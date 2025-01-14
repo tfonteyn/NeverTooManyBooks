@@ -26,6 +26,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
@@ -36,6 +37,32 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 
 public interface TagDao {
 
+    @IntRange(from = 1)
+    long insert(@NonNull Tag tag)
+            throws DaoInsertException;
+
+    void update(@NonNull Tag tag)
+            throws DaoUpdateException;
+
+    boolean delete(@NonNull Tag tag);
+
+    /**
+     * Get the list of all tags, ordered by name.
+     *
+     * @return list
+     */
+    @NonNull
+    List<Tag> getList();
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param context        Current context
+     * @param list           List to clean up
+     * @param localeSupplier deferred supplier for a {@link Locale}.
+     *
+     * @return {@code true} if the list was modified.
+     */
     boolean pruneList(@NonNull Context context,
                       @NonNull Collection<Tag> list,
                       @NonNull Function<Tag, Locale> localeSupplier);
@@ -58,13 +85,4 @@ public interface TagDao {
 
     @NonNull
     Collection<Tag> getByBookId(@IntRange(from = 1) long bookId);
-
-    @IntRange(from = 1)
-    long insert(@NonNull Tag tag)
-            throws DaoInsertException;
-
-    void update(@NonNull Tag tag)
-            throws DaoUpdateException;
-
-    boolean delete(@NonNull Tag tag);
 }

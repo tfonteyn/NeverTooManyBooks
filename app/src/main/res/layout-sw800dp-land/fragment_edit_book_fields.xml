@@ -221,19 +221,17 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_genre"
-            style="@style/TIL.AutoCompleteTextView"
-            android:hint="@string/lbl_genre"
+            android:id="@+id/lbl_tags"
+            style="@style/TIL.ListPicker"
+            android:hint="@string/lbl_tags"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/col2"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             >
 
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/genre"
-                style="@style/TIA.InlineStringField"
-                android:imeOptions="actionNext"
-                tools:ignore="LabelFor"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tags"
+                style="@style/TIE.ReadOnly"
                 tools:text="@sample/data.json/genre/name"
                 />
 
@@ -245,7 +243,7 @@
             android:hint="@string/lbl_bookshelves"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
+            app:layout_constraintTop_toBottomOf="@id/lbl_tags"
             >
 
             <com.google.android.material.textfield.TextInputEditText

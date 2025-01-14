@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 public class Tag
-        implements Parcelable, Entity, Mergeable {
+        implements Parcelable, Entity, Mergeable, Comparable<Tag> {
 
     /** {@link Parcelable}. */
     public static final Creator<Tag> CREATOR = new Creator<Tag>() {
@@ -153,5 +153,10 @@ public class Tag
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    @Override
+    public int compareTo(@NonNull final Tag o) {
+        return name.compareTo(o.name);
     }
 }

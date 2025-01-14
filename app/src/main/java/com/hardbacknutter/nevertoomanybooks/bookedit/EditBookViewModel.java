@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.AutoCompleteTextField;
 import com.hardbacknutter.nevertoomanybooks.fields.BitmaskChipGroupField;
@@ -122,7 +123,7 @@ public class EditBookViewModel
      *  the list again... and it will not show. => we don't refresh these lists!
      */
     @Nullable
-    private List<String> genres;
+    private List<Tag> tags;
     /** Field drop down list. */
     @Nullable
     private List<String> locations;
@@ -613,16 +614,16 @@ public class EditBookViewModel
     }
 
     /**
-     * Get a unique list of all book-genres in the database, ordered alphabetically.
+     * Get a unique list of all tags in the database, ordered alphabetically.
      *
      * @return List of genres
      */
     @NonNull
-    private List<String> getAllGenres() {
-        if (genres == null) {
-            genres = ServiceLocator.getInstance().getGenreDao().getList();
+    List<Tag> getAllTags() {
+        if (tags == null) {
+            tags = ServiceLocator.getInstance().getTagDao().getList();
         }
-        return genres;
+        return tags;
     }
 
     /**
@@ -784,6 +785,12 @@ public class EditBookViewModel
         // Update BOTH the book and the field
         book.setPublishers(list);
         requireField(R.id.publisher).setValue(list);
+    }
+
+    void updateTags(final List<Tag> list) {
+        // Update BOTH the book and the field
+        book.setTags(list);
+        requireField(R.id.tags).setValue(list);
     }
 
     void updateBookshelves(@NonNull final Set<Long> previousSelection,
@@ -1022,11 +1029,11 @@ public class EditBookViewModel
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
-        fields.add(new AutoCompleteTextField(fragmentId, R.id.genre, DBKey.GENRE,
-                                             this::getAllGenres)
-                           .setTextInputLayoutId(R.id.lbl_genre));
-
         // Personal fields
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.tags, Book.BKEY_TAG_LIST,
+                                       DBKey.FK_TAG,
+                                       listFormatterNormalDetails)
+                           .addRelatedViews(R.id.lbl_tags));
 
         fields.add(new TextViewField<>(fragmentId, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
                                        DBKey.FK_BOOKSHELF,

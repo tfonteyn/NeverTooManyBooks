@@ -98,6 +98,19 @@ public class TagDaoImpl
 
     @NonNull
     @Override
+    public List<Tag> getList() {
+        final List<Tag> list = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(Sql.GET_ALL, null)) {
+            final CursorRow rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                list.add(new Tag(rowData.getLong(DBKey.PK_ID), rowData));
+            }
+        }
+        return list;
+    }
+
+    @NonNull
+    @Override
     public Collection<Tag> getByBookId(@IntRange(from = 1) final long bookId) {
         final List<Tag> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
@@ -280,6 +293,10 @@ public class TagDaoImpl
         static final String DELETE_BY_ID =
                 DELETE_FROM_ + TBL_TAGS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
+        static final String GET_ALL =
+                SELECT_ + DBKey.PK_ID + ',' + DBKey.TAG
+                + _FROM_ + TBL_TAGS.getName()
+                + _ORDER_BY_ + DBKey.TAG;
 
         static final String FIND_BY_ID =
                 SELECT_ + DBKey.PK_ID + ',' + DBKey.TAG
@@ -295,7 +312,8 @@ public class TagDaoImpl
                 SELECT_ + TBL_TAGS.dotAs(DBKey.PK_ID)
                 + ',' + TBL_TAGS.dotAs(DBKey.TAG)
                 + _FROM_ + TBL_BOOK_TAG.startJoin(TBL_TAGS)
-                + _WHERE_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK) + "=?";
+                + _WHERE_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK) + "=?"
+                + _ORDER_BY_ + DBKey.TAG;
 
         /** Insert the link between a {@link Book} and a {@link Identifier}. */
         static final String INSERT_BOOK_LINK =

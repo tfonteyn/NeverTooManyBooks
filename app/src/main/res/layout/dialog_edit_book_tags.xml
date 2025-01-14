@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp"
+        >
+
+        <!-- uses a 'back' icon because saving is always/automatically done -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/Toolbar.Dialog.Fullscreen"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:title="@string/lbl_tags"
+            />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dialog_content"
+        style="@style/Dialog.Content">
+
+        <TextView
+            android:id="@+id/info"
+            style="@style/Text.Info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/info_tap_to_move_tag"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/lbl_tags"
+            style="@style/Text.Header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_tags"
+            app:layout_constraintStart_toStartOf="@id/tag_available"
+            app:layout_constraintTop_toBottomOf="@id/info"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tag_available"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:backgroundTint="?attr/colorSurfaceContainer"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tags_in_book"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_tags"
+            tools:itemCount="10"
+            tools:listitem="@layout/row_edit_tag_list"
+            />
+
+        <TextView
+            android:id="@+id/lbl_book"
+            style="@style/Text.Header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_book"
+            app:layout_constraintStart_toStartOf="@id/tags_in_book"
+            app:layout_constraintTop_toBottomOf="@id/info"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tags_in_book"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/section_margin_top"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tag_available"
+            app:layout_constraintTop_toBottomOf="@id/lbl_book"
+            tools:itemCount="10"
+            tools:listitem="@layout/row_edit_tag_list"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.hardbacknutter.nevertoomanybooks.core.widgets.MovableFloatingActionButton
+        android:id="@+id/fab"
+        style="@style/Widget.App.FloatingActionButton"
+        android:src="@drawable/add_24px"
+        />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
