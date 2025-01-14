@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -223,6 +223,10 @@ public class SearchAdminFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
+            menu.add(Menu.NONE, R.id.MENU_ACTION_CLEAR, 0, R.string.action_clear)
+                .setIcon(R.drawable.check_box_outline_blank_24px)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
             menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
                 .setIcon(R.drawable.undo_24px)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -248,6 +252,12 @@ public class SearchAdminFragment
                         .addToBackStack(SiteConfigPreferenceFragment.TAG)
                         .replace(R.id.main_fragment, fragment, SiteConfigPreferenceFragment.TAG)
                         .commit();
+                return true;
+
+            } else if (menuItemId == R.id.MENU_ACTION_CLEAR) {
+                // See TabAdapter: the position will always match the index of the type
+                final int position = vb.pager.getCurrentItem();
+                vm.clear(vm.getTypes().get(position));
                 return true;
 
             } else if (menuItemId == R.id.MENU_RESET) {

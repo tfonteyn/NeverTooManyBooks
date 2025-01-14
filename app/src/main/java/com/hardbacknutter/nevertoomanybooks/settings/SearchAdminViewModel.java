@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -90,6 +90,16 @@ public class SearchAdminViewModel
                                  Site.Type.AltEditions.getSites());
             }
         }
+    }
+
+    /**
+     * Clear all selections in the site list for the given type.
+     *
+     * @param type to clear
+     */
+    public void clear(final Site.Type type) {
+        getList(type).forEach(site -> site.setActive(false));
+        siteListUpdated.setValue(type);
     }
 
     /**
