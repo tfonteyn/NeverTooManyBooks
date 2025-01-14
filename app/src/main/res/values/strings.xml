@@ -1928,5 +1928,10 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="lbl_text"
             translatable="false">Text</string>
-    <string name="lbl_tags">Tags</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="lbl_tags"
+            translatable="false">Tags</string>
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="lbl_tags_genre"
+            translatable="false">Tags/genre</string>
 </resources>
