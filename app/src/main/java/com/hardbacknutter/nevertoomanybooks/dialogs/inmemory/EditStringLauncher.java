@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.InputType;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +40,7 @@ public class EditStringLauncher
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
     static final String BKEY_EXTRAS = TAG + ":extras";
+    static final String BKEY_INPUT_TYPE = TAG + ":it";
 
     static final String BKEY_CURRENT = TAG + ":current";
     private static final String BKEY_PREVIOUS = TAG + ":previous";
@@ -101,12 +103,15 @@ public class EditStringLauncher
      *                      but another UI {@code Context} will also do.
      * @param dialogTitle   the dialog title
      * @param dialogMessage (optional) message to display at the top of the dialog
+     * @param inputType     a valid {@link InputType} value
+     *                      {@code 0} is switched to CLASS_TEXT
      * @param currentValue  (optional) the current value of the field
      * @param extras        (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
+                       final int inputType,
                        @Nullable final String currentValue,
                        @Nullable final Bundle extras) {
 
@@ -117,6 +122,9 @@ public class EditStringLauncher
         if (dialogMessage != null && !dialogMessage.isEmpty()) {
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
+
+        args.putInt(BKEY_INPUT_TYPE, inputType != 0 ? inputType
+                                                    : InputType.TYPE_CLASS_TEXT);
 
         // be consistent: don't pass null, DO pass empty (i.e. PartialDate#NOT_SET)
         if (currentValue != null) {

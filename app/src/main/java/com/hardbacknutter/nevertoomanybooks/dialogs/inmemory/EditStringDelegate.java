@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,7 @@ public class EditStringDelegate
     private final String dialogMessage;
 
     private final EditStringViewModel vm;
+    private final int inputType;
     private DialogEditStringContentBinding vb;
 
     @Nullable
@@ -66,6 +68,9 @@ public class EditStringDelegate
         dialogTitle = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_TITLE,
                                      owner.getString(R.string.action_edit));
         dialogMessage = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_MESSAGE, null);
+
+        inputType = args.getInt(EditStringLauncher.BKEY_INPUT_TYPE,
+                                InputType.TYPE_CLASS_TEXT);
 
         vm = new ViewModelProvider(owner).get(EditStringViewModel.class);
         vm.init(args);
@@ -119,6 +124,7 @@ public class EditStringDelegate
             vb.message.setVisibility(View.GONE);
         }
 
+        vb.editString.setInputType(inputType);
         vb.editString.setText(vm.getCurrentValue());
         vb.editString.requestFocus();
     }
