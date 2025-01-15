@@ -327,10 +327,11 @@ public class DnbSearchEngine
                                 // Themen­gebiet / Topic
                                 // Thema / Subject
                                 final String[] split = td.text().split(",");
-                                final List<Tag> tags = Arrays.stream(split)
-                                                             .map(String::strip)
-                                                             .map(Tag::new)
-                                                             .collect(Collectors.toList());
+                                final List<Tag> tags = Arrays
+                                        .stream(split)
+                                        .map(String::strip)
+                                        .map(name -> new Tag(name, locale))
+                                        .collect(Collectors.toList());
                                 book.setTags(tags);
 
                                 break;

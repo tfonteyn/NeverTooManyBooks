@@ -39,6 +39,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -400,6 +401,8 @@ public class GoogleBooks2SearchEngine
         String s;
         float f;
 
+        final Locale locale = getLocale(context);
+
         s = volumeInfo.optString("title", null);
         if (s != null && !s.isEmpty()) {
             book.putString(DBKey.TITLE, s);
@@ -416,7 +419,7 @@ public class GoogleBooks2SearchEngine
         }
         s = volumeInfo.optString("publishedDate", null);
         if (s != null && !s.isEmpty()) {
-            addPublicationDate(context, getLocale(context), s, book);
+            addPublicationDate(context, locale, s, book);
         }
 
         s = volumeInfo.optString("description", null);
@@ -453,7 +456,7 @@ public class GoogleBooks2SearchEngine
             for (int g = 0; g < a.length(); g++) {
                 final String category = a.optString(g, null);
                 if (category != null && !category.isEmpty()) {
-                    tags.add(new Tag(category));
+                    tags.add(new Tag(category, locale));
                 }
             }
             book.setTags(tags);

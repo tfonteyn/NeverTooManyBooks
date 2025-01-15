@@ -26,9 +26,14 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -37,7 +42,7 @@ public class Tag
         implements Parcelable, Entity, Mergeable, Comparable<Tag> {
 
     /** {@link Parcelable}. */
-    public static final Creator<Tag> CREATOR = new Creator<Tag>() {
+    public static final Creator<Tag> CREATOR = new Creator<>() {
         @Override
         @NonNull
         public Tag createFromParcel(@NonNull final Parcel in) {
@@ -50,18 +55,33 @@ public class Tag
             return new Tag[size];
         }
     };
+    private static final Pattern WHITESPACE_SPLITTER = Pattern.compile("\\s+");
 
     private long id;
     @NonNull
     private String name;
 
     /**
-     * Constructor without ID.
+     * Testing only; the caller must ensure correct upper/lowercase usage.
      *
      * @param name for the Tag
      */
+    @VisibleForTesting
     public Tag(@NonNull final String name) {
         this.name = name;
+    }
+
+    /**
+     * Constructor without ID.
+     *
+     * @param name   for the Tag
+     * @param locale for normalizing the name
+     *
+     * @see #normalize(CharSequence, Locale)
+     */
+    public Tag(@NonNull final CharSequence name,
+               @NonNull final Locale locale) {
+        this.name = normalize(name, locale);
     }
 
     /**
@@ -82,8 +102,20 @@ public class Tag
         name = in.readString();
     }
 
+    public static String normalize(@NonNull final CharSequence sentence,
+                                   @NonNull final Locale locale) {
+        return Arrays.stream(WHITESPACE_SPLITTER.split(sentence))
+                     .map(s -> s.substring(0, 1).toUpperCase(locale)
+                               + s.substring(1).toLowerCase(locale))
+                     .collect(Collectors.joining(" "));
+    }
+
     public long getId() {
         return id;
+    }
+
+    public void setId(final long id) {
+        this.id = id;
     }
 
     @NonNull
@@ -94,23 +126,42 @@ public class Tag
         return name;
     }
 
-    public void setId(final long id) {
-        this.id = id;
-    }
-
     @NonNull
     @Override
     public List<String> getNameFields() {
         return List.of(name);
     }
 
+    /**
+     * Get the (normalized) name.
+     *
+     * @return "The Name"
+     */
     @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(@NonNull final String name) {
-        this.name = name;
+    /**
+     * Set the name.
+     *
+     * @param name   for the Tag
+     * @param locale for normalizing the name
+     *
+     * @see #normalize(CharSequence, Locale)
+     */
+    public void setName(@NonNull final CharSequence name,
+                        @NonNull final Locale locale) {
+        this.name = normalize(name, locale);
+    }
+
+    /**
+     * Replace local details from another Tag.
+     *
+     * @param source to copy from
+     */
+    public void copyFrom(@NonNull final Tag source) {
+        name = source.name;
     }
 
     @Override
@@ -134,6 +185,12 @@ public class Tag
                + '}';
     }
 
+    /**
+     * Equality: <strong>id, name</strong>.
+     * <p>
+     * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
+     * This allows correcting case mistakes even with identical ID.
+     */
     @Override
     public boolean equals(@Nullable final Object obj) {
         if (this == obj) {

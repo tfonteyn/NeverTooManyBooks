@@ -242,6 +242,8 @@ public class StripWebSearchEngine
                       @NonNull final List<AuthorResolver> authorResolvers)
             throws StorageException, SearchException, CredentialsException {
 
+        final Locale siteLocale = getLocale(context);
+
         final Element main = document.selectFirst("main.content");
         if (main == null) {
             return;
@@ -261,7 +263,7 @@ public class StripWebSearchEngine
         if (titleElement == null) {
             return;
         }
-        parseTitle(titleElement, book);
+        parseTitle(context, titleElement, book);
 
         final Element techInfoSection = details.selectFirst("div.techinfo");
         if (techInfoSection == null) {
@@ -301,7 +303,7 @@ public class StripWebSearchEngine
                     case "Verschijningsdatum": {
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty()) {
-                            addPublicationDate(context, getLocale(context), text, book);
+                            addPublicationDate(context, siteLocale, text, book);
                         }
                         break;
                     }
@@ -329,7 +331,7 @@ public class StripWebSearchEngine
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty()) {
                             final List<Tag> tags = book.getTags();
-                            tags.add(new Tag(text));
+                            tags.add(new Tag(text, siteLocale));
                             book.setTags(tags);
                         }
                         break;
@@ -341,8 +343,8 @@ public class StripWebSearchEngine
 
                         final List<Tag> tags = book.getTags();
                         tags.addAll(Arrays.stream(split)
-                                                     .map(String::strip)
-                                                     .map(Tag::new)
+                                          .map(String::strip)
+                                          .map(name -> new Tag(name, siteLocale))
                                           .collect(Collectors.toList()));
                         book.setTags(tags);
                         break;
@@ -401,11 +403,13 @@ public class StripWebSearchEngine
         }
     }
 
-    private void parseTitle(@NonNull final Element titleElement,
+    private void parseTitle(@NonNull final Context context,
+                            @NonNull final Element titleElement,
                             @NonNull final Book book) {
         final String text = SearchEngineUtils.cleanText(titleElement.text());
         if (!text.isEmpty()) {
-            final String lcText = text.toLowerCase(Locale.ROOT);
+            // TITLE_SUFFIXES are as entered by site-employees, hence use site-locale
+            final String lcText = text.toLowerCase(getLocale(context));
             final String title = TITLE_SUFFIXES
                     .stream()
                     .filter(lcText::endsWith)
@@ -434,7 +438,9 @@ public class StripWebSearchEngine
                                @NonNull final Element td) {
         final String langCode = SearchEngineUtils.cleanText(td.text());
         if (!langCode.isEmpty()) {
-            // Seen: NL,FR,EN,Fr
+            // Another mess.. the site uses an abbreviation for the language,
+            // but NOT a standard one.
+            // Seen in use: NL,FR,EN,Fr
             switch (langCode.toLowerCase(Locale.ROOT)) {
                 case "nl":
                     book.putString(DBKey.LANGUAGE, "nld");

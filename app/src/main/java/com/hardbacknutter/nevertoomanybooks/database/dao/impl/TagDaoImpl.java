@@ -159,7 +159,7 @@ public class TagDaoImpl
             // Sanity check
             if (dbTag.isPresent()) {
                 // copy any updated fields
-                tag.setName(dbTag.get().getName());
+                tag.copyFrom(dbTag.get());
             } else {
                 // we shouldn't get here... but if we do, set it to 'new'
                 tag.setId(0);

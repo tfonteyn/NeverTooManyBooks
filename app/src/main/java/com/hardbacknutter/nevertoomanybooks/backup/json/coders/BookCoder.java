@@ -73,7 +73,7 @@ public class BookCoder
     private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
-    private final JsonCoder<Tag> tagCoder = new TagCoder();
+    private final JsonCoder<Tag> tagCoder;
     private final IdentifierCoder identifierCoder = new IdentifierCoder();
     @NonNull
     private final RealNumberParser realNumberParser;
@@ -88,6 +88,7 @@ public class BookCoder
                      @NonNull final Style defaultStyle) {
 
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
+        tagCoder = new TagCoder(context.getResources().getConfiguration().getLocales().get(0));
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
         this.realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
     }

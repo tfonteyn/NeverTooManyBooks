@@ -347,7 +347,9 @@ public class BertrandPtSearchEngine
                 "div#productPageSectionDetails-collapseDetalhes-content-themes > div.info");
         if (element != null) {
             final Elements as = element.select("a");
-            final List<Tag> tags = as.stream().map(Element::text).map(Tag::new)
+            final List<Tag> tags = as.stream()
+                                     .map(Element::text)
+                                     .map(name -> new Tag(name, siteLocale))
                                      .collect(Collectors.toList());
             book.setTags(tags);
         }

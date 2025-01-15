@@ -418,7 +418,7 @@ public class GoodreadsSearchEngine
 
         final JSONArray genres = o.optJSONArray("bookGenres");
         if (genres != null) {
-            parseBookGenres(genres, book);
+            parseBookGenres(genres, locale, book);
         }
 
         final JSONObject work = o.optJSONObject("work");
@@ -570,6 +570,7 @@ public class GoodreadsSearchEngine
     }
 
     private void parseBookGenres(@NonNull final JSONArray genres,
+                                 @NonNull final Locale locale,
                                  @NonNull final Book book) {
         final Set<Tag> result = new HashSet<>();
         for (int i = 0; i < genres.length(); i++) {
@@ -579,7 +580,7 @@ public class GoodreadsSearchEngine
                 if (genre != null) {
                     final String name = genre.optString("name");
                     if (!name.isEmpty()) {
-                        result.add(new Tag(name));
+                        result.add(new Tag(name, locale));
                     }
                 }
             }
