@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTagsBinding;
@@ -63,9 +66,9 @@ public class EditBookTagsDialogFragment
     private EditBookViewModel vm;
     /** View Binding. */
     private DialogEditBookTagsBinding vb;
+    private TagAdapter availableTagsAdapter;
     private TagAdapter bookTagsAdapter;
     private List<Tag> bookTags;
-
     /** React to list changes. */
     private final SimpleAdapterDataObserver bookAdapterObserver =
             new SimpleAdapterDataObserver() {
@@ -75,6 +78,7 @@ public class EditBookTagsDialogFragment
                     vm.updateTags(bookTags);
                 }
             };
+    private List<Tag> availableTags;
     private EditStringLauncher editStringLauncher;
 
     /**
@@ -135,24 +139,26 @@ public class EditBookTagsDialogFragment
         vb.toolbar.setSubtitle(vm.getBook().getTitle());
 
         //noinspection DataFlowIssue
-        vb.fab.setOnClickListener(v -> editStringLauncher.launch(getActivity(),
-                                                                 getString(R.string.action_add),
-                                                                 null,
-                                                                 "",
-                                                                 null));
+        vb.fab.setOnClickListener(v -> editStringLauncher
+                .launch(getActivity(),
+                        getString(R.string.action_add),
+                        null,
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS,
+                        "",
+                        null));
 
         editStringLauncher = new EditStringLauncher(RK_EDIT_TAG);
         editStringLauncher.setResultListener((previousValue, currentValue, extras)
-                                                     -> bookTagsAdapter.add(new Tag(currentValue)));
+                                                     -> addNewTag(currentValue));
         editStringLauncher.registerForFragmentResult(getChildFragmentManager(), this);
 
         bookTags = vm.getBook().getTags();
-        final List<Tag> availableTags = vm.getAllTags();
+        availableTags = vm.getAllTags();
         availableTags.removeAll(bookTags);
 
         final Context context = getContext();
         //noinspection DataFlowIssue
-        final TagAdapter availableTagsAdapter = new TagAdapter(context, availableTags);
+        availableTagsAdapter = new TagAdapter(context, availableTags);
         bookTagsAdapter = new TagAdapter(context, bookTags);
         availableTagsAdapter.setDestination(bookTagsAdapter);
         bookTagsAdapter.setDestination(availableTagsAdapter);
@@ -161,6 +167,28 @@ public class EditBookTagsDialogFragment
 
         vb.tagAvailable.setAdapter(availableTagsAdapter);
         vb.tagsInBook.setAdapter(bookTagsAdapter);
+    }
+
+    private void addNewTag(final CharSequence value) {
+        final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
+        // Always create so the name is normalized for sure.
+        // Android does not stop the user overruling TYPE_TEXT_FLAG_CAP_WORDS
+        final Tag tag = new Tag(value, userLocale);
+
+        if (bookTagsAdapter.has(tag).isPresent()) {
+            // already present in the book, we're done
+            return;
+        }
+
+        final Optional<Tag> has = availableTagsAdapter.has(tag);
+        if (has.isPresent()) {
+            // already available, move it to the book
+            availableTagsAdapter.move(has.get());
+            return;
+        }
+
+        // it's new... add it
+        bookTagsAdapter.add(tag);
     }
 
     @Override
@@ -231,20 +259,46 @@ public class EditBookTagsDialogFragment
             };
         }
 
+        @NonNull
+        Optional<Tag> has(@NonNull final Tag t) {
+            return tags.stream()
+                       .filter(tag -> tag.getName().equals(t.getName()))
+                       .findFirst();
+        }
+
         void add(@NonNull final Tag tag) {
-            // Sanity check: reject duplicates
-            if (tags.stream()
-                    .map(Tag::getName)
-                    .noneMatch(name -> name.equals(tag.getName()))) {
-                // find insertion point without resorting,
-                // using a brute-force sequential search...
-                int i = 0;
-                while (i < tags.size() && tags.get(i).compareTo(tag) < 0) {
-                    i++;
-                }
-                tags.add(i, tag);
-                notifyItemInserted(i);
+            // Sanity check: ignore duplicates
+            if (has(tag).isPresent()) {
+                return;
             }
+
+            // find insertion point using a brute-force sequential search...
+            int i = 0;
+            while (i < tags.size() && tags.get(i).compareTo(tag) < 0) {
+                i++;
+            }
+            tags.add(i, tag);
+            notifyItemInserted(i);
+        }
+
+        /**
+         * Move the given tag from this adapter(list) to the destination adapter.
+         *
+         * @param tag to move
+         *
+         * @return {@code true} if the tag was present and moved
+         */
+        boolean move(@NonNull final Tag tag) {
+            for (int position = 0; position < tags.size(); position++) {
+                final Tag tmp = tags.get(position);
+                if (tmp.compareTo(tag) == 0) {
+                    destination.add(tmp);
+                    tags.remove(tmp);
+                    notifyItemRemoved(position);
+                    return true;
+                }
+            }
+            return false;
         }
 
         /**
