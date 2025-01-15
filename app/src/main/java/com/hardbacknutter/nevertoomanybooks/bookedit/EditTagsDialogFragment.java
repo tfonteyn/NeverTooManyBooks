@@ -48,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.insets.Side;
 
 public class EditTagsDialogFragment
         extends DialogFragment
@@ -115,6 +117,19 @@ public class EditTagsDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        InsetsListenerBuilder.create(vb.tagAvailable)
+                             .margins(Side.Start, Side.Bottom)
+                             .systemBars()
+                             .displayCutout()
+                             .ime()
+                             .apply();
+        InsetsListenerBuilder.create(vb.tagsInBook)
+                             .margins(Side.End, Side.Bottom)
+                             .systemBars()
+                             .displayCutout()
+                             .ime()
+                             .apply();
 
         initToolbar(this, DialogType.Fullscreen, vb.toolbar);
         vb.toolbar.setSubtitle(vm.getBook().getTitle());
