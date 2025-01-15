@@ -373,9 +373,8 @@ public class OpenLibrarySearchEngine
      *
      * @throws UncheckedIOException on any failure
      */
-    @VisibleForTesting
     @NonNull
-    String readResponseStream(@NonNull final InputStream is)
+    private String readResponseStream(@NonNull final InputStream is)
             throws UncheckedIOException {
         // Don't close this stream!
         final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -966,14 +965,16 @@ public class OpenLibrarySearchEngine
         String response;
         try {
             // get and store the result into a string.
-            response = futureHttpGet.get(url, (con, is) -> readResponseStream(is));
+            response = futureHttpGet.get(url, (con, is) ->
+                    readResponseStream(is));
 
             final JSONObject jsonObject = new JSONObject(response);
             final JSONArray works = jsonObject.optJSONArray("works");
             if (works != null && !works.isEmpty()) {
                 final String worksKey = works.getJSONObject(0).optString("key");
                 url = getHostUrl(context) + worksKey + "/editions.json";
-                response = futureHttpGet.get(url, (con, is) -> readResponseStream(is));
+                response = futureHttpGet.get(url, (con, is) ->
+                        readResponseStream(is));
                 return parseWorks(new JSONObject(response));
             }
         } catch (@NonNull final StorageException | IOException | JSONException e) {

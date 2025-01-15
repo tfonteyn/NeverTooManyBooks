@@ -262,9 +262,8 @@ public class GoodreadsSearchEngine
      *
      * @throws UncheckedIOException on any failure
      */
-    @VisibleForTesting
     @NonNull
-    String readResponseStream(@NonNull final InputStream is)
+    private String readResponseStream(@NonNull final InputStream is)
             throws UncheckedIOException {
         // Don't close this stream!
         final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);

@@ -215,7 +215,8 @@ public class GoogleBooks2SearchEngine
 
         try {
             // get and store the result into a string.
-            final String response = futureHttpGet.get(url, (con, is) -> readResponseStream(is));
+            final String response = futureHttpGet.get(url, (con, is) ->
+                    readResponseStream(is));
 
             final JSONObject document = new JSONObject(response);
             // https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes
@@ -253,9 +254,8 @@ public class GoogleBooks2SearchEngine
      *
      * @throws UncheckedIOException on any failure
      */
-    @VisibleForTesting
     @NonNull
-    String readResponseStream(@NonNull final InputStream is)
+    private String readResponseStream(@NonNull final InputStream is)
             throws UncheckedIOException {
         // Don't close this stream!
         final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
