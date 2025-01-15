@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
@@ -238,7 +238,7 @@ public class EditBookFieldsFragment
     }
 
     private void editTags() {
-        EditTagsDialogFragment.launch(getChildFragmentManager());
+        EditBookTagsDialogFragment.launch(getChildFragmentManager());
     }
 
     private void editBookshelves() {

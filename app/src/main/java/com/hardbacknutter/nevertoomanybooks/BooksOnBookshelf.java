@@ -124,8 +124,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherBottom
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.AutoCompletePickerLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.autocomplete.AutoCompletePickerLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;

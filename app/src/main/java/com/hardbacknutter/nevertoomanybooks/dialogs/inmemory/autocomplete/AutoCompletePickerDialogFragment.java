@@ -18,20 +18,20 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.autocomplete;
 
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexBottomSheetDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
 
-public class EditStringBottomSheet
-        extends FlexBottomSheetDialogFragment {
+public class AutoCompletePickerDialogFragment
+        extends FlexClassicDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditStringDelegate(this, requireArguments());
+        delegate = new AutoCompletePickerDelegate(this, requireArguments());
     }
 }

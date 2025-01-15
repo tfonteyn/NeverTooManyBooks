@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleSimpleBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiChoiceBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
 /**

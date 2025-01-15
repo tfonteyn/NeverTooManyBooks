@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring;
 
 import android.os.Bundle;
 
@@ -27,14 +27,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-@SuppressWarnings("WeakerAccess")
-public class AutoCompletePickerViewModel
+public class EditStringViewModel
         extends ViewModel {
 
     @NonNull
-    private String previousSelection = "";
+    private String previousValue = "";
     @NonNull
-    private String currentSelection = "";
+    private String currentValue = "";
     @Nullable
     private Bundle extras;
 
@@ -49,26 +48,25 @@ public class AutoCompletePickerViewModel
         if (!initDone) {
             initDone = true;
 
-            currentSelection = args.getString(AutoCompletePickerLauncher.BKEY_CURRENT_SELECTION,
-                                              "");
-            previousSelection = currentSelection;
+            currentValue = args.getString(EditStringLauncher.BKEY_CURRENT, "");
+            previousValue = currentValue;
 
-            extras = args.getBundle(AutoCompletePickerLauncher.BKEY_EXTRAS);
+            extras = args.getBundle(EditStringLauncher.BKEY_EXTRAS);
         }
     }
 
     @NonNull
-    String getPreviousSelection() {
-        return previousSelection;
+    String getPreviousValue() {
+        return previousValue;
     }
 
     @NonNull
-    String getCurrentSelection() {
-        return currentSelection;
+    String getCurrentValue() {
+        return currentValue;
     }
 
-    void setCurrentSelection(@NonNull final String currentSelection) {
-        this.currentSelection = currentSelection;
+    void setCurrentValue(@NonNull final String currentValue) {
+        this.currentValue = currentValue;
     }
 
     @Nullable

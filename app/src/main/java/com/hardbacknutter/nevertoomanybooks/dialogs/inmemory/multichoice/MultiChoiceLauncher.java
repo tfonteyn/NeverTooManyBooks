@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,34 +18,39 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
-/**
- * IMPORTANT: The <strong>input</strong> current-value/selection is a {@code String}.
- * The <strong>output</strong> for the same is a {@link PartialDate}.
- */
-public class PartialDatePickerLauncher
+public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         extends DialogLauncher {
 
-    private static final String TAG = "PDatePickerLauncher";
+    private static final String TAG = "MultiChoiceLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
     static final String BKEY_EXTRAS = TAG + ":extras";
 
-    /** A standard sql style (partial) date string, must/will be valid. */
+    /** The list of strings to display in the dropdown. */
+    static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
+    /** The ids for the list of strings to display in the dropdown. */
+    static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
+
     static final String BKEY_CURRENT_SELECTION = TAG + ":current";
     private static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
 
@@ -59,10 +64,10 @@ public class PartialDatePickerLauncher
      *
      * @param requestKey FragmentResultListener request key to use for our response.
      */
-    public PartialDatePickerLauncher(@NonNull final String requestKey) {
+    public MultiChoiceLauncher(@NonNull final String requestKey) {
         super(requestKey,
-              PartialDatePickerDialogFragment::new,
-              PartialDatePickerBottomSheet::new);
+              MultiChoiceDialogFragment::new,
+              MultiChoiceBottomSheet::new);
     }
 
     /**
@@ -79,12 +84,14 @@ public class PartialDatePickerLauncher
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @NonNull final PartialDate previousSelection,
-                          @NonNull final PartialDate currentSelection,
+                          @NonNull final Set<Long> previousSelection,
+                          @NonNull final Set<Long> currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putParcelable(BKEY_PREVIOUS_SELECTION, previousSelection);
-        result.putParcelable(BKEY_CURRENT_SELECTION, currentSelection);
+        result.putLongArray(BKEY_PREVIOUS_SELECTION,
+                            previousSelection.stream().mapToLong(o -> o).toArray());
+        result.putLongArray(BKEY_CURRENT_SELECTION,
+                            currentSelection.stream().mapToLong(o -> o).toArray());
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -107,13 +114,15 @@ public class PartialDatePickerLauncher
      *                         but another UI {@code Context} will also do.
      * @param dialogTitle      the dialog title
      * @param dialogMessage    (optional) message to display at the top of the dialog
-     * @param currentSelection (optional) the current value of the field
+     * @param allItems         list of all possible items
+     * @param currentSelection (optional) list of items which are currently selected
      * @param extras           (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
-                       @Nullable final String currentSelection,
+                       @NonNull final List<T> allItems,
+                       @Nullable final List<T> currentSelection,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -124,9 +133,16 @@ public class PartialDatePickerLauncher
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
-        // be consistent: don't pass null, DO pass empty (i.e. PartialDate#NOT_SET)
+        // pass in id/labels as two arrays
+        args.putLongArray(BKEY_ITEM_LIST_ID, allItems
+                .stream().mapToLong(Entity::getId).toArray());
+        args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
+                .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
+
+        // be consistent: don't pass null, DO pass empty
         if (currentSelection != null) {
-            args.putString(BKEY_CURRENT_SELECTION, currentSelection);
+            args.putLongArray(BKEY_CURRENT_SELECTION, currentSelection
+                    .stream().mapToLong(Entity::getId).toArray());
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -138,14 +154,24 @@ public class PartialDatePickerLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
+
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        resultListener.onResult(
-                Objects.requireNonNull(result.getParcelable(BKEY_PREVIOUS_SELECTION),
-                                       BKEY_PREVIOUS_SELECTION),
-                Objects.requireNonNull(result.getParcelable(BKEY_CURRENT_SELECTION),
-                                       BKEY_CURRENT_SELECTION),
-                result.getBundle(BKEY_EXTRAS));
+        final Set<Long> previousSelection =
+                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_PREVIOUS_SELECTION),
+                                                     BKEY_PREVIOUS_SELECTION))
+                      .boxed()
+                      .collect(Collectors.toSet());
+
+        final Set<Long> currentSelection =
+                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_CURRENT_SELECTION),
+                                                     BKEY_CURRENT_SELECTION))
+                      .boxed()
+                      .collect(Collectors.toSet());
+
+        resultListener.onResult(previousSelection,
+                                currentSelection,
+                                result.getBundle(BKEY_EXTRAS));
     }
 
     @FunctionalInterface
@@ -158,8 +184,8 @@ public class PartialDatePickerLauncher
          * @param extras            (optional) Bundle as provided to one of the
          *                          {@code Launcher#launch} methods
          */
-        void onResult(@NonNull PartialDate previousSelection,
-                      @NonNull PartialDate currentSelection,
+        void onResult(@NonNull Set<Long> previousSelection,
+                      @NonNull Set<Long> currentSelection,
                       @Nullable Bundle extras);
     }
 }

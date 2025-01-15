@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,31 +17,21 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
+
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate;
 
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FlexBottomSheetDialogFragment;
 
-public class MultiChoiceDialogFragment
-        extends FlexClassicDialogFragment {
+public class PartialDatePickerBottomSheet
+        extends FlexBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new MultiChoiceDelegate(this, requireArguments());
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final MultiChoiceDelegate pickerDelegate = (MultiChoiceDelegate) delegate;
-        adjustWindowSize(pickerDelegate.getRecyclerView(), 0.33f);
+        delegate = new PartialDatePickerDelegate(this, requireArguments());
     }
 }

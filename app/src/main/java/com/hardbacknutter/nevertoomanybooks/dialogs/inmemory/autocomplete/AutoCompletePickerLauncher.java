@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,11 +18,10 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.autocomplete;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,21 +31,18 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
-public class SingleChoiceLauncher<T extends Parcelable & Entity>
+public class AutoCompletePickerLauncher
         extends DialogLauncher {
 
-    private static final String TAG = "SingleChoiceLauncher";
+    private static final String TAG = "ACPickerLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
     static final String BKEY_EXTRAS = TAG + ":extras";
 
-    /** The list of strings to display. */
+    /** The list of strings to display in the dropdown. */
     static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
-    /** The ids for the list of strings to display. */
-    static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
 
     static final String BKEY_CURRENT_SELECTION = TAG + ":current";
     private static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
@@ -61,10 +57,10 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
      *
      * @param requestKey FragmentResultListener request key to use for our response.
      */
-    public SingleChoiceLauncher(@NonNull final String requestKey) {
+    public AutoCompletePickerLauncher(@NonNull final String requestKey) {
         super(requestKey,
-              SingleChoiceDialogFragment::new,
-              SingleChoiceBottomSheet::new);
+              AutoCompletePickerDialogFragment::new,
+              AutoCompletePickerBottomSheet::new);
     }
 
     /**
@@ -73,9 +69,7 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
      * @param fragment          the calling DialogFragment
      * @param requestKey        to use
      * @param previousSelection the previous selection/value
-     *                          Can be {@code null} for none selected.
      * @param currentSelection  the new selection/value
-     *                          Can be {@code null} for none selected.
      * @param extras            (optional) Bundle as provided to {@link #launch}
      *
      * @see #onFragmentResult(String, Bundle)
@@ -83,16 +77,12 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @Nullable final Long previousSelection,
-                          @Nullable final Long currentSelection,
+                          @NonNull final String previousSelection,
+                          @NonNull final String currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        if (previousSelection != null) {
-            result.putLong(BKEY_PREVIOUS_SELECTION, previousSelection);
-        }
-        if (currentSelection != null) {
-            result.putLong(BKEY_CURRENT_SELECTION, currentSelection);
-        }
+        result.putString(BKEY_PREVIOUS_SELECTION, previousSelection);
+        result.putString(BKEY_CURRENT_SELECTION, currentSelection);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -114,7 +104,7 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
      * @param context          preferably the {@code Activity}
      *                         but another UI {@code Context} will also do.
      * @param dialogTitle      the dialog title
-     * @param dialogMessage    optional message to display at the top of the dialog
+     * @param dialogMessage    (optional) message to display at the top of the dialog
      * @param allItems         list of all possible items
      * @param currentSelection (optional) the current value of the field
      * @param extras           (optional) Bundle which will be passed back to the result-listener.
@@ -122,8 +112,8 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
-                       @NonNull final List<T> allItems,
-                       @Nullable final T currentSelection,
+                       @NonNull final List<String> allItems,
+                       @Nullable final String currentSelection,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -134,15 +124,12 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
-        // pass in id/labels only as two arrays
-        args.putLongArray(BKEY_ITEM_LIST_ID, allItems
-                .stream().mapToLong(Entity::getId).toArray());
-        args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
-                .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
+        // pass in the texts; there are no ids
+        args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems.toArray(String[]::new));
 
         // be consistent: don't pass null, DO pass empty
         if (currentSelection != null) {
-            args.putLong(BKEY_CURRENT_SELECTION, currentSelection.getId());
+            args.putString(BKEY_CURRENT_SELECTION, currentSelection);
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -154,26 +141,11 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
+
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        @Nullable
-        final Long previousSelection;
-        @Nullable
-        final Long currentSelection;
-
-        if (result.containsKey(BKEY_PREVIOUS_SELECTION)) {
-            previousSelection = result.getLong(BKEY_PREVIOUS_SELECTION);
-        } else {
-            previousSelection = null;
-        }
-        if (result.containsKey(BKEY_CURRENT_SELECTION)) {
-            currentSelection = result.getLong(BKEY_CURRENT_SELECTION);
-        } else {
-            currentSelection = null;
-        }
-
-        resultListener.onResult(previousSelection,
-                                currentSelection,
+        resultListener.onResult(result.getString(BKEY_PREVIOUS_SELECTION, ""),
+                                result.getString(BKEY_CURRENT_SELECTION, ""),
                                 result.getBundle(BKEY_EXTRAS));
     }
 
@@ -183,14 +155,12 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
          * Callback handler with the user's selection.
          *
          * @param previousSelection the previous selection/value
-         *                          Can be {@code null} for none.
          * @param currentSelection  the new selection/value
-         *                          Can be {@code null} for none.
-         * @param extras            the optional Bundle as provided to one of the
+         * @param extras            (optional) Bundle as provided to one of the
          *                          {@code Launcher#launch} methods
          */
-        void onResult(@Nullable Long previousSelection,
-                      @Nullable Long currentSelection,
+        void onResult(@NonNull String previousSelection,
+                      @NonNull String currentSelection,
                       @Nullable Bundle extras);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.singlechoice;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -28,27 +28,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
-public final class MultiChoiceLauncher<T extends Parcelable & Entity>
+public class SingleChoiceLauncher<T extends Parcelable & Entity>
         extends DialogLauncher {
 
-    private static final String TAG = "MultiChoiceLauncher";
+    private static final String TAG = "SingleChoiceLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
     static final String BKEY_EXTRAS = TAG + ":extras";
 
-    /** The list of strings to display in the dropdown. */
+    /** The list of strings to display. */
     static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
-    /** The ids for the list of strings to display in the dropdown. */
+    /** The ids for the list of strings to display. */
     static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
 
     static final String BKEY_CURRENT_SELECTION = TAG + ":current";
@@ -64,10 +61,10 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
      *
      * @param requestKey FragmentResultListener request key to use for our response.
      */
-    public MultiChoiceLauncher(@NonNull final String requestKey) {
+    public SingleChoiceLauncher(@NonNull final String requestKey) {
         super(requestKey,
-              MultiChoiceDialogFragment::new,
-              MultiChoiceBottomSheet::new);
+              SingleChoiceDialogFragment::new,
+              SingleChoiceBottomSheet::new);
     }
 
     /**
@@ -76,7 +73,9 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
      * @param fragment          the calling DialogFragment
      * @param requestKey        to use
      * @param previousSelection the previous selection/value
+     *                          Can be {@code null} for none selected.
      * @param currentSelection  the new selection/value
+     *                          Can be {@code null} for none selected.
      * @param extras            (optional) Bundle as provided to {@link #launch}
      *
      * @see #onFragmentResult(String, Bundle)
@@ -84,14 +83,16 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @NonNull final Set<Long> previousSelection,
-                          @NonNull final Set<Long> currentSelection,
+                          @Nullable final Long previousSelection,
+                          @Nullable final Long currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putLongArray(BKEY_PREVIOUS_SELECTION,
-                            previousSelection.stream().mapToLong(o -> o).toArray());
-        result.putLongArray(BKEY_CURRENT_SELECTION,
-                            currentSelection.stream().mapToLong(o -> o).toArray());
+        if (previousSelection != null) {
+            result.putLong(BKEY_PREVIOUS_SELECTION, previousSelection);
+        }
+        if (currentSelection != null) {
+            result.putLong(BKEY_CURRENT_SELECTION, currentSelection);
+        }
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -113,16 +114,16 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
      * @param context          preferably the {@code Activity}
      *                         but another UI {@code Context} will also do.
      * @param dialogTitle      the dialog title
-     * @param dialogMessage    (optional) message to display at the top of the dialog
+     * @param dialogMessage    optional message to display at the top of the dialog
      * @param allItems         list of all possible items
-     * @param currentSelection (optional) list of items which are currently selected
+     * @param currentSelection (optional) the current value of the field
      * @param extras           (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        @NonNull final List<T> allItems,
-                       @Nullable final List<T> currentSelection,
+                       @Nullable final T currentSelection,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -133,7 +134,7 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
-        // pass in id/labels as two arrays
+        // pass in id/labels only as two arrays
         args.putLongArray(BKEY_ITEM_LIST_ID, allItems
                 .stream().mapToLong(Entity::getId).toArray());
         args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
@@ -141,8 +142,7 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
 
         // be consistent: don't pass null, DO pass empty
         if (currentSelection != null) {
-            args.putLongArray(BKEY_CURRENT_SELECTION, currentSelection
-                    .stream().mapToLong(Entity::getId).toArray());
+            args.putLong(BKEY_CURRENT_SELECTION, currentSelection.getId());
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -154,20 +154,23 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        final Set<Long> previousSelection =
-                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_PREVIOUS_SELECTION),
-                                                     BKEY_PREVIOUS_SELECTION))
-                      .boxed()
-                      .collect(Collectors.toSet());
+        @Nullable
+        final Long previousSelection;
+        @Nullable
+        final Long currentSelection;
 
-        final Set<Long> currentSelection =
-                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_CURRENT_SELECTION),
-                                                     BKEY_CURRENT_SELECTION))
-                      .boxed()
-                      .collect(Collectors.toSet());
+        if (result.containsKey(BKEY_PREVIOUS_SELECTION)) {
+            previousSelection = result.getLong(BKEY_PREVIOUS_SELECTION);
+        } else {
+            previousSelection = null;
+        }
+        if (result.containsKey(BKEY_CURRENT_SELECTION)) {
+            currentSelection = result.getLong(BKEY_CURRENT_SELECTION);
+        } else {
+            currentSelection = null;
+        }
 
         resultListener.onResult(previousSelection,
                                 currentSelection,
@@ -180,12 +183,14 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
          * Callback handler with the user's selection.
          *
          * @param previousSelection the previous selection/value
+         *                          Can be {@code null} for none.
          * @param currentSelection  the new selection/value
-         * @param extras            (optional) Bundle as provided to one of the
+         *                          Can be {@code null} for none.
+         * @param extras            the optional Bundle as provided to one of the
          *                          {@code Launcher#launch} methods
          */
-        void onResult(@NonNull Set<Long> previousSelection,
-                      @NonNull Set<Long> currentSelection,
+        void onResult(@Nullable Long previousSelection,
+                      @Nullable Long currentSelection,
                       @Nullable Bundle extras);
     }
 }

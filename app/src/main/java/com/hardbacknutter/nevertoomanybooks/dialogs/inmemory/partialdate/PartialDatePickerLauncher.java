@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -27,23 +27,25 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
-public class AutoCompletePickerLauncher
+/**
+ * IMPORTANT: The <strong>input</strong> current-value/selection is a {@code String}.
+ * The <strong>output</strong> for the same is a {@link PartialDate}.
+ */
+public class PartialDatePickerLauncher
         extends DialogLauncher {
 
-    private static final String TAG = "ACPickerLauncher";
+    private static final String TAG = "PDatePickerLauncher";
     static final String BKEY_DIALOG_TITLE = TAG + ":title";
     static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
     static final String BKEY_EXTRAS = TAG + ":extras";
 
-    /** The list of strings to display in the dropdown. */
-    static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
-
+    /** A standard sql style (partial) date string, must/will be valid. */
     static final String BKEY_CURRENT_SELECTION = TAG + ":current";
     private static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
 
@@ -57,10 +59,10 @@ public class AutoCompletePickerLauncher
      *
      * @param requestKey FragmentResultListener request key to use for our response.
      */
-    public AutoCompletePickerLauncher(@NonNull final String requestKey) {
+    public PartialDatePickerLauncher(@NonNull final String requestKey) {
         super(requestKey,
-              AutoCompletePickerDialogFragment::new,
-              AutoCompletePickerBottomSheet::new);
+              PartialDatePickerDialogFragment::new,
+              PartialDatePickerBottomSheet::new);
     }
 
     /**
@@ -77,12 +79,12 @@ public class AutoCompletePickerLauncher
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @NonNull final String previousSelection,
-                          @NonNull final String currentSelection,
+                          @NonNull final PartialDate previousSelection,
+                          @NonNull final PartialDate currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putString(BKEY_PREVIOUS_SELECTION, previousSelection);
-        result.putString(BKEY_CURRENT_SELECTION, currentSelection);
+        result.putParcelable(BKEY_PREVIOUS_SELECTION, previousSelection);
+        result.putParcelable(BKEY_CURRENT_SELECTION, currentSelection);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -105,14 +107,12 @@ public class AutoCompletePickerLauncher
      *                         but another UI {@code Context} will also do.
      * @param dialogTitle      the dialog title
      * @param dialogMessage    (optional) message to display at the top of the dialog
-     * @param allItems         list of all possible items
      * @param currentSelection (optional) the current value of the field
      * @param extras           (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
-                       @NonNull final List<String> allItems,
                        @Nullable final String currentSelection,
                        @Nullable final Bundle extras) {
 
@@ -124,10 +124,7 @@ public class AutoCompletePickerLauncher
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
-        // pass in the texts; there are no ids
-        args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems.toArray(String[]::new));
-
-        // be consistent: don't pass null, DO pass empty
+        // be consistent: don't pass null, DO pass empty (i.e. PartialDate#NOT_SET)
         if (currentSelection != null) {
             args.putString(BKEY_CURRENT_SELECTION, currentSelection);
         }
@@ -141,12 +138,14 @@ public class AutoCompletePickerLauncher
     @Override
     public void onFragmentResult(@NonNull final String requestKey,
                                  @NonNull final Bundle result) {
-
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        resultListener.onResult(result.getString(BKEY_PREVIOUS_SELECTION, ""),
-                                result.getString(BKEY_CURRENT_SELECTION, ""),
-                                result.getBundle(BKEY_EXTRAS));
+        resultListener.onResult(
+                Objects.requireNonNull(result.getParcelable(BKEY_PREVIOUS_SELECTION),
+                                       BKEY_PREVIOUS_SELECTION),
+                Objects.requireNonNull(result.getParcelable(BKEY_CURRENT_SELECTION),
+                                       BKEY_CURRENT_SELECTION),
+                result.getBundle(BKEY_EXTRAS));
     }
 
     @FunctionalInterface
@@ -159,8 +158,8 @@ public class AutoCompletePickerLauncher
          * @param extras            (optional) Bundle as provided to one of the
          *                          {@code Launcher#launch} methods
          */
-        void onResult(@NonNull String previousSelection,
-                      @NonNull String currentSelection,
+        void onResult(@NonNull PartialDate previousSelection,
+                      @NonNull PartialDate currentSelection,
                       @Nullable Bundle extras);
     }
 }

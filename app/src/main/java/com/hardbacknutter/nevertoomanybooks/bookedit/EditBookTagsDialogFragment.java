@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTagsBindin
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
-import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.EditStringLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
@@ -51,12 +51,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataOb
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
-public class EditTagsDialogFragment
+public class EditBookTagsDialogFragment
         extends DialogFragment
         implements FlexToolbar {
 
     /** Fragment/Log tag. */
-    private static final String TAG = "EditTagsDialogFragment";
+    private static final String TAG = "EditBookTagsDialogFragment";
     private static final String RK_EDIT_TAG = TAG + ":rk:tag";
 
     /** Book View model. Activity scope. */
@@ -83,7 +83,7 @@ public class EditTagsDialogFragment
      * @param fm The FragmentManager this fragment will be added to.
      */
     public static void launch(@NonNull final FragmentManager fm) {
-        new EditTagsDialogFragment()
+        new EditBookTagsDialogFragment()
                 .show(fm, TAG);
     }
 

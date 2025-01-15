@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.autocomplete;
 
 import android.os.Bundle;
 
@@ -27,13 +27,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-public class EditStringViewModel
+@SuppressWarnings("WeakerAccess")
+public class AutoCompletePickerViewModel
         extends ViewModel {
 
     @NonNull
-    private String previousValue = "";
+    private String previousSelection = "";
     @NonNull
-    private String currentValue = "";
+    private String currentSelection = "";
     @Nullable
     private Bundle extras;
 
@@ -48,25 +49,26 @@ public class EditStringViewModel
         if (!initDone) {
             initDone = true;
 
-            currentValue = args.getString(EditStringLauncher.BKEY_CURRENT, "");
-            previousValue = currentValue;
+            currentSelection = args.getString(AutoCompletePickerLauncher.BKEY_CURRENT_SELECTION,
+                                              "");
+            previousSelection = currentSelection;
 
             extras = args.getBundle(AutoCompletePickerLauncher.BKEY_EXTRAS);
         }
     }
 
     @NonNull
-    String getPreviousValue() {
-        return previousValue;
+    String getPreviousSelection() {
+        return previousSelection;
     }
 
     @NonNull
-    String getCurrentValue() {
-        return currentValue;
+    String getCurrentSelection() {
+        return currentSelection;
     }
 
-    void setCurrentValue(@NonNull final String currentValue) {
-        this.currentValue = currentValue;
+    void setCurrentSelection(@NonNull final String currentSelection) {
+        this.currentSelection = currentSelection;
     }
 
     @Nullable

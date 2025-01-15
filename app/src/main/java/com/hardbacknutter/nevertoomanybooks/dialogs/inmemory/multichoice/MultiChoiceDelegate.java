@@ -18,10 +18,10 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,22 +30,32 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringContentBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
 
-public class EditStringDelegate
+/**
+ * Replacement for an AlertDialog with checkbox setup.
+ */
+class MultiChoiceDelegate
         implements FlexDialogDelegate {
 
     @NonNull
     private final DialogFragment owner;
+    @NonNull
+    private final MultiChoiceViewModel vm;
+
     @NonNull
     private final String requestKey;
     @NonNull
@@ -53,26 +63,36 @@ public class EditStringDelegate
     @Nullable
     private final String dialogMessage;
 
-    private final EditStringViewModel vm;
-    private final int inputType;
-    private DialogEditStringContentBinding vb;
+    /** The list of items to display. */
+    @NonNull
+    private final List<String> items;
+    /** The ids for the list of items to display. */
+    @NonNull
+    private final List<Long> itemIds;
 
+    private DialogSelectMultipleContentBinding vb;
     @Nullable
     private Toolbar toolbar;
 
-    EditStringDelegate(@NonNull final DialogFragment owner,
-                       @NonNull final Bundle args) {
+    MultiChoiceDelegate(@NonNull final DialogFragment owner,
+                        @NonNull final Bundle args) {
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
-        dialogTitle = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_TITLE,
+        dialogTitle = args.getString(MultiChoiceLauncher.BKEY_DIALOG_TITLE,
                                      owner.getString(R.string.action_edit));
-        dialogMessage = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_MESSAGE, null);
+        dialogMessage = args.getString(MultiChoiceLauncher.BKEY_DIALOG_MESSAGE, null);
 
-        inputType = args.getInt(EditStringLauncher.BKEY_INPUT_TYPE,
-                                InputType.TYPE_CLASS_TEXT);
+        itemIds = Arrays.stream(Objects.requireNonNull(
+                              args.getLongArray(MultiChoiceLauncher.BKEY_ITEM_LIST_ID),
+                              MultiChoiceLauncher.BKEY_ITEM_LIST_ID))
+                        .boxed().collect(Collectors.toList());
+        items = Arrays.stream(Objects.requireNonNull(
+                                   args.getStringArray(MultiChoiceLauncher.BKEY_ITEM_LIST_TEXT),
+                                   MultiChoiceLauncher.BKEY_ITEM_LIST_TEXT))
+                      .collect(Collectors.toList());
 
-        vm = new ViewModelProvider(owner).get(EditStringViewModel.class);
+        vm = new ViewModelProvider(owner).get(MultiChoiceViewModel.class);
         vm.init(args);
     }
 
@@ -80,10 +100,7 @@ public class EditStringDelegate
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container) {
-        // Ensure components match current Locale order BEFORE we bind the views.
-        final View view = inflater.inflate(R.layout.dialog_edit_string_content,
-                                           container, false);
-        vb = DialogEditStringContentBinding.bind(view);
+        vb = DialogSelectMultipleContentBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
@@ -91,9 +108,8 @@ public class EditStringDelegate
     @NonNull
     public View onCreateFullscreen(@NonNull final LayoutInflater inflater,
                                    @Nullable final ViewGroup container) {
-        final View view = inflater.inflate(R.layout.dialog_edit_string, container, false);
-
-        vb = DialogEditStringContentBinding.bind(view.findViewById(R.id.dialog_content));
+        final View view = inflater.inflate(R.layout.dialog_select_multiple, container, false);
+        vb = DialogSelectMultipleContentBinding.bind(view.findViewById(R.id.dialog_content));
         return view;
     }
 
@@ -107,7 +123,6 @@ public class EditStringDelegate
         this.toolbar = toolbar;
     }
 
-    @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
             if (dialogType == DialogType.BottomSheet) {
@@ -124,9 +139,22 @@ public class EditStringDelegate
             vb.message.setVisibility(View.GONE);
         }
 
-        vb.editString.setInputType(inputType);
-        vb.editString.setText(vm.getCurrentValue());
-        vb.editString.requestFocus();
+        final Context context = vb.getRoot().getContext();
+        final ChecklistRecyclerAdapter<Long> adapter = new ChecklistRecyclerAdapter<>(
+                context, itemIds, items::get, vm.getCurrentSelection(),
+                (id, checked) -> {
+                    if (checked) {
+                        vm.getCurrentSelection().add(id);
+                    } else {
+                        vm.getCurrentSelection().remove(id);
+                    }
+                });
+        vb.itemList.setAdapter(adapter);
+    }
+
+    @NonNull
+    RecyclerView getRecyclerView() {
+        return vb.itemList;
     }
 
     @Override
@@ -148,22 +176,13 @@ public class EditStringDelegate
         return false;
     }
 
-    @Override
-    public void onPause(@NonNull final LifecycleOwner lifecycleOwner) {
-        viewToModel();
-    }
-
     private boolean saveChanges() {
-        viewToModel();
+        // the model is already updated by the adapters selection listener.
 
-        EditStringLauncher.setResult(owner, requestKey,
-                                     vm.getPreviousValue(),
-                                     vm.getCurrentValue(),
-                                     vm.getExtras());
+        MultiChoiceLauncher.setResult(owner, requestKey,
+                                      vm.getPreviousSelection(),
+                                      vm.getCurrentSelection(),
+                                      vm.getExtras());
         return true;
-    }
-
-    private void viewToModel() {
-        vm.setCurrentValue(vb.editString.getText().toString().trim());
     }
 }
