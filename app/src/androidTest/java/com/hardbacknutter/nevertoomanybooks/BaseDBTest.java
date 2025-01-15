@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,9 +28,13 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -43,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
+import com.hardbacknutter.org.json.JSONObject;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -148,5 +153,19 @@ public abstract class BaseDBTest {
             assertTrue(document.hasText());
         }
         return document;
+    }
+
+    @NonNull
+    protected JSONObject loadJSONObject(final int resId)
+            throws IOException {
+        // getContext(): we want the "androidTest" context which is where our test resources live
+        try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
+                                                     .getResources().openRawResource(resId);
+             InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(isr)) {
+
+            final String response = reader.lines().collect(Collectors.joining());
+            return new JSONObject(response);
+        }
     }
 }

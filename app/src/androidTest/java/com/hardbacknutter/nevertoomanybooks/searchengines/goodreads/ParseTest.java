@@ -20,11 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
-import androidx.annotation.NonNull;
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,36 +74,20 @@ public class ParseTest
         realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
     }
 
-    @NonNull
-    private Book getBook(final int resId,
-                         @NonNull final boolean[] fetchCovers)
-            throws IOException, StorageException {
-        final Book book = new Book();
-
-        // getContext(): we want the "androidTest" context which is where our test resources live
-        try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
-                                                     .getResources().openRawResource(resId)) {
-            assertNotNull(is);
-            final String response = searchEngine.readResponseStream(is);
-            searchEngine.parse(context, new JSONObject(response), book, fetchCovers);
-        }
-
-        return book;
-    }
-
     @Test
     public void parseNextDataJson9789604419197()
             throws IOException, StorageException {
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.goodreads_next_data_9789604419197,
-                                  new boolean[]{true, false});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.goodreads_next_data_9789604419197);
+        searchEngine.parse(context, document, book, new boolean[]{true, false});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
 
         assertEquals("Ο νόμος ποτέ δε κοιμάται...", book.getTitle());
         assertEquals("9789604419197", book.getIsbn());
-        assertEquals("Greek, Modern (1453-)", book.getString(DBKey.LANGUAGE));
+        assertEquals("Greek", book.getString(DBKey.LANGUAGE));
         assertEquals("Paperback", book.getString(DBKey.FORMAT));
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("L'Agent 212, Tome 01 : 24 heures sur 24",
@@ -174,16 +154,17 @@ public class ParseTest
     public void parseNextDataJson9789028453807()
             throws IOException, StorageException {
 
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.goodreads_next_data_9789028453807,
-                                  new boolean[]{true, false});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.goodreads_next_data_9789028453807);
+        searchEngine.parse(context, document, book, new boolean[]{true, false});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
 
         assertEquals("De chocoladewinkel van verloren liefdes", book.getTitle());
         assertEquals("9789028453807", book.getIsbn());
-        assertEquals("Dutch; Flemish", book.getString(DBKey.LANGUAGE));
+        assertEquals("Dutch", book.getString(DBKey.LANGUAGE));
         assertEquals("Kindle Edition", book.getString(DBKey.FORMAT));
         assertNull(book.getString(DBKey.PAGES, null));
         assertNull(book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
@@ -242,9 +223,10 @@ public class ParseTest
     public void parseNextDataJson9780062683250()
             throws IOException, StorageException {
 
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.goodreads_next_data_9780062683250,
-                                  new boolean[]{true, false});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.goodreads_next_data_9780062683250);
+        searchEngine.parse(context, document, book, new boolean[]{true, false});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -332,9 +314,10 @@ public class ParseTest
     public void parseNextDataJson9780553803723()
             throws IOException, StorageException {
 
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.goodreads_next_data_9780553803723,
-                                  new boolean[]{true, false});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.goodreads_next_data_9780553803723);
+        searchEngine.parse(context, document, book, new boolean[]{true, false});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -419,9 +402,10 @@ public class ParseTest
     public void withNulls()
             throws IOException, StorageException {
 
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.goodreads_with_nulls,
-                                  new boolean[]{true, false});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.goodreads_with_nulls);
+        searchEngine.parse(context, document, book, new boolean[]{true, false});
 
         assertNotNull(book);
         assertFalse(book.isEmpty());

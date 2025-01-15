@@ -20,11 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
-import androidx.annotation.NonNull;
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
@@ -73,34 +69,16 @@ public class Parse2Test
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
-    @NonNull
-    private Book getBook(final int resId)
-            throws IOException, StorageException {
-        final Book book = new Book();
-
-        // getContext(): we want the "androidTest" context which is where our test resources live
-        try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
-                                                     .getResources().openRawResource(resId)) {
-            assertNotNull(is);
-            final String response = searchEngine.readResponseStream(is);
-
-            final JSONObject document = new JSONObject(response);
-
-            // Grab the first one found
-            final JSONObject edition = document.getJSONArray("items")
-                                               .getJSONObject(0);
-            searchEngine.parse(context, edition,
-                               new boolean[]{true, true}, book);
-        }
-        return book;
-    }
-
     @Test
     public void parse1()
             throws IOException, StorageException {
         // https://www.googleapis.com/books/v1/volumes?q=isbn:9781857989380
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.googlebooks_9781857989380);
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.googlebooks_9781857989380);
+        // Grab the first one found
+        final JSONObject edition = document.getJSONArray("items").getJSONObject(0);
+        searchEngine.parse(context, edition, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -163,8 +141,12 @@ public class Parse2Test
                 new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         // https://www.googleapis.com/books/v1/volumes?q=isbn:9780007499793
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.googlebooks_9780007499793);
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.googlebooks_9780007499793);
+        // Grab the first one found
+        final JSONObject edition = document.getJSONArray("items").getJSONObject(0);
+        searchEngine.parse(context, edition, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());

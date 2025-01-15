@@ -19,11 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
-import androidx.annotation.NonNull;
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -90,30 +86,15 @@ public class ParseTest
         //        searchEngine.login(context);
     }
 
-    @NonNull
-    private Book getBook(final int resId,
-                         @NonNull final boolean[] fetchCovers)
-            throws IOException, StorageException, SearchException, CredentialsException {
-        final Book book = new Book();
-
-        // getContext(): we want the "androidTest" context which is where our test resources live
-        try (InputStream is = InstrumentationRegistry.getInstrumentation().getContext()
-                                                     .getResources().openRawResource(resId)) {
-            assertNotNull(is);
-            final String response = searchEngine.readResponseStream(is);
-            searchEngine.parse(context, new JSONObject(response), fetchCovers, book);
-        }
-        return book;
-    }
-
     @Test
     public void parse1()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
         // https://openlibrary.org/books/OL22853304M.json
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.openlibrary2_9780980200447,
-                                  new boolean[]{true, true});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.openlibrary2_9780980200447);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -188,9 +169,10 @@ public class ParseTest
     public void parse2()
             throws IOException, StorageException, SearchException, CredentialsException {
 
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.openlibrary2_9780734418227,
-                                  new boolean[]{true, true});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.openlibrary2_9780734418227);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -233,9 +215,10 @@ public class ParseTest
     @Test
     public void parse3()
             throws IOException, StorageException, SearchException, CredentialsException {
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.openlibrary2_9780141346830,
-                                  new boolean[]{true, true});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.openlibrary2_9780141346830);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -280,9 +263,10 @@ public class ParseTest
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
         // https://openlibrary.org/books/OL36696710M.json
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.openlibrary2_9783103971422,
-                                  new boolean[]{true, true});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.openlibrary2_9783103971422);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -336,9 +320,10 @@ public class ParseTest
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780553276329&fields=key,editions
         // https://openlibrary.org/books/OL7824144M.json
-        final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test
-                                          .R.raw.openlibrary2_9780553276329,
-                                  new boolean[]{false, false});
+        final Book book = new Book();
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.openlibrary2_9780553276329);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
