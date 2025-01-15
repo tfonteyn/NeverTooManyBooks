@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,11 +27,12 @@ import java.net.HttpURLConnection;
 public final class HttpConstants {
 
     /**
-     * RELEASE: BROWSER_USER_AGENT: Last updated: 2024-11-06.
-     * Some sites don't return full data unless the user agent is set to a valid browser.
+     * RELEASE: BROWSER_USER_AGENT: Last updated: 2025-01-15.
+     * Now using most used mobile ua from https://www.useragents.me/
      */
     public static final String BROWSER_USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0";
+            // "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0";
+            "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.3";
 
     /**
      * HTTP Request Header.
