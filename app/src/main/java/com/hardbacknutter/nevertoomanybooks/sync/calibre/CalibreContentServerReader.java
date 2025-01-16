@@ -104,8 +104,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Note we're not taking "books.pubdate"; most metadata downloaded by Calibre contains
  * bad/incorrect dates (at least the ones we've seen)
  * <p>
- * ENHANCE: calibre tags: refactor our "genre" from a single string value to a list of tags
- * <p>
  * ENHANCE: implement {@link SyncAction}.
  * For now overwrite/skip is a bit ad-hoc.
  */
