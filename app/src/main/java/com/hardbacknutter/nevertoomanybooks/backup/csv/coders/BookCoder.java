@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
@@ -102,6 +103,7 @@ public class BookCoder {
     @NonNull
     private final Style defaultStyle;
     private final FullDateParser dateParser;
+    private final Locale userLocale;
     @Nullable
     private Goodreads goodreads;
     @Nullable
@@ -131,6 +133,7 @@ public class BookCoder {
 
         unknownAuthor = Author.createUnknownAuthor(context);
 
+        userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context);
         dateParser = new FullDateParser(systemLocale, locales);
@@ -185,6 +188,7 @@ public class BookCoder {
         processCalibreData(book);
         processRating(book);
         processDescriptionAndNotes(book);
+        processGenre(book);
 
         verifyDates(book, DBKey.DATETIME_KEYS, false);
         verifyDates(book, DBKey.DATE_KEYS, true);
@@ -562,6 +566,13 @@ public class BookCoder {
             }
             notes += review;
             book.putString(DBKey.PERSONAL_NOTES, notes);
+        }
+    }
+
+    private void processGenre(@NonNull final Book book) {
+        final String genre = book.getString("genre");
+        if (!genre.isEmpty()) {
+            book.getTags().addAll(Tag.migrateGenre(genre, userLocale));
         }
     }
 

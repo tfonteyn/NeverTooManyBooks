@@ -28,13 +28,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.backup.LegacySidColumn;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -64,6 +65,7 @@ import com.hardbacknutter.org.json.JSONObject;
 public class BookCoder
         implements JsonCoder<Book> {
 
+
     private final JsonCoder<Author> authorCoder = new AuthorCoder();
     @NonNull
     private final JsonCoder<Bookshelf> bookshelfCoder;
@@ -77,6 +79,7 @@ public class BookCoder
     private final IdentifierCoder identifierCoder = new IdentifierCoder();
     @NonNull
     private final RealNumberParser realNumberParser;
+    private final Locale userLocale;
 
     /**
      * Constructor.
@@ -91,6 +94,8 @@ public class BookCoder
         tagCoder = new TagCoder(context.getResources().getConfiguration().getLocales().get(0));
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
         this.realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
+
+        userLocale = context.getResources().getConfiguration().getLocales().get(0);
     }
 
     @Override
@@ -226,21 +231,11 @@ public class BookCoder
         while (it.hasNext()) {
             final String key = it.next();
             switch (key) {
-                case Book.BKEY_BOOKSHELF_LIST: {
-                    // Full object as written by archive version 2..3
-                    book.setBookshelves(bookshelfCoder.decode(data.getJSONArray(key)));
-                    break;
-                }
                 case DBKey.FK_BOOKSHELF: {
                     // Reference as written by archive version 4+
                     // If the reference is not found,
                     // the book will be put on the preferred (or default) Bookshelf.
                     book.setBookshelves(bookshelfCoder.decodeReference(data.getJSONArray(key)));
-                    break;
-                }
-                case Book.BKEY_CALIBRE_LIBRARY: {
-                    // Full object as written by archive version 2..3
-                    book.setCalibreLibrary(calibreLibraryCoder.decode(data.getJSONObject(key)));
                     break;
                 }
                 case DBKey.FK_CALIBRE_LIBRARY: {
@@ -273,8 +268,7 @@ public class BookCoder
                     break;
                 }
                 case Book.BKEY_IDENTIFIER_LIST: {
-                    // Archive v8+
-                    // Just unpack as individual keys
+                    // Archive v8+: Just unpack as individual keys
                     identifierCoder.decode(data.getJSONArray(key))
                                    .forEach(p -> book.put(p.first, p.second));
                     break;
@@ -285,12 +279,7 @@ public class BookCoder
                     break;
                 }
                 default: {
-                    // Archive v7 and older used individual Identifier keys
-                    final String identifierKey = LegacySidColumn.MAP.get(key);
-                    if (identifierKey != null) {
-                        final String sid = data.optString(key, null);
-                        book.setIdentifierValue(identifierKey, sid);
-                    } else {
+                    if (!decodeLegacyKeys(key, data, book)) {
                         // All other keys
                         book.put(key, data.get(key));
                     }
@@ -299,5 +288,46 @@ public class BookCoder
             }
         }
         return book;
+    }
+
+    /**
+     * Decode/migrate data from older archive version.
+     *
+     * @param key  to handle
+     * @param data to decode
+     * @param book to update
+     *
+     * @return {@code true} if the key was handled
+     */
+    private boolean decodeLegacyKeys(@NonNull final String key,
+                                     @NonNull final JSONObject data,
+                                     @NonNull final Book book) {
+        switch (key) {
+            case "bookshelf_list": {
+                // Full object as written by archive version 2..3
+                book.setBookshelves(bookshelfCoder.decode(data.getJSONArray(key)));
+                return true;
+            }
+            case "calibre_library": {
+                // Full object as written by archive version 2..3
+                book.setCalibreLibrary(calibreLibraryCoder.decode(data.getJSONObject(key)));
+                return true;
+            }
+            case "genre": {
+                // Archive v7 and older used a single string for the genre
+                book.getTags().addAll(Tag.migrateGenre(data.getString(key), userLocale));
+                return true;
+            }
+            default: {
+                // Archive v7 and older used individual Identifier keys
+                final String identifierKey = LegacyUpgrades.IDENTIFIERS.get(key);
+                if (identifierKey != null) {
+                    final String sid = data.optString(key, null);
+                    book.setIdentifierValue(identifierKey, sid);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

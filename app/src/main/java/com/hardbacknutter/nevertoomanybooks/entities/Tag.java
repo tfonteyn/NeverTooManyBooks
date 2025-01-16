@@ -56,6 +56,8 @@ public class Tag
         }
     };
     private static final Pattern WHITESPACE_SPLITTER = Pattern.compile("\\s+");
+    /** Genre string migration splitter characters. */
+    private static final Pattern SPLITTER_PATTERN = Pattern.compile("[/,;&>]");
 
     private long id;
     @NonNull
@@ -108,6 +110,19 @@ public class Tag
                      .map(s -> s.substring(0, 1).toUpperCase(locale)
                                + s.substring(1).toLowerCase(locale))
                      .collect(Collectors.joining(" "));
+    }
+
+    @NonNull
+    public static List<Tag> migrateGenre(@NonNull final String genre,
+                                         @NonNull final Locale locale) {
+        // sanity
+        if (genre.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(SPLITTER_PATTERN.split(genre))
+                     .map(String::strip)
+                     .map(s -> new Tag(s, locale))
+                     .collect(Collectors.toList());
     }
 
     public long getId() {
