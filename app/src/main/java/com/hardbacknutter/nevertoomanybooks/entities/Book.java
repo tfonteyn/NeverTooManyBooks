@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -1270,9 +1271,60 @@ public class Book
             putLong(DBKey.FK_CALIBRE_LIBRARY, library.getId());
             putParcelable(BKEY_CALIBRE_LIBRARY, library);
         } else {
-            remove(DBKey.FK_CALIBRE_LIBRARY);
             remove(BKEY_CALIBRE_LIBRARY);
+            remove(CalibreBookData.BKEY);
 
+            remove(DBKey.FK_CALIBRE_LIBRARY);
+            remove(DBKey.CALIBRE_BOOK_ID);
+            remove(DBKey.CALIBRE_BOOK_UUID);
+            remove(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
+        }
+    }
+
+    @NonNull
+    public Optional<CalibreBookData> getCalibreBookData() {
+        // temp hack...
+        if (!contains(CalibreBookData.BKEY)
+            && contains(DBKey.FK_CALIBRE_LIBRARY)
+            && contains(DBKey.CALIBRE_BOOK_ID)) {
+
+            final CalibreBookData calibreBookData = new CalibreBookData(
+                    getLong(DBKey.FK_CALIBRE_LIBRARY),
+                    getLong(DBKey.CALIBRE_BOOK_ID),
+                    getString(DBKey.CALIBRE_BOOK_UUID),
+                    getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT, null));
+            putParcelable(CalibreBookData.BKEY, calibreBookData);
+            return Optional.of(calibreBookData);
+        }
+
+        // We MIGHT have it (probably not) ...
+        if (contains(CalibreBookData.BKEY)) {
+            final CalibreBookData calibreBookData = getParcelable(CalibreBookData.BKEY);
+            if (calibreBookData == null) {
+                return Optional.empty();
+            } else {
+                return Optional.of(calibreBookData);
+            }
+        } else {
+            // but if not, go explicitly fetch it.
+            final Optional<CalibreBookData> calibreBookData = ServiceLocator
+                    .getInstance()
+                    .getCalibreDao()
+                    .findByLocalBookId(getId());
+            // store for reuse
+            calibreBookData.ifPresent(bookData -> putParcelable(CalibreBookData.BKEY, bookData));
+            return calibreBookData;
+        }
+    }
+
+    public void setCalibreBookData(@Nullable final CalibreBookData data) {
+        if (data != null) {
+            putParcelable(CalibreBookData.BKEY, data);
+        } else {
+            remove(BKEY_CALIBRE_LIBRARY);
+            remove(CalibreBookData.BKEY);
+
+            remove(DBKey.FK_CALIBRE_LIBRARY);
             remove(DBKey.CALIBRE_BOOK_ID);
             remove(DBKey.CALIBRE_BOOK_UUID);
             remove(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
