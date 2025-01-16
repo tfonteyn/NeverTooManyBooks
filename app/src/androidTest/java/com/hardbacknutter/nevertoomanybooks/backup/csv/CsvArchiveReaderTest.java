@@ -29,6 +29,7 @@ import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -48,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -55,6 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+
+import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -255,17 +259,23 @@ public class CsvArchiveReaderTest
         assertFalse(book.getBoolean(DBKey.SIGNED__BOOL));
         assertEquals("", book.getString(DBKey.LOANEE_NAME, null));
         assertEquals("Fearsome giants, magic spells, ...", book.getString(DBKey.DESCRIPTION));
-        assertEquals("History / Europe / Ireland", book.getString(DBKey.GENRE));
         assertEquals("English", book.getString(DBKey.LANGUAGE));
         assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_ADDED__UTC));
         assertEquals(1294006, book.getLong(Identifier.SID_GOODREADS_BOOK));
         assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_LAST_UPDATED__UTC));
         assertEquals("e9787a594f11549db20f163db56a3ec9", book.getString(DBKey.BOOK_UUID));
 
+        final List<Tag> bookTags = book.getTags();
+        TestCase.assertEquals(3, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("History"));
+        assertTrue(tags.contains("Europe"));
+        assertTrue(tags.contains("Ireland"));
+
         final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
-        // A new shelf was created
-        assertEquals(2, bookshelves.get(0).getId());
+        // A new shelf was created. Don't test the id== as we might have others
+        assertTrue(bookshelves.get(0).getId() > 0);
         assertEquals("Default", bookshelves.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
@@ -306,17 +316,22 @@ public class CsvArchiveReaderTest
         assertEquals("", book.getString(DBKey.LOANEE_NAME, null));
         assertEquals("Jonathan Harker is travelling to Castle Dracula ...",
                      book.getString(DBKey.DESCRIPTION));
-        assertEquals("Fiction / Literary", book.getString(DBKey.GENRE));
         assertEquals("English", book.getString(DBKey.LANGUAGE));
         assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_ADDED__UTC));
         assertNull(book.getString(Identifier.SID_GOODREADS_BOOK, null));
         assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_LAST_UPDATED__UTC));
         assertEquals("b483250f6016cbe775ce16bfbc6d64da", book.getString(DBKey.BOOK_UUID));
 
+        final List<Tag> bookTags = book.getTags();
+        TestCase.assertEquals(2, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Fiction"));
+        assertTrue(tags.contains("Literary"));
+
         final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
         // A new shelf was created
-        assertEquals(2, bookshelves.get(0).getId());
+        assertTrue(bookshelves.get(0).getId() > 0);
         assertEquals("Default", bookshelves.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
