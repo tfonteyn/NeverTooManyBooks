@@ -58,14 +58,14 @@ public class Parse2Test
 
     private static final String TAG = "Parse2Test";
 
-    private GoogleBooks2SearchEngine searchEngine;
+    private GoogleBooksSearchEngine searchEngine;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        searchEngine = (GoogleBooks2SearchEngine) EngineId.GoogleBooks.createSearchEngine(context);
+        searchEngine = (GoogleBooksSearchEngine) EngineId.GoogleBooks.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 

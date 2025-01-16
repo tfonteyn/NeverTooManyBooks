@@ -91,7 +91,7 @@ import com.hardbacknutter.org.json.JSONObject;
  *         resource-representations</a>
  * @see <a href="https://developers.google.com/books/docs/static-links>static-links</a>
  */
-public class GoogleBooks2SearchEngine
+public class GoogleBooksSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText,
@@ -111,8 +111,8 @@ public class GoogleBooks2SearchEngine
      * @param config     the search engine configuration
      */
     @Keep
-    public GoogleBooks2SearchEngine(@NonNull final Context appContext,
-                                    @NonNull final SearchEngineConfig config) {
+    public GoogleBooksSearchEngine(@NonNull final Context appContext,
+                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
 
         ratingParser = new RatingParser(5);

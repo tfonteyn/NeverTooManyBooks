@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderS
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooks2SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
@@ -233,7 +233,7 @@ public enum EngineId
                         R.string.site_description_catalog),
                 "https://www.googleapis.com",
                 Locale.US,
-                GoogleBooks2SearchEngine.class,
+                GoogleBooksSearchEngine.class,
                 true),
 
     /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
