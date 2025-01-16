@@ -592,6 +592,7 @@ public class CalibreContentServerReader
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if a value has unexpectedly the text "null".
      */
+    @NonNull
     private Book convert(@NonNull final Context context,
                          @NonNull final JSONObject calibreBook)
             throws IOException, StorageException {
