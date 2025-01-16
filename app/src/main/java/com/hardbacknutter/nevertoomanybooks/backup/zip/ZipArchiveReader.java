@@ -62,17 +62,26 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  * <p>
  * Currently supported formats.
  * <ul>
- *     <li>v8: drops the individual identifier fields on the Book level, and
- *             groups them in a new array key.
- *             Adds {@link com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData}
- *             for books.
+ *     <li>
+ *         v8: app version 7.0.0
+ *              Drops the individual identifier fields on the Book level, and
+ *              groups them in a new array key.
+ *              Adds book {@link com.hardbacknutter.nevertoomanybooks.entities.Tag} lists.
+ *              Adds book {@link com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData}.
  *     </li>
- *     <li>v7: adds {@link Style#getBookLevelFieldsOrderBy()} to {@link RecordType#Styles}</li>
- *     <li>v6: adds {@link RecordType#DeletedBooks} : {@link RecordEncoding#Json}</li>
- *     <li>v5: identical to v4,
- *              but a number of internal preferences have been changed/deleted.
+ *     <li>
+ *         v7: app version 5.0.0
+ *              Adds {@link Style#getBookLevelFieldsOrderBy()} to {@link RecordType#Styles}</li>
+ *     <li>
+ *         v6: app version 4.5.0
+ *              Adds {@link RecordType#DeletedBooks} : {@link RecordEncoding#Json}</li>
+ *     <li>
+ *         v5: app version 3.0.0
+ *              Identical to v4, but a number of internal preferences have been changed/deleted.
  *     </li>
- *     <li>v4: Books will contain REFERENCES to Bookshelves and CalibreLibraries;
+ *     <li>
+ *         v4: app version 2.6.0
+ *              Books will contain REFERENCES to Bookshelves and CalibreLibraries;
  *              and FULL data on other related objects.
  *         <ul>
  *             <li>{@link RecordType#MetaData} :            {@link RecordEncoding#Json}</li>
@@ -86,7 +95,9 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  *             <li>Multiple {@link RecordType#Cover}</li>
  *         </ul>
  *     </li>
- *     <li>v3: Books will contain FULL data on related objects.
+ *     <li>
+ *         v3: app version 2.0.0
+ *              Books will contain FULL data on related objects.
  *         <ul>
  *             <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Json}</li>
  *             <li>{@link RecordType#Styles} :       {@link RecordEncoding#Json}</li>
@@ -96,7 +107,11 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  *             <li>Multiple {@link RecordType#Cover}</li>
  *         </ul>
  *     </li>
- *     <li>v2: xml/csv
+ *     <li>
+ *         v2: app version 1.0.0
+ *              IMPORTANT: Starting from version 3.0.0 of the app importing a v2 archive:
+ *              - XML MetaData keeps being supported, but
+ *              - XML Styles, Preferences and Certificates will NO LONGER BE IMPORTED.
  *         <ul>
  *             <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Xml}</li>
  *             <li>{@link RecordType#Styles} :       {@link RecordEncoding#Xml}</li>
@@ -106,7 +121,8 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  *             <li>Multiple {@link RecordType#Cover}</li>
  *         </ul>
  *     </li>
- *     <li>v1: the original BookCatalogue format; prefs and styles cannot be imported.
+ *     <li>
+ *         v1: the original BookCatalogue format; Styles and Preferences cannot be imported.
  *         <ul>
  *             <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Xml}</li>
  *             <li>{@link RecordType#Books} :        {@link RecordEncoding#Csv}</li>
