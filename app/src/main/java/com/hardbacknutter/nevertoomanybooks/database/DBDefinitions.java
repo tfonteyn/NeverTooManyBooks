@@ -355,8 +355,6 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_LAST_UPDATED__UTC;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_BOOK_GENRE;
-    /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_LOCATION;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_READ;
@@ -883,13 +881,6 @@ public final class DBDefinitions {
 
         DOM_BOOK_LANGUAGE =
                 new Domain.Builder(DBKey.LANGUAGE, SqLiteDataType.Text)
-                        .notNull()
-                        .withDefaultEmptyString()
-                        .localized()
-                        .build();
-
-        DOM_BOOK_GENRE =
-                new Domain.Builder(DBKey.GENRE, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()

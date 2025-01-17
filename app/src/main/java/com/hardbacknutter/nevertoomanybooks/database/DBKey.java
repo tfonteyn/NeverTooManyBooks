@@ -233,7 +233,6 @@ public final class DBKey {
     public static final String FORMAT = "format";
     public static final String COLOR = "color";
     public static final String LANGUAGE = "language";
-    public static final String GENRE = "genre";
     public static final String DESCRIPTION = "description";
 
     public static final String EDITION__BITMASK = "edition_bm";
