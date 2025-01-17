@@ -621,7 +621,7 @@ public class EditBookViewModel
     @NonNull
     List<Tag> getAllTags() {
         if (tags == null) {
-            tags = ServiceLocator.getInstance().getTagDao().getList();
+            tags = ServiceLocator.getInstance().getTagDao().getAll();
         }
         return tags;
     }

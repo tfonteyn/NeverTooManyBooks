@@ -100,7 +100,7 @@ public class TagDaoImpl
 
     @NonNull
     @Override
-    public List<Tag> getList() {
+    public List<Tag> getAll() {
         final List<Tag> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.GET_ALL, null)) {
             final CursorRow rowData = new CursorRow(cursor);

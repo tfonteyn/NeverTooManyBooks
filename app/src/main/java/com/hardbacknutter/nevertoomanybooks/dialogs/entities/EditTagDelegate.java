@@ -120,7 +120,7 @@ class EditTagDelegate
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                ServiceLocator.getInstance().getTagDao().getList()
+                ServiceLocator.getInstance().getTagDao().getAll()
                               .stream().map(Tag::getName).collect(Collectors.toList()));
 
         vb.tagName.setText(currentEdit.getName());

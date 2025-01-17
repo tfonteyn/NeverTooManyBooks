@@ -55,7 +55,7 @@ public interface TagDao
      * @return list
      */
     @NonNull
-    List<Tag> getList();
+    List<Tag> getAll();
 
     /**
      * Remove duplicates. We keep the first occurrence.
