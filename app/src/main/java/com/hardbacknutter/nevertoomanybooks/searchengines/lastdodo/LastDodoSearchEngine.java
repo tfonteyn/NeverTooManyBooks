@@ -65,7 +65,7 @@ import org.jsoup.select.Elements;
  * <p>
  * {@link SearchEngine.ByBarcode}: for barcodes (explicitly supported by the site
  * and invalid ISBN numbers (which the site stores as-is on purpose)
- *
+ * <p>
  * ENHANCE: check if we can implement {@link SearchEngine.AlternativeEditions}
  * and consequently {@link SearchEngine.CoverByEdition}
  * Comics re-published by a different publisher do have different ISBN's.
@@ -567,12 +567,24 @@ public class LastDodoSearchEngine
                         }
                         break;
 
+                    case "Soort":
+                        processType(td, book);
+                        break;
+
                     case "Taal / dialect":
                         processText(td, DBKey.LANGUAGE, book);
                         break;
 
-                    case "Soort":
-                        processType(td, book);
+                    case "Vertaler":
+                        parseAuthor(td, Author.TYPE_TRANSLATOR, book);
+                        break;
+
+                    case "Inkter":
+                        parseAuthor(td, Author.TYPE_INKING, book);
+                        break;
+
+                    case "Inkleurder":
+                        parseAuthor(td, Author.TYPE_COLORIST, book);
                         break;
 
                     case "Bijzonderheden":
