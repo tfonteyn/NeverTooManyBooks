@@ -558,8 +558,8 @@
             translatable="false">@string/lbl_group_1st_char_book_title</string>
     <string name="style_builtin_format"
             translatable="false">@string/lbl_format</string>
-    <string name="style_builtin_genre"
-            translatable="false">@string/lbl_genre</string>
+    <string name="style_builtin_tags"
+            translatable="false">@string/lbl_tags</string>
     <string name="style_builtin_language"
             translatable="false">@string/lbl_language</string>
     <string name="style_builtin_lending"

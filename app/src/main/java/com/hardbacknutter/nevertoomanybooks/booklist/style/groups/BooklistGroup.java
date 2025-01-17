@@ -52,7 +52,9 @@ public interface BooklistGroup {
     int AUTHOR = 1;
     /** {@link SeriesBooklistGroup}. */
     int SERIES = 2;
-    int GENRE = 3;
+    // 2025-01-17: Formerly the book table column "genre"
+    // Now the linked tags table
+    int TAGS_GENRE = 3;
     /** {@link PublisherBooklistGroup}. */
     int PUBLISHER = 4;
     int READ_STATUS = 5;
@@ -122,6 +124,8 @@ public interface BooklistGroup {
                 return new PublisherBooklistGroup(groupKey);
             case BOOKSHELF:
                 return new BookshelfBooklistGroup(groupKey);
+            case TAGS_GENRE:
+                return new TagBooklistGroup(groupKey);
 
             default:
                 return new BooklistGroupImpl(groupKey);
@@ -244,7 +248,7 @@ public interface BooklistGroup {
             PUBLISHER_NAME_1ST_CHAR,
             BOOK_TITLE_1ST_CHAR,
 
-            GENRE,
+            TAGS_GENRE,
             FORMAT,
             COLOR,
             LOCATION,
@@ -281,6 +285,8 @@ public interface BooklistGroup {
 
     /**
      * The equivalent to {@link DBKey}s for the BooklistGroup specific domains.
+     *
+     * @see MapDBKey
      */
     @SuppressWarnings("WeakerAccess")
     final class BlgDBKey {
@@ -310,7 +316,7 @@ public interface BooklistGroup {
 
         /**
          * Specific domains for sorting.
-         * IMPORTANT: when adding a SORT_* key here,
+         * <strong>IMPORTANT</strong>: when adding a SORT_* key here,
          * it should also be added to {@link MapDBKey}#DB_KEY_TO_LABEL_RES_ID
          */
         public static final String SORT_AUTHOR = "blg_sort_aut";
@@ -318,6 +324,7 @@ public interface BooklistGroup {
         public static final String SORT_PUBLISHER = "blg_sort_pub";
         public static final String SORT_SERIES_TITLE = "blg_sort_ser";
         public static final String SORT_SERIES_NUM_FLOAT = "blg_sort_ser_num_f";
+        public static final String SORT_TAG = "blg_sort_tags";
 
         private BlgDBKey() {
         }

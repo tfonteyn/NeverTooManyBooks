@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,9 +65,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 
 /**
  * Build and populate temporary tables with details of "flattened" books.
@@ -886,8 +888,8 @@ class BooklistBuilder {
              * Since BooklistGroup objects are processed in order, this allows us to get
              * the fields applicable to the currently processed group, including its outer groups.
              *
-             * As subsequent addGroup calls will modify this collection,
-             * we make a (shallow) copy of the list.
+             * As subsequent addGroup calls will modify the {@code #accumulatedDomains} collection,
+             * hence we must make a (shallow) copy of the list.
              */
             group.setAccumulatedDomains(new ArrayList<>(accumulatedDomains));
         }
@@ -954,6 +956,11 @@ class BooklistBuilder {
             if (style.hasGroup(BooklistGroup.PUBLISHER)
                 || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_PUBLISHER)) {
                 joinWithPublishers(sb);
+            }
+
+            if (style.hasGroup(BooklistGroup.TAGS_GENRE)
+                || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)) {
+                joinWithTags(sb);
             }
 
             // Add LEFT OUTER JOIN tables as needed
@@ -1026,6 +1033,13 @@ class BooklistBuilder {
             }
             // Join with Publishers to make the names available
             sb.append(TBL_BOOK_PUBLISHER.leftOuterJoin(TBL_PUBLISHERS));
+        }
+
+        private void joinWithTags(@NonNull final StringBuilder sb) {
+            // Join with the link table between Book and Tags.
+            sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_TAG));
+            // Join with Tags to make the names available
+            sb.append(TBL_BOOK_TAG.leftOuterJoin(TBL_TAGS));
         }
 
         /**

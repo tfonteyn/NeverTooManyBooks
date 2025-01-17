@@ -225,7 +225,7 @@ class Formatter
 
 
             case BooklistGroup.FORMAT:
-            case BooklistGroup.GENRE:
+            case BooklistGroup.TAGS_GENRE:
             case BooklistGroup.LOCATION:
             case BooklistGroup.BOOKSHELF:
             case BooklistGroup.COLOR:

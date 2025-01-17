@@ -1848,8 +1848,8 @@ public class BooksOnBookshelf
                     forLocation(rowData, menu);
                     break;
                 }
-                case BooklistGroup.GENRE: {
-                    forGenre(rowData, menu);
+                case BooklistGroup.TAGS_GENRE: {
+                    forTag(rowData, menu);
                     break;
                 }
                 case BooklistGroup.FORMAT: {
@@ -1935,8 +1935,8 @@ public class BooksOnBookshelf
                 case BooklistGroup.LOCATION: {
                     return onLocation(context, menuItemId, rowData);
                 }
-                case BooklistGroup.GENRE: {
-                    return onGenre(context, menuItemId, rowData);
+                case BooklistGroup.TAGS_GENRE: {
+                    return onTag(context, menuItemId, rowData);
                 }
                 case BooklistGroup.FORMAT: {
                     return onFormat(context, menuItemId, rowData);
@@ -2392,10 +2392,10 @@ public class BooksOnBookshelf
             return false;
         }
 
-        private void forGenre(@NonNull final DataHolder rowData,
-                              @NonNull final Menu menu) {
-            if (!rowData.getString(DBKey.GENRE).isEmpty()) {
-                menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
+        private void forTag(@NonNull final DataHolder rowData,
+                            @NonNull final Menu menu) {
+            if (!rowData.getString(DBKey.TAG).isEmpty()) {
+                menu.add(Menu.NONE, R.id.MENU_TAG_EDIT,
                          getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                          R.string.action_edit_ellipsis)
                     .setIcon(R.drawable.edit_24px);
@@ -2411,11 +2411,11 @@ public class BooksOnBookshelf
             }
         }
 
-        private boolean onGenre(@NonNull final Context context,
-                                @IdRes final int menuItemId,
-                                @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_GENRE_EDIT) {
-                editGenreLauncher.edit(context, rowData.getString(DBKey.GENRE));
+        private boolean onTag(@NonNull final Context context,
+                              @IdRes final int menuItemId,
+                              @NonNull final DataHolder rowData) {
+            if (menuItemId == R.id.MENU_TAG_EDIT) {
+                editGenreLauncher.edit(context, rowData.getString(DBKey.TAG));
                 return true;
             }
             return false;

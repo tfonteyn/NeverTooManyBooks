@@ -40,7 +40,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_READ_END;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LOCATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
@@ -52,6 +51,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LAST_UPDATED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
@@ -64,9 +64,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 
 final class GroupKeyFactory {
     /** Cache for the static GroupKey instances. */
@@ -276,6 +278,30 @@ final class GroupKeyFactory {
                                                      Sort.Unsorted));
             }
 
+            case BooklistGroup.TAGS_GENRE: {
+                // We use the foreign ID to create the key-domain.
+                // It is NOT used to display the data; instead we use
+                // TagsBooklistGroup#displayDomainExpression.
+                // We do NOT sort by the foreign-key display-domain; instead we use
+                // the name column, sorted, added as a group domain.
+                return new GroupKey(id, R.string.lbl_tags, "tg",
+                                    new DomainExpression(DOM_FK_TAG,
+                                                         TBL_TAGS.dot(DBKey.PK_ID),
+                                                         Sort.Unsorted))
+                        .addGroupDomain(
+                                new DomainExpression(
+                                        new Domain.Builder(
+                                                BooklistGroup.BlgDBKey.SORT_TAG,
+                                                SqLiteDataType.Text)
+                                                .build(),
+                                        TBL_TAGS.dot(DBKey.TAG),
+                                        Sort.Asc))
+                        .addGroupDomain(
+                                new DomainExpression(DOM_FK_TAG,
+                                                     TBL_BOOK_TAG,
+                                                     Sort.Unsorted));
+            }
+
             // Data without a linked table uses the display name as the key domain.
             case BooklistGroup.COLOR: {
                 return new GroupKey(id, R.string.lbl_color, "col",
@@ -284,10 +310,6 @@ final class GroupKeyFactory {
             case BooklistGroup.FORMAT: {
                 return new GroupKey(id, R.string.lbl_format, "fmt",
                                     new DomainExpression(DOM_BOOK_FORMAT, TBL_BOOKS, Sort.Asc));
-            }
-            case BooklistGroup.GENRE: {
-                return new GroupKey(id, R.string.lbl_genre, "g",
-                                    new DomainExpression(DOM_BOOK_GENRE, TBL_BOOKS, Sort.Asc));
             }
             case BooklistGroup.LANGUAGE: {
                 // Formatting is done after fetching.

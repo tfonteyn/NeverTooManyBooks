@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,7 +57,7 @@ final class IconMapper {
             // BoB for a Book
             Map.entry(R.id.MENU_LANGUAGE_EDIT, R.drawable.edit_24px),
             Map.entry(R.id.MENU_LOCATION_EDIT, R.drawable.edit_24px),
-            Map.entry(R.id.MENU_GENRE_EDIT, R.drawable.edit_24px),
+            Map.entry(R.id.MENU_TAG_EDIT, R.drawable.edit_24px),
             Map.entry(R.id.MENU_FORMAT_EDIT, R.drawable.edit_24px),
             Map.entry(R.id.MENU_COLOR_EDIT, R.drawable.edit_24px),
             Map.entry(R.id.MENU_NEXT_MISSING_COVER, R.drawable.broken_image_24px),

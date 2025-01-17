@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,7 +77,8 @@ public final class BuiltinStyle
     private static final int ID_DEPRECATED_2 = -3;
     private static final int ID_BOOK_TITLE_FIRST_LETTER = -4;
     private static final int ID_SERIES = -5;
-    private static final int ID_GENRE = -6;
+    // 2025-01-17: Formerly GENRE
+    private static final int ID_TAGS = -6;
     private static final int ID_LENDING = -7;
     private static final int ID_READ_AND_UNREAD = -8;
     private static final int ID_PUBLICATION_DATA = -9;
@@ -121,10 +122,10 @@ public final class BuiltinStyle
                               R.string.style_builtin_series,
                               List.of(BooklistGroup.SERIES)),
             // 5
-            Definition.create(ID_GENRE,
+            Definition.create(ID_TAGS,
                               "edc5c178-60f0-40e7-9674-e08445b6c942",
-                              R.string.style_builtin_genre,
-                              List.of(BooklistGroup.GENRE,
+                              R.string.style_builtin_tags,
+                              List.of(BooklistGroup.TAGS_GENRE,
                                       BooklistGroup.AUTHOR,
                                       BooklistGroup.SERIES)),
             Definition.create(ID_LENDING,

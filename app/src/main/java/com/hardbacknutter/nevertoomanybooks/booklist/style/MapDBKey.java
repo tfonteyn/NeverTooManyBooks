@@ -44,6 +44,9 @@ public final class MapDBKey {
             Map.entry(DBKey.FK_SERIES, DBKey.SERIES_TITLE)
     );
 
+    /**
+     * @see BooklistGroup.BlgDBKey
+     */
     private static final Map<String, Integer> DB_KEY_TO_LABEL_RES_ID = Map.ofEntries(
             Map.entry(DBKey.COVER[0], R.string.lbl_cover_front),
             Map.entry(DBKey.COVER[1], R.string.lbl_cover_back),
@@ -90,7 +93,8 @@ public final class MapDBKey {
             Map.entry(BooklistGroup.BlgDBKey.SORT_BOOKSHELF, R.string.lbl_bookshelf),
             Map.entry(BooklistGroup.BlgDBKey.SORT_PUBLISHER, R.string.lbl_publisher),
             Map.entry(BooklistGroup.BlgDBKey.SORT_SERIES_TITLE, R.string.lbl_series),
-            Map.entry(BooklistGroup.BlgDBKey.SORT_SERIES_NUM_FLOAT, R.string.lbl_series_num)
+            Map.entry(BooklistGroup.BlgDBKey.SORT_SERIES_NUM_FLOAT, R.string.lbl_series_num),
+            Map.entry(BooklistGroup.BlgDBKey.SORT_TAG, R.string.lbl_tags)
     );
 
     private MapDBKey() {
