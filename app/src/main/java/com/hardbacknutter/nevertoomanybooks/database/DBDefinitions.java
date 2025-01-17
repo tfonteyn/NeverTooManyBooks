@@ -1849,7 +1849,6 @@ public final class DBDefinitions {
 
                             DOM_BOOK_DESCRIPTION,
                             DOM_BOOK_PRIVATE_NOTES,
-                            DOM_BOOK_GENRE,
                             DOM_BOOK_LOCATION,
                             DOM_BOOK_ISBN,
 

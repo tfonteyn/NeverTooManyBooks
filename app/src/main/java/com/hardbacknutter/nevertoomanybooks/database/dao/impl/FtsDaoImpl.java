@@ -361,15 +361,14 @@ public class FtsDaoImpl
 
                 bindStringOrNull(stmt, 6, publisherList);
 
-                bindStringOrNull(stmt, 7, rowData.getString(DBKey.GENRE));
-                bindStringOrNull(stmt, 8, rowData.getString(DBKey.LOCATION));
-                bindStringOrNull(stmt, 9, rowData.getString(DBKey.BOOK_ISBN));
+                bindStringOrNull(stmt, 7, rowData.getString(DBKey.LOCATION));
+                bindStringOrNull(stmt, 8, rowData.getString(DBKey.BOOK_ISBN));
 
                 // FTS_TOC_ENTRY_TITLE
-                bindStringOrNull(stmt, 10, tocList);
+                bindStringOrNull(stmt, 9, tocList);
 
                 // FTS_BOOK_ID : in a where clause, or as insert parameter
-                stmt.bindLong(11, bookId);
+                stmt.bindLong(10, bookId);
 
                 stmt.execute();
             }
@@ -386,13 +385,12 @@ public class FtsDaoImpl
                 + ',' + DBKey.DESCRIPTION
                 + ',' + DBKey.PERSONAL_NOTES
                 + ',' + DBKey.PUBLISHER_NAME
-                + ',' + DBKey.GENRE
                 + ',' + DBKey.LOCATION
                 + ',' + DBKey.BOOK_ISBN
                 + ',' + DBKey.FTS_TOC_ENTRY_TITLE
 
                 + ',' + DBKey.FTS_BOOK_ID
-                + ") VALUES (?,?,?,?, ?,?,?,?, ?,?,?)";
+                + ") VALUES (?,?,?,?,?,?,?,?,?, ?)";
 
         /**
          * The full INSERT statement.
@@ -413,7 +411,6 @@ public class FtsDaoImpl
                 + ',' + DBKey.DESCRIPTION + "=?"
                 + ',' + DBKey.PERSONAL_NOTES + "=?"
                 + ',' + DBKey.PUBLISHER_NAME + "=?"
-                + ',' + DBKey.GENRE + "=?"
                 + ',' + DBKey.LOCATION + "=?"
                 + ',' + DBKey.BOOK_ISBN + "=?"
                 + ',' + DBKey.FTS_TOC_ENTRY_TITLE + "=?"
@@ -426,7 +423,6 @@ public class FtsDaoImpl
                 + ',' + DBKey.TITLE
                 + ',' + DBKey.DESCRIPTION
                 + ',' + DBKey.PERSONAL_NOTES
-                + ',' + DBKey.GENRE
                 + ',' + DBKey.LOCATION
                 + ',' + DBKey.BOOK_ISBN
                 + _FROM_ + TBL_BOOKS.getName();
