@@ -670,7 +670,7 @@ public class OpenLibrarySearchEngine
         //    "Fiction / Thrillers",
         //    "Action & Adventure"
         //  ]
-        // could be used for genres... but the subject list for a single book can be very large
+        // could be used for tags... but the subject list for a single book can be very large
 
 
         // "notes" is a specific (set of) remarks on this particular edition of the book.

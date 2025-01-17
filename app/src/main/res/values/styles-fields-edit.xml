@@ -340,7 +340,7 @@
         <item name="android:inputType">textPersonName|textCapWords</item>
     </style>
 
-    <!-- AutoComplete fields: format, genre, language, color,location. -->
+    <!-- AutoComplete fields: format, language, color,location. -->
     <style name="TIA.InlineStringField"
            parent="TIA">
         <item name="android:inputType">textCapWords</item>

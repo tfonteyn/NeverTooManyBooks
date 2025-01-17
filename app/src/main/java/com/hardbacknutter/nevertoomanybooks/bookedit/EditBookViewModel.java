@@ -616,7 +616,7 @@ public class EditBookViewModel
     /**
      * Get a unique list of all tags in the database, ordered alphabetically.
      *
-     * @return List of genres
+     * @return list
      */
     @NonNull
     List<Tag> getAllTags() {

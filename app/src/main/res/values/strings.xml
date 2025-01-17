@@ -376,6 +376,8 @@
     <string name="info_tap_on_thumbnail_to_zoom">Tap on a thumbnail to display a larger image.</string>
     <!--Label above an image. -->
     <string name="info_tap_to_select">Tap to select.</string>
+    <!-- Header/help text in the tag-editor dialog -->
+    <string name="info_tap_to_move_tag">Tap a tag to move it to/from the Book</string>
 
     <string name="info_download_successful">Download successful</string>
     <!-- See GitHub docs... there is optional code to be added to Calibre. -->
@@ -1099,10 +1101,15 @@
     <string name="lbl_color">Color</string>
     <!-- [VERIFIED] -->
     <string name="lbl_language">Language</string>
-    <!-- Label for the genre of the book (e.g. Romance, Crime, etc..) -->
+    <!-- Label for the genre of the book (e.g. Romance, Crime, etc..)
+         Used in combination wth "lbl_tag" only.
+    -->
     <string name="lbl_genre">Genre</string>
-    <!-- Label for tagging a book (i.e assign a set of labels/tags to a book: Romance, Crime, etc..) -->
+    <!-- Label for tagging a book (i.e assign a set of labels/tags to a book: Romance, Crime, etc..)
+        Single. -->
     <string name="lbl_tag">Tag</string>
+    <!-- Label for tagging a book (i.e assign a set of labels/tags to a book: Romance, Crime, etc..)
+        Plural. -->
     <string name="lbl_tags">Tags</string>
     <!-- is this book signed by the author? -->
     <string name="lbl_signed">Signed</string>
@@ -1943,7 +1950,4 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="lbl_text"
             translatable="false">Text</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="info_tap_to_move_tag"
-            translatable="false">Tap a tag to move it to/from the Book</string>
 </resources>

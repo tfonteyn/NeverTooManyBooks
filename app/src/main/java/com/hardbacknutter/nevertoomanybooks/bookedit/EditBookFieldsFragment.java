@@ -139,7 +139,7 @@ public class EditBookFieldsFragment
         vb.lblSeries.setEndIconOnClickListener(v -> editSeries());
         vb.seriesTitle.setOnClickListener(v -> editSeries());
 
-        // Tags/genre editor (dialog)
+        // Tags editor (dialog)
         vb.lblTags.setEndIconOnClickListener(v -> editTags());
         vb.tags.setOnClickListener(v -> editTags());
 
