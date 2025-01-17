@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -186,7 +186,8 @@ public abstract class StyleBaseFragment
                     }
                     final PreferenceCategory category =
                             screen.findPreference(groupPrefs.getCategory());
-                    // Sanity check
+                    // We may implement plumbing, but not want to expose it
+                    // to the user (yet)
                     if (category == null) {
                         return;
                     }

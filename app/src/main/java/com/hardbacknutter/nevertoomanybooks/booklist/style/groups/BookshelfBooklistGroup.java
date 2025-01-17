@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
  * Includes extra attributes based on preferences.
  * <p>
  * {@link #getDisplayDomainExpression()} returns a customized display domain
- * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
 class BookshelfBooklistGroup
         extends BooklistGroupImpl
@@ -61,7 +60,9 @@ class BookshelfBooklistGroup
      */
     BookshelfBooklistGroup(@NonNull final GroupKey groupKey) {
         super(groupKey);
-        // Not sorted; we sort on the OB domain as defined in GroupKeyFactory#create
+        // Not sorted; we sort on the name domain as defined in GroupKeyFactory#create
+        // This is "replacing" the foreign-key domain; it's NOT duplicating the
+        // group/sort domain from the GroupKey
         displayDomainExpression = new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME,
                                                        DBDefinitions.TBL_BOOKSHELF,
                                                        Sort.Unsorted);

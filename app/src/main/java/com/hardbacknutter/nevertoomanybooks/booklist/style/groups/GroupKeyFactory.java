@@ -256,8 +256,8 @@ final class GroupKeyFactory {
                 // We use the foreign ID to create the key-domain.
                 // It is NOT used to display the data; instead we use
                 // BookshelfBooklistGroup#displayDomainExpression.
-                // We do NOT sort by the display-domain; instead we use
-                // the OB column, sorted, added as a group domain.
+                // We do NOT sort by the foreign-key display-domain; instead we use
+                // the name column, sorted, added as a group domain.
                 return new GroupKey(id, R.string.lbl_bookshelf, "shelf",
                                     new DomainExpression(DOM_FK_BOOKSHELF,
                                                          TBL_BOOKSHELF.dot(DBKey.PK_ID),
