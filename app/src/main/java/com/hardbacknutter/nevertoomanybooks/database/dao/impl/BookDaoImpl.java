@@ -1146,7 +1146,7 @@ public class BookDaoImpl
                         DBKey.BOOK_PUBLICATION__DATE, DBKey.PRINT_RUN,
                         DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY,
                         DBKey.FIRST_PUBLICATION__DATE,
-                        DBKey.FORMAT, DBKey.COLOR, DBKey.GENRE, DBKey.LANGUAGE, DBKey.PAGES,
+                        DBKey.FORMAT, DBKey.COLOR, DBKey.LANGUAGE, DBKey.PAGES,
                         // Main/public description about the content/publication
                         DBKey.DESCRIPTION,
                         // partially edition info, partially user-owned info.

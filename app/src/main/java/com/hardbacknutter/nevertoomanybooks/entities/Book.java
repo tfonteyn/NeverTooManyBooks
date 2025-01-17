@@ -440,7 +440,6 @@ public class Book
 
         duplicate.putString(DBKey.FORMAT, getString(DBKey.FORMAT));
         duplicate.putString(DBKey.COLOR, getString(DBKey.COLOR));
-        duplicate.putString(DBKey.GENRE, getString(DBKey.GENRE));
         duplicate.putString(DBKey.LANGUAGE, getString(DBKey.LANGUAGE));
         duplicate.putString(DBKey.PAGES, getString(DBKey.PAGES));
         // common blurb

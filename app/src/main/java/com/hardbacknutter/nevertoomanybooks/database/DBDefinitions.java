@@ -1497,7 +1497,6 @@ public final class DBDefinitions {
                             DOM_BOOK_CONTENT_TYPE,
                             DOM_BOOK_FORMAT,
                             DOM_BOOK_COLOR,
-                            DOM_BOOK_GENRE,
                             DOM_BOOK_LANGUAGE,
                             DOM_BOOK_PAGES,
 
