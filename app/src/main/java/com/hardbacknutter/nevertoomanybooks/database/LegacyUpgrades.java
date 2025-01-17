@@ -25,9 +25,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
@@ -65,12 +65,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
@@ -354,7 +348,8 @@ public final class LegacyUpgrades {
 
             String sql;
 
-            sql = "UPDATE " + TBL_BOOK_AUTHOR.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
+            sql = "UPDATE " + DBDefinitions.TBL_BOOK_AUTHOR.getName()
+                  + " SET " + DBKey.FK_AUTHOR + "=" + keep
                   + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
             //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
@@ -436,7 +431,8 @@ public final class LegacyUpgrades {
 
             String sql;
 
-            sql = "UPDATE " + TBL_BOOK_TOC_ENTRIES + " SET " + DBKey.FK_TOC_ENTRY + "=" + keep
+            sql = "UPDATE " + DBDefinitions.TBL_BOOK_TOC_ENTRIES
+                  + " SET " + DBKey.FK_TOC_ENTRY + "=" + keep
                   + " WHERE " + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
             //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
@@ -510,7 +506,7 @@ public final class LegacyUpgrades {
 
         final Map<String, Integer> predef = new HashMap<>();
         final String predefSql = "SELECT " + DBKey.PK_ID + ',' + DBKey.IDENT_KEY
-                                 + " FROM " + TBL_IDENTIFIERS.getName();
+                                 + " FROM " + DBDefinitions.TBL_IDENTIFIERS.getName();
         try (Cursor cursor = db.rawQuery(predefSql, null)) {
             while (cursor.moveToNext()) {
                 final int id = cursor.getInt(0);
@@ -527,7 +523,7 @@ public final class LegacyUpgrades {
                                              .map(c -> "(" + c + " IS NOT NULL)")
                                              .collect(Collectors.joining(" OR "));
 
-        final String sqlInsert = "INSERT INTO " + TBL_BOOK_IDENTIFIER.getName()
+        final String sqlInsert = "INSERT INTO " + DBDefinitions.TBL_BOOK_IDENTIFIER.getName()
                                  + '(' + DBKey.FK_BOOK
                                  + ',' + DBKey.FK_IDENTIFIER
                                  + ',' + DBKey.IDENT_SID
@@ -571,10 +567,11 @@ public final class LegacyUpgrades {
                                  + " WHERE " + DBKEY_GENRE + "<>''";
 
         final String sqlInsertTag =
-                "INSERT INTO " + TBL_TAGS.getName() + '(' + DBKey.TAG + ") VALUES (?)";
+                "INSERT INTO " + DBDefinitions.TBL_TAGS.getName()
+                + '(' + DBKey.TAG + ") VALUES (?)";
 
         final String sqlLinkBook =
-                "INSERT INTO " + TBL_BOOK_TAG.getName()
+                "INSERT INTO " + DBDefinitions.TBL_BOOK_TAG.getName()
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_TAG
                 + ") VALUES(?,?)";
@@ -608,7 +605,12 @@ public final class LegacyUpgrades {
         }
 
         // empty old column, we'll delete it in a future version
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DBKEY_GENRE + "=''");
+        db.execSQL("UPDATE " + TBL_BOOKS.getName() + " SET " + DBKEY_GENRE + "=''");
+
+        // Remove any genre based filters, they cannot be converted to a tag filter
+        db.execSQL("DELETE FROM " + DBDefinitions.TBL_BOOKSHELF_FILTERS.getName()
+                   + " WHERE " + DBKey.BOOKSHELF_FILTER_NAME + "='" + DBKEY_GENRE + "'");
+
     }
 
     /**
