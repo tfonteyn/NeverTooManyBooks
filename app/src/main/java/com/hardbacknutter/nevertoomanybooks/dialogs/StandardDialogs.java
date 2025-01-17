@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 
 public final class StandardDialogs {
 
@@ -145,6 +146,27 @@ public final class StandardDialogs {
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_publisher,
                                               publisher.getLabel(context)))
+                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
+                .create()
+                .show();
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param tag       we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteTag(@NonNull final Context context,
+                                 @NonNull final Tag tag,
+                                 @NonNull final Runnable onConfirm) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.warning_24px)
+                .setTitle(R.string.action_delete)
+                .setMessage(context.getString(R.string.confirm_delete_tag,
+                                              tag.getLabel(context)))
                 .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
                 .create()

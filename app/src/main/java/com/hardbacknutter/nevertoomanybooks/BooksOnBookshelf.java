@@ -111,8 +111,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorBottomShee
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditInLineStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageDialogFragment;
@@ -124,6 +122,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherBottom
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTagBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTagDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.autocomplete.AutoCompletePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiChoiceLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -134,6 +134,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -1714,13 +1715,13 @@ public class BooksOnBookshelf
         private final EditParcelableLauncher<Series> editSeriesLauncher;
         /** Edit a {@link Publisher} which appears as a {@link BooklistGroup} (node). */
         private final EditParcelableLauncher<Publisher> editPublisherLauncher;
+        /** Edit a {@code Book Tag} which appears as a {@link BooklistGroup} (node). */
+        private final EditParcelableLauncher<Tag> editTagLauncher;
 
         /** Edit a {@code Book Color} which appears as a {@link BooklistGroup} (node). */
         private final EditInLineStringLauncher editColorLauncher;
         /** Edit a {@code Book Format} which appears as a {@link BooklistGroup} (node). */
         private final EditInLineStringLauncher editFormatLauncher;
-        /** Edit a {@code Book Genre} which appears as a {@link BooklistGroup} (node). */
-        private final EditInLineStringLauncher editGenreLauncher;
         /** Edit a {@code Book Language} which appears as a {@link BooklistGroup} (node). */
         private final EditInLineStringLauncher editLanguageLauncher;
         /** Edit a {@code Book Location} which appears as a {@link BooklistGroup} (node). */
@@ -1755,6 +1756,13 @@ public class BooksOnBookshelf
             editPublisherLauncher.setOnEditInPlaceListener(
                     publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
 
+            editTagLauncher = new EditParcelableLauncher<>(
+                    DBKey.FK_TAG,
+                    EditTagDialogFragment::new,
+                    EditTagBottomSheet::new);
+            editTagLauncher.setOnEditInPlaceListener(
+                    tag -> vm.onEntityUpdate(DBKey.TAG, tag));
+
             editColorLauncher = new EditInLineStringLauncher(
                     DBKey.COLOR,
                     EditColorDialogFragment::new,
@@ -1770,14 +1778,6 @@ public class BooksOnBookshelf
             editFormatLauncher.setOnEditListener(
                     (original, modified)
                             -> vm.onInlineStringUpdate(DBKey.FORMAT, original, modified));
-
-            editGenreLauncher = new EditInLineStringLauncher(
-                    DBKey.GENRE,
-                    EditGenreDialogFragment::new,
-                    EditGenreBottomSheet::new);
-            editGenreLauncher.setOnEditListener(
-                    (original, modified)
-                            -> vm.onInlineStringUpdate(DBKey.GENRE, original, modified));
 
             editLanguageLauncher = new EditInLineStringLauncher(
                     DBKey.LANGUAGE,
@@ -1808,7 +1808,7 @@ public class BooksOnBookshelf
 
             editColorLauncher.registerForFragmentResult(fm, lifecycleOwner);
             editFormatLauncher.registerForFragmentResult(fm, lifecycleOwner);
-            editGenreLauncher.registerForFragmentResult(fm, lifecycleOwner);
+            editTagLauncher.registerForFragmentResult(fm, lifecycleOwner);
             editLanguageLauncher.registerForFragmentResult(fm, lifecycleOwner);
             editLocationLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
@@ -2261,6 +2261,64 @@ public class BooksOnBookshelf
         }
 
         /**
+         * Create the row/context menu for a {@link Tag}.
+         *
+         * @param rowData the row data
+         * @param menu    to attach to
+         *
+         * @see #onTag(Context, int, DataHolder)
+         */
+        private void forTag(@NonNull final DataHolder rowData,
+                            @NonNull final Menu menu) {
+            if (rowData.getLong(DBKey.FK_TAG) != 0) {
+                getMenuInflater().inflate(R.menu.tag, menu);
+            } else {
+                // It's a "(Not set)" mode
+                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                         R.string.lbl_assign_bookshelves)
+                    .setIcon(R.drawable.library_books_24px);
+                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                         R.string.lbl_assign_location)
+                    .setIcon(R.drawable.edit_location_24px);
+
+                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                         getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                         R.string.menu_update_books)
+                    .setIcon(R.drawable.cloud_download_24px);
+            }
+        }
+
+        /**
+         * Handle the row/context menu for a {@link Tag}.
+         *
+         * @param context    Current context
+         * @param menuItemId The menu item that was invoked.
+         * @param rowData    the row data
+         *
+         * @return {@code true} if handled.
+         *
+         * @see #forTag(DataHolder, Menu)
+         */
+        private boolean onTag(@NonNull final Context context,
+                              @IdRes final int menuItemId,
+                              @NonNull final DataHolder rowData) {
+            if (menuItemId == R.id.MENU_TAG_EDIT) {
+                final Tag tag = DataHolderUtils.requireTag(rowData);
+                editTagLauncher.editInPlace(context, tag);
+                return true;
+
+            } else if (menuItemId == R.id.MENU_TAG_DELETE) {
+                final Tag tag = DataHolderUtils.requireTag(rowData);
+                StandardDialogs.deleteTag(context, tag,
+                                          () -> vm.delete(context, tag));
+                return true;
+            }
+            return false;
+        }
+
+        /**
          * Create the row/context menu for a {@link Bookshelf}.
          *
          * @param rowData the row data
@@ -2387,35 +2445,6 @@ public class BooksOnBookshelf
                                    @NonNull final DataHolder rowData) {
             if (menuItemId == R.id.MENU_LOCATION_EDIT) {
                 editLocationLauncher.edit(context, rowData.getString(DBKey.LOCATION));
-                return true;
-            }
-            return false;
-        }
-
-        private void forTag(@NonNull final DataHolder rowData,
-                            @NonNull final Menu menu) {
-            if (!rowData.getString(DBKey.TAG).isEmpty()) {
-                menu.add(Menu.NONE, R.id.MENU_TAG_EDIT,
-                         getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                         R.string.action_edit_ellipsis)
-                    .setIcon(R.drawable.edit_24px);
-
-                menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                         R.string.lbl_assign_bookshelves)
-                    .setIcon(R.drawable.library_books_24px);
-                menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                         getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                         R.string.lbl_assign_location)
-                    .setIcon(R.drawable.edit_location_24px);
-            }
-        }
-
-        private boolean onTag(@NonNull final Context context,
-                              @IdRes final int menuItemId,
-                              @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_TAG_EDIT) {
-                editGenreLauncher.edit(context, rowData.getString(DBKey.TAG));
                 return true;
             }
             return false;

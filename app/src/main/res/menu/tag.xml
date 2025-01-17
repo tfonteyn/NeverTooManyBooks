@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@id/MENU_TAG_EDIT"
+        android:icon="@drawable/edit_24px"
+        android:orderInCategory="@integer/MENU_ORDER_EDIT"
+        android:title="@string/action_edit_ellipsis" />
+
+    <item
+        android:id="@id/MENU_TAG_DELETE"
+        android:icon="@drawable/delete_24px"
+        android:orderInCategory="@integer/MENU_ORDER_DELETE"
+        android:title="@string/action_delete" />
+
+    <item
+        android:id="@id/MENU_SET_BOOKSHELVES"
+        android:icon="@drawable/library_books_24px"
+        android:orderInCategory="@integer/MENU_ORDER_SET_BOOKSHELVES"
+        android:title="@string/lbl_assign_bookshelves" />
+
+    <item
+        android:id="@id/MENU_SET_LOCATION"
+        android:icon="@drawable/edit_location_24px"
+        android:orderInCategory="@integer/MENU_ORDER_SET_LOCATION"
+        android:title="@string/lbl_assign_location" />
+
+    <item
+        android:id="@id/MENU_UPDATE_FROM_INTERNET"
+        android:icon="@drawable/cloud_download_24px"
+        android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
+        android:title="@string/menu_update_books" />
+</menu>

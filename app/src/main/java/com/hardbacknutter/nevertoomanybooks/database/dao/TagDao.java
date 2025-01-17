@@ -33,9 +33,12 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 
-public interface TagDao {
+public interface TagDao
+        extends MoveBooksDao<Tag> {
 
     @IntRange(from = 1)
     long insert(@NonNull Tag tag)
@@ -71,6 +74,22 @@ public interface TagDao {
 
     void refresh(@NonNull Tag tag);
 
+    /**
+     * Insert or update a list of {@link Tag}'s linked to a single {@link Book}.
+     * <p>
+     * The list is pruned before storage.
+     * New {@link Tag}'s are added to the {@link Tag} table, existing ones are NOT updated
+     * unless explicitly allowed by the {@code doUpdates} parameter.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context        Current context
+     * @param bookId         of the book
+     * @param list           the list of {@link Tag}'s
+     * @param localeSupplier a supplier to get the Locale; called for each item in the list
+     *
+     * @throws DaoWriteException on failure
+     */
     void insertOrUpdate(@NonNull Context context,
                         @IntRange(from = 1) long bookId,
                         @NonNull Collection<Tag> list,
@@ -83,6 +102,24 @@ public interface TagDao {
     @NonNull
     Optional<Tag> findByName(@NonNull Tag tag);
 
+
+    /**
+     * Get a list of the {@link Tag}s for a book.
+     *
+     * @param bookId of the book
+     *
+     * @return list
+     */
     @NonNull
-    Collection<Tag> getByBookId(@IntRange(from = 1) long bookId);
+    List<Tag> getByBookId(@IntRange(from = 1) long bookId);
+
+    /**
+     * Get a list of book ID's for the given {@link Tag}.
+     *
+     * @param itemId id of the item
+     *
+     * @return list with book ID's linked to this item
+     */
+    @NonNull
+    List<Long> getBookIds(@IntRange(from = 1) long itemId);
 }

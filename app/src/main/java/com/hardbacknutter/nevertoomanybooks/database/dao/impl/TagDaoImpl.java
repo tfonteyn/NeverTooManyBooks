@@ -36,8 +36,10 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -111,13 +113,26 @@ public class TagDaoImpl
 
     @NonNull
     @Override
-    public Collection<Tag> getByBookId(@IntRange(from = 1) final long bookId) {
+    public List<Tag> getByBookId(@IntRange(from = 1) final long bookId) {
         final List<Tag> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Tag(rowData.getLong(DBKey.PK_ID), rowData));
+            }
+        }
+        return list;
+    }
+
+    @NonNull
+    @Override
+    public List<Long> getBookIds(final long tagId) {
+        final List<Long> list = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BOOK_IDS_BY_TAG_ID,
+                                         new String[]{String.valueOf(tagId)})) {
+            while (cursor.moveToNext()) {
+                list.add(cursor.getLong(0));
             }
         }
         return list;
@@ -197,7 +212,7 @@ public class TagDaoImpl
             for (final Tag tag : list) {
                 fixId(tag);
 
-                // create if needed - do NOT do updates unless explicitly allowed
+                // create if needed
                 if (tag.getId() == 0) {
                     insert(tag);
                 } else {
@@ -275,6 +290,56 @@ public class TagDaoImpl
         return false;
     }
 
+    @Override
+    public void moveBooks(@NonNull final Context context,
+                          @NonNull final Tag source,
+                          @NonNull final Tag target)
+            throws DaoWriteException {
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            // Relink books with the target Tag,
+            // respecting the position of the Tag in the list for each book.
+            for (final long bookId : getBookIds(source.getId())) {
+                final Book book = Book.from(bookId);
+
+                final List<Tag> fromBook = book.getTags();
+                final List<Tag> destList = new ArrayList<>();
+
+                for (final Tag item : fromBook) {
+                    if (source.getId() == item.getId()) {
+                        destList.add(target);
+                        // We could 'break' here as there should be no duplicates,
+                        // but paranoia...
+                    } else {
+                        // just keep/copy
+                        destList.add(item);
+                    }
+                }
+
+                // delete old links and store all new links
+                // We KNOW there are no updates needed.
+                final Locale bookLocale = book.getLocaleOrUserLocale(context);
+                insertOrUpdate(context, bookId, destList, tag -> bookLocale);
+            }
+
+            // delete the obsolete source.
+            delete(source);
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
+    }
+
     private static final class Sql {
 
         /** Insert a {@link Tag}. */
@@ -321,6 +386,12 @@ public class TagDaoImpl
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_TAG
                 + ") VALUES(?,?)";
+
+        /** All {@link Book}s (id only!) for a given {@link Tag}. */
+        static final String FIND_BOOK_IDS_BY_TAG_ID =
+                SELECT_ + TBL_BOOK_TAG.dotAs(DBKey.FK_BOOK)
+                + _FROM_ + TBL_BOOK_TAG.ref()
+                + _WHERE_ + TBL_BOOK_TAG.dot(DBKey.FK_TAG) + "=?";
 
         /**
          * Delete the link between a {@link Book} and a {@link Identifier}.

@@ -814,17 +814,28 @@
     <!-- region ========== Messages for actions that need confirming first. -->
     <string name="confirm_continue">Are you sure you want to continue?</string>
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
+
+    <!-- Param 1: Series name -->
     <string name="confirm_delete_series">Delete the series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
+    <!-- Param 1: Publisher name -->
     <string name="confirm_delete_publisher">Delete the publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
+    <!-- Param 1: Bookshelf name
+         Param 2: the "All books" bookshelf name -->
     <string name="confirm_delete_bookshelf">Delete the bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
+    <!-- Param 1: Tag name -->
+    <string name="confirm_delete_tag">Delete the tag “%1$s”?\n\nIt will be deleted from all books on which it is set. The books themselves will not be deleted.</string>
+    <!-- Param 1: TOC entry title
+         Param 2: author name -->
     <string name="confirm_delete_toc_entry_everywhere">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
-    <!-- Param 1: book title; Param 2: author name -->
+    <!-- Param 1: book title
+         Param 2: author name -->
     <string name="confirm_remove_toc_entry">Remove the title “%1$s” by %2$s from this book?</string>
     <!-- param 1: work title
          param 2: author
          param 3: the text on the button for making a global change. e.g. "All books" -->
     <string name="confirm_scope_for_delete">Delete the title “%1$s” by %2$s\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” cannot be undone!</string>
-    <!-- Param 1: book title; Param 2: author name -->
+    <!-- Param 1: book title
+         Param 2: author name -->
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
     <!-- Param 1: style name -->
     <string name="confirm_delete_style">Delete the style “%1$s”?</string>
@@ -833,6 +844,7 @@
     <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_series">The series you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_publishers">The publisher you are modifying already exists. Would you like to merge them?</string>
+    <string name="confirm_merge_tags">The tag you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
     <string name="confirm_overwrite_cover">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
     <!-- param 1: previous name; param 2: new name - each time as a single string.
@@ -1090,6 +1102,7 @@
     <!-- Label for the genre of the book (e.g. Romance, Crime, etc..) -->
     <string name="lbl_genre">Genre</string>
     <!-- Label for tagging a book (i.e assign a set of labels/tags to a book: Romance, Crime, etc..) -->
+    <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tags</string>
     <!-- is this book signed by the author? -->
     <string name="lbl_signed">Signed</string>

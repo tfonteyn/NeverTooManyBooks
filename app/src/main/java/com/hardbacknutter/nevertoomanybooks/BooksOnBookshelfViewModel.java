@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -79,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -194,6 +196,7 @@ public class BooksOnBookshelfViewModel
     /** Database Access. */
     private BookDao bookDao;
     private BookshelfDao bookshelfDao;
+    private TagDao tagDao;
 
     /** Preferred booklist state in next rebuild. */
     private RebuildBooklist rebuildMode;
@@ -321,6 +324,7 @@ public class BooksOnBookshelfViewModel
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
             bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+            tagDao = ServiceLocator.getInstance().getTagDao();
 
             // first start of the activity, read from user preference
             rebuildMode = RebuildBooklist.getPreferredMode(context);
@@ -1289,6 +1293,18 @@ public class BooksOnBookshelfViewModel
         }
     }
 
+    /**
+     * Delete the given {@link Tag}.
+     *
+     * @param context Current context
+     * @param tag     to delete
+     */
+    void delete(@NonNull final Context context,
+                @NonNull final Tag tag) {
+        if (tagDao.delete(tag)) {
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
+        }
+    }
     /**
      * Delete the given Book.
      *

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -250,6 +250,50 @@ public final class DataHolderUtils {
             return result;
         }
         throw new IllegalArgumentException("No Publisher found");
+    }
+
+    /**
+     * Extract the {@link Tag} from the given {@link DataHolder}.
+     *
+     * @param dataHolder with {@link Tag} data
+     *
+     * @return Tag
+     *
+     * @throws IllegalArgumentException if there is incompatible data in the {@link DataHolder}.
+     */
+    @NonNull
+    public static Tag requireTag(@NonNull final DataHolder dataHolder)
+            throws IllegalArgumentException {
+        Tag result = null;
+
+        if (dataHolder.contains(Book.BKEY_TAG_LIST)) {
+            // Ideally the row contains the data as a list. Simply return the first one.
+            final List<Tag> list = dataHolder.getParcelableArrayList(Book.BKEY_TAG_LIST);
+            if (!list.isEmpty()) {
+                result = list.get(0);
+            }
+        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            // The rowData is flagged as containing book data without being a full Book object.
+            final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
+            // sanity check
+            if (bookId > 0) {
+                final List<Tag> list = ServiceLocator.getInstance().getTagDao()
+                                                     .getByBookId(bookId);
+                if (!list.isEmpty()) {
+                    result = list.get(0);
+                }
+            }
+        } else if (dataHolder.contains(DBKey.FK_TAG)) {
+            final long id = dataHolder.getLong(DBKey.FK_TAG);
+            if (id > 0) {
+                result = ServiceLocator.getInstance().getTagDao().findById(id).orElse(null);
+            }
+        }
+
+        if (result != null) {
+            return result;
+        }
+        throw new IllegalArgumentException("No Tag found");
     }
 
     /**

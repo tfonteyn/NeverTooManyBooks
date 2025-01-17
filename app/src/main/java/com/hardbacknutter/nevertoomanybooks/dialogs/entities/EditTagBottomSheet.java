@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,19 +23,14 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexBottomSheetDialogFragment;
 
-public class EditGenreBottomSheet
+public class EditTagBottomSheet
         extends FlexBottomSheetDialogFragment {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        delegate = new EditInLineStringDelegate(this, requireArguments(),
-                                                R.string.lbl_genre, R.string.lbl_genre,
-                                                ServiceLocator.getInstance()::getGenreDao
-        );
+        delegate = new EditTagDelegate(this, requireArguments());
     }
 }

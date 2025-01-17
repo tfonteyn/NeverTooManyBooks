@@ -74,6 +74,15 @@ public class Tag
     }
 
     /**
+     * Copy constructor.
+     *
+     * @param tag to copy
+     */
+    public Tag(final Tag tag) {
+        copyFrom(tag);
+    }
+
+    /**
      * Constructor without ID.
      *
      * @param name   for the Tag
