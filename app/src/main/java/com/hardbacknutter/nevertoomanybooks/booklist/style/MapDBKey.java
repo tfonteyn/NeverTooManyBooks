@@ -70,7 +70,6 @@ public final class MapDBKey {
             Map.entry(DBKey.FK_TAG, R.string.lbl_tags),
             Map.entry(DBKey.FK_TOC_ENTRY, R.string.lbl_table_of_content),
             Map.entry(DBKey.FORMAT, R.string.lbl_format),
-            Map.entry(DBKey.GENRE, R.string.lbl_genre),
             Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
             // TEST: should this be R.string.lbl_lend_out instead?
             Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lending),

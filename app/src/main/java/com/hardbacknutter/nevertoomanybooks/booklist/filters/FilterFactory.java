@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -39,14 +40,21 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 
 public final class FilterFactory {
 
-    // Not always the same mapping as {@link MapDBKey}
+    /**
+     * Used to build the GUI list of user options to create filters.
+     * <p>
+     * Dev. note: Not always the same mapping as {@link MapDBKey}
+     */
     public static final Map<String, Integer> SUPPORTED = Map.ofEntries(
             Map.entry(DBKey.BOOK_ISBN, R.string.lbl_isbn),
             Map.entry(DBKey.EDITION__BITMASK, R.string.lbl_edition),
             Map.entry(DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf),
+            Map.entry(DBKey.FK_TAG, R.string.lbl_tag),
+
             //FIXME: the key name is a mistake but makes no difference
             // in functionality.
             // It should have been BOOK_CONTENT_TYPE
@@ -56,7 +64,6 @@ public final class FilterFactory {
 
             Map.entry(DBKey.COLOR, R.string.lbl_color),
             Map.entry(DBKey.FORMAT, R.string.lbl_format),
-            Map.entry(DBKey.GENRE, R.string.lbl_genre),
             Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
             Map.entry(DBKey.LOCATION, R.string.lbl_location),
             // Different from MapDBKey. Here it MUST be "lbl_lend_out"
@@ -113,11 +120,6 @@ public final class FilterFactory {
                         dbKey, R.string.lbl_format,
                         TBL_BOOKS, DBDefinitions.DOM_BOOK_FORMAT);
             }
-            case DBKey.GENRE: {
-                return new PStringEqualityFilter(
-                        dbKey, R.string.lbl_genre,
-                        TBL_BOOKS, DBDefinitions.DOM_BOOK_GENRE);
-            }
             case DBKey.LANGUAGE: {
                 final PStringEqualityFilter filter = new PStringEqualityFilter(
                         dbKey, R.string.lbl_language,
@@ -147,6 +149,12 @@ public final class FilterFactory {
                         dbKey, R.string.lbl_bookshelves,
                         TBL_BOOK_BOOKSHELF, DBDefinitions.DOM_FK_BOOKSHELF,
                         () -> ServiceLocator.getInstance().getBookshelfDao().getAll());
+            }
+            case DBKey.FK_TAG: {
+                return new PEntityListFilter<>(
+                        dbKey, R.string.lbl_tags,
+                        TBL_BOOK_TAG, DBDefinitions.DOM_FK_TAG,
+                        () -> ServiceLocator.getInstance().getTagDao().getAll());
             }
 
             case DBKey.FK_TOC_ENTRY: {
@@ -183,10 +191,6 @@ public final class FilterFactory {
             case DBKey.FORMAT: {
                 return FieldArrayAdapter.createStringDropDown(
                         context, serviceLocator.getFormatDao().getList(), null);
-            }
-            case DBKey.GENRE: {
-                return FieldArrayAdapter.createStringDropDown(
-                        context, serviceLocator.getGenreDao().getList(), null);
             }
             case DBKey.LANGUAGE: {
                 final Locale userLocale = context.getResources().getConfiguration()
