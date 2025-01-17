@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -186,29 +186,29 @@ class EditSeriesDelegate
             final Optional<Series> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
                 // Success
-                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getSeries());
+                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getOriginal());
                 return true;
             }
 
             // There is one with the same name; ask whether to merge the 2.
             StandardDialogs.askToMerge(context, R.string.confirm_merge_series,
-                                       vm.getSeries().getLabel(context), () -> {
+                                       vm.getOriginal().getLabel(context), () -> {
                         owner.dismiss();
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
                             EditParcelableLauncher.setEditInPlaceResult(owner, requestKey,
-                                                                        vm.getSeries());
+                                                                        vm.getOriginal());
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
-                            LoggerFactory.getLogger().e(TAG, e, vm.getSeries());
+                            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
                         }
                     });
             return false;
 
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, vm.getSeries());
+            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
             return false;
         }
     }

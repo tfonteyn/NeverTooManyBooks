@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,7 @@ public class EditBookshelfViewModel
         extends ViewModel {
 
     /** The Bookshelf we're editing. */
-    private Bookshelf bookshelf;
+    private Bookshelf original;
 
     /** Current edit. */
     private Bookshelf currentEdit;
@@ -56,16 +56,16 @@ public class EditBookshelfViewModel
         if (dao == null) {
             dao = ServiceLocator.getInstance().getBookshelfDao();
 
-            bookshelf = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                                               EditParcelableLauncher.BKEY_ITEM);
+            original = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
+                                              EditParcelableLauncher.BKEY_ITEM);
 
-            currentEdit = new Bookshelf(bookshelf);
+            currentEdit = new Bookshelf(original);
         }
     }
 
     @NonNull
-    Bookshelf getBookshelf() {
-        return bookshelf;
+    Bookshelf getOriginal() {
+        return original;
     }
 
     @NonNull
@@ -73,10 +73,13 @@ public class EditBookshelfViewModel
         return currentEdit;
     }
 
-
+    /**
+     * Were any of the fields changed?
+     *
+     * @return {@code true} if modified
+     */
     boolean isModified() {
-        // Case-sensitive! We must allow the user to correct case.
-        return !bookshelf.isSameName(currentEdit);
+        return !original.isSameName(currentEdit);
     }
 
     /**
@@ -96,21 +99,24 @@ public class EditBookshelfViewModel
     @NonNull
     Optional<Bookshelf> saveIfUnique(@NonNull final Context context)
             throws DaoWriteException {
-        bookshelf.setName(currentEdit.getName());
+        // The logic flow here is different from the default one as used for e.g. an Author.
+        // See the code which is calling this method
+
+        original.setName(currentEdit.getName());
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         // Check if there is an another one with the same new name.
-        final Optional<Bookshelf> existingEntity = dao.findByName(context, bookshelf, locale);
+        final Optional<Bookshelf> existingEntity = dao.findByName(context, original, locale);
         if (existingEntity.isPresent()) {
             return existingEntity;
         }
 
         // Just insert or update as needed
-        if (bookshelf.getId() == 0) {
-            dao.insert(context, bookshelf, locale);
+        if (original.getId() == 0) {
+            dao.insert(context, original, locale);
         } else {
-            dao.update(context, bookshelf, locale);
+            dao.update(context, original, locale);
         }
         return Optional.empty();
     }
@@ -120,6 +126,6 @@ public class EditBookshelfViewModel
             throws DaoWriteException {
         // Note that we ONLY move the books. No other attributes from
         // the source item are copied to the target item!
-        dao.moveBooks(context, bookshelf, destination);
+        dao.moveBooks(context, original, destination);
     }
 }

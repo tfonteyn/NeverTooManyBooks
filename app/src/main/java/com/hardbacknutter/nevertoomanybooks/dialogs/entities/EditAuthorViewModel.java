@@ -50,7 +50,7 @@ public class EditAuthorViewModel
     private static final String TAG = "EditAuthorViewModel";
 
     /** The Author we're editing. */
-    private Author author;
+    private Author original;
 
     /** Current edit. */
     private Author currentEdit;
@@ -74,14 +74,14 @@ public class EditAuthorViewModel
         if (dao == null) {
             dao = ServiceLocator.getInstance().getAuthorDao();
 
-            author = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                                            EditParcelableLauncher.BKEY_ITEM);
+            original = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
+                                              EditParcelableLauncher.BKEY_ITEM);
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
             useAuthorType = serviceLocator.isFieldEnabled(DBKey.AUTHOR_TYPE__BITMASK);
 
-            currentEdit = new Author(author, true);
+            currentEdit = new Author(original, true);
             final Author tmp = currentEdit.getRealAuthor();
             currentRealAuthorName = tmp != null ? tmp.getFormattedName(false) : null;
         }
@@ -112,8 +112,8 @@ public class EditAuthorViewModel
      * @return author
      */
     @NonNull
-    public Author getAuthor() {
-        return author;
+    public Author getOriginal() {
+        return original;
     }
 
     /**
@@ -190,16 +190,14 @@ public class EditAuthorViewModel
     }
 
     /**
-     * Check if the author was modified at all.
-     * <p>
-     * The check is sase-sensitive! We must allow the user to correct case.
+     * Were any of the fields changed?
      *
      * @return {@code true} if modified
      */
     public boolean isModified() {
-        return !(author.isSameName(currentEdit)
-                 && author.isComplete() == currentEdit.isComplete()
-                 && Objects.equals(author.getRealAuthor(), currentEdit.getRealAuthor()));
+        return !(original.isSameName(currentEdit)
+                 && original.isComplete() == currentEdit.isComplete()
+                 && Objects.equals(original.getRealAuthor(), currentEdit.getRealAuthor()));
     }
 
     /**
@@ -219,28 +217,33 @@ public class EditAuthorViewModel
     @NonNull
     Optional<Author> saveIfUnique(@NonNull final Context context)
             throws DaoWriteException {
-        author.copyFrom(currentEdit, false);
+
+        // FIRST check if the name was changed
+        final boolean sameName = original.isSameName(currentEdit);
+
+        // now copy changes, including the name and any other attributes
+        original.copyFrom(currentEdit, false);
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         // It's an existing one and the name was not changed;
         // just update the other attributes
-        if (author.getId() != 0 && author.isSameName(currentEdit)) {
-            dao.update(context, author, locale);
+        if (original.getId() != 0 && sameName) {
+            dao.update(context, original, locale);
             return Optional.empty();
         }
 
         // Check if there is an another one with the same new name.
-        final Optional<Author> existingEntity = dao.findByName(context, author, locale);
+        final Optional<Author> existingEntity = dao.findByName(context, original, locale);
         if (existingEntity.isPresent()) {
             return existingEntity;
         }
 
         // Just insert or update as needed
-        if (author.getId() == 0) {
-            dao.insert(context, author, locale);
+        if (original.getId() == 0) {
+            dao.insert(context, original, locale);
         } else {
-            dao.update(context, author, locale);
+            dao.update(context, original, locale);
         }
         // return SUCCESS
         return Optional.empty();
@@ -251,6 +254,6 @@ public class EditAuthorViewModel
             throws DaoWriteException {
         // Note that we ONLY move the books. No other attributes from
         // the source item are copied to the target item!
-        dao.moveBooks(context, author, destination);
+        dao.moveBooks(context, original, destination);
     }
 }

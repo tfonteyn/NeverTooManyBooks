@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -171,14 +171,14 @@ class EditBookshelfDelegate
             final Optional<Bookshelf> existingEntity = vm.saveIfUnique(context);
             if (existingEntity.isEmpty()) {
                 // Success
-                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getBookshelf());
+                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getOriginal());
                 return true;
             }
 
             // The logic flow here is different from the default one as used for e.g. an Author.
             // IF the user meant to create a NEW Bookshelf
             // REJECT an already existing Bookshelf with the same name.
-            if (vm.getBookshelf().getId() == 0) {
+            if (vm.getOriginal().getId() == 0) {
                 vb.lblBookshelf.setError(context.getString(
                         R.string.warning_x_already_exists,
                         context.getString(R.string.lbl_bookshelf)));
@@ -187,23 +187,23 @@ class EditBookshelfDelegate
 
             // There is one with the same name; ask whether to merge the 2
             StandardDialogs.askToMerge(context, R.string.confirm_merge_bookshelves,
-                                       vm.getBookshelf().getLabel(context), () -> {
+                                       vm.getOriginal().getLabel(context), () -> {
                         owner.dismiss();
                         try {
                             vm.move(context, existingEntity.get());
                             // return the item which 'lost' it's books
                             EditParcelableLauncher.setEditInPlaceResult(owner, requestKey,
-                                                                        vm.getBookshelf());
+                                                                        vm.getOriginal());
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
-                            LoggerFactory.getLogger().e(TAG, e, vm.getBookshelf());
+                            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
                         }
                     });
             return false;
 
         } catch (@NonNull final DaoWriteException e) {
             // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, vm.getBookshelf());
+            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
             return false;
         }
     }

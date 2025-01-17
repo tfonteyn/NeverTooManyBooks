@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,7 @@ public class EditPublisherViewModel
         extends ViewModel {
 
     /** The Publisher we're editing. */
-    private Publisher publisher;
+    private Publisher original;
 
     /** Current edit. */
     private Publisher currentEdit;
@@ -56,16 +56,16 @@ public class EditPublisherViewModel
         if (dao == null) {
             dao = ServiceLocator.getInstance().getPublisherDao();
 
-            publisher = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
-                                               EditParcelableLauncher.BKEY_ITEM);
+            original = Objects.requireNonNull(args.getParcelable(EditParcelableLauncher.BKEY_ITEM),
+                                              EditParcelableLauncher.BKEY_ITEM);
 
-            currentEdit = new Publisher(publisher);
+            currentEdit = new Publisher(original);
         }
     }
 
     @NonNull
-    public Publisher getPublisher() {
-        return publisher;
+    public Publisher getOriginal() {
+        return original;
     }
 
     @NonNull
@@ -73,9 +73,13 @@ public class EditPublisherViewModel
         return currentEdit;
     }
 
+    /**
+     * Were any of the fields changed?
+     *
+     * @return {@code true} if modified
+     */
     boolean isModified() {
-        // Case-sensitive! We must allow the user to correct case.
-        return !publisher.isSameName(currentEdit);
+        return !original.isSameName(currentEdit);
     }
 
     /**
@@ -96,28 +100,32 @@ public class EditPublisherViewModel
     Optional<Publisher> saveIfUnique(@NonNull final Context context)
             throws DaoWriteException {
 
-        publisher.copyFrom(currentEdit);
+        // FIRST check if the name was changed
+        final boolean sameName = original.isSameName(currentEdit);
+
+        // now copy changes, including the name and any other attributes
+        original.copyFrom(currentEdit);
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         // It's an existing one and the name was not changed;
         // just update the other attributes
-        if (publisher.getId() != 0 && publisher.isSameName(currentEdit)) {
-            dao.update(context, publisher, locale);
+        if (original.getId() != 0 && sameName) {
+            dao.update(context, original, locale);
             return Optional.empty();
         }
 
         // Check if there is an another one with the same new name.
-        final Optional<Publisher> existingEntity = dao.findByName(context, publisher, locale);
+        final Optional<Publisher> existingEntity = dao.findByName(context, original, locale);
         if (existingEntity.isPresent()) {
             return existingEntity;
         }
 
         // Just insert or update as needed
-        if (publisher.getId() == 0) {
-            dao.insert(context, publisher, locale);
+        if (original.getId() == 0) {
+            dao.insert(context, original, locale);
         } else {
-            dao.update(context, publisher, locale);
+            dao.update(context, original, locale);
         }
         // return SUCCESS
         return Optional.empty();
@@ -128,6 +136,6 @@ public class EditPublisherViewModel
             throws DaoWriteException {
         // Note that we ONLY move the books. No other attributes from
         // the source item are copied to the target item!
-        dao.moveBooks(context, publisher, destination);
+        dao.moveBooks(context, original, destination);
     }
 }
