@@ -196,7 +196,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tags"
                 style="@style/TIE.ReadOnly"
-                tools:text="@sample/data.json/genre/name"
+                tools:text="@sample/data.json/tags/name"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

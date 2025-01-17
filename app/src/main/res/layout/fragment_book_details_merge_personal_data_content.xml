@@ -70,7 +70,7 @@
         app:layout_constraintStart_toStartOf="@id/lbl_tags"
         app:layout_constraintTop_toBottomOf="@id/lbl_tags"
         tools:ignore="SelectableText"
-        tools:text="@sample/data.json/genre/name"
+        tools:text="@sample/data.json/tags/name"
         />
 
     <TextView

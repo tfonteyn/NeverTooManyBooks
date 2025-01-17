@@ -70,7 +70,7 @@
     {"name": "Pocket"},
     {"name": "Softcover"}
   ],
-  "genre": [
+  "tags": [
     {"name": "Science Fiction"},
     {"name": "Romance"},
     {"name": "Detective"},
