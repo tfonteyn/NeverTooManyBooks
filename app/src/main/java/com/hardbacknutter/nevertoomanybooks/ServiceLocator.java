@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DeletedBooksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.GenreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
@@ -79,7 +78,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CoverCacheDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.DeletedBooksDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FormatDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.GenreDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LanguageDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LoaneeDaoImpl;
@@ -181,8 +179,6 @@ public class ServiceLocator {
     private FormatDao formatDao;
     @Nullable
     private FtsDao ftsDao;
-    @Nullable
-    private GenreDao genreDao;
     @Nullable
     private IdentifierDao identifierDao;
     @Nullable
@@ -630,16 +626,6 @@ public class ServiceLocator {
             }
         }
         return ftsDao;
-    }
-
-    @NonNull
-    public GenreDao getGenreDao() {
-        synchronized (this) {
-            if (genreDao == null) {
-                genreDao = new GenreDaoImpl(getDb());
-            }
-        }
-        return genreDao;
     }
 
     @NonNull
