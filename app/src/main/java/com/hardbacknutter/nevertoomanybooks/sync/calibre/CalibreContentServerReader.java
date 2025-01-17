@@ -267,8 +267,9 @@ public class CalibreContentServerReader
                           try {
                               map.put(MapDBKey.getLabel(context, dbKey), new String[]{dbKey});
                           } catch (@NonNull final IllegalArgumentException ignore) {
-                              // will currently never fail, as all custom fields are
-                              // hardcoded.
+                              // will currently never fail, as all custom fields are hardcoded.
+                              LoggerFactory.getLogger().w(TAG, "No MapDBKey for: "
+                                                               + dbKey);
                           }
                       });
 
