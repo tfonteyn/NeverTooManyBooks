@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,6 +71,7 @@ public class TableDefinition {
     private final String name;
     @NonNull
     private final String alias;
+    /** Always initialised in DEBUG; alwas {@code null} otherwise. */
     @Nullable
     private final DebugHelper debugHelper;
     @NonNull
@@ -150,7 +151,8 @@ public class TableDefinition {
         indexes.clear();
         primaryKey.clear();
 
-        if (debugHelper != null) {
+        if (BuildConfig.DEBUG /* always */) {
+            //noinspection DataFlowIssue
             debugHelper.clear();
         }
 
@@ -219,7 +221,8 @@ public class TableDefinition {
      */
     @NonNull
     public TableDefinition addDomains(@NonNull final Domain... domains) {
-        if (debugHelper != null) {
+        if (BuildConfig.DEBUG /* always */) {
+            //noinspection DataFlowIssue
             debugHelper.addDomains(domains);
         }
         Collections.addAll(this.domains, domains);
@@ -335,7 +338,8 @@ public class TableDefinition {
     public TableDefinition addIndex(@NonNull final String nameSuffix,
                                     final boolean unique,
                                     @NonNull final Domain... domains) {
-        if (debugHelper != null) {
+        if (BuildConfig.DEBUG /* always */) {
+            //noinspection DataFlowIssue
             debugHelper.addIndex(nameSuffix);
         }
 
@@ -786,7 +790,7 @@ public class TableDefinition {
 //        }
 //    }
 
-    private static class DebugHelper {
+    private static final class DebugHelper {
         /** Used for checking if a domain has already been added. Only used in DEBUG. */
         private final Collection<Integer> debugDomainNameDuplicates = new HashSet<>();
         /** Used for checking if an index has already been added. Only used in DEBUG. */
@@ -801,7 +805,7 @@ public class TableDefinition {
             Arrays.stream(domains).forEach(domain -> {
                 final int nameHash = domain.getName().hashCode();
                 if (debugDomainNameDuplicates.contains(nameHash)) {
-                    throw new IllegalStateException("Duplicate domain: " + domain);
+                    throw new IllegalStateException("DebugHelper: Duplicate domain: " + domain);
                 }
                 debugDomainNameDuplicates.add(nameHash);
             });
@@ -811,7 +815,7 @@ public class TableDefinition {
             // Make sure not already defined
             final int nameHash = nameSuffix.hashCode();
             if (debugIndexNameDuplicates.contains(nameHash)) {
-                throw new IllegalStateException("Duplicate nameSuffix: " + nameSuffix);
+                throw new IllegalStateException("DebugHelper: Duplicate nameSuffix: " + nameSuffix);
             }
             debugIndexNameDuplicates.add(nameHash);
         }
