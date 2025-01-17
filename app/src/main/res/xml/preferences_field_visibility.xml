@@ -141,8 +141,8 @@
         <!-- bit: 18 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="genre"
-            android:title="@string/lbl_genre" />
+            android:key="tag"
+            android:title="@string/lbl_tag" />
 
         <!-- bit: 19 -->
         <SwitchPreference
