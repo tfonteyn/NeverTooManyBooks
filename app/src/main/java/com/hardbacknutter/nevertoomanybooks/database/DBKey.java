@@ -52,7 +52,9 @@ public final class DBKey {
     /** Foreign key. */
     public static final String FK_IDENTIFIER = "ident_id";
     /** Foreign key. */
-    public static final String FK_TAG = "tag";
+    public static final String FK_TAG = "tag_id";
+
+    // Adding new FK's...  make sure to name them "xxx_id" to avoid duplicate use of "xxx"
 
     /*
      * ======================================================================================
