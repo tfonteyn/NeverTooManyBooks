@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -51,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -305,14 +307,16 @@ public class BolSearchEngine
             return;
         }
 
-        final List<Locale> locales = LocaleListUtils.asList(context, getLocale(context));
+        final Locale locale = getLocale(context);
+        final List<Locale> locales = LocaleListUtils.asList(context, locale);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         for (final Element specRow : specs.select("div.specs__row")) {
             final Element label = specRow.selectFirst("dt.specs__title");
             final Element value = specRow.selectFirst("dd.specs__value");
             if (label != null && value != null) {
-                switch (label.text()) {
+                final String labelText = label.text();
+                switch (labelText) {
                     case "Taal":
                     case "Langue": {
                         // the first occurrence uses the iso abbreviation
@@ -328,7 +332,7 @@ public class BolSearchEngine
                     case "Date de sortie initiale": {
                         final String text = SearchEngineUtils.cleanText(value.text());
                         if (!text.isEmpty()) {
-                            addPublicationDate(context, getLocale(context), text, book);
+                            addPublicationDate(context, locale, text, book);
                         }
                         break;
                     }
@@ -372,7 +376,7 @@ public class BolSearchEngine
                     }
                     case "Originele titel":
                     case "Titre original": {
-                        processText(value, SiteField.ORIGINAL_TITLE, book);
+                        processText(value, DBKey.TITLE_ORIGINAL_LANG, book);
                         break;
                     }
                     case "Serie": {
@@ -401,6 +405,11 @@ public class BolSearchEngine
                     }
                     case "EAN": {
                         processText(value, DBKey.BOOK_ISBN, book);
+                        break;
+                    }
+                    case "Categorieën":
+                    case "Catégories": {
+                        processTags(value, locale, book);
                         break;
                     }
                     default:
@@ -475,6 +484,21 @@ public class BolSearchEngine
                 // ignore
             }
         }
+    }
+
+    private void processTags(@NonNull final Element value,
+                             @NonNull final Locale locale,
+                             @NonNull final Book book) {
+        // its an 'ul' with 'li' each containing an 'a'
+        final List<Tag> tags = value.select("a")
+                                    .stream()
+                                    .map(Element::text)
+                                    // Tag "Books" (nl/fr) is always ignored
+                                    .filter(t -> !"Boeken".equals(t))
+                                    .filter(t -> !"Livres".equals(t))
+                                    .map(name -> new Tag(name, locale))
+                                    .collect(Collectors.toList());
+        book.setTags(tags);
     }
 
     /**
@@ -700,16 +724,5 @@ public class BolSearchEngine
         }
 
         return getHostUrl(context) + String.format(BY_TEXT, getCountry(context), fields);
-    }
-
-    /**
-     * BOL specific field names we add to the bundle based on parsed data.
-     */
-    public static final class SiteField {
-
-        static final String ORIGINAL_TITLE = "__original_title";
-
-        private SiteField() {
-        }
     }
 }

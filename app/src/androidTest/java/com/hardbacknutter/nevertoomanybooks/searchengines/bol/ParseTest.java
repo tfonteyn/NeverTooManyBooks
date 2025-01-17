@@ -20,9 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -35,17 +38,18 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -82,7 +86,7 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parseMultiResult(context, document, new boolean[]{false, false}, book);
-        // Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
         assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
@@ -91,11 +95,17 @@ public class ParseTest
         assertEquals("144", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        // Don't check, this test is a dynamic download
-//        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
-        // Don't check price, this test is a dynamic download
-//        assertEquals(new Money(BigDecimal.valueOf(16.5d), Money.EURO),
-//                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(new Money(BigDecimal.valueOf(16.5d), Money.EURO),
+                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        // TEST: missing tags?
+//        final List<Tag> bookTags = book.getTags();
+//        Assert.assertEquals(3, bookTags.size());
+//        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+//        assertTrue(tags.contains("Kinderboeken"));
+//        assertTrue(tags.contains("Prentenboeken"));
+//        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -128,29 +138,37 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parseMultiResult(context, document, new boolean[]{true, true}, book);
-        // Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
-        assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
-        assertEquals("9781841593326", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("Foundation", book.getString(DBKey.TITLE, null));
+        assertEquals("Foundation / Foundation And Empire / Second Foundation",
+                     book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertEquals("9780008117498", book.getString(DBKey.BOOK_ISBN, null));
 
-        assertEquals("2010-10-29", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("664", book.getString(DBKey.PAGES, null));
-        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("2016-09-22", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("240", book.getString(DBKey.PAGES, null));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
-        // Don't check, this test is a dynamic download
-//        assertEquals(4.8f, book.getFloat(DBKey.RATING, realNumberParser));
-        // Don't check, this test is a dynamic download
-//        assertEquals(new Money(BigDecimal.valueOf(18.07d), Money.EURO),
-//                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+        assertEquals(3.5f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(new Money(BigDecimal.valueOf(8.95d), Money.EURO),
+                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+//  TEST: MISSING TAGS?
+//        final List<Tag> bookTags = book.getTags();
+//        Assert.assertEquals(3, bookTags.size());
+//        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+//        assertTrue(tags.contains("Fantasy & Sciencefiction"));
+//        assertTrue(tags.contains("Sciencefiction"));
+//        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
-        assertEquals("Everyman'S Library", allPublishers.get(0).getName());
+        assertEquals("HCOL", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
-        assertEquals(2, authors.size());
+        assertEquals(1, authors.size());
 
         Author author;
         author = authors.get(0);
@@ -158,16 +176,11 @@ public class ParseTest
         assertEquals("Isaac", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        author = authors.get(1);
-        assertEquals("Dirda", author.getFamilyName());
-        assertEquals("Michael", author.getGivenNames());
-        assertEquals(Author.TYPE_EDITOR, author.getType());
-
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                          + "_9781841593326_0_.jpg"));
+                                          + "_9780008117498_0_.jpg"));
 
         final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
         assertNotNull(backCovers);
@@ -192,18 +205,30 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book);
-        // Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
-        assertEquals("Alter Ego", book.getString(DBKey.TITLE, null));
-        assertEquals("9789044652901", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("Alter ego", book.getString(DBKey.TITLE, null));
+        assertEquals("9789044652895", book.getString(DBKey.BOOK_ISBN, null));
 
-        assertEquals("2023-03-28", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("400", book.getString(DBKey.PAGES, null));
-        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
+        assertEquals("2023-04-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("416", book.getString(DBKey.PAGES, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
-        assertEquals(new Money(BigDecimal.valueOf(22.99d), Money.EURO),
+        assertEquals(4.5f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(new Money(BigDecimal.valueOf(51.6d), Money.EURO),
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final List<Tag> bookTags = book.getTags();
+        Assert.assertEquals(8, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Literatuur & Romans"));
+        assertTrue(tags.contains("Thrillers & Spanning"));
+        assertTrue(tags.contains("Romance"));
+        assertTrue(tags.contains("Psychologische Thrillers"));
+        assertTrue(tags.contains("Spanning"));
+        assertTrue(tags.contains("Romantische Thrillers"));
+        assertTrue(tags.contains("Literaire Thrillers"));
+        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -223,56 +248,13 @@ public class ParseTest
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                          + "_9789044652901_0_.jpg"));
+                                          + "_9789044652895_0_.jpg"));
 
         final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
         assertTrue(backCovers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                              + "_9789044652901_1_.jpg"));
-    }
-
-    /**
-     * be/fr + dutch book
-     */
-    @Test
-    public void parse01fr()
-            throws SearchException, IOException, CredentialsException, StorageException {
-
-        final String locationHeader =
-                "https://www.bol.com/be/fr/p/alter-ego/9300000135231911/?s2a=";
-        final int resId = com.hardbacknutter.nevertoomanybooks.test
-                .R.raw.bol_9789044652901_nl_fr;
-
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(List.of(searchEngine.getLocale(context)));
-
-        final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // Log.d(TAG, book.toString());
-        // there won't be a title!
-        assertNotEquals("Alter Ego", book.getString(DBKey.TITLE, null));
-//        assertEquals("9789044652901", book.getString(DBKey.BOOK_ISBN, null));
-//        assertEquals("2023-03-28", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-//        assertEquals("400", book.getString(DBKey.PAGE_COUNT, null));
-//        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
-//        assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
-//        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
-//
-//        final List<Publisher> allPublishers = book.getPublishers();
-//        assertNotNull(allPublishers);
-//        assertEquals(1, allPublishers.size());
-//        assertEquals("Prometheus", allPublishers.get(0).getName());
-//
-//        final List<Author> authors = book.getAuthors();
-//        assertNotNull(authors);
-//        assertEquals(1, authors.size());
-//
-//        final Author author = authors.get(0);
-//        assertEquals("Verhoef", author.getFamilyName());
-//        assertEquals("Esther", author.getGivenNames());
-//        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+                                              + "_9789044652895_1_.jpg"));
     }
 
     @Test
@@ -300,6 +282,14 @@ public class ParseTest
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
         assertEquals(new Money(BigDecimal.valueOf(26.99d), Money.EURO),
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final List<Tag> bookTags = book.getTags();
+        Assert.assertEquals(4, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Geschiedenis"));
+        assertTrue(tags.contains("Europa"));
+        assertTrue(tags.contains("Regio's & Landen"));
+        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -334,7 +324,6 @@ public class ParseTest
                                               + "_9789044544725_1_.jpg"));
     }
 
-
     /** The redirect from {@link #parseMultiResult01()} */
     @Test
     public void parse03()
@@ -363,6 +352,13 @@ public class ParseTest
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
         assertEquals(new Money(BigDecimal.valueOf(16.5d), Money.EURO),
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final List<Tag> bookTags = book.getTags();
+        Assert.assertEquals(3, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Kinderboeken"));
+        assertTrue(tags.contains("Prentenboeken"));
+        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -405,8 +401,15 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
-        assertEquals(new Money(BigDecimal.valueOf(18.09d), Money.EURO),
+        assertEquals(new Money(BigDecimal.valueOf(18.28d), Money.EURO),
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        final List<Tag> bookTags = book.getTags();
+        Assert.assertEquals(3, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Literatuur & Romans"));
+        assertTrue(tags.contains("Literaire Romans"));
+        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
