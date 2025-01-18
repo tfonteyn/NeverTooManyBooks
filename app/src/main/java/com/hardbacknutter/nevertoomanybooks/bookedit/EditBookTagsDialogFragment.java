@@ -78,7 +78,6 @@ public class EditBookTagsDialogFragment
                     vm.updateTags(bookTags);
                 }
             };
-    private List<Tag> availableTags;
     private EditStringLauncher editStringLauncher;
 
     /**
@@ -143,7 +142,7 @@ public class EditBookTagsDialogFragment
                 .launch(getActivity(),
                         getString(R.string.action_add),
                         null,
-                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS,
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
                         "",
                         null));
 
@@ -153,7 +152,7 @@ public class EditBookTagsDialogFragment
         editStringLauncher.registerForFragmentResult(getChildFragmentManager(), this);
 
         bookTags = vm.getBook().getTags();
-        availableTags = vm.getAllTags();
+        final List<Tag> availableTags = vm.getAllTags();
         availableTags.removeAll(bookTags);
 
         final Context context = getContext();
@@ -169,10 +168,10 @@ public class EditBookTagsDialogFragment
         vb.tagsInBook.setAdapter(bookTagsAdapter);
     }
 
-    private void addNewTag(final CharSequence value) {
+    private void addNewTag(final String value) {
         final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
         // Always create so the name is normalized for sure.
-        // Android does not stop the user overruling TYPE_TEXT_FLAG_CAP_WORDS
+        // Android does not stop the user overruling TYPE_TEXT_FLAG_CAP_SENTENCES
         final Tag tag = new Tag(value, userLocale);
 
         if (bookTagsAdapter.has(tag).isPresent()) {

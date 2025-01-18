@@ -55,9 +55,8 @@ public class Tag
             return new Tag[size];
         }
     };
-    private static final Pattern WHITESPACE_SPLITTER = Pattern.compile("\\s+");
     /** Genre string migration splitter characters. */
-    private static final Pattern SPLITTER_PATTERN = Pattern.compile("[/,;&>]");
+    private static final Pattern SPLITTER_PATTERN = Pattern.compile("[/,;>]");
 
     private long id;
     @NonNull
@@ -88,9 +87,9 @@ public class Tag
      * @param name   for the Tag
      * @param locale for normalizing the name
      *
-     * @see #normalize(CharSequence, Locale)
+     * @see #normalize(String, Locale)
      */
-    public Tag(@NonNull final CharSequence name,
+    public Tag(@NonNull final String name,
                @NonNull final Locale locale) {
         this.name = normalize(name, locale);
     }
@@ -113,12 +112,16 @@ public class Tag
         name = in.readString();
     }
 
-    public static String normalize(@NonNull final CharSequence sentence,
+    @NonNull
+    public static String normalize(@NonNull final String sentence,
                                    @NonNull final Locale locale) {
-        return Arrays.stream(WHITESPACE_SPLITTER.split(sentence))
-                     .map(s -> s.substring(0, 1).toUpperCase(locale)
-                               + s.substring(1).toLowerCase(locale))
-                     .collect(Collectors.joining(" "));
+        if (sentence.isBlank()) {
+            return "";
+        } else if (sentence.length() == 1) {
+            return sentence.toUpperCase(locale);
+        }
+
+        return sentence.substring(0, 1).toUpperCase(locale) + sentence.substring(1);
     }
 
     @NonNull
@@ -172,9 +175,9 @@ public class Tag
      * @param name   for the Tag
      * @param locale for normalizing the name
      *
-     * @see #normalize(CharSequence, Locale)
+     * @see #normalize(String, Locale)
      */
-    public void setName(@NonNull final CharSequence name,
+    public void setName(@NonNull final String name,
                         @NonNull final Locale locale) {
         this.name = normalize(name, locale);
     }
