@@ -132,9 +132,19 @@ public class OpenLibrarySearchEngine
     /**
      * Do NOT REORDER. Some keys are duplicates.
      * e.g. "oclc_numbers" is current/preferred, "oclc" is legacy.
+     *
+     * Seen but not supported:
+     * "better_world_books"
+     * "paperback_swap"
+     * "alibris_id"
+     * "amazon.co.uk_asin"
+     * "depu00f3sito_legal"
+     * ...
      */
     private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
             Map.entry("amazon", Identifier.SID_ASIN),
+            Map.entry("dnb", Identifier.SID_DNB),
+            Map.entry("doi", Identifier.SID_DOI),
             Map.entry("goodreads", Identifier.SID_GOODREADS_BOOK),
             Map.entry("google", Identifier.SID_GOOGLE),
             Map.entry("lccn", Identifier.SID_LCCN),
@@ -645,16 +655,39 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("publish_date", null);
         if (s != null && !s.isEmpty()) {
+            // The site serves dates in multiple formats...
+            // "2013"
+            // "1984-10"
+            // "2022-02-09"
+            // "March 2009"
+            // "18 October 2006"
+            // "May 1, 1983"
+            // hope for the best by parsing
             addPublicationDate(context, getLocale(context), s, book);
         }
 
-        //TODO: parse the "copyright_date" but need more examples of data.
-        //  "copyright_date": "1982, 1994",
-        //        s = document.optString("copyright_date", null);
-        //        if (s != null && !s.isEmpty()) {
-        //
-        //        }
+        s = document.optString("first_publish_date", null);
+        if (s != null && !s.isEmpty()) {
+            addFirstPublicationDate(context, getLocale(context), s, book);
+        } else {
+            //  "copyright_date": "1982, 1994",
+            //  "copyright_date": "2022",
+            s = document.optString("copyright_date", null);
+            if (s != null && !s.isEmpty()) {
+                // grab the first, we'll assume it will the earlier date.
+                // Given OL track record of structure we'll probably be wrong sometimes
+                final String[] split = s.split(",");
+                addFirstPublicationDate(context, getLocale(context), split[0], book);
+            }
+        }
 
+        // ENHANCE: "subjects" could be used for tags...
+        //  but the subject list for a single book can be very large
+        //  and contain various entries of dubious quality.
+        // I mean.. seriously, 47 tags ?
+        // https://openlibrary.org/works/OL257943W.json
+        //
+        // There are also two formats:
         // "subjects": [
         //            {
         //                "name": "History",
@@ -670,8 +703,6 @@ public class OpenLibrarySearchEngine
         //    "Fiction / Thrillers",
         //    "Action & Adventure"
         //  ]
-        // could be used for tags... but the subject list for a single book can be very large
-
 
         // "notes" is a specific (set of) remarks on this particular edition of the book.
         // There are two known formats returned
@@ -897,6 +928,7 @@ public class OpenLibrarySearchEngine
             final JSONArray data = element.optJSONArray(olKey);
             if (data != null && !data.isEmpty()) {
                 if (!book.contains(identifier)) {
+                    // each identifier on the site can be an array, just grab the first entry
                     book.setIdentifierValue(identifier, data.getString(0));
                 }
             }

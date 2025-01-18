@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -55,7 +57,8 @@ public class ParseTest
     private static final String TAG = "ParseTest";
 
     /**
-     * The site is rather unstable.... half of the time it fails to serve covers.
+     * The site is rather unstable.... half of the time it fails to serve covers
+     * and returns a "500".
      * Ignore any failing tests for covers...
      */
     private static final String SITE_COVERS_BROKEN_AGAIN = "site covers broken again";
@@ -91,13 +94,15 @@ public class ParseTest
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
         // https://openlibrary.org/books/OL22853304M.json
-        final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary2_9780980200447);
+                                                           .R.raw.openlibrary_9780980200447);
+
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
+        Log.d(TAG, book.toString());
 
         assertEquals("Slow reading", book.getString(DBKey.TITLE, null));
         assertEquals("9780980200447", book.getString(DBKey.BOOK_ISBN, null));
@@ -107,12 +112,15 @@ public class ParseTest
         assertEquals("6383507", book.getString(Identifier.SID_GOODREADS_BOOK, null));
         assertEquals("098020044X", book.getString(Identifier.SID_ASIN, null));
         assertEquals("297222669", book.getString(Identifier.SID_OCLC, null));
+        assertEquals("4LQU1YwhY6kC", book.getString(Identifier.SID_GOOGLE, null));
 
         assertEquals("Includes bibliographical references and index.",
                      book.getString(DBKey.DESCRIPTION, null));
         assertEquals("92", book.getString(DBKey.PAGES, null));
+        assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2009-03-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
+        assertEquals(Book.ContentType.Collection.getId(), book.getLong(DBKey.BOOK_CONTENT_TYPE));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -151,6 +159,7 @@ public class ParseTest
         assertEquals("The psychology of slow reading", tocs.get(3).getTitle());
         assertEquals("The practice of slow reading.", tocs.get(4).getTitle());
 
+        // same for all toc entries
         assertEquals("Miedema", tocs.get(0).getPrimaryAuthor().getFamilyName());
         assertEquals("John", tocs.get(0).getPrimaryAuthor().getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
@@ -169,13 +178,16 @@ public class ParseTest
     public void parse2()
             throws IOException, StorageException, SearchException, CredentialsException {
 
-        final Book book = new Book();
+        // https://openlibrary.org/search.json?q=9780734418227&fields=key,editions
+        // https://openlibrary.org/books/OL47304760M.json
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary2_9780734418227);
+                                                           .R.raw.openlibrary_9780734418227);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
+        Log.d(TAG, book.toString());
 
         assertEquals("Wundersmith", book.getString(DBKey.TITLE, null));
         assertEquals("9780734418227", book.getString(DBKey.BOOK_ISBN, null));
@@ -185,6 +197,7 @@ public class ParseTest
                      book.getString(DBKey.DESCRIPTION, null));
         assertEquals("473", book.getString(DBKey.PAGES, null));
         assertEquals("paperback", book.getString(DBKey.FORMAT, null));
+        assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -215,13 +228,16 @@ public class ParseTest
     @Test
     public void parse3()
             throws IOException, StorageException, SearchException, CredentialsException {
-        final Book book = new Book();
+        // https://openlibrary.org/search.json?q=9780141346830&fields=key,editions
+        // https://openlibrary.org/books/OL28508809M.json
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary2_9780141346830);
+                                                           .R.raw.openlibrary_9780141346830);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
+        Log.d(TAG, book.toString());
 
         assertEquals("Percy Jackson and the Battle of the Labyrinth",
                      book.getString(DBKey.TITLE, null));
@@ -230,6 +246,7 @@ public class ParseTest
 
         assertEquals("2013", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("352", book.getString(DBKey.PAGES, null));
+        assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -263,17 +280,19 @@ public class ParseTest
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
         // https://openlibrary.org/books/OL36696710M.json
-        final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary2_9783103971422);
+                                                           .R.raw.openlibrary_9783103971422);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
+        Log.d(TAG, book.toString());
 
         assertEquals("Autokorrektur", book.getString(DBKey.TITLE, null));
         assertEquals("9783103971422", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("OL36696710M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
+        assertEquals("1244449636", book.getString(Identifier.SID_DNB, null));
         assertEquals("lzexzgEACAAJ", book.getString(Identifier.SID_GOOGLE, null));
         assertEquals("1282184385", book.getString(Identifier.SID_OCLC, null));
 
@@ -281,6 +300,7 @@ public class ParseTest
         assertEquals("272", book.getString(DBKey.PAGES, null));
         assertEquals("ger", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
+        assertEquals(Book.ContentType.Collection.getId(), book.getLong(DBKey.BOOK_CONTENT_TYPE));
         assertEquals("Mit zahlreichen farbigen Illustrationen",
                      book.getString(DBKey.DESCRIPTION, null));
 
@@ -305,6 +325,39 @@ public class ParseTest
         assertEquals("Doris", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
 
+        final List<TocEntry> tocs = book.getToc();
+        assertNotNull(tocs);
+        assertEquals(23, tocs.size());
+
+        assertEquals("Bin ich der Wandel – oder warte ich auf ihn?", tocs.get(0).getTitle());
+        assertEquals("Mobilität", tocs.get(1).getTitle());
+        assertEquals("Was hat sich durch das Auto verdndert?", tocs.get(2).getTitle());
+        assertEquals("#Autokorrektur-Fakten", tocs.get(3).getTitle());
+        assertEquals("»Nicht-männliche« Mobilität", tocs.get(4).getTitle());
+        assertEquals("Privilegien", tocs.get(5).getTitle());
+        assertEquals("Lobbyismus", tocs.get(6).getTitle());
+        assertEquals("Für eine wahlfreie Mobilität", tocs.get(7).getTitle());
+        assertEquals("Raum", tocs.get(8).getTitle());
+        assertEquals("Die Entwicklung des Raums", tocs.get(9).getTitle());
+        assertEquals("Die autogerechte Stadt", tocs.get(10).getTitle());
+        assertEquals("Ländlicher Raum", tocs.get(11).getTitle());
+        assertEquals("Öffentlicher Raum", tocs.get(12).getTitle());
+        assertEquals("Für einen lebenswerten Raum", tocs.get(13).getTitle());
+        assertEquals("Mensch", tocs.get(14).getTitle());
+        assertEquals("Menschen, die nicht Auto fahren wollen", tocs.get(15).getTitle());
+        assertEquals("Menschen in Familien", tocs.get(16).getTitle());
+        assertEquals("Menschen im ländlichen Raum", tocs.get(17).getTitle());
+        assertEquals("Menschen in Armut", tocs.get(18).getTitle());
+        assertEquals("Menschen mit Einschränkungen", tocs.get(19).getTitle());
+        assertEquals("BIPoC und Transpersonen", tocs.get(20).getTitle());
+        assertEquals("Menschen, die alt oder krank sind", tocs.get(21).getTitle());
+        assertEquals("So geht Mobilität für alle!", tocs.get(22).getTitle());
+
+        // same for all toc entries
+        assertEquals("Diehl", tocs.get(0).getPrimaryAuthor().getFamilyName());
+        assertEquals("Katja", tocs.get(0).getPrimaryAuthor().getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
+
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
@@ -320,15 +373,14 @@ public class ParseTest
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780553276329&fields=key,editions
         // https://openlibrary.org/books/OL7824144M.json
-        final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary2_9780553276329);
+                                                           .R.raw.openlibrary_9780553276329);
+        final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
-
-        //Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
         assertEquals("Pacific Vortex!", book.getString(DBKey.TITLE, null));
         assertEquals("9780553276329", book.getString(DBKey.BOOK_ISBN, null));
@@ -337,6 +389,7 @@ public class ParseTest
         assertEquals("1182484", book.getString(Identifier.SID_LIBRARY_THING, null));
 
         assertEquals("1984-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1982", book.getString(DBKey.FIRST_PUBLICATION__DATE, null));
         assertEquals("270", book.getString(DBKey.PAGES, null));
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Mass Market Paperback", book.getString(DBKey.FORMAT, null));
