@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -68,8 +67,8 @@ public class IsfdbAuth
     /** Preferences prefix. */
     private static final String PREF_KEY = EngineId.Isfdb.getPreferenceKey();
 
-    static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
-    static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
+    static final String PK_HOST_USER = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_USER;
+    static final String PK_HOST_PASS = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
 
     /** the id returned in the cookie. Stored for easy access. */
     private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";

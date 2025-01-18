@@ -101,11 +101,10 @@ public class ParseTest
 
         // TEST: missing tags?
 //        final List<Tag> bookTags = book.getTags();
-//        Assert.assertEquals(3, bookTags.size());
+//        Assert.assertEquals(2, bookTags.size());
 //        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
 //        assertTrue(tags.contains("Kinderboeken"));
 //        assertTrue(tags.contains("Prentenboeken"));
-//        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -155,11 +154,10 @@ public class ParseTest
 
 //  TEST: MISSING TAGS?
 //        final List<Tag> bookTags = book.getTags();
-//        Assert.assertEquals(3, bookTags.size());
+//        Assert.assertEquals(2, bookTags.size());
 //        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
 //        assertTrue(tags.contains("Fantasy & Sciencefiction"));
 //        assertTrue(tags.contains("Sciencefiction"));
-//        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -219,7 +217,7 @@ public class ParseTest
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 
         final List<Tag> bookTags = book.getTags();
-        Assert.assertEquals(8, bookTags.size());
+        Assert.assertEquals(7, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Literatuur & Romans"));
         assertTrue(tags.contains("Thrillers & Spanning"));
@@ -228,7 +226,6 @@ public class ParseTest
         assertTrue(tags.contains("Spanning"));
         assertTrue(tags.contains("Romantische Thrillers"));
         assertTrue(tags.contains("Literaire Thrillers"));
-        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -284,12 +281,11 @@ public class ParseTest
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 
         final List<Tag> bookTags = book.getTags();
-        Assert.assertEquals(4, bookTags.size());
+        Assert.assertEquals(3, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Geschiedenis"));
         assertTrue(tags.contains("Europa"));
         assertTrue(tags.contains("Regio's & Landen"));
-        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -354,11 +350,10 @@ public class ParseTest
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 
         final List<Tag> bookTags = book.getTags();
-        Assert.assertEquals(3, bookTags.size());
+        Assert.assertEquals(2, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Kinderboeken"));
         assertTrue(tags.contains("Prentenboeken"));
-        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -405,11 +400,10 @@ public class ParseTest
                      book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 
         final List<Tag> bookTags = book.getTags();
-        Assert.assertEquals(3, bookTags.size());
+        Assert.assertEquals(2, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Literatuur & Romans"));
         assertTrue(tags.contains("Literaire Romans"));
-        assertTrue(tags.contains("Boeken"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

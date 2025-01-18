@@ -66,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -113,7 +112,7 @@ public class AmazonSearchEngine
 
     /** Preferences - Type: {@code String}. */
     public static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
-                                             + '.' + Prefs.PK_HOST_URL;
+                                             + '.' + SearchEngineConfig.PK_HOST_URL;
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
     /** Log tag. */
@@ -760,7 +759,7 @@ public class AmazonSearchEngine
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(getEngineId().getPreferenceKey()
-                                            + '.' + Prefs.PK_SEARCH_WEBSITE_MENU,
+                                            + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU,
                                             true);
     }
 

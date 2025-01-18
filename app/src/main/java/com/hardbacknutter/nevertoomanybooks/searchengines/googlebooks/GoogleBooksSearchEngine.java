@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -452,10 +453,14 @@ public class GoogleBooksSearchEngine
 
         a = volumeInfo.optJSONArray("categories");
         if (a != null && !a.isEmpty()) {
+            //noinspection DataFlowIssue
+            final Set<String> tagsToIgnore =
+                    getEngineId().getConfig().getTagsToIgnore(context);
+
             final List<Tag> tags = new ArrayList<>();
             for (int g = 0; g < a.length(); g++) {
                 final String category = a.optString(g, null);
-                if (category != null && !category.isEmpty()) {
+                if (category != null && !category.isEmpty() && !tagsToIgnore.contains(category)) {
                     tags.add(new Tag(category, locale));
                 }
             }

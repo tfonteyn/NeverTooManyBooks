@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -327,9 +328,14 @@ public class DnbSearchEngine
                                 // Themen­gebiet / Topic
                                 // Thema / Subject
                                 final String[] split = td.text().split(",");
+                                //noinspection DataFlowIssue
+                                final Set<String> tagsToIgnore =
+                                        getEngineId().getConfig().getTagsToIgnore(context);
+
                                 final List<Tag> tags = Arrays
                                         .stream(split)
                                         .map(String::strip)
+                                        .filter(name -> !tagsToIgnore.contains(name))
                                         .map(name -> new Tag(name, locale))
                                         .collect(Collectors.toList());
                                 book.setTags(tags);

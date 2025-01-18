@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -62,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
@@ -346,9 +346,13 @@ public class BertrandPtSearchEngine
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-themes > div.info");
         if (element != null) {
+            //noinspection DataFlowIssue
+            final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore(context);
+
             final Elements as = element.select("a");
             final List<Tag> tags = as.stream()
                                      .map(Element::text)
+                                     .filter(t -> !tagsToIgnore.contains(t))
                                      .map(name -> new Tag(name, siteLocale))
                                      .collect(Collectors.toList());
             book.setTags(tags);
@@ -443,7 +447,8 @@ public class BertrandPtSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = getEngineId().getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU;
+        final String key = getEngineId().getPreferenceKey()
+                           + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {

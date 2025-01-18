@@ -418,7 +418,7 @@ public class GoodreadsSearchEngine
 
         final JSONArray genres = o.optJSONArray("bookGenres");
         if (genres != null) {
-            parseBookGenres(genres, locale, book);
+            parseBookGenres(context, genres, locale, book);
         }
 
         final JSONObject work = o.optJSONObject("work");
@@ -569,9 +569,13 @@ public class GoodreadsSearchEngine
         }
     }
 
-    private void parseBookGenres(@NonNull final JSONArray genres,
+    private void parseBookGenres(@NonNull final Context context,
+                                 @NonNull final JSONArray genres,
                                  @NonNull final Locale locale,
                                  @NonNull final Book book) {
+        //noinspection DataFlowIssue
+        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore(context);
+
         final Set<Tag> result = new HashSet<>();
         for (int i = 0; i < genres.length(); i++) {
             final JSONObject bg = genres.optJSONObject(i);
@@ -579,7 +583,7 @@ public class GoodreadsSearchEngine
                 final JSONObject genre = bg.optJSONObject("genre");
                 if (genre != null) {
                     final String name = genre.optString("name");
-                    if (!name.isEmpty()) {
+                    if (!name.isEmpty() && !tagsToIgnore.contains(name)) {
                         result.add(new Tag(name, locale));
                     }
                 }

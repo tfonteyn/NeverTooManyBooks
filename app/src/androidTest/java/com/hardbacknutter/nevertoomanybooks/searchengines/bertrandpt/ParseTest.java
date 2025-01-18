@@ -113,10 +113,8 @@ public class ParseTest
 //                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 
         final List<Tag> bookTags = book.getTags();
-        assertEquals(4, bookTags.size());
+        assertEquals(2, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
-        assertTrue(tags.contains("Livros"));
-        assertTrue(tags.contains("Livros em Português"));
         assertTrue(tags.contains("Literatura"));
         assertTrue(tags.contains("Romance"));
 
@@ -188,10 +186,8 @@ public class ParseTest
 //                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 
         final List<Tag> bookTags = book.getTags();
-        assertEquals(4, bookTags.size());
+        assertEquals(2, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
-        assertTrue(tags.contains("Livros"));
-        assertTrue(tags.contains("Livros em Português"));
         assertTrue(tags.contains("Literatura"));
         assertTrue(tags.contains("Ficção Científica"));
 

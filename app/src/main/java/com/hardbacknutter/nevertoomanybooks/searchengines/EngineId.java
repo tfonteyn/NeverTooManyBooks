@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.method.LinkMovementMethod;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -101,7 +103,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *         This is the {@link #key} field.
  *     </li>
  *
- *     <li>Configure the engine in the method {@link #createEngineConfigurations()},
+ *     <li>Configure the engine in the method {@link #createEngineConfigurations(Context)},
  *         using {@link SearchEngineConfig.Builder} methods.
  *     </li>
  *
@@ -403,11 +405,14 @@ public enum EngineId
 
     /**
      * Create all {@link SearchEngine} configurations; called during startup.
+     *
+     * @param context <strong>Application</strong> or <strong>test</strong> context.
      */
-    static void createEngineConfigurations() {
+    static void createEngineConfigurations(@NonNull final Context context) {
         // The engine order here is not important; just keep them alphabetical
 
-        // ENHANCE: support ASIN and the ViewBookByExternalId interface
+        //FIXME: cleanup the mix of the config builder and the post create config
+
         if (Amazon.isEnabled()) {
             Amazon.setIdentifierKey(Identifier.SID_ASIN)
                   .createConfig()
@@ -422,12 +427,22 @@ public enum EngineId
                       .build(SearchEngineConfig::new);
         }
         if (Bol.isEnabled()) {
-            Bol.createConfig()
-               .build(SearchEngineConfig::new);
+            final SearchEngineConfig config = Bol.createConfig()
+                                                 .build(SearchEngineConfig::new);
+            final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+            if (!p.contains(Bol.getPreferenceKey()
+                            + '.' + SearchEngineConfig.PK_TAGS_IGNORE)) {
+                config.setTagsToIgnore(context, Set.of("Boeken", "Livres"));
+            }
         }
         if (BertrandPt.isEnabled()) {
-            BertrandPt.createConfig()
-                      .build(SearchEngineConfig::new);
+            final SearchEngineConfig config = BertrandPt.createConfig()
+                                                        .build(SearchEngineConfig::new);
+            final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+            if (!p.contains(BertrandPt.getPreferenceKey()
+                            + '.' + SearchEngineConfig.PK_TAGS_IGNORE)) {
+                config.setTagsToIgnore(context, Set.of("Livros", "Livros em Português"));
+            }
         }
         if (BookFinder.isEnabled()) {
             BookFinder.createConfig()

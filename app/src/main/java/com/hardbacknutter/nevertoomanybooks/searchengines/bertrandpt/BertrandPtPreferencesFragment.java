@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,8 +29,8 @@ import androidx.preference.SwitchPreference;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 @Keep
 public class BertrandPtPreferencesFragment
@@ -55,7 +55,7 @@ public class BertrandPtPreferencesFragment
         final SearchEngine.SearchOnSite searchEngine = (SearchEngine.SearchOnSite)
                 engineId.createSearchEngine(getContext());
         final SwitchPreference preference = findPreference(
-                engineId.getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU);
+                engineId.getPreferenceKey() + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU);
         preference.setChecked(searchEngine.isShowSearchOnSiteMenu(getContext()));
     }
 }

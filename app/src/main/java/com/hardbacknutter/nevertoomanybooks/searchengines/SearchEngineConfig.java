@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -155,7 +156,7 @@ public class SearchEngineConfig {
     public static void createRegistry(@NonNull final Context context,
                                       @NonNull final Languages languages) {
         synchronized (SearchEngineConfig.class) {
-            EngineId.createEngineConfigurations();
+            EngineId.createEngineConfigurations(context);
             Arrays.stream(Site.Type.values())
                   .forEach(type -> type.createList(context, languages));
         }
@@ -356,9 +357,14 @@ public class SearchEngineConfig {
          * Finish the build. Initialise the engine with the configuration.
          *
          * @param configSupplier the base or superclass for the configuration.
+         *
+         * @return the config
          */
-        public void build(@NonNull final Function<Builder, SearchEngineConfig> configSupplier) {
-            engineId.setConfig(configSupplier.apply(this));
+        @NonNull
+        public SearchEngineConfig build(@NonNull final Function<Builder, SearchEngineConfig> configSupplier) {
+            final SearchEngineConfig config = configSupplier.apply(this);
+            engineId.setConfig(config);
+            return config;
         }
 
         @NonNull

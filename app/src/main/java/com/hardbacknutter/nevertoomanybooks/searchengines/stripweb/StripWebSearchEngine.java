@@ -330,6 +330,7 @@ public class StripWebSearchEngine
                     case "Genre": {
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty()) {
+                            // Can also be populated by "Trefwoorden"
                             final List<Tag> tags = book.getTags();
                             tags.add(new Tag(text, siteLocale));
                             book.setTags(tags);
@@ -341,6 +342,7 @@ public class StripWebSearchEngine
                         final String[] split = SearchEngineUtils.cleanText(td.text())
                                                                 .split(",");
 
+                        // Can also be populated by "Genre"
                         final List<Tag> tags = book.getTags();
                         tags.addAll(Arrays.stream(split)
                                           .map(String::strip)
@@ -662,7 +664,8 @@ public class StripWebSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = getEngineId().getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU;
+        final String key = getEngineId().getPreferenceKey()
+                           + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {

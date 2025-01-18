@@ -36,6 +36,7 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -61,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -409,7 +409,7 @@ public class BolSearchEngine
                     }
                     case "Categorieën":
                     case "Catégories": {
-                        processTags(value, locale, book);
+                        processTags(context, value, locale, book);
                         break;
                     }
                     default:
@@ -486,16 +486,17 @@ public class BolSearchEngine
         }
     }
 
-    private void processTags(@NonNull final Element value,
+    private void processTags(final Context context,
+                             @NonNull final Element value,
                              @NonNull final Locale locale,
                              @NonNull final Book book) {
+        //noinspection DataFlowIssue
+        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore(context);
         // its an 'ul' with 'li' each containing an 'a'
         final List<Tag> tags = value.select("a")
                                     .stream()
                                     .map(Element::text)
-                                    // Tag "Books" (nl/fr) is always ignored
-                                    .filter(t -> !"Boeken".equals(t))
-                                    .filter(t -> !"Livres".equals(t))
+                                    .filter(t -> !tagsToIgnore.contains(t))
                                     .map(name -> new Tag(name, locale))
                                     .collect(Collectors.toList());
         book.setTags(tags);
@@ -674,7 +675,7 @@ public class BolSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = getEngineId().getPreferenceKey() + '.' + Prefs.PK_SEARCH_WEBSITE_MENU;
+        final String key = getEngineId().getPreferenceKey() + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {
