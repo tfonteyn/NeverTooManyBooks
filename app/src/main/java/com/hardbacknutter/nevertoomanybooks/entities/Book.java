@@ -583,6 +583,19 @@ public class Book
     /**
      * Set or remove the first-publication-date for this work.
      *
+     * @param year to set; {@code 0} to remove
+     */
+    public void setFirstPublicationDate(@IntRange(from = 0) final int year) {
+        if (year > 0) {
+            putString(DBKey.FIRST_PUBLICATION__DATE, String.valueOf(year));
+        } else {
+            remove(DBKey.FIRST_PUBLICATION__DATE);
+        }
+    }
+
+    /**
+     * Set or remove the first-publication-date for this work.
+     *
      * @param date to set; {@code null} to remove
      */
     public void setFirstPublicationDate(@Nullable final LocalDateTime date) {

@@ -542,6 +542,31 @@ public abstract class SearchEngineBase
                 .ifPresent(book::setPublicationDate);
     }
 
+    public void addFirstPublicationDate(@NonNull final Context context,
+                                        @NonNull final Locale locale,
+                                        @Nullable final String dateStr,
+                                        @NonNull final Book book) {
+
+        if (dateStr == null || dateStr.isBlank()) {
+            return;
+        }
+
+        if (dateStr.length() == 4) {
+            // we have a 4-digit year, use the simplified notation.
+            try {
+                book.setFirstPublicationDate(Integer.parseInt(dateStr));
+                return;
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore and continue with full parsing
+            }
+        }
+
+        // error or not 4 digits? Do a full parse.
+        getDateParser(context, locale)
+                .parse(dateStr)
+                .ifPresent(book::setFirstPublicationDate);
+    }
+
     /**
      * Process the price-listed field according to the given site locale.
      *
