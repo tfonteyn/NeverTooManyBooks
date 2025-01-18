@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -680,8 +679,8 @@ public final class LegacyUpgrades {
               .remove("ui.messages.use")
 
               // Editing the URL for these sites has been removed.
-              .remove(EngineId.Isfdb.getPreferenceKey() + '.' + Prefs.PK_HOST_URL)
-              .remove(EngineId.LibraryThing.getPreferenceKey() + '.' + Prefs.PK_HOST_URL)
+              .remove("isfdb.host.url")
+              .remove("librarything.host.url")
 
               .apply();
     }
