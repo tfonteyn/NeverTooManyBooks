@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.method.LinkMovementMethod;
@@ -427,22 +426,14 @@ public enum EngineId
                       .build(SearchEngineConfig::new);
         }
         if (Bol.isEnabled()) {
-            final SearchEngineConfig config = Bol.createConfig()
-                                                 .build(SearchEngineConfig::new);
-            final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-            if (!p.contains(Bol.getPreferenceKey()
-                            + '.' + SearchEngineConfig.PK_TAGS_IGNORE)) {
-                config.setTagsToIgnore(context, Set.of("Boeken", "Livres"));
-            }
+            Bol.createConfig()
+               .setTagsToIgnore(Set.of("Boeken", "Livres"))
+               .build(SearchEngineConfig::new);
         }
         if (BertrandPt.isEnabled()) {
-            final SearchEngineConfig config = BertrandPt.createConfig()
-                                                        .build(SearchEngineConfig::new);
-            final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-            if (!p.contains(BertrandPt.getPreferenceKey()
-                            + '.' + SearchEngineConfig.PK_TAGS_IGNORE)) {
-                config.setTagsToIgnore(context, Set.of("Livros", "Livros em Português"));
-            }
+            BertrandPt.createConfig()
+                      .setTagsToIgnore(Set.of("Livros", "Livros em Português"))
+                      .build(SearchEngineConfig::new);
         }
         if (BookFinder.isEnabled()) {
             BookFinder.createConfig()

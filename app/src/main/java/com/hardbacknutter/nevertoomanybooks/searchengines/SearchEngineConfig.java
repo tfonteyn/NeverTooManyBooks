@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -113,6 +112,7 @@ public class SearchEngineConfig {
      * {@code boolean}
      */
     private static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
+    private static final int TO_MILLIS = 1000;
 
     @NonNull
     private final EngineId engineId;
@@ -127,6 +127,7 @@ public class SearchEngineConfig {
     private final Throttler throttler;
 
     private final boolean prefersIsbn10;
+    private final Set<String> tagsToIgnore;
 
     /**
      * Constructor.
@@ -137,6 +138,7 @@ public class SearchEngineConfig {
         engineId = builder.engineId;
 
         prefersIsbn10 = builder.prefersIsbn10;
+        tagsToIgnore = builder.tagsToIgnore;
 
         connectTimeoutMs = builder.connectTimeoutMs;
         readTimeoutMs = builder.readTimeoutMs;
@@ -176,9 +178,10 @@ public class SearchEngineConfig {
                                           final int defValueInMs) {
         final int seconds = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getInt(key, 0);
-        // <1000 as sanity check for roque preference file imports
-        if (seconds > 0 && seconds < 1000) {
-            return seconds * 1000;
+        // The value from prefs is in SECONDS
+        if (seconds > 0) {
+            // convert to milliseconds
+            return seconds * TO_MILLIS;
         } else {
             return defValueInMs;
         }
@@ -187,16 +190,15 @@ public class SearchEngineConfig {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public boolean isLogHttpGetRequests(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
-                engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING, false);
+                engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING,
+                false);
     }
 
     @VisibleForTesting
     public void setLogHttpGetRequests(@NonNull final Context context,
                                       final boolean flag) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putBoolean(engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING,
-                                     flag)
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(
+                                 engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING, flag)
                          .apply();
     }
 
@@ -231,39 +233,23 @@ public class SearchEngineConfig {
      * A preference setting per site can override this.
      * If set, and an ISBN13 is passed in, it will be translated to an ISBN10 before starting
      * the search.
-     * <p>
-     * We first try to get the engine specific setting, and if that does not exist,
-     * the global setting. The global default is {@code false}.
      *
      * @param context Current context
      *
      * @return {@code true} if ISBN10 should be preferred.
      */
     boolean prefersIsbn10(@NonNull final Context context) {
-        final SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(context);
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+                engineId.getPreferenceKey() + '.' + PK_SEARCH_ISBN_PREFER_10,
+                prefersIsbn10);
 
-        final String key = engineId.getPreferenceKey() + "." + PK_SEARCH_ISBN_PREFER_10;
-        if (preferences.contains(key)) {
-            return preferences.getBoolean(key, prefersIsbn10);
-        } else {
-            return preferences.getBoolean(PK_SEARCH_ISBN_PREFER_10, false);
-        }
-    }
-
-    public void setTagsToIgnore(@NonNull final Context context,
-                                @NonNull final Set<String> tags) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putStringSet(engineId.getPreferenceKey() + PK_TAGS_IGNORE, tags)
-                         .apply();
     }
 
     @NonNull
     public Set<String> getTagsToIgnore(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getStringSet(engineId.getPreferenceKey() + PK_TAGS_IGNORE,
-                                              Set.of());
+        return PreferenceManager.getDefaultSharedPreferences(context).getStringSet(
+                engineId.getPreferenceKey() + '.' + PK_TAGS_IGNORE,
+                tagsToIgnore);
     }
 
     /**
@@ -274,8 +260,8 @@ public class SearchEngineConfig {
      * @return milli seconds
      */
     public int getConnectTimeoutInMs(@NonNull final Context context) {
-        return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
-                                            + PK_TIMEOUT_CONNECT_IN_SECONDS,
+        return getTimeoutValueInMs(context, engineId.getPreferenceKey()
+                                            + '.' + PK_TIMEOUT_CONNECT_IN_SECONDS,
                                    connectTimeoutMs);
     }
 
@@ -287,8 +273,8 @@ public class SearchEngineConfig {
      * @return milli seconds
      */
     public int getReadTimeoutInMs(@NonNull final Context context) {
-        return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
-                                            + PK_TIMEOUT_READ_IN_SECONDS,
+        return getTimeoutValueInMs(context, engineId.getPreferenceKey()
+                                            + '.' + PK_TIMEOUT_READ_IN_SECONDS,
                                    readTimeoutMs);
     }
 
@@ -313,6 +299,7 @@ public class SearchEngineConfig {
                + ", readTimeoutMs=" + readTimeoutMs
                + ", throttler=" + throttler
                + ", searchPrefersIsbn10=" + prefersIsbn10
+               + ", tagsToIgnore=" + tagsToIgnore
                + '}';
     }
 
@@ -344,6 +331,9 @@ public class SearchEngineConfig {
         /** The DEFAULT for the engine: {@code false}. */
         private boolean prefersIsbn10;
 
+        /** The DEFAULT for the engine. */
+        private Set<String> tagsToIgnore = Set.of();
+
         /**
          * Constructor.
          *
@@ -357,14 +347,10 @@ public class SearchEngineConfig {
          * Finish the build. Initialise the engine with the configuration.
          *
          * @param configSupplier the base or superclass for the configuration.
-         *
-         * @return the config
          */
-        @NonNull
-        public SearchEngineConfig build(@NonNull final Function<Builder, SearchEngineConfig> configSupplier) {
+        public void build(@NonNull final Function<Builder, SearchEngineConfig> configSupplier) {
             final SearchEngineConfig config = configSupplier.apply(this);
             engineId.setConfig(config);
-            return config;
         }
 
         @NonNull
@@ -388,6 +374,12 @@ public class SearchEngineConfig {
         @NonNull
         Builder setPrefersIsbn10(final boolean prefersIsbn10) {
             this.prefersIsbn10 = prefersIsbn10;
+            return this;
+        }
+
+        @NonNull
+        Builder setTagsToIgnore(@NonNull final Set<String> tagsToIgnore) {
+            this.tagsToIgnore = tagsToIgnore;
             return this;
         }
     }
