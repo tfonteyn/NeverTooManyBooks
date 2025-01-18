@@ -410,6 +410,7 @@
     <string name="lbl_series_multiple">Серии</string>
     <string name="lbl_series_num">№</string>
     <string name="lbl_settings">Настройки</string>
+    <string name="lbl_tag">Тег</string>
     <string name="lbl_tags">Теги</string>
     <string name="lbl_signed">подписанный</string>
     <string name="lbl_site_book_id">Идентификатор книги сайта</string>

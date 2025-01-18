@@ -433,6 +433,7 @@
     <string name="lbl_series_multiple">系列</string>
     <string name="lbl_series_num">不</string>
     <string name="lbl_settings">設定</string>
+    <string name="lbl_tag">標籤</string>
     <string name="lbl_tags">標記</string>
     <string name="lbl_signed">已簽署</string>
     <string name="lbl_site_book_id">網站圖書 ID</string>

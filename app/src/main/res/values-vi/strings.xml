@@ -432,7 +432,8 @@
     <string name="lbl_series_multiple">Bộ sách</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Thiết đặt</string>
-    <string name="lbl_tags">Thẻ</string>
+    <string name="lbl_tag">Nhãn</string>
+    <string name="lbl_tags">Nhãn</string>
     <string name="lbl_signed">Đã ký</string>
     <string name="lbl_site_book_id">ID sách trang web</string>
     <string name="lbl_sort_ascending">Tăng dần</string>

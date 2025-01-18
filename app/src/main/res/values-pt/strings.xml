@@ -527,6 +527,7 @@
     <string name="lbl_edit_style">Editar estilo</string>
     <string name="lbl_search_for_books">Procurar Livros</string>
     <string name="lbl_test_connection">Testar conexão</string>
+    <string name="lbl_tag">Etiqueta</string>
     <string name="lbl_tags">Etiquetas</string>
     <string name="lbl_signed">Assinado</string>
     <string name="lbl_title">Título</string>
