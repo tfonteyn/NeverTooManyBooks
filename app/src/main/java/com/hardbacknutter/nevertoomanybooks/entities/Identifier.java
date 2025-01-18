@@ -50,6 +50,7 @@ public class Identifier
     public static final String SID_BNF = "bnf";
     public static final String SID_BRITISH_LIBRARY = "bl";
     public static final String SID_DNB = "dnb";
+    public static final String SID_DOI = "doi";
     public static final String SID_DOUBAN = "douban";
     public static final String SID_GOODREADS_BOOK = "goodreads";
     public static final String SID_GOOGLE = "google";
@@ -154,6 +155,8 @@ public class Identifier
                                context.getString(R.string.site_british_library)),
                 new Identifier(SID_DNB, TYPE_LONG,
                                context.getString(R.string.site_dnb_de)),
+                new Identifier(SID_DOI, TYPE_STRING,
+                               context.getString(R.string.site_doi)),
                 new Identifier(SID_DOUBAN, TYPE_LONG,
                                context.getString(R.string.site_douban)),
                 new Identifier(SID_GOODREADS_BOOK, TYPE_LONG,

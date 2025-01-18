@@ -62,6 +62,10 @@
     <!-- Deutschen Nationalbibliothek -->
     <string name="site_dnb_de"
             translatable="false">DNB.DE</string>
+    <!-- Digital Object Identifier
+         https://www.doi.org/ -->
+    <string name="site_doi"
+            translatable="false">doi</string>
     <string name="site_douban"
             translatable="false">Douban</string>
     <string name="site_goodreads"
