@@ -43,12 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
@@ -572,7 +572,7 @@ public class BookCoder {
     private void processGenre(@NonNull final Book book) {
         final String genre = book.getString("genre");
         if (!genre.isEmpty()) {
-            book.getTags().addAll(Tag.migrateGenre(genre, userLocale));
+            book.getTags().addAll(LegacyUpgrades.migrateGenre(genre, userLocale));
         }
     }
 

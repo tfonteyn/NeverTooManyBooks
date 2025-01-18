@@ -315,7 +315,7 @@ public class BookCoder
             }
             case "genre": {
                 // Archive v7 and older used a single string for the genre
-                book.getTags().addAll(Tag.migrateGenre(data.getString(key), userLocale));
+                book.getTags().addAll(LegacyUpgrades.migrateGenre(data.getString(key), userLocale));
                 return true;
             }
             default: {

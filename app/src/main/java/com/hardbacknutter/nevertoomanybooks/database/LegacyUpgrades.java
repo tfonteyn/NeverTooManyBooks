@@ -93,6 +93,8 @@ public final class LegacyUpgrades {
             "show.author.name.given_first";
     private static final String PK_SORT_AUTHOR_NAME_GIVEN_FIRST =
             "sort.author.name.given_first";
+    /** Genre string migration splitter characters. */
+    private static final Pattern SPLITTER_PATTERN = Pattern.compile("[/,;>]");
 
     private LegacyUpgrades() {
     }
@@ -581,7 +583,7 @@ public final class LegacyUpgrades {
             while (cursor.moveToNext()) {
                 final long bookId = cursor.getLong(0);
                 final String genre = cursor.getString(1);
-                final List<Tag> tags = Tag.migrateGenre(genre, userLocale);
+                final List<Tag> tags = migrateGenre(genre, userLocale);
 
                 for (final Tag tag : tags) {
                     // insert tags we don't have yet
@@ -705,5 +707,18 @@ public final class LegacyUpgrades {
 
             StyleDaoImpl.insertGlobalDefaults(db, style);
         }
+    }
+
+    @NonNull
+    public static List<Tag> migrateGenre(@NonNull final String genre,
+                                         @NonNull final Locale locale) {
+        // sanity
+        if (genre.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(SPLITTER_PATTERN.split(genre))
+                     .map(String::strip)
+                     .map(s -> new Tag(s, locale))
+                     .collect(Collectors.toList());
     }
 }

@@ -28,12 +28,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -55,8 +52,6 @@ public class Tag
             return new Tag[size];
         }
     };
-    /** Genre string migration splitter characters. */
-    private static final Pattern SPLITTER_PATTERN = Pattern.compile("[/,;>]");
 
     private long id;
     @NonNull
@@ -122,19 +117,6 @@ public class Tag
         }
 
         return sentence.substring(0, 1).toUpperCase(locale) + sentence.substring(1);
-    }
-
-    @NonNull
-    public static List<Tag> migrateGenre(@NonNull final String genre,
-                                         @NonNull final Locale locale) {
-        // sanity
-        if (genre.isBlank()) {
-            return List.of();
-        }
-        return Arrays.stream(SPLITTER_PATTERN.split(genre))
-                     .map(String::strip)
-                     .map(s -> new Tag(s, locale))
-                     .collect(Collectors.toList());
     }
 
     public long getId() {
