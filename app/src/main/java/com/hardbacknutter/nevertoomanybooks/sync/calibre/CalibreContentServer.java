@@ -88,7 +88,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -143,9 +142,9 @@ public final class CalibreContentServer
     static final String PREF_KEY = "calibre";
 
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
-    static final String PK_HOST_URL = PREF_KEY + '.' + Prefs.PK_HOST_URL;
-    static final String PK_HOST_USER = PREF_KEY + '.' + Prefs.PK_HOST_USER;
-    static final String PK_HOST_PASS = PREF_KEY + '.' + Prefs.PK_HOST_PASSWORD;
+    static final String PK_HOST_URL = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
+    static final String PK_HOST_USER = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_USER;
+    static final String PK_HOST_PASS = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
     /** Response root tag: Total number of items found in a query. */
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
 
@@ -279,10 +278,10 @@ public final class CalibreContentServer
         }
 
         connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREF_KEY + "." + Prefs.PK_TIMEOUT_CONNECT_IN_SECONDS,
+                context, PREF_KEY + "." + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
                 CONNECT_TIMEOUT_IN_MS);
         readTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREF_KEY + "." + Prefs.PK_TIMEOUT_READ_IN_SECONDS,
+                context, PREF_KEY + "." + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
 
         calibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()

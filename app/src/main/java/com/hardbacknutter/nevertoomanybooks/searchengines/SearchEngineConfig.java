@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
@@ -44,6 +44,74 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * @see Site
  */
 public class SearchEngineConfig {
+
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * Whether a website-specific-search (using a url) menu should be shown.
+     * <p>
+     * {@code boolean}
+     * <p>
+     * The "shopping" part is legacy/misnamed.
+     *
+     * @see SearchEngineConfig
+     */
+    public static final String PK_SEARCH_WEBSITE_MENU = "search.shopping.menu";
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * HTTP socket connect timeout.
+     * <p>
+     * {@code int} in seconds
+     */
+    public static final String PK_TIMEOUT_CONNECT_IN_SECONDS = "timeout.connect";
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * HTTP socket read timeout
+     * <p>
+     * {@code int} in seconds
+     */
+    public static final String PK_TIMEOUT_READ_IN_SECONDS = "timeout.read";
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * A full url, including the http(s) part.
+     * <p>
+     * {@code String}
+     */
+    public static final String PK_HOST_URL = "host.url";
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * A full url, including the http(s) part.
+     * <p>
+     * {@code String}
+     */
+    public static final String PK_HOST_USER = "host.user";
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * Clear text, but removed from debug reports.
+     * <p>
+     * {@code String}
+     */
+    public static final String PK_HOST_PASSWORD = "host.password";
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * The set of Tags an engine will ignore when parsing a book.
+     *
+     * @see #getTagsToIgnore(Context)
+     */
+    public static final String PK_TAGS_IGNORE = "tags.ignore";
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * Whether to search by using the ISBN10 value or the original {@link DBKey#BOOK_ISBN}.
+     * <p>
+     * {@code boolean}
+     */
+    private static final String PK_SEARCH_ISBN_PREFER_10 = "search.byIsbn.prefer.10";
+    /**
+     * Prefixed with {@link EngineId#getPreferenceKey()}.
+     * HTTP GET/HEAD requests will log urls, response-codes and manual redirects.
+     * <p>
+     * {@code boolean}
+     */
+    private static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
 
     @NonNull
     private final EngineId engineId;
@@ -118,7 +186,7 @@ public class SearchEngineConfig {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public boolean isLogHttpGetRequests(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
-                engineId.getPreferenceKey() + '.' + Prefs.PK_ENABLE_HTTP_LOGGING, false);
+                engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING, false);
     }
 
     @VisibleForTesting
@@ -126,8 +194,7 @@ public class SearchEngineConfig {
                                       final boolean flag) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putBoolean(engineId.getPreferenceKey()
-                                     + '.' + Prefs.PK_ENABLE_HTTP_LOGGING,
+                         .putBoolean(engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING,
                                      flag)
                          .apply();
     }
@@ -152,7 +219,7 @@ public class SearchEngineConfig {
     @NonNull
     public String getHostUrl(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(
-                engineId.getPreferenceKey() + '.' + Prefs.PK_HOST_URL,
+                engineId.getPreferenceKey() + '.' + PK_HOST_URL,
                 engineId.getDefaultUrl());
     }
 
@@ -175,12 +242,27 @@ public class SearchEngineConfig {
         final SharedPreferences preferences =
                 PreferenceManager.getDefaultSharedPreferences(context);
 
-        final String key = engineId.getPreferenceKey() + "." + Prefs.PK_SEARCH_ISBN_PREFER_10;
+        final String key = engineId.getPreferenceKey() + "." + PK_SEARCH_ISBN_PREFER_10;
         if (preferences.contains(key)) {
             return preferences.getBoolean(key, prefersIsbn10);
         } else {
-            return preferences.getBoolean(Prefs.PK_SEARCH_ISBN_PREFER_10, false);
+            return preferences.getBoolean(PK_SEARCH_ISBN_PREFER_10, false);
         }
+    }
+
+    public void setTagsToIgnore(@NonNull final Context context,
+                                @NonNull final Set<String> tags) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putStringSet(engineId.getPreferenceKey() + PK_TAGS_IGNORE, tags)
+                         .apply();
+    }
+
+    @NonNull
+    public Set<String> getTagsToIgnore(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getStringSet(engineId.getPreferenceKey() + PK_TAGS_IGNORE,
+                                              Set.of());
     }
 
     /**
@@ -192,7 +274,7 @@ public class SearchEngineConfig {
      */
     public int getConnectTimeoutInMs(@NonNull final Context context) {
         return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
-                                            + Prefs.PK_TIMEOUT_CONNECT_IN_SECONDS,
+                                            + PK_TIMEOUT_CONNECT_IN_SECONDS,
                                    connectTimeoutMs);
     }
 
@@ -205,7 +287,7 @@ public class SearchEngineConfig {
      */
     public int getReadTimeoutInMs(@NonNull final Context context) {
         return getTimeoutValueInMs(context, engineId.getPreferenceKey() + "."
-                                            + Prefs.PK_TIMEOUT_READ_IN_SECONDS,
+                                            + PK_TIMEOUT_READ_IN_SECONDS,
                                    readTimeoutMs);
     }
 

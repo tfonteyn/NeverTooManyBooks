@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ import com.hardbacknutter.fastscroller.OverlayProviderFactory;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 /**
  * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml".
@@ -67,25 +66,6 @@ public final class Prefs {
     public static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
     public static final String PK_NORMALIZE_PUBLISHER_NAME = "normalize.publisher.name";
 
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * Whether to search by using the ISBN10 value or the original {@link DBKey#BOOK_ISBN}.
-     * <p>
-     * {@code boolean}
-     */
-    public static final String PK_SEARCH_ISBN_PREFER_10 = "search.byIsbn.prefer.10";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * Whether a website-specific-search (using a url) menu should be shown.
-     * <p>
-     * {@code boolean}
-     *
-     * The "shopping" part is legacy/misnamed.
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig
-     */
-    public static final String PK_SEARCH_WEBSITE_MENU = "search.shopping.menu";
-
     public static final String PK_CAMERA_IMAGE_AUTOROTATE = "camera.image.autorotate";
     public static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";
     public static final String PK_CAMERA_LENS_FACING = "camera.lens.facing";
@@ -119,51 +99,6 @@ public final class Prefs {
      * @see com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment
      */
     public static final String PK_EDIT_BOOK_TABS_EXTERNAL_ID = "edit.book.tab.externalId";
-
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * A full url, including the http(s) part.
-     * <p>
-     * {@code String}
-     */
-    public static final String PK_HOST_URL = "host.url";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * A full url, including the http(s) part.
-     * <p>
-     * {@code String}
-     */
-    public static final String PK_HOST_USER = "host.user";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * Clear text, but removed from debug reports.
-     * <p>
-     * {@code String}
-     */
-    public static final String PK_HOST_PASSWORD = "host.password";
-
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * HTTP socket connect timeout.
-     * <p>
-     * {@code int} in seconds
-     */
-    public static final String PK_TIMEOUT_CONNECT_IN_SECONDS = "timeout.connect";
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * HTTP socket read timeout
-     * <p>
-     * {@code int} in seconds
-     */
-    public static final String PK_TIMEOUT_READ_IN_SECONDS = "timeout.read";
-
-    /**
-     * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * HTTP GET/HEAD requests will log urls, response-codes and manual redirects.
-     * <p>
-     * {@code boolean}
-     */
-    public static final String PK_ENABLE_HTTP_LOGGING = "logging.http.get";
 
     /** The prefix of all "acra" settings which need to be excluded during import/export. */
     public static final String ACRA_EXCLUDE_PREFIX = "^acra\\..*";
