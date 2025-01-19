@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -57,12 +56,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.mockito.stubbing.Answer;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
@@ -232,31 +229,6 @@ public class Base {
                                     "isfdb,librarything")
 
                          .apply();
-
-        when(sharedPreferences.getString(eq(AmazonSearchEngine.PK_HOST_URL),
-                                         nullable(String.class)))
-                .thenAnswer((Answer<String>) invocation ->
-                        getLocalizedSiteUrl("amazon", true));
-    }
-
-    @NonNull
-    private String getLocalizedSiteUrl(@NonNull final String site,
-                                       final boolean hasUkSite) {
-        final String iso3 = locales.get(0).getISO3Language();
-        if (Locale.US.getISO3Language().equals(iso3)) {
-            return "https://www." + site + ".com";
-        } else if (Locale.FRANCE.getISO3Language().equals(iso3)) {
-            return "https://www." + site + ".fr";
-        } else if (Locale.GERMANY.getISO3Language().equals(iso3)) {
-            return "https://www." + site + ".de";
-        } else if (new Locale("nl").getISO3Language().equals(iso3)) {
-            return "https://www." + site + ".nl";
-
-        } else if (hasUkSite && Locale.UK.getISO3Language().equals(iso3)) {
-            return "https://www." + site + ".co.uk";
-        }
-
-        return "https://www." + site + ".com";
     }
 
     /*
