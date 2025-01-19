@@ -88,8 +88,7 @@ public class DBHelper
      * v5.5.0: 32
      * v5.5.1: 33
      * v5.5.4: 34
-     * <p>
-     * v6.5.0: 35
+     * v7.0.0: 35
      * <p>
      * Current version.
      */
