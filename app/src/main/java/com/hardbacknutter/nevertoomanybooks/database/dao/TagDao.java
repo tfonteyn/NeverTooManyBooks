@@ -94,7 +94,7 @@ public interface TagDao
                         @IntRange(from = 1) long bookId,
                         @NonNull Collection<Tag> list,
                         @NonNull Function<Tag, Locale> localeSupplier)
-            throws DaoInsertException, DaoUpdateException;
+            throws DaoWriteException;
 
     @NonNull
     Optional<Tag> findById(@IntRange(from = 1) long id);

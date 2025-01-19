@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -794,14 +794,14 @@ public class Booklist
      * Simple equality: two builders are equal if their ID's are the same.
      */
     @Override
-    public boolean equals(@Nullable final Object obj) {
-        if (this == obj) {
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Booklist that = (Booklist) obj;
+        final Booklist that = (Booklist) o;
         return instanceId == that.instanceId;
     }
 

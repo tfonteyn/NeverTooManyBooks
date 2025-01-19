@@ -787,14 +787,14 @@ public class ISBN {
     }
 
     @Override
-    public boolean equals(@Nullable final Object obj) {
-        if (this == obj) {
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final ISBN cmp = (ISBN) obj;
+        final ISBN cmp = (ISBN) o;
 
         // Reminder: do not compare 'codeText' !
 

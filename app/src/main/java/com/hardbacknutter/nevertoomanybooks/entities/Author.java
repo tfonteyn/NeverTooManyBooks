@@ -993,18 +993,19 @@ public class Author
      * @see #isIdentical(Author)
      */
     @Override
-    public boolean equals(@Nullable final Object obj) {
-        if (this == obj) {
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Author that = (Author) obj;
+        final Author that = (Author) o;
         // if both 'exist' but have different ID's -> different.
         if (id != 0 && that.id != 0 && id != that.id) {
             return false;
         }
+        // The ids might be different, but at least one is != 0
         return Objects.equals(familyName, that.familyName)
                && Objects.equals(givenNames, that.givenNames)
                && Objects.equals(realAuthor, that.realAuthor);

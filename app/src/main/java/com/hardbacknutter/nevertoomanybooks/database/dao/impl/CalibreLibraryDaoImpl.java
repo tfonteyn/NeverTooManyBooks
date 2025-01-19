@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@ public class CalibreLibraryDaoImpl
 
     @Override
     @NonNull
-    public Optional<CalibreLibrary> findById(final long id) {
+    public Optional<CalibreLibrary> findById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.FIND_LIBRARY_BY_ID,
                                          new String[]{String.valueOf(id)})) {
             return loadLibrary(cursor);
