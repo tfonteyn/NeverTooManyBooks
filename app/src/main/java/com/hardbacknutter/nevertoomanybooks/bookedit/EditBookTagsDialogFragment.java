@@ -37,7 +37,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -142,7 +141,7 @@ public class EditBookTagsDialogFragment
                 .launch(getActivity(),
                         getString(R.string.action_add),
                         null,
-                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+                        InputType.TYPE_CLASS_TEXT,
                         "",
                         null));
 
@@ -169,10 +168,7 @@ public class EditBookTagsDialogFragment
     }
 
     private void addNewTag(final String value) {
-        final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
-        // Always create so the name is normalized for sure.
-        // Android does not stop the user overruling TYPE_TEXT_FLAG_CAP_SENTENCES
-        final Tag tag = new Tag(value, userLocale);
+        final Tag tag = new Tag(value);
 
         if (bookTagsAdapter.has(tag).isPresent()) {
             // already present in the book, we're done

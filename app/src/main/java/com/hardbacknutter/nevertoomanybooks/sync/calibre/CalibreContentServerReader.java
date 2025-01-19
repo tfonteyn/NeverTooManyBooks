@@ -596,8 +596,6 @@ public class CalibreContentServerReader
                          @NonNull final JSONObject calibreBook)
             throws IOException, StorageException {
 
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-
         final Book book = new Book();
         book.setStage(EntityStage.Stage.Dirty);
 
@@ -639,7 +637,7 @@ public class CalibreContentServerReader
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.TAGS_ARRAY)) {
-            convertTags(calibreBook, locale, book);
+            convertTags(calibreBook, book);
         }
         convertAuthors(context, calibreBook, book);
 
@@ -680,13 +678,12 @@ public class CalibreContentServerReader
     //    "Space Opera"
     //  ],
     private void convertTags(@NonNull final JSONObject calibreBook,
-                             @NonNull final Locale locale,
                              @NonNull final Book book) {
         final JSONArray calTags = calibreBook.optJSONArray(CalibreBookJsonKey.TAGS_ARRAY);
         if (calTags != null && !calTags.isEmpty()) {
             final List<Tag> tags = new ArrayList<>();
             for (int i = 0; i < calTags.length(); i++) {
-                tags.add(new Tag(calTags.getString(i), locale));
+                tags.add(new Tag(calTags.getString(i)));
             }
             if (!tags.isEmpty()) {
                 book.setTags(tags);

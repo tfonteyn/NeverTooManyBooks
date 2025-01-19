@@ -26,10 +26,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -58,11 +56,10 @@ public class Tag
     private String name;
 
     /**
-     * Testing only; the caller must ensure correct upper/lowercase usage.
+     * Constructor without ID.
      *
      * @param name for the Tag
      */
-    @VisibleForTesting
     public Tag(@NonNull final String name) {
         this.name = name;
     }
@@ -76,18 +73,6 @@ public class Tag
         copyFrom(tag);
     }
 
-    /**
-     * Constructor without ID.
-     *
-     * @param name   for the Tag
-     * @param locale for normalizing the name
-     *
-     * @see #normalize(String, Locale)
-     */
-    public Tag(@NonNull final String name,
-               @NonNull final Locale locale) {
-        this.name = normalize(name, locale);
-    }
 
     /**
      * Full constructor.
@@ -105,18 +90,6 @@ public class Tag
         id = in.readLong();
         //noinspection DataFlowIssue
         name = in.readString();
-    }
-
-    @NonNull
-    public static String normalize(@NonNull final String sentence,
-                                   @NonNull final Locale locale) {
-        if (sentence.isBlank()) {
-            return "";
-        } else if (sentence.length() == 1) {
-            return sentence.toUpperCase(locale);
-        }
-
-        return sentence.substring(0, 1).toUpperCase(locale) + sentence.substring(1);
     }
 
     public long getId() {
@@ -154,14 +127,10 @@ public class Tag
     /**
      * Set the name.
      *
-     * @param name   for the Tag
-     * @param locale for normalizing the name
-     *
-     * @see #normalize(String, Locale)
+     * @param name for the Tag
      */
-    public void setName(@NonNull final String name,
-                        @NonNull final Locale locale) {
-        this.name = normalize(name, locale);
+    public void setName(@NonNull final String name) {
+        this.name = name;
     }
 
     /**

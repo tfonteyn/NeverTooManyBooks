@@ -409,7 +409,7 @@ public class BolSearchEngine
                     }
                     case "Categorieën":
                     case "Catégories": {
-                        processTags(context, value, locale, book);
+                        processTags(context, value, book);
                         break;
                     }
                     default:
@@ -488,7 +488,6 @@ public class BolSearchEngine
 
     private void processTags(final Context context,
                              @NonNull final Element value,
-                             @NonNull final Locale locale,
                              @NonNull final Book book) {
         //noinspection DataFlowIssue
         final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore(context);
@@ -497,7 +496,7 @@ public class BolSearchEngine
                                     .stream()
                                     .map(Element::text)
                                     .filter(t -> !tagsToIgnore.contains(t))
-                                    .map(name -> new Tag(name, locale))
+                                    .map(Tag::new)
                                     .collect(Collectors.toList());
         book.setTags(tags);
     }

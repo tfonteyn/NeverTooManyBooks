@@ -353,7 +353,7 @@ public class BertrandPtSearchEngine
             final List<Tag> tags = as.stream()
                                      .map(Element::text)
                                      .filter(t -> !tagsToIgnore.contains(t))
-                                     .map(name -> new Tag(name, siteLocale))
+                                     .map(Tag::new)
                                      .collect(Collectors.toList());
             book.setTags(tags);
         }

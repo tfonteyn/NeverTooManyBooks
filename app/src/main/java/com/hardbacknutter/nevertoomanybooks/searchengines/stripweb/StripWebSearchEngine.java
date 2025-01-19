@@ -270,6 +270,9 @@ public class StripWebSearchEngine
         }
 
         String tmpSeriesNr = null;
+        //noinspection DataFlowIssue
+        final Set<String> tagsToIgnore =
+                getEngineId().getConfig().getTagsToIgnore(context);
 
         for (final Element divRows : techInfoSection.select("div")) {
             final Element th = divRows.selectFirst("strong");
@@ -327,10 +330,10 @@ public class StripWebSearchEngine
 
                     case "Genre": {
                         final String text = SearchEngineUtils.cleanText(td.text());
-                        if (!text.isEmpty()) {
+                        if (!text.isEmpty() && !tagsToIgnore.contains(text)) {
                             // Can also be populated by "Trefwoorden"
                             final List<Tag> tags = book.getTags();
-                            tags.add(new Tag(text, siteLocale));
+                            tags.add(new Tag(text));
                             book.setTags(tags);
                         }
                         break;
@@ -344,7 +347,8 @@ public class StripWebSearchEngine
                         final List<Tag> tags = book.getTags();
                         tags.addAll(Arrays.stream(split)
                                           .map(String::strip)
-                                          .map(name -> new Tag(name, siteLocale))
+                                          .filter(s -> !tagsToIgnore.contains(s))
+                                          .map(Tag::new)
                                           .collect(Collectors.toList()));
                         book.setTags(tags);
                         break;

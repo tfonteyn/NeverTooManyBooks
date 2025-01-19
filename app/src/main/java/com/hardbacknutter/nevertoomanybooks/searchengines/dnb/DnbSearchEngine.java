@@ -336,7 +336,7 @@ public class DnbSearchEngine
                                         .stream(split)
                                         .map(String::strip)
                                         .filter(name -> !tagsToIgnore.contains(name))
-                                        .map(name -> new Tag(name, locale))
+                                        .map(Tag::new)
                                         .collect(Collectors.toList());
                                 book.setTags(tags);
 

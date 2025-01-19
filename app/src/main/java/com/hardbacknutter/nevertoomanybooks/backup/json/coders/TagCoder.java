@@ -21,8 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.org.json.JSONException;
@@ -30,13 +28,6 @@ import com.hardbacknutter.org.json.JSONObject;
 
 public class TagCoder
         implements JsonCoder<Tag> {
-
-    @NonNull
-    private final Locale locale;
-
-    TagCoder(@NonNull final Locale locale) {
-        this.locale = locale;
-    }
 
     @Override
     @NonNull
@@ -51,6 +42,6 @@ public class TagCoder
     @NonNull
     public Tag decode(@NonNull final JSONObject data)
             throws JSONException {
-        return new Tag(data.getString(DBKey.TAG), locale);
+        return new Tag(data.getString(DBKey.TAG));
     }
 }

@@ -33,7 +33,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -203,8 +202,6 @@ class EditTagDelegate
     }
 
     private void viewToModel() {
-        final Context context = vb.getRoot().getContext();
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-        vm.getCurrentEdit().setName(vb.tagName.getText().toString().trim(), locale);
+        vm.getCurrentEdit().setName(vb.tagName.getText().toString().trim());
     }
 }
