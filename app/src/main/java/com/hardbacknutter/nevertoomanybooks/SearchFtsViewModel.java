@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 
+@SuppressWarnings("WeakerAccess")
 public class SearchFtsViewModel
         extends ViewModel {
 

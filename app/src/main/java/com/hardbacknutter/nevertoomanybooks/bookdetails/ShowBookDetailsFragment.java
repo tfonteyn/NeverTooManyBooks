@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -368,9 +368,8 @@ public class ShowBookDetailsFragment
             field.setVisibility(getView(), true, false);
         });
 
-        vm.getField(R.id.date_last_updated).ifPresent(field -> {
-            field.setValue(book.getString(DBKey.DATE_LAST_UPDATED__UTC));
-        });
+        vm.getField(R.id.date_last_updated).ifPresent(
+                field -> field.setValue(book.getString(DBKey.DATE_LAST_UPDATED__UTC)));
 
         // when running in embedded mode, update the BoB list
         if (bookChangedListener != null) {

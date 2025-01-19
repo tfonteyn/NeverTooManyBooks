@@ -305,7 +305,7 @@ public class EditBookTagsDialogFragment
          *
          * @param destination other tag list
          */
-        public void setDestination(@NonNull final TagAdapter destination) {
+        void setDestination(@NonNull final TagAdapter destination) {
             this.destination = destination;
         }
 

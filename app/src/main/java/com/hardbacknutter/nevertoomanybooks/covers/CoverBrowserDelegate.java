@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,7 @@ class CoverBrowserDelegate
         implements FlexDialogDelegate {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "CoverBrowserDelegate";
+    private static final String TAG = "CoverBrowserDelegate";
 
     private static final String ERROR_GALLERY_ADAPTER = "galleryAdapter";
     /** The max width to be used for the preview image. */

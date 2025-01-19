@@ -93,7 +93,7 @@ public class StripInfoCollectionData
         lastSync = rowData.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC, null);
     }
 
-    public StripInfoCollectionData(@NonNull final Parcel in) {
+    private StripInfoCollectionData(@NonNull final Parcel in) {
         sid = in.readLong();
         collectionId = in.readLong();
         wanted = in.readByte() != 0;

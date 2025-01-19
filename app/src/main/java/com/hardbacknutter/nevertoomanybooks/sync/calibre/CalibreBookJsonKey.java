@@ -84,7 +84,7 @@ final class CalibreBookJsonKey {
      *   "languages": [
      *     "eng"
      *   ],
-     *   "comments": "<div>\n<p><strong>A spectacular, large-scale space opera - the ultimate galaxy-spanning adventure</strong> </p>\n<p>Six million years ago, at the very dawn of the starfaring era, Abigail Gentian fractured herself into a thousand male and female clones: the shatterlings. Sent out into the galaxy, these shatterlings have stood aloof as they document the rise and fall of countless human empires. They meet every two hundred thousand years, to exchange news and memories of their travels with their siblings. </p>\n<p>Campion and Purslane are not only late for their thirty-second reunion, but they have brought along an amnesiac golden robot for a guest. But the wayward shatterlings get more than the scolding they expect: they face the discovery that someone has a very serious grudge against the Gentian line, and there is a very real possibility of traitors in their midst. The surviving shatterlings have to dodge exotic weapons while they regroup to try to solve the mystery of who is persecuting them, and why - before their ancient line is wiped out of existence, forever.</p></div>",
+     *   "comments": "blah blah...",
      *   "timestamp": "2025-01-08T22:53:56+00:00",
      *   "series_index": 1,
      *   "title": "House of Suns",

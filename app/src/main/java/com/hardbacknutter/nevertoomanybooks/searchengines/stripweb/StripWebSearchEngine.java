@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 import org.jsoup.nodes.Document;
@@ -270,7 +269,6 @@ public class StripWebSearchEngine
             return;
         }
 
-        //noinspection NonConstantStringShouldBeStringBuffer
         String tmpSeriesNr = null;
 
         for (final Element divRows : techInfoSection.select("div")) {

@@ -72,8 +72,7 @@ public class SingleChoiceBottomSheet
         final BottomSheetDialog dialog = (BottomSheetDialog) requireDialog();
 
         // Due to multi-use of the layouts, we don't set these in xml:
-        final BottomSheetBehavior<FrameLayout> behavior =
-                ((BottomSheetDialog) dialog).getBehavior();
+        final BottomSheetBehavior<FrameLayout> behavior = dialog.getBehavior();
         // Close fully when the user is dragging us down
         behavior.setSkipCollapsed(true);
         // Open fully when started.

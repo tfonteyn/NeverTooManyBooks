@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,7 +77,7 @@ public class PreferredStylesFragment
         extends BaseFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "PreferredStylesFragment";
+    private static final String TAG = "PreferredStylesFragment";
     private static final String RK_MENU = TAG + ":rk:menu";
 
     private PreferredStylesViewModel vm;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,7 +57,7 @@ abstract class KbNlHandlerBase
 
     /** The final output will be written to this bundle as passed in to the constructor. */
     @NonNull
-    protected final Book book;
+    final Book book;
 
     /** XML content of a single element. */
     @SuppressWarnings("StringBufferField")

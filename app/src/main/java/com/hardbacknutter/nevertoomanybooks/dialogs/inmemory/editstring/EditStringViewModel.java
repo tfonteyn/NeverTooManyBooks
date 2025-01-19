@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+@SuppressWarnings("WeakerAccess")
 public class EditStringViewModel
         extends ViewModel {
 

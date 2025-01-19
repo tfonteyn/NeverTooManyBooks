@@ -486,14 +486,14 @@ public class DnbSearchEngine
     /**
      * Part-of. Seems to overlap with the above "Series" field?
      * <pre>
-     *     {@code
-     *     <td class="c-catalog-table__content">
-     *         <p>
-     *             <a href="DE/resource.html?id=1300481129&amp;pr=0&amp;sortA=bez&amp;sortD=-dat&amp;v=plist">
-     *                 <span>Star Wars Thrawn - der Aufstieg</span>
-     *             </a> ; 3
-     *         </p></td>
-     *     }
+     * {@code
+     * <td class="c-catalog-table__content">
+     *   <p>
+     *     <a href="DE/resource.html?id=1300481129&amp;pr=0&amp;sortA=bez&amp;sortD=-dat&amp;v=plist">
+     *       <span>Star Wars Thrawn - der Aufstieg</span>
+     *     </a> ; 3
+     *   </p></td>
+     * }
      * </pre>
      *
      * @param td   to parse
@@ -585,7 +585,7 @@ public class DnbSearchEngine
         if (p != null) {
             final String html = p.html();
 
-            String publisherName = null;
+            final String publisherName;
             // The part before '<br>' is a city/region name followed by ':' and the pub. name
             // The part after '<br>' is the publishing date
             final String[] brSplit = PATTERN_BR.split(html);

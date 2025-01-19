@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.preference.ListPreference;
 
 import java.util.Objects;
 
+@SuppressWarnings("WeakerAccess")
 public class Ext2ListPreferenceViewModel
         extends Ext2PreferenceViewModel {
 

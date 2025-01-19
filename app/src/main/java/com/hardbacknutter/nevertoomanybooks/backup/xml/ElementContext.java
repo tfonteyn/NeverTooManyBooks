@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,9 +28,9 @@ import org.xml.sax.helpers.AttributesImpl;
 /**
  * Defines the context of a specific element (xml tag).
  * <p>
- * The 'mBody' element will only be set when the tag end is handled.
+ * The 'body' element will only be set when the tag end is handled.
  */
-public class ElementContext {
+class ElementContext {
 
     /** the short name of the tag. */
     @NonNull
@@ -48,6 +48,8 @@ public class ElementContext {
     private XmlFilter filter;
 
     /**
+     * Constructor.
+     *
      * @param filter to use for this tag.
      */
     ElementContext(@NonNull final XmlFilter filter) {

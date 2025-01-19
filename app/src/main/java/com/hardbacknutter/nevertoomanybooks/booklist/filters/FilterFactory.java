@@ -37,11 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
-
 public final class FilterFactory {
 
     /**
@@ -49,6 +44,8 @@ public final class FilterFactory {
      * <p>
      * Dev. note: Not always the same mapping as {@link MapDBKey}
      */
+    @SuppressWarnings({"PublicStaticCollectionField",
+            "NonFinalStaticVariableUsedInClassInitialization"})
     public static final Map<String, Integer> SUPPORTED = Map.ofEntries(
             Map.entry(DBKey.BOOK_ISBN, R.string.lbl_isbn),
             Map.entry(DBKey.EDITION__BITMASK, R.string.lbl_edition),
@@ -92,7 +89,7 @@ public final class FilterFactory {
             case DBKey.SIGNED__BOOL: {
                 return new PBooleanFilter(
                         dbKey, R.string.lbl_signed, R.array.lbl_bob_filter_signed,
-                        TBL_BOOKS, DBDefinitions.DOM_BOOK_SIGNED);
+                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_SIGNED);
             }
 
 
@@ -100,30 +97,30 @@ public final class FilterFactory {
             case DBKey.BOOK_ISBN: {
                 return new PHasValueFilter(
                         dbKey, R.string.lbl_isbn, R.array.lbl_bob_filter_isbn,
-                        TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN);
+                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN);
             }
             // Is the book lend out or not.
             case DBKey.LOANEE_NAME: {
                 return new PHasValueFilter(
                         dbKey, R.string.lbl_lend_out, R.array.lbl_bob_filter_lending,
-                        TBL_BOOK_LOANEE, DBDefinitions.DOM_LOANEE);
+                        DBDefinitions.TBL_BOOK_LOANEE, DBDefinitions.DOM_LOANEE);
             }
 
 
             case DBKey.COLOR: {
                 return new PStringEqualityFilter(
                         dbKey, R.string.lbl_color,
-                        TBL_BOOKS, DBDefinitions.DOM_BOOK_COLOR);
+                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_COLOR);
             }
             case DBKey.FORMAT: {
                 return new PStringEqualityFilter(
                         dbKey, R.string.lbl_format,
-                        TBL_BOOKS, DBDefinitions.DOM_BOOK_FORMAT);
+                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_FORMAT);
             }
             case DBKey.LANGUAGE: {
                 final PStringEqualityFilter filter = new PStringEqualityFilter(
                         dbKey, R.string.lbl_language,
-                        TBL_BOOKS, DBDefinitions.DOM_BOOK_LANGUAGE);
+                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_LANGUAGE);
 
                 filter.setFormatter(context -> new LanguageFormatter(
                         context.getResources().getConfiguration().getLocales().get(0),
@@ -133,13 +130,13 @@ public final class FilterFactory {
             case DBKey.LOCATION: {
                 return new PStringEqualityFilter(
                         dbKey, R.string.lbl_location,
-                        TBL_BOOKS, DBDefinitions.DOM_BOOK_LOCATION);
+                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_LOCATION);
             }
 
             case DBKey.EDITION__BITMASK: {
                 return new PBitmaskFilter(
                         dbKey, R.string.lbl_edition,
-                        TBL_BOOKS, DBDefinitions.DOM_BOOK_EDITION,
+                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_EDITION,
                         Book.Edition::getAll);
             }
 
@@ -147,13 +144,13 @@ public final class FilterFactory {
             case DBKey.FK_BOOKSHELF: {
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_bookshelves,
-                        TBL_BOOK_BOOKSHELF, DBDefinitions.DOM_FK_BOOKSHELF,
+                        DBDefinitions.TBL_BOOK_BOOKSHELF, DBDefinitions.DOM_FK_BOOKSHELF,
                         () -> ServiceLocator.getInstance().getBookshelfDao().getAll());
             }
             case DBKey.FK_TAG: {
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_tags,
-                        TBL_BOOK_TAG, DBDefinitions.DOM_FK_TAG,
+                        DBDefinitions.TBL_BOOK_TAG, DBDefinitions.DOM_FK_TAG,
                         () -> ServiceLocator.getInstance().getTagDao().getAll());
             }
 
@@ -161,7 +158,7 @@ public final class FilterFactory {
                 // FIXME: see note with SUPPORTED above
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_book_type,
-                        TBL_BOOKS, DBDefinitions.DOM_BOOK_CONTENT_TYPE,
+                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_CONTENT_TYPE,
                         Book.ContentType::getAll);
             }
 

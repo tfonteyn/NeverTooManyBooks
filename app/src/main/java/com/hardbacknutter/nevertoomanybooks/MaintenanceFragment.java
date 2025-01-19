@@ -42,7 +42,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -66,7 +65,7 @@ public class MaintenanceFragment
         extends BaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "MaintenanceFragment";
+    private static final String TAG = "MaintenanceFragment";
 
     /** The length of a UUID string. */
     private static final int UUID_LEN = 32;
@@ -164,8 +163,7 @@ public class MaintenanceFragment
         final FileFilter coverFilter = file -> {
             if (file.getName().length() > UUID_LEN) {
                 // not in the list? then we can purge it
-                return !((Collection<String>) bookUuidList)
-                        .contains(file.getName().substring(0, UUID_LEN));
+                return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
             }
             // not a uuid base filename ? be careful and leave it.
             return false;

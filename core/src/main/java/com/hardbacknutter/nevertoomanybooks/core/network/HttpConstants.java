@@ -28,7 +28,8 @@ public final class HttpConstants {
 
     /**
      * RELEASE: BROWSER_USER_AGENT: Last updated: 2025-01-15.
-     * Now using most used mobile ua from https://www.useragents.me/
+     * Now using most used mobile ua from
+     * <a href="https://www.useragents.me/">https://www.useragents.me/</a>
      */
     public static final String BROWSER_USER_AGENT =
             // "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0";

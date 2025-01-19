@@ -132,7 +132,7 @@ public class OpenLibrarySearchEngine
     /**
      * Do NOT REORDER. Some keys are duplicates.
      * e.g. "oclc_numbers" is current/preferred, "oclc" is legacy.
-     *
+     * <p>
      * Seen but not supported:
      * "better_world_books"
      * "paperback_swap"

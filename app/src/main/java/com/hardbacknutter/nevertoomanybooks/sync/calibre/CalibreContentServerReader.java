@@ -785,7 +785,7 @@ public class CalibreContentServerReader
                     if (sid != null && !sid.isEmpty()) {
                         final CalibreIdentifier calibreIdentifier = CalibreIdentifier.MAP.get(key);
                         if (calibreIdentifier != null) {
-                            book.setIdentifierValue(calibreIdentifier.local, sid);
+                            book.setIdentifierValue(calibreIdentifier.getLocal(), sid);
 
                         } else if (key.startsWith("amazon")) {
                             // Other than strict "amazon", there are variants

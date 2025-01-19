@@ -71,7 +71,7 @@ public class ImportFragment
         extends BaseFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "ImportFragment";
+    private static final String TAG = "ImportFragment";
 
     /**
      * The mime types accepted for importing files SHOULD be set to this list:

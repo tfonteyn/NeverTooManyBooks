@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ public class EntityStage
     public EntityStage() {
     }
 
-    protected EntityStage(@NonNull final Parcel in) {
+    private EntityStage(@NonNull final Parcel in) {
         //noinspection DataFlowIssue
         stage = in.readParcelable(Stage.class.getClassLoader());
         locked = in.readByte() != 0;

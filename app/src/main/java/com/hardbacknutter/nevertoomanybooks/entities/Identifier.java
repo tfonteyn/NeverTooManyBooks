@@ -305,7 +305,7 @@ public class Identifier
             this.sid = sid;
         }
 
-        protected Value(@NonNull final Parcel in) {
+        private Value(@NonNull final Parcel in) {
             //noinspection DataFlowIssue
             identifier = in.readParcelable(getClass().getClassLoader());
             //noinspection DataFlowIssue

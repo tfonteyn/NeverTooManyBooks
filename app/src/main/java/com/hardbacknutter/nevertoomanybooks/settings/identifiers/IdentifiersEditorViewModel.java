@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+@SuppressWarnings("WeakerAccess")
 public class IdentifiersEditorViewModel
         extends ViewModel {
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -90,7 +90,7 @@ public enum ReadStatus
 
     /**
      * Get the list of all status value.
-     *
+     * <p>
      * <strong>Excludes</strong> the unknown status.
      * <p>
      * Uses the same order as the numerical order.

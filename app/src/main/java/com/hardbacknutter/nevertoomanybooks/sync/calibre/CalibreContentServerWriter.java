@@ -371,8 +371,8 @@ public class CalibreContentServerWriter
         // Collect all known local Identifiers
         final JSONObject localIdentifiers = new JSONObject();
         CalibreIdentifier.MAP.values().forEach(
-                cId -> localBook.getIdentifierValue(cId.local)
-                                .ifPresent(sid -> localIdentifiers.put(cId.remote, sid)));
+                cId -> localBook.getIdentifierValue(cId.getLocal())
+                                .ifPresent(sid -> localIdentifiers.put(cId.getRemote(), sid)));
 
         if (!localIdentifiers.isEmpty()) {
             if (calibreBookIdentifiers != null) {

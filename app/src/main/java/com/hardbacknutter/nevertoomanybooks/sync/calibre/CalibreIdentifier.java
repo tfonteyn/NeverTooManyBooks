@@ -27,7 +27,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
-public final class CalibreIdentifier {
+final class CalibreIdentifier {
 
     /** Key is the remote (Calibre) identifier. */
     static final Map<String, CalibreIdentifier> MAP = new HashMap<>();
@@ -51,9 +51,10 @@ public final class CalibreIdentifier {
     }
 
     @NonNull
-    public final String remote;
+    private final String remote;
     @NonNull
-    public final String local;
+    private final String local;
+
     private CalibreIdentifier(@NonNull final String remote,
                               @NonNull final String local) {
         this.remote = remote;
@@ -64,5 +65,15 @@ public final class CalibreIdentifier {
                                @NonNull final String local) {
         final CalibreIdentifier ci = new CalibreIdentifier(remote, local);
         MAP.put(ci.remote, ci);
+    }
+
+    @NonNull
+    public String getRemote() {
+        return remote;
+    }
+
+    @NonNull
+    public String getLocal() {
+        return local;
     }
 }

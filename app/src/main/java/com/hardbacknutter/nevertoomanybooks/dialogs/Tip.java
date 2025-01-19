@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -127,7 +127,7 @@ public enum Tip {
                        @Nullable final Runnable postRun,
                        @Nullable final Object... textArgs) {
         final View root = inflateLayout(context);
-        setMessage(root, context.getString(msgResId, (Object[]) textArgs));
+        setMessage(root, context.getString(msgResId, textArgs));
 
         final AlertDialog alertDialog = new MaterialAlertDialogBuilder(context)
                 .setView(root)

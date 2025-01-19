@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,6 +73,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  * RELEASE: check for android updates of java.net.InMemoryCookieStore
  */
+@SuppressWarnings("ALL")
 public class BiscuitStore
         implements CookieStore {
     // BEGIN Android-changed: Add targetSdkVersion and remove cookieJar and domainIndex.

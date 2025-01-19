@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,7 @@ class Ext2PreferenceDelegate<P extends DialogPreference,
         VM extends Ext2PreferenceViewModel> {
 
     @NonNull
-    protected final DialogFragment owner;
+    final DialogFragment owner;
     private final String key;
     /** Use {@link #getPreference()} to access. */
     private P preference;

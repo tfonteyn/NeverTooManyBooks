@@ -59,7 +59,7 @@ public abstract class StyleBaseFragment
     private static final String PSK_LIST_BOOK_SHOW_COVER_0 = "style.booklist.show.thumbnails";
     @NonNull
     private final SwitchPreference[] pShowCoversOnDetailsScreen = new SwitchPreference[2];
-    protected StyleViewModel vm;
+    StyleViewModel vm;
     EditTextPreference pName;
     SeekBarPreference pExpansionLevel;
     Preference pGroups;

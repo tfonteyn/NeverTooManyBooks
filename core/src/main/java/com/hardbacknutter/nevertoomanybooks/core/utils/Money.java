@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -154,7 +154,7 @@ public class Money
         this.currency = currency;
     }
 
-    protected Money(@NonNull final Parcel in) {
+    private Money(@NonNull final Parcel in) {
         //noinspection DataFlowIssue
         value = (BigDecimal) in.readSerializable();
         final boolean hasCurrency = in.readByte() != 0;
