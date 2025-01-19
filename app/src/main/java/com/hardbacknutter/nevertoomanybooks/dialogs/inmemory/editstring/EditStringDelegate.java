@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -164,6 +165,7 @@ class EditStringDelegate
     }
 
     private void viewToModel() {
-        vm.setCurrentValue(vb.editString.getText().toString().trim());
+        final Editable text = vb.editString.getText();
+        vm.setCurrentValue(text != null ? text.toString().trim() : "");
     }
 }
