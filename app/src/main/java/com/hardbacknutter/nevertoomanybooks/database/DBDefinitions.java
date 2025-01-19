@@ -78,7 +78,7 @@ public final class DBDefinitions {
      * Only add standard tables. Do not add temporary/FTS tables.
      * app tables
      * {@link #TBL_BOOKLIST_STYLES},
-     * {@link #TBL_IDENTIFIERS},
+     * {@link #TBL_TAG_MAPPINGS},
      * <p>
      * basic user data tables
      * {@link #TBL_BOOKSHELF},
@@ -88,6 +88,8 @@ public final class DBDefinitions {
      * {@link #TBL_PUBLISHERS},
      * {@link #TBL_BOOKS},
      * {@link #TBL_TOC_ENTRIES},
+     * {@link #TBL_IDENTIFIERS},
+     * {@link #TBL_TAGS},
      * {@link #TBL_DELETED_BOOKS},
      * <p>
      * link tables
@@ -101,6 +103,7 @@ public final class DBDefinitions {
      * {@link #TBL_BOOK_LOANEE},
      * <p>
      * {@link #TBL_BOOK_IDENTIFIER}
+     * {@link #TBL_BOOK_TAG}
      * <p>
      * {@link #TBL_CALIBRE_BOOKS},
      * {@link #TBL_CALIBRE_LIBRARIES},
@@ -161,6 +164,8 @@ public final class DBDefinitions {
 
     /** Map alternative names for Authors. */
     public static final TableDefinition TBL_PSEUDONYM_AUTHOR;
+    /** Map site tags to local Tags. */
+    public static final TableDefinition TBL_TAG_MAPPINGS;
 
     /** User defined styles. */
     public static final TableDefinition TBL_BOOKLIST_STYLES;
@@ -233,6 +238,8 @@ public final class DBDefinitions {
 
     /** {@link #TBL_TAGS}. */
     public static final Domain DOM_TAG;
+    /** {@link #TBL_TAG_MAPPINGS}. */
+    public static final Domain DOM_TAG_MAPPING;
 
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_FAMILY_NAME;
@@ -574,6 +581,7 @@ public final class DBDefinitions {
 
         TBL_IDENTIFIERS = new TableDefinition("identifiers", "ids");
         TBL_TAGS = new TableDefinition("tags", "tags");
+        TBL_TAG_MAPPINGS = new TableDefinition("tag_mappings", "tgmp");
 
         TBL_PSEUDONYM_AUTHOR = new TableDefinition("pseudonym_author", "ap");
 
@@ -1001,6 +1009,13 @@ public final class DBDefinitions {
         DOM_TAG =
                 new Domain.Builder(DBKey.TAG, SqLiteDataType.Text)
                         .notNull()
+                        .unique()
+                        .build();
+
+        DOM_TAG_MAPPING =
+                new Domain.Builder(DBKey.TAG_MAPPING, SqLiteDataType.Text)
+                        .notNull()
+                        .withDefaultEmptyString()
                         .build();
 
         /* ======================================================================================
@@ -1433,8 +1448,16 @@ public final class DBDefinitions {
                 .addDomains(DOM_PK_ID,
                             DOM_TAG)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.TAG, false, DOM_TAG);
+                .addIndex(DBKey.TAG, true, DOM_TAG);
         ALL_TABLES.put(TBL_TAGS.getName(), TBL_TAGS);
+
+        TBL_TAG_MAPPINGS
+                .addDomains(DOM_PK_ID,
+                            DOM_TAG,
+                            DOM_TAG_MAPPING)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex(DBKey.TAG, true, DOM_TAG);
+        ALL_TABLES.put(TBL_TAG_MAPPINGS.getName(), TBL_TAG_MAPPINGS);
 
         TBL_AUTHORS
                 .addDomains(DOM_PK_ID,

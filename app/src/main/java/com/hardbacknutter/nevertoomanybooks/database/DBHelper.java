@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -68,6 +69,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAG_MAPPINGS;
 
 /**
  * {@link SQLiteOpenHelper} for the main database.
@@ -321,14 +323,12 @@ public class DBHelper
         // Create all the app & user data tables in the correct dependency order
         TableDefinition.onCreate(db, getCollation(db), DBDefinitions.ALL_TABLES.values());
 
-        // insert the default and builtin styles
         StyleDaoImpl.onPostCreate(db);
-        // and the all/default shelves
-        BookshelfDaoImpl.onPostCreate(context, db);
-        // and the known identifiers
-        IdentifierDaoImpl.onPostCreate(context, db);
-
         CalibreCustomFieldDaoImpl.onPostCreate(db);
+
+        BookshelfDaoImpl.onPostCreate(context, db);
+        IdentifierDaoImpl.onPostCreate(context, db);
+        TagMappingDaoImpl.onPostCreate(context, db);
 
         //IMPORTANT: withDomainConstraints MUST BE false (FTS columns don't use a type/constraints)
         TBL_FTS_BOOKS.create(db, false);
@@ -511,6 +511,9 @@ public class DBHelper
             TBL_BOOK_IDENTIFIER.create(db, true);
             IdentifierDaoImpl.onPostCreate(context, db);
             LegacyUpgrades.migrateV35Sids(db);
+
+            TBL_TAG_MAPPINGS.create(db, true);
+            TagMappingDaoImpl.onPostCreate(context, db);
 
             TBL_TAGS.create(db, true);
             TBL_BOOK_TAG.create(db, true);

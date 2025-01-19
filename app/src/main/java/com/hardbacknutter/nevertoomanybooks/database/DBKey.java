@@ -266,6 +266,9 @@ public final class DBKey {
     /** {@link DBDefinitions#TBL_TAGS}. */
     public static final String TAG = "tag";
 
+    /** {@link DBDefinitions#TBL_TAG_MAPPINGS}. */
+    public static final String TAG_MAPPING = "mapping";
+
     /** {@link DBDefinitions#TBL_BOOK_LOANEE}. */
     public static final String LOANEE_NAME = "loaned_to";
 

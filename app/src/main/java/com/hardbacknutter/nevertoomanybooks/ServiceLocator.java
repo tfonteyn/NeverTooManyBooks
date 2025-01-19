@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BedethequeCacheDaoImpl;
@@ -88,6 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -199,6 +201,8 @@ public class ServiceLocator {
     private StyleDao styleDao;
     @Nullable
     private TagDao tagDao;
+    @Nullable
+    private TagMappingDao tagMappingDao;
     @Nullable
     private TocEntryDao tocEntryDao;
 
@@ -739,6 +743,16 @@ public class ServiceLocator {
             }
         }
         return tagDao;
+    }
+
+    @NonNull
+    public TagMappingDao getTagMappingDao() {
+        synchronized (this) {
+            if (tagMappingDao == null) {
+                tagMappingDao = new TagMappingDaoImpl(getDb());
+            }
+        }
+        return tagMappingDao;
     }
 
     @NonNull

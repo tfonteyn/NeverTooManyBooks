@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -80,6 +81,10 @@ public class BookCoder
     @NonNull
     private final RealNumberParser realNumberParser;
     private final Locale userLocale;
+    @NonNull
+    private final Context context;
+
+    private final TagMapper tagMapper = new TagMapper();
 
     /**
      * Constructor.
@@ -90,12 +95,13 @@ public class BookCoder
     public BookCoder(@NonNull final Context context,
                      @NonNull final Style defaultStyle) {
 
+        userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        this.context = context;
+
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
-        tagCoder = new TagCoder(context.getResources().getConfiguration().getLocales().get(0));
+        tagCoder = new TagCoder();
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
         this.realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
-
-        userLocale = context.getResources().getConfiguration().getLocales().get(0);
     }
 
     @Override
@@ -279,7 +285,7 @@ public class BookCoder
                     break;
                 }
                 default: {
-                    if (!decodeLegacyKeys(key, data, book)) {
+                    if (!decodeLegacyKeys(context, key, data, book)) {
                         // All other keys
                         book.put(key, data.get(key));
                     }
@@ -293,13 +299,15 @@ public class BookCoder
     /**
      * Decode/migrate data from older archive version.
      *
-     * @param key  to handle
-     * @param data to decode
-     * @param book to update
+     * @param context Current context
+     * @param key     to handle
+     * @param data    to decode
+     * @param book    to update
      *
      * @return {@code true} if the key was handled
      */
-    private boolean decodeLegacyKeys(@NonNull final String key,
+    private boolean decodeLegacyKeys(@NonNull final Context context,
+                                     @NonNull final String key,
                                      @NonNull final JSONObject data,
                                      @NonNull final Book book) {
         switch (key) {
@@ -315,7 +323,8 @@ public class BookCoder
             }
             case "genre": {
                 // Archive v7 and older used a single string for the genre
-                book.getTags().addAll(LegacyUpgrades.migrateGenre(data.getString(key), userLocale));
+                final String genre = data.getString(key);
+                book.getTags().addAll(tagMapper.migrateGenre(context, genre, userLocale));
                 return true;
             }
             default: {

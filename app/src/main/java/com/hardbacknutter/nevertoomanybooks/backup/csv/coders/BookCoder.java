@@ -43,13 +43,13 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
 
 /**
  * Note: the keys for the CSV columns are not the same as the internal Book keys
@@ -110,6 +110,8 @@ public class BookCoder {
     private Map<String, Long> calibreLibraryStr2IdMap;
 
     private final RatingParser ratingParser;
+
+    private final TagMapper tagMapper = new TagMapper();
 
     /**
      * Constructor.
@@ -188,7 +190,7 @@ public class BookCoder {
         processCalibreData(book);
         processRating(book);
         processDescriptionAndNotes(book);
-        processGenre(book);
+        processGenre(context, book);
 
         verifyDates(book, DBKey.DATETIME_KEYS, false);
         verifyDates(book, DBKey.DATE_KEYS, true);
@@ -569,10 +571,11 @@ public class BookCoder {
         }
     }
 
-    private void processGenre(@NonNull final Book book) {
+    private void processGenre(@NonNull final Context context,
+                              @NonNull final Book book) {
         final String genre = book.getString("genre");
         if (!genre.isEmpty()) {
-            book.getTags().addAll(LegacyUpgrades.migrateGenre(genre, userLocale));
+            book.getTags().addAll(tagMapper.migrateGenre(context, genre, userLocale));
         }
     }
 

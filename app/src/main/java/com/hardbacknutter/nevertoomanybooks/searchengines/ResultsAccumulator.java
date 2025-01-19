@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 class ResultsAccumulator {
@@ -87,6 +88,7 @@ class ResultsAccumulator {
 
         ColorMapper.create(context).ifPresent(mappers::add);
         FormatMapper.create(context).ifPresent(mappers::add);
+        mappers.add(new TagMapper());
     }
 
     private static void dbgLogValueCopied(@NonNull final String method,
