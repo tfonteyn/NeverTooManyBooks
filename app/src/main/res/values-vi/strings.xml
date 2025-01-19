@@ -152,7 +152,9 @@
     <string name="confirm_delete_publisher">Xóa nhà xuất bản “%1$s”?\n\nBản thân sách sẽ không bị xóa.\n\nHãy xem xét chỉnh sửa nhà xuất bản và đổi tên nhà xuất bản thành tên của nhà xuất bản khác để bảo toàn dữ liệu này.</string>
     <string name="confirm_delete_series">Xóa bộ “%1$s”?\n\nBản thân các cuốn sách sẽ không bị xóa.\n\nHãy cân nhắc chỉnh sửa bộ này và đổi tên bộ này thành tên của bộ khác để bảo toàn dữ liệu này.</string>
     <string name="confirm_delete_style">Xóa kiểu “%1$s”?</string>
+    <string name="confirm_delete_tag">Xóa thẻ “%1$s”?\n\nNó sẽ bị xóa khỏi tất cả các sách mà nó được đặt. Bản thân các sách sẽ không bị xóa.</string>
     <string name="confirm_delete_toc_entry_everywhere">Thực sự xóa nhan đề “%1$s” của %2$s? Nó sẽ bị xóa khỏi tất cả các sách có liệt kê nó. Bản thân các cuốn sách sẽ không bị xóa.</string>
+    <string name="confirm_merge_tags">Thẻ bạn đang sửa đổi đã tồn tại. Bạn có muốn hợp nhất chúng không?</string>
     <string name="confirm_duplicate_book_message">Cuốn sách bạn đang cố gắng thêm đã tồn tại trong cơ sở dữ liệu, bạn có chắc chắn muốn thêm một bản khác không?</string>
     <string name="confirm_email_file">Bạn có muốn gửi tệp này qua email không?</string>
     <string name="confirm_merge_authors">Tác giả bạn đang sửa đổi đã tồn tại. Bạn có muốn hợp nhất chúng không?</string>

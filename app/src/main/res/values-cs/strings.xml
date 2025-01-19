@@ -152,13 +152,15 @@
     <string name="confirm_delete_publisher">Opravdu smazat vydavatele „%1$s“?\n\nSamotné knihy nebudou smazány.\n\nVšechny úpravy vydavatele a změna názvu vydavatele na jméno jiného vydavatele za účelem uchování těchto dat.</string>
     <string name="confirm_delete_series">Opravdu chcete smazat série „%1$s“?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
     <string name="confirm_delete_style">Smazat styl „%1$s“?</string>
+    <string name="confirm_delete_tag">Smazat značku „%1$s“?\n\nSmaže se ze všech knih, na kterých je nastavena. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_toc_entry_everywhere">Odstraňte název „%1$s“ (z %2$s)? Bude odstraněn ze všech knih, ve kterých je uveden. Samotné knihy nebudou smazány.</string>
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
     <string name="confirm_email_file">Chcete tento soubor někomu poslat e-mailem?</string>
-    <string name="confirm_merge_authors">Autor, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
-    <string name="confirm_merge_bookshelves">Knihovna, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
-    <string name="confirm_merge_publishers">Vydavatel, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
-    <string name="confirm_merge_series">Série, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_authors">Autor, kterého upravujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_bookshelves">Regál, který upravujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_publishers">Vydavatel, kterého upravujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_series">Série, kterou upravujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_tags">Značka, kterou upravujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_overwrite_cover">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.
 \n
 \nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat.</string>
@@ -409,8 +411,8 @@
     <string name="lbl_series_multiple">Série</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Nastavení</string>
-    <string name="lbl_tag">Tag</string>
-    <string name="lbl_tags">Tagy</string>
+    <string name="lbl_tag">Značka</string>
+    <string name="lbl_tags">Značky</string>
     <string name="lbl_signed">Podepsaný</string>
     <string name="lbl_site_book_id">ID webové stránky</string>
     <string name="option_sort_and_style_ellipsis">Seřadit &amp; Styl…</string>

@@ -156,13 +156,15 @@
 \n
 \nRozważ zmianę nazwy serii by zachować te dane.</string>
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
+    <string name="confirm_delete_tag">Usunąć tag „%1$s”?\n\nZostanie on usunięty ze wszystkich książek, w których jest ustawiony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_delete_toc_entry_everywhere">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
+    <string name="confirm_merge_tags">Modyfikowany tag już istnieje. Czy chcesz je scalić?</string>
     <string name="confirm_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
     <string name="confirm_email_file">Czy chcesz wysłać do kogoś ten plik e-mailem?</string>
-    <string name="confirm_merge_authors">Autor o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
-    <string name="confirm_merge_bookshelves">Półka o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
-    <string name="confirm_merge_publishers">Wydawca o zmienionej nazwie już istnieje.. Czy chcesz je połączyć?</string>
-    <string name="confirm_merge_series">Seria o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
+    <string name="confirm_merge_authors">Autor, którego modyfikujesz, już istnieje. Czy chcesz je scalić?</string>
+    <string name="confirm_merge_bookshelves">Modyfikowana półka już istnieje. Czy chcesz je scalić?</string>
+    <string name="confirm_merge_publishers">Wydawca, którego chcesz zmodyfikować, już istnieje. Czy chcesz je scalić?</string>
+    <string name="confirm_merge_series">Seria, którą modyfikujesz, już istnieje. Czy chcesz je scalić?</string>
     <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.
 \n
 \nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu.</string>

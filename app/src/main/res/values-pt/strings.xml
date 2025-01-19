@@ -310,6 +310,7 @@
     <string name="option_download_set_folder">Definir a pasta de transferências</string>
     <string name="confirm_unsaved_edits">Tem alterações não guardadas, se sair agora estas serão perdidas.</string>
     <string name="confirm_delete_bookshelf">Excluir a prateleira“%1$s”? Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%2$s”.</string>
+    <string name="confirm_delete_tag">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de todos os livros em que estiver definida. Os livros em si não serão eliminados.</string>
     <string name="confirm_delete_toc_entry_everywhere">Pretende realmente excluir o título “%1$s” por %2$s? Ele será excluído de todos os livros em que estiver listado. Os próprios livros não serão excluídos.</string>
     <string name="warning_nothing_selected">Nada selecionado</string>
     <string name="info_isfdb_warning_limited_to">(suportado apenas pelo site do ISFDB)</string>
@@ -320,7 +321,7 @@
     <string name="option_isbn_strict">ISBN estrito</string>
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>
     <string name="confirm_delete_style">Excluir o estilo “%1$s”?</string>
-    <string name="confirm_merge_bookshelves">A prateleira que está a modificar já existe. Gostaria de uni-las?</string>
+    <string name="confirm_merge_bookshelves">A prateleira que está a modificar já existe. Gostaria de as fundir?</string>
     <string name="option_reset_all_tips">Repor dicas</string>
     <string name="tip_authors_book_may_appear_more_than_once">Se os livros forem apresentados para cada autor do livro, podem aparecer várias vezes na lista. A eliminação de um desses livros tem o efeito de remover todos os exemplares da lista.</string>
     <string name="tip_view_only_help">Pode deslizar para a esquerda ou para a direita para navegar para outros livros.</string>
@@ -385,9 +386,10 @@
     <string name="confirm_delete_book">Isso excluirá completamente o livro intitulado “%1$s” por %2$s.
 \n
 \nTem certeza de que deseja continuar?</string>
-    <string name="confirm_merge_authors">O autor que está a modificar já existe. Gostaria de uni-los?</string>
-    <string name="confirm_merge_series">A série que está a modificar já existe. Gostaria de uni-las?</string>
-    <string name="confirm_merge_publishers">O editor que está a modificar já existe. Gostaria de uni-los?</string>
+    <string name="confirm_merge_authors">O autor que está a modificar já existe. Gostaria de as fundir?</string>
+    <string name="confirm_merge_series">A série que está a modificar já existe. Gostaria de as fundir?</string>
+    <string name="confirm_merge_publishers">O editor que está a modificar já existe. Gostaria de as fundir?</string>
+    <string name="confirm_merge_tags">A etiqueta que está a modificar já existe. Gostaria de as fundir?</string>
     <string name="confirm_duplicate_book_message">O livro que está a tentar adicionar já existe na base de dados, tem a certeza de que deseja adicionar outra cópia?</string>
     <string name="confirm_overwrite_cover">Isso atualizará os campos selecionados conforme mostrado, mas as imagens podem, opcionalmente, ser transferidas para TODOS os livros.
 \n
