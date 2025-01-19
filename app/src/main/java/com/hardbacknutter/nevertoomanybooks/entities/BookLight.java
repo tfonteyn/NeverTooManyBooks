@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -124,6 +125,13 @@ public class BookLight
         return list;
     }
 
+    /**
+     * Get the Book's Locale (based on its language).
+     *
+     * @param context Current context
+     *
+     * @return the Locale, or the users preferred Locale if no language was set.
+     */
     @NonNull
     public Optional<Locale> getLocale(@NonNull final Context context) {
         if (language.isEmpty()) {
@@ -157,5 +165,38 @@ public class BookLight
     @NonNull
     public PartialDate getFirstPublicationDate() {
         return firstPublicationDate;
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final BookLight bookLight = (BookLight) o;
+        return id == bookLight.id
+               && Objects.equals(title, bookLight.title)
+               && Objects.equals(language, bookLight.language)
+               && Objects.equals(primaryAuthor, bookLight.primaryAuthor)
+               && Objects.equals(firstPublicationDate, bookLight.firstPublicationDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, language, primaryAuthor, firstPublicationDate);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "BookLight{"
+               + "id=" + id
+               + ", title=`" + title + '`'
+               + ", language=`" + language + '`'
+               + ", primaryAuthor=" + primaryAuthor
+               + ", firstPublicationDate=" + firstPublicationDate
+               + '}';
     }
 }
