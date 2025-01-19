@@ -39,15 +39,23 @@ final class CalibreIdentifier {
         create("asin", Identifier.SID_ASIN);
 
         create("bedetheque", Identifier.SID_BEDETHEQUE);
+        create("bnf", Identifier.SID_BNF);
+        create("bl", Identifier.SID_BRITISH_LIBRARY);
+        create("dnb", Identifier.SID_DNB);
+        create("doi", Identifier.SID_DOI);
+        create("douban", Identifier.SID_DOUBAN);
         create("goodreads", Identifier.SID_GOODREADS_BOOK);
         create("google", Identifier.SID_GOOGLE);
         create("isfdb", Identifier.SID_ISFDB);
+        create("ppn", Identifier.SID_KBNL);
         create("lastdodo", Identifier.SID_LAST_DODO_NL);
         create("lccn", Identifier.SID_LCCN);
         create("librarything", Identifier.SID_LIBRARY_THING);
+        create("mobi-asin", Identifier.SID_MOBI_ASIN);
         create("oclc", Identifier.SID_OCLC);
         create("openlibrary", Identifier.SID_OPEN_LIBRARY);
         create("stripinfo", Identifier.SID_STRIP_INFO);
+        create("uri", Identifier.SID_URI);
     }
 
     @NonNull
