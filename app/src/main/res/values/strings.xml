@@ -841,12 +841,13 @@
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
     <!-- Param 1: style name -->
     <string name="confirm_delete_style">Delete the style “%1$s”?</string>
-    <!-- TODO: these 4 could do with a better/clearer message. We're proposing to move the books from nr 1 to nr 2 and delete nr 1. -->
+    <!-- TODO: these 5 could do with a better/clearer message. We're proposing to move the books from nr 1 to nr 2 and delete nr 1. -->
     <string name="confirm_merge_bookshelves">The bookshelf you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_series">The series you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_publishers">The publisher you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_tags">The tag you are modifying already exists. Would you like to merge them?</string>
+
     <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
     <string name="confirm_overwrite_cover">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
     <!-- param 1: previous name; param 2: new name - each time as a single string.
