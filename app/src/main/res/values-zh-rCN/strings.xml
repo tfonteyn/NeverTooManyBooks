@@ -814,4 +814,7 @@
     <string name="yes">确定</string>
     <string name="lbl_identifier">标识符</string>
     <string name="lbl_identifiers">标识符</string>
+    <string name="info_tap_to_move_tag">轻按标签将其移动到书籍或从书籍移出</string>
+    <string name="confirm_delete_tag">删除标签 “%1$s”？\n\n将从所有设置了该标签的书籍处移除它。不会删除书籍本身。</string>
+    <string name="confirm_merge_tags">你正修改的标签已存在。你要合并它们吗？</string>
 </resources>
