@@ -378,9 +378,9 @@
     <!-- Header/help text in the tag-editor dialog -->
     <string name="info_tap_to_move_tag">Tap a tag to move it to/from the Book</string>
     <!-- hint/label above a multi-line txt field where the user should
-         enter one mapping text on each line.
+         enter one Substitution text on each line.
     -->
-    <string name="info_mappings_one_per_line">Add one mapping per line</string>
+    <string name="info_substitutions_one_per_line">Add one substitution per line</string>
 
     <string name="info_download_successful">Download successful</string>
     <!-- See GitHub docs... there is optional code to be added to Calibre. -->
@@ -828,9 +828,9 @@
          Param 2: the "All books" bookshelf name -->
     <string name="confirm_delete_bookshelf">Delete the bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
 
-    <!-- context: mapping/substitution of one item to another item
+    <!-- context: substitution of one item to another item
          Param 1: Tag name -->
-    <string name="confirm_delete_mapping">Delete the mapping for “%1$s”?</string>
+    <string name="confirm_delete_substitutions">Delete the substitutions for “%1$s”?</string>
 
     <!-- Param 1: Tag name -->
     <string name="confirm_delete_tag">Delete the tag “%1$s”?\n\nIt will be deleted from all books on which it is set. The books themselves will not be deleted.</string>
@@ -1127,8 +1127,8 @@
         Plural. -->
     <string name="lbl_tags">Tags</string>
 
-    <!-- context: mapping/substitution of one item to another item  -->
-    <string name="lbl_mapping">Mapping</string>
+    <!-- context: substitutions of one item to another item  -->
+    <string name="lbl_substitutions">Substitutions</string>
 
     <!-- is this book signed by the author? -->
     <string name="lbl_signed">Signed</string>

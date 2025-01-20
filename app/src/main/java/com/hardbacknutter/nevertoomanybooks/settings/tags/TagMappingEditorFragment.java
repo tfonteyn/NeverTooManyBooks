@@ -241,7 +241,7 @@ public class TagMappingEditorFragment
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.action_delete)
-                .setMessage(getString(R.string.confirm_delete_mapping, tagMapping.getName()))
+                .setMessage(getString(R.string.confirm_delete_substitutions, tagMapping.getName()))
                 .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                 .setNeutralButton(R.string.ok, (d, w) -> {
                     mappings.remove(position);

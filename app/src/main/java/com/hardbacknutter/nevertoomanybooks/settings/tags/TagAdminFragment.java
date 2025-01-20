@@ -129,7 +129,7 @@ public class TagAdminFragment
                 case 0:
                     return R.string.lbl_tags;
                 case 1:
-                    return R.string.lbl_mapping;
+                    return R.string.lbl_substitutions;
             }
             throw new IllegalArgumentException();
         }

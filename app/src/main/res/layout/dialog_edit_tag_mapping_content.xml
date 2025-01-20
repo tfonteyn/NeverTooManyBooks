@@ -40,7 +40,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drag_handle"
-        app:title="@string/lbl_mapping"
+        app:title="@string/lbl_substitutions"
         />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -67,7 +67,7 @@
         android:id="@+id/lbl_tag_mapping"
         style="@style/TIL.Text"
         android:layout_width="@dimen/til_fixed_width_personal_name"
-        android:hint="@string/info_mappings_one_per_line"
+        android:hint="@string/info_substitutions_one_per_line"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_tag_name"
