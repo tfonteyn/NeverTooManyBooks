@@ -13,7 +13,6 @@
       <option name="prefixLines" value="false" />
     </LanguageOptions>
     <LanguageOptions name="XML">
-      <option name="fileTypeOverride" value="1" />
       <option name="prefixLines" value="false" />
     </LanguageOptions>
   </settings>
