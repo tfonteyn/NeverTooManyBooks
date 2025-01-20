@@ -30,7 +30,6 @@
     <plurals name="n_stars">
         <item quantity="other">%1$s sao</item>
     </plurals>
-
     <string name="X_action_clear_credentials">Xóa thông tin xác thực</string>
     <string name="X_action_customize">Tùy chỉnh…</string>
     <string name="X_action_execute">Thực hiện</string>
@@ -262,8 +261,7 @@
     <string name="info_story_in_single_book">“%1$s” hiện diện trong một cuốn sách duy nhất:\n\n%2$s</string>
     <string name="info_tap_on_thumbnail_to_zoom">Nhấn vào hình thu nhỏ để hiển thị hình ảnh lớn hơn.</string>
     <string name="info_tap_to_select">Nhấn để chọn.</string>
-    <string name="info_x_pages"
-            tools:ignore="PluralsCandidate">%1$d trang</string>
+    <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d trang</string>
     <string name="lbl_about">Giới thiệu</string>
     <string name="lbl_about_contact">Liên hệ:</string>
     <string name="lbl_add_book">Thêm sách</string>
