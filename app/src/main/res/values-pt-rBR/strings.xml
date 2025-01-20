@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
@@ -230,5 +233,9 @@
     <string name="info_bulk_set_location">Selecione o local que deseja atribuir a todos os livros listados no nó selecionado.</string>
     <string name="lbl_citation_type">Formato de citação/compartilhamento</string>
     <string name="site_description_various_languages">Vários idiomas</string>
+    <string name="confirm_merge_tags">A tag que você está modificando já existe. Você gostaria de mesclá-las?</string>
+    <string name="confirm_delete_tag">Excluir a tag “%1$s”?\n\nEla será excluída de todos os livros nos quais estiver definida. Os livros em si não serão excluídos.</string>
+    <string name="lbl_tag">Tag</string>
+    <string name="lbl_tags">Tags</string>
 
 </resources>
