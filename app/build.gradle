@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,7 +75,7 @@ android {
         // Keep the two sub-lists in alphabetic order
         def supportedLocales = [
                 // Primary translations - done/checked by native speaker or pretty good.
-                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "pt_BR", "tr", "vi",
+                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "pt_BR", "ta", "tr", "vi",
                 "zh_CN", "zh_TW",
                 // Secondary translations - These really need checking by a native speaker
                 "cs", "el", "pl", "ru"]
