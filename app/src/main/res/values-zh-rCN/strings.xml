@@ -27,7 +27,7 @@
     <plurals name="n_books_found">
         <item quantity="other">找到%1$d本</item>
     </plurals>
-    <plurals name="displaying_n_books">
+    <plurals name="n_books">
         <item quantity="other">%1$d本书</item>
     </plurals>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->

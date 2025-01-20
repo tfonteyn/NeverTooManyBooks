@@ -21,7 +21,7 @@
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
-    <plurals name="displaying_n_books">
+    <plurals name="n_books">
         <item quantity="one">%1$d kitap</item>
         <item quantity="other">%1$d kitaplar</item>
     </plurals>

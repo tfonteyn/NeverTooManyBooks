@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -83,7 +83,7 @@ public class BooklistHeader {
             if (distinctBooks == totalBooks) {
                 // Using a plural, so this covers zero books as well
                 bookCount = context.getResources()
-                                   .getQuantityString(R.plurals.displaying_n_books,
+                                   .getQuantityString(R.plurals.n_books,
                                                       distinctBooks, totalBooks);
             } else {
                 bookCount = context.getString(R.string.info_displaying_n_books_in_m_entries,

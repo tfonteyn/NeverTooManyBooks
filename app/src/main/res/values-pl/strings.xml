@@ -21,7 +21,7 @@
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
-    <plurals name="displaying_n_books">
+    <plurals name="n_books">
         <item quantity="one">%1$d książka</item>
         <item quantity="few">%1$d książki</item>
         <item quantity="many">%1$d książek</item>

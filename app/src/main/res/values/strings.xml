@@ -48,8 +48,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
            tools:locale="en">
     <!-- region ========== Plurals. -->
-    <!-- displayed in the header of booklist -->
-    <plurals name="displaying_n_books">
+    <plurals name="n_books">
         <item quantity="one">%1$d book</item>
         <item quantity="other">%1$d books</item>
     </plurals>
