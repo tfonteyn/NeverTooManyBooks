@@ -81,6 +81,11 @@
     {"name": "Full color"},
     {"name": "Black &amp; White"}
   ],
+  "identifier": [
+    {"name": "asin"},
+    {"name": "goodreads"},
+    {"name": "isfdb"}
+  ],
   "isbn": [
     {"d13": "9780316310420", "d10": "0316310425"},
     {"d13": "9781250762849", "d10": "1250762847"},

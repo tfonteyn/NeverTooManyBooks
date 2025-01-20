@@ -13,7 +13,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="keyword" />
+        tools:text="@sample/data.json/identifier/name" />
 
     <TextView
         android:id="@+id/type"
