@@ -126,7 +126,7 @@
     <string name="action_clear_queue">Effacer la file d’attente</string>
     <string name="action_disable_message">Désactiver ce message</string>
     <string name="action_email">e-mail</string>
-    <string name="btn_just_this_shelf">Cette bibliothèque uniquement</string>
+    <string name="btn_just_this_shelf">Cette étagère uniquement</string>
     <string name="action_learn_more">En savoir plus</string>
     <string name="action_less_ellipsis">Moins…</string>
     <string name="action_more_ellipsis">Plus…</string>
@@ -235,7 +235,7 @@
     <string name="lbl_date_added_year">Année d’ajout</string>
     <string name="pc_lists">Listes</string>
     <string name="pc_advanced_options">Paramètres avancés</string>
-    <string name="lbl_all_bookshelves">Toutes les bibliothèques</string>
+    <string name="lbl_all_bookshelves">Toutes les étagères</string>
     <string name="lbl_book_type_anthology">Anthologie</string>
     <string name="lbl_archive_format">Format</string>
     <string name="option_info_archive_format_db">La base de données SQLite.</string>
@@ -273,8 +273,8 @@
     <string name="pc_book_detail_screen">Page de détails du livre</string>
     <string name="lbl_book_type">Type de livre</string>
     <string name="lbl_books">Livres</string>
-    <string name="lbl_bookshelf">Bibliothèque</string>
-    <string name="lbl_bookshelves">Bibliothèques</string>
+    <string name="lbl_bookshelf">Étagère</string>
+    <string name="lbl_bookshelves">Étagères</string>
     <string name="lbl_calibre_content_server">Serveur de contenu Calibre</string>
     <string name="info_calibre_content_server_extension">L’extension du serveur de contenu Calibre n’est pas installée. Les bibliothèques virtuelles ne seront pas disponibles.</string>
     <string name="lbl_certificate_ca">Certificat CA</string>
@@ -415,7 +415,7 @@
     <string name="option_isbn_strict">ISBN strict</string>
     <string name="lbl_style">Style</string>
     <string name="lbl_styles">Les styles</string>
-    <string name="lbl_styles_long">Style d’une bibliothèque</string>
+    <string name="lbl_styles_long">Style d’une étagère</string>
     <string name="lbl_sync_date">Depuis</string>
     <string name="lbl_tab_alternative_editions">Éd. alt.</string>
     <string name="lbl_tab_details">Détails</string>
@@ -668,7 +668,7 @@
     <string name="warning_backup_request">Voulez-vous sauvegarder votre base de données sur la carte SD ?</string>
     <string name="warning_book_not_always_found">Pas tous les sites ont renvoyé de données valides.</string>
     <string name="warning_book_not_found">Impossible de trouver le livre demandé.</string>
-    <string name="warning_cannot_delete_1st_bs">La première bibliothèquene peut pas être supprimée.</string>
+    <string name="warning_cannot_delete_1st_bs">La première étagère ne peut pas être supprimée.</string>
     <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
     <string name="warning_export_contains_no_data">Il n’y avait rien à exporter.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Si le jour est précisé, le mois et l’année doivent l’être aussi.</string>
@@ -715,7 +715,7 @@
     <string name="pt_bedetheque_search_resolve_formats">Conserver la dénomination au format Bedetheque</string>
     <string name="confirm_toc_list_update_with_books_main_author">Remplacer l’auteur de toutes les entrées par l’auteur principal du livre « %1$s » ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tous les livres en dessous de cette rangée ont des couvertures. Rechercher à nouveau à partir du haut ?</string>
-    <string name="info_all_books_have_covers">Tous les livres de cette bibliothèque ont des couvertures</string>
+    <string name="info_all_books_have_covers">Tous les livres de cette étagère ont des couvertures</string>
     <string name="book_format_hardcover_oblong">Relié - oblongue</string>
     <string name="book_format_softcover_oblong">Broché - oblongue</string>
     <string name="lbl_purge_blns">Effacer l’état du nœud</string>

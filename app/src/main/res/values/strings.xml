@@ -266,7 +266,7 @@
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
     <!-- Search using a websites native book-id -->
     <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
-    <string name="warning_cannot_delete_1st_bs">The first Bookshelf cannot be deleted.</string>
+    <string name="warning_cannot_delete_1st_bs">The first bookshelf cannot be deleted.</string>
     <!-- When the user tries to add e.g. an Author which is already listed on the book -->
     <string name="warning_already_in_list">Already in the list!</string>
     <!-- result of a search -->
