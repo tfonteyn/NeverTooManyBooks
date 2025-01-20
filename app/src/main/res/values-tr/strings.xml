@@ -665,7 +665,7 @@
     <string name="warning_backup_request">Veritabanınızı SD karta yedeklemek ister misiniz?</string>
     <string name="warning_book_not_always_found">Tüm siteler geçerli veri döndürmedi.</string>
     <string name="warning_book_not_found">Belirtilen kitap bulunamıyor.</string>
-    <string name="warning_cannot_delete_1st_bs">İlk Kitap Rafı silinemez.</string>
+    <string name="warning_cannot_delete_1st_bs">İlk kitap rafı silinemez.</string>
     <string name="warning_enable_at_least_1_website">Her kategori için en az bir web sitesini etkinleştirin.</string>
     <string name="warning_export_contains_no_data">İhraç edecek bir şey yoktu.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Eğer gün belirtmiş iseniz hem ay hem yıl bölümlerini de doldurmalısınız.</string>
