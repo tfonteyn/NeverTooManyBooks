@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -56,6 +56,11 @@
         android:id="@id/MENU_SETTINGS"
         android:icon="@drawable/settings_24px"
         android:title="@string/lbl_settings" />
+
+    <item
+        android:id="@id/MENU_MANAGE_TAGS"
+        android:icon="@drawable/tag_24px"
+        android:title="@string/lbl_tags" />
 
     <item
         android:id="@id/MENU_HELP"

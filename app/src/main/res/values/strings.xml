@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -377,6 +377,10 @@
     <string name="info_tap_to_select">Tap to select.</string>
     <!-- Header/help text in the tag-editor dialog -->
     <string name="info_tap_to_move_tag">Tap a tag to move it to/from the Book</string>
+    <!-- hint/label above a multi-line txt field where the user should
+         enter one mapping text on each line.
+    -->
+    <string name="info_mappings_one_per_line">Add one mapping per line</string>
 
     <string name="info_download_successful">Download successful</string>
     <!-- See GitHub docs... there is optional code to be added to Calibre. -->
@@ -823,8 +827,18 @@
     <!-- Param 1: Bookshelf name
          Param 2: the "All books" bookshelf name -->
     <string name="confirm_delete_bookshelf">Delete the bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
+
+    <!-- Param 1: Tag name -->
+    <string name="confirm_delete_mapping">Delete the mapping for “%1$s”?</string>
+
     <!-- Param 1: Tag name -->
     <string name="confirm_delete_tag">Delete the tag “%1$s”?\n\nIt will be deleted from all books on which it is set. The books themselves will not be deleted.</string>
+    <!-- Param 1: Tag name
+         Param 2: content of plural "displaying_n_books",
+                  e.g.: "It will be deleted from 5 books on which it is set."
+    -->
+    <string name="confirm_delete_tag_from_x_books">Delete the tag “%1$s”?\n\nIt will be deleted from %2$s on which it is set. The books themselves will not be deleted.</string>
+
     <!-- Param 1: TOC entry title
          Param 2: author name -->
     <string name="confirm_delete_toc_entry_everywhere">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
@@ -1111,6 +1125,10 @@
     <!-- Label for tagging a book (i.e assign a set of labels/tags to a book: Romance, Crime, etc..)
         Plural. -->
     <string name="lbl_tags">Tags</string>
+
+    <!-- context: mapping/substitution of one item to another item  -->
+    <string name="lbl_mapping">Mapping</string>
+
     <!-- is this book signed by the author? -->
     <string name="lbl_signed">Signed</string>
     <!-- Single book/series/story title. Short label. -->

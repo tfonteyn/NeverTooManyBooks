@@ -19,30 +19,23 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/container_margin"
+    tools:context=".FragmentHostActivity"
+    >
 
-    <item
-        android:id="@id/MENU_MANAGE_BOOKSHELVES"
-        android:icon="@drawable/library_books_24px"
-        android:title="@string/lbl_bookshelves" />
+    <!-- Note the "center_horizontal" which is there for larger screens -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
 
-    <item
-        android:id="@id/MENU_SETTINGS"
-        android:icon="@drawable/settings_24px"
-        android:title="@string/lbl_settings" />
-
-    <item
-        android:id="@id/MENU_MANAGE_TAGS"
-        android:icon="@drawable/tag_24px"
-        android:title="@string/lbl_tags" />
-
-    <item
-        android:id="@id/MENU_HELP"
-        android:icon="@drawable/help_24px"
-        android:title="@string/action_help" />
-
-    <item
-        android:id="@id/MENU_ABOUT"
-        android:icon="@drawable/info_24px"
-        android:title="@string/lbl_about" />
-</menu>
+</androidx.constraintlayout.widget.ConstraintLayout>
