@@ -60,7 +60,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_tags"
             tools:itemCount="10"
-            tools:listitem="@layout/row_edit_tag_list"
+            tools:listitem="@layout/row_edit_book_tag_list"
             />
 
         <TextView
@@ -84,7 +84,7 @@
             app:layout_constraintStart_toEndOf="@id/tag_available"
             app:layout_constraintTop_toBottomOf="@id/lbl_book"
             tools:itemCount="10"
-            tools:listitem="@layout/row_edit_tag_list"
+            tools:listitem="@layout/row_edit_book_tag_list"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

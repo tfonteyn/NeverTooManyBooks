@@ -41,7 +41,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTagsBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagListBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookTagListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexToolbar;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring.EditStringLauncher;
@@ -214,9 +214,9 @@ public class EditBookTagsDialogFragment
             implements BindableViewHolder<Tag> {
 
         @NonNull
-        private final RowEditTagListBinding vb;
+        private final RowEditBookTagListBinding vb;
 
-        Holder(@NonNull final RowEditTagListBinding vb,
+        Holder(@NonNull final RowEditBookTagListBinding vb,
                @NonNull final OnRowClickListener onRowClickListener) {
             super(vb.getRoot());
             this.vb = vb;
@@ -309,8 +309,8 @@ public class EditBookTagsDialogFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowEditTagListBinding vb = RowEditTagListBinding.inflate(inflater, parent,
-                                                                           false);
+            final RowEditBookTagListBinding vb = RowEditBookTagListBinding.inflate(inflater, parent,
+                                                                                   false);
             return new Holder(vb, onRowClickListener);
         }
 
