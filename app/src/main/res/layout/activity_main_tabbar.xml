@@ -38,7 +38,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar.Activity"
-            app:title="@string/lbl_websites"
+            tools:title="@string/lbl_websites"
             />
 
         <com.google.android.material.tabs.TabLayout
@@ -55,6 +55,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+
+
+    <com.hardbacknutter.nevertoomanybooks.core.widgets.MovableFloatingActionButton
+        android:id="@+id/fab"
+        style="@style/Widget.App.FloatingActionButton"
+        android:src="@drawable/add_24px"
+        android:visibility="invisible"
+        tools:visibility="visible"
         />
 
     <include
