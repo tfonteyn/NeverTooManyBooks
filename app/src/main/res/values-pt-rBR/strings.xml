@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes “...” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
-<resources>
+<!-- Quotes “...” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="n_books">
         <item quantity="one">%1$d Livro</item>
         <item quantity="many">%1$d Livros</item>
@@ -237,5 +233,4 @@
     <string name="confirm_delete_tag">Excluir a tag “%1$s”?\n\nEla será excluída de todos os livros nos quais estiver definida. Os livros em si não serão excluídos.</string>
     <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tags</string>
-
 </resources>
