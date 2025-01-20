@@ -70,11 +70,9 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncC
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
@@ -137,6 +135,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
@@ -260,7 +260,7 @@ public class BooksOnBookshelf
 
     /** Manage the list of (preferred) styles. */
     private final ActivityResultLauncher<String> editStylesLauncher =
-            registerForActivityResult(new PreferredStylesContract(), o -> o.ifPresent(
+            registerForActivityResult(new EditPreferredStylesContract(), o -> o.ifPresent(
                     data -> vm.onEditStylesFinished(this, data)));
 
     /** Edit an individual style. */

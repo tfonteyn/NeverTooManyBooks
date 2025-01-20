@@ -48,8 +48,6 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
@@ -82,6 +80,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
@@ -1351,14 +1351,14 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * This method is called after the user used {@link PreferredStylesContract}
+     * This method is called after the user used {@link EditPreferredStylesContract}
      * to edit the list of styles.
      *
      * @param context Current context
      * @param data    returned from the view/edit contract
      */
     void onEditStylesFinished(@NonNull final Context context,
-                              @NonNull final PreferredStylesContract.Output data) {
+                              @NonNull final EditPreferredStylesContract.Output data) {
         // we get the UUID for the selected style back.
         data.getUuid().ifPresent(uuid -> onStyleChanged(context, uuid));
 

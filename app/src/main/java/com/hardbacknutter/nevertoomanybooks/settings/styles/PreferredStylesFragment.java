@@ -50,8 +50,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.StartDragListener;
@@ -88,7 +86,7 @@ public class PreferredStylesFragment
                 public void handleOnBackPressed() {
                     final Style selectedStyle = vm.getSelectedStyle();
                     final String uuid = selectedStyle != null ? selectedStyle.getUuid() : null;
-                    final Intent resultIntent = PreferredStylesContract
+                    final Intent resultIntent = EditPreferredStylesContract
                             .createResult(uuid, vm.isDirty());
 
                     //noinspection DataFlowIssue
