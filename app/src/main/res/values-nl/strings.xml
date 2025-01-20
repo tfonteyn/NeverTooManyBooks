@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -140,7 +143,7 @@
     <string name="confirm_delete_bookshelf">Verwijder de boekenplank „%1$s”? De boeken zelf worden niet verwijderd. Ze zullen nog steeds aanwezig zijn op alle andere schappen, of op de „%2$s” -plank.</string>
     <string name="confirm_delete_publisher">Verwijder de uitgever „%1$s”?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_series">Verwijder de reeks „%1$s”?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
-    <string name="confirm_delete_tag">Verwijder de tag „%1$s”? Het wordt verwijderd uit alle boeken waarop deze tag is gezet. De boeken zelf worden niet verwijderd.</string>
+    <string name="confirm_delete_tag">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit alle boeken waarop deze tag is gezet. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_style">De stijl „%1$s” verwijderen?</string>
     <string name="confirm_delete_toc_entry_everywhere">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
