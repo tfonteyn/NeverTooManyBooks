@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**

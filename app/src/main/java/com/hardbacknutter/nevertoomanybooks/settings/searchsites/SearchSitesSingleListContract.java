@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
+package com.hardbacknutter.nevertoomanybooks.settings.searchsites;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,8 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminViewModel;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -72,9 +70,9 @@ public class SearchSitesSingleListContract
     public Optional<List<Site>> parseResult(final int resultCode,
                                             @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
-                                                + "|listKey=" + listKey);
+            LoggerFactory.getLogger().d(TAG, "parseResult", "|resultCode=" + resultCode
+                                                            + "|intent=" + intent
+                                                            + "|listKey=" + listKey);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
