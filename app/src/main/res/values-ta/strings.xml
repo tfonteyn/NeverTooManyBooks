@@ -55,10 +55,6 @@
     <string name="acra_report_saved">நீங்கள் இப்போது கிதுபில் உள்ள திட்டப் பக்கத்தைப் பார்வையிட்டு புதிய சிக்கலை பதிவு செய்யலாம். முன்னர் சேமிக்கப்பட்ட அறிக்கையை பிரச்சினைக்கு இணைக்கவும். உங்களிடம் இன்னும் அறிவிலிமையம் கணக்கு இல்லையென்றால், நீங்கள் ஒன்றை உருவாக்க வேண்டும்.</string>
     <string name="X_httpErrorIO">சேவையகத்துடன் தொடர்பு கொள்ள முடியவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்.</string>
     <string name="httpErrorTimeout">சேவையகத்திற்கான இணைப்பு நேரம் முடிந்தது.</string>
-    <plurals name="displaying_n_books">
-        <item quantity="one">%1$d நூல்</item>
-        <item quantity="other">%1$d புத்தகங்கள்</item>
-    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d நூல் காணப்பட்டது</item>
         <item quantity="other">%1$d புத்தகங்கள் கிடைத்தன</item>
