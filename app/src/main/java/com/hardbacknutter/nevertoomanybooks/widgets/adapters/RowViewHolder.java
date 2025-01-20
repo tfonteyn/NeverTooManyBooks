@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 /**
  * Base for all ViewHolder classes.
+ * URGENT: add generics T and onBind(T item) and eventually use a common adapter
  * <p>
  * Provides unified handling of clicks, long-clicks and an optional context menu button.
  * <p>
