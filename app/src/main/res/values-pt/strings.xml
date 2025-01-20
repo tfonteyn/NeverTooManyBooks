@@ -228,7 +228,7 @@
     <string name="warning_requires_isbn">Esta ação requer um ISBN válido.</string>
     <string name="warning_image_not_found">A imagem não pôde ser encontrada.</string>
     <string name="warning_no_editions">Nenhuma informação adicional de edição disponível.</string>
-    <string name="warning_cannot_delete_1st_bs">A primeira Prateleira não pode ser eliminada.</string>
+    <string name="warning_cannot_delete_1st_bs">A primeira prateleira não pode ser eliminada.</string>
     <string name="warning_if_month_set_year_must_be">Se um mês é especificado, então um ano também deve ser especificado.</string>
     <string name="warning_toc_confirm">Por favor, confirme que estes títulos estão (maioritariamente) corretos.</string>
     <string name="warning_backup_request">Gostaria de fazer uma cópia de segurança da sua base de dados para o seu cartão SD?</string>
