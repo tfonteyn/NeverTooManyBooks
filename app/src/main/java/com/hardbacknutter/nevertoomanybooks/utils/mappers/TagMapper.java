@@ -28,15 +28,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 
 public class TagMapper
         implements Mapper {
@@ -68,26 +66,28 @@ public class TagMapper
             return List.of();
         }
 
-        final Map<String, Set<String>> all =
-                ServiceLocator.getInstance().getTagMappingDao().getAll();
+        final List<TagMapping> all = ServiceLocator.getInstance().getTagMappingDao().getAll();
         if (all.isEmpty()) {
             return List.of();
         }
 
-        final TagDao tagDao = ServiceLocator.getInstance().getTagDao();
         final List<Tag> result = new ArrayList<>();
         tags.forEach(tag -> {
-            final Set<String> replacement = all.get(tag.getName().toLowerCase(locale));
-            if (replacement == null) {
+            final List<Tag> replacement = all
+                    .stream()
+                    .filter(tm -> tm.getName().equalsIgnoreCase(tag.getName()))
+                    .flatMap(tm -> tm.getMappings().stream())
+                    .map(Tag::new)
+                    .collect(Collectors.toList());
+
+            if (replacement.isEmpty()) {
                 result.add(tag);
             } else {
-                replacement.stream()
-                           .map(Tag::new)
-                           .forEach(result::add);
+                result.addAll(replacement);
             }
         });
 
-        tagDao.pruneList(context, result, tag -> locale);
+        ServiceLocator.getInstance().getTagDao().pruneList(context, result, tag -> locale);
         return result;
     }
 

@@ -23,50 +23,48 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
+import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 
-/**
- * Note that the external-tag names MUST/are always be lowercase.
- */
 public interface TagMappingDao {
 
     /**
-     * Get all mapping.
-     * <p>
-     * <strong>The key in the map, i.e. the external tag name</strong> will be all-lowercase.
+     * Get all mappings.
      *
      * @return mappings
      */
     @NonNull
-    Map<String, Set<String>> getAll();
+    List<TagMapping> getAll();
 
     /**
      * Insert a new mapping pair.
      *
-     * @param extTag   the <strong>external/site</strong> tag name
-     *                 MUST be all-lowercase.
-     * @param mappings the set of <strong>internal/local</strong> tags to replace the above with.
+     * @param mapping to insert
      *
      * @return the row id of the newly inserted item
      *
-     * @throws DaoWriteException on failure
+     * @throws DaoInsertException on failure
      */
     @IntRange(from = 1)
-    long insert(@NonNull String extTag,
-                @NonNull Set<String> mappings)
-            throws DaoWriteException;
+    long insert(@NonNull TagMapping mapping)
+            throws DaoInsertException;
+
+    void update(@NonNull TagMapping mapping)
+            throws DaoUpdateException;
 
     /**
-     * Delete the given {@link Identifier}.
+     * Delete the given {@link TagMapping}.
      *
-     * @param extTag <strong>external/site</strong> tag name to delete
-     *               MUST be all-lowercase.
+     * @param mapping to delete
      *
      * @return {@code true} if a row was deleted
      */
-    boolean delete(@NonNull String extTag);
+    boolean delete(@NonNull TagMapping mapping);
+
+    @NonNull
+    Optional<TagMapping> findByName(TagMapping mapping);
 }

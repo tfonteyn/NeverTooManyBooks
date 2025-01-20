@@ -29,19 +29,20 @@ import android.util.Pair;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
+import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAG_MAPPINGS;
@@ -56,8 +57,7 @@ public class TagMappingDaoImpl
 
     private static final String TAG = "TagMappingDaoImpl";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
-
-    private static final Pattern SPLIT = Pattern.compile("[^\\\\],");
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     /**
      * Constructor.
@@ -97,10 +97,7 @@ public class TagMappingDaoImpl
                                  @NonNull final Set<String> mappings,
                                  @NonNull final ExtSQLiteStatement stmt) {
 
-        final String mapped = mappings
-                .stream()
-                .map(s -> s.replace(",", "\\,"))
-                .collect(Collectors.joining(","));
+        final String mapped = TagMapping.encodeMappingString(mappings);
         stmt.bindString(1, tag);
         stmt.bindString(2, mapped);
         return stmt.executeInsert();
@@ -108,47 +105,87 @@ public class TagMappingDaoImpl
 
     @NonNull
     @Override
-    public Map<String, Set<String>> getAll() {
-        final Map<String, Set<String>> map = new HashMap<>();
-        try (Cursor cursor = db.rawQuery(Sql.GET_ALL, null)) {
-            while (cursor.moveToNext()) {
-                final String tag = cursor.getString(0);
-                final String[] split = SPLIT.split(cursor.getString(1));
-                map.put(tag, Set.of(split));
+    public Optional<TagMapping> findByName(final TagMapping mapping) {
+        final String name = mapping.getName();
+
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{name})) {
+            if (cursor.moveToFirst()) {
+                final CursorRow rowData = new CursorRow(cursor);
+                return Optional.of(new TagMapping(rowData.getLong(DBKey.PK_ID), rowData));
+            } else {
+                return Optional.empty();
             }
         }
-        return map;
+    }
+
+    @NonNull
+    @Override
+    public List<TagMapping> getAll() {
+        final List<TagMapping> list = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(Sql.GET_ALL, null)) {
+            final CursorRow rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                list.add(new TagMapping(rowData.getLong(DBKey.PK_ID), rowData));
+            }
+        }
+        return list;
     }
 
     @IntRange(from = 1)
     @Override
-    public long insert(@NonNull final String extTag,
-                       @NonNull final Set<String> mappings)
+    public long insert(@NonNull final TagMapping mapping)
             throws DaoInsertException {
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            iId = doInsert(extTag, mappings, stmt);
+            iId = doInsert(mapping.getName(), mapping.getMappings(), stmt);
         }
         if (iId != -1) {
+            mapping.setId(iId);
             return iId;
         }
         // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + extTag + "=" + mappings);
+        throw new DaoInsertException(ERROR_INSERT_FROM + mapping);
     }
 
     @Override
-    public boolean delete(@NonNull final String extTag) {
+    public void update(@NonNull final TagMapping mapping)
+            throws DaoUpdateException {
+
         final int rowsAffected;
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_TAG)) {
-            stmt.bindString(1, extTag);
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+            stmt.bindString(1, mapping.getName());
+            stmt.bindString(2, TagMapping.encodeMappingString(mapping.getMappings()));
+
+            stmt.bindLong(3, mapping.getId());
+            rowsAffected = stmt.executeUpdateDelete();
+        }
+
+        if (rowsAffected > 0) {
+            return;
+        }
+
+        throw new DaoUpdateException(ERROR_UPDATE_FROM + mapping);
+
+    }
+
+    @Override
+    public boolean delete(@NonNull final TagMapping mapping) {
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
+            stmt.bindLong(1, mapping.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
         return rowsAffected > 0;
     }
 
     private static final class Sql {
-        static final String DELETE_BY_TAG =
-                DELETE_FROM_ + TBL_TAG_MAPPINGS.getName() + _WHERE_ + DBKey.TAG + "=?";
+
+        static final String FIND_BY_NAME =
+                SELECT_ + DBKey.PK_ID
+                + ',' + DBKey.TAG
+                + ',' + DBKey.TAG_MAPPING
+                + _FROM_ + TBL_TAG_MAPPINGS.getName()
+                + _WHERE_ + DBKey.TAG + "=?";
 
         static final String INSERT =
                 INSERT_INTO_ + TBL_TAG_MAPPINGS.getName()
@@ -156,8 +193,20 @@ public class TagMappingDaoImpl
                 + ',' + DBKey.TAG_MAPPING
                 + ") VALUES(?,?)";
 
+        static final String UPDATE =
+                UPDATE_ + TBL_TAG_MAPPINGS.getName()
+                + _SET_ + DBKey.TAG + "=?"
+                + ',' + DBKey.TAG_MAPPING + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        static final String DELETE_BY_ID =
+                DELETE_FROM_ + TBL_TAG_MAPPINGS.getName()
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
         static final String GET_ALL =
-                SELECT_ + DBKey.TAG + ',' + DBKey.TAG_MAPPING
+                SELECT_ + DBKey.PK_ID
+                + ',' + DBKey.TAG
+                + ',' + DBKey.TAG_MAPPING
                 + _FROM_ + TBL_TAG_MAPPINGS.getName()
                 + _ORDER_BY_ + DBKey.TAG;
     }
