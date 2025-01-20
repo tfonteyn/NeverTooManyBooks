@@ -107,7 +107,7 @@
     <string name="and_others_textual">%1$s et al.</string>
 
     <!-- Same as "and_others" but with the number of items added.
-         HTML string, must be between a CDATA tag/brackets;
+         HTML string, must be inside a CDATA section;
          Support for RTL languages -->
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <!-- Should internal formatting of price/currency fail, then this fallback format is used.
@@ -828,7 +828,8 @@
          Param 2: the "All books" bookshelf name -->
     <string name="confirm_delete_bookshelf">Delete the bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
 
-    <!-- Param 1: Tag name -->
+    <!-- context: mapping/substitution of one item to another item
+         Param 1: Tag name -->
     <string name="confirm_delete_mapping">Delete the mapping for “%1$s”?</string>
 
     <!-- Param 1: Tag name -->
@@ -1167,7 +1168,7 @@
     <!-- Plural of "lbl_identifier" -->
     <string name="lbl_identifiers">Identifiers</string>
     <!-- Small suffix for a site to indicate the field is an identifier.
-         HTML string, must be between a CDATA tag/brackets;
+         HTML string, must be inside a CDATA section;
          Example:  "Goodreads ID"  (with ID in a smaller font)
          The "ID" string should be very short, maximum 3 or 4 characters.
          -->
