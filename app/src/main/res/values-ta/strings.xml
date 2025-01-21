@@ -284,7 +284,7 @@
     <string name="style_type_builtin">பில்டின்</string>
     <string name="style_type_user_defined">பயனர் வரையறுக்கப்பட்ட</string>
     <string name="info_builtin_style_asterix">(* இயல்புநிலை பாணிகள்)</string>
-    <string name="lbl_group_read_and_unread">படித்த மற்றும் படிக்காத புத்தகங்கள்.</string>
+    <string name="lbl_group_read_and_unread">படித்த மற்றும் படிக்காத புத்தகங்கள்</string>
     <string name="lbl_group_1st_char_author_family_name">எழுத்தாளர் குடும்பப் பெயரின் 1 வது எழுத்து</string>
     <string name="lbl_group_1st_char_series_title">தொடர் தலைப்பின் 1 வது எழுத்து</string>
     <string name="lbl_group_1st_char_publisher_name">வெளியீட்டாளரின் பெயரின் 1 வது எழுத்து</string>
