@@ -157,7 +157,7 @@
     <string name="warning_cannot_delete_1st_bs">முதல் புத்தக அலமாரியை நீக்க முடியாது.</string>
     <string name="warning_already_in_list">ஏற்கனவே பட்டியலில்!</string>
     <string name="error_import_csv_line">%1$d வரிசையில் தெரியாத பிழை</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ஐடி</small>]]></string>
     <string name="fallback_currency_format">%1$s %2$.2f</string>
     <string name="warning_toc_confirm">இந்த தலைப்புகள் (பெரும்பாலும்) சரியானவை என்பதை உறுதிப்படுத்தவும்.</string>
     <string name="warning_backup_request">உங்கள் தரவுத்தளத்தை உங்கள் SDCARD க்கு காப்புப் பிரதி எடுக்க விரும்புகிறீர்களா?</string>
