@@ -241,6 +241,7 @@
     <string name="info_calibre_content_server_extension">Tiện ích mở rộng Máy chủ Nội dung Calibre chưa được cài đặt. Thư viện ảo sẽ không có sẵn.</string>
     <string name="info_cleanup_files">Các tệp có thể xóa hiện đang sử dụng %1$s trên thẻ SD. Các tệp nhật ký và dữ liệu khác được lưu trên thẻ SD mỗi lần nâng cấp, khi bạn sao lưu cơ sở dữ liệu hoặc khi ứng dụng gặp sự cố. Nhấn vào nút bên dưới để xóa các tệp này khỏi thẻ SD của bạn. Nếu bạn gặp sự cố hoặc lỗi khác, trước tiên hãy cân nhắc sử dụng nút “%2$s”.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d sách, trong %2$d mục</string>
+    <string name="info_tap_to_move_tag">Chạm vào thẻ để di chuyển nó đến/ra khỏi cuốn sách</string>
     <string name="info_substitutions_one_per_line">Thêm một thay thế cho mỗi dòng</string>
     <string name="info_download_successful">Tải xuống thành công</string>
     <string name="info_export_books_option_since_last_full_backup">Sách được thêm hoặc cập nhật kể từ lần sao lưu đầy đủ gần đây nhất.</string>

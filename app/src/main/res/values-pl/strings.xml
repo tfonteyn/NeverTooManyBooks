@@ -539,6 +539,7 @@
     <string name="pt_field_visibility">Dostosuj widoczność pól</string>
     <string name="preference_not_set">Nie ustawiono</string>
     <string name="info_backup_successful">Резервное копирование выполнено успешно</string>
+    <string name="info_tap_to_move_tag">Dotknij tagu, aby przenieść go do/z książki</string>
     <string name="info_substitutions_one_per_line">Dodaj jedno podstawienie w każdym wierszu</string>
     <string name="info_download_successful">Pobieranie powiodło się</string>
     <string name="info_export_report">W wybranym folderze został utworzony plik %1$s o nazwie „%2$s”. Należy go ręcznie skopiować w inne miejsce, aby chronić dane w przypadku uszkodzenia, zgubienia lub kradzieży urządzenia.</string>

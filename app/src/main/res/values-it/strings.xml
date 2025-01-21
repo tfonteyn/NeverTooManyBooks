@@ -523,6 +523,7 @@
     <string name="pt_field_visibility">Gestisci visibilità campi</string>
     <string name="preference_not_set">Non impostato</string>
     <string name="info_backup_successful">Backup riuscito</string>
+    <string name="info_tap_to_move_tag">Toccare un\'etichetta per spostarla nel/dal libro.</string>
     <string name="info_substitutions_one_per_line">Aggiungere una sostituzione per riga</string>
     <string name="info_download_successful">Download riuscito</string>
     <string name="info_export_report">Nella cartella selezionata è stato creato un file %1$s chiamato «%2$s». È necessario copiarlo manualmente altrove per proteggere i dati in caso di danneggiamento, smarrimento o furto del dispositivo.</string>
