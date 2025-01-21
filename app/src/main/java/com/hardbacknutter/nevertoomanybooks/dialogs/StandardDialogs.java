@@ -30,6 +30,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -162,11 +163,16 @@ public final class StandardDialogs {
     public static void deleteTag(@NonNull final Context context,
                                  @NonNull final Tag tag,
                                  @NonNull final Runnable onConfirm) {
+        final int books = ServiceLocator.getInstance().getTagDao().getBookIds(tag.getId()).size();
+        final String nrOfBook = context.getResources().getQuantityString(R.plurals.n_books,
+                                                                         books, books);
+        final String msg = context.getString(R.string.confirm_delete_tag_from_x_books,
+                                             tag.getLabel(context),
+                                             nrOfBook);
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.action_delete)
-                .setMessage(context.getString(R.string.confirm_delete_tag,
-                                              tag.getLabel(context)))
+                .setMessage(msg)
                 .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
                 .create()
