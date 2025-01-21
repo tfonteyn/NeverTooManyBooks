@@ -820,4 +820,8 @@
     <string name="info_tap_to_move_tag">轻按标签将其移动到书籍或从书籍移出</string>
     <string name="confirm_delete_tag">删除标签 “%1$s”？  将从所有设置了该标签的书籍处移除它。不会删除书籍本身。</string>
     <string name="confirm_merge_tags">你正修改的标签已存在。你要合并它们吗？</string>
+    <string name="info_substitutions_one_per_line">每行添加一个替代</string>
+    <string name="confirm_delete_tag_from_x_books">删除 “%1$s” 标签？\n\n将从设置了该标签的 %2$s 处删除它。书籍本身不会被删除。</string>
+    <string name="confirm_delete_substitutions">删除 “%1$s” 的替代？</string>
+    <string name="lbl_substitutions">替代</string>
 </resources>
