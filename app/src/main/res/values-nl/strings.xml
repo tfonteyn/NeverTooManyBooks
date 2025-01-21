@@ -145,6 +145,7 @@
     <string name="confirm_delete_series">Verwijder de reeks „%1$s”?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_substitutions">De substituties voor “%1$s” verwijderen?</string>
     <string name="confirm_delete_tag">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit alle boeken waarop deze tag is gezet. De boeken zelf worden niet verwijderd.</string>
+    <string name="confirm_delete_tag_from_x_books">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit %2$s waarop deze tag is gezet. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_style">De stijl „%1$s” verwijderen?</string>
     <string name="confirm_delete_toc_entry_everywhere">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>

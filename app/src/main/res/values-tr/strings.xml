@@ -150,6 +150,7 @@
     <string name="confirm_delete_style">“%1$s” stili silinsin mi?</string>
     <string name="confirm_delete_substitutions">“%1$s” için ikameleri silelim mi?</string>
     <string name="confirm_delete_tag">“%1$s” etiketini silin.\n\nEtiket, üzerinde bulunduğu tüm kitaplardan silinecektir. Kitapların kendileri silinmeyecektir.</string>
+    <string name="confirm_delete_tag_from_x_books">“%1$s” etiketini silin.\n\nnEtiket, üzerinde bulunduğu %2$s silinecektir. Kitapların kendileri silinmeyecektir.</string>
     <string name="confirm_delete_toc_entry_everywhere">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>
     <string name="confirm_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>
     <string name="confirm_email_file">Bu dosyayı birisine e-posta ile göndermek ister misiniz?</string>

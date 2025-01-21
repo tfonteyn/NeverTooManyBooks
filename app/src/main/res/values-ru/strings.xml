@@ -160,6 +160,7 @@
     <string name="confirm_delete_style">Удалить стиль «%1$s»?</string>
     <string name="confirm_delete_substitutions">Удалить подстановки для «%1$s»?</string>
     <string name="confirm_delete_tag">Удалить тег «%1$s»?\n\nОн будет удален из всех книг, на которых он установлен. Сами книги не будут удалены.</string>
+    <string name="confirm_delete_tag_from_x_books">Удалить тег «%1$s»?\n\nОн будет удален с %2$s, на которых он установлен. Сами книги не будут удалены.</string>
     <string name="confirm_delete_toc_entry_everywhere">Действительно удалить запись «%1$s» (от %2$s)? Он будет удален из всех книг, в которых он указан. Сами книги не будут удалены.</string>
     <string name="confirm_merge_tags">Тег, который вы изменяете, уже существует. Не хотите ли вы объединить их?</string>
     <string name="confirm_duplicate_book_message">Книга, которую Вы пытаетесь добавить уже есть в базе. Вы уверены, что хотите добавить ещё одну копию этой книги?</string>

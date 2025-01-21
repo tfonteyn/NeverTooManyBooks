@@ -316,6 +316,7 @@
     <string name="confirm_delete_bookshelf">Excluir a prateleira“%1$s”? Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%2$s”.</string>
     <string name="confirm_delete_substitutions">Eliminar as substituições de “%1$s”?</string>
     <string name="confirm_delete_tag">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de todos os livros em que estiver definida. Os livros em si não serão eliminados.</string>
+    <string name="confirm_delete_tag_from_x_books">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de %2$s em que estiver definida. Os livros em si não serão eliminados.</string>
     <string name="confirm_delete_toc_entry_everywhere">Pretende realmente excluir o título “%1$s” por %2$s? Ele será excluído de todos os livros em que estiver listado. Os próprios livros não serão excluídos.</string>
     <string name="warning_nothing_selected">Nada selecionado</string>
     <string name="info_isfdb_warning_limited_to">(suportado apenas pelo site do ISFDB)</string>

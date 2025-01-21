@@ -156,6 +156,7 @@
     <string name="confirm_delete_style">Xóa kiểu “%1$s”?</string>
     <string name="confirm_delete_substitutions">Xóa các thay thế cho “%1$s”?</string>
     <string name="confirm_delete_tag">Xóa thẻ “%1$s”?\n\nNó sẽ bị xóa khỏi tất cả các sách mà nó được đặt. Bản thân các sách sẽ không bị xóa.</string>
+    <string name="confirm_delete_tag_from_x_books">Xóa thẻ “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s nơi nó được đặt. Bản thân các sách sẽ không bị xóa.</string>
     <string name="confirm_delete_toc_entry_everywhere">Thực sự xóa nhan đề “%1$s” của %2$s? Nó sẽ bị xóa khỏi tất cả các sách có liệt kê nó. Bản thân các cuốn sách sẽ không bị xóa.</string>
     <string name="confirm_merge_tags">Thẻ bạn đang sửa đổi đã tồn tại. Bạn có muốn hợp nhất chúng không?</string>
     <string name="confirm_duplicate_book_message">Cuốn sách bạn đang cố gắng thêm đã tồn tại trong cơ sở dữ liệu, bạn có chắc chắn muốn thêm một bản khác không?</string>

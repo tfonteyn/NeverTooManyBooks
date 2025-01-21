@@ -151,6 +151,7 @@
     <string name="confirm_delete_style">Den Stil „%1$s“ löschen?</string>
     <string name="confirm_delete_substitutions">Die Ersetzungen für „%1$s“ löschen?</string>
     <string name="confirm_delete_tag">Das Tag „%1$s“ löschen?\n\nEs wird aus allen Büchern gelöscht, in denen es gesetzt ist. Die Bücher selbst werden nicht gelöscht.</string>
+    <string name="confirm_delete_tag_from_x_books">Das Tag „%1$s“ löschen?\n\nEs wird aus %2$s gelöscht, in denen es gesetzt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_delete_toc_entry_everywhere">Den Eintrag „%1$s“ (von %2$s) wirklich löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_merge_tags">Der Tag, den Sie ändern möchten, existiert bereits. Möchten Sie sie zusammenführen?</string>
     <string name="confirm_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in der Datenbank. Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?</string>

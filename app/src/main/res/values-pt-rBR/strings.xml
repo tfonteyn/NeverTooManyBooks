@@ -235,6 +235,7 @@
     <string name="confirm_merge_tags">A tag que você está modificando já existe. Você gostaria de mesclá-las?</string>
     <string name="confirm_delete_substitutions">Excluir as substituições para “%1$s”?</string>
     <string name="confirm_delete_tag">Excluir a tag “%1$s”?\n\nEla será excluída de todos os livros nos quais estiver definida. Os livros em si não serão excluídos.</string>
+    <string name="confirm_delete_tag_from_x_books">Excluir a tag “%1$s”?\n\nEla será excluída de %2$s nos quais estiver definida. Os livros em si não serão excluídos.</string>
     <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tags</string>
 </resources>

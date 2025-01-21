@@ -153,6 +153,7 @@
     <string name="confirm_delete_style">Eliminare lo stile «%1$s»?</string>
     <string name="confirm_delete_substitutions">Cancellare le sostituzioni per “%1$s”?</string>
     <string name="confirm_delete_tag">Eliminare il tag «%1$s»?\n\nVerrà eliminata da tutti i libri su cui è impostata. I libri stessi non verranno eliminati.</string>
+    <string name="confirm_delete_tag_from_x_books">Eliminare il tag «%1$s»?\n\nVerrà eliminata da %2$s su cui è impostata. I libri stessi non verranno eliminati.</string>
     <string name="confirm_delete_toc_entry_everywhere">Cancellare davvero il titolo «%1$s» (di %2$s)? Sarà cancellato da tutti i libri in cui è elencato. Libri stessi non saranno cancellati.</string>
     <string name="confirm_merge_tags">Il tag che si sta modificando esiste già. Si desidera unirli?</string>
     <string name="confirm_duplicate_book_message">Il libro che stai cercando di aggiungere è già presente nel database, vuoi aggiungerne un’altra copia?</string>

@@ -21,7 +21,7 @@
 <!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!--suppress LongLine -->
+<!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="list_element">• %s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
@@ -388,6 +388,7 @@
     <string name="confirm_delete_bookshelf">புத்தக அலமாரியை “%1$s” நீக்கவா? புத்தகங்கள் தானே நீக்கப்படாது. அவை இன்னும் வேறு எந்த அலமாரிகளிலும் அல்லது “%2$s” அலமாரியில் இருக்கும்.</string>
     <string name="confirm_delete_substitutions">“%1$s”க்கான மாற்றுகளை நீக்கவா?</string>
     <string name="confirm_delete_tag">“%1$s” என்ற குறிச்சொல்லை நீக்கவா?\n\n அது அமைக்கப்பட்ட அனைத்து புத்தகங்களிலிருந்தும் இது நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
+    <string name="confirm_delete_tag_from_x_books">“%1$s” என்ற குறிச்சொல்லை நீக்கவா?\n\n இது அமைக்கப்பட்டிருக்கும் %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
     <string name="confirm_delete_toc_entry_everywhere">“ %1$s” என்ற தலைப்பை %2$s ஆல் நீக்கவா? இது பட்டியலிடப்பட்ட அனைத்து புத்தகங்களிலிருந்தும் நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
     <string name="confirm_remove_toc_entry">இந்த புத்தகத்திலிருந்து “ %1$s” என்ற தலைப்பை %2$s ஆல் அகற்றவா?</string>
     <string name="confirm_scope_for_delete">“ %1$s” என்ற தலைப்பை %2$s ஆல் நீக்கு\n\n இந்த மாற்றத்தை எவ்வாறு பயன்படுத்த விரும்புகிறீர்கள்?\n குறிப்பு: “%3$s” தேர்வு செயல்தவிர்க்க முடியாது!</string>

@@ -835,7 +835,7 @@
     <!-- Param 1: Tag name -->
     <string name="confirm_delete_tag">Delete the tag “%1$s”?\n\nIt will be deleted from all books on which it is set. The books themselves will not be deleted.</string>
     <!-- Param 1: Tag name
-         Param 2: content of plural "displaying_n_books",
+         Param 2: content of plural "n_books",
                   e.g.: "It will be deleted from 5 books on which it is set."
     -->
     <string name="confirm_delete_tag_from_x_books">Delete the tag “%1$s”?\n\nIt will be deleted from %2$s on which it is set. The books themselves will not be deleted.</string>
