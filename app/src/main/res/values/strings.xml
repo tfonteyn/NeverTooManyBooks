@@ -594,7 +594,9 @@
 
     <!-- endregion -->
     <!-- region ========== Booklist Group names. -->
-    <!-- Booklist Group name -->
+    <!-- Booklist Group name:
+         2 groups, one for the books you have read, the other for the books you have not read yet.
+    -->
     <string name="lbl_group_read_and_unread">Read &amp; Unread</string>
     <!-- Booklist Group name -->
     <string name="lbl_group_1st_char_author_family_name">1st character of the Author family name</string>

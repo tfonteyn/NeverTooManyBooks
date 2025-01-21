@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes « … »  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -96,7 +99,7 @@
     <string name="action_synchronize">Synchroniser</string>
     <string name="and_others">%1$s…</string>
     <string name="and_others_textual">%1$s et al.</string>
-    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(L’auteur est manquant)</string>
     <string name="bob_empty_day">(Jour non défini)</string>
     <string name="bob_empty_field">(Vide)</string>
@@ -439,7 +442,7 @@
     <string name="lbl_website_address">Adresse du site (URL)</string>
     <string name="lbl_websites">Sites Internet</string>
     <string name="bookshelf_my_wishlist">Liste de souhaits</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Année</string>
     <string name="list_and">et</string>
     <string name="ellipsize">%1$s…</string>
