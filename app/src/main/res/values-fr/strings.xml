@@ -521,7 +521,7 @@
     <string name="pt_field_visibility">Gérer la visibilité des champs</string>
     <string name="preference_not_set">Non définie</string>
     <string name="info_backup_successful">Sauvegarde réussie</string>
-    <string name="info_tap_to_move_tag">Appuyez sur une étiquette pour la déplacer vers/depuis le livre</string>
+    <string name="info_tap_to_move_tag">Appuyez sur une étiquette pour la déplacer vers/depuis le livre.</string>
     <string name="info_substitutions_one_per_line">Ajouter une substitution par ligne</string>
     <string name="info_download_successful">Téléchargement réussi</string>
     <string name="info_export_report">Un fichier de %1$s appelé « %2$s » a été créé dans le dossier sélectionné. Vous devez le copier manuellement ailleurs pour protéger les données en cas d’endommagement, de perte ou de vol de votre appareil.</string>
