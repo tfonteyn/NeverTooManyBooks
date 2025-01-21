@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -122,14 +122,29 @@ public final class EditParcelableLauncher<T extends Parcelable>
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
+    /**
+     * Set the listener which will be used by {@link #add(Context, Parcelable)}.
+     *
+     * @param listener to use
+     */
     public void setOnAddListener(@NonNull final OnAddListener<T> listener) {
         this.onAddListener = listener;
     }
 
+    /**
+     * Set the listener which will be used by {@link #edit(Context, Parcelable)}.
+     *
+     * @param listener to use
+     */
     public void setOnEditListener(@NonNull final OnEditListener<T> listener) {
         this.onEditListener = listener;
     }
 
+    /**
+     * Set the listener which will be used by {@link #editInPlace(Context, Parcelable)}.
+     *
+     * @param listener to use
+     */
     public void setOnEditInPlaceListener(@NonNull final OnEditInPlaceListener<T> listener) {
         this.onEditInPlaceListener = listener;
     }
