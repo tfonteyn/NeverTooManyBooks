@@ -3,14 +3,13 @@ Draft notes for next version:
 ### 7.0.0
 
 NEW:
+- new UI language: Tamil, kindly contributed by [தமிழ்நேரம்](https://hosted.weblate.org/user/TamilNeram/)
 - Goodreads added as a search-site
 - The 'genre' field has been replaced by a versatile tag/keyword system.
 - We're now collecting many more website book-id's and making most available
   as book-links to the original site and allow them to be used as direct/unique searches.
-
 - "Share" has been extended to provide several "Citation" formats.
   Configurable on a style: original ('I read...') / BibTex / MLA / RIS
-
 - Book list header now shows filter/search indicators even when the text is hidden
 - Enhanced parsing in series title/number to better detect titles with embedded digits
 - Parsing enhancement: IsfDb (Editor), KB.NL (Description, Pages, Translated titles)
@@ -24,7 +23,6 @@ FIXES:
   i.e. we got "Kim" and "Stanley Robinson" instead of "Kim Stanley" and "Robinson".
 
 REMOVED:
-- genre as a single field
 
 ====================================================================================================
 Supported Android versions:
