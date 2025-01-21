@@ -1010,12 +1010,14 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.TAG, SqLiteDataType.Text)
                         .notNull()
                         .unique()
+                        .localized()
                         .build();
 
         DOM_TAG_MAPPING =
                 new Domain.Builder(DBKey.TAG_MAPPING, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .localized()
                         .build();
 
         /* ======================================================================================
@@ -1034,6 +1036,7 @@ public final class DBDefinitions {
         DOM_IDENT_NAME =
                 new Domain.Builder(DBKey.IDENT_NAME, SqLiteDataType.Text)
                         .notNull()
+                        .localized()
                         .build();
 
         DOM_IDENT_SID =

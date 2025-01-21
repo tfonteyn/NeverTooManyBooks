@@ -62,11 +62,11 @@ public final class DBKey {
      * ======================================================================================
      */
 
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. The keyword. */
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. The keyword. Not localized. */
     public static final String IDENT_KEY = "key";
     /** {@link DBDefinitions#TBL_IDENTIFIERS}. Type: a char: S or L. */
     public static final String IDENT_TYPE = "type";
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. A short name; i.e. website name. Not localized. */
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. A short name; i.e. website name. Localized. */
     public static final String IDENT_NAME = "name";
 
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
@@ -263,10 +263,10 @@ public final class DBKey {
     /** Flag: the user can 'lock' (i.e. set 'false') a book from being automatically updated. */
     public static final String AUTO_UPDATE = "auto_update";
 
-    /** {@link DBDefinitions#TBL_TAGS}. */
+    /** {@link DBDefinitions#TBL_TAGS}. Localized. */
     public static final String TAG = "tag";
 
-    /** {@link DBDefinitions#TBL_TAG_MAPPINGS}. */
+    /** {@link DBDefinitions#TBL_TAG_MAPPINGS}. Localized. */
     public static final String TAG_MAPPING = "mapping";
 
     /** {@link DBDefinitions#TBL_BOOK_LOANEE}. */
