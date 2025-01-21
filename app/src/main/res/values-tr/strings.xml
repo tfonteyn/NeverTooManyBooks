@@ -523,7 +523,7 @@
     <string name="pt_field_visibility">Alan görünürlüğünü yönet</string>
     <string name="preference_not_set">Ayarlanmadı</string>
     <string name="info_backup_successful">Yedekleme başarılı</string>
-    <string name="info_tap_to_move_tag">Kitaba taşımak veya kitaptan çıkarmak için bir etikete dokunun</string>
+    <string name="info_tap_to_move_tag">Kitaba taşımak veya kitaptan çıkarmak için bir etikete dokunun.</string>
     <string name="info_substitutions_one_per_line">Her satıra bir ikame ekleyin</string>
     <string name="info_download_successful">İndirme başarılı</string>
     <string name="info_export_report">Seçilen klasörde “%2$s” adında bir %1$s dosyası oluşturuldu. Cihazınızın hasar görmesi, kaybolması veya çalınması durumunda verileri korumak için elle başka bir yere kopyalamanız gerekir.</string>
