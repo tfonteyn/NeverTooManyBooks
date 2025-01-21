@@ -161,6 +161,7 @@
     <string name="confirm_delete_publisher">刪除出版商「%1$s」嗎？\n\n將不會刪除圖書本身。\n\n若要保留此數據，請考慮編輯出版商，將其名稱改為另一出版商的名稱。</string>
     <string name="confirm_delete_series">刪除系列「%1$s」嗎？\n\n將不會刪除圖書本身。\n\n若要保留此數據，請考慮編輯系列，將其名稱改為另一系列的名稱。</string>
     <string name="confirm_delete_style">刪除樣式「%1$s」嗎？</string>
+    <string name="confirm_delete_tag_from_x_books">刪除「%1$s」標籤？\\n\\n將從設定了該標籤的「%2$s」處刪除它。書籍本身不會被刪除。</string>
     <string name="confirm_delete_toc_entry_everywhere">真的要刪除 %2$s 的標題「%1$s」嗎？它將會從將其列出的所有圖書中被刪除。將不會刪除圖書本身。</string>
     <string name="confirm_merge_tags">你正修改的標籤已存在。你要合併它們嗎？</string>
     <string name="confirm_duplicate_book_message">您要新增的圖書已經存在於資料庫中，您確定要再增加一本嗎？</string>
@@ -245,6 +246,7 @@
     <string name="info_calibre_content_server_extension">沒有安裝Calibre內容伺服器擴充。不提供虛擬圖書館。</string>
     <string name="info_cleanup_files">可刪除檔案目前佔用 SD 卡 %1$s 空間。當您備份資料庫或應用程式崩潰時，會將日誌與其他資料檔案儲存在 SD 卡上。點擊下方按鈕以從 SD 卡刪除這些檔案。如果您遇到了崩潰或其他問題，請考慮先使用「%2$s」按鈕。</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d書，在 %2$d條目中</string>
+    <string name="info_substitutions_one_per_line">每行添加一個替代</string>
     <string name="info_download_successful">下載成功</string>
     <string name="info_export_books_option_since_last_full_backup">自上次完整備份後新增或更新的圖書。</string>
     <string name="info_export_successful">匯出成功</string>
@@ -439,6 +441,7 @@
     <string name="lbl_settings">設定</string>
     <string name="lbl_tag">標籤</string>
     <string name="lbl_tags">標記</string>
+    <string name="lbl_substitutions">替代</string>
     <string name="lbl_signed">已簽署</string>
     <string name="lbl_site_book_id">網站圖書 ID</string>
     <string name="lbl_sort_ascending">遞增</string>
@@ -819,5 +822,7 @@
     <string name="ps_sort_author_name_given_first">優先按名字排序，\n如「Cixin Liu」</string>
     <string name="lbl_identifier">識別碼</string>
     <string name="lbl_identifiers">識別碼</string>
-    <string name="confirm_delete_tag">刪除標籤 “%1$s”？將從所有設定了該標籤的書籍處移除它。不會刪除書籍本身。</string>
+    <string name="confirm_delete_substitutions">刪除「%1$s」的替代？</string>
+    <string name="confirm_delete_tag">刪除標籤「%1$s」？將從所有設定了該標籤的書籍處移除它。不會刪除書籍本身。</string>
+    <string name="info_tap_to_move_tag">輕按標籤將其移動到書籍或從書籍移出</string>
 </resources>
