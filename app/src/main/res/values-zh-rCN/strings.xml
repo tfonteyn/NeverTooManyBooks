@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -815,6 +818,6 @@
     <string name="lbl_identifier">标识符</string>
     <string name="lbl_identifiers">标识符</string>
     <string name="info_tap_to_move_tag">轻按标签将其移动到书籍或从书籍移出</string>
-    <string name="confirm_delete_tag">删除标签 “%1$s”？\n\n将从所有设置了该标签的书籍处移除它。不会删除书籍本身。</string>
+    <string name="confirm_delete_tag">删除标签 “%1$s”？  将从所有设置了该标签的书籍处移除它。不会删除书籍本身。</string>
     <string name="confirm_merge_tags">你正修改的标签已存在。你要合并它们吗？</string>
 </resources>

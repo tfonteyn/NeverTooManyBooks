@@ -37,6 +37,10 @@
     <string name="acra_report_saved">நீங்கள் இப்போது கிதுபில் உள்ள திட்டப் பக்கத்தைப் பார்வையிட்டு புதிய சிக்கலை பதிவு செய்யலாம். முன்னர் சேமிக்கப்பட்ட அறிக்கையை பிரச்சினைக்கு இணைக்கவும். உங்களிடம் இன்னும் அறிவிலிமையம் கணக்கு இல்லையென்றால், நீங்கள் ஒன்றை உருவாக்க வேண்டும்.</string>
     <string name="X_httpErrorIO">சேவையகத்துடன் தொடர்பு கொள்ள முடியவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்.</string>
     <string name="httpErrorTimeout">சேவையகத்திற்கான இணைப்பு நேரம் முடிந்தது.</string>
+    <plurals name="n_books">
+        <item quantity="one">%1$d நூல்</item>
+        <item quantity="other">%1$d புத்தகங்கள்</item>
+    </plurals>
     <plurals name="n_books_found">
         <item quantity="one">%1$d நூல் காணப்பட்டது</item>
         <item quantity="other">%1$d புத்தகங்கள் கிடைத்தன</item>
@@ -197,6 +201,7 @@
     <string name="info_tap_on_thumbnail_to_zoom">ஒரு பெரிய படத்தைக் காட்ட சிறு உருவத்தைத் தட்டவும்.</string>
     <string name="info_tap_to_select">தேர்ந்தெடுக்க தட்டவும்.</string>
     <string name="info_tap_to_move_tag">ஒரு குறிச்சொல்லை புத்தகத்திலிருந்து/நகர்த்தத் தட்டவும்</string>
+    <string name="info_substitutions_one_per_line">ஒரு வரிக்கு ஒரு மாற்று சேர்க்கவும்</string>
     <string name="info_download_successful">வெற்றிகரமாக பதிவிறக்கவும்</string>
     <string name="info_calibre_content_server_extension">காலிபர் உள்ளடக்க சேவையக நீட்டிப்பு நிறுவப்படவில்லை. மெய்நிகர் நூலகங்கள் கிடைக்காது.</string>
     <string name="cd_btn_drag_handle">இந்த பட்டியலை மறுதொடக்கம் செய்ய இழுக்கவும்</string>
@@ -381,6 +386,7 @@
     <string name="confirm_delete_series">“%1$s” தொடரை நீக்கவா?\n\n புத்தகங்கள் தானே நீக்கப்படாது.\n\n இந்தத் தரவைப் பாதுகாக்க தொடரைத் திருத்தி, தொடர் பெயரை மற்றொரு தொடருக்கு மாற்றுவதைக் கவனியுங்கள்.</string>
     <string name="confirm_delete_publisher">வெளியீட்டாளரை “%1$s” நீக்கவா?\n\n புத்தகங்கள் தானே நீக்கப்படாது.\n\n இந்தத் தரவைப் பாதுகாக்க வெளியீட்டாளரைத் திருத்துவதையும் வெளியீட்டாளரின் பெயரை மற்றொரு வெளியீட்டாளருக்கு மாற்றுவதையும் கவனியுங்கள்.</string>
     <string name="confirm_delete_bookshelf">புத்தக அலமாரியை “%1$s” நீக்கவா? புத்தகங்கள் தானே நீக்கப்படாது. அவை இன்னும் வேறு எந்த அலமாரிகளிலும் அல்லது “%2$s” அலமாரியில் இருக்கும்.</string>
+    <string name="confirm_delete_substitutions">“%1$s”க்கான மாற்றுகளை நீக்கவா?</string>
     <string name="confirm_delete_tag">“%1$s” என்ற குறிச்சொல்லை நீக்கவா?\n\n அது அமைக்கப்பட்ட அனைத்து புத்தகங்களிலிருந்தும் இது நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
     <string name="confirm_delete_toc_entry_everywhere">“ %1$s” என்ற தலைப்பை %2$s ஆல் நீக்கவா? இது பட்டியலிடப்பட்ட அனைத்து புத்தகங்களிலிருந்தும் நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
     <string name="confirm_remove_toc_entry">இந்த புத்தகத்திலிருந்து “ %1$s” என்ற தலைப்பை %2$s ஆல் அகற்றவா?</string>
@@ -502,6 +508,7 @@
     <string name="lbl_genre">வகை</string>
     <string name="lbl_tag">குறிச்சொல்</string>
     <string name="lbl_tags">குறிச்சொற்கள்</string>
+    <string name="lbl_substitutions">மாற்றுகள்</string>
     <string name="lbl_signed">கையொப்பமிடப்பட்டது</string>
     <string name="lbl_title">தலைப்பு</string>
     <string name="lbl_titles">தலைப்புகள்</string>
@@ -580,6 +587,7 @@
     <string name="ps_manage_fields">சேர்/திருத்து புத்தகத் திரைகளில் தேர்ந்தெடுக்கப்பட்ட புலங்கள் தெரியும். தேர்வு செய்யப்படாத புலங்கள் மறைக்கப்பட்டுள்ளன.</string>
     <string name="pt_show_title_reordered">தலைப்புகளைக் காட்டு…</string>
     <string name="pt_sort_title_reordered">தலைப்புகளை வரிசைப்படுத்துங்கள்</string>
+    <string name="pv_reformat_titles_prefixes">|</string>
     <string name="ps_show_titles_reordered_off">கொடுக்கப்பட்டபடி காட்சி,\n எ.கா. “ரிங்க்சின் இறைவன்”</string>
     <string name="ps_show_titles_reordered_on">ஒரு தலைப்பின் தொடக்கத்தில் ஒரு கட்டுரையை இறுதிவரை நகர்த்தவும்,\n எ.கா. \"லார்ட் ஆஃப் தி ரிங்க்ச், தி\"</string>
     <string name="pt_capitalize_title">தலைப்பு மூலதனம்</string>

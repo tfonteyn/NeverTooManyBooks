@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -140,6 +143,7 @@
     <string name="confirm_delete_bookshelf">Verwijder de boekenplank „%1$s”? De boeken zelf worden niet verwijderd. Ze zullen nog steeds aanwezig zijn op alle andere schappen, of op de „%2$s” -plank.</string>
     <string name="confirm_delete_publisher">Verwijder de uitgever „%1$s”?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_series">Verwijder de reeks „%1$s”?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
+    <string name="confirm_delete_substitutions">De substituties voor “%1$s” verwijderen?</string>
     <string name="confirm_delete_tag">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit alle boeken waarop deze tag is gezet. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_style">De stijl „%1$s” verwijderen?</string>
     <string name="confirm_delete_toc_entry_everywhere">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
@@ -216,6 +220,7 @@
     <string name="info_calibre_content_server_extension">Calibre content server-extensie is niet geïnstalleerd. Virtuele bibliotheken zijn niet beschikbaar.</string>
     <string name="info_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD-kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD-kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD-kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
+    <string name="info_substitutions_one_per_line">Voeg één substitutie per regel toe</string>
     <string name="info_download_successful">Download succesvol</string>
     <string name="info_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up.</string>
     <string name="info_export_report">Een %1$s bestand genaamd „%2$s” werd aangemaakt in de geselecteerde map. U moet het handmatig naar elders kopiëren om de gegevens te beschermen in geval van beschadiging, verlies of diefstal van uw apparaat.</string>
@@ -389,6 +394,7 @@
     <string name="lbl_settings">Instellingen</string>
     <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tags</string>
+    <string name="lbl_substitutions">Substituties</string>
     <string name="lbl_signed">Gesigneerd</string>
     <string name="lbl_site_book_id">Website boek ID</string>
     <string name="lbl_sorting">Sorteren</string>

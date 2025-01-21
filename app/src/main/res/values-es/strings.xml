@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -148,6 +151,7 @@
     <string name="confirm_delete_publisher">¿Eliminar realmente el editor «%1$s»?\n\nLos libros en sí no se eliminarán.\n\nConsidere editar el editor y cambiar el nombre del editor por el de otro editor para conservar estos datos.</string>
     <string name="confirm_delete_series">¿Borrar la serie «%1$s»?\n\nLos libros en sí no se borrarán.\n\nConsidere la posibilidad de editar la serie y cambiar el nombre de la serie por el de otra serie para conservar estos datos.</string>
     <string name="confirm_delete_style">¿Eliminar el estilo «%1$s»?</string>
+    <string name="confirm_delete_substitutions">¿Suprimir las sustituciones de «%1$s»?</string>
     <string name="confirm_delete_tag">¿Quieres eliminar la etiqueta «%1$s»?\n\nSe eliminará de todos los libros en los que esté configurada. Los libros en sí no se eliminarán.</string>
     <string name="confirm_delete_toc_entry_everywhere">¿Realmente elimina la entrada «%1$s» (por %2$s)? Se eliminará de todos los libros en los que figura. Los libros en sí no serán borrados.</string>
     <string name="confirm_merge_tags">La etiqueta que está modificando ya existe. ¿Desea fusionarlas?</string>
@@ -401,6 +405,7 @@
     <string name="lbl_settings">Ajustes</string>
     <string name="lbl_tag">Etiqueta</string>
     <string name="lbl_tags">Etiquetas</string>
+    <string name="lbl_substitutions">Sustituciones</string>
     <string name="lbl_signed">Firmado</string>
     <string name="lbl_site_book_id">ID del libro del sitio web</string>
     <string name="option_sort_and_style_ellipsis">Estilo de &amp; ordenación…</string>
@@ -516,6 +521,7 @@
     <string name="pt_field_visibility">Visibilidad de campos</string>
     <string name="preference_not_set">Sin definir</string>
     <string name="info_backup_successful">Copia de seguridad correcta</string>
+    <string name="info_substitutions_one_per_line">Añadir una sustitución por línea</string>
     <string name="info_download_successful">Descarga exitosa</string>
     <string name="info_export_report">Se ha creado un archivo %1$s llamado «%2$s» en la carpeta seleccionada. Deberías copiarlo manualmente en otro lugar para proteger los datos en caso de que tu dispositivo se dañe, se pierda o te lo roben.</string>
     <string name="info_export_successful">Exportación exitosa</string>

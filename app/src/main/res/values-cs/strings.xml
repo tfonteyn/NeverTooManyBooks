@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -152,6 +155,7 @@
     <string name="confirm_delete_publisher">Opravdu smazat vydavatele „%1$s“?\n\nSamotné knihy nebudou smazány.\n\nVšechny úpravy vydavatele a změna názvu vydavatele na jméno jiného vydavatele za účelem uchování těchto dat.</string>
     <string name="confirm_delete_series">Opravdu chcete smazat série „%1$s“?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
     <string name="confirm_delete_style">Smazat styl „%1$s“?</string>
+    <string name="confirm_delete_substitutions">Smazat náhrady za „%1$s“?</string>
     <string name="confirm_delete_tag">Smazat značku „%1$s“?\n\nSmaže se ze všech knih, na kterých je nastavena. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_toc_entry_everywhere">Odstraňte název „%1$s“ (z %2$s)? Bude odstraněn ze všech knih, ve kterých je uveden. Samotné knihy nebudou smazány.</string>
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
@@ -413,6 +417,7 @@
     <string name="lbl_settings">Nastavení</string>
     <string name="lbl_tag">Značka</string>
     <string name="lbl_tags">Značky</string>
+    <string name="lbl_substitutions">Náhrady</string>
     <string name="lbl_signed">Podepsaný</string>
     <string name="lbl_site_book_id">ID webové stránky</string>
     <string name="option_sort_and_style_ellipsis">Seřadit &amp; Styl…</string>
@@ -529,6 +534,7 @@
     <string name="pt_field_visibility">Spravovat viditelnost jednotlivých polí</string>
     <string name="preference_not_set">Nenastaveno</string>
     <string name="info_backup_successful">Zálohování proběhlo úspěšně</string>
+    <string name="info_substitutions_one_per_line">Přidejte jednu substituci na řádek</string>
     <string name="info_download_successful">Stahování bylo úspěšné</string>
     <string name="info_export_report">Ve vybrané složce byl vytvořen soubor %1$s s názvem „%2$s“. Měli byste jej ručně zkopírovat jinam, abyste ochránili data pro případ poškození, ztráty nebo krádeže zařízení.</string>
     <string name="info_export_successful">Export byl úspěšný</string>

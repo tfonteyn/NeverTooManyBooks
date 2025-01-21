@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -146,6 +149,7 @@
     <string name="confirm_delete_publisher">Να διαγραφεί πραγματικά ο εκδότης «%1$s»;\n\nΤα ίδια τα βιβλία δεν θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε τον εκδότη και να αλλάξετε το όνομα του εκδότη σε αυτό άλλου εκδότη για να διατηρήσετε αυτά τα δεδομένα.</string>
     <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά «%1$s»;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
     <string name="confirm_delete_style">Διαγραφή του στυλ «%1$s»;</string>
+    <string name="confirm_delete_substitutions">Διαγραφή των αντικαταστάσεων για το «%1$s»?</string>
     <string name="confirm_delete_tag">Διαγραφή της ετικέτας «%1$s»;\n\nΘα διαγραφεί από όλα τα βιβλία στα οποία έχει οριστεί. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
     <string name="confirm_delete_toc_entry_everywhere">Πραγματικά διαγράψτε τον τίτλο «%1$s» (από το %2$s); Θα διαγραφεί από όλα τα βιβλία στα οποία αναφέρεται. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
     <string name="confirm_merge_tags">Η ετικέτα που τροποποιείτε υπάρχει ήδη. Θα θέλατε να τις συγχωνεύσετε;</string>
@@ -399,6 +403,7 @@
     <string name="lbl_settings">Ρυθμίσεις</string>
     <string name="lbl_tag">Ετικέτα</string>
     <string name="lbl_tags">Ετικέτες</string>
+    <string name="lbl_substitutions">Αντικαταστάσεις</string>
     <string name="lbl_signed">Υπογραφή</string>
     <string name="lbl_site_book_id">Αναγνωριστικό βιβλίου ιστοτόπου</string>
     <string name="option_sort_and_style_ellipsis">Ταξινόμηση &amp; Στυλ…</string>
@@ -515,6 +520,7 @@
     <string name="pt_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
     <string name="preference_not_set">Δεν έχει οριστεί</string>
     <string name="info_backup_successful">Η δημιουργία αντιγράφων ασφαλείας ήταν επιτυχής</string>
+    <string name="info_substitutions_one_per_line">Προσθέστε μία αντικατάσταση ανά γραμμή</string>
     <string name="info_download_successful">Η λήψη ήταν επιτυχής</string>
     <string name="info_export_report">Ένα αρχείο %1$s με όνομα «%2$s» δημιουργήθηκε στον επιλεγμένο φάκελο. Θα πρέπει να το αντιγράψετε με μη αυτόματο τρόπο σε άλλο μέρος για να προστατεύσετε τα δεδομένα σε περίπτωση που η συσκευή σας καταστραφεί, χαθεί ή κλαπεί.</string>
     <string name="info_export_successful">Η εξαγωγή ήταν επιτυχής</string>

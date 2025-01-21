@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -156,6 +159,7 @@
 \n
 \nRozważ zmianę nazwy serii by zachować te dane.</string>
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
+    <string name="confirm_delete_substitutions">Usunąć podstawienia dla „%1$s”?</string>
     <string name="confirm_delete_tag">Usunąć tag „%1$s”?\n\nZostanie on usunięty ze wszystkich książek, w których jest ustawiony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_delete_toc_entry_everywhere">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_merge_tags">Modyfikowany tag już istnieje. Czy chcesz je scalić?</string>
@@ -417,6 +421,7 @@
     <string name="lbl_settings">Ustawienia</string>
     <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tagi</string>
+    <string name="lbl_substitutions">Zastępstwa</string>
     <string name="lbl_signed">Podpisany</string>
     <string name="lbl_site_book_id">Identyfikator książki internetowej</string>
     <string name="option_sort_and_style_ellipsis">Sortuj i styl…</string>
@@ -533,6 +538,7 @@
     <string name="pt_field_visibility">Dostosuj widoczność pól</string>
     <string name="preference_not_set">Nie ustawiono</string>
     <string name="info_backup_successful">Резервное копирование выполнено успешно</string>
+    <string name="info_substitutions_one_per_line">Dodaj jedno podstawienie w każdym wierszu</string>
     <string name="info_download_successful">Pobieranie powiodło się</string>
     <string name="info_export_report">W wybranym folderze został utworzony plik %1$s o nazwie „%2$s”. Należy go ręcznie skopiować w inne miejsce, aby chronić dane w przypadku uszkodzenia, zgubienia lub kradzieży urządzenia.</string>
     <string name="info_export_successful">Eksport powiódł się</string>

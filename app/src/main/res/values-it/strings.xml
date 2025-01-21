@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -148,6 +151,7 @@
     <string name="confirm_delete_publisher">Eliminare davvero l’editore «%1$s»?\n\nI libri stessi non verranno eliminati.\n\nConsidera la possibilità di modificare l’editore e di cambiare il nome dell’editore con quello di un altro editore per conservare questi dati.</string>
     <string name="confirm_delete_series">Cancellare la serie «%1$s»?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un’altra serie per preservare i dati.</string>
     <string name="confirm_delete_style">Eliminare lo stile «%1$s»?</string>
+    <string name="confirm_delete_substitutions">Cancellare le sostituzioni per “%1$s”?</string>
     <string name="confirm_delete_tag">Eliminare il tag «%1$s»?\n\nVerrà eliminata da tutti i libri su cui è impostata. I libri stessi non verranno eliminati.</string>
     <string name="confirm_delete_toc_entry_everywhere">Cancellare davvero il titolo «%1$s» (di %2$s)? Sarà cancellato da tutti i libri in cui è elencato. Libri stessi non saranno cancellati.</string>
     <string name="confirm_merge_tags">Il tag che si sta modificando esiste già. Si desidera unirli?</string>
@@ -401,6 +405,7 @@
     <string name="lbl_settings">Impostazioni</string>
     <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tag</string>
+    <string name="lbl_substitutions">Sostituzioni</string>
     <string name="lbl_signed">Firmato</string>
     <string name="lbl_site_book_id">ID libro del sito Web</string>
     <string name="option_sort_and_style_ellipsis">Ordina &amp; Stile…</string>
@@ -517,6 +522,7 @@
     <string name="pt_field_visibility">Gestisci visibilità campi</string>
     <string name="preference_not_set">Non impostato</string>
     <string name="info_backup_successful">Backup riuscito</string>
+    <string name="info_substitutions_one_per_line">Aggiungere una sostituzione per riga</string>
     <string name="info_download_successful">Download riuscito</string>
     <string name="info_export_report">Nella cartella selezionata è stato creato un file %1$s chiamato «%2$s». È necessario copiarlo manualmente altrove per proteggere i dati in caso di danneggiamento, smarrimento o furto del dispositivo.</string>
     <string name="info_export_successful">Esportazione riuscita</string>

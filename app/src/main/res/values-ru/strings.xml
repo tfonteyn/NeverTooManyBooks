@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -155,6 +158,7 @@
 \n
 \nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами.</string>
     <string name="confirm_delete_style">Удалить стиль «%1$s»?</string>
+    <string name="confirm_delete_substitutions">Удалить подстановки для «%1$s»?</string>
     <string name="confirm_delete_tag">Удалить тег «%1$s»?\n\nОн будет удален из всех книг, на которых он установлен. Сами книги не будут удалены.</string>
     <string name="confirm_delete_toc_entry_everywhere">Действительно удалить запись «%1$s» (от %2$s)? Он будет удален из всех книг, в которых он указан. Сами книги не будут удалены.</string>
     <string name="confirm_merge_tags">Тег, который вы изменяете, уже существует. Не хотите ли вы объединить их?</string>
@@ -414,6 +418,7 @@
     <string name="lbl_settings">Настройки</string>
     <string name="lbl_tag">Тег</string>
     <string name="lbl_tags">Теги</string>
+    <string name="lbl_substitutions">Подстановки</string>
     <string name="lbl_signed">подписанный</string>
     <string name="lbl_site_book_id">Идентификатор книги сайта</string>
     <string name="option_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
@@ -530,6 +535,7 @@
     <string name="pt_field_visibility">Видимость полей</string>
     <string name="preference_not_set">Не указано</string>
     <string name="info_backup_successful">Резервное копирование выполнено успешно</string>
+    <string name="info_substitutions_one_per_line">Добавьте по одной подстановке на строку</string>
     <string name="info_download_successful">Загрузка прошла успешно</string>
     <string name="info_export_report">В выбранной папке был создан файл %1$s с именем «%2$s». Вы должны вручную скопировать его в другое место, чтобы защитить данные в случае повреждения, потери или кражи устройства.</string>
     <string name="info_export_successful">Экспорт успешен</string>

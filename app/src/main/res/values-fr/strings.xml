@@ -153,6 +153,7 @@
     <string name="confirm_delete_publisher">Supprimer l’éditeur « %1$s » ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l’éditeur et de remplacer le nom pour conserver ces données.</string>
     <string name="confirm_delete_series">Supprimer la série « %1$s » ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n Envisagez de modifier la série et d’en changer le nom pour conserver ces données.</string>
     <string name="confirm_delete_style">Supprimer le style « %1$s » ?</string>
+    <string name="confirm_delete_substitutions">Supprimer les substitutions pour « %1$s » ?</string>
     <string name="confirm_delete_tag">Supprimer l’étiquette « %1$s » ?\n\nElle sera supprimée de tous les livres sur lesquels elle est définie. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_delete_toc_entry_everywhere">Vraiment supprimer le titre « %1$s » (par %2$s) ? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_duplicate_book_message">Le livre que vous tentez d’ajouter existe déjà dans la base de donnnées. Êtes vous certain de vouloir en ajouter une nouvelle copie ?</string>
@@ -405,6 +406,7 @@
     <string name="lbl_settings">Paramètres</string>
     <string name="lbl_tag">Étiquette</string>
     <string name="lbl_tags">Étiquettes</string>
+    <string name="lbl_substitutions">Substitutions</string>
     <string name="lbl_signed">Signé</string>
     <string name="lbl_site_book_id">Identifiant du livre du site</string>
     <string name="option_sort_and_style_ellipsis">Tri &amp; style…</string>
@@ -521,6 +523,7 @@
     <string name="pt_field_visibility">Gérer la visibilité des champs</string>
     <string name="preference_not_set">Non définie</string>
     <string name="info_backup_successful">Sauvegarde réussie</string>
+    <string name="info_substitutions_one_per_line">Ajouter une substitution par ligne</string>
     <string name="info_download_successful">Téléchargement réussi</string>
     <string name="info_export_report">Un fichier de %1$s appelé « %2$s » a été créé dans le dossier sélectionné. Vous devez le copier manuellement ailleurs pour protéger les données en cas d’endommagement, de perte ou de vol de votre appareil.</string>
     <string name="info_export_successful">Exportation réussie</string>

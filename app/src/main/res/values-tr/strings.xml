@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -145,6 +148,7 @@
     <string name="confirm_delete_publisher">“%1$s” yayıncısını gerçekten silmek istiyor musunuz?\n\nKitapların kendileri silinmeyecek.\n\nBu verileri korumak için yayıncıyı düzenlemeyi ve yayıncı adını başka bir yayıncının adıyla değiştirmeyi düşünün.</string>
     <string name="confirm_delete_series">“%1$s” serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="confirm_delete_style">“%1$s” stili silinsin mi?</string>
+    <string name="confirm_delete_substitutions">“%1$s” için ikameleri silelim mi?</string>
     <string name="confirm_delete_tag">“%1$s” etiketini silin.\n\nEtiket, üzerinde bulunduğu tüm kitaplardan silinecektir. Kitapların kendileri silinmeyecektir.</string>
     <string name="confirm_delete_toc_entry_everywhere">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>
     <string name="confirm_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>
@@ -404,6 +408,7 @@
     <string name="lbl_settings">Ayarlar</string>
     <string name="lbl_tag">Etiket</string>
     <string name="lbl_tags">Etiketler</string>
+    <string name="lbl_substitutions">İkameler</string>
     <string name="lbl_signed">İmzalanmış</string>
     <string name="lbl_site_book_id">Web sitesi kitap kimliği</string>
     <string name="option_sort_and_style_ellipsis">Sıralama &amp; biçemi…</string>
@@ -520,6 +525,7 @@
     <string name="pt_field_visibility">Alan görünürlüğünü yönet</string>
     <string name="preference_not_set">Ayarlanmadı</string>
     <string name="info_backup_successful">Yedekleme başarılı</string>
+    <string name="info_substitutions_one_per_line">Her satıra bir ikame ekleyin</string>
     <string name="info_download_successful">İndirme başarılı</string>
     <string name="info_export_report">Seçilen klasörde “%2$s” adında bir %1$s dosyası oluşturuldu. Cihazınızın hasar görmesi, kaybolması veya çalınması durumunda verileri korumak için elle başka bir yere kopyalamanız gerekir.</string>
     <string name="info_export_successful">Dışa aktarma başarılı</string>

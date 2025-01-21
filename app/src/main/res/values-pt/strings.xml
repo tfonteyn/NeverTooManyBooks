@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “...”  (older «…» are no longer used as verified with a native speaker) - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt">
@@ -258,6 +261,7 @@
     <string name="lbl_citation_type_default">Estou a ler…</string>
     <string name="citation_share_book_im_reading">Estou a ler “%1$s” %2$s por %3$s %4$s</string>
     <string name="info_tap_on_thumbnail_to_zoom">Toque em uma miniatura para exibir uma imagem maior.</string>
+    <string name="info_substitutions_one_per_line">Adicionar uma substituição por linha</string>
     <string name="info_download_successful">Transferência bem-sucedida</string>
     <string name="cd_btn_drag_handle">Arraste para reordenar esta lista</string>
     <string name="cd_clear_text_end_icon">Limpar texto</string>
@@ -310,6 +314,7 @@
     <string name="option_download_set_folder">Definir a pasta de transferências</string>
     <string name="confirm_unsaved_edits">Tem alterações não guardadas, se sair agora estas serão perdidas.</string>
     <string name="confirm_delete_bookshelf">Excluir a prateleira“%1$s”? Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%2$s”.</string>
+    <string name="confirm_delete_substitutions">Eliminar as substituições de “%1$s”?</string>
     <string name="confirm_delete_tag">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de todos os livros em que estiver definida. Os livros em si não serão eliminados.</string>
     <string name="confirm_delete_toc_entry_everywhere">Pretende realmente excluir o título “%1$s” por %2$s? Ele será excluído de todos os livros em que estiver listado. Os próprios livros não serão excluídos.</string>
     <string name="warning_nothing_selected">Nada selecionado</string>
@@ -531,6 +536,7 @@
     <string name="lbl_test_connection">Testar conexão</string>
     <string name="lbl_tag">Etiqueta</string>
     <string name="lbl_tags">Etiquetas</string>
+    <string name="lbl_substitutions">Substituições</string>
     <string name="lbl_signed">Assinado</string>
     <string name="lbl_title">Título</string>
     <string name="lbl_date_last_updated">Data da última atualização</string>
