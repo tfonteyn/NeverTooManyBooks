@@ -70,7 +70,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 
-final class GroupKeyFactory {
+public final class GroupKeyFactory {
     /** Cache for the static GroupKey instances. */
     private static final Map<Integer, GroupKey> GROUP_KEYS = new UniqueMap<>();
 
@@ -128,6 +128,7 @@ final class GroupKeyFactory {
      *
      * @throws IllegalArgumentException for an unknown group id
      */
+    @NonNull
     static GroupKey getKey(@BooklistGroup.Id final int id)
             throws IllegalArgumentException {
         GroupKey key = GROUP_KEYS.get(id);
@@ -136,6 +137,21 @@ final class GroupKeyFactory {
             GROUP_KEYS.put(id, key);
         }
         return key;
+    }
+
+    /**
+     * Get the name, i.e. the {@link DBKey} for the given {@link BooklistGroup} id.
+     * Convenience method to hide the internals.
+     *
+     * @param id BooklistGroup
+     *
+     * @return DBKey
+     *
+     * @throws IllegalArgumentException for an unknown group id
+     */
+    public static String getKeyDomainName(@BooklistGroup.Id final int id)
+            throws IllegalArgumentException {
+        return getKey(id).getKeyDomainExpression().getDomain().getName();
     }
 
     /**
