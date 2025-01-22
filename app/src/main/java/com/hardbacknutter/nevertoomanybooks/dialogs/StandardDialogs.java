@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 
 public final class StandardDialogs {
 
@@ -167,7 +168,7 @@ public final class StandardDialogs {
         final String nrOfBook = context.getResources().getQuantityString(R.plurals.n_books,
                                                                          books, books);
         final String msg = context.getString(R.string.confirm_delete_tag_from_x_books,
-                                             tag.getLabel(context),
+                                             tag.getName(),
                                              nrOfBook);
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.warning_24px)
@@ -281,6 +282,27 @@ public final class StandardDialogs {
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_style,
                                               style.getLabel(context)))
+                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
+                .create()
+                .show();
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context    Current context
+     * @param tagMapping we're about to delete
+     * @param onConfirm  Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteTagMapping(@NonNull final Context context,
+                                        @NonNull final TagMapping tagMapping,
+                                        final Runnable onConfirm) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.warning_24px)
+                .setTitle(R.string.action_delete)
+                .setMessage(context.getString(R.string.confirm_delete_substitutions,
+                                              tagMapping.getName()))
                 .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
                 .create()
