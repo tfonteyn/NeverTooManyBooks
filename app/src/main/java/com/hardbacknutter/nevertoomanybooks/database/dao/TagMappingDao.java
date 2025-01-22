@@ -32,6 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 
 public interface TagMappingDao {
 
+    void fixId(@NonNull TagMapping mapping);
+
     /**
      * Get all mappings.
      *

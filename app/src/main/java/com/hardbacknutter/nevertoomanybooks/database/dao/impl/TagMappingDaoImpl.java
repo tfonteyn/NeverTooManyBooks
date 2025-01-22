@@ -118,6 +118,13 @@ public class TagMappingDaoImpl
         }
     }
 
+    @Override
+    public void fixId(@NonNull final TagMapping mapping) {
+        final long found = findByName(mapping)
+                .map(TagMapping::getId).orElse(0L);
+        mapping.setId(found);
+    }
+
     @NonNull
     @Override
     public List<TagMapping> getAll() {
