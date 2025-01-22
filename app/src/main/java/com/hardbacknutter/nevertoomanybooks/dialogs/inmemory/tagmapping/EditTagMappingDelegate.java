@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
+package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.tagmapping;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -35,20 +35,16 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditTagMappingContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 class EditTagMappingDelegate
         implements FlexDialogDelegate {
@@ -62,8 +58,8 @@ class EditTagMappingDelegate
     @NonNull
     private final String requestKey;
 
-    /** View Binding. */
     private DialogEditTagMappingContentBinding vb;
+
     @Nullable
     private Toolbar toolbar;
 
@@ -72,6 +68,7 @@ class EditTagMappingDelegate
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
+
         vm = new ViewModelProvider(owner).get(EditTagMappingViewModel.class);
         vm.init(args);
     }
@@ -112,7 +109,7 @@ class EditTagMappingDelegate
             initToolbar(owner, dialogType, toolbar);
         }
 
-        final TagMapping currentEdit = vm.getCurrentEdit();
+        final TagMapping currentEdit = vm.getCurrentValue();
 
         vb.tagName.setText(currentEdit.getName());
         TilUtil.autoRemoveError(vb.tagName, vb.lblTagName);
@@ -143,13 +140,12 @@ class EditTagMappingDelegate
         return false;
     }
 
-
     private boolean saveChanges() {
         viewToModel();
 
         final Context context = vb.getRoot().getContext();
 
-        final TagMapping currentEdit = vm.getCurrentEdit();
+        final TagMapping currentEdit = vm.getCurrentValue();
         if (currentEdit.getName().isEmpty()) {
             vb.lblTagName.setError(context.getString(R.string.vldt_non_blank_required));
             return false;
@@ -164,35 +160,11 @@ class EditTagMappingDelegate
             return true;
         }
 
-        try {
-            final Optional<TagMapping> existingEntity = vm.saveIfUnique(context);
-            if (existingEntity.isEmpty()) {
-                // Success
-                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getOriginal());
-                return true;
-            }
-
-            // There is one with the same name; ask whether to merge the 2
-            StandardDialogs.askToMerge(context, R.string.confirm_merge_tags,
-                                       vm.getOriginal().getLabel(context), () -> {
-                        owner.dismiss();
-//                        try {
-//                            vm.move(context, existingEntity.get());
-//                            // return the item which 'lost' it's books
-//                            EditParcelableLauncher.setEditInPlaceResult(owner, requestKey,
-//                                                                        vm.getOriginal());
-//                        } catch (@NonNull final DaoWriteException e) {
-//                            // log, but ignore - should never happen unless disk full
-//                            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-//                        }
-                    });
-            return false;
-
-        } catch (@NonNull final DaoWriteException e) {
-            // log, but ignore - should never happen unless disk full
-            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
-            return false;
-        }
+        EditTagMappingLauncher.setResult(owner, requestKey,
+                                         vm.getPreviousValue(),
+                                         vm.getCurrentValue(),
+                                         vm.getExtras());
+        return true;
     }
 
     @Override
@@ -202,7 +174,7 @@ class EditTagMappingDelegate
 
     private void viewToModel() {
         Editable text = vb.tagName.getText();
-        final TagMapping currentEdit = vm.getCurrentEdit();
+        final TagMapping currentEdit = vm.getCurrentValue();
         currentEdit.setName(text != null ? text.toString().trim() : "");
 
         text = vb.tagMapping.getText();

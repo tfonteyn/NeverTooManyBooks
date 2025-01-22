@@ -33,11 +33,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,9 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagMappingsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagMappingBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTagMappingBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTagMappingDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.tagmapping.EditTagMappingLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
@@ -62,18 +62,28 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
+/**
+ * This editor allows CRUD actions on {@link TagMapping}s.
+ * Editing/creating uses an {@link EditParcelableLauncher}.
+ * Dao interaction is handled in
+ * {@code com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTagMappingDelegate}.
+ * <p>
+ * This fragment is hosted in the ViewPager2 of {@link TagAdminFragment}.
+ */
 public class TagMappingEditorFragment
         extends BaseFragment {
 
     private static final String TAG = "TagMappingEditorFrag";
     private static final String RK_MENU = TAG + ":rk:menu";
-    private static final String RK_MAPPING = TAG + ":rk:mapping";
+    private static final String RK_TAG = TAG + ":rk:tag";
+    private static final String BKEY_POSITION = TAG + ":pos";
+    private static final int POS_NEW_ENTRY = -1;
 
     private FragmentEditTagMappingsBinding vb;
     private List<TagMapping> mappings;
     private TagAdapter adapter;
-    private EditParcelableLauncher<TagMapping> editLauncher;
     private ExtMenuLauncher menuLauncher;
+    private EditTagMappingLauncher editLauncher;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -81,11 +91,8 @@ public class TagMappingEditorFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        editLauncher = new EditParcelableLauncher<>(
-                RK_MAPPING,
-                EditTagMappingDialogFragment::new,
-                EditTagMappingBottomSheet::new);
-        editLauncher.setOnEditInPlaceListener(this::onEntryUpdated);
+        editLauncher = new EditTagMappingLauncher(RK_TAG);
+        editLauncher.setResultListener(this::onEditEntryDone);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
@@ -113,7 +120,7 @@ public class TagMappingEditorFragment
         //noinspection DataFlowIssue
         adapter = new TagAdapter(context, mappings);
 
-        adapter.setOnRowClickListener((v, position) -> editEntry(mappings.get(position)));
+        adapter.setOnRowClickListener((v, position) -> editEntry(mappings.get(position), position));
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
@@ -144,7 +151,8 @@ public class TagMappingEditorFragment
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.add_24px);
         fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> editEntry(new TagMapping("", Set.of())));
+        fab.setOnClickListener(v -> editEntry(new TagMapping("", Set.of()),
+                                              POS_NEW_ENTRY));
     }
 
     /**
@@ -159,7 +167,7 @@ public class TagMappingEditorFragment
                                        @IdRes final int menuItemId) {
 
         if (menuItemId == R.id.MENU_EDIT) {
-            editEntry(mappings.get(position));
+            editEntry(mappings.get(position), position);
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {
@@ -172,54 +180,103 @@ public class TagMappingEditorFragment
     /**
      * Start the fragment dialog to edit an entry.
      *
-     * @param mapping to edit
+     * @param mapping  to edit
+     * @param position the position of the item; use {@link #POS_NEW_ENTRY} for a new entry.
      */
-    private void editEntry(@NonNull final TagMapping mapping) {
+    private void editEntry(@NonNull final TagMapping mapping,
+                           final int position) {
+        final Bundle extras = new Bundle();
+        extras.putInt(BKEY_POSITION, position);
+
         //noinspection DataFlowIssue
-        editLauncher.editInPlace(getActivity(), mapping);
+        editLauncher.launch(getActivity(), mapping, extras);
     }
 
-    private void onEntryUpdated(@NonNull final TagMapping tagMapping) {
+    private void onEditEntryDone(@NonNull final TagMapping original,
+                                 @NonNull final TagMapping edit,
+                                 @Nullable final Bundle extras) {
+
+        // anything actually changed ? If not, we're done.
+        if (edit.equals(original)) {
+            return;
+        }
+
         try {
-            if (tagMapping.getId() == 0) {
-                // check by NAME it's not already in the list.
-                int position = mappings.stream().map(TagMapping::getName)
-                                       .collect(Collectors.toList())
-                                       .indexOf(tagMapping.getName());
-                if (position >= 0) {
-                    Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
-                                  Snackbar.LENGTH_LONG).show();
-                    vb.tagList.scrollToPosition(position);
-                } else {
-                    // It's a new entry, add it
-                    ServiceLocator.getInstance().getTagMappingDao().insert(tagMapping);
+            Objects.requireNonNull(extras);
+            final int originalPos = extras.getInt(BKEY_POSITION);
 
-                    // find insertion point using a brute-force sequential search...
-                    position = 0;
-                    while (position < mappings.size()
-                           && mappings.get(position).compareTo(tagMapping) < 0) {
-                        position++;
-                    }
-                    mappings.add(position, tagMapping);
-                    adapter.notifyItemInserted(position);
-                    vb.tagList.scrollToPosition(position);
-                }
+            if (originalPos == POS_NEW_ENTRY) {
+                // User was adding a new mapping
+                addEntry(edit);
             } else {
-                // It's an existing entry in the list, find it and update with the new data
-                final int position = mappings.stream().map(TagMapping::getId).collect(
-                        Collectors.toList()).indexOf(tagMapping.getId());
-
-                final TagMapping existing = mappings.get(position);
-                existing.copyFrom(tagMapping);
-                ServiceLocator.getInstance().getTagMappingDao().update(existing);
-
-                adapter.notifyItemChanged(position);
-                vb.tagList.scrollToPosition(position);
+                // User was editing an existing mapping
+                updateEntry(original, originalPos, edit);
             }
-
         } catch (@NonNull final DaoInsertException | DaoUpdateException e) {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), TAG, e);
+        }
+    }
+
+    private int findByName(@NonNull final String name) {
+        return mappings.stream().map(TagMapping::getName)
+                       .collect(Collectors.toList())
+                       .indexOf(name);
+    }
+
+    private void addEntry(@NonNull final TagMapping edit)
+            throws DaoInsertException {
+
+        // check by NAME it's not already in the list.
+        final int existingPos = findByName(edit.getName());
+
+        if (existingPos >= 0) {
+            // Trying to add a NEW one already there.
+            // TODO: propose merge/overwrite
+            // For now, reject it!
+            Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
+                          Snackbar.LENGTH_LONG).show();
+            vb.tagList.scrollToPosition(existingPos);
+        } else {
+            // It's a new entry, add it
+            ServiceLocator.getInstance().getTagMappingDao().insert(edit);
+
+            // find insertion point using a brute-force sequential search...
+            int position = 0;
+            while (position < mappings.size()
+                   && mappings.get(position).compareTo(edit) < 0) {
+                position++;
+            }
+            mappings.add(position, edit);
+            adapter.notifyItemInserted(position);
+            vb.tagList.scrollToPosition(position);
+        }
+    }
+
+    private void updateEntry(@NonNull final TagMapping original,
+                             final int originalPos,
+                             @NonNull final TagMapping edit)
+            throws DaoUpdateException {
+
+        // check by NAME it's not already in the list.
+        final int existingPos = findByName(edit.getName());
+
+        // == when the name was NOT modified and we found ourselves.
+        // -1 when the name WAS modified and there is no other match
+        if (existingPos == originalPos || existingPos == -1) {
+            //  Update with the new data.
+            original.copyFrom(edit);
+            ServiceLocator.getInstance().getTagMappingDao().update(original);
+            adapter.notifyItemChanged(originalPos);
+            vb.tagList.scrollToPosition(originalPos);
+
+        } else {
+            // We found another entry with the same external tag-name.
+            // TODO: propose overwrite/merge
+            // For now, reject the edit!
+            Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
+                          Snackbar.LENGTH_LONG).show();
+            vb.tagList.scrollToPosition(existingPos);
         }
     }
 
@@ -237,18 +294,12 @@ public class TagMappingEditorFragment
             adapter.notifyItemRemoved(position);
             return;
         }
+
         //noinspection DataFlowIssue
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(getString(R.string.confirm_delete_substitutions, tagMapping.getName()))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setNeutralButton(R.string.ok, (d, w) -> {
-                    mappings.remove(position);
-                    adapter.notifyItemRemoved(position);
-                })
-                .create()
-                .show();
+        StandardDialogs.deleteTagMapping(getContext(), tagMapping, () -> {
+            mappings.remove(position);
+            adapter.notifyItemRemoved(position);
+        });
     }
 
     /**
