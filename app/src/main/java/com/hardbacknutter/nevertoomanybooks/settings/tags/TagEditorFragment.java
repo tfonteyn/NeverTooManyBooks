@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -47,9 +46,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagNamesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagNameBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring.EditStringLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
@@ -60,7 +62,18 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
+/**
+ * This editor allows CRUD actions on {@link Tag}s.
+ * Editing/creating uses the in-memory {@link EditStringLauncher}.
+ * {@link TagDao} interaction is local in this class.
+ * <p>
+ * This fragment is hosted in the ViewPager2 of {@link TagAdminFragment}.
+ * <p>
+ * IMPORTANT: EditTagDelegate and TagEditorFragment have partially overlapping
+ * functionality which should kept in sync.
+ */
 public class TagEditorFragment
         extends BaseFragment {
 
@@ -83,7 +96,7 @@ public class TagEditorFragment
         final FragmentManager fm = getChildFragmentManager();
 
         editLauncher = new EditStringLauncher(RK_TAG);
-        editLauncher.setResultListener(this::onEntryUpdated);
+        editLauncher.setResultListener(this::onEditEntryDone);
         editLauncher.registerForFragmentResult(fm, this);
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
@@ -185,49 +198,92 @@ public class TagEditorFragment
                             extras);
     }
 
-    private void onEntryUpdated(@NonNull final String previous,
-                                @NonNull final String current,
-                                @Nullable final Bundle extras) {
+    private void onEditEntryDone(@NonNull final String previous,
+                                 @NonNull final String currentName,
+                                 @Nullable final Bundle extras) {
+
+        // anything actually changed ? If not, we're done.
+        if (currentName.equals(previous)) {
+            return;
+        }
+
         try {
             Objects.requireNonNull(extras);
-            int position = extras.getInt(BKEY_POSITION);
-            if (position == POS_NEW_ENTRY) {
-                // check it's not already in the list.
-                position = tags.stream().map(Tag::getName).collect(Collectors.toList())
-                               .indexOf(current);
-                if (position >= 0) {
-                    Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
-                                  Snackbar.LENGTH_LONG).show();
-                    vb.tagList.scrollToPosition(position);
-                } else {
-                    // It's a new entry, add it
-                    final Tag tag = new Tag(current);
-                    ServiceLocator.getInstance().getTagDao().insert(tag);
+            final int currentPos = extras.getInt(BKEY_POSITION);
 
-                    // find insertion point using a brute-force sequential search...
-                    position = 0;
-                    while (position < tags.size() && tags.get(position).compareTo(tag) < 0) {
-                        position++;
-                    }
-                    tags.add(position, tag);
-                    adapter.notifyItemInserted(position);
-                    vb.tagList.scrollToPosition(position);
+            // check by NAME it's not already in the list.
+            final int existingPos = tags.stream().map(Tag::getName)
+                                        .collect(Collectors.toList())
+                                        .indexOf(currentName);
 
-                }
+            if (currentPos == POS_NEW_ENTRY) {
+                // User was adding a new tag
+                addEntry(currentName, existingPos);
             } else {
-                // It's an existing entry in the list, find it and update with the new data
-                final Tag existing = tags.get(position);
-                existing.setName(current);
-                ServiceLocator.getInstance().getTagDao().update(existing);
-
-                adapter.notifyItemChanged(position);
-                vb.tagList.scrollToPosition(position);
+                // User was editing an existing tag
+                updateEntry(currentName, currentPos, existingPos);
             }
         } catch (@NonNull final DaoInsertException | DaoUpdateException e) {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), TAG, e);
         }
     }
+
+    private void addEntry(@NonNull final String currentName,
+                          final int existingPos)
+            throws DaoInsertException {
+        if (existingPos >= 0) {
+            // Trying to add a NEW one already there. Just reject it...
+            Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
+                          Snackbar.LENGTH_LONG).show();
+            vb.tagList.scrollToPosition(existingPos);
+        } else {
+            // It's a new entry, add it
+            final Tag tag = new Tag(currentName);
+            ServiceLocator.getInstance().getTagDao().insert(tag);
+
+            // find insertion point using a brute-force sequential search...
+            int position = 0;
+            while (position < tags.size() && tags.get(position).compareTo(tag) < 0) {
+                position++;
+            }
+            tags.add(position, tag);
+            adapter.notifyItemInserted(position);
+            vb.tagList.scrollToPosition(position);
+        }
+    }
+
+    private void updateEntry(@NonNull final String currentName,
+                             final int currentPos,
+                             final int existingPos)
+            throws DaoUpdateException {
+        final Tag currentTag = tags.get(currentPos);
+        currentTag.setName(currentName);
+
+        if (existingPos >= 0) {
+            // Renaming a tag to have the same name as another, propose to merge
+            final Context context = getContext();
+            //noinspection DataFlowIssue
+            StandardDialogs.askToMerge(context, R.string.confirm_merge_tags,
+                                       currentTag.getName(), () -> {
+                        try {
+                            ServiceLocator.getInstance().getTagDao()
+                                          .moveBooks(context, currentTag, tags.get(existingPos));
+                            adapter.notifyItemRemoved(currentPos);
+                            vb.tagList.scrollToPosition(existingPos);
+                        } catch (@NonNull final DaoWriteException e) {
+                            // log, but ignore - should never happen unless disk full
+                            LoggerFactory.getLogger().e(TAG, e, currentTag);
+                        }
+                    });
+        } else {
+            // update with the new data.
+            ServiceLocator.getInstance().getTagDao().update(currentTag);
+            adapter.notifyItemChanged(currentPos);
+            vb.tagList.scrollToPosition(currentPos);
+        }
+    }
+
 
     /**
      * Prompt the user to delete the given item.
@@ -243,22 +299,12 @@ public class TagEditorFragment
             adapter.notifyItemRemoved(position);
             return;
         }
-        final int books = ServiceLocator.getInstance().getTagDao().getBookIds(tag.getId()).size();
-        final String nrOfBook = getResources().getQuantityString(R.plurals.n_books, books);
+
         //noinspection DataFlowIssue
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(getString(R.string.confirm_delete_tag_from_x_books,
-                                      tag.getName(),
-                                      nrOfBook))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setNeutralButton(R.string.ok, (d, w) -> {
-                    tags.remove(position);
-                    adapter.notifyItemRemoved(position);
-                })
-                .create()
-                .show();
+        StandardDialogs.deleteTag(getContext(), tag, () -> {
+            tags.remove(position);
+            adapter.notifyItemRemoved(position);
+        });
     }
 
     /**
