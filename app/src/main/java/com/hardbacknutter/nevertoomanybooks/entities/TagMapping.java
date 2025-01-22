@@ -163,7 +163,8 @@ public class TagMapping
 
     public void copyFrom(@NonNull final TagMapping source) {
         name = source.name;
-        mappings = source.mappings;
+        // new Set, contents are immutable Strings
+        mappings = new HashSet<>(source.mappings);
     }
 
     @NonNull
