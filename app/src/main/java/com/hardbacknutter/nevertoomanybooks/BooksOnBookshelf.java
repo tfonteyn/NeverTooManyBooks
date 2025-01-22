@@ -188,7 +188,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *     <li>{@link #onBackPressed} checks if there are search criteria, if so, clears and
  *     rebuild and suppresses the 'back' action</li>
  * </ol>
- *
+ * <p>
  * As an alternative to advanced/standard search, the user can also define filters on per-bookshelf
  * basis. These are static and applied at the time the list is build.
  */
@@ -1741,35 +1741,35 @@ public class BooksOnBookshelf
                     EditBookshelfDialogFragment::new,
                     EditBookshelfBottomSheet::new);
             editBookshelfLauncher.setOnEditInPlaceListener(
-                    bookshelf -> vm.onEntityUpdate(DBKey.FK_BOOKSHELF, bookshelf));
+                    bookshelf -> vm.onRowGroupEntityUpdate(BooklistGroup.BOOKSHELF, bookshelf));
 
             editAuthorLauncher = new EditParcelableLauncher<>(
                     DBKey.FK_AUTHOR,
                     EditAuthorDialogFragment::new,
                     EditAuthorBottomSheet::new);
             editAuthorLauncher.setOnEditInPlaceListener(
-                    author -> vm.onEntityUpdate(DBKey.FK_AUTHOR, author));
+                    author -> vm.onRowGroupEntityUpdate(BooklistGroup.AUTHOR, author));
 
             editSeriesLauncher = new EditParcelableLauncher<>(
                     DBKey.FK_SERIES,
                     EditSeriesDialogFragment::new,
                     EditSeriesBottomSheet::new);
             editSeriesLauncher.setOnEditInPlaceListener(
-                    series -> vm.onEntityUpdate(DBKey.FK_SERIES, series));
+                    series -> vm.onRowGroupEntityUpdate(BooklistGroup.SERIES, series));
 
             editPublisherLauncher = new EditParcelableLauncher<>(
                     DBKey.FK_PUBLISHER,
                     EditPublisherDialogFragment::new,
                     EditPublisherBottomSheet::new);
             editPublisherLauncher.setOnEditInPlaceListener(
-                    publisher -> vm.onEntityUpdate(DBKey.FK_PUBLISHER, publisher));
+                    publisher -> vm.onRowGroupEntityUpdate(BooklistGroup.PUBLISHER, publisher));
 
             editTagLauncher = new EditParcelableLauncher<>(
                     DBKey.FK_TAG,
                     EditTagDialogFragment::new,
                     EditTagBottomSheet::new);
             editTagLauncher.setOnEditInPlaceListener(
-                    tag -> vm.onEntityUpdate(DBKey.TAG, tag));
+                    tag -> vm.onRowGroupEntityUpdate(BooklistGroup.TAGS_GENRE, tag));
 
             editColorLauncher = new EditInLineStringLauncher(
                     DBKey.COLOR,

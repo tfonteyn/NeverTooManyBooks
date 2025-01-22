@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.GroupKeyFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.ReadStatus;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -1188,19 +1189,29 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Receives notifications that an {@link Entity} (but NOT a Book) potentially was updated.
+     * Receives notifications that a group {@link Entity} (but NOT a Book) potentially was updated.
      *
-     * @param dbKey  the request-key, a {@link DBKey}, from the update event
-     * @param entity the entity that potentially was updated
+     * @param groupId the group, from the update event
+     * @param entity  the entity that potentially was updated or
+     *                {@code null} for all entities of the given type (group)
      */
-    void onEntityUpdate(@NonNull final String dbKey,
-                        @NonNull final Entity entity) {
+    void onRowGroupEntityUpdate(@BooklistGroup.Id final int groupId,
+                                @Nullable final Entity entity) {
+
+        final String dbKey = GroupKeyFactory.getKeyDomainName(groupId);
         if (getStyle().isShowField(FieldVisibility.Screen.List, dbKey)) {
-            // The entity is shown on the book level, do a full rebuild
+            // The entity is shown on the book level.
+            // A full rebuild is easier/faster than updating all books
+            triggerRebuildList.setValue(LiveDataEvent.of(false));
+        } else if (entity == null) {
+            // We don't have enough info to know what to update.
+            // Always rebuild.
             triggerRebuildList.setValue(LiveDataEvent.of(false));
         } else {
             // Update only the levels, and trigger an adapter update
             // ENHANCE: update the modified row without a rebuild.
+            //  with the group-id and the new value (entity label),
+            //  it should be fairly easy to update the list table directly.
             triggerRebuildList.setValue(LiveDataEvent.of(false));
         }
     }
@@ -1305,6 +1316,7 @@ public class BooksOnBookshelfViewModel
             triggerRebuildList.setValue(LiveDataEvent.of(false));
         }
     }
+
     /**
      * Delete the given Book.
      *
