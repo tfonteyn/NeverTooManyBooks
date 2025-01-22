@@ -50,6 +50,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+/**
+ * This is the editor for the BoB {@link Tag} BooklistGroup.
+ * i.e. called from the row-menu of a tag grouping.
+ * <p>
+ * This allows editing the tag name and potential merging with another tag.
+ * <p>
+ * IMPORTANT: EditTagDelegate and TagEditorFragment have partially overlapping
+ * functionality which should kept in sync.
+ */
 class EditTagDelegate
         implements FlexDialogDelegate {
 
