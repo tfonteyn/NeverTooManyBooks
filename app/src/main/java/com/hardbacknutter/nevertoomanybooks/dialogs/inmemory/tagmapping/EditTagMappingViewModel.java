@@ -55,7 +55,7 @@ public class EditTagMappingViewModel
 
             // Read the BKEY_CURRENT and store it as the original value
             previousValue = Objects.requireNonNull(args.getParcelable(
-                    EditTagMappingLauncher.BKEY_CURRENT));
+                    EditTagMappingLauncher.BKEY_EDIT));
             // take a copy without copying the id
             currentValue = new TagMapping(previousValue);
 

@@ -39,8 +39,8 @@ public class EditTagMappingLauncher
 
     static final String BKEY_EXTRAS = TAG + ":extras";
 
-    static final String BKEY_CURRENT = TAG + ":current";
-    private static final String BKEY_PREVIOUS = TAG + ":previous";
+    static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_ORIGINAL = TAG + ":original";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -76,8 +76,8 @@ public class EditTagMappingLauncher
                           @NonNull final TagMapping currentValue,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putParcelable(BKEY_PREVIOUS, previousValue);
-        result.putParcelable(BKEY_CURRENT, currentValue);
+        result.putParcelable(BKEY_ORIGINAL, previousValue);
+        result.putParcelable(BKEY_EDIT, currentValue);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -98,21 +98,19 @@ public class EditTagMappingLauncher
      *
      * @param context      preferably the {@code Activity}
      *                     but another UI {@code Context} will also do.
-     * @param currentValue (optional) the current value of the field
+     * @param currentValue the current value of the field
      * @param extras       (optional) Bundle which will be passed back to the result-listener.
      */
     @SuppressWarnings("TypeMayBeWeakened")
     public void launch(@NonNull final Context context,
-                       @Nullable final TagMapping currentValue,
+                       @NonNull final TagMapping currentValue,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         final Bundle args = new Bundle();
 
-        if (currentValue != null) {
-            args.putParcelable(BKEY_CURRENT, currentValue);
-        }
+        args.putParcelable(BKEY_EDIT, currentValue);
 
         if (extras != null && !extras.isEmpty()) {
             args.putBundle(BKEY_EXTRAS, extras);
@@ -126,8 +124,8 @@ public class EditTagMappingLauncher
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         resultListener.onResult(
-                Objects.requireNonNull(result.getParcelable(BKEY_PREVIOUS), BKEY_PREVIOUS),
-                Objects.requireNonNull(result.getParcelable(BKEY_CURRENT), BKEY_CURRENT),
+                Objects.requireNonNull(result.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL),
+                Objects.requireNonNull(result.getParcelable(BKEY_EDIT), BKEY_EDIT),
                 result.getBundle(BKEY_EXTRAS));
     }
 
