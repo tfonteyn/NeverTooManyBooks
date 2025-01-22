@@ -930,6 +930,7 @@ public class Author
         familyName = source.familyName;
         givenNames = source.givenNames;
         complete = source.complete;
+        // Do not deep copy! We WANT the same/original object
         realAuthor = source.realAuthor;
 
         if (includeBookFields) {
