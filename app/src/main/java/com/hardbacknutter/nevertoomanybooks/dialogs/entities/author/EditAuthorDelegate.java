@@ -18,15 +18,13 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.bookedit;
+package com.hardbacknutter.nevertoomanybooks.dialogs.entities.author;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,85 +37,79 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorContentBinding;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorViewModel;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Add/Edit a single {@link Author} from the book's author list.
- * <p>
- * Can already exist (i.e. have an id) or can be a previously added/new one (id==0).
- * <p>
- * {@link EditAction#Add}:
+ * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Author}.
+ * For now this class is not in fact called to create a new entry.
+ * We do however keep the code flexible enough to allow it for future usage.
  * <ul>
- * <li>List-dialogs ADD a NEW item</li>
- * <li>The new item is <strong>NOT stored</strong> in the database</li>
- * <li>Returns the new item</li>
- * </ul>
- * <p>
- * {@link EditAction#Edit}:
- * <ul>
- * <li>List-dialogs EDIT an EXISTING item</li>
- * <li>Modifications are <strong>NOT STORED</strong> in the database</li>
- * <li>Returns the original + a new instance/copy with the modifications</li>
+ * <li>Direct/in-place editing.</li>
+ * <li>Modifications <strong>ARE STORED</strong> in the database</li>
+ * <li>Returns the modified item.</li>
  * </ul>
  *
- * In either of the above cases, the 'real' Author <strong>IS STORED</strong>
- * when applicable and explicitly allowed by the user.
+ * @see EditAuthorDialogFragment
+ * @see EditSeriesDialogFragment
+ * @see EditPublisherDialogFragment
+ * @see EditBookshelfDialogFragment
+ * @see EditAuthorBottomSheet
+ * @see EditSeriesBottomSheet
+ * @see EditPublisherBottomSheet
+ * @see EditBookshelfBottomSheet
  */
-class EditBookAuthorDelegate
+class EditAuthorDelegate
         implements FlexDialogDelegate {
 
-    /**
-     * We create a list of all the {@link Author.Type} checkboxes for easy handling.
-     * The key is the {@link Author.Type}.
-     */
-    private final SparseArray<CompoundButton> typeButtons = new SparseArray<>();
+    private static final String TAG = "EditAuthorDelegate";
 
+    /** Author View model. Fragment scope. */
+    private final EditAuthorViewModel vm;
     @NonNull
     private final DialogFragment owner;
     @NonNull
     private final String requestKey;
-
-    /** Book View model. Activity scope. */
-    private final EditBookViewModel vm;
-    /** Author View model. Fragment scope. */
-    private final EditAuthorViewModel authorVm;
-    /** Adding or Editing. */
-    private final EditAction action;
     /** View Binding. */
-    private DialogEditBookAuthorContentBinding vb;
+    private DialogEditAuthorContentBinding vb;
     @Nullable
     private Toolbar toolbar;
 
-    EditBookAuthorDelegate(@NonNull final DialogFragment owner,
-                           @NonNull final Bundle args) {
+    EditAuthorDelegate(@NonNull final DialogFragment owner,
+                       @NonNull final Bundle args) {
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-
-        //noinspection DataFlowIssue
-        vm = new ViewModelProvider(owner.getActivity()).get(EditBookViewModel.class);
-        authorVm = new ViewModelProvider(owner).get(EditAuthorViewModel.class);
-        authorVm.init(args);
+        vm = new ViewModelProvider(owner).get(EditAuthorViewModel.class);
+        vm.init(args);
     }
 
     @NonNull
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container) {
-        vb = DialogEditBookAuthorContentBinding.inflate(inflater, container, false);
+        vb = DialogEditAuthorContentBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
@@ -125,8 +117,8 @@ class EditBookAuthorDelegate
     @NonNull
     public View onCreateFullscreen(@NonNull final LayoutInflater inflater,
                                    @Nullable final ViewGroup container) {
-        final View view = inflater.inflate(R.layout.dialog_edit_book_author, container, false);
-        vb = DialogEditBookAuthorContentBinding.bind(view.findViewById(R.id.dialog_content));
+        final View view = inflater.inflate(R.layout.dialog_edit_author, container, false);
+        vb = DialogEditAuthorContentBinding.bind(view.findViewById(R.id.dialog_content));
         return view;
     }
 
@@ -147,17 +139,18 @@ class EditBookAuthorDelegate
                 toolbar.inflateMenu(R.menu.toolbar_action_save);
             }
             initToolbar(owner, dialogType, toolbar);
-            toolbar.setSubtitle(vm.getBook().getTitle());
         }
 
         final Context context = vb.getRoot().getContext();
 
-        final Author currentEdit = authorVm.getCurrentEdit();
+        final Author currentEdit = vm.getCurrentEdit();
+
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                vm.getAllAuthorFamilyNames());
+                authorDao.getNames(DBKey.AUTHOR_FAMILY_NAME));
         vb.familyName.setText(currentEdit.getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
         TilUtil.autoRemoveError(vb.familyName, vb.lblFamilyName);
@@ -165,94 +158,34 @@ class EditBookAuthorDelegate
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                vm.getAllAuthorGivenNames());
+                authorDao.getNames(DBKey.AUTHOR_GIVEN_NAMES));
         vb.givenNames.setText(currentEdit.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
 
-        setupRealAuthorField(context);
-        setupAuthorTypeField(currentEdit.getType());
+        setupRealAuthorField(context, authorDao);
 
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.familyName.requestFocus();
     }
 
-    private void setupRealAuthorField(@NonNull final Context context) {
-        if (authorVm.showRealAuthorName()) {
+    private void setupRealAuthorField(@NonNull final Context context,
+                                      @NonNull final AuthorDao authorDao) {
+        if (vm.showRealAuthorName()) {
             vb.lblRealAuthorHeader.setVisibility(View.VISIBLE);
             vb.lblRealAuthor.setVisibility(View.VISIBLE);
 
             final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
                     context, R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic,
-                    vm.getAllAuthorNames());
-            vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
+                    authorDao.getNames(DBKey.AUTHOR_FORMATTED));
+            vb.realAuthor.setText(vm.getCurrentRealAuthorName(), false);
             vb.realAuthor.setAdapter(realNameAdapter);
             TilUtil.autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
 
         } else {
             vb.lblRealAuthorHeader.setVisibility(View.GONE);
             vb.lblRealAuthor.setVisibility(View.GONE);
-        }
-    }
-
-    private void setupAuthorTypeField(@Author.Type final int currentType) {
-        if (authorVm.showAuthorType()) {
-            vb.btnUseAuthorType.setVisibility(View.VISIBLE);
-            vb.btnUseAuthorType.setOnCheckedChangeListener((v, isChecked) -> {
-                setTypeEnabled(isChecked);
-                vb.authorTypeGroup.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            });
-
-            createTypeButtonList();
-
-            if (currentType == Author.TYPE_UNKNOWN) {
-                setTypeEnabled(false);
-                vb.authorTypeGroup.setVisibility(View.GONE);
-            } else {
-                setTypeEnabled(true);
-                vb.authorTypeGroup.setVisibility(View.VISIBLE);
-                for (int i = 0; i < typeButtons.size(); i++) {
-                    typeButtons.valueAt(i).setChecked((currentType & typeButtons.keyAt(i)) != 0);
-                }
-            }
-        } else {
-            vb.btnUseAuthorType.setVisibility(View.GONE);
-            vb.authorTypeGroup.setVisibility(View.GONE);
-        }
-    }
-
-    private void createTypeButtonList() {
-        // NEWTHINGS: author type: add a button to the layout
-        typeButtons.put(Author.TYPE_WRITER, vb.cbxAuthorTypeWriter);
-        typeButtons.put(Author.TYPE_CONTRIBUTOR, vb.cbxAuthorTypeContributor);
-        typeButtons.put(Author.TYPE_INTRODUCTION, vb.cbxAuthorTypeIntro);
-        typeButtons.put(Author.TYPE_TRANSLATOR, vb.cbxAuthorTypeTranslator);
-        typeButtons.put(Author.TYPE_EDITOR, vb.cbxAuthorTypeEditor);
-        typeButtons.put(Author.TYPE_NARRATOR, vb.cbxAuthorTypeNarrator);
-
-        typeButtons.put(Author.TYPE_ARTIST, vb.cbxAuthorTypeArtist);
-        typeButtons.put(Author.TYPE_INKING, vb.cbxAuthorTypeInking);
-        typeButtons.put(Author.TYPE_COLORIST, vb.cbxAuthorTypeColorist);
-        typeButtons.put(Author.TYPE_STORYBOARD, vb.cbxAuthorTypeStoryboard);
-        typeButtons.put(Author.TYPE_LETTERING, vb.cbxAuthorTypeLettering);
-
-        typeButtons.put(Author.TYPE_COVER_ARTIST, vb.cbxAuthorTypeCoverArtist);
-        typeButtons.put(Author.TYPE_COVER_INKING, vb.cbxAuthorTypeCoverInking);
-        typeButtons.put(Author.TYPE_COVER_COLORIST, vb.cbxAuthorTypeCoverColorist);
-    }
-
-    /**
-     * Enable or disable the type related fields.
-     *
-     * @param enable Flag
-     */
-    private void setTypeEnabled(final boolean enable) {
-        // don't bother changing the 'checked' status, we'll ignore them anyhow.
-        // and this is more user friendly if they flip the switch more than once.
-        vb.btnUseAuthorType.setChecked(enable);
-        for (int i = 0; i < typeButtons.size(); i++) {
-            typeButtons.valueAt(i).setEnabled(enable);
         }
     }
 
@@ -280,33 +213,56 @@ class EditBookAuthorDelegate
 
         final Context context = vb.getRoot().getContext();
 
-        final Author currentEdit = authorVm.getCurrentEdit();
+        final Author currentEdit = vm.getCurrentEdit();
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getFamilyName().isEmpty()) {
             vb.lblFamilyName.setError(context.getString(R.string.vldt_non_blank_required));
             return false;
         }
 
-        // invalidate the type if needed
-        if (!vb.btnUseAuthorType.isChecked()) {
-            currentEdit.setType(Author.TYPE_UNKNOWN);
-        }
-
-
-        final Locale locale = ServiceLocator
-                .getInstance().getLanguages()
-                .toLocale(context, vm.getBook().getString(DBKey.LANGUAGE));
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         // We let this call go ahead even if real-author is switched off by the user
         // so we can clean up as needed.
-        if (!authorVm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
+        if (!vm.validateAndSetRealAuthor(context, locale, createRealAuthorIfNeeded)) {
             warnThatRealAuthorMustBeValid(context);
             return false;
         }
 
-        EditParcelableLauncher.setResult(owner, requestKey, action,
-                                         authorVm.getOriginal(), currentEdit);
-        return true;
+        // anything actually changed ? If not, we're done.
+        if (!vm.isModified()) {
+            return true;
+        }
+
+        try {
+            final Optional<Author> existingEntity = vm.saveIfUnique(context);
+            if (existingEntity.isEmpty()) {
+                // Success
+                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getOriginal());
+                return true;
+            }
+
+            // There is one with the same name; ask whether to merge the 2
+            StandardDialogs.askToMerge(context, R.string.confirm_merge_authors,
+                                       vm.getOriginal().getLabel(context), () -> {
+                        owner.dismiss();
+                        try {
+                            vm.move(context, existingEntity.get());
+                            // return the item which 'lost' it's books
+                            EditParcelableLauncher.setEditInPlaceResult(owner, requestKey,
+                                                                        vm.getOriginal());
+                        } catch (@NonNull final DaoWriteException e) {
+                            // log, but ignore - should never happen unless disk full
+                            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
+                        }
+                    });
+            return false;
+
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
+            return false;
+        }
     }
 
     private void warnThatRealAuthorMustBeValid(@NonNull final Context context) {
@@ -314,7 +270,7 @@ class EditBookAuthorDelegate
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.vldt_real_author_must_be_valid)
                 .setMessage(context.getString(R.string.confirm_create_real_author,
-                                              authorVm.getCurrentRealAuthorName()))
+                                              vm.getCurrentRealAuthorName()))
                 .setNegativeButton(R.string.action_edit, (d, w) -> vb.lblRealAuthor.setError(
                         context.getString(R.string.vldt_real_author_must_be_valid)))
                 .setPositiveButton(R.string.action_create, (d, w) -> {
@@ -333,23 +289,13 @@ class EditBookAuthorDelegate
     }
 
     private void viewToModel() {
-        final Author currentEdit = authorVm.getCurrentEdit();
+        final Author currentEdit = vm.getCurrentEdit();
         currentEdit.setName(vb.familyName.getText().toString().trim(),
                             vb.givenNames.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
-        if (authorVm.showRealAuthorName()) {
-            authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
-        }
-
-        if (authorVm.showAuthorType()) {
-            int type = Author.TYPE_UNKNOWN;
-            for (int i = 0; i < typeButtons.size(); i++) {
-                if (typeButtons.valueAt(i).isChecked()) {
-                    type |= typeButtons.keyAt(i);
-                }
-            }
-            currentEdit.setType(type);
+        if (vm.showRealAuthorName()) {
+            vm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
         }
     }
 }

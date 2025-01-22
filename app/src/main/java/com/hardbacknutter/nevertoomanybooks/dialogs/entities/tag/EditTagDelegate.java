@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.bookedit;
+package com.hardbacknutter.nevertoomanybooks.dialogs.entities.tag;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -34,74 +34,63 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditTagContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherViewModel;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Add/Edit a single {@link Publisher} from the book's publisher list.
+ * This is the editor for the BoB {@link Tag} BooklistGroup.
+ * i.e. called from the row-menu of a tag grouping.
  * <p>
- * Can already exist (i.e. have an id) or can be a previously added/new one (id==0).
+ * This allows editing the tag name and potential merging with another tag.
  * <p>
- * {@link EditAction#Add}:
- * <ul>
- * <li>List-dialogs ADD a NEW item</li>
- * <li>The new item is <strong>NOT stored</strong> in the database</li>
- * <li>Returns the new item</li>
- * </ul>
- * <p>
- * {@link EditAction#Edit}:
- * <ul>
- * <li>List-dialogs EDIT an EXISTING item</li>
- * <li>Modifications are <strong>NOT STORED</strong> in the database</li>
- * <li>Returns the original + a new instance/copy with the modifications</li>
- * </ul>
+ * IMPORTANT: EditTagDelegate and TagEditorFragment have partially overlapping
+ * functionality which should kept in sync.
  */
-class EditBookPublisherDelegate
+class EditTagDelegate
         implements FlexDialogDelegate {
+
+    private static final String TAG = "EditTagDelegate";
+
+    private final EditTagViewModel vm;
 
     @NonNull
     private final DialogFragment owner;
     @NonNull
     private final String requestKey;
 
-    /** Book View model. Activity scope. */
-    private final EditBookViewModel vm;
-    /** Publisher View model. Fragment scope. */
-    private final EditPublisherViewModel publisherVm;
-    /** Adding or Editing. */
-    private final EditAction action;
     /** View Binding. */
-    private DialogEditBookPublisherContentBinding vb;
+    private DialogEditTagContentBinding vb;
     @Nullable
     private Toolbar toolbar;
 
-    EditBookPublisherDelegate(@NonNull final DialogFragment owner,
-                              @NonNull final Bundle args) {
+    EditTagDelegate(@NonNull final DialogFragment owner,
+                    @NonNull final Bundle args) {
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-
-        //noinspection DataFlowIssue
-        vm = new ViewModelProvider(owner.getActivity()).get(EditBookViewModel.class);
-        publisherVm = new ViewModelProvider(owner).get(EditPublisherViewModel.class);
-        publisherVm.init(args);
+        vm = new ViewModelProvider(owner).get(EditTagViewModel.class);
+        vm.init(args);
     }
 
     @NonNull
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container) {
-        vb = DialogEditBookPublisherContentBinding.inflate(inflater, container, false);
+        vb = DialogEditTagContentBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
@@ -109,19 +98,19 @@ class EditBookPublisherDelegate
     @NonNull
     public View onCreateFullscreen(@NonNull final LayoutInflater inflater,
                                    @Nullable final ViewGroup container) {
-        final View view = inflater.inflate(R.layout.dialog_edit_book_publisher, container, false);
-        vb = DialogEditBookPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
+        final View view = inflater.inflate(R.layout.dialog_edit_tag, container, false);
+        vb = DialogEditTagContentBinding.bind(view.findViewById(R.id.dialog_content));
         return view;
-    }
-
-    @Override
-    public void setToolbar(@Nullable final Toolbar toolbar) {
-        this.toolbar = toolbar;
     }
 
     @NonNull
     public Toolbar getToolbar() {
         return Objects.requireNonNull(toolbar, "No toolbar set");
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
     }
 
     @Override
@@ -131,22 +120,23 @@ class EditBookPublisherDelegate
                 toolbar.inflateMenu(R.menu.toolbar_action_save);
             }
             initToolbar(owner, dialogType, toolbar);
-            toolbar.setSubtitle(vm.getBook().getTitle());
         }
 
         final Context context = vb.getRoot().getContext();
 
-        final Publisher currentEdit = publisherVm.getCurrentEdit();
+        final Tag currentEdit = vm.getCurrentEdit();
 
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
+                ExtArrayAdapter.FilterType.Diacritic,
+                ServiceLocator.getInstance().getTagDao().getAll()
+                              .stream().map(Tag::getName).collect(Collectors.toList()));
 
-        vb.publisherName.setText(currentEdit.getName());
-        vb.publisherName.setAdapter(nameAdapter);
-        TilUtil.autoRemoveError(vb.publisherName, vb.lblPublisherName);
+        vb.tagName.setText(currentEdit.getName());
+        vb.tagName.setAdapter(nameAdapter);
+        TilUtil.autoRemoveError(vb.tagName, vb.lblTagName);
 
-        vb.publisherName.requestFocus();
+        vb.tagName.requestFocus();
     }
 
     @Override
@@ -168,21 +158,52 @@ class EditBookPublisherDelegate
         return false;
     }
 
+
     private boolean saveChanges() {
         viewToModel();
 
         final Context context = vb.getRoot().getContext();
 
-        final Publisher currentEdit = publisherVm.getCurrentEdit();
-        // basic check only, we're doing more extensive checks later on.
+        final Tag currentEdit = vm.getCurrentEdit();
         if (currentEdit.getName().isEmpty()) {
-            vb.lblPublisherName.setError(context.getString(R.string.vldt_non_blank_required));
+            vb.lblTagName.setError(context.getString(R.string.vldt_non_blank_required));
             return false;
         }
 
-        EditParcelableLauncher.setResult(owner, requestKey, action,
-                                         publisherVm.getOriginal(), currentEdit);
-        return true;
+        // anything actually changed ? If not, we're done.
+        if (!vm.isModified()) {
+            return true;
+        }
+
+        try {
+            final Optional<Tag> existingEntity = vm.saveIfUnique(context);
+            if (existingEntity.isEmpty()) {
+                // Success
+                EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getOriginal());
+                return true;
+            }
+
+            // There is one with the same name; ask whether to merge the 2
+            StandardDialogs.askToMerge(context, R.string.confirm_merge_tags,
+                                       vm.getOriginal().getLabel(context), () -> {
+                        owner.dismiss();
+                        try {
+                            vm.move(context, existingEntity.get());
+                            // return the item which 'lost' it's books
+                            EditParcelableLauncher.setEditInPlaceResult(owner, requestKey,
+                                                                        vm.getOriginal());
+                        } catch (@NonNull final DaoWriteException e) {
+                            // log, but ignore - should never happen unless disk full
+                            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
+                        }
+                    });
+            return false;
+
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, vm.getOriginal());
+            return false;
+        }
     }
 
     @Override
@@ -191,6 +212,6 @@ class EditBookPublisherDelegate
     }
 
     private void viewToModel() {
-        publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
+        vm.getCurrentEdit().setName(vb.tagName.getText().toString().trim());
     }
 }

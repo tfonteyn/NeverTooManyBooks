@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.bookedit;
+package com.hardbacknutter.nevertoomanybooks.dialogs.entities.tocentry;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -36,72 +36,49 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherContentBinding;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherViewModel;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 
 /**
- * Add/Edit a single {@link Publisher} from the book's publisher list.
- * <p>
- * Can already exist (i.e. have an id) or can be a previously added/new one (id==0).
- * <p>
- * {@link EditAction#Add}:
- * <ul>
- * <li>List-dialogs ADD a NEW item</li>
- * <li>The new item is <strong>NOT stored</strong> in the database</li>
- * <li>Returns the new item</li>
- * </ul>
- * <p>
- * {@link EditAction#Edit}:
- * <ul>
- * <li>List-dialogs EDIT an EXISTING item</li>
- * <li>Modifications are <strong>NOT STORED</strong> in the database</li>
- * <li>Returns the original + a new instance/copy with the modifications</li>
- * </ul>
+ * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
  */
-class EditBookPublisherDelegate
+class EditTocEntryDelegate
         implements FlexDialogDelegate {
 
+    private final EditTocEntryViewModel vm;
     @NonNull
     private final DialogFragment owner;
     @NonNull
     private final String requestKey;
-
-    /** Book View model. Activity scope. */
-    private final EditBookViewModel vm;
-    /** Publisher View model. Fragment scope. */
-    private final EditPublisherViewModel publisherVm;
-    /** Adding or Editing. */
-    private final EditAction action;
     /** View Binding. */
-    private DialogEditBookPublisherContentBinding vb;
+    private DialogEditBookTocContentBinding vb;
     @Nullable
     private Toolbar toolbar;
 
-    EditBookPublisherDelegate(@NonNull final DialogFragment owner,
-                              @NonNull final Bundle args) {
+    EditTocEntryDelegate(@NonNull final DialogFragment owner,
+                         @NonNull final Bundle args) {
         this.owner = owner;
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-
+        vm = new ViewModelProvider(owner).get(EditTocEntryViewModel.class);
         //noinspection DataFlowIssue
-        vm = new ViewModelProvider(owner.getActivity()).get(EditBookViewModel.class);
-        publisherVm = new ViewModelProvider(owner).get(EditPublisherViewModel.class);
-        publisherVm.init(args);
+        vm.init(owner.getContext(), args);
     }
 
     @NonNull
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container) {
-        vb = DialogEditBookPublisherContentBinding.inflate(inflater, container, false);
+        vb = DialogEditBookTocContentBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
@@ -109,8 +86,8 @@ class EditBookPublisherDelegate
     @NonNull
     public View onCreateFullscreen(@NonNull final LayoutInflater inflater,
                                    @Nullable final ViewGroup container) {
-        final View view = inflater.inflate(R.layout.dialog_edit_book_publisher, container, false);
-        vb = DialogEditBookPublisherContentBinding.bind(view.findViewById(R.id.dialog_content));
+        final View view = inflater.inflate(R.layout.dialog_edit_book_toc, container, false);
+        vb = DialogEditBookTocContentBinding.bind(view.findViewById(R.id.dialog_content));
         return view;
     }
 
@@ -131,22 +108,48 @@ class EditBookPublisherDelegate
                 toolbar.inflateMenu(R.menu.toolbar_action_save);
             }
             initToolbar(owner, dialogType, toolbar);
-            toolbar.setSubtitle(vm.getBook().getTitle());
+            final String bookTitle = vm.getBookTitle();
+            // Only override the default if we have a book title
+            if (bookTitle != null) {
+                toolbar.setTitle(bookTitle);
+            }
         }
 
         final Context context = vb.getRoot().getContext();
 
-        final Publisher currentEdit = publisherVm.getCurrentEdit();
+        final TocEntry currentEdit = vm.getCurrentEdit();
 
-        final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
-                context, R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
+        //ENHANCE: should we provide a AuthorWorksAdapter to aid manually adding TOC titles?
+        // What about the publication year?
+        vb.title.setText(currentEdit.getTitle());
+        EditTextField.Capitalization.Title.apply(vb.title);
+        TilUtil.autoRemoveError(vb.title, vb.lblTitle);
 
-        vb.publisherName.setText(currentEdit.getName());
-        vb.publisherName.setAdapter(nameAdapter);
-        TilUtil.autoRemoveError(vb.publisherName, vb.lblPublisherName);
+        final PartialDate firstPublicationDate = currentEdit.getFirstPublicationDate();
+        if (firstPublicationDate.isPresent()) {
+            vb.firstPublication.setText(String.valueOf(firstPublicationDate.getYearValue()));
+        }
 
-        vb.publisherName.requestFocus();
+        if (vm.isAnthology()) {
+            final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(
+                    context, R.layout.popup_dropdown_menu_item,
+                    ExtArrayAdapter.FilterType.Diacritic,
+                    ServiceLocator.getInstance().getAuthorDao()
+                                  .getNames(DBKey.AUTHOR_FORMATTED));
+            vb.author.setAdapter(authorAdapter);
+            vb.author.setText(vm.getCurrentAuthorName());
+            vb.author.selectAll();
+            vb.author.requestFocus();
+
+            vb.lblAuthor.setVisibility(View.VISIBLE);
+            vb.author.setVisibility(View.VISIBLE);
+
+        } else {
+            vb.title.requestFocus();
+
+            vb.lblAuthor.setVisibility(View.GONE);
+            vb.author.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -173,15 +176,19 @@ class EditBookPublisherDelegate
 
         final Context context = vb.getRoot().getContext();
 
-        final Publisher currentEdit = publisherVm.getCurrentEdit();
-        // basic check only, we're doing more extensive checks later on.
-        if (currentEdit.getName().isEmpty()) {
-            vb.lblPublisherName.setError(context.getString(R.string.vldt_non_blank_required));
+        if (vm.getCurrentEdit().getTitle().isEmpty()) {
+            vb.lblTitle.setError(context.getString(R.string.vldt_non_blank_required));
             return false;
         }
 
-        EditParcelableLauncher.setResult(owner, requestKey, action,
-                                         publisherVm.getOriginal(), currentEdit);
+        // anything actually changed ? If not, we're done.
+        if (!vm.isModified(context)) {
+            return true;
+        }
+
+        vm.copyChanges();
+
+        EditTocEntryLauncher.setResult(owner, requestKey, vm.getTocEntry(), vm.getEditPosition());
         return true;
     }
 
@@ -191,6 +198,13 @@ class EditBookPublisherDelegate
     }
 
     private void viewToModel() {
-        publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
+        //noinspection DataFlowIssue
+        vm.setTitle(vb.title.getText().toString().trim());
+        //noinspection DataFlowIssue
+        vm.setFirstPublicationDate(vb.firstPublication.getText().toString().trim());
+
+        if (vm.isAnthology()) {
+            vm.setCurrentAuthorName(vb.author.getText().toString().trim());
+        }
     }
 }
