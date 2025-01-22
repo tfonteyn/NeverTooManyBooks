@@ -36,9 +36,11 @@ import java.util.stream.Collectors;
 public class MultiChoiceViewModel
         extends ViewModel {
 
-    private Set<Long> previousSelection;
     @NonNull
-    private final Set<Long> currentSelection = new HashSet<>();
+    private final Set<Long> previousSelection = new HashSet<>();
+    @SuppressWarnings("NotNullFieldNotInitialized")
+    @NonNull
+    private Set<Long> currentSelection;
     @Nullable
     private Bundle extras;
 
@@ -56,14 +58,18 @@ public class MultiChoiceViewModel
             @Nullable
             final long[] selected = args.getLongArray(MultiChoiceLauncher.BKEY_EDIT);
             if (selected != null) {
-                currentSelection.addAll(Arrays.stream(selected)
+                previousSelection.addAll(Arrays.stream(selected)
                                               .boxed()
                                               .collect(Collectors.toSet()));
             }
-            previousSelection = new HashSet<>(currentSelection);
+            currentSelection = new HashSet<>(previousSelection);
 
             extras = args.getBundle(MultiChoiceLauncher.BKEY_EXTRAS);
         }
+    }
+
+    boolean isModified() {
+        return !previousSelection.equals(currentSelection);
     }
 
     @NonNull

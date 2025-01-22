@@ -110,19 +110,19 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Launch the dialog.
      *
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
-     * @param dialogTitle      the dialog title
-     * @param dialogMessage    (optional) message to display at the top of the dialog
-     * @param allItems         list of all possible items
-     * @param currentSelection (optional) list of items which are currently selected
-     * @param extras           (optional) Bundle which will be passed back to the result-listener.
+     * @param context       preferably the {@code Activity}
+     *                      but another UI {@code Context} will also do.
+     * @param dialogTitle   the dialog title
+     * @param dialogMessage (optional) message to display at the top of the dialog
+     * @param allItems      list of all possible items
+     * @param edit          (optional) list of items which are currently selected
+     * @param extras        (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        @NonNull final List<T> allItems,
-                       @Nullable final List<T> currentSelection,
+                       @Nullable final List<T> edit,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -139,10 +139,8 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
                 .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
 
-        // be consistent: don't pass null, DO pass empty
-        if (currentSelection != null) {
-            args.putLongArray(BKEY_EDIT, currentSelection
-                    .stream().mapToLong(Entity::getId).toArray());
+        if (edit != null) {
+            args.putLongArray(BKEY_EDIT, edit.stream().mapToLong(Entity::getId).toArray());
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -178,6 +176,8 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     public interface ResultListener {
         /**
          * Callback handler with the user's selection.
+         * <p>
+         * Either selection can be empty when nothing was/is selected.
          *
          * @param previousSelection the previous selection/value
          * @param currentSelection  the new selection/value

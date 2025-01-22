@@ -179,6 +179,11 @@ class MultiChoiceDelegate
     private boolean saveChanges() {
         // the model is already updated by the adapters selection listener.
 
+        // anything actually changed ? If not, we're done.
+        if (!vm.isModified()) {
+            return true;
+        }
+
         MultiChoiceLauncher.setResult(owner, requestKey,
                                       vm.getPreviousSelection(),
                                       vm.getCurrentSelection(),
