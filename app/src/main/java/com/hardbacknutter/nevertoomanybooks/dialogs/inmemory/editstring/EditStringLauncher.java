@@ -75,11 +75,13 @@ public class EditStringLauncher
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @NonNull final String previousValue,
+                          @Nullable final String previousValue,
                           @NonNull final String currentValue,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putString(BKEY_ORIGINAL, previousValue);
+        if (previousValue != null) {
+            result.putString(BKEY_ORIGINAL, previousValue);
+        }
         result.putString(BKEY_EDIT, currentValue);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
@@ -105,14 +107,14 @@ public class EditStringLauncher
      * @param dialogMessage (optional) message to display at the top of the dialog
      * @param inputType     a valid {@link InputType} value
      *                      {@code 0} is switched to CLASS_TEXT
-     * @param currentValue  (optional) the current value of the field
+     * @param edit          (optional) the value to edit
      * @param extras        (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        final int inputType,
-                       @Nullable final String currentValue,
+                       @Nullable final String edit,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -126,9 +128,8 @@ public class EditStringLauncher
         args.putInt(BKEY_INPUT_TYPE, inputType != 0 ? inputType
                                                     : InputType.TYPE_CLASS_TEXT);
 
-        // be consistent: don't pass null, DO pass empty
-        if (currentValue != null) {
-            args.putString(BKEY_EDIT, currentValue);
+        if (edit != null) {
+            args.putString(BKEY_EDIT, edit);
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -143,7 +144,7 @@ public class EditStringLauncher
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         resultListener.onResult(
-                Objects.requireNonNull(result.getString(BKEY_ORIGINAL), BKEY_ORIGINAL),
+                result.getString(BKEY_ORIGINAL, null),
                 Objects.requireNonNull(result.getString(BKEY_EDIT), BKEY_EDIT),
                 result.getBundle(BKEY_EXTRAS));
     }
@@ -158,7 +159,7 @@ public class EditStringLauncher
          * @param extras        (optional) Bundle as provided to one of the
          *                      {@code Launcher#launch} methods
          */
-        void onResult(@NonNull String previousValue,
+        void onResult(@Nullable String previousValue,
                       @NonNull String currentValue,
                       @Nullable Bundle extras);
     }

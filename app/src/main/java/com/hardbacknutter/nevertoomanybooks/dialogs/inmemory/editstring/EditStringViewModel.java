@@ -31,8 +31,8 @@ import androidx.lifecycle.ViewModel;
 public class EditStringViewModel
         extends ViewModel {
 
-    @NonNull
-    private String previousValue = "";
+    @Nullable
+    private String previousValue;
     @NonNull
     private String currentValue = "";
     @Nullable
@@ -49,18 +49,18 @@ public class EditStringViewModel
         if (!initDone) {
             initDone = true;
 
-            currentValue = args.getString(EditStringLauncher.BKEY_EDIT, "");
-            previousValue = currentValue;
+            previousValue = args.getString(EditStringLauncher.BKEY_EDIT, null);
+            currentValue = previousValue != null ? previousValue : "";
 
             extras = args.getBundle(EditStringLauncher.BKEY_EXTRAS);
         }
     }
 
     boolean isModified() {
-        return !previousValue.equals(currentValue);
+        return !currentValue.equals(previousValue);
     }
 
-    @NonNull
+    @Nullable
     String getPreviousValue() {
         return previousValue;
     }
