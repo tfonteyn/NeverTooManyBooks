@@ -188,7 +188,7 @@ class EditTocEntryDelegate
 
         vm.copyChanges();
 
-        EditTocEntryLauncher.setResult(owner, requestKey, vm.getTocEntry(), vm.getEditPosition());
+        EditTocEntryLauncher.setResult(owner, requestKey, vm.getOriginal(), vm.getEditPosition());
         return true;
     }
 

@@ -142,7 +142,7 @@ class EditInLineStringDelegate
         final Context context = vb.getRoot().getContext();
 
         vb.lblEditString.setHint(label);
-        vb.editString.setText(vm.getCurrentText());
+        vb.editString.setText(vm.getCurrentEdit());
         TilUtil.autoRemoveError(vb.editString, vb.lblEditString);
 
         // soft-keyboards 'done' button act as a shortcut to confirming/saving the changes
@@ -188,7 +188,7 @@ class EditInLineStringDelegate
 
         final Context context = vb.getRoot().getContext();
 
-        if (vm.getCurrentText().isEmpty()) {
+        if (vm.getCurrentEdit().isEmpty()) {
             vb.lblEditString.setError(context.getString(R.string.vldt_non_blank_required));
             return false;
         }
@@ -198,8 +198,8 @@ class EditInLineStringDelegate
             return true;
         }
 
-        final String storedText = onSave(context, vm.getOriginalText(), vm.getCurrentText());
-        EditInLineStringLauncher.setResult(owner, requestKey, vm.getOriginalText(), storedText);
+        final String storedText = onSave(context, vm.getOriginal(), vm.getCurrentEdit());
+        EditInLineStringLauncher.setResult(owner, requestKey, vm.getOriginal(), storedText);
         return true;
     }
 
@@ -243,6 +243,6 @@ class EditInLineStringDelegate
     }
 
     private void viewToModel() {
-        vm.setCurrentText(vb.editString.getText().toString().trim());
+        vm.setCurrentEdit(vb.editString.getText().toString().trim());
     }
 }

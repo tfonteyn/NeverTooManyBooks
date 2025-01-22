@@ -50,7 +50,7 @@ public class EditTocEntryViewModel
     private String bookTitle;
 
     /** The one we're editing. */
-    private TocEntry tocEntry;
+    private TocEntry original;
 
     /** the position of the tocEntry in the TOC list. */
     private int editPosition;
@@ -65,7 +65,7 @@ public class EditTocEntryViewModel
      * Current edit. Not handled in {@link #currentEdit} as we only
      * want to run our name parser {@link Author#from(String)} ONCE.
      * <p>
-     * The original author name is simply read from the {@link #tocEntry}.
+     * The original author name is simply read from the {@link #original}.
      */
     private String currentAuthorName;
 
@@ -77,17 +77,17 @@ public class EditTocEntryViewModel
      */
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
-        if (tocEntry == null) {
-            tocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
+        if (original == null) {
+            original = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
             editPosition = args.getInt(BKEY_POSITION, 0);
             isAnthology = args.getBoolean(BKEY_ANTHOLOGY, false);
             bookTitle = args.getString(DBKey.TITLE);
 
-            currentEdit = new TocEntry(new Author(tocEntry.getPrimaryAuthor(), true),
-                                       tocEntry.getTitle(),
-                                       tocEntry.getFirstPublicationDate());
+            currentEdit = new TocEntry(new Author(original.getPrimaryAuthor(), true),
+                                       original.getTitle(),
+                                       original.getFirstPublicationDate());
 
-            currentAuthorName = tocEntry.getPrimaryAuthor().getLabel(context);
+            currentAuthorName = original.getPrimaryAuthor().getLabel(context);
         }
     }
 
@@ -97,8 +97,8 @@ public class EditTocEntryViewModel
     }
 
     @NonNull
-    public TocEntry getTocEntry() {
-        return tocEntry;
+    public TocEntry getOriginal() {
+        return original;
     }
 
     public int getEditPosition() {
@@ -132,9 +132,9 @@ public class EditTocEntryViewModel
     }
 
     boolean isModified(@NonNull final Context context) {
-        return !(tocEntry.getTitle().equals(currentEdit.getTitle())
-                 && tocEntry.getFirstPublicationDate().equals(currentEdit.getFirstPublicationDate())
-                 && tocEntry.getPrimaryAuthor().getLabel(context).equals(currentAuthorName));
+        return !(original.getTitle().equals(currentEdit.getTitle())
+                 && original.getFirstPublicationDate().equals(currentEdit.getFirstPublicationDate())
+                 && original.getPrimaryAuthor().getLabel(context).equals(currentAuthorName));
     }
 
     /**
@@ -144,10 +144,10 @@ public class EditTocEntryViewModel
      * TOCs are updated in bulk/list per Book.
      */
     void copyChanges() {
-        tocEntry.setTitle(currentEdit.getTitle());
-        tocEntry.setFirstPublicationDate(currentEdit.getFirstPublicationDate());
+        original.setTitle(currentEdit.getTitle());
+        original.setFirstPublicationDate(currentEdit.getFirstPublicationDate());
         if (isAnthology) {
-            tocEntry.setPrimaryAuthor(Author.from(currentAuthorName));
+            original.setPrimaryAuthor(Author.from(currentAuthorName));
         }
     }
 }

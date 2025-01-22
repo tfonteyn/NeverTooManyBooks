@@ -31,9 +31,9 @@ public class EditInLineStringViewModel
         extends ViewModel {
 
     /** The text we're editing. */
-    private String originalText;
+    private String original;
     /** Current edit. */
-    private String currentText;
+    private String currentEdit;
 
     /**
      * Pseudo constructor.
@@ -41,28 +41,28 @@ public class EditInLineStringViewModel
      * @param args {@link Fragment#requireArguments()}
      */
     void init(@NonNull final Bundle args) {
-        if (originalText == null) {
-            originalText = args.getString(EditInLineStringLauncher.BKEY_ITEM, "");
+        if (original == null) {
+            original = args.getString(EditInLineStringLauncher.BKEY_ITEM, "");
 
-            currentText = originalText;
+            currentEdit = original;
         }
     }
 
     @NonNull
-    String getOriginalText() {
-        return originalText;
+    String getOriginal() {
+        return original;
     }
 
     @NonNull
-    String getCurrentText() {
-        return currentText;
+    String getCurrentEdit() {
+        return currentEdit;
     }
 
-    void setCurrentText(@NonNull final String currentText) {
-        this.currentText = currentText;
+    void setCurrentEdit(@NonNull final String currentEdit) {
+        this.currentEdit = currentEdit;
     }
 
     boolean isModified() {
-        return !currentText.equals(originalText);
+        return !currentEdit.equals(original);
     }
 }
