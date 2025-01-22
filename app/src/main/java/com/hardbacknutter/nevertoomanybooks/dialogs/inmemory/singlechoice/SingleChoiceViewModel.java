@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.Objects;
+
 @SuppressWarnings("WeakerAccess")
 public class SingleChoiceViewModel
         extends ViewModel {
@@ -50,12 +52,16 @@ public class SingleChoiceViewModel
             initDone = true;
 
             if (args.containsKey(SingleChoiceLauncher.BKEY_EDIT)) {
-                currentSelection = args.getLong(SingleChoiceLauncher.BKEY_EDIT);
+                previousSelection = args.getLong(SingleChoiceLauncher.BKEY_EDIT);
             }
-            previousSelection = currentSelection;
+            currentSelection = previousSelection;
 
             extras = args.getBundle(SingleChoiceLauncher.BKEY_EXTRAS);
         }
+    }
+
+    boolean isModified() {
+        return Objects.equals(previousSelection, currentSelection);
     }
 
     @Nullable

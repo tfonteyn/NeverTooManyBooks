@@ -111,19 +111,19 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     /**
      * Launch the dialog.
      *
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
-     * @param dialogTitle      the dialog title
-     * @param dialogMessage    optional message to display at the top of the dialog
-     * @param allItems         list of all possible items
-     * @param currentSelection (optional) the current value of the field
-     * @param extras           (optional) Bundle which will be passed back to the result-listener.
+     * @param context       preferably the {@code Activity}
+     *                      but another UI {@code Context} will also do.
+     * @param dialogTitle   the dialog title
+     * @param dialogMessage optional message to display at the top of the dialog
+     * @param allItems      list of all possible items
+     * @param edit          (optional) the current selection
+     * @param extras        (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        @NonNull final List<T> allItems,
-                       @Nullable final T currentSelection,
+                       @Nullable final T edit,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -140,9 +140,8 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
         args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems
                 .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
 
-        // be consistent: don't pass null, DO pass empty
-        if (currentSelection != null) {
-            args.putLong(BKEY_EDIT, currentSelection.getId());
+        if (edit != null) {
+            args.putLong(BKEY_EDIT, edit.getId());
         }
 
         if (extras != null && !extras.isEmpty()) {
