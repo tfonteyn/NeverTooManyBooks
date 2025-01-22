@@ -103,17 +103,17 @@ public class PartialDatePickerLauncher
     /**
      * Launch the dialog.
      *
-     * @param context          preferably the {@code Activity}
-     *                         but another UI {@code Context} will also do.
-     * @param dialogTitle      the dialog title
-     * @param dialogMessage    (optional) message to display at the top of the dialog
-     * @param currentSelection (optional) the current value of the field
-     * @param extras           (optional) Bundle which will be passed back to the result-listener.
+     * @param context       preferably the {@code Activity}
+     *                      but another UI {@code Context} will also do.
+     * @param dialogTitle   the dialog title
+     * @param dialogMessage (optional) message to display at the top of the dialog
+     * @param edit          (optional) the value to edit
+     * @param extras        (optional) Bundle which will be passed back to the result-listener.
      */
     public void launch(@NonNull final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
-                       @Nullable final String currentSelection,
+                       @Nullable final String edit,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
@@ -124,9 +124,8 @@ public class PartialDatePickerLauncher
             args.putString(BKEY_DIALOG_MESSAGE, dialogMessage);
         }
 
-        // be consistent: don't pass null, DO pass empty (i.e. PartialDate#NOT_SET)
-        if (currentSelection != null) {
-            args.putString(BKEY_EDIT, currentSelection);
+        if (edit != null) {
+            args.putString(BKEY_EDIT, edit);
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -150,14 +149,16 @@ public class PartialDatePickerLauncher
     public interface ResultListener {
         /**
          * Callback handler with the user's selection.
+         * <p>
+         * Either values can be {@link PartialDate#NOT_SET}.
          *
-         * @param previousSelection the previous selection/value
-         * @param currentSelection  the new selection/value
-         * @param extras            (optional) Bundle as provided to one of the
-         *                          {@code Launcher#launch} methods
+         * @param previousValue the previous value
+         * @param currentValue  the new value
+         * @param extras        (optional) Bundle as provided to one of the
+         *                      {@code Launcher#launch} methods
          */
-        void onResult(@NonNull PartialDate previousSelection,
-                      @NonNull PartialDate currentSelection,
+        void onResult(@NonNull PartialDate previousValue,
+                      @NonNull PartialDate currentValue,
                       @Nullable Bundle extras);
     }
 }

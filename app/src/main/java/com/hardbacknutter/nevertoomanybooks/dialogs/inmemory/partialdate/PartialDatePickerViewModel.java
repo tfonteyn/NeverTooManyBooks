@@ -50,7 +50,8 @@ public class PartialDatePickerViewModel
     /** Currently displayed; {@code 0} if empty/invalid. */
     private int day;
 
-    private PartialDate previousSelection;
+    @NonNull
+    private PartialDate previousSelection = PartialDate.NOT_SET;
 
     @Nullable
     private Bundle extras;

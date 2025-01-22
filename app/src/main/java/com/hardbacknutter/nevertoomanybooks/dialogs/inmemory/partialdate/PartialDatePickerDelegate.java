@@ -45,6 +45,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogPartialDatePickerContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
@@ -88,9 +89,6 @@ class PartialDatePickerDelegate
 
     private PartialDatePickerViewModel vm;
     private DialogPartialDatePickerContentBinding vb;
-    @Nullable
-    private Toolbar toolbar;
-
     /** This listener is called after <strong>any change</strong> made to the pickers. */
     private final NumberPicker.OnValueChangeListener valueChangeListener =
             (picker, oldVal, newVal) -> {
@@ -117,6 +115,8 @@ class PartialDatePickerDelegate
                     }
                 }
             };
+    @Nullable
+    private Toolbar toolbar;
 
     PartialDatePickerDelegate(@NonNull final DialogFragment owner,
                               @NonNull final Bundle args) {
@@ -287,20 +287,28 @@ class PartialDatePickerDelegate
         if (vm.getDay() != 0 && vm.getMonth() == 0) {
             Snackbar.make(vb.getRoot(), R.string.warning_if_day_set_month_and_year_must_be,
                           Snackbar.LENGTH_LONG).show();
+            return false;
 
         } else if (vm.getMonth() != 0 && vm.getYear() == 0) {
             Snackbar.make(vb.getRoot(), R.string.warning_if_month_set_year_must_be,
                           Snackbar.LENGTH_LONG).show();
+            return false;
+        }
 
-        } else {
-            PartialDatePickerLauncher.setResult(owner, requestKey,
-                                                vm.getPreviousSelection(),
-                                                vm.getCurrentSelection(),
-                                                vm.getExtras());
+        // not using an "isModified" to avoid having to call getCurrentSelection twice
+        final PartialDate previousSelection = vm.getPreviousSelection();
+        final PartialDate currentSelection = vm.getCurrentSelection();
+
+        // anything actually changed ? If not, we're done.
+        if (previousSelection.equals(currentSelection)) {
             return true;
         }
 
-        return false;
+        PartialDatePickerLauncher.setResult(owner, requestKey,
+                                            previousSelection,
+                                            currentSelection,
+                                            vm.getExtras());
+        return true;
     }
 
     /**
