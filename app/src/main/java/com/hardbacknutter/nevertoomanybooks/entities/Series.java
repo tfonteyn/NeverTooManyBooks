@@ -661,7 +661,8 @@ public class Series
         if (id != 0 && that.id != 0 && id != that.id) {
             return false;
         }
-        // The ids might be different, but at least one is != 0
+
+        // The ids MAY be different, but at least one is != 0
         return Objects.equals(title, that.title);
     }
 

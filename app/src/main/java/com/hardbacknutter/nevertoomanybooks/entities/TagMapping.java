@@ -197,12 +197,20 @@ public class TagMapping
 
     @Override
     public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         final TagMapping that = (TagMapping) o;
-        return id == that.id
-               && Objects.equals(name, that.name)
+        // if both 'exist' but have different ID's -> different.
+        if (id != 0 && that.id != 0 && id != that.id) {
+            return false;
+        }
+
+        // The ids MAY be different, but at least one is != 0
+        return Objects.equals(name, that.name)
                && Objects.equals(mappings, that.mappings);
     }
 

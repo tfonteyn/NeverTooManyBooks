@@ -175,12 +175,17 @@ public class BookLight
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final BookLight bookLight = (BookLight) o;
-        return id == bookLight.id
-               && Objects.equals(title, bookLight.title)
-               && Objects.equals(language, bookLight.language)
-               && Objects.equals(primaryAuthor, bookLight.primaryAuthor)
-               && Objects.equals(firstPublicationDate, bookLight.firstPublicationDate);
+        final BookLight that = (BookLight) o;
+        // if both 'exist' but have different ID's -> different.
+        if (id != 0 && that.id != 0 && id != that.id) {
+            return false;
+        }
+
+        // The ids MAY be different, but at least one is != 0
+        return Objects.equals(title, that.title)
+               && Objects.equals(language, that.language)
+               && Objects.equals(primaryAuthor, that.primaryAuthor)
+               && Objects.equals(firstPublicationDate, that.firstPublicationDate);
     }
 
     @Override
