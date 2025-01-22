@@ -96,21 +96,20 @@ public class EditTagMappingLauncher
     /**
      * Launch the dialog.
      *
-     * @param context      preferably the {@code Activity}
-     *                     but another UI {@code Context} will also do.
-     * @param currentValue the current value of the field
-     * @param extras       (optional) Bundle which will be passed back to the result-listener.
+     * @param context preferably the {@code Activity}
+     *                but another UI {@code Context} will also do.
+     * @param edit    the value to edit
+     * @param extras  (optional) Bundle which will be passed back to the result-listener.
      */
     @SuppressWarnings("TypeMayBeWeakened")
     public void launch(@NonNull final Context context,
-                       @NonNull final TagMapping currentValue,
+                       @NonNull final TagMapping edit,
                        @Nullable final Bundle extras) {
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         final Bundle args = new Bundle();
-
-        args.putParcelable(BKEY_EDIT, currentValue);
+        args.putParcelable(BKEY_EDIT, edit);
 
         if (extras != null && !extras.isEmpty()) {
             args.putBundle(BKEY_EXTRAS, extras);

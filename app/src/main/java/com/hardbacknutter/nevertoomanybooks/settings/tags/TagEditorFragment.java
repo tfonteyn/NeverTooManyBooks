@@ -198,7 +198,7 @@ public class TagEditorFragment
                             extras);
     }
 
-    private void onEditEntryDone(@NonNull final String previous,
+    private void onEditEntryDone(@Nullable final String previous,
                                  @NonNull final String currentName,
                                  @Nullable final Bundle extras) {
 

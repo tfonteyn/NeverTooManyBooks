@@ -35,8 +35,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 public class EditTagMappingViewModel
         extends ViewModel {
 
+    @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
     private TagMapping previousValue;
+    @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
     private TagMapping currentValue;
     @Nullable
@@ -53,7 +55,6 @@ public class EditTagMappingViewModel
         if (!initDone) {
             initDone = true;
 
-            // Read the BKEY_CURRENT and store it as the original value
             previousValue = Objects.requireNonNull(args.getParcelable(
                     EditTagMappingLauncher.BKEY_EDIT));
             // take a copy without copying the id
