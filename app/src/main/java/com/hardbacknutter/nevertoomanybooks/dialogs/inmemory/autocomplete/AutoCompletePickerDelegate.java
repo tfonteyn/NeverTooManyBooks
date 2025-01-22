@@ -136,7 +136,7 @@ class AutoCompletePickerDelegate
                 ExtArrayAdapter.FilterType.Diacritic, items);
         vb.editString.setAdapter(adapter);
         // set the initial location == the current location of the first book
-        vb.editString.setText(vm.getCurrentSelection());
+        vb.editString.setText(vm.getCurrentValue());
         vb.editString.requestFocus();
     }
 
@@ -168,14 +168,19 @@ class AutoCompletePickerDelegate
     private boolean saveChanges() {
         viewToModel();
 
+        // anything actually changed ? If not, we're done.
+        if (!vm.isModified()) {
+            return true;
+        }
+
         AutoCompletePickerLauncher.setResult(owner, requestKey,
-                                             vm.getPreviousSelection(),
-                                             vm.getCurrentSelection(),
+                                             vm.getPreviousValue(),
+                                             vm.getCurrentValue(),
                                              vm.getExtras());
         return true;
     }
 
     private void viewToModel() {
-        vm.setCurrentSelection(vb.editString.getText().toString().trim());
+        vm.setCurrentValue(vb.editString.getText().toString().trim());
     }
 }

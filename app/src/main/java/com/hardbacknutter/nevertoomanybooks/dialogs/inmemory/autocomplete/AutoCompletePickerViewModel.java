@@ -31,10 +31,11 @@ import androidx.lifecycle.ViewModel;
 public class AutoCompletePickerViewModel
         extends ViewModel {
 
+    @Nullable
+    private String previousValue;
+    @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
-    private String previousSelection = "";
-    @NonNull
-    private String currentSelection = "";
+    private String currentValue;
     @Nullable
     private Bundle extras;
 
@@ -49,25 +50,29 @@ public class AutoCompletePickerViewModel
         if (!initDone) {
             initDone = true;
 
-            currentSelection = args.getString(AutoCompletePickerLauncher.BKEY_EDIT, "");
-            previousSelection = currentSelection;
+            previousValue = args.getString(AutoCompletePickerLauncher.BKEY_EDIT, null);
+            currentValue = previousValue != null ? previousValue : "";
 
             extras = args.getBundle(AutoCompletePickerLauncher.BKEY_EXTRAS);
         }
     }
 
-    @NonNull
-    String getPreviousSelection() {
-        return previousSelection;
+    boolean isModified() {
+        return !currentValue.equals(previousValue);
+    }
+
+    @Nullable
+    String getPreviousValue() {
+        return previousValue;
     }
 
     @NonNull
-    String getCurrentSelection() {
-        return currentSelection;
+    String getCurrentValue() {
+        return currentValue;
     }
 
-    void setCurrentSelection(@NonNull final String currentSelection) {
-        this.currentSelection = currentSelection;
+    void setCurrentValue(@NonNull final String currentValue) {
+        this.currentValue = currentValue;
     }
 
     @Nullable

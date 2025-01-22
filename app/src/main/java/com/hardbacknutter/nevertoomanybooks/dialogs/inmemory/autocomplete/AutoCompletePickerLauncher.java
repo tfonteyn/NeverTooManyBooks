@@ -77,11 +77,13 @@ public class AutoCompletePickerLauncher
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static void setResult(@NonNull final Fragment fragment,
                           @NonNull final String requestKey,
-                          @NonNull final String previousSelection,
+                          @Nullable final String previousSelection,
                           @NonNull final String currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putString(BKEY_ORIGINAL, previousSelection);
+        if (previousSelection != null) {
+            result.putString(BKEY_ORIGINAL, previousSelection);
+        }
         result.putString(BKEY_EDIT, currentSelection);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
@@ -127,7 +129,6 @@ public class AutoCompletePickerLauncher
         // pass in the texts; there are no ids
         args.putStringArray(BKEY_ITEM_LIST_TEXT, allItems.toArray(String[]::new));
 
-        // be consistent: don't pass null, DO pass empty
         if (currentSelection != null) {
             args.putString(BKEY_EDIT, currentSelection);
         }
@@ -144,8 +145,8 @@ public class AutoCompletePickerLauncher
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        resultListener.onResult(result.getString(BKEY_ORIGINAL, ""),
-                                result.getString(BKEY_EDIT, ""),
+        resultListener.onResult(result.getString(BKEY_ORIGINAL, null),
+                                Objects.requireNonNull(result.getString(BKEY_EDIT)),
                                 result.getBundle(BKEY_EXTRAS));
     }
 
@@ -159,7 +160,7 @@ public class AutoCompletePickerLauncher
          * @param extras            (optional) Bundle as provided to one of the
          *                          {@code Launcher#launch} methods
          */
-        void onResult(@NonNull String previousSelection,
+        void onResult(@Nullable String previousSelection,
                       @NonNull String currentSelection,
                       @Nullable Bundle extras);
     }
