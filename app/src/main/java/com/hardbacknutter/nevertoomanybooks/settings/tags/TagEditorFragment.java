@@ -302,6 +302,7 @@ public class TagEditorFragment
 
         //noinspection DataFlowIssue
         StandardDialogs.deleteTag(getContext(), tag, () -> {
+            ServiceLocator.getInstance().getTagDao().delete(tag);
             tags.remove(position);
             adapter.notifyItemRemoved(position);
         });
