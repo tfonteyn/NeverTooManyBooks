@@ -81,10 +81,7 @@ class EditStringDelegate
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container) {
-        // Ensure components match current Locale order BEFORE we bind the views.
-        final View view = inflater.inflate(R.layout.dialog_edit_string_content,
-                                           container, false);
-        vb = DialogEditStringContentBinding.bind(view);
+        vb = DialogEditStringContentBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
@@ -93,7 +90,6 @@ class EditStringDelegate
     public View onCreateFullscreen(@NonNull final LayoutInflater inflater,
                                    @Nullable final ViewGroup container) {
         final View view = inflater.inflate(R.layout.dialog_edit_string, container, false);
-
         vb = DialogEditStringContentBinding.bind(view.findViewById(R.id.dialog_content));
         return view;
     }
@@ -156,6 +152,13 @@ class EditStringDelegate
 
     private boolean saveChanges() {
         viewToModel();
+
+        // Note we allow the empty string as a result!
+
+        // anything actually changed ? If not, we're done.
+        if (!vm.isModified()) {
+            return true;
+        }
 
         EditStringLauncher.setResult(owner, requestKey,
                                      vm.getPreviousValue(),

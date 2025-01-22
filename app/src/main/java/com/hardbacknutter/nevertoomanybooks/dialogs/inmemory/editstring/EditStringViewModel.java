@@ -56,6 +56,10 @@ public class EditStringViewModel
         }
     }
 
+    boolean isModified() {
+        return !previousValue.equals(currentValue);
+    }
+
     @NonNull
     String getPreviousValue() {
         return previousValue;

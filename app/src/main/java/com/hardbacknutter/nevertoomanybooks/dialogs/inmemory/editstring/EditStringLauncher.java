@@ -126,7 +126,7 @@ public class EditStringLauncher
         args.putInt(BKEY_INPUT_TYPE, inputType != 0 ? inputType
                                                     : InputType.TYPE_CLASS_TEXT);
 
-        // be consistent: don't pass null, DO pass empty (i.e. PartialDate#NOT_SET)
+        // be consistent: don't pass null, DO pass empty
         if (currentValue != null) {
             args.putString(BKEY_CURRENT, currentValue);
         }
