@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ final class GroupKey {
 
     /** The key domain, which is by default also the display-domain. */
     @NonNull
-    private final DomainExpression keyDomain;
+    private final DomainExpression keyDomainExpression;
 
     /**
      * Aside of the main display domain, a group can have extra domains that should
@@ -78,7 +78,7 @@ final class GroupKey {
         this.id = id;
         this.labelResId = labelResId;
         this.keyPrefix = keyPrefix;
-        keyDomain = keyDomainExpression;
+        this.keyDomainExpression = keyDomainExpression;
     }
 
     @BooklistGroup.Id
@@ -127,17 +127,17 @@ final class GroupKey {
      */
     @NonNull
     String getNodeKeyExpression() {
-        return "'/" + keyPrefix + "='||COALESCE(" + keyDomain.getExpression() + ",'')";
+        return "'/" + keyPrefix + "='||COALESCE(" + keyDomainExpression.getExpression() + ",'')";
     }
 
     /**
-     * Get the domain that contains the displayable data.
+     * Get the key domain. This contains, by default, the displayable data.
      *
      * @return domain to display
      */
     @NonNull
-    DomainExpression getDisplayDomainExpression() {
-        return keyDomain;
+    DomainExpression getKeyDomainExpression() {
+        return keyDomainExpression;
     }
 
     /**
@@ -176,14 +176,15 @@ final class GroupKey {
         return id == that.id
                && labelResId == that.labelResId
                && keyPrefix.equals(that.keyPrefix)
-               && keyDomain.equals(that.keyDomain)
+               && keyDomainExpression.equals(that.keyDomainExpression)
                && groupDomains.equals(that.groupDomains)
                && baseDomains.equals(that.baseDomains);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, labelResId, keyPrefix, keyDomain, groupDomains, baseDomains);
+        return Objects.hash(id, labelResId, keyPrefix, keyDomainExpression, groupDomains,
+                            baseDomains);
     }
 
     @NonNull
@@ -192,7 +193,7 @@ final class GroupKey {
         return "GroupKey{"
                + "id=" + id
                + ", keyPrefix=`" + keyPrefix + '`'
-               + ", keyDomain=" + keyDomain
+               + ", keyDomainExpression=" + keyDomainExpression
                + ", groupDomains=" + groupDomains
                + ", baseDomains=" + baseDomains
                + '}';
