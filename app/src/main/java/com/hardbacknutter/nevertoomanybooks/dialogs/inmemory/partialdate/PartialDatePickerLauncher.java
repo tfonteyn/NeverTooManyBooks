@@ -46,8 +46,8 @@ public class PartialDatePickerLauncher
     static final String BKEY_EXTRAS = TAG + ":extras";
 
     /** A standard sql style (partial) date string, must/will be valid. */
-    static final String BKEY_CURRENT_SELECTION = TAG + ":current";
-    private static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
+    static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_ORIGINAL = TAG + ":original";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -83,8 +83,8 @@ public class PartialDatePickerLauncher
                           @NonNull final PartialDate currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putParcelable(BKEY_PREVIOUS_SELECTION, previousSelection);
-        result.putParcelable(BKEY_CURRENT_SELECTION, currentSelection);
+        result.putParcelable(BKEY_ORIGINAL, previousSelection);
+        result.putParcelable(BKEY_EDIT, currentSelection);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -126,7 +126,7 @@ public class PartialDatePickerLauncher
 
         // be consistent: don't pass null, DO pass empty (i.e. PartialDate#NOT_SET)
         if (currentSelection != null) {
-            args.putString(BKEY_CURRENT_SELECTION, currentSelection);
+            args.putString(BKEY_EDIT, currentSelection);
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -141,10 +141,8 @@ public class PartialDatePickerLauncher
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         resultListener.onResult(
-                Objects.requireNonNull(result.getParcelable(BKEY_PREVIOUS_SELECTION),
-                                       BKEY_PREVIOUS_SELECTION),
-                Objects.requireNonNull(result.getParcelable(BKEY_CURRENT_SELECTION),
-                                       BKEY_CURRENT_SELECTION),
+                Objects.requireNonNull(result.getParcelable(BKEY_ORIGINAL), BKEY_ORIGINAL),
+                Objects.requireNonNull(result.getParcelable(BKEY_EDIT), BKEY_EDIT),
                 result.getBundle(BKEY_EXTRAS));
     }
 

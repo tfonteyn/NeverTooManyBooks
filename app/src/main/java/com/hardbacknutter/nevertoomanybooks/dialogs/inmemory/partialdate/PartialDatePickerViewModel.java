@@ -62,7 +62,7 @@ public class PartialDatePickerViewModel
             initDone = true;
             // parsing sets both previousSelection and currentSelection.
             // The latter as individual year/mont/day components
-            parseDate(args.getString(PartialDatePickerLauncher.BKEY_CURRENT_SELECTION));
+            parseDate(args.getString(PartialDatePickerLauncher.BKEY_EDIT, null));
 
             extras = args.getBundle(PartialDatePickerLauncher.BKEY_EXTRAS);
         }

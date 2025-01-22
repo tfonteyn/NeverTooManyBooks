@@ -51,8 +51,8 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
     /** The ids for the list of strings to display in the dropdown. */
     static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
 
-    static final String BKEY_CURRENT_SELECTION = TAG + ":current";
-    private static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
+    static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_ORIGINAL = TAG + ":original";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -88,9 +88,9 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
                           @NonNull final Set<Long> currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putLongArray(BKEY_PREVIOUS_SELECTION,
+        result.putLongArray(BKEY_ORIGINAL,
                             previousSelection.stream().mapToLong(o -> o).toArray());
-        result.putLongArray(BKEY_CURRENT_SELECTION,
+        result.putLongArray(BKEY_EDIT,
                             currentSelection.stream().mapToLong(o -> o).toArray());
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
@@ -141,7 +141,7 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
 
         // be consistent: don't pass null, DO pass empty
         if (currentSelection != null) {
-            args.putLongArray(BKEY_CURRENT_SELECTION, currentSelection
+            args.putLongArray(BKEY_EDIT, currentSelection
                     .stream().mapToLong(Entity::getId).toArray());
         }
 
@@ -158,14 +158,14 @@ public final class MultiChoiceLauncher<T extends Parcelable & Entity>
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         final Set<Long> previousSelection =
-                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_PREVIOUS_SELECTION),
-                                                     BKEY_PREVIOUS_SELECTION))
+                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_ORIGINAL),
+                                                     BKEY_ORIGINAL))
                       .boxed()
                       .collect(Collectors.toSet());
 
         final Set<Long> currentSelection =
-                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_CURRENT_SELECTION),
-                                                     BKEY_CURRENT_SELECTION))
+                Arrays.stream(Objects.requireNonNull(result.getLongArray(BKEY_EDIT),
+                                                     BKEY_EDIT))
                       .boxed()
                       .collect(Collectors.toSet());
 

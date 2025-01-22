@@ -49,8 +49,8 @@ public class SingleChoiceViewModel
         if (!initDone) {
             initDone = true;
 
-            if (args.containsKey(SingleChoiceLauncher.BKEY_CURRENT_SELECTION)) {
-                currentSelection = args.getLong(SingleChoiceLauncher.BKEY_CURRENT_SELECTION);
+            if (args.containsKey(SingleChoiceLauncher.BKEY_EDIT)) {
+                currentSelection = args.getLong(SingleChoiceLauncher.BKEY_EDIT);
             }
             previousSelection = currentSelection;
 

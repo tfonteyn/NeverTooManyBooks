@@ -42,8 +42,8 @@ public class EditStringLauncher
     static final String BKEY_EXTRAS = TAG + ":extras";
     static final String BKEY_INPUT_TYPE = TAG + ":it";
 
-    static final String BKEY_CURRENT = TAG + ":current";
-    private static final String BKEY_PREVIOUS = TAG + ":previous";
+    static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_ORIGINAL = TAG + ":original";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -79,8 +79,8 @@ public class EditStringLauncher
                           @NonNull final String currentValue,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putString(BKEY_PREVIOUS, previousValue);
-        result.putString(BKEY_CURRENT, currentValue);
+        result.putString(BKEY_ORIGINAL, previousValue);
+        result.putString(BKEY_EDIT, currentValue);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -128,7 +128,7 @@ public class EditStringLauncher
 
         // be consistent: don't pass null, DO pass empty
         if (currentValue != null) {
-            args.putString(BKEY_CURRENT, currentValue);
+            args.putString(BKEY_EDIT, currentValue);
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -143,8 +143,8 @@ public class EditStringLauncher
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
         resultListener.onResult(
-                Objects.requireNonNull(result.getString(BKEY_PREVIOUS), BKEY_PREVIOUS),
-                Objects.requireNonNull(result.getString(BKEY_CURRENT), BKEY_CURRENT),
+                Objects.requireNonNull(result.getString(BKEY_ORIGINAL), BKEY_ORIGINAL),
+                Objects.requireNonNull(result.getString(BKEY_EDIT), BKEY_EDIT),
                 result.getBundle(BKEY_EXTRAS));
     }
 

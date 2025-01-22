@@ -44,8 +44,8 @@ public class AutoCompletePickerLauncher
     /** The list of strings to display in the dropdown. */
     static final String BKEY_ITEM_LIST_TEXT = TAG + ":items-text";
 
-    static final String BKEY_CURRENT_SELECTION = TAG + ":current";
-    private static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
+    static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_ORIGINAL = TAG + ":original";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -81,8 +81,8 @@ public class AutoCompletePickerLauncher
                           @NonNull final String currentSelection,
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
-        result.putString(BKEY_PREVIOUS_SELECTION, previousSelection);
-        result.putString(BKEY_CURRENT_SELECTION, currentSelection);
+        result.putString(BKEY_ORIGINAL, previousSelection);
+        result.putString(BKEY_EDIT, currentSelection);
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
         }
@@ -129,7 +129,7 @@ public class AutoCompletePickerLauncher
 
         // be consistent: don't pass null, DO pass empty
         if (currentSelection != null) {
-            args.putString(BKEY_CURRENT_SELECTION, currentSelection);
+            args.putString(BKEY_EDIT, currentSelection);
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -144,8 +144,8 @@ public class AutoCompletePickerLauncher
 
         Objects.requireNonNull(resultListener, ERROR_NULL_ON_EDIT_LISTENER);
 
-        resultListener.onResult(result.getString(BKEY_PREVIOUS_SELECTION, ""),
-                                result.getString(BKEY_CURRENT_SELECTION, ""),
+        resultListener.onResult(result.getString(BKEY_ORIGINAL, ""),
+                                result.getString(BKEY_EDIT, ""),
                                 result.getBundle(BKEY_EXTRAS));
     }
 

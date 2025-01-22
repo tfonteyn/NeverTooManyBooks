@@ -48,8 +48,8 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
     /** The ids for the list of strings to display. */
     static final String BKEY_ITEM_LIST_ID = TAG + ":items-id";
 
-    static final String BKEY_CURRENT_SELECTION = TAG + ":current";
-    private static final String BKEY_PREVIOUS_SELECTION = TAG + ":previous";
+    static final String BKEY_EDIT = TAG + ":edit";
+    private static final String BKEY_ORIGINAL = TAG + ":original";
 
     private static final String ERROR_NULL_ON_EDIT_LISTENER = "onEditListener";
 
@@ -88,10 +88,10 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
                           @Nullable final Bundle extras) {
         final Bundle result = new Bundle(3);
         if (previousSelection != null) {
-            result.putLong(BKEY_PREVIOUS_SELECTION, previousSelection);
+            result.putLong(BKEY_ORIGINAL, previousSelection);
         }
         if (currentSelection != null) {
-            result.putLong(BKEY_CURRENT_SELECTION, currentSelection);
+            result.putLong(BKEY_EDIT, currentSelection);
         }
         if (extras != null && !extras.isEmpty()) {
             result.putBundle(BKEY_EXTRAS, extras);
@@ -142,7 +142,7 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
 
         // be consistent: don't pass null, DO pass empty
         if (currentSelection != null) {
-            args.putLong(BKEY_CURRENT_SELECTION, currentSelection.getId());
+            args.putLong(BKEY_EDIT, currentSelection.getId());
         }
 
         if (extras != null && !extras.isEmpty()) {
@@ -161,13 +161,13 @@ public class SingleChoiceLauncher<T extends Parcelable & Entity>
         @Nullable
         final Long currentSelection;
 
-        if (result.containsKey(BKEY_PREVIOUS_SELECTION)) {
-            previousSelection = result.getLong(BKEY_PREVIOUS_SELECTION);
+        if (result.containsKey(BKEY_ORIGINAL)) {
+            previousSelection = result.getLong(BKEY_ORIGINAL);
         } else {
             previousSelection = null;
         }
-        if (result.containsKey(BKEY_CURRENT_SELECTION)) {
-            currentSelection = result.getLong(BKEY_CURRENT_SELECTION);
+        if (result.containsKey(BKEY_EDIT)) {
+            currentSelection = result.getLong(BKEY_EDIT);
         } else {
             currentSelection = null;
         }

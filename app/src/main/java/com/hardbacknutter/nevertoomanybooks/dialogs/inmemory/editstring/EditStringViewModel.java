@@ -49,7 +49,7 @@ public class EditStringViewModel
         if (!initDone) {
             initDone = true;
 
-            currentValue = args.getString(EditStringLauncher.BKEY_CURRENT, "");
+            currentValue = args.getString(EditStringLauncher.BKEY_EDIT, "");
             previousValue = currentValue;
 
             extras = args.getBundle(EditStringLauncher.BKEY_EXTRAS);

@@ -54,7 +54,7 @@ public class MultiChoiceViewModel
             initDone = true;
 
             @Nullable
-            final long[] selected = args.getLongArray(MultiChoiceLauncher.BKEY_CURRENT_SELECTION);
+            final long[] selected = args.getLongArray(MultiChoiceLauncher.BKEY_EDIT);
             if (selected != null) {
                 currentSelection.addAll(Arrays.stream(selected)
                                               .boxed()
