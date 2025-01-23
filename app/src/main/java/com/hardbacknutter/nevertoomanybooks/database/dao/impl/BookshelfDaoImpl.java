@@ -33,14 +33,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -54,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.BookshelfMergeHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -251,6 +257,107 @@ public class BookshelfDaoImpl
         return list;
     }
 
+    @Override
+    public void validate(@NonNull final Context context)
+            throws DaoInsertException,
+                   DaoUpdateException {
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        for (final Bookshelf bookshelf : getAll()) {
+            boolean doUpdate = false;
+
+            doUpdate |= validateFilters(context, bookshelf);
+            doUpdate |= validateStyle(bookshelf);
+
+            if (doUpdate) {
+                update(context, bookshelf, locale);
+            }
+        }
+    }
+
+    /**
+     * Validate the Style for the given Bookshelf.
+     * Does NOT alter the database.
+     *
+     * @param bookshelf to validate
+     *
+     * @return {@code true} if the Bookshelf was modified
+     */
+    private boolean validateStyle(@NonNull final Bookshelf bookshelf) {
+        final String uuid = bookshelf.getStyleUuid();
+        // Resolving the style might change it (i.e. a different UUID)
+        final Style style = bookshelf.getStyle();
+        return !uuid.equals(style.getUuid());
+    }
+
+    @Override
+    public boolean validateFilters(@NonNull final Context context,
+                                   @NonNull final Bookshelf bookshelf) {
+        final List<PFilter<?>> filters = bookshelf.getFilters();
+        final List<PFilter<?>> keepFilters = validateFilters(context, filters);
+        if (!keepFilters.equals(filters)) {
+            bookshelf.setFilters(keepFilters);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Validate the given list of filter.
+     * Does NOT alter the database.
+     *
+     * @param context Current context
+     * @param filters to validate
+     *
+     * @return a new list
+     */
+    @NonNull
+    private List<PFilter<?>> validateFilters(@NonNull final Context context,
+                                             @NonNull final List<PFilter<?>> filters) {
+        return filters
+                .stream()
+                .map(filter -> validateFilter(context, filter))
+                .flatMap(Optional::stream)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Validate the given filter.
+     * Does NOT alter the database.
+     *
+     * @param context Current context
+     * @param filter  to validate
+     *
+     * @return the potentially 'fixed' filter, or {@code Optional.empty()}
+     *         if the filter <strong>should</strong> be dropped
+     */
+    @NonNull
+    private Optional<PFilter<?>> validateFilter(@NonNull final Context context,
+                                                @NonNull final PFilter<?> filter) {
+        // A filter based on tags might contain previously deleted tag ids.
+        if (DBKey.FK_TAG.equals(filter.getDBKey())) {
+            final Set<Long> validTagIds = ServiceLocator
+                    .getInstance().getTagDao().getAll().stream()
+                    .map(Tag::getId).collect(Collectors.toSet());
+            //noinspection unchecked,TypeMayBeWeakened
+            final PEntityListFilter<Tag> tagFilter = (PEntityListFilter<Tag>) filter;
+            // collect valid tags
+            final Set<Long> keepTags = tagFilter.getValue()
+                                                .stream()
+                                                .filter(validTagIds::contains)
+                                                .collect(Collectors.toSet());
+            if (keepTags.size() > 1) {
+                tagFilter.setValue(context, keepTags);
+                return Optional.of(filter);
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            // all other filters are fine
+            return Optional.of(filter);
+        }
+    }
+
     /**
      * Store the <strong>active filter</strong>.
      *
@@ -263,6 +370,7 @@ public class BookshelfDaoImpl
 
         // prune the filters so we only keep the active ones
         final List<PFilter<?>> list = bookshelf.pruneFilters();
+        final long bookshelfId = bookshelf.getId();
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -273,7 +381,7 @@ public class BookshelfDaoImpl
             // Delete all existing ones.
             try (SynchronizedStatement stmt = db.compileStatement(
                     Sql.DELETE_FILTERS_BY_BOOKSHELF_ID)) {
-                stmt.bindLong(1, bookshelf.getId());
+                stmt.bindLong(1, bookshelfId);
                 stmt.executeUpdateDelete();
             }
 
@@ -284,7 +392,7 @@ public class BookshelfDaoImpl
 
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_FILTER)) {
                 for (final PFilter<?> filter : list) {
-                    stmt.bindLong(1, bookshelf.getId());
+                    stmt.bindLong(1, bookshelfId);
                     stmt.bindString(2, filter.getDBKey());
                     stmt.bindString(3, filter.getPersistedValue());
                     if (stmt.executeInsert() == -1) {

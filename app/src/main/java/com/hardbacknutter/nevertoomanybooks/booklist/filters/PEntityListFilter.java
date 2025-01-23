@@ -52,6 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * <li>An empty Set indicates an inactive filter.</li>
  * </ul>
  *
+ * <strong>IMPORTANT</strong>: there <strong>may</strong> be invalid/deleted ids
+ * in this set. An example is a filter based on DBKey.TAG when a tag gets deleted.
+ * The code is annotated when needed.
+ * See the BookshelfDao validation methods where the cleanup is done.
+ *
  * @param <T> type of Entity value.
  */
 public class PEntityListFilter<T extends Entity>
@@ -108,6 +113,7 @@ public class PEntityListFilter<T extends Entity>
         if (value.size() == 1) {
             return '(' + table.dot(domain) + '=' + value.toArray()[0] + ')';
         } else {
+            // deleted ids MAY be included, but have no effect
             return value.stream()
                         .map(String::valueOf)
                         .collect(Collectors.joining(
@@ -126,6 +132,7 @@ public class PEntityListFilter<T extends Entity>
     @Nullable
     @Override
     public String getPersistedValue() {
+        // deleted ids will be included
         return value.stream()
                     .map(String::valueOf)
                     .collect(Collectors.joining(","));
@@ -135,6 +142,7 @@ public class PEntityListFilter<T extends Entity>
     public void setPersistedValue(@Nullable final String csvString) {
         value.clear();
         if (csvString != null && !csvString.isEmpty()) {
+            // deleted ids will be included
             value.addAll(Arrays.stream(csvString.split(","))
                                .map(Long::parseLong)
                                .collect(Collectors.toList()));
@@ -154,6 +162,7 @@ public class PEntityListFilter<T extends Entity>
     @NonNull
     @Override
     public Set<Long> getValue() {
+        // deleted ids will be included
         return new HashSet<>(value);
     }
 
@@ -162,6 +171,7 @@ public class PEntityListFilter<T extends Entity>
                          @Nullable final Set<Long> value) {
         this.value.clear();
         if (value != null && !value.isEmpty()) {
+            // deleted ids will be included
             this.value.addAll(value);
         }
     }
@@ -182,6 +192,9 @@ public class PEntityListFilter<T extends Entity>
             //noinspection DataFlowIssue
             return value.stream()
                         .map(entityMap::get)
+                        // deleted ids will be filtered out
+                        // If there was only a single and deleted id,
+                        // the result returned will be the empty String.
                         .filter(Objects::nonNull)
                         .map(entity -> entity.getLabel(context))
                         .collect(Collectors.joining("; "));

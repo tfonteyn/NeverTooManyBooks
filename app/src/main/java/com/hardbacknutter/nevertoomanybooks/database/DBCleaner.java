@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
@@ -40,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -101,8 +99,8 @@ public class DBCleaner {
                        DBDefinitions.TBL_AUTHORS,
                        DBDefinitions.TBL_SERIES);
 
-        // clean/correct style UUID's on Bookshelves for deleted styles.
-        bookshelves(context);
+        // Validate styles and filters.
+        serviceLocator.getBookshelfDao().validate(context);
 
         //TEST: we only check & log for now, but don't update yet...
         // we need to test with bad data
@@ -157,17 +155,6 @@ public class DBCleaner {
             rows.clear();
         }
     }
-
-    /**
-     * Validates {@link Bookshelf} being set to a valid {@link Style}.
-     *
-     * @param context Current context
-     */
-    private void bookshelves(@NonNull final Context context) {
-        ServiceLocator.getInstance().getBookshelfDao().getAll().forEach(
-                bookshelf -> bookshelf.validateStyle(context));
-    }
-
 
     /**
      * Validates all boolean columns to contain '0' or '1'.

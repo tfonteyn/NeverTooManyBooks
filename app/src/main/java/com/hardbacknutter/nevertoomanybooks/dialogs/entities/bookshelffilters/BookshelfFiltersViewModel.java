@@ -68,7 +68,11 @@ public class BookshelfFiltersViewModel
         if (bookshelf == null) {
             bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
                                                DBKey.FK_BOOKSHELF);
-            filterList = bookshelf.getFilters();
+            // Validates, but does not update the database at this point.
+            // If the user edits any filter, updates are done.
+            // If the user abandons this edit, the regular DBCleaner takes care of it.
+            filterList = ServiceLocator.getInstance().getBookshelfDao()
+                                       .validateFilters(context, bookshelf.getFilters());
 
             filterChoiceItems = createFilterChoiceItems(context);
         }

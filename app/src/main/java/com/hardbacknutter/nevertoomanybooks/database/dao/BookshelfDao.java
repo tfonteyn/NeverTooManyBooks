@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,6 +105,31 @@ public interface BookshelfDao
      */
     @NonNull
     List<Bookshelf> getAll();
+
+    /**
+     * Check all data for potential issues.
+     * This is a cleanup operation for Styles and Filters
+     * which are not database reference enforced.
+     * Updates all affected Bookshelves as needed.
+     *
+     * @param context Current context
+     *
+     * @throws DaoWriteException on failure
+     */
+    void validate(@NonNull Context context)
+            throws DaoWriteException;
+
+    /**
+     * Validate all filters for the given Bookshelf.
+     * Does NOT alter the database.
+     *
+     * @param context   Current context
+     * @param bookshelf to validate
+     *
+     * @return {@code true} if the Bookshelf was modified
+     */
+    boolean validateFilters(@NonNull Context context,
+                            @NonNull Bookshelf bookshelf);
 
     /**
      * Passed a list of Objects, remove duplicates. We keep the first occurrence.

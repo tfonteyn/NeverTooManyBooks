@@ -322,20 +322,6 @@ public class Bookshelf
     }
 
     /**
-     * Check the current style and if it had to be corrected, update this shelf in the database.
-     *
-     * @param context Current context
-     */
-    public void validateStyle(@NonNull final Context context) {
-        final String uuid = styleUuid;
-        // Resolving the style might change it (i.e. a different UUID)
-        final Style style = getStyle();
-        if (!uuid.equals(style.getUuid())) {
-            doUpdate(context);
-        }
-    }
-
-    /**
      * Update the database for this Bookshelf.
      *
      * @param context Current context
