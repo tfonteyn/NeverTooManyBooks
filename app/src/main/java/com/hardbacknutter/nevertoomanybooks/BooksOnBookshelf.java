@@ -106,6 +106,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorBo
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelffilters.BookshelfFiltersLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditColorBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditColorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.inlinestring.EditFormatBottomSheet;
