@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -281,14 +282,12 @@ public class Bookshelf
     /**
      * Prune the filters so we only keep the active ones.
      *
-     * @param context Current context
-     *
      * @return a new list of active filters
      */
     @NonNull
-    public List<PFilter<?>> pruneFilters(@NonNull final Context context) {
+    public List<PFilter<?>> pruneFilters() {
         final List<PFilter<?>> list = filters.stream()
-                                             .filter(f -> f.isActive(context))
+                                             .filter(Filter::isActive)
                                              .collect(Collectors.toList());
         filters.clear();
         filters.addAll(list);

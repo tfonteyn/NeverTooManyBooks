@@ -1057,8 +1057,8 @@ class BooklistBuilder {
             final String where = filters
                     .stream()
                     // ONLY APPLY ACTIVE FILTERS!
-                    .filter(filter -> filter.isActive(context))
-                    .map(filter -> filter.getExpression(context))
+                    .filter(Filter::isActive)
+                    .map(Filter::getExpression)
                     // sanity checks
                     .filter(Objects::nonNull)
                     .filter(expression -> !expression.isEmpty())

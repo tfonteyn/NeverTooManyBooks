@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public class PEntityListFilter<T extends Entity>
         implements PFilter<Set<Long>> {
 
+    protected final Set<Long> value = new HashSet<>();
     @StringRes
     private final int labelResId;
     @NonNull
@@ -67,11 +68,19 @@ public class PEntityListFilter<T extends Entity>
     private final TableDefinition table;
     @NonNull
     private final Supplier<List<T>> listSupplier;
-
-    protected final Set<Long> value = new HashSet<>();
     @Nullable
     private Map<Long, Entity> entityMap;
 
+    /**
+     * Constructor.
+     *
+     * @param dbKey        the field we're filtering on
+     * @param labelResId   label string resource id for the name of the filter as shown to the user
+     * @param table        the table with the field
+     * @param domain       the domain representing the field
+     * @param listSupplier a supplier of <strong>all</strong> possible values.
+     *                     Typically {@code () -> dao.getAll()} or similar
+     */
     PEntityListFilter(@NonNull final String dbKey,
                       @StringRes final int labelResId,
                       @NonNull final TableDefinition table,
@@ -85,7 +94,7 @@ public class PEntityListFilter<T extends Entity>
     }
 
     @Override
-    public boolean isActive(@NonNull final Context context) {
+    public boolean isActive() {
         final String dbdKey = domain.getName();
         if (ServiceLocator.getInstance().isFieldEnabled(dbdKey)) {
             return !value.isEmpty();
@@ -95,7 +104,7 @@ public class PEntityListFilter<T extends Entity>
 
     @Override
     @NonNull
-    public String getExpression(@NonNull final Context context) {
+    public String getExpression() {
         if (value.size() == 1) {
             return '(' + table.dot(domain) + '=' + value.toArray()[0] + ')';
         } else {
@@ -132,6 +141,11 @@ public class PEntityListFilter<T extends Entity>
         }
     }
 
+    /**
+     * Get the list of <strong>all</strong> possible values.
+     *
+     * @return list
+     */
     @NonNull
     public List<T> getEntities() {
         return listSupplier.get();

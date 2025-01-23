@@ -438,7 +438,7 @@ public class BoBTask
             // but we do need to handle single quotes as we are concatenating.
             final String loanee = searchCriteria.getLoanee();
             if (loanee != null && !loanee.isBlank()) {
-                builder.addFilter(c -> String.format(LOAN_FILTER, SqlEncode.singleQuotes(loanee)));
+                builder.addFilter(() -> String.format(LOAN_FILTER, SqlEncode.singleQuotes(loanee)));
                 builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
             }
         } else {
@@ -456,7 +456,7 @@ public class BoBTask
                             @NonNull final BooklistBuilder builder,
                             @NonNull final Style style) {
         // Prepare the Bookshelf filters; paranoia: make sure we only get the active ones
-        final List<PFilter<?>> filters = bookshelf.pruneFilters(context);
+        final List<PFilter<?>> filters = bookshelf.pruneFilters();
 
         // Add a filter on the current Bookshelf?
         // Only consider doing this if this is NOT the "All books" Bookshelf

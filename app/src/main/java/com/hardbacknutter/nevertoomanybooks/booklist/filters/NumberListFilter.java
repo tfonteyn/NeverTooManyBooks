@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
-
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 
@@ -70,7 +68,7 @@ public class NumberListFilter<T extends Number>
 
     @Override
     @NonNull
-    public String getExpression(@NonNull final Context context) {
+    public String getExpression() {
         if (list.size() == 1) {
             return '(' + table.dot(domain) + '=' + list.get(0) + ')';
         } else {
@@ -83,7 +81,7 @@ public class NumberListFilter<T extends Number>
     }
 
     @Override
-    public boolean isActive(@NonNull final Context context) {
+    public boolean isActive() {
         return !list.isEmpty();
     }
 }

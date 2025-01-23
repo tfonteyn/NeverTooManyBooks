@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,9 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -34,22 +31,18 @@ public interface Filter {
     /**
      * A Filter must implement this method and return a valid WHERE clause expression.
      *
-     * @param context Current context
-     *
      * @return filter SQL expression, or undefined if not active.
      */
     @Nullable
-    String getExpression(@NonNull Context context);
+    String getExpression();
 
     /**
      * Check if a filter is active / should be applied.
      *
-     * @param context Current context
-     *
      * @return {@code true} if this filter is active.
      */
-    default boolean isActive(@NonNull final Context context) {
-        final String expression = getExpression(context);
+    default boolean isActive() {
+        final String expression = getExpression();
         return expression != null && !expression.isEmpty();
     }
 }

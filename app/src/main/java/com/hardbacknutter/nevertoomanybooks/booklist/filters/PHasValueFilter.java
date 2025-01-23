@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
-
-import android.content.Context;
 
 import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
@@ -49,7 +47,7 @@ public class PHasValueFilter
 
     @NonNull
     @Override
-    public String getExpression(@NonNull final Context context) {
+    public String getExpression() {
         final String column = table.dot(domain);
         if (Boolean.TRUE.equals(value)) {
             return '(' + column + " IS NOT NULL AND " + column + "<>'')";

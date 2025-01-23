@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
@@ -101,7 +102,7 @@ public class BooklistHeader {
 
         final String tmpFilterText = filters
                 .stream()
-                .filter(f -> f.isActive(context))
+                .filter(Filter::isActive)
                 .map(filter -> filter.getValueText(context))
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(", "));

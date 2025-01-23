@@ -254,17 +254,15 @@ public class BookshelfDaoImpl
     /**
      * Store the <strong>active filter</strong>.
      *
-     * @param context   Current context
      * @param bookshelf to store the filters of
      *
      * @throws DaoInsertException on failure
      */
-    private void storeFilters(@NonNull final Context context,
-                              @NonNull final Bookshelf bookshelf)
+    private void storeFilters(@NonNull final Bookshelf bookshelf)
             throws DaoInsertException {
 
         // prune the filters so we only keep the active ones
-        final List<PFilter<?>> list = bookshelf.pruneFilters(context);
+        final List<PFilter<?>> list = bookshelf.pruneFilters();
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -426,7 +424,7 @@ public class BookshelfDaoImpl
 
             if (iId != -1) {
                 bookshelf.setId(iId);
-                storeFilters(context, bookshelf);
+                storeFilters(bookshelf);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -474,7 +472,7 @@ public class BookshelfDaoImpl
             }
 
             if (rowsAffected > 0) {
-                storeFilters(context, bookshelf);
+                storeFilters(bookshelf);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();

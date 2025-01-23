@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -69,7 +69,7 @@ public class PBooleanFilter
     }
 
     @Override
-    public boolean isActive(@NonNull final Context context) {
+    public boolean isActive() {
         final String dbdKey = domain.getName();
         if (ServiceLocator.getInstance().isFieldEnabled(dbdKey)) {
             return value != null;
@@ -80,7 +80,7 @@ public class PBooleanFilter
 
     @NonNull
     @Override
-    public String getExpression(@NonNull final Context context) {
+    public String getExpression() {
         //noinspection DataFlowIssue
         return table.dot(domain) + '=' + (value ? 1 : 0);
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,7 +75,7 @@ public class PStringEqualityFilter
     }
 
     @Override
-    public boolean isActive(@NonNull final Context context) {
+    public boolean isActive() {
         final String dbdKey = domain.getName();
         if (ServiceLocator.getInstance().isFieldEnabled(dbdKey)) {
             return value != null;
@@ -86,7 +86,7 @@ public class PStringEqualityFilter
 
     @NonNull
     @Override
-    public String getExpression(@NonNull final Context context) {
+    public String getExpression() {
         // We want to use the exact string, so do not normalize the value,
         // but we do need to handle single quotes as we are concatenating.
         //noinspection DataFlowIssue

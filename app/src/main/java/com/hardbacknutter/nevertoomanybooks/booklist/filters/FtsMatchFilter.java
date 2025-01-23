@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
-
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 
@@ -45,7 +43,7 @@ public class FtsMatchFilter
 
     @NonNull
     @Override
-    public String getExpression(@NonNull final Context context) {
+    public String getExpression() {
         return '(' + TBL_BOOKS.dot(DBKey.PK_ID) + " IN ("
                // fetch the ID's only
                + "SELECT " + DBKey.FTS_BOOK_ID
@@ -56,7 +54,7 @@ public class FtsMatchFilter
     }
 
     @Override
-    public boolean isActive(@NonNull final Context context) {
+    public boolean isActive() {
         return !matchClause.isEmpty();
     }
 }
