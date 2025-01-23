@@ -32,6 +32,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -89,9 +90,14 @@ public class TagEditorFragment
     private ExtMenuLauncher menuLauncher;
     private EditStringLauncher editLauncher;
 
+    private TagAdminViewModel vm;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //noinspection DataFlowIssue
+        vm = new ViewModelProvider(getActivity()).get(TagAdminViewModel.class);
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -207,6 +213,9 @@ public class TagEditorFragment
             return;
         }
 
+        // brute force... the user modified something
+        vm.setModified();
+
         try {
             Objects.requireNonNull(extras);
             final int currentPos = extras.getInt(BKEY_POSITION);
@@ -305,6 +314,8 @@ public class TagEditorFragment
             ServiceLocator.getInstance().getTagDao().delete(tag);
             tags.remove(position);
             adapter.notifyItemRemoved(position);
+            // brute force... the user modified something
+            vm.setModified();
         });
     }
 

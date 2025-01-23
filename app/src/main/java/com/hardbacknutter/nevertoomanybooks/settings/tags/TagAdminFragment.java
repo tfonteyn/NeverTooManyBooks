@@ -20,17 +20,21 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.tags;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.google.android.material.tabs.TabLayout;
@@ -38,6 +42,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminTagsBinding;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
@@ -51,6 +56,30 @@ public class TagAdminFragment
     private TabLayout tabPanel;
 
     private TabAdapter tabAdapter;
+
+    private TagAdminViewModel vm;
+
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback backPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    final Intent resultIntent = SettingsOutput.createResult(
+                            false,
+                            vm.isModified());
+                    //noinspection DataFlowIssue
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().finish();
+                }
+            };
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //noinspection DataFlowIssue
+        vm = new ViewModelProvider(getActivity()).get(TagAdminViewModel.class);
+    }
 
     @Nullable
     @Override
@@ -66,6 +95,10 @@ public class TagAdminFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //noinspection DataFlowIssue
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
         final Toolbar toolbar = getToolbar();
         InsetsListenerBuilder.apply(toolbar);
         // Effectively disable edge-to-edge for the pager and include system gestures.
@@ -79,7 +112,6 @@ public class TagAdminFragment
         toolbar.setTitle(R.string.lbl_tags);
         toolbar.setSubtitle("");
 
-        //noinspection DataFlowIssue
         tabAdapter = new TabAdapter(getActivity());
         tabPanel = getActivity().findViewById(R.id.tab_panel);
 
@@ -87,9 +119,8 @@ public class TagAdminFragment
         vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
 
         vb.pager.setAdapter(tabAdapter);
-        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
-            tab.setText(getString(tabAdapter.getTabTitle(position)));
-        }).attach();
+        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) ->
+                tab.setText(getString(tabAdapter.getTabTitle(position)))).attach();
 
     }
 

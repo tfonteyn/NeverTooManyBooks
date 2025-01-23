@@ -20,21 +20,29 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.tags;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+/**
+ * Use {@link SettingsOutput#createResult(boolean, boolean)} to construct the output.
+ */
 public class TagAdminContract
-        extends ActivityResultContract<Void, Void> {
+        extends ActivityResultContract<Void, Optional<SettingsOutput>> {
 
     private static final String TAG = "TagAdminContract";
 
@@ -42,19 +50,26 @@ public class TagAdminContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                final Void unused) {
-        return FragmentHostActivity.createIntent(context,
-                                                 R.layout.activity_main_tabbar,
+        return FragmentHostActivity.createIntent(context, R.layout.activity_main_tabbar,
                                                  TagAdminFragment.class);
     }
 
     @Override
-    public Void parseResult(final int resultCode,
-                            @Nullable final Intent intent) {
+    public Optional<SettingsOutput> parseResult(final int resultCode,
+                                                @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger().d(TAG, "parseResult", "|resultCode=" + resultCode
                                                             + "|intent=" + intent);
         }
 
-        return null;
+        if (intent == null || resultCode != Activity.RESULT_OK) {
+            return Optional.empty();
+        }
+        final Bundle result = intent.getExtras();
+        if (result == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new SettingsOutput(result));
     }
 }

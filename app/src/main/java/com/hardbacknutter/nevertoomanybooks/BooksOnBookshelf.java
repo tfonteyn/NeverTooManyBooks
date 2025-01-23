@@ -256,8 +256,8 @@ public class BooksOnBookshelf
             registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
                     this::onSettingsChanged));
     private final ActivityResultLauncher<Void> manageTagsLauncher =
-            registerForActivityResult(new TagAdminContract(), o -> {
-            });
+            registerForActivityResult(new TagAdminContract(), o -> o.ifPresent(
+                    this::onSettingsChanged));
 
     /** Do an import. */
     private final ActivityResultLauncher<Void> importLauncher =
