@@ -32,11 +32,6 @@
         android:title="@string/lbl_settings" />
 
     <item
-        android:id="@id/MENU_MANAGE_TAGS"
-        android:icon="@drawable/tag_24px"
-        android:title="@string/lbl_tags" />
-
-    <item
         android:id="@id/MENU_HELP"
         android:icon="@drawable/help_24px"
         android:title="@string/action_help" />

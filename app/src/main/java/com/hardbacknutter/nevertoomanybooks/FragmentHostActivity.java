@@ -47,12 +47,15 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.settings.tags.TagAdminContract;
 import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * Hosting activity for generic fragments.
+ * <p>
+ * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!
+ * Each time we format the code, methods and variables jump around.
+ * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
  */
 public class FragmentHostActivity
         extends BaseActivity {
@@ -66,8 +69,6 @@ public class FragmentHostActivity
     private ActivityResultLauncher<String> editSettingsLauncher;
     @Nullable
     private ActivityResultLauncher<Long> manageBookshelvesLauncher;
-    @Nullable
-    private ActivityResultLauncher<Void> manageTagsLauncher;
 
     /** Optional - The side/navigation menu. */
     @Nullable
@@ -154,10 +155,6 @@ public class FragmentHostActivity
                     new EditBookshelvesContract(), optBookshelfId -> {
                     });
 
-            manageTagsLauncher = registerForActivityResult(
-                    new TagAdminContract(), v -> {
-                    });
-
             editSettingsLauncher = registerForActivityResult(
                     new SettingsContract(), o -> o.ifPresent(result -> {
                         if (result.isRecreateActivity()) {
@@ -240,11 +237,6 @@ public class FragmentHostActivity
             // override and pass the current bookshelf id instead of 0L
             //noinspection DataFlowIssue
             manageBookshelvesLauncher.launch(0L);
-            return true;
-
-        } else if (menuItemId == R.id.MENU_MANAGE_TAGS) {
-            //noinspection DataFlowIssue
-            manageTagsLauncher.launch(null);
             return true;
 
         } else if (menuItemId == R.id.MENU_SETTINGS) {
