@@ -75,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntent
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
@@ -868,7 +869,7 @@ public class BooksOnBookshelf
         return false;
     }
 
-    private void onSettingsChanged(@NonNull final SettingsContract.Output result) {
+    private void onSettingsChanged(@NonNull final SettingsOutput result) {
         if (result.isRecreateActivity()) {
             ActivityRestarter.recreate();
         }

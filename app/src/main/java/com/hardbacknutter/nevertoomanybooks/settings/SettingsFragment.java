@@ -54,7 +54,7 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -100,7 +100,7 @@ public class SettingsFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Intent resultIntent = SettingsContract.createResult(
+                    final Intent resultIntent = SettingsOutput.createResult(
                             vm.isRequiresActivityRecreation(),
                             vm.isForceRebuildBooklist());
                     //noinspection DataFlowIssue
