@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -60,53 +60,65 @@
         app:constraint_referenced_ids="app_icon,version"
         />
 
-    <TextView
-        android:id="@+id/lbl_books"
-        style="@style/About.Label"
-        android:layout_marginTop="24dp"
-        android:text="@string/lbl_books"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
-        />
-
-    <TextView
-        android:id="@+id/lbl_series"
-        style="@style/About.Label"
-        android:text="@string/lbl_series"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_books"
-        />
-
-    <TextView
-        android:id="@+id/lbl_authors"
-        style="@style/About.Label"
-        android:text="@string/lbl_authors"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_series"
-        />
-
-    <TextView
-        android:id="@+id/lbl_publishers"
-        style="@style/About.Label"
-        android:text="@string/lbl_publishers"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_authors"
-        />
-
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_labels_end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="end"
-        app:constraint_referenced_ids="lbl_books,lbl_authors,lbl_publishers"
+        app:constraint_referenced_ids="lbl_books,lbl_authors,lbl_series,lbl_publishers"
+        />
+
+
+    <!-- the counts use a larger font than the labels,
+            so the former decide position, the labels align to the baselines.
+
+             android:maxLines="1" : because Android is ...
+             sigh... in the emulator we see the "Books" label sometimes
+             being split in 2 lines "Book" an "s" ... not a clue why...
+             -->
+    <TextView
+        android:id="@+id/lbl_books"
+        style="@style/About.Label"
+        android:maxLines="1"
+        android:text="@string/lbl_books"
+        app:layout_constraintBaseline_toBaselineOf="@id/book_count"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/lbl_series"
+        style="@style/About.Label"
+        android:maxLines="1"
+        android:text="@string/lbl_series"
+        app:layout_constraintBaseline_toBaselineOf="@id/series_count"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/lbl_authors"
+        style="@style/About.Label"
+        android:maxLines="1"
+        android:text="@string/lbl_authors"
+        app:layout_constraintBaseline_toBaselineOf="@id/author_count"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/lbl_publishers"
+        style="@style/About.Label"
+        android:maxLines="1"
+        android:text="@string/lbl_publishers"
+        app:layout_constraintBaseline_toBaselineOf="@id/publisher_count"
+        app:layout_constraintStart_toStartOf="parent"
         />
 
     <TextView
         android:id="@+id/book_count"
         style="@style/About.Statistic"
+        android:layout_marginTop="24dp"
         android:textIsSelectable="true"
-        app:layout_constraintBaseline_toBaselineOf="@id/lbl_books"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
         tools:text="1234"
         />
 
@@ -114,8 +126,8 @@
         android:id="@+id/series_count"
         style="@style/About.Statistic"
         android:textIsSelectable="true"
-        app:layout_constraintBaseline_toBaselineOf="@id/lbl_series"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        app:layout_constraintTop_toBottomOf="@id/book_count"
         tools:text="234"
         />
 
@@ -123,8 +135,8 @@
         android:id="@+id/author_count"
         style="@style/About.Statistic"
         android:textIsSelectable="true"
-        app:layout_constraintBaseline_toBaselineOf="@id/lbl_authors"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        app:layout_constraintTop_toBottomOf="@id/series_count"
         tools:text="567"
         />
 
@@ -132,9 +144,9 @@
         android:id="@+id/publisher_count"
         style="@style/About.Statistic"
         android:textIsSelectable="true"
-        app:layout_constraintBaseline_toBaselineOf="@id/lbl_publishers"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
-        tools:text="13"
+        app:layout_constraintTop_toBottomOf="@id/author_count"
+        tools:text="89"
         />
 
     <TextView
