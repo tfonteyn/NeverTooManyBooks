@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -103,6 +103,16 @@ public abstract class FlexClassicDialogFragment
                                         "screenSize=" + screenSize,
                                         "fullscreen=" + fullscreen);
         }
+    }
+
+    /**
+     * Overrule/force this dialog to fullscreen mode.
+     * <p>
+     * <strong>Must</strong> be called from the child class {@link #onCreate(Bundle)}
+     * after it has called {@link FlexClassicDialogFragment#onCreate(Bundle)}.
+     */
+    protected void forceFullscreen() {
+        fullscreen = true;
     }
 
     protected boolean isFloatingDialog() {
