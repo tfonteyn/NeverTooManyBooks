@@ -120,18 +120,6 @@ public interface BookshelfDao
             throws DaoWriteException;
 
     /**
-     * Validate all filters for the given Bookshelf.
-     * Does NOT alter the database.
-     *
-     * @param context   Current context
-     * @param bookshelf to validate
-     *
-     * @return {@code true} if the Bookshelf was modified
-     */
-    boolean validateFilters(@NonNull Context context,
-                            @NonNull Bookshelf bookshelf);
-
-    /**
      * Passed a list of Objects, remove duplicates. We keep the first occurrence.
      *
      * @param context Current context

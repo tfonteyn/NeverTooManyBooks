@@ -290,35 +290,31 @@ public class BookshelfDaoImpl
         return !uuid.equals(style.getUuid());
     }
 
-    @Override
-    public boolean validateFilters(@NonNull final Context context,
-                                   @NonNull final Bookshelf bookshelf) {
-        final List<PFilter<?>> filters = bookshelf.getFilters();
-        final List<PFilter<?>> keepFilters = validateFilters(context, filters);
-        if (!keepFilters.equals(filters)) {
-            bookshelf.setFilters(keepFilters);
-            return true;
-        }
-        return false;
-    }
-
     /**
-     * Validate the given list of filter.
+     * Validate the Filters for the given Bookshelf.
      * Does NOT alter the database.
      *
-     * @param context Current context
-     * @param filters to validate
+     * @param context   Current context
+     * @param bookshelf to validate
      *
-     * @return a new list
+     * @return {@code true} if the Bookshelf was modified
      */
-    @NonNull
-    private List<PFilter<?>> validateFilters(@NonNull final Context context,
-                                             @NonNull final List<PFilter<?>> filters) {
-        return filters
-                .stream()
-                .map(filter -> validateFilter(context, filter))
-                .flatMap(Optional::stream)
-                .collect(Collectors.toList());
+    private boolean validateFilters(@NonNull final Context context,
+                                    @NonNull final Bookshelf bookshelf) {
+        final List<PFilter<?>> filters = bookshelf.getFilters();
+        if (!filters.isEmpty()) {
+            final List<PFilter<?>> keepFilters = filters
+                    .stream()
+                    .map(filter -> validateFilter(context, filter))
+                    .flatMap(Optional::stream)
+                    .collect(Collectors.toList());
+
+            if (!keepFilters.equals(filters)) {
+                bookshelf.setFilters(keepFilters);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -346,11 +342,11 @@ public class BookshelfDaoImpl
                                                 .stream()
                                                 .filter(validTagIds::contains)
                                                 .collect(Collectors.toSet());
-            if (keepTags.size() > 1) {
+            if (keepTags.isEmpty()) {
+                return Optional.empty();
+            } else {
                 tagFilter.setValue(context, keepTags);
                 return Optional.of(filter);
-            } else {
-                return Optional.empty();
             }
         } else {
             // all other filters are fine
@@ -457,6 +453,10 @@ public class BookshelfDaoImpl
                 bookshelf.setId(0);
             }
         }
+
+        // Validates, but does not update the database at this point.
+        validateStyle(bookshelf);
+        validateFilters(context, bookshelf);
     }
 
     @Override
