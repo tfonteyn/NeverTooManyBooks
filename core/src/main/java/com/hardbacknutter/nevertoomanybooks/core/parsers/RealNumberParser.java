@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -178,7 +178,8 @@ public class RealNumberParser
      * Translate the passed Object to a {@code double} value.
      * <p>
      * This is a wrapper around {@link #parseDouble(String)} which will check
-     * for the given source to be convertible to a {@code double} before parsing as a {@code String}.
+     * for the given source to be convertible to a {@code double}
+     * before parsing as a {@code String}.
      *
      * @param source Object to convert
      *

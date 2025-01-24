@@ -53,8 +53,8 @@ public class StripInfoBePreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
         //noinspection DataFlowIssue
-        findPreference("stripinfo.resolve.authors.bedetheque")
-                .setEnabled(ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR));
+        findPreference("stripinfo.resolve.authors.bedetheque").setEnabled(
+                ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR));
 
         initLoginPrefs();
 

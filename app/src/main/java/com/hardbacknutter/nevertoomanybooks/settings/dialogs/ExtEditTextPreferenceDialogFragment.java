@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,6 @@ public class ExtEditTextPreferenceDialogFragment
         super.onCreate(savedInstanceState);
     }
 
-    @SuppressWarnings("deprecation")
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
@@ -103,6 +102,8 @@ public class ExtEditTextPreferenceDialogFragment
      * Note that starting from Android R, the new WindowInsets API supports showing soft-input
      * on-demand, so there is no longer a need to schedule showing soft-input when input connection
      * established by the focused editor.</p>
+     *
+     * @param dialog to process
      */
     private void requestInputMethod(@NonNull final Dialog dialog) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -141,8 +142,8 @@ public class ExtEditTextPreferenceDialogFragment
     }
 
     private boolean hasPendingShowSoftInputRequest() {
-        return (showRequestTime != -1 && ((showRequestTime + SHOW_REQUEST_TIMEOUT)
-                                          > SystemClock.currentThreadTimeMillis()));
+        return showRequestTime != -1 && showRequestTime + SHOW_REQUEST_TIMEOUT
+                                        > SystemClock.currentThreadTimeMillis();
     }
 
     private final Runnable mShowSoftInputRunnable = this::scheduleShowSoftInputInner;

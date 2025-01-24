@@ -151,7 +151,7 @@ public class TagAdminFragment
                 case 1:
                     return new TagMappingEditorFragment();
             }
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("position=" + position);
         }
 
         @StringRes
@@ -162,7 +162,7 @@ public class TagAdminFragment
                 case 1:
                     return R.string.lbl_substitutions;
             }
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("position=" + position);
         }
     }
 }

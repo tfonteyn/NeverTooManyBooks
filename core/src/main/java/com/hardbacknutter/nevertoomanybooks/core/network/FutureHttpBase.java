@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -247,15 +247,15 @@ public abstract class FutureHttpBase<T> {
     /**
      * For secure connections.
      *
-     * @param hostnameVerifier (optional) for custom checking of hostnames in for
-     *                         example certificate handling with self-signed certificates.
-     *                         {@code null} to use the system default.
+     * @param verifier (optional) for custom checking of hostnames in for
+     *                 example certificate handling with self-signed certificates.
+     *                 {@code null} to use the system default.
      *
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public FutureHttpBase<T> setHostnameVerifier(@Nullable final HostnameVerifier hostnameVerifier) {
-        this.hostnameVerifier = hostnameVerifier;
+    public FutureHttpBase<T> setHostnameVerifier(@Nullable final HostnameVerifier verifier) {
+        this.hostnameVerifier = verifier;
         return this;
     }
 
@@ -294,8 +294,8 @@ public abstract class FutureHttpBase<T> {
 
     @NonNull
     protected HttpURLConnection createRequest(@NonNull final URL url,
-                                            @NonNull final String method,
-                                            final boolean doOutput)
+                                              @NonNull final String method,
+                                              final boolean doOutput)
             throws IOException {
 
         final HttpURLConnection request = (HttpURLConnection) url.openConnection();

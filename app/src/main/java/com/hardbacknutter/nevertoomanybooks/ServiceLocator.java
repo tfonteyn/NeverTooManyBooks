@@ -447,8 +447,9 @@ public class ServiceLocator {
             if (appLocale == null) {
                 // Using SYSTEM Locales versus USER Locales, see:
                 // https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242
-                // Key-Takeaway #5: To get the list of preferred locales of the device (as defined in
-                // the Settings), call Resources.getSystem().getConfiguration().getLocales()
+                // Key-Takeaway #5: To get the list of preferred locales of the device
+                // (as defined in the Settings), call
+                // Resources.getSystem().getConfiguration().getLocales()
                 //
                 // although, at this point, it seems LocaleList.getDefault() DOES return
                 // the correct list, so we could use that. It's not clear if it matters.

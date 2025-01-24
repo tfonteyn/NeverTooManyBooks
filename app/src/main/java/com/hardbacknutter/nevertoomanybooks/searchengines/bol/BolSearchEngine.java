@@ -674,7 +674,8 @@ public class BolSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = getEngineId().getPreferenceKey() + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+        final String key = getEngineId().getPreferenceKey()
+                           + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {
