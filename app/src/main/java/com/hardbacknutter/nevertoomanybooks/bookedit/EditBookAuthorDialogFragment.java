@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,5 +32,8 @@ public class EditBookAuthorDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new EditBookAuthorDelegate(this, requireArguments());
+
+        // FIXME: still not ideal on tablet in landscape. Needs revisiting.
+        // forceFullscreen();
     }
 }
