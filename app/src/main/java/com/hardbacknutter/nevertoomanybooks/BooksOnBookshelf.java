@@ -1528,7 +1528,7 @@ public class BooksOnBookshelf
             if (adapter != null) {
                 adapter.setBooklist(null);
             }
-            vm.buildBookList();
+            vm.buildBookList(this);
         }
     }
 

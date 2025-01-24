@@ -40,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -1437,8 +1438,10 @@ public class BooksOnBookshelfViewModel
 
     /**
      * Queue a rebuild of the underlying cursor and data.
+     *
+     * @param context Current context
      */
-    void buildBookList() {
+    void buildBookList(@NonNull final Context context) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
             Debug.startMethodTracing("trace-" + LocalDateTime
                     .now().withNano(0)
@@ -1447,6 +1450,10 @@ public class BooksOnBookshelfViewModel
 
         Objects.requireNonNull(bookshelf, ERROR_NULL_BOOKLIST);
         Objects.requireNonNull(searchCriteria, "searchCriteria");
+
+        // make sure we pickup the current style, filters, ...
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        bookshelfDao.refresh(context, bookshelf, locale);
 
         boBTask.build(bookshelf, rebuildMode, searchCriteria, selectedBookId);
     }
