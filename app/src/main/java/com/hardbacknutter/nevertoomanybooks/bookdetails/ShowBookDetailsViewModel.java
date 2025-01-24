@@ -74,7 +74,7 @@ public class ShowBookDetailsViewModel
     private static final String BOOK_NOT_LOADED_YET = "Book not loaded yet";
 
     private final MutableLiveData<Book> onBookLoaded = new MutableLiveData<>();
-    private final MutableLiveData<Void> onReadStatusChanged = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> onReadStatusUpdateUI = new MutableLiveData<>();
 
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
@@ -121,7 +121,7 @@ public class ShowBookDetailsViewModel
     private void updateUI() {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         onBookLoaded.setValue(book);
-        readStatusChanged();
+        updateReadStatus(false);
     }
 
     /**
@@ -206,12 +206,12 @@ public class ShowBookDetailsViewModel
     public void setReadNow(final boolean read) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         ServiceLocator.getInstance().getBookDao().setRead(book, read);
-        readStatusChanged();
+        updateReadStatus(true);
     }
 
     @Override
-    public void readStatusChanged() {
-        onReadStatusChanged.setValue(null);
+    public void updateReadStatus(final boolean statusModified) {
+        onReadStatusUpdateUI.setValue(statusModified);
     }
 
     @Override
@@ -225,13 +225,13 @@ public class ShowBookDetailsViewModel
     public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
         Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         ServiceLocator.getInstance().getBookDao().setReadingProgress(book, readingProgress);
-        readStatusChanged();
+        updateReadStatus(true);
     }
 
     @Override
     @NonNull
-    public MutableLiveData<Void> onReadStatusChanged() {
-        return onReadStatusChanged;
+    public MutableLiveData<Boolean> onUpdateReadStatus() {
+        return onReadStatusUpdateUI;
     }
 
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,12 +61,12 @@ public class EditBookNotesFragment
         //noinspection DataFlowIssue
         vm.initFields(getContext(), FragmentId.Notes, FieldGroup.Notes);
 
-        vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
+        vm.onUpdateReadStatus().observe(getViewLifecycleOwner(), this::onReadStatusUpdate);
 
         ReadStatusFragmentFactory.createEditor(getChildFragmentManager(), R.id.fragment_read,
                                                vm.getStyle());
         // Update *this* fragment + the ReadStatusFragment
-        vm.readStatusChanged();
+        vm.updateReadStatus(false);
     }
 
     @Override

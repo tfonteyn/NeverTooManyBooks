@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ public interface BookReadStatusViewModel {
      *
      * @param read flag
      *
-     * @see #onReadStatusChanged()
+     * @see #onUpdateReadStatus()
      */
     void setReadNow(boolean read);
 
@@ -61,26 +61,27 @@ public interface BookReadStatusViewModel {
      *
      * @param readingProgress to set
      *
-     * @see #onReadStatusChanged()
+     * @see #onUpdateReadStatus()
      */
     void setReadingProgress(@NonNull ReadingProgress readingProgress);
 
     /**
-     * Trigger a call to {@link #onReadStatusChanged()}.
+     * Trigger a call to {@link #onUpdateReadStatus()}.
+     *
+     * @param statusModified {@code true} if the actual status was modified
+     *                       {@code false} if we just want the UI repainted
      */
-    void readStatusChanged();
+    void updateReadStatus(boolean statusModified);
 
     /**
-     * Triggered after a call to
-     * {@link #setReadNow(boolean)},
-     * {@link #setReadingProgress(ReadingProgress)} or
-     * {@link #readStatusChanged()}.
+     * Triggered after a call to {@link #updateReadStatus(boolean)}.
      *
-     * @return void; indicates the UI should update the read-status related fields.
+     * @return boolean
      *
      * @see #setReadNow(boolean)
      * @see #setReadingProgress(ReadingProgress)
+     * @see #updateReadStatus(boolean)
      */
     @NonNull
-    MutableLiveData<Void> onReadStatusChanged();
+    MutableLiveData<Boolean> onUpdateReadStatus();
 }

@@ -405,13 +405,13 @@ public abstract class EditBookBaseFragment
             book.putBoolean(DBKey.READ__BOOL, true);
             book.putString(DBKey.READ_PROGRESS, "");
             // Update *this* fragment + the ReadStatusFragment
-            vm.readStatusChanged();
+            vm.updateReadStatus(false);
         }
-        // Note we're NOT calling vm.readStatusChanged() when the R.id.read_start field
+        // Note we're NOT calling vm.updateReadStatus() when the R.id.read_start field
         // is updated; there is no need
     }
 
-    void onReadStatusChanged() {
+    void onReadStatusUpdate(@NonNull final Boolean modified) {
         // Refresh the read_end value displayed
         final Field<String, TextView> readEnd = vm.requireField(R.id.read_end);
         readEnd.setValue(vm.getBook().getString(DBKey.READ_END__DATE));

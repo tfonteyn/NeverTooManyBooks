@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,12 +65,12 @@ public class ReadStatusFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
+        vm.onUpdateReadStatus().observe(getViewLifecycleOwner(), this::onReadStatusUpdate);
 
         vb.read.setOnClickListener(v -> vm.setReadNow(!vm.isRead()));
     }
 
-    private void onReadStatusChanged() {
+    private void onReadStatusUpdate(final Boolean modified) {
         vb.read.setChecked(vm.isRead());
     }
 }

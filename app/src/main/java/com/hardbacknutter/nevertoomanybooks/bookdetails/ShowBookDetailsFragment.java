@@ -263,7 +263,7 @@ public class ShowBookDetailsFragment
         createSyncDelegates();
 
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
-        vm.onReadStatusChanged().observe(getViewLifecycleOwner(), aVoid -> onReadStatusChanged());
+        vm.onUpdateReadStatus().observe(getViewLifecycleOwner(), this::onUpdateReadStatus);
     }
 
     /**
@@ -354,7 +354,11 @@ public class ShowBookDetailsFragment
         }
     }
 
-    private void onReadStatusChanged() {
+    private void onUpdateReadStatus(@NonNull final Boolean modified) {
+        if (!modified) {
+            return;
+        }
+
         // Needed when running inside the ViewPager to update the activity result data
         // Ignored if running im embedded mode, but keeping this future-proof
         aVm.setDataModified();

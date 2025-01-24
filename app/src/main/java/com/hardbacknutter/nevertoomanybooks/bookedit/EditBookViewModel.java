@@ -107,7 +107,7 @@ public class EditBookViewModel
     /** The key is the fragment tag. */
     private final Collection<FragmentId> fragmentsWithUnfinishedEdits =
             EnumSet.noneOf(FragmentId.class);
-    private final MutableLiveData<Void> onReadStatusChanged = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> onReadStatusUpdateUI = new MutableLiveData<>();
     private List<MenuHandler> menuHandlers;
     /**
      * The Book we're editing (creating/updating).
@@ -350,7 +350,7 @@ public class EditBookViewModel
     public void setReadNow(final boolean read) {
         book.setReadNow(read);
         book.setStage(EntityStage.Stage.Dirty);
-        readStatusChanged();
+        updateReadStatus(true);
     }
 
     @Override
@@ -363,18 +363,18 @@ public class EditBookViewModel
     public void setReadingProgress(@NonNull final ReadingProgress readingProgress) {
         book.setReadingProgress(readingProgress);
         book.setStage(EntityStage.Stage.Dirty);
-        readStatusChanged();
+        updateReadStatus(true);
     }
 
     @Override
-    public void readStatusChanged() {
-        onReadStatusChanged.setValue(null);
+    public void updateReadStatus(final boolean statusModified) {
+        onReadStatusUpdateUI.setValue(statusModified);
     }
 
     @NonNull
     @Override
-    public MutableLiveData<Void> onReadStatusChanged() {
-        return onReadStatusChanged;
+    public MutableLiveData<Boolean> onUpdateReadStatus() {
+        return onReadStatusUpdateUI;
     }
 
     boolean isAnthology() {
