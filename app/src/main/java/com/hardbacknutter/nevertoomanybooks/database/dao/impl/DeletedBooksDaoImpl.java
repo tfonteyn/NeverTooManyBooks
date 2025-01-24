@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,7 +100,7 @@ public class DeletedBooksDaoImpl
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(
-                    "INSERT OR IGNORE INTO " + TBL_DELETED_BOOKS.getName()
+                    INSERT_OR_IGNORE_INTO_ + TBL_DELETED_BOOKS.getName()
                     + "(" + DBKey.BOOK_UUID + ',' + DBKey.DATE_ADDED__UTC + ") VALUES (?,?)")) {
                 for (final Pair<String, String> record : list) {
                     stmt.bindString(1, record.first);

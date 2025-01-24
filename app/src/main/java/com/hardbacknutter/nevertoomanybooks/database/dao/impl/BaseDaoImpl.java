@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,6 +48,7 @@ class BaseDaoImpl {
 
     static final String DELETE_FROM_ = "DELETE FROM ";
     static final String INSERT_INTO_ = "INSERT INTO ";
+    static final String INSERT_OR_IGNORE_INTO_ = "INSERT OR IGNORE INTO ";
 
     static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
     static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
