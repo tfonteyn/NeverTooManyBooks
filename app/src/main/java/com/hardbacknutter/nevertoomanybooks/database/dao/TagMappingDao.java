@@ -26,8 +26,7 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 
 public interface TagMappingDao {
@@ -49,14 +48,14 @@ public interface TagMappingDao {
      *
      * @return the row id of the newly inserted item
      *
-     * @throws DaoInsertException on failure
+     * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
     long insert(@NonNull TagMapping mapping)
-            throws DaoInsertException;
+            throws DaoWriteException;
 
     void update(@NonNull TagMapping mapping)
-            throws DaoUpdateException;
+            throws DaoWriteException;
 
     /**
      * Delete the given {@link TagMapping}.

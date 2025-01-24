@@ -31,8 +31,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -42,10 +40,10 @@ public interface TagDao
 
     @IntRange(from = 1)
     long insert(@NonNull Tag tag)
-            throws DaoInsertException;
+            throws DaoWriteException;
 
     void update(@NonNull Tag tag)
-            throws DaoUpdateException;
+            throws DaoWriteException;
 
     boolean delete(@NonNull Tag tag);
 

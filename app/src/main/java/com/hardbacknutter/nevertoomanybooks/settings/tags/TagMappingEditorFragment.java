@@ -44,8 +44,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagMappingsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagMappingBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -212,7 +211,7 @@ public class TagMappingEditorFragment
                 // User was editing an existing mapping
                 updateEntry(original, originalPos, edit);
             }
-        } catch (@NonNull final DaoInsertException | DaoUpdateException e) {
+        } catch (@NonNull final DaoWriteException e) {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), TAG, e);
         }
@@ -225,7 +224,7 @@ public class TagMappingEditorFragment
     }
 
     private void addEntry(@NonNull final TagMapping edit)
-            throws DaoInsertException {
+            throws DaoWriteException {
 
         // check by NAME it's not already in the list.
         final int existingPos = findByName(edit.getName());
@@ -256,7 +255,7 @@ public class TagMappingEditorFragment
     private void updateEntry(@NonNull final TagMapping original,
                              final int originalPos,
                              @NonNull final TagMapping edit)
-            throws DaoUpdateException {
+            throws DaoWriteException {
 
         // check by NAME it's not already in the list.
         final int existingPos = findByName(edit.getName());

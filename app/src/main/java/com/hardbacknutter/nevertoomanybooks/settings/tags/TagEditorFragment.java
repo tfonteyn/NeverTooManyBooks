@@ -45,8 +45,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagNamesBinding;
@@ -232,7 +230,7 @@ public class TagEditorFragment
                 // User was editing an existing tag
                 updateEntry(currentName, currentPos, existingPos);
             }
-        } catch (@NonNull final DaoInsertException | DaoUpdateException e) {
+        } catch (@NonNull final DaoWriteException e) {
             //noinspection DataFlowIssue
             ErrorDialog.show(getContext(), TAG, e);
         }
@@ -240,7 +238,7 @@ public class TagEditorFragment
 
     private void addEntry(@NonNull final String currentName,
                           final int existingPos)
-            throws DaoInsertException {
+            throws DaoWriteException {
         if (existingPos >= 0) {
             // Trying to add a NEW one already there. Just reject it...
             Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
@@ -265,7 +263,7 @@ public class TagEditorFragment
     private void updateEntry(@NonNull final String currentName,
                              final int currentPos,
                              final int existingPos)
-            throws DaoUpdateException {
+            throws DaoWriteException {
         final Tag currentTag = tags.get(currentPos);
         currentTag.setName(currentName);
 
