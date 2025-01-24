@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -56,6 +57,7 @@ public class BookshelfFiltersViewModel
 
     private boolean modified;
     private Pair<String[], String[]> filterChoiceItems;
+    private BookshelfDao dao;
 
     /**
      * Pseudo constructor.
@@ -65,14 +67,19 @@ public class BookshelfFiltersViewModel
      */
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
-        if (bookshelf == null) {
+        if (dao == null) {
+            dao = ServiceLocator.getInstance().getBookshelfDao();
+
             bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
                                                DBKey.FK_BOOKSHELF);
-            // Validates, but does not update the database at this point.
-            // If the user edits any filter, updates are done.
-            // If the user abandons this edit, the regular DBCleaner takes care of it.
-            filterList = ServiceLocator.getInstance().getBookshelfDao()
-                                       .validateFilters(context, bookshelf.getFilters());
+
+            // We do a refresh, to make sure the filters are fully up-to-date.
+            // The database is not modified at this point.
+            // If the user edits any filter, any issues would have been resolved.
+            // If the user abandons this edit, the regular DBCleaner will kick in sooner or later.
+            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+            dao.refresh(context, bookshelf, locale);
+            filterList = bookshelf.getFilters();
 
             filterChoiceItems = createFilterChoiceItems(context);
         }
@@ -114,10 +121,20 @@ public class BookshelfFiltersViewModel
         return filterList;
     }
 
+    /**
+     * Get the modification flag used for the result when quiting the filter editor.
+     *
+     * @return flag
+     */
     public boolean isModified() {
         return modified;
     }
 
+    /**
+     * Set the modification flag used for the result when quiting the filter editor.
+     *
+     * @param modified flag
+     */
     public void setModified(final boolean modified) {
         this.modified = modified;
     }
@@ -137,7 +154,7 @@ public class BookshelfFiltersViewModel
             bookshelf.setFilters(filterList);
             try {
                 final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-                ServiceLocator.getInstance().getBookshelfDao().update(context, bookshelf, locale);
+                dao.update(context, bookshelf, locale);
             } catch (@NonNull final DaoWriteException e) {
                 // log, but ignore - should never happen unless disk full
                 LoggerFactory.getLogger().e(TAG, e);
