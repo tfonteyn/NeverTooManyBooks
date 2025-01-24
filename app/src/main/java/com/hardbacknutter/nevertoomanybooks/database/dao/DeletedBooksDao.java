@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,10 @@ import androidx.core.util.Pair;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Note that there is no individual 'insert' method.
+ * New records are created by a database trigger when books are deleted.
+ */
 public interface DeletedBooksDao {
 
     /**
@@ -45,13 +49,10 @@ public interface DeletedBooksDao {
     List<Pair<String, String>> getAll(@Nullable LocalDateTime sinceDateTime);
 
     /**
-     * Insert the list of deleted books (uuid + date deleted).
+     * Bulk import of the list of deleted books (uuid + date deleted).
      * Entries already present are simply skipped.
-     * <p>
-     * Note that there is no individual 'insert' method. Deletions are handled by a trigger.
-     * This method is for use by the imported code.
      *
-     * @param list to insert.
+     * @param list to import.
      *
      * @return the number of entries actually inserted; can be {@code 0}.
      *
