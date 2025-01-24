@@ -76,6 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
  *
  *     <li>These depend on other types being included or not</li>
  *     <li>{@link RecordType#Certificates}</li>
+ *     <li>{@link RecordType#Tags}</li>
  *     <li>{@link RecordType#Bookshelves}</li>
  *     <li>{@link RecordType#CalibreLibraries}</li>
  *     <li>{@link RecordType#CalibreCustomFields}</li>
@@ -195,15 +196,21 @@ public class ZipArchiveWriter
             writeMetaData(context, results);
 
             // The order we're writing is important:
-            // Write styles first, and preferences next! This will facilitate & speedup
-            // importing as we'll be seeking in the input archive for these.
-            final List<RecordType> typeList = List.of(RecordType.Styles,
-                                                      RecordType.Preferences,
-                                                      RecordType.Certificates,
-                                                      RecordType.Bookshelves,
-                                                      RecordType.CalibreLibraries,
-                                                      RecordType.CalibreCustomFields,
-                                                      RecordType.DeletedBooks);
+
+            final List<RecordType> typeList = List.of(
+                    // Write styles first, and preferences next! This will facilitate & speedup
+                    // importing as we'll be seeking in the input archive for these.
+                    RecordType.Styles,
+                    RecordType.Preferences,
+                    RecordType.Certificates,
+                    // write tags before Bookshelves, Authors, ...
+                    // we might use them in future versions
+                    RecordType.Tags,
+                    // Bookshelves before Calibre as the latter can refer to them
+                    RecordType.Bookshelves,
+                    RecordType.CalibreLibraries,
+                    RecordType.CalibreCustomFields,
+                    RecordType.DeletedBooks);
             for (final RecordType type : typeList) {
                 if (!progressListener.isCancelled() && recordTypes.contains(type)) {
                     results.add(writeRecord(context, type, progressListener));
@@ -319,6 +326,7 @@ public class ZipArchiveWriter
      *     <li>{@link RecordType#Styles}</li>
      *     <li>{@link RecordType#Preferences}</li>
      *     <li>{@link RecordType#Certificates}</li>
+     *     <li>{@link RecordType#Tags}</li>
      *     <li>{@link RecordType#Bookshelves}</li>
      *     <li>{@link RecordType#CalibreLibraries}</li>
      *     <li>{@link RecordType#CalibreCustomFields}</li>
@@ -413,25 +421,17 @@ public class ZipArchiveWriter
     @AnyThread
     @NonNull
     private RecordEncoding getEncoding(@NonNull final RecordType recordType) {
-        switch (recordType) {
-            case MetaData:
-            case Styles:
-            case Preferences:
-            case Certificates:
-            case Bookshelves:
-            case CalibreLibraries:
-            case CalibreCustomFields:
-            case DeletedBooks:
-            case Books:
-            case AutoDetect:
-                return RecordEncoding.Json;
-            case Cover:
-                return RecordEncoding.Cover;
-
-            case Database:
-            default:
-                throw new IllegalArgumentException(recordType.toString());
+        if (recordType == RecordType.Cover) {
+            return RecordEncoding.Cover;
         }
+        if (recordType == RecordType.Database) {
+            // currently not supported, but could easily be added as 'binary'
+            // similarly to the covers.
+            throw new IllegalArgumentException(RecordType.Database.toString());
+        }
+
+        // everything else is now json
+        return RecordEncoding.Json;
     }
 
     /**

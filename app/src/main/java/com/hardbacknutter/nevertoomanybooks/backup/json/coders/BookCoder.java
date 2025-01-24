@@ -115,7 +115,11 @@ public class BookCoder
         final JSONObject out = new JSONObject();
         for (final String key : book.keySet()) {
             if (identifierCoder.contains(key)) {
-                identifiers.add(new Pair<>(key, book.getString(key)));
+                book.getIdentifierValue(key).ifPresent(identifierValue -> {
+                    identifiers.add(new Pair<>(key, identifierValue));
+
+                    encodeIdentifier(out, book, identifierValue);
+                });
             } else {
                 encode(out, book, key);
             }
@@ -128,12 +132,24 @@ public class BookCoder
         return out;
     }
 
+    private void encodeIdentifier(@NonNull final JSONObject out,
+                                  @NonNull final Book book,
+                                  @NonNull final String identifierValue) {
+        switch (identifierValue) {
+            case Identifier.SID_STRIP_INFO: {
+                book.getStripInfoCollectionData().ifPresent(
+                        scd ->
+                                out.put(StripInfoCollectionData.BKEY,
+                                        stripInfoDataCoder.encode(scd)));
+                break;
+            }
+        }
+    }
+
     private void encode(@NonNull final JSONObject out,
                         @NonNull final Book book,
                         @NonNull final String key)
             throws JSONException {
-
-        final Object element = book.get(key, realNumberParser);
 
         switch (key) {
             case Book.BKEY_BOOKSHELF_LIST: {
@@ -191,13 +207,7 @@ public class BookCoder
             }
         }
 
-        if (book.getIdentifierValue(Identifier.SID_STRIP_INFO).isPresent()) {
-            book.getStripInfoCollectionData().ifPresent(
-                    scd ->
-                            out.put(StripInfoCollectionData.BKEY,
-                                    stripInfoDataCoder.encode(scd)));
-            return;
-        }
+        final Object element = book.get(key, realNumberParser);
 
         if (element instanceof CharSequence) {
             if (((CharSequence) element).length() > 0) {

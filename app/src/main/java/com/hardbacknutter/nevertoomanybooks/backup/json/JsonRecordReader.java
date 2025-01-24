@@ -53,6 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.DeletedBooksCoder
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.TagCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.TagMappingCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -67,7 +69,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -90,6 +94,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *         <li>{@link RecordType#Styles}</li>
  *         <li>{@link RecordType#Preferences}</li>
  *         <li>{@link RecordType#Certificates}</li>
+ *         <li>{@link RecordType#Tags}</li>
  *         <li>{@link RecordType#Bookshelves}</li>
  *         <li>{@link RecordType#CalibreLibraries}</li>
  *         <li>{@link RecordType#CalibreCustomFields}</li>
@@ -106,6 +111,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *              <li>{@link RecordType#Styles}</li>
  *              <li>{@link RecordType#Preferences}</li>
  *              <li>{@link RecordType#Certificates}</li>
+ *              <li>{@link RecordType#Tags}</li>
  *              <li>{@link RecordType#Bookshelves}</li>
  *              <li>{@link RecordType#CalibreLibraries}</li>
  *              <li>{@link RecordType#CalibreCustomFields}</li>
@@ -285,6 +291,17 @@ public class JsonRecordReader
                     if (recordType == RecordType.DeletedBooks
                         || recordType == RecordType.AutoDetect) {
                         readDeletedBooks(root);
+                    }
+
+                    if (recordType == RecordType.Tags
+                        || recordType == RecordType.AutoDetect) {
+                        // An outer container for the RecordType
+                        final JSONObject container = root.optJSONObject(RecordType.Tags.getName());
+                        if (container != null) {
+                            // contains two optional containers
+                            readTags(container);
+                            readTagMappings(container);
+                        }
                     }
 
                     if (recordType == RecordType.Books
@@ -504,6 +521,55 @@ public class JsonRecordReader
                                                            .getDeletedBooksDao()
                                                            .importRecords(list);
             }
+        }
+    }
+
+    private void readTags(@NonNull final JSONObject root) {
+        // a sub container for {@link Tag} objects.
+        final JSONArray elements = root.optJSONArray(DBKey.TAG);
+        if (elements != null) {
+            final List<Tag> list = new TagCoder().decode(elements);
+            if (!list.isEmpty()) {
+                // Insert new ones, skip existing ones. No updates needed.
+                ServiceLocator.getInstance().getTagDao().importRecords(list);
+            }
+        }
+    }
+
+    private void readTagMappings(@NonNull final JSONObject root) {
+        // a sub container for {@link TagMapping} objects.
+        final JSONArray elements = root.optJSONArray(DBKey.TAG_MAPPING);
+        if (elements != null) {
+            final TagMappingDao dao = ServiceLocator.getInstance().getTagMappingDao();
+
+            new TagMappingCoder()
+                    .decode(elements)
+                    .forEach(tagMapping -> {
+                        dao.fixId(tagMapping);
+                        if (tagMapping.getId() > 0) {
+                            // The field already exists
+                            switch (getUpdateOption()) {
+                                case Overwrite: {
+                                    try {
+                                        dao.update(tagMapping);
+                                    } catch (@NonNull final DaoWriteException e) {
+                                        throw new UncheckedDaoWriteException(e);
+                                    }
+                                    break;
+                                }
+                                case OnlyNewer:
+                                case Skip:
+                                    break;
+                            }
+                        } else {
+                            try {
+                                dao.insert(tagMapping);
+                            } catch (@NonNull final DaoWriteException e) {
+                                throw new UncheckedDaoWriteException(e);
+                            }
+                        }
+                    });
+
         }
     }
 

@@ -50,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.DeletedBooksCoder
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.TagCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.TagMappingCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -59,6 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -80,6 +84,7 @@ import com.hardbacknutter.org.json.JSONObject;
  *      <li>{@link RecordType#Styles}</li>
  *      <li>{@link RecordType#Preferences}</li>
  *      <li>{@link RecordType#Certificates}</li>
+ *      <li>{@link RecordType#Tags}</li>
  *      <li>{@link RecordType#Bookshelves}</li>
  *      <li>{@link RecordType#CalibreLibraries}</li>
  *      <li>{@link RecordType#CalibreCustomFields}</li>
@@ -221,6 +226,32 @@ public class JsonRecordWriter
                 }
                 if (!certificates.isEmpty()) {
                     jsonData.put(RecordType.Certificates.getName(), certificates);
+                }
+            }
+
+            if (recordTypes.contains(RecordType.Tags)
+                && !progressListener.isCancelled()) {
+                progressListener.publishProgress(1, context.getString(
+                        R.string.lbl_tags));
+
+                // An outer container for the RecordType.Tags
+                final JSONObject container = new JSONObject();
+                // a sub container for {@link Tag} objects.
+                final List<Tag> tags = ServiceLocator.getInstance().getTagDao().getAll();
+                if (!tags.isEmpty()) {
+                    container.put(DBKey.TAG, new TagCoder().encode(tags));
+                }
+                // a sub container for {@link TagMapping} objects.
+                final List<TagMapping> tagMappings =
+                        ServiceLocator.getInstance().getTagMappingDao().getAll();
+                if (!tagMappings.isEmpty()) {
+                    container.put(DBKey.TAG_MAPPING, new TagMappingCoder().encode(tagMappings));
+                }
+
+                // write the outer container as needed.
+                if (!container.isEmpty()) {
+                    jsonData.put(RecordType.Tags.getName(), container);
+                    results.tags = 1;
                 }
             }
 

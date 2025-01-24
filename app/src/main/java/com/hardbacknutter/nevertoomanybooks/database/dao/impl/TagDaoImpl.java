@@ -25,6 +25,7 @@ import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -339,12 +340,50 @@ public class TagDaoImpl
         }
     }
 
+    @Override
+    @WorkerThread
+    public int importRecords(@NonNull final List<Tag> list) {
+        int count = 0;
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BULK)) {
+                for (final Tag tag : list) {
+                    stmt.bindString(1, tag.getName());
+                    final long iId = stmt.executeInsert();
+                    // simply ignore failure, see SQL statement.
+                    if (iId != -1) {
+                        count++;
+                    }
+                }
+            }
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
+        return count;
+    }
+
     private static final class Sql {
 
         /** Insert a {@link Tag}. */
         static final String INSERT =
                 INSERT_INTO_ + TBL_TAGS.getName()
                 + '(' + DBKey.TAG
+                + ") VALUES (?)";
+
+        static final String INSERT_BULK =
+                INSERT_OR_IGNORE_INTO_ + TBL_TAGS.getName()
+                + "(" + DBKey.TAG
                 + ") VALUES (?)";
 
         /** Update a {@link Tag}. */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -67,6 +67,8 @@ public class ExportResults
     public int preferences;
     /** #certificates we exported. */
     public int certificates;
+    /** #tags we exported. In reality just a 0 or 1 value. Don't use to display to the user! */
+    public int tags;
 
     /** #bookshelves we exported. */
     public int bookshelves;
@@ -102,6 +104,7 @@ public class ExportResults
         styles = in.readInt();
         preferences = in.readInt();
         certificates = in.readInt();
+        tags = in.readInt();
         database = in.readByte() != 0;
     }
 
@@ -130,6 +133,8 @@ public class ExportResults
                 return calibreCustomFields > 0;
             case DeletedBooks:
                 return deletedBooks > 0;
+            case Tags:
+                return tags > 0;
             case Books:
                 return getBookCount() > 0;
             case Cover:
@@ -154,6 +159,7 @@ public class ExportResults
         return styles == 0
                && preferences == 0
                && certificates == 0
+               && tags == 0
                && bookshelves == 0
                && calibreLibraries == 0
                && calibreCustomFields == 0
@@ -178,6 +184,7 @@ public class ExportResults
         styles += results.styles;
         preferences += results.preferences;
         certificates += results.certificates;
+        tags += results.tags;
 
         if (results.database) {
             database = true;
@@ -243,6 +250,7 @@ public class ExportResults
         dest.writeInt(styles);
         dest.writeInt(preferences);
         dest.writeInt(certificates);
+        dest.writeInt(tags);
         dest.writeByte((byte) (database ? 1 : 0));
     }
 
@@ -264,6 +272,7 @@ public class ExportResults
                + ", styles=" + styles
                + ", preferences=" + preferences
                + ", certificates=" + certificates
+               + ", tags=" + tags
                + ", database=" + database
                + '}';
     }

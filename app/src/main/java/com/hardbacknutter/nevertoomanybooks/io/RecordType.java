@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,6 +77,15 @@ public enum RecordType {
      * ONLY ONE PER ARCHIVE.
      */
     Preferences("preferences"),
+
+    /**
+     * Contains sub sections:
+     * {@code DBKey.TAG}:         all defined {@code Tag}s.
+     * {@code DBKey.TAG_MAPPING}: all defined {@code TagMapping}s.
+     * <p>
+     * ONLY ONE PER ARCHIVE.
+     */
+    Tags("tags"),
 
     /**
      * Collection of named Certificates.
@@ -191,15 +200,18 @@ public enum RecordType {
     @NonNull
     public static Set<RecordType> addRelatedTypes(@NonNull final Set<RecordType> recordTypes) {
         final Set<RecordType> all = EnumSet.copyOf(recordTypes);
-        // If we're doing preferences, then implicitly handle calibre custom fields as well
+        // If we're doing preferences, then implicitly handle these as well
         if (recordTypes.contains(Preferences)) {
             all.add(CalibreCustomFields);
+            all.add(Tags);
+
         }
 
         // If we're doing books, then we must do its dependencies:
         if (recordTypes.contains(Books)) {
             all.add(Bookshelves);
             all.add(CalibreLibraries);
+            all.add(Tags);
             all.add(DeletedBooks);
         }
 

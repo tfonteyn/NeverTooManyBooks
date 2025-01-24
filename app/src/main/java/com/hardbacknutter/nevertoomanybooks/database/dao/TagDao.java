@@ -24,6 +24,7 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.util.Collection;
 import java.util.List;
@@ -120,4 +121,15 @@ public interface TagDao
      */
     @NonNull
     List<Long> getBookIds(@IntRange(from = 1) long itemId);
+
+    /**
+     * Bulk import the given list of {@link Tag}s.
+     * Entries already present are simply skipped.
+     *
+     * @param list to import.
+     *
+     * @return the number of entries actually inserted; can be {@code 0}.
+     */
+    @WorkerThread
+    int importRecords(@NonNull List<Tag> list);
 }
