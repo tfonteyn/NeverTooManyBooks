@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -118,6 +119,19 @@ class IsfdbPublicationListHandler
     private static final String XML_ID_TYPE = "IDtype";
     private static final String XML_ID_VALUE = "IDvalue";
 
+    /**
+     * Key: the codes used by the ISFDB website in table "identifier_types".
+     */
+    private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
+            Map.entry("1", Identifier.SID_ASIN),
+            Map.entry("2", Identifier.SID_BRITISH_LIBRARY),
+            Map.entry("6", Identifier.SID_DNB),
+            Map.entry("8", Identifier.SID_GOODREADS_BOOK),
+            Map.entry("10", Identifier.SID_LCCN),
+            Map.entry("12", Identifier.SID_OCLC),
+            Map.entry("13", Identifier.SID_OPEN_LIBRARY),
+            Map.entry("16", Identifier.SID_KBNL)
+    );
     @NonNull
     private final Context context;
     @NonNull
@@ -266,7 +280,7 @@ class IsfdbPublicationListHandler
                 }
 
                 case XML_RECORD: {
-                    addIfNotPresent(Identifier.SID_ISFDB, builder.toString().strip());
+                    book.setIdentifierValue(Identifier.SID_ISFDB, builder.toString().strip());
                     break;
                 }
                 case XML_TITLE: {
@@ -398,32 +412,9 @@ class IsfdbPublicationListHandler
                 case XML_EXTERNAL_ID: {
                     if (inExternalIds) {
                         if (externalIdType != null && externalId != null) {
-                            //NEWTHINGS: adding a new search engine: optional: add external id DOM
-                            switch (externalIdType) {
-                                // the case labels are the codes used by the ISFDB website
-                                case "1":
-                                    addIfNotPresent(Identifier.SID_ASIN, externalId);
-                                    break;
-                                case "6":
-                                    addIfNotPresent(Identifier.SID_DNB, externalId);
-                                    break;
-                                case "8":
-                                    addIfNotPresent(Identifier.SID_GOODREADS_BOOK, externalId);
-                                    break;
-                                case "10":
-                                    addIfNotPresent(Identifier.SID_LCCN, externalId);
-                                    break;
-                                case "12":
-                                    addIfNotPresent(Identifier.SID_OCLC, externalId);
-                                    break;
-                                case "13":
-                                    addIfNotPresent(Identifier.SID_OPEN_LIBRARY, externalId);
-                                    break;
-                                case "16":
-                                    addIfNotPresent(Identifier.SID_KBNL, externalId);
-                                    break;
-                                default:
-                                    break;
+                            final String key = IDENTIFIER_MAPPING.get(externalIdType);
+                            if (key != null) {
+                                book.setIdentifierValue(key, externalId);
                             }
                         }
                         inExternalId = false;
