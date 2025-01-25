@@ -211,6 +211,8 @@ public class BookDaoHelper {
             // Either way, make sure any currency strings present are uppercase
             if (book.contains(currencyKey)) {
                 book.putString(currencyKey, book.getString(currencyKey)
+                                                //TODO: using Locale.ENGLISH might
+                                                // not be 100% foolproof...
                                                 .toUpperCase(Locale.ENGLISH));
             }
         } catch (@NonNull final NumberFormatException e) {

@@ -38,9 +38,22 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * External website id's (site-id, sid).
  * <ul>
  * <li>key: a unique keyword; never to be changed; used as bundle keys and import/export</li>
- * <li>name: a non-localized short name to show to the user.</li>
- * <li>sid: the actual value</li>
+ * <li>type: {@code 'L'} or {@code 'S'}, see below.</li>
+ * <li>name: a non-localized short name to show to the user. Can be empty.</li>
+ * <li>sid: the actual value of the identifier field</li>
  * </ul>
+ * The type is used in two situations only.
+ * <ol>
+ *     <li>When storing a book, {@code TYPE_LONG} identifiers are checked for
+ *         being a valid {@code long}. If they fail, they are removed.
+ *         {@code TYPE_STRING} is always stored unless it's empty.
+ *     </li>
+ *     <li>The screen where the user can directly edit identifier values will
+ *         show a numeric or full keyboard depending on the type just for convenience.
+ *     </li>
+ * </ol>
+ * i.o.w. the type {@code TYPE_LONG} is only used in the predefined Identifiers,
+ * and an unknown identifier is always assumed to be a {@code TYPE_STRING}.
  */
 public class Identifier
         implements Parcelable {
@@ -85,24 +98,26 @@ public class Identifier
         }
     };
 
+    public static final int MAX_KEY_LEN = 15;
+
     private long id;
     @NonNull
-    private String key;
+    private final String key;
     @NonNull
-    private String name;
+    private final String name;
 
-    private char type;
+    private final char type;
 
     /**
      * Constructor.
      *
      * @param key  a key(word) for this Identifier. e.g. "oclc"
-     *             The size is not enforced, but should be 15 characters max,
-     *             preferably less.
+     *             The size is not enforced, but should be {@link #MAX_KEY_LEN}
+     *             characters max, preferably less.
      * @param type {@link #TYPE_STRING} or {@link #TYPE_LONG}
      * @param name the NOT-LOCALIZED short name
      */
-    public Identifier(@Size(max = 15) @NonNull final String key,
+    public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key,
                       final char type,
                       @NonNull final String name) {
         this.key = key;
@@ -202,16 +217,26 @@ public class Identifier
         return 0;
     }
 
+    /**
+     * <strong>DAO use only.</strong>
+     *
+     * @return id
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * <strong>DAO use only.</strong>
+     *
+     * @param id to set
+     */
     public void setId(final long id) {
         this.id = id;
     }
 
     /**
-     * Check the type.
+     * Get the type.
      *
      * @return {@code L} for a {@code long}, {@code S} for a {@code String}
      */
@@ -219,26 +244,24 @@ public class Identifier
         return type;
     }
 
-    public void setType(final char type) {
-        this.type = type;
-    }
-
+    /**
+     * Get the Identifier key.
+     *
+     * @return key
+     */
     @NonNull
     public String getKey() {
         return key;
     }
 
-    public void setKey(@NonNull final String key) {
-        this.key = key;
-    }
-
+    /**
+     * Get the user displayable name.
+     *
+     * @return name
+     */
     @NonNull
     public String getName() {
         return name;
-    }
-
-    public void setName(@NonNull final String name) {
-        this.name = name;
     }
 
     @Override
@@ -325,11 +348,21 @@ public class Identifier
             return 0;
         }
 
+        /**
+         * Get the {@link Identifier} key.
+         *
+         * @return key
+         */
         @NonNull
         public Identifier getIdentifier() {
             return identifier;
         }
 
+        /**
+         * Get the external website id (site-id, sid).
+         *
+         * @return sid
+         */
         @NonNull
         public String getSid() {
             return sid;

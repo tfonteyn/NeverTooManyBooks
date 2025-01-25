@@ -633,11 +633,10 @@ public class DoubanSearchEngine
                 case "og:url": {
                     // content="https://book.douban.com/subject/36874304/"
                     final String[] parts = content.split("/");
-                    // Sanity check;
-                    // Make sure it's an int as we might need it for more parsing,
-                    // but store it in the book as a string as per usual with SID values
+                    // Sanity check
                     if (parts.length >= 5) {
                         try {
+                            // Paranoia: parse to make sure it's a number
                             final int sid = Integer.parseInt(parts[4]);
                             book.setIdentifierValue(Identifier.SID_DOUBAN, sid);
                         } catch (@NonNull final NumberFormatException ignore) {

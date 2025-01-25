@@ -1463,6 +1463,7 @@ public class IsfdbSearchEngine
      * }
      * </pre>
      * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
+     * 2025: at least this is true for books! Not necessarily true for non-book products.
      * <p>
      * Much more information can be found on the
      * <a href="https://www.isfdb.org/wiki/index.php/Sources_of_Bibliographic_Information">

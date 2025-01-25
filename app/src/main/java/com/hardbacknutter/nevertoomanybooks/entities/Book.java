@@ -1034,7 +1034,7 @@ public class Book
     }
 
     /**
-     * Get the list of tags.
+     * Get the list of {@link Tag}s.
      *
      * @return List
      */
@@ -1044,7 +1044,7 @@ public class Book
     }
 
     /**
-     * Set/replace the list of tags.
+     * Set/replace the list of {@link Tag}s.
      *
      * @param tags list
      */

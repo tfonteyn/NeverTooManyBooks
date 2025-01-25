@@ -287,6 +287,7 @@ class UserCollection {
         // sanity check, each row is normally a book.
         if (idAttr.startsWith(ROW_ID_ATTR)) {
             try {
+                // Paranoia: parse to make sure it's a number
                 final long externalId = Long.parseLong(idAttr.substring(ROW_ID_ATTR_LEN));
                 final Element collectionIdElement =
                         row.getElementById("stripCollectie-" + externalId);

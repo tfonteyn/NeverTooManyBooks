@@ -832,6 +832,7 @@ public class StripInfoSearchEngine
             // _Hauteville_House_14_De_37ste_parallel
             final String idString = titleUrl.substring(titleUrl.lastIndexOf('/') + 1)
                                             .split("_")[0];
+            // Paranoia: parse to make sure it's a number
             sid = Long.parseLong(idString);
             if (sid > 0) {
                 book.setIdentifierValue(Identifier.SID_STRIP_INFO, sid);

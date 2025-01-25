@@ -349,6 +349,7 @@ public class GoodreadsSearchEngine
             final String bookIdStr = params.optString("book_id");
             final Matcher matcher = PARAMS_BOOK_ID_PATTERN.matcher(bookIdStr);
             if (matcher.find()) {
+                // Paranoia: parse to make sure it's a number
                 final long bookId = NumberParser.toLong(matcher.group(1));
                 if (bookId > 0) {
                     book.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, bookId);

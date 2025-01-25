@@ -39,6 +39,16 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 public interface TagDao
         extends MoveBooksDao<Tag> {
 
+    @NonNull
+    Optional<Tag> findById(@IntRange(from = 1) long id);
+
+    @NonNull
+    Optional<Tag> findByName(@NonNull Tag tag);
+
+    void fixId(@NonNull Tag tag);
+
+    void refresh(@NonNull Tag tag);
+
     @IntRange(from = 1)
     long insert(@NonNull Tag tag)
             throws DaoWriteException;
@@ -69,22 +79,18 @@ public interface TagDao
                       @NonNull Collection<Tag> list,
                       @NonNull Function<Tag, Locale> localeSupplier);
 
-    void fixId(@NonNull Tag tag);
-
-    void refresh(@NonNull Tag tag);
-
     /**
-     * Insert or update a list of {@link Tag}'s linked to a single {@link Book}.
+     * Insert or update a list of {@link Tag}s linked to a single {@link Book}.
      * <p>
      * The list is pruned before storage.
-     * New {@link Tag}'s are added to the {@link Tag} table, existing ones are NOT updated
-     * unless explicitly allowed by the {@code doUpdates} parameter.
+     * New {@link Tag}s are added to the {@link Tag} table,
+     * existing ones are NOT updated (nothing to do).
      * <p>
      * <strong>Transaction:</strong> required
      *
      * @param context        Current context
      * @param bookId         of the book
-     * @param list           the list of {@link Tag}'s
+     * @param list           the list of {@link Tag}s
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
      *
      * @throws DaoWriteException on failure
@@ -94,13 +100,6 @@ public interface TagDao
                         @NonNull Collection<Tag> list,
                         @NonNull Function<Tag, Locale> localeSupplier)
             throws DaoWriteException;
-
-    @NonNull
-    Optional<Tag> findById(@IntRange(from = 1) long id);
-
-    @NonNull
-    Optional<Tag> findByName(@NonNull Tag tag);
-
 
     /**
      * Get a list of the {@link Tag}s for a book.
