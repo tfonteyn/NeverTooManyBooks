@@ -384,7 +384,7 @@ public class GoodreadsSearchEngine
         }
         book.setTitle(title);
 
-        if (!book.contains(Identifier.SID_GOODREADS_BOOK)) {
+        if (book.getIdentifierValue(Identifier.SID_GOODREADS_BOOK).isEmpty()) {
             final long legacyId = o.optLong("legacyId");
             if (legacyId > 0) {
                 book.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, legacyId);

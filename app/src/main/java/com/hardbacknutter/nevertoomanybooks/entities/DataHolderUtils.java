@@ -318,18 +318,13 @@ public final class DataHolderUtils {
             }
         }
 
-        // Identifier is part of the cursor result row,
-        // which (usually) means the row IS a Book
-        // This is the case used with the book details screen
-        if (dataHolder.contains(identifierKey)) {
-            final String sid = dataHolder.getString(identifierKey, null);
-            if (sid != null && !identifierKey.isEmpty() && !"0".equals(identifierKey)) {
-                return Optional.of(sid);
-            }
+        // If the row IS a Book; This is the case used with the book details screen
+        if (dataHolder instanceof Book) {
+            return ((Book) dataHolder).getIdentifierValue(identifierKey);
         }
 
-        // DO NOT throw here. We get here if the row IS a Book
-        // but the key does not exist for this Book.
+        // Paranoia.. DO NOT throw here; Not entirely sure we can never get here..
+        // e.g. if this method was called in error on for example a Series.
         return Optional.empty();
     }
 }

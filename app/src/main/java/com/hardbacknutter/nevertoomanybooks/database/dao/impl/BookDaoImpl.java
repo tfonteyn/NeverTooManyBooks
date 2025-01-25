@@ -571,7 +571,7 @@ public class BookDaoImpl
         }
 
         // Handle synchronization field.
-        if (book.contains(Identifier.SID_STRIP_INFO)) {
+        if (book.getIdentifierValue(Identifier.SID_STRIP_INFO).isPresent()) {
             stripInfoDaoSupplier.get().insertOrUpdate(book);
         }
     }
