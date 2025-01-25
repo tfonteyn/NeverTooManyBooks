@@ -924,15 +924,19 @@ public class OpenLibrarySearchEngine
                 }
             }
         }
-        IDENTIFIER_MAPPING.forEach((olKey, identifier) -> {
+
+        // the SID_OPEN_LIBRARY should already be there, so get the current list!
+        final List<Identifier.Value> ivs = book.getIdentifiers();
+        IDENTIFIER_MAPPING.forEach((olKey, key) -> {
             final JSONArray data = element.optJSONArray(olKey);
             if (data != null && !data.isEmpty()) {
-                if (!book.contains(identifier)) {
                     // each identifier on the site can be an array, just grab the first entry
-                    book.setIdentifierValue(identifier, data.getString(0));
+                ivs.add(new Identifier.Value(key, data.getString(0)));
                 }
-            }
         });
+        if (!ivs.isEmpty()) {
+            book.setIdentifiers(ivs);
+        }
     }
 
     private void parseToc(@NonNull final Context context,

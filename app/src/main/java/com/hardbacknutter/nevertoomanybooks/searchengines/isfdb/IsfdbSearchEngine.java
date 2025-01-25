@@ -1477,6 +1477,8 @@ public class IsfdbSearchEngine
      */
     private void processExternalIdElements(@NonNull final Collection<Element> elements,
                                            @NonNull final Book book) {
+        final List<Identifier.Value> ivs = new ArrayList<>();
+
         elements.stream()
                 .map(element -> element.select("a").first())
                 .filter(Objects::nonNull)
@@ -1492,12 +1494,12 @@ public class IsfdbSearchEngine
                                 end = url.length();
                             }
                             final String asin = url.substring(start + 1, end);
-                            book.setIdentifierValue(Identifier.SID_ASIN, asin);
+                            ivs.add(new Identifier.Value(Identifier.SID_ASIN, asin));
                         }
                     } else {
                         IDENTIFIER_MAPPING.forEach((inUrl, identifier) -> {
                             if (url.contains(inUrl)) {
-                                book.setIdentifierValue(identifier, stripString(url, '/'));
+                                ivs.add(new Identifier.Value(identifier, stripString(url, '/')));
                             }
                         });
                     }
@@ -1526,6 +1528,10 @@ public class IsfdbSearchEngine
                     // French
                     // https://www.noosfere.org/livres/niourf.asp?numlivre=-323033
                 });
+
+        if (!ivs.isEmpty()) {
+            book.setIdentifiers(ivs);
+        }
     }
 
     @NonNull

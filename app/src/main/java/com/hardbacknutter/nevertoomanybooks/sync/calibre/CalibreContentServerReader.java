@@ -774,26 +774,32 @@ public class CalibreContentServerReader
                                     @NonNull final Book book) {
         final JSONObject remotes = calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
         if (remotes != null) {
+            final List<Identifier.Value> ivs = new ArrayList<>();
+
             final Iterator<String> it = remotes.keys();
             while (it.hasNext()) {
                 final String key = it.next();
                 if (!remotes.isNull(key)) {
                     final String sid = remotes.optString(key);
                     if (sid != null && !sid.isEmpty()) {
-                        final CalibreIdentifier calibreIdentifier = CalibreIdentifier.MAP.get(key);
-                        if (calibreIdentifier != null) {
-                            book.setIdentifierValue(calibreIdentifier.getLocal(), sid);
+                        final CalibreIdentifier calId = CalibreIdentifier.MAP.get(key);
+                        if (calId != null) {
+                            ivs.add(new Identifier.Value(calId.getLocal(), sid));
 
                         } else if (key.startsWith("amazon")) {
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
-                            // We always use the first one found.
-                            if (!book.contains(Identifier.SID_ASIN)) {
-                                book.setIdentifierValue(Identifier.SID_ASIN, sid);
+                            // The actual ASIN is always the same,
+                            // so just use the first one found.
+                            if (book.getIdentifierValue(Identifier.SID_ASIN).isEmpty()) {
+                                ivs.add(new Identifier.Value(Identifier.SID_ASIN, sid));
                             }
                         }
                     }
                 }
+            }
+            if (!ivs.isEmpty()) {
+                book.setIdentifiers(ivs);
             }
         }
     }
