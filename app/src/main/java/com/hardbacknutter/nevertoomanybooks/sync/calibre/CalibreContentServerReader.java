@@ -243,6 +243,8 @@ public class CalibreContentServerReader
                 new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
         map.put(context.getString(R.string.lbl_tags),
                 new String[]{DBKey.FK_TAG, Book.BKEY_TAG_LIST});
+        map.put(context.getString(R.string.lbl_identifiers),
+                new String[]{DBKey.FK_IDENTIFIER, Book.BKEY_IDENTIFIER_LIST});
 
         map.put(context.getString(R.string.lbl_date_published),
                 new String[]{DBKey.BOOK_PUBLICATION__DATE});
@@ -284,9 +286,6 @@ public class CalibreContentServerReader
         builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
                .addRelatedField(DBKey.CALIBRE_BOOK_ID, DBKey.CALIBRE_BOOK_UUID);
-
-        // The (locally sorted) external-id fields are added at the end of the list.
-        builder.addIdentifierFields(context);
 
         return builder.build();
     }

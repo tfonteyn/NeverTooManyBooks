@@ -669,28 +669,6 @@ public class SyncReaderProcessor {
         }
 
         /**
-         * Add the supported external-id fields.
-         * The label is the Identifier name, the value is the key/field name.
-         * <p>
-         * No chaining returned as a reminder these should come last.
-         *
-         * @param context Current context
-         */
-        public void addIdentifierFields(@NonNull final Context context) {
-            // Collect and sort at the same time
-            final SortedMap<String, String> sidMap = new TreeMap<>();
-            // All known/supported identifiers, this is NOT limited to our SearchEngines!
-            ServiceLocator.getInstance().getIdentifierDao().getAll().forEach(
-                    identifier -> sidMap.put(identifier.getName(), identifier.getKey()));
-
-            // create and add as SyncFields
-            sidMap.forEach((label, key) ->
-                                   add(context.getString(R.string.lbl_identifier_suffix, label),
-                                       key, SyncAction.Overwrite));
-
-        }
-
-        /**
          * Build the processor.
          *
          * @return new instance

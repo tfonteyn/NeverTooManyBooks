@@ -210,15 +210,14 @@ public class SearchBookUpdatesViewModel
                 new String[]{DBKey.BOOK_CONTENT_TYPE, Book.BKEY_TOC_LIST});
         map.put(context.getString(R.string.lbl_publishers),
                 new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
+        map.put(context.getString(R.string.lbl_identifiers),
+                new String[]{DBKey.FK_IDENTIFIER, Book.BKEY_IDENTIFIER_LIST});
 
         map.forEach(builder::add);
 
         builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
                .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
-
-        // The (locally sorted) external-id fields are added at the end of the list.
-        builder.addIdentifierFields(context);
 
         return builder;
     }
