@@ -37,11 +37,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Set;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -51,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -63,6 +62,15 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class SyncReaderProcessor {
 
     private static final String TAG = "SyncProcessor";
+
+    private static final Set<String> LIST_KEYS = Set.of(
+            Book.BKEY_AUTHOR_LIST,
+            Book.BKEY_BOOKSHELF_LIST,
+            Book.BKEY_IDENTIFIER_LIST,
+            Book.BKEY_PUBLISHER_LIST,
+            Book.BKEY_SERIES_LIST,
+            Book.BKEY_TAG_LIST,
+            Book.BKEY_TOC_LIST);
 
     @NonNull
     private final Map<String, SyncField> fields;
@@ -136,40 +144,30 @@ public class SyncReaderProcessor {
                 return true;
             }
             case CopyIfBlank: {
-                switch (field.getKey()) {
-                    // We should never have a book without authors, but be paranoid
-                    case Book.BKEY_AUTHOR_LIST:
-                    case Book.BKEY_SERIES_LIST:
-                    case Book.BKEY_PUBLISHER_LIST:
-                    case Book.BKEY_TOC_LIST:
-                    case Book.BKEY_BOOKSHELF_LIST:
-                    case Book.BKEY_TAG_LIST: {
-                        if (localBook.contains(field.getKey())) {
-                            return localBook.getParcelableArrayList(field.getKey()).isEmpty();
-                        }
-                        return false;
+                // We should never have a book without authors, but be paranoid
+                if (LIST_KEYS.contains(field.getKey())) {
+                    if (localBook.contains(field.getKey())) {
+                        return localBook.getParcelableArrayList(field.getKey()).isEmpty();
                     }
-                    default: {
-                        // If it's a cover...
-                        if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
-                            final String uuid = localBook.getString(DBKey.BOOK_UUID);
-                            // check if it's missing or empty.
-                            return ServiceLocator.getInstance().getCoverStorage()
-                                                 .getPersistedFile(uuid, 0)
-                                                 .isEmpty();
+                    return false;
 
-                        } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
-                            final String uuid = localBook.getString(DBKey.BOOK_UUID);
-                            // check if it's missing or empty.
-                            return ServiceLocator.getInstance().getCoverStorage()
-                                                 .getPersistedFile(uuid, 1)
-                                                 .isEmpty();
-                        } else {
-                            // If the original was blank/zero, add to list
-                            final String value = localBook.getString(field.getKey(), null);
-                            return value == null || value.isEmpty() || "0".equals(value);
-                        }
-                    }
+                } else if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
+                    final String uuid = localBook.getString(DBKey.BOOK_UUID);
+                    // check if it's missing or empty.
+                    return ServiceLocator.getInstance().getCoverStorage()
+                                         .getPersistedFile(uuid, 0)
+                                         .isEmpty();
+
+                } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
+                    final String uuid = localBook.getString(DBKey.BOOK_UUID);
+                    // check if it's missing or empty.
+                    return ServiceLocator.getInstance().getCoverStorage()
+                                         .getPersistedFile(uuid, 1)
+                                         .isEmpty();
+                } else {
+                    // If the original was blank/zero, add to list
+                    final String value = localBook.getString(field.getKey(), null);
+                    return value == null || value.isEmpty() || "0".equals(value);
                 }
             }
             case Skip:
@@ -331,25 +329,15 @@ public class SyncReaderProcessor {
     private boolean hasField(@NonNull final Book localBook,
                              @NonNull final String key,
                              @NonNull final RealNumberParser realNumberParser) {
-        switch (key) {
-            case Book.BKEY_AUTHOR_LIST:
-            case Book.BKEY_SERIES_LIST:
-            case Book.BKEY_PUBLISHER_LIST:
-            case Book.BKEY_TOC_LIST:
-            case Book.BKEY_BOOKSHELF_LIST:
-            case Book.BKEY_TAG_LIST: {
-                if (localBook.contains(key)) {
-                    return !localBook.getParcelableArrayList(key).isEmpty();
-                }
-                break;
+        if (LIST_KEYS.contains(key)) {
+            if (localBook.contains(key)) {
+                return !localBook.getParcelableArrayList(key).isEmpty();
             }
-            default: {
-                final Object o = localBook.get(key, realNumberParser);
-                if (o != null) {
-                    final String value = o.toString().trim();
-                    return !value.isEmpty() && !"0".equals(value);
-                }
-                break;
+        } else {
+            final Object o = localBook.get(key, realNumberParser);
+            if (o != null) {
+                final String value = o.toString().trim();
+                return !value.isEmpty() && !"0".equals(value);
             }
         }
 
@@ -405,39 +393,12 @@ public class SyncReaderProcessor {
                              @NonNull final String key) {
         // Add the localBook data to the remoteBook list!
         // and not the other way around! We want to collect a delta!
+        // must cover same keys as in {@link LIST_KEYS}
         switch (key) {
             case Book.BKEY_AUTHOR_LIST: {
                 final List<Author> list = remoteBook.getAuthors();
                 if (!list.isEmpty()) {
                     list.addAll(localeBook.getAuthors());
-                }
-                break;
-            }
-            case Book.BKEY_SERIES_LIST: {
-                final List<Series> list = remoteBook.getSeries();
-                if (!list.isEmpty()) {
-                    list.addAll(localeBook.getSeries());
-                }
-                break;
-            }
-            case Book.BKEY_PUBLISHER_LIST: {
-                final List<Publisher> list = remoteBook.getPublishers();
-                if (!list.isEmpty()) {
-                    list.addAll(localeBook.getPublishers());
-                }
-                break;
-            }
-            case Book.BKEY_TOC_LIST: {
-                final List<TocEntry> list = remoteBook.getToc();
-                if (!list.isEmpty()) {
-                    list.addAll(localeBook.getToc());
-                }
-                break;
-            }
-            case Book.BKEY_TAG_LIST: {
-                final List<Tag> list = remoteBook.getTags();
-                if (!list.isEmpty()) {
-                    list.addAll(localeBook.getTags());
                 }
                 break;
             }
@@ -449,9 +410,45 @@ public class SyncReaderProcessor {
                 }
                 break;
             }
-            default:
+            case Book.BKEY_IDENTIFIER_LIST: {
+                final List<Identifier.Value> list = remoteBook.getIdentifiers();
+                if (!list.isEmpty()) {
+                    list.addAll(localeBook.getIdentifiers());
+                }
+                break;
+            }
+            case Book.BKEY_PUBLISHER_LIST: {
+                final List<Publisher> list = remoteBook.getPublishers();
+                if (!list.isEmpty()) {
+                    list.addAll(localeBook.getPublishers());
+                }
+                break;
+            }
+            case Book.BKEY_SERIES_LIST: {
+                final List<Series> list = remoteBook.getSeries();
+                if (!list.isEmpty()) {
+                    list.addAll(localeBook.getSeries());
+                }
+                break;
+            }
+            case Book.BKEY_TAG_LIST: {
+                final List<Tag> list = remoteBook.getTags();
+                if (!list.isEmpty()) {
+                    list.addAll(localeBook.getTags());
+                }
+                break;
+            }
+            case Book.BKEY_TOC_LIST: {
+                final List<TocEntry> list = remoteBook.getToc();
+                if (!list.isEmpty()) {
+                    list.addAll(localeBook.getToc());
+                }
+                break;
+            }
+            default: {
                 // We currently don't 'append' String fields
                 throw new IllegalArgumentException(key);
+            }
         }
     }
 
