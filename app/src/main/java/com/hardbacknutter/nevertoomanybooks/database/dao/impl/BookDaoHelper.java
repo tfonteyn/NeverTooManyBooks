@@ -28,12 +28,15 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -53,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -316,54 +320,46 @@ public class BookDaoHelper {
      */
     @VisibleForTesting
     public void processExternalIds() {
-        final List<Identifier> domains = ServiceLocator.getInstance().getIdentifierDao().getAll();
+        final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
+        final List<Identifier> domains = dao.getAll();
+        final Map<String, Character> map = domains.stream().collect(
+                Collectors.toMap(Identifier::getKey, Identifier::getType));
 
-        domains.stream()
-               .filter(identifier -> identifier.getType() == Identifier.TYPE_LONG)
-               .map(Identifier::getKey)
-               .filter(book::contains)
-               .forEach(key -> {
-                   final Object o = book.get(key, realNumberParser);
-                   try {
-                       if (o == null) {
-                           book.remove(key);
-                       } else {
-                           // we could add "instanceof" checks, but we might as well
-                           // just try the conversion and deal with the NumberFormatException
-                           final long v = book.getLong(key);
-                           if (v < 1) {
-                               book.remove(key);
-                           }
-                       }
-                   } catch (@NonNull final NumberFormatException e) {
-                       // always remove illegal input
-                       book.remove(key);
+        final List<Identifier.Value> ivsOut = new ArrayList<>();
+        final List<Identifier.Value> ivsIn = book.getIdentifiers();
 
-                       if (BuildConfig.DEBUG /* always */) {
-                           LoggerFactory.getLogger()
-                                        .d(TAG, "preprocessExternalIds",
-                                           "NumberFormatException"
-                                           + "|name=" + key
-                                           + "|value=`" + o + '`');
-                       }
-                   }
-               });
+        // Weed out duplicates, nulls, empties and "0"s.
+        dao.pruneList(ivsIn);
 
-        domains.stream()
-               .filter(identifier -> identifier.getType() == Identifier.TYPE_STRING)
-               .map(Identifier::getKey)
-               .filter(book::contains)
-               .forEach(key -> {
-                   final Object o = book.get(key, realNumberParser);
-                   if (o == null) {
-                       book.remove(key);
-                   } else {
-                       final String v = o.toString();
-                       if (v.isEmpty() || "0".equals(v)) {
-                           book.remove(key);
-                       }
-                   }
-               });
+        ivsIn.stream()
+             .filter(iv -> {
+                 final Character type = map.get(iv.getKey());
+                 // TYPE_LONG identifiers MUST exist
+                 return type != null && type == Identifier.TYPE_LONG;
+             })
+             .forEach(iv -> {
+                 try {
+                     final long v = Long.parseLong(iv.getSid());
+                     if (v > 0) {
+                         ivsOut.add(iv);
+                     }
+                 } catch (@NonNull final NumberFormatException e) {
+                     if (BuildConfig.DEBUG /* always */) {
+                         LoggerFactory.getLogger().d(TAG, "preprocessExternalIds",
+                                                     "NumberFormatException|iv=" + iv);
+                     }
+                 }
+             });
+
+        ivsIn.stream()
+             .filter(iv -> {
+                 final Character type = map.get(iv.getKey());
+                 // TYPE_STRING identifiers are optionally existing
+                 return type == null || type == Identifier.TYPE_STRING;
+             })
+             .forEach(ivsOut::add);
+
+        book.setIdentifiers(ivsOut);
     }
 
     /**

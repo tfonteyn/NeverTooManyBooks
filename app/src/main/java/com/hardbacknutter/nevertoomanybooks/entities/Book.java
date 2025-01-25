@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -168,7 +169,7 @@ public class Book
     public static final String BKEY_TAG_LIST = "tag_list";
 
     /**
-     * Not (yet) used to group {@link Identifier.Value}s in a list.
+     * Bundle key for {@code ArrayList<Identifier.Value>}.
      * <strong>Used in export/import, NEVER change the string</strong>
      */
     public static final String BKEY_IDENTIFIER_LIST = "identifier_list";
@@ -1053,96 +1054,87 @@ public class Book
     }
 
     /**
+     * Get the list of {@link Identifier.Value}s.
+     *
+     * @return List
+     */
+    @NonNull
+    public List<Identifier.Value> getIdentifiers() {
+        return getParcelableArrayList(BKEY_IDENTIFIER_LIST);
+    }
+
+    /**
      * Set/replace the list of {@link Identifier.Value}s.
      *
      * @param ivs list
      */
     public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
-        ivs.forEach(iv -> putString(iv.getIdentifier().getKey(), iv.getSid()));
+        putParcelableCollection(BKEY_IDENTIFIER_LIST, ivs);
     }
 
     /**
      * Set the value for the given {@link Identifier}.
      * <p>
-     * Empty/null values will cause a removal of the key.
-     * Values are always stored as a {@code String}.
-     * <p>
-     * Meant as a safer replacement for {@link #getString(String)}
-     * specifically for {@link Identifier} vales.
-     * Do <strong>NOT</strong> use for normal testing as we need to detect bad values in tests.
+     * Convenience method.
      *
-     * @param identifierKey to set
-     * @param value         to set; a value {@code <= 0} will remove the field
+     * @param key   to set
+     * @param value to set; a {@code 0} will remove the field
      */
-    public void setIdentifierValue(@NonNull final String identifierKey,
+    public void setIdentifierValue(@NonNull final String key,
                                    final long value) {
-        if (value <= 0) {
-            remove(identifierKey);
-        } else {
-            putString(identifierKey, String.valueOf(value));
-        }
+        setIdentifierValue(key, value <= 0 ? null : String.valueOf(value));
     }
 
     /**
      * Set the value for the given {@link Identifier}.
-     * <p>
-     * Empty/null values will cause a removal of the key.
-     * Values are always stored as a {@code String}.
-     * <p>
-     * Meant as a safer replacement for {@link #getString(String)}
-     * specifically for {@link Identifier} vales.
-     * Do <strong>NOT</strong> use for normal testing as we need to detect bad values in tests.
      *
-     * @param identifierKey to set
-     * @param value         to set; a {@code null}, {@code "0"} or an empty string
-     *                      will remove the field
+     * @param key   to set
+     * @param value to set; a {@code null}, {@code "0"} or an empty string
+     *              will remove the field
      */
-    public void setIdentifierValue(@NonNull final String identifierKey,
+    public void setIdentifierValue(@NonNull final String key,
                                    @Nullable final String value) {
-        if (value == null || value.isBlank() || "0".equals(value)) {
-            remove(identifierKey);
-        } else {
-            putString(identifierKey, value);
+        // get and remove old value if present
+        final List<Identifier.Value> ivs = getIdentifiers()
+                .stream().filter(iv -> !iv.getKey().equals(key))
+                .collect(Collectors.toList());
+
+        // add the new value if valid
+        if (value != null && !value.isBlank() && !"0".equals(value)) {
+            ivs.add(new Identifier.Value(key, value));
         }
+        // and store the new list
+        setIdentifiers(ivs);
     }
 
     /**
      * Get the value for the given {@link Identifier}.
-     * <p>
-     * Meant as a safer replacement for {@link #getString(String)}
-     * specifically for {@link Identifier} vales.
-     * Do <strong>NOT</strong> use for normal testing as we need to detect bad values in tests.
      *
-     * @param identifierKey to get
+     * @param key to get
      *
      * @return a valid, non-empty value
      */
     @NonNull
-    public Optional<String> getIdentifierValue(@NonNull final String identifierKey) {
-        final String sid = getString(identifierKey, null);
-        if (sid != null && !sid.isBlank() && !"0".equals(sid)) {
-            return Optional.of(sid);
-        }
-        // cleanup empty values
-        remove(identifierKey);
-
-        return Optional.empty();
+    public Optional<String> getIdentifierValue(@NonNull final String key) {
+        return getIdentifiers().stream()
+                               .filter(iv -> iv.getKey().equals(key))
+                               .map(Identifier.Value::getSid)
+                               .findAny();
     }
 
     /**
      * Get the value for the given {@link Identifier}.
      *
-     * @param identifierKey to get
+     * @param key to get
      *
      * @return a valid, non-empty value
      *
      * @throws IllegalArgumentException if not found, which indicates a bug
      */
     @NonNull
-    public String requireIdentifierValue(@NonNull final String identifierKey) {
-        return getIdentifierValue(identifierKey)
-                .orElseThrow(() -> new IllegalArgumentException("Missing Identifier: "
-                                                                + identifierKey));
+    public String requireIdentifierValue(@NonNull final String key) {
+        return getIdentifierValue(key)
+                .orElseThrow(() -> new IllegalArgumentException("Missing Identifier: " + key));
     }
 
     /**
@@ -1202,13 +1194,12 @@ public class Book
      * Get the {@link StripInfoCollectionData}.
      *
      * @return collection data
-     *
-     * @throws IllegalStateException if there is no {@link Identifier#SID_STRIP_INFO}
      */
     @NonNull
     public Optional<StripInfoCollectionData> getStripInfoCollectionData() {
-        if (!contains(Identifier.SID_STRIP_INFO)) {
-            throw new IllegalStateException("Missing SID_STRIP_INFO");
+        // Sanity check
+        if (getIdentifierValue(Identifier.SID_STRIP_INFO).isEmpty()) {
+            return Optional.empty();
         }
 
         // We MIGHT have it (probably not) ...
