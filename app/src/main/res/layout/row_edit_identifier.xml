@@ -37,21 +37,21 @@
         tools:text="@sample/data.json/identifier/name" />
 
     <TextView
-        android:id="@+id/type"
+        android:id="@+id/name"
         style="@style/RowEditor.Text.Secondary"
         android:layout_width="wrap_content"
         app:layout_constraintStart_toEndOf="@id/key"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/lbl_text" />
+        tools:text="@string/lbl_name" />
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/type"
         style="@style/RowEditor.Text.Secondary"
         android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toStartOf="@id/key"
         app:layout_constraintTop_toBottomOf="@id/key"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_name"
+        tools:text="@string/lbl_text"
         />
 
 
