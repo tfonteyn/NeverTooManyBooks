@@ -56,14 +56,16 @@ class ResultsAccumulator {
 
     private static final String TAG = "ResultsAccumulator";
 
-    private static final Set<String> LIST_KEYS = Set.of(Book.BKEY_AUTHOR_LIST,
-                                                        Book.BKEY_SERIES_LIST,
-                                                        Book.BKEY_PUBLISHER_LIST,
-                                                        Book.BKEY_TOC_LIST,
-                                                        Book.BKEY_TAG_LIST,
-                                                        Book.BKEY_BOOKSHELF_LIST,
-                                                        CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0],
-                                                        CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[1]);
+    private static final Set<String> LIST_KEYS = Set.of(
+            Book.BKEY_AUTHOR_LIST,
+            Book.BKEY_BOOKSHELF_LIST,
+            Book.BKEY_IDENTIFIER_LIST,
+            Book.BKEY_PUBLISHER_LIST,
+            Book.BKEY_SERIES_LIST,
+            Book.BKEY_TAG_LIST,
+            Book.BKEY_TOC_LIST,
+            CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0],
+            CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[1]);
 
     /** Mappers to apply. */
     private final Collection<Mapper> mappers = new ArrayList<>();
