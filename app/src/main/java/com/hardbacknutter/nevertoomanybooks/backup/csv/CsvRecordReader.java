@@ -332,6 +332,7 @@ public class CsvRecordReader
         final Origin origin = Origin.guess(columnHeader);
 
         // Parse the column header to use as keys into the book.
+        // We swap column names as needed depending on origin.
         final List<String> csvColumnNames = parse(context, 0, columnHeader)
                 .stream()
                 .map(name -> name.toLowerCase(Locale.ENGLISH))
