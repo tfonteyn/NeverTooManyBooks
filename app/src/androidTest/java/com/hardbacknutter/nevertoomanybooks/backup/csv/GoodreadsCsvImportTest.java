@@ -66,7 +66,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings("MissingJavadoc")
+@SuppressWarnings({"MissingJavadoc", "OptionalGetWithoutIsPresent"})
 public class GoodreadsCsvImportTest
         extends BaseDBTest {
 
@@ -75,7 +75,6 @@ public class GoodreadsCsvImportTest
     private BookDao bookDao;
     private int booksPresent;
     private IdentifierDao identifierDao;
-    private Identifier grIdent;
 
     @Before
     public void setup()
@@ -88,9 +87,9 @@ public class GoodreadsCsvImportTest
         bookDao = locator.getBookDao();
         booksPresent = bookDao.count();
 
-        grIdent = identifierDao.findByKey(Identifier.SID_GOODREADS_BOOK).get();
+        final long grId = identifierDao.findByKey(Identifier.SID_GOODREADS_BOOK).get().getId();
         locator.getDb().delete(DBDefinitions.TBL_BOOK_IDENTIFIER.getName(),
-                               DBKey.FK_IDENTIFIER + "=" + grIdent.getId(),
+                               DBKey.FK_IDENTIFIER + "=" + grId,
                                null);
     }
 
@@ -194,7 +193,7 @@ public class GoodreadsCsvImportTest
         // Tor Books,Hardcover,472,2014,2006,,2024/04/24,
         // "currently-reading, books","currently-reading (#3), books (#15)",currently-reading,
         // On my todo list,,my own notes on this book,1,0
-        bookId = identifierDao.getBookId(grIdent, "20518872");
+        bookId = identifierDao.findBookId(Identifier.SID_GOODREADS_BOOK, "20518872");
         assertNotEquals(0, bookId);
 
         try (Cursor cursor = bookDao.fetchById(bookId)) {

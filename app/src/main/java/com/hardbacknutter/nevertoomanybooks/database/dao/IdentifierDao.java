@@ -147,19 +147,7 @@ public interface IdentifierDao {
     /**
      * Find the book id for the given SID and name.
      *
-     * @param identifier to use
-     * @param sid        value
-     *
-     * @return book id, or {@code 0} if none found
-     */
-    @IntRange(from = 0)
-    long getBookId(@NonNull Identifier identifier,
-                   @NonNull String sid);
-
-    /**
-     * Find the book id for the given SID and name.
-     *
-     * @param identifierName one of the {@link Identifier} SID constants
+     * @param key one of the {@link Identifier} SID constants
      * @param sid            value
      *
      * @return book id, or {@code 0} if none found

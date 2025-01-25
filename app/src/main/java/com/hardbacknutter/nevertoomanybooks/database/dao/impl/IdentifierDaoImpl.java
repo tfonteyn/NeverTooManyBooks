@@ -270,18 +270,6 @@ public class IdentifierDaoImpl
         return Optional.empty();
     }
 
-    @IntRange(from = 0)
-    @Override
-    public long getBookId(@NonNull final Identifier identifier,
-                          @NonNull final String sid) {
-        try (SynchronizedStatement stmt = db.compileStatement(
-                Sql.FIND_BOOK_ID_BY_IDENTIFIER_ID_AND_SID)) {
-            stmt.bindLong(1, identifier.getId());
-            stmt.bindString(2, sid);
-            return stmt.simpleQueryForLongOrZero();
-        }
-    }
-
     @Override
     @IntRange(from = 0)
     public long findBookId(@NonNull final String key,
