@@ -21,11 +21,13 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Function;
 import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -44,6 +46,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * The {@link CoverFileSpecArray#BKEY_FILE_SPEC_ARRAY} keys are not used here,
@@ -140,7 +143,8 @@ public class ResultsAccumulatorTest
 
         book.setPublishers(List.of(new Publisher("Corgi")));
 
-        book.putString(Identifier.SID_ISFDB, "568139");
+        book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_ISFDB, "568139")));
+
         book.putString("__ISFDB_ISBN2", "0552574473");
         book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
@@ -173,11 +177,9 @@ public class ResultsAccumulatorTest
         // list_price_currency=GBP}]}
 
         final Book book = new Book();
-        book.setSeries(List.of(new Series("Discworld Novels")
-        ));
+        book.setSeries(List.of(new Series("Discworld Novels")));
         book.putString(DBKey.LANGUAGE, "English");
         book.putString(DBKey.FORMAT, "Paperback");
-        book.putString(Identifier.SID_ASIN, "0552574473");
         book.putString(DBKey.BOOK_ISBN, "978-0552574471");
         book.putString(DBKey.PAGES, "336");
         book.putString(DBKey.TITLE, "The Shepherd's Crown: A Discworld Novel, Volume 41");
@@ -186,6 +188,9 @@ public class ResultsAccumulatorTest
                 new Author("Pratchett", "Terry")
                         .setType(Author.TYPE_WRITER)));
         book.setPublishers(List.of(new Publisher("Corgi Childrens")));
+
+        book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_ASIN, "0552574473")));
+
         book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         return new Pair<>(Locale.UK, book);
@@ -233,7 +238,11 @@ public class ResultsAccumulatorTest
         final Book book = new Book();
         book.setSeries(List.of(new Series("Discworld Novels")));
         book.putString(DBKey.DESCRIPTION,
-                       "An old enemy is gathering strength. This is a time of endings and beginnings, old friends and new, a blurring of edges and a shifting of power. Now Tiffany stands between the light and the dark, the good and the bad. As the fairy horde prepares for invasion, Tiffany must summon all the witches to stand with her.");
+                       "An old enemy is gathering strength. This is a time of endings"
+                       + " and beginnings, old friends and new, a blurring of edges and a"
+                       + " shifting of power. Now Tiffany stands between the light and the dark,"
+                       + " the good and the bad. As the fairy horde prepares for invasion,"
+                       + " Tiffany must summon all the witches to stand with her.");
         book.putString(DBKey.LANGUAGE, "en");
         book.putString(DBKey.FORMAT, "Paperback");
         book.putFloat(DBKey.RATING, 4.8f);
@@ -365,7 +374,6 @@ public class ResultsAccumulatorTest
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
-        book.putString(Identifier.SID_ASIN, "0552574473");
         book.putString(DBKey.BOOK_ISBN, "9780552574471");
         book.putString(DBKey.PAGES, "332");
         book.putString(DBKey.TITLE, "The Shepherd's Crown");
@@ -390,7 +398,11 @@ public class ResultsAccumulatorTest
                 new Publisher("Corgi Childrens"),
                 new Publisher("Corgi Childrens")
         ));
-        book.putString(Identifier.SID_ISFDB, "568139");
+        book.setIdentifiers(List.of(
+                new Identifier.Value(Identifier.SID_ASIN, "0552574473"),
+                new Identifier.Value(Identifier.SID_ISFDB, "568139")
+        ));
+
         book.putString("__ISFDB_ISBN2", "0552574473");
         book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
@@ -415,21 +427,28 @@ public class ResultsAccumulatorTest
 
         final Book expected = createResult_01_02_03();
 
-        assertEquals(expected.getAuthors(), book.getAuthors());
-        assertEquals(expected.getSeries(), book.getSeries());
-        assertEquals(expected.getPublishers(), book.getPublishers());
-        assertEquals(expected.getToc(), book.getToc());
+        // compare the special list types first
+        cmpList(expected, book, Book::getAuthors, b -> b.setAuthors(List.of()));
+        cmpList(expected, book, Book::getSeries, b -> b.setSeries(List.of()));
+        cmpList(expected, book, Book::getPublishers, b -> b.setPublishers(List.of()));
+        cmpList(expected, book, Book::getToc, b -> b.setToc(List.of()));
+        cmpList(expected, book, Book::getTags, b -> b.setTags(List.of()));
+        cmpList(expected, book, Book::getIdentifiers, b -> b.setIdentifiers(List.of()));
 
-        expected.setAuthors(List.of());
-        expected.setSeries(List.of());
-        expected.setPublishers(List.of());
-        expected.setToc(List.of());
-
-        book.setAuthors(List.of());
-        book.setSeries(List.of());
-        book.setPublishers(List.of());
-        book.setToc(List.of());
-
+        // finally compare all 'simple' fields
         assertEquals(expected, book);
+    }
+
+    private void cmpList(@NonNull final Book expected,
+                         @NonNull final Book book,
+                         @NonNull final Function<Book, List<?>> getList,
+                         @NonNull final Consumer<Book> emptyList) {
+        final List<?> eList = getList.apply(expected);
+        final List<?> bList = getList.apply(book);
+        //noinspection SuspiciousMethodCalls
+        assertTrue(eList.size() == bList.size()
+                   && eList.containsAll(bList) && bList.containsAll(eList));
+        emptyList.accept(expected);
+        emptyList.accept(book);
     }
 }

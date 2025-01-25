@@ -66,7 +66,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
@@ -261,7 +260,7 @@ public class CsvArchiveReaderTest
         assertEquals("Fearsome giants, magic spells, ...", book.getString(DBKey.DESCRIPTION));
         assertEquals("English", book.getString(DBKey.LANGUAGE));
         assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_ADDED__UTC));
-        assertEquals(1294006, book.getLong(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("1294006", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
         assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_LAST_UPDATED__UTC));
         assertEquals("e9787a594f11549db20f163db56a3ec9", book.getString(DBKey.BOOK_UUID));
 
@@ -318,7 +317,7 @@ public class CsvArchiveReaderTest
                      book.getString(DBKey.DESCRIPTION));
         assertEquals("English", book.getString(DBKey.LANGUAGE));
         assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_ADDED__UTC));
-        assertNull(book.getString(Identifier.SID_GOODREADS_BOOK, null));
+        assertTrue(book.getIdentifierValue(Identifier.SID_GOODREADS_BOOK).isEmpty());
         assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_LAST_UPDATED__UTC));
         assertEquals("b483250f6016cbe775ce16bfbc6d64da", book.getString(DBKey.BOOK_UUID));
 

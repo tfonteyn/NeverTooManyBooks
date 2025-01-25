@@ -80,7 +80,7 @@ public class ParseTest
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
         assertEquals("9789463064385", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("7323911", book.getString(Identifier.SID_LAST_DODO_NL, null));
+        assertEquals("7323911", book.requireIdentifierValue(Identifier.SID_LAST_DODO_NL));
 
         assertEquals("2018", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("48", book.getString(DBKey.PAGES, null));
@@ -140,7 +140,7 @@ public class ParseTest
 
         assertEquals("Schoot der aarde", book.getString(DBKey.TITLE, null));
         assertEquals("9789463943109", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("8838967", book.getString(Identifier.SID_LAST_DODO_NL, null));
+        assertEquals("8838967", book.requireIdentifierValue(Identifier.SID_LAST_DODO_NL));
 
         assertEquals("2021", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("64", book.getString(DBKey.PAGES, null));
@@ -163,11 +163,22 @@ public class ParseTest
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
-        assertEquals(1, authors.size());
+        assertEquals(3, authors.size());
 
-        final Author author = authors.get(0);
+        Author author;
+        author = authors.get(0);
         assertEquals("Astier", author.getFamilyName());
         assertEquals("Laurent", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+
+        author = authors.get(1);
+        assertEquals("Van Tilburgh", author.getFamilyName());
+        assertEquals("Dieter", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+
+        author = authors.get(2);
+        assertEquals("Astier", author.getFamilyName());
+        assertEquals("Stéphane", author.getGivenNames());
+        assertEquals(Author.TYPE_COLORIST, author.getType());
     }
 }

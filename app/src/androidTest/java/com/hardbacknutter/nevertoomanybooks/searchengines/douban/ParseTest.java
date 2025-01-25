@@ -195,7 +195,7 @@ public class ParseTest
 
         assertEquals("三体", book.getString(DBKey.TITLE, null));
         assertEquals("9787536692930", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("36892731", book.getString(Identifier.SID_DOUBAN, null));
+        assertEquals("36892731", book.requireIdentifierValue(Identifier.SID_DOUBAN));
 
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2021-01-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -250,7 +250,7 @@ public class ParseTest
 
         assertEquals("三体", book.getString(DBKey.TITLE, null));
         assertEquals("9787536692930", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("36874304", book.getString(Identifier.SID_DOUBAN, null));
+        assertEquals("36874304", book.requireIdentifierValue(Identifier.SID_DOUBAN));
 
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2011-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -328,7 +328,7 @@ public class ParseTest
         assertEquals("第七重解答", book.getString(DBKey.TITLE, null));
         assertEquals("La Septième Hypothèse", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
         assertEquals("9787549641864", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("36665775", book.getString(Identifier.SID_DOUBAN, null));
+        assertEquals("36665775", book.requireIdentifierValue(Identifier.SID_DOUBAN));
 
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-04-30", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -512,7 +512,7 @@ public class ParseTest
         assertEquals("Galileo's Error: Foundations for a New Science of Consciousness",
                      book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
         assertEquals("9787532190294", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("36897178", book.getString(Identifier.SID_DOUBAN, null));
+        assertEquals("36897178", book.requireIdentifierValue(Identifier.SID_DOUBAN));
 
         assertEquals("zho", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));

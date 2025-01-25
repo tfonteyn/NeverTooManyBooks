@@ -65,7 +65,6 @@ public class BookDaoHelperTest
         b.putString(DBKey.LANGUAGE, "eng");
         b.putString(DBKey.FIRST_PUBLICATION__DATE, "2008-04-17");
         b.putString(DBKey.BOOK_PUBLICATION__DATE, "2009-06-02");
-        b.putString(Identifier.SID_GOODREADS_BOOK, "18306114");
 
         final Book book = new Book(b);
         final Author author0 = Author.from("Alastair Reynolds");
@@ -78,6 +77,9 @@ public class BookDaoHelperTest
                              new Tag("Space"),
                              new Tag("Opera")
         ));
+
+        book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_GOODREADS_BOOK,
+                                                         "18306114")));
 
         final ServiceLocator locator = ServiceLocator.getInstance();
         final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,

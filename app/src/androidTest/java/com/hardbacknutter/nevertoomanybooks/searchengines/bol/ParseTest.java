@@ -222,10 +222,10 @@ public class ParseTest
         assertTrue(tags.contains("Literatuur & Romans"));
         assertTrue(tags.contains("Thrillers & Spanning"));
         assertTrue(tags.contains("Romance"));
-        assertTrue(tags.contains("Psychologische Thrillers"));
+        assertTrue(tags.contains("Psychologische thrillers"));
         assertTrue(tags.contains("Spanning"));
-        assertTrue(tags.contains("Romantische Thrillers"));
-        assertTrue(tags.contains("Literaire Thrillers"));
+        assertTrue(tags.contains("Romantische thrillers"));
+        assertTrue(tags.contains("Literaire thrillers"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -403,7 +403,7 @@ public class ParseTest
         Assert.assertEquals(2, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
         assertTrue(tags.contains("Literatuur & Romans"));
-        assertTrue(tags.contains("Literaire Romans"));
+        assertTrue(tags.contains("Literaire romans"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);

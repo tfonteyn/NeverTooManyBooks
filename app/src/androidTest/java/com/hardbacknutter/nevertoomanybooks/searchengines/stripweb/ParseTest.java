@@ -93,7 +93,7 @@ public class ParseTest
 
         assertEquals("Wanted Lucky Luke", book.getString(DBKey.TITLE, null));
         assertEquals("9782884719506", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("523041", book.getString(Identifier.SID_STRIPWEB, null));
+        assertEquals("523041", book.requireIdentifierValue(Identifier.SID_STRIPWEB));
 
         assertEquals("2021-10-05", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("72", book.getString(DBKey.PAGES, null));
@@ -172,7 +172,7 @@ public class ParseTest
 
         assertEquals("Valstrikken en emoties", book.getString(DBKey.TITLE, null));
         assertEquals("9789085587187", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("548714", book.getString(Identifier.SID_STRIPWEB, null));
+        assertEquals("548714", book.requireIdentifierValue(Identifier.SID_STRIPWEB));
 
         assertEquals("2024-02-13", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("64", book.getString(DBKey.PAGES, null));
@@ -290,7 +290,7 @@ public class ParseTest
 
         assertEquals("XIII- box Delen 1-3", book.getString(DBKey.TITLE, null));
         assertEquals("3600121191341", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("522632", book.getString(Identifier.SID_STRIPWEB, null));
+        assertEquals("522632", book.requireIdentifierValue(Identifier.SID_STRIPWEB));
 
         assertEquals("2020-09-25", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("48 x 3", book.getString(DBKey.PAGES, null));

@@ -82,7 +82,7 @@ public class ParseTest
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));
         assertEquals("2840557428", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("19401", book.getString(Identifier.SID_BEDETHEQUE, null));
+        assertEquals("19401", book.requireIdentifierValue(Identifier.SID_BEDETHEQUE));
 
         assertEquals("2002-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));

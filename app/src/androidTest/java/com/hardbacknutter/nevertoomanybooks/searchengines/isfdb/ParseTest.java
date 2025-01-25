@@ -101,8 +101,8 @@ public class ParseTest
         assertEquals("Like Nothing on Earth", book.getString(DBKey.TITLE, null));
         assertEquals("0413600106", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("9780413600103", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals("112781", book.getString(Identifier.SID_ISFDB, null));
-        assertEquals("13665857", book.getString(Identifier.SID_OCLC, null));
+        assertEquals("112781", book.requireIdentifierValue(Identifier.SID_ISFDB));
+        assertEquals("13665857", book.requireIdentifierValue(Identifier.SID_OCLC));
 
         assertEquals("1986-10", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
@@ -175,7 +175,7 @@ public class ParseTest
         assertEquals("Mort", book.getString(DBKey.TITLE, null));
         assertEquals("9781473200104", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("1473200105", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals("431964", book.getString(Identifier.SID_ISFDB, null));
+        assertEquals("431964", book.requireIdentifierValue(Identifier.SID_ISFDB));
 
         assertEquals("2013-11-07", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
@@ -240,9 +240,9 @@ public class ParseTest
         assertEquals("The Shepherd's Crown", book.getString(DBKey.TITLE, null));
         assertEquals("9780062429995", book.getString(DBKey.BOOK_ISBN, null));
         assertEquals("006242999X", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
-        assertEquals("542125", book.getString(Identifier.SID_ISFDB, null));
-        assertEquals("2015943558", book.getString(Identifier.SID_LCCN, null));
-        assertEquals("B00W2EBY8O", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("542125", book.requireIdentifierValue(Identifier.SID_ISFDB));
+        assertEquals("2015943558", book.requireIdentifierValue(Identifier.SID_LCCN));
+        assertEquals("B00W2EBY8O", book.requireIdentifierValue(Identifier.SID_ASIN));
 
         assertEquals("2015-09-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals(11.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);

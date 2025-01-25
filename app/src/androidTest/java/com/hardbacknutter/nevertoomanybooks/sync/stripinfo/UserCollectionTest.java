@@ -117,7 +117,7 @@ public class UserCollectionTest
                 b0.getParcelable(StripInfoCollectionData.BKEY);
         assertNotNull(collectionData);
 
-        assertEquals("5435", b0.getString(Identifier.SID_STRIP_INFO, null));
+        assertEquals("5435", b0.requireIdentifierValue(Identifier.SID_STRIP_INFO));
         assertEquals(5408, collectionData.getCollectionId());
         assertEquals(1, collectionData.getAmount());
         assertTrue(collectionData.isOwned());

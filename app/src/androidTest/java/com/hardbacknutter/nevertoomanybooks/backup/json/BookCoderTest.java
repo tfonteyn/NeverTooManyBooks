@@ -20,18 +20,14 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
-import android.util.Pair;
-
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.IdentifierCoder;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -57,13 +53,11 @@ public class BookCoderTest
     private Book book;
     private BookCoder bookCoder;
     private IdentifierCoder identifierCoder;
-    private RealNumberParser realNumberParser;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
-        realNumberParser = new RealNumberParser(List.of(Locale.getDefault()));
         book = new Book();
         bookCoder = new BookCoder(context, serviceLocator.getStyles().getDefault());
         identifierCoder = new IdentifierCoder();
@@ -125,19 +119,12 @@ public class BookCoderTest
         final JSONArray identifiers = encodedBook.optJSONArray(Book.BKEY_IDENTIFIER_LIST);
         assertNotNull(identifiers);
 
-        final List<Pair<String, String>> list = identifierCoder.decode(identifiers);
+        final List<Identifier.Value> list = identifierCoder.decode(identifiers);
         assertEquals(2, list.size());
 
         final Book decodedBook = bookCoder.decode(encodedBook);
-        Object sid;
-        // Identifiers are always String
-        sid = decodedBook.get(Identifier.SID_GOODREADS_BOOK, realNumberParser);
-        assertTrue(sid instanceof String);
-        assertEquals("1234", decodedBook.getString(Identifier.SID_GOODREADS_BOOK));
-
-        sid = decodedBook.get(Identifier.SID_OPEN_LIBRARY, realNumberParser);
-        assertTrue(sid instanceof String);
-        assertEquals("ol123", decodedBook.getString(Identifier.SID_OPEN_LIBRARY));
+        assertEquals("1234", decodedBook.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("ol123", decodedBook.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
     }
 
     @Test
@@ -151,9 +138,8 @@ public class BookCoderTest
         assertNull(identifiers);
 
         final Book decodedBook = bookCoder.decode(encodedBook);
-        Object sid;
         // Invalid values were not stored
-        assertFalse(decodedBook.contains(Identifier.SID_GOODREADS_BOOK));
-        assertFalse(decodedBook.contains(Identifier.SID_OPEN_LIBRARY));
+        assertTrue(decodedBook.getIdentifierValue(Identifier.SID_GOODREADS_BOOK).isEmpty());
+        assertTrue(decodedBook.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
     }
 }

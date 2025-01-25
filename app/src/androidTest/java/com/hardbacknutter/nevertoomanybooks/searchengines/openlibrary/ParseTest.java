@@ -106,13 +106,13 @@ public class ParseTest
 
         assertEquals("Slow reading", book.getString(DBKey.TITLE, null));
         assertEquals("9780980200447", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL22853304M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
-        assertEquals("2008054742", book.getString(Identifier.SID_LCCN, null));
-        assertEquals("8071257", book.getString(Identifier.SID_LIBRARY_THING, null));
-        assertEquals("6383507", book.getString(Identifier.SID_GOODREADS_BOOK, null));
-        assertEquals("098020044X", book.getString(Identifier.SID_ASIN, null));
-        assertEquals("297222669", book.getString(Identifier.SID_OCLC, null));
-        assertEquals("4LQU1YwhY6kC", book.getString(Identifier.SID_GOOGLE, null));
+        assertEquals("OL22853304M", book.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
+        assertEquals("2008054742", book.requireIdentifierValue(Identifier.SID_LCCN));
+        assertEquals("8071257", book.requireIdentifierValue(Identifier.SID_LIBRARY_THING));
+        assertEquals("6383507", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("098020044X", book.requireIdentifierValue(Identifier.SID_ASIN));
+        assertEquals("297222669", book.requireIdentifierValue(Identifier.SID_OCLC));
+        assertEquals("4LQU1YwhY6kC", book.requireIdentifierValue(Identifier.SID_GOOGLE));
 
         assertEquals("Includes bibliographical references and index.",
                      book.getString(DBKey.DESCRIPTION, null));
@@ -191,7 +191,7 @@ public class ParseTest
 
         assertEquals("Wundersmith", book.getString(DBKey.TITLE, null));
         assertEquals("9780734418227", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL47304760M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
+        assertEquals("OL47304760M", book.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
 
         assertEquals("Source title: Wundersmith: The Calling of Morrigan Crow",
                      book.getString(DBKey.DESCRIPTION, null));
@@ -242,7 +242,7 @@ public class ParseTest
         assertEquals("Percy Jackson and the Battle of the Labyrinth",
                      book.getString(DBKey.TITLE, null));
         assertEquals("9780141346830", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL28508809M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
+        assertEquals("OL28508809M", book.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
 
         assertEquals("2013", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("352", book.getString(DBKey.PAGES, null));
@@ -291,10 +291,10 @@ public class ParseTest
 
         assertEquals("Autokorrektur", book.getString(DBKey.TITLE, null));
         assertEquals("9783103971422", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL36696710M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
-        assertEquals("1244449636", book.getString(Identifier.SID_DNB, null));
-        assertEquals("lzexzgEACAAJ", book.getString(Identifier.SID_GOOGLE, null));
-        assertEquals("1282184385", book.getString(Identifier.SID_OCLC, null));
+        assertEquals("OL36696710M", book.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
+        assertEquals("1244449636", book.requireIdentifierValue(Identifier.SID_DNB));
+        assertEquals("lzexzgEACAAJ", book.requireIdentifierValue(Identifier.SID_GOOGLE));
+        assertEquals("1282184385", book.requireIdentifierValue(Identifier.SID_OCLC));
 
         assertEquals("2022-02-09", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("272", book.getString(DBKey.PAGES, null));
@@ -384,9 +384,9 @@ public class ParseTest
 
         assertEquals("Pacific Vortex!", book.getString(DBKey.TITLE, null));
         assertEquals("9780553276329", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL7824144M", book.getString(Identifier.SID_OPEN_LIBRARY, null));
-        assertEquals("361081", book.getString(Identifier.SID_GOODREADS_BOOK, null));
-        assertEquals("1182484", book.getString(Identifier.SID_LIBRARY_THING, null));
+        assertEquals("OL7824144M", book.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
+        assertEquals("361081", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("1182484", book.requireIdentifierValue(Identifier.SID_LIBRARY_THING));
 
         assertEquals("1984-10-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("1982", book.getString(DBKey.FIRST_PUBLICATION__DATE, null));

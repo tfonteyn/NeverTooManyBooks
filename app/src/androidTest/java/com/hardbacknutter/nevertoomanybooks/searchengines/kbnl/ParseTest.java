@@ -107,7 +107,7 @@ public class ParseTest
 
         assertEquals("1983", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("9022953351", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("833191217", book.getString(Identifier.SID_KBNL, null));
+        assertEquals("833191217", book.requireIdentifierValue(Identifier.SID_KBNL));
 
         assertEquals("geb.", book.getString(DBKey.FORMAT, null));
         assertEquals("156", book.getString(DBKey.PAGES, null));
@@ -144,7 +144,7 @@ public class ParseTest
 
         assertEquals("De buitengewone reis", book.getString(DBKey.TITLE, null));
         assertEquals("9789463731454", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("422449148", book.getString(Identifier.SID_KBNL, null));
+        assertEquals("422449148", book.requireIdentifierValue(Identifier.SID_KBNL));
 
         assertEquals("2019", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("paperback", book.getString(DBKey.FORMAT, null));
@@ -193,7 +193,7 @@ public class ParseTest
     static void verify9020612476(@NonNull final Book book) {
         assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
         assertEquals("9020612476", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("428377971", book.getString(Identifier.SID_KBNL, null));
+        assertEquals("428377971", book.requireIdentifierValue(Identifier.SID_KBNL));
 
         assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("157", book.getString(DBKey.PAGES, null));

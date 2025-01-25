@@ -145,8 +145,8 @@ public class IsfdbXmlPublicationTest
 
         assertEquals("Triplanetary", book.getTitle());
         assertEquals("0491001576", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("425189", book.getString(Identifier.SID_ISFDB, null));
-        assertEquals("16190406", book.getString(Identifier.SID_OCLC, null));
+        assertEquals("425189", book.requireIdentifierValue(Identifier.SID_ISFDB));
+        assertEquals("16190406", book.requireIdentifierValue(Identifier.SID_OCLC));
 
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("hc", book.getString(DBKey.FORMAT, null));

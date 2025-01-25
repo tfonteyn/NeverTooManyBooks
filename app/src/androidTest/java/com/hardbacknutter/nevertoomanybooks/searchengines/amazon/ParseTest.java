@@ -81,7 +81,7 @@ public class ParseTest
 
         assertEquals("Bone Silence", book.getString(DBKey.TITLE, null));
         assertEquals("978-0575090675", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("0575090677", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("0575090677", book.requireIdentifierValue(Identifier.SID_ASIN));
 
         assertEquals("2020-01-30", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("608", book.getString(DBKey.PAGES, null));
@@ -120,7 +120,7 @@ public class ParseTest
         assertEquals("The Medusa Chronicles: Alastair Reynolds & Stephen Baxter",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-1473210202", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("1473210208", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("1473210208", book.requireIdentifierValue(Identifier.SID_ASIN));
 
         assertEquals("2017-01-12", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         assertEquals("336", book.getString(DBKey.PAGES, null));
@@ -161,7 +161,7 @@ public class ParseTest
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-2205057331", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2205057332", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("2205057332", book.requireIdentifierValue(Identifier.SID_ASIN));
 
         assertEquals("Français", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Relié", book.getString(DBKey.FORMAT, null));
@@ -200,7 +200,7 @@ public class ParseTest
         assertEquals("Siddhartha. Eine indische Dichtung",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("3518366823", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("3518366823", book.requireIdentifierValue(Identifier.SID_ASIN));
 
         assertEquals("Deutsch", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Taschenbuch", book.getString(DBKey.FORMAT, null));
@@ -236,7 +236,7 @@ public class ParseTest
 
         assertEquals("Siddhartha", book.getString(DBKey.TITLE, null));
         assertEquals("978-3518366820", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("3518366823", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("3518366823", book.requireIdentifierValue(Identifier.SID_ASIN));
 
         assertEquals("German", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
@@ -275,7 +275,7 @@ public class ParseTest
         assertEquals("Essential Grammar in Use. Fourth Edition. Book with Answers.",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-1107480551", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("1107480558", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("1107480558", book.requireIdentifierValue(Identifier.SID_ASIN));
 
         assertEquals("Inglés", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Tapa blanda", book.getString(DBKey.FORMAT, null));
@@ -312,7 +312,7 @@ public class ParseTest
         assertEquals("La rebelión de los buenos: Premio de Novela Fernando Lara 2023",
                      book.getString(DBKey.TITLE, null));
         assertEquals("978-8408275787", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("840827578X", book.getString(Identifier.SID_ASIN, null));
+        assertEquals("840827578X", book.requireIdentifierValue(Identifier.SID_ASIN));
 
         assertEquals("Tapa dura", book.getString(DBKey.FORMAT, null));
         assertEquals("Español", book.getString(DBKey.LANGUAGE, null));

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -169,23 +169,23 @@ public class BookTest
     @Test
     public void preprocessExternalIdsForInsert() {
 
-        // Long: valid number
-        book.put(Identifier.SID_GOODREADS_BOOK, 2L);
-        // Long: 0 -> should be removed
-        book.put(Identifier.SID_ISFDB, 0L);
-        // Long: null -> should be removed
-        book.put(Identifier.SID_LAST_DODO_NL, null);
-        // Long: blank string -> should be removed
-        book.put(Identifier.SID_LIBRARY_THING, "");
-        // Long: non-blank string -> should be removed
-        book.put(Identifier.SID_STRIP_INFO, "test");
+        //noinspection DataFlowIssue
+        book.setIdentifiers(List.of(
+                // Long: valid number
+                new Identifier.Value(Identifier.SID_GOODREADS_BOOK, 2L),
 
+                // Long: 0 -> should be removed
+                new Identifier.Value(Identifier.SID_ISFDB, 0L),
+                // Long: null -> should be removed
+                new Identifier.Value(Identifier.SID_LAST_DODO_NL, null),
+                // Long: blank string -> should be removed
+                new Identifier.Value(Identifier.SID_LIBRARY_THING, ""),
+                // Long: non-blank string -> should be removed
+                new Identifier.Value(Identifier.SID_STRIP_INFO, "test"),
 
-        // String: valid
-        // (KEY_ISBN is the external key for Amazon)
-        book.put(DBKey.BOOK_ISBN, "test");
-        // blank string for a text field -> should be removed
-        book.put(Identifier.SID_OPEN_LIBRARY, "");
+                // blank string for a text field -> should be removed
+                new Identifier.Value(Identifier.SID_OPEN_LIBRARY, "")
+        ));
 
         // Not tested: null string for a string field..
 
@@ -197,44 +197,40 @@ public class BookTest
         bdh.processExternalIds();
         dump(book);
 
-        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK, null));
-        assertFalse(book.contains(Identifier.SID_ISFDB));
-        assertFalse(book.contains(Identifier.SID_LAST_DODO_NL));
-        assertFalse(book.contains(Identifier.SID_LIBRARY_THING));
-        assertFalse(book.contains(Identifier.SID_STRIP_INFO));
+        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
 
-        assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
-        assertFalse(book.contains(Identifier.SID_OPEN_LIBRARY));
+        assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_LAST_DODO_NL).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_LIBRARY_THING).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_STRIP_INFO).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
 
         bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK, null));
-        assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
     }
 
     @Test
     public void preprocessExternalIdsForUpdate() {
         final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
 
-        // Long: valid number
-        book.put(Identifier.SID_GOODREADS_BOOK, 2L);
-        // Long: 0 -> should be defaulted to null
-        book.put(Identifier.SID_ISFDB, 0L);
-        // Long: null
-        book.put(Identifier.SID_LAST_DODO_NL, null);
-        // Long: blank string -> defaulted to null
-        book.put(Identifier.SID_LIBRARY_THING, "");
-        // Long: non-blank string -> defaulted to null
-        book.put(Identifier.SID_STRIP_INFO, "test");
+        //noinspection DataFlowIssue
+        book.setIdentifiers(List.of(
+                // Long: valid number
+                new Identifier.Value(Identifier.SID_GOODREADS_BOOK, 2L),
+                // Long: 0 -> should be defaulted to null
+                new Identifier.Value(Identifier.SID_ISFDB, 0L),
+                // Long: null
+                new Identifier.Value(Identifier.SID_LAST_DODO_NL, null),
+                // Long: blank string -> defaulted to null
+                new Identifier.Value(Identifier.SID_LIBRARY_THING, ""),
+                // Long: non-blank string -> defaulted to null
+                new Identifier.Value(Identifier.SID_STRIP_INFO, "test"),
 
-
-        // String: valid
-        // (KEY_ISBN is the external key for Amazon)
-        book.put(DBKey.BOOK_ISBN, "test");
-        // blank string for a text field -> defaulted to null
-        book.put(Identifier.SID_OPEN_LIBRARY, "");
-
+                // blank string for a text field -> defaulted to null
+                new Identifier.Value(Identifier.SID_OPEN_LIBRARY, "")
+        ));
 
         // Not tested: null string for a string field..
 
@@ -247,27 +243,25 @@ public class BookTest
         bdh.processExternalIds();
         dump(book);
 
-        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK, null));
-        assertNull(book.get(Identifier.SID_ISFDB, realNumberParser));
-        assertNull(book.get(Identifier.SID_LAST_DODO_NL, realNumberParser));
-        assertNull(book.get(Identifier.SID_LIBRARY_THING, realNumberParser));
-        assertNull(book.get(Identifier.SID_STRIP_INFO, realNumberParser));
+        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_LAST_DODO_NL).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_LIBRARY_THING).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_STRIP_INFO).isEmpty());
 
-        assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
-        assertNull(book.get(Identifier.SID_OPEN_LIBRARY, realNumberParser));
+        assertTrue(book.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
 
 
         bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals("2", book.getString(Identifier.SID_GOODREADS_BOOK, null));
-        assertNull(book.get(Identifier.SID_ISFDB, realNumberParser));
-        assertNull(book.get(Identifier.SID_LAST_DODO_NL, realNumberParser));
-        assertNull(book.get(Identifier.SID_LIBRARY_THING, realNumberParser));
-        assertNull(book.get(Identifier.SID_STRIP_INFO, realNumberParser));
+        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_LAST_DODO_NL).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_LIBRARY_THING).isEmpty());
+        assertTrue(book.getIdentifierValue(Identifier.SID_STRIP_INFO).isEmpty());
 
-        assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
-        assertNull(book.get(Identifier.SID_OPEN_LIBRARY, realNumberParser));
+        assertTrue(book.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
     }
 
     /**

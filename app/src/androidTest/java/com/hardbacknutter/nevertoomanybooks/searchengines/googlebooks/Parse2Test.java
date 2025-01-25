@@ -87,7 +87,7 @@ public class Parse2Test
 
         assertEquals("Flowers for Algernon", book.getString(DBKey.TITLE, null));
         assertEquals("9781857989380", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("64tuPwAACAAJ", book.getString(Identifier.SID_GOOGLE, null));
+        assertEquals("64tuPwAACAAJ", book.requireIdentifierValue(Identifier.SID_GOOGLE));
 
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2000", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -155,7 +155,7 @@ public class Parse2Test
 
         assertEquals("Space", book.getString(DBKey.TITLE, null));
         assertEquals("9780007499793", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("lDihJsa19_gC", book.getString(Identifier.SID_GOOGLE, null));
+        assertEquals("lDihJsa19_gC", book.requireIdentifierValue(Identifier.SID_GOOGLE));
 
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2012-11-22", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -347,8 +347,10 @@ public class BookTest
         book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE[bookIdx]);
         book.setStage(EntityStage.Stage.Dirty);
 
-        book.putString(Identifier.SID_ISFDB, TestConstants.BOOK_ISFDB[bookIdx]);
-        book.putString(Identifier.SID_LCCN, TestConstants.BOOK_LCCN[bookIdx]);
+        book.setIdentifiers(List.of(
+                new Identifier.Value(Identifier.SID_ISFDB, TestConstants.BOOK_ISFDB[bookIdx]),
+                new Identifier.Value(Identifier.SID_LCCN, TestConstants.BOOK_LCCN[bookIdx])
+        ));
 
         book.setBookshelves(bookshelfList);
         book.setAuthors(authorList);
@@ -383,8 +385,10 @@ public class BookTest
         assertFalse(uuid.isEmpty());
         assertEquals(TestConstants.BOOK_TITLE[bookIdx], book.getTitle());
 
-        assertEquals(TestConstants.BOOK_ISFDB[bookIdx], book.getString(Identifier.SID_ISFDB, null));
-        assertEquals(TestConstants.BOOK_LCCN[bookIdx], book.getString(Identifier.SID_LCCN, null));
+        assertEquals(TestConstants.BOOK_ISFDB[bookIdx],
+                     book.requireIdentifierValue(Identifier.SID_ISFDB));
+        assertEquals(TestConstants.BOOK_LCCN[bookIdx],
+                     book.requireIdentifierValue(Identifier.SID_LCCN));
 
         final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());

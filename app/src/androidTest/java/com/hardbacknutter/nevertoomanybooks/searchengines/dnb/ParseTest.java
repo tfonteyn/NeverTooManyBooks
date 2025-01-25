@@ -81,7 +81,7 @@ public class ParseTest
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
         assertEquals("9783453321892", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("1254682597", book.getString(Identifier.SID_DNB, null));
+        assertEquals("1254682597", book.requireIdentifierValue(Identifier.SID_DNB));
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -138,7 +138,7 @@ public class ParseTest
         assertEquals("Totholz : was vergraben ist, ist nicht vergessen",
                      book.getString(DBKey.TITLE, null));
         assertEquals("9783426226681", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("1308358113", book.getString(Identifier.SID_DNB, null));
+        assertEquals("1308358113", book.requireIdentifierValue(Identifier.SID_DNB));
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2024-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -189,7 +189,7 @@ public class ParseTest
 
         assertEquals("Teurer Sieg", book.getString(DBKey.TITLE, null));
         assertEquals("9783734163296", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("1272077195", book.getString(Identifier.SID_DNB, null));
+        assertEquals("1272077195", book.requireIdentifierValue(Identifier.SID_DNB));
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
@@ -254,7 +254,7 @@ public class ParseTest
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
         assertEquals("9783641285166", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("1278243054", book.getString(Identifier.SID_DNB, null));
+        assertEquals("1278243054", book.requireIdentifierValue(Identifier.SID_DNB));
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
