@@ -548,8 +548,8 @@ public class BookDaoImpl
         }
 
         if (book.contains(Book.BKEY_TAG_LIST)) {
-            // Tags are two steps away; they can exist in other books
-            // Hence we will both insert new entries
+            // Tags are two steps away; they can exist in other books.
+            // We will insert new entries
             // AND update existing ones as needed.
             tagDaoSupplier.get().insertOrUpdate(context,
                                                 book.getId(),
@@ -557,8 +557,15 @@ public class BookDaoImpl
                                                 tag -> bookLocale);
         }
 
-        identifierDaoSupplier.get().insertOrUpdate(book);
-
+        if (book.contains(Book.BKEY_IDENTIFIER_LIST)) {
+            // Tags are two steps away; they can exist in other books.
+            // However, we in fact dot NOT use id's except for the internal database references.
+            // Instead we always work with the String key.
+            // We will insert new entries
+            // but there is nothing to update as such.
+            identifierDaoSupplier.get().insertOrUpdate(book.getId(),
+                                                       book.getIdentifiers());
+        }
 
         if (book.contains(DBKey.LOANEE_NAME)) {
             loaneeDaoDaoSupplier.get().setLoanee(book);
