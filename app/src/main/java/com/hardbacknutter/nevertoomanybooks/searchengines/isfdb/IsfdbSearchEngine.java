@@ -217,7 +217,10 @@ public class IsfdbSearchEngine
             // is valid for https://kb.nl, i.e. the oclc link
             // https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=852323123
             // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
-            Map.entry("/XMLPRS=Y/PPN?PPN=", Identifier.SID_KBNL)
+            Map.entry("/XMLPRS=Y/PPN?PPN=", Identifier.SID_KBNL),
+            // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
+            // vid=BLVU1&docId=BLL01014057142
+            Map.entry("explore.bl.uk", Identifier.SID_BRITISH_LIBRARY)
     );
 
     /*
@@ -1499,10 +1502,6 @@ public class IsfdbSearchEngine
                         });
                     }
 
-//                    } else if (url.contains("explore.bl.uk")) {
-                    // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
-                    // vid=BLVU1&docId=BLL01014057142
-                    // British Library
 //                    } else if (url.contains("audible.com")) {
                     // https://www.audible.com/pd/B00HJZAQPI
 //                    } else if (url.contains("tercerafundacion.net")) {
