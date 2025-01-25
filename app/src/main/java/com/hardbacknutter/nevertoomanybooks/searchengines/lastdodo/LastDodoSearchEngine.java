@@ -478,27 +478,28 @@ public class LastDodoSearchEngine
             if (th != null && td != null) {
 
                 switch (th.text()) {
-                    case "LastDodo nummer":
-                        processText(td, Identifier.SID_LAST_DODO_NL, book);
+                    case "LastDodo nummer": {
+                        final String sid = SearchEngineUtils.cleanText(td.text());
+                        book.setIdentifierValue(Identifier.SID_LAST_DODO_NL, sid);
                         break;
-
-                    case "Titel":
+                    }
+                    case "Titel": {
                         processText(td, DBKey.TITLE, book);
                         break;
-
-                    case "Serie / held":
+                    }
+                    case "Serie / held": {
                         processSeries(td, book);
                         break;
-
-                    case "Reeks":
+                    }
+                    case "Reeks": {
                         processText(td.child(0), SiteField.REEKS, book);
                         break;
-
-                    case "Nummer in reeks":
+                    }
+                    case "Nummer in reeks": {
                         tmpSeriesNr = td.text();
                         break;
-
-                    case "Nummertoevoeging":
+                    }
+                    case "Nummertoevoeging": {
                         tmpString = td.text();
                         if (!tmpString.isEmpty()) {
                             // this entry (number-suffix) can exist without a previous
@@ -511,7 +512,7 @@ public class LastDodoSearchEngine
                             }
                         }
                         break;
-
+                    }
                     case "Tekenaar": {
                         parseAuthor(td, Author.TYPE_ARTIST, book);
                         break;
@@ -520,30 +521,42 @@ public class LastDodoSearchEngine
                         parseAuthor(td, Author.TYPE_WRITER, book);
                         break;
                     }
-                    case "Uitgeverij":
+                    case "Vertaler": {
+                        parseAuthor(td, Author.TYPE_TRANSLATOR, book);
+                        break;
+                    }
+                    case "Inkter": {
+                        parseAuthor(td, Author.TYPE_INKING, book);
+                        break;
+                    }
+                    case "Inkleurder": {
+                        parseAuthor(td, Author.TYPE_COLORIST, book);
+                        break;
+                    }
+                    case "Uitgeverij": {
                         parsePublisher(td, book);
                         break;
-
-                    case "Jaar":
+                    }
+                    case "Jaar": {
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty()) {
                             addPublicationDate(context, getLocale(context), text, book);
                         }
                         break;
-
-                    case "Cover":
+                    }
+                    case "Cover": {
                         processText(td, DBKey.FORMAT, book);
                         break;
-
-                    case "Druk":
+                    }
+                    case "Druk": {
                         processText(td, SiteField.PRINTING, book);
                         break;
-
-                    case "Inkleuring":
+                    }
+                    case "Inkleuring": {
                         processText(td, DBKey.COLOR, book);
                         break;
-
-                    case "ISBN":
+                    }
+                    case "ISBN": {
                         tmpString = td.text();
                         if (!"Geen".equals(tmpString)) {
                             tmpString = ISBN.cleanText(tmpString);
@@ -552,45 +565,33 @@ public class LastDodoSearchEngine
                             }
                         }
                         break;
-
-                    case "Oplage":
+                    }
+                    case "Oplage": {
                         processText(td, DBKey.PRINT_RUN, book);
                         break;
-
-                    case "Aantal bladzijden":
+                    }
+                    case "Aantal bladzijden": {
                         processText(td, DBKey.PAGES, book);
                         break;
-
-                    case "Afmetingen":
+                    }
+                    case "Afmetingen": {
                         if (!"? x ? cm".equals(td.text())) {
                             processText(td, SiteField.SIZE, book);
                         }
                         break;
-
-                    case "Soort":
+                    }
+                    case "Soort": {
                         processType(td, book);
                         break;
-
-                    case "Taal / dialect":
+                    }
+                    case "Taal / dialect": {
                         processText(td, DBKey.LANGUAGE, book);
                         break;
-
-                    case "Vertaler":
-                        parseAuthor(td, Author.TYPE_TRANSLATOR, book);
-                        break;
-
-                    case "Inkter":
-                        parseAuthor(td, Author.TYPE_INKING, book);
-                        break;
-
-                    case "Inkleurder":
-                        parseAuthor(td, Author.TYPE_COLORIST, book);
-                        break;
-
-                    case "Bijzonderheden":
+                    }
+                    case "Bijzonderheden": {
                         processText(td, DBKey.DESCRIPTION, book);
                         break;
-
+                    }
                     default:
                         break;
                 }
@@ -687,6 +688,14 @@ public class LastDodoSearchEngine
 
     /**
      * Found an Author.
+     * <p>
+     * The site uses a format of "family-name, givennames" but gets the typical
+     * "Van", "De", ... family name prefixes wrongly in the given names part.
+     * So we TRY to get around that before calling {@link Author#from(String)}.
+     * <pre>
+     *     "Astier, Laurent"
+     *     "Tilburgh, Dieter Van"
+     * </pre>
      *
      * @param td   data td
      * @param type of this entry
@@ -697,7 +706,14 @@ public class LastDodoSearchEngine
                              @NonNull final Book book) {
 
         for (final Element a : td.select("a")) {
-            addAuthor(Author.from(a.text()), type, book);
+            String text = a.text();
+            if (text.contains(",")) {
+                final String[] split = text.split(",");
+                if (split.length == 2) {
+                    text = split[1].strip() + ' ' + split[0].strip();
+                }
+            }
+            addAuthor(Author.from(text), type, book);
         }
     }
 
