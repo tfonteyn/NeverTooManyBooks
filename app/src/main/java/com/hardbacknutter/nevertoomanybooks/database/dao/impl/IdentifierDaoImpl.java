@@ -253,13 +253,13 @@ public class IdentifierDaoImpl
 
     @Override
     @NonNull
-    public Optional<String> findSid(@NonNull final String identifierKey,
+    public Optional<String> findSid(@NonNull final String key,
                                     final long bookId) {
 
         try (SynchronizedStatement stmt = db.compileStatement(
                 Sql.FIND_SID_BY_BOOK_ID_AND_IDENTIFIER_KEY)) {
             stmt.bindLong(1, bookId);
-            stmt.bindString(2, identifierKey);
+            stmt.bindString(2, key);
 
             final String sid = stmt.simpleQueryForStringOrNull();
             // null check sure.. the rest is paranoia
@@ -284,11 +284,11 @@ public class IdentifierDaoImpl
 
     @Override
     @IntRange(from = 0)
-    public long getBookId(@NonNull final String identifierName,
-                          @NonNull final String sid) {
+    public long findBookId(@NonNull final String key,
+                           @NonNull final String sid) {
         try (SynchronizedStatement stmt = db.compileStatement(
                 Sql.FIND_BOOK_ID_BY_IDENTIFIER_KEY_AND_SID)) {
-            stmt.bindString(1, identifierName);
+            stmt.bindString(1, key);
             stmt.bindString(2, sid);
             return stmt.simpleQueryForLongOrZero();
         }

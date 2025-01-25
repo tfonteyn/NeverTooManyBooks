@@ -145,7 +145,7 @@ public class GoodreadsCsvImportTest
         // 5,3.99,Het Spectrum,Paperback,172,1973,1972,,2020/06/05,books,books (#8),read,
         // ,,,1,0
 
-        long bookId = identifierDao.getBookId(grIdent, "8998451");
+        long bookId = identifierDao.findBookId(Identifier.SID_GOODREADS_BOOK, "8998451");
         assertNotEquals(0, bookId);
 
         try (Cursor cursor = bookDao.fetchById(bookId)) {

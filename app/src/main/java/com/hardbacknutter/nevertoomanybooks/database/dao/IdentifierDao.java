@@ -54,12 +54,12 @@ public interface IdentifierDao {
     /**
      * Find the {@link Identifier} for the given name.
      *
-     * @param name of the {@link Identifier}
+     * @param key of the {@link Identifier}
      *
      * @return {@link Identifier}
      */
     @NonNull
-    Optional<Identifier> findByKey(@NonNull String name);
+    Optional<Identifier> findByKey(@NonNull String key);
 
     /**
      * Convenience method, fetch all {@link Identifier}s, and return them as a List
@@ -135,13 +135,13 @@ public interface IdentifierDao {
     /**
      * Get the SID value for the given {@link Identifier} of the given book id.
      *
-     * @param identifierName to get
+     * @param key to get
      * @param bookId         for this book id
      *
      * @return sid value
      */
     @NonNull
-    Optional<String> findSid(@NonNull String identifierName,
+    Optional<String> findSid(@NonNull String key,
                              @IntRange(from = 1) long bookId);
 
     /**
@@ -165,6 +165,6 @@ public interface IdentifierDao {
      * @return book id, or {@code 0} if none found
      */
     @IntRange(from = 0)
-    long getBookId(@NonNull String identifierName,
-                   @NonNull String sid);
+    long findBookId(@NonNull String key,
+                    @NonNull String sid);
 }
