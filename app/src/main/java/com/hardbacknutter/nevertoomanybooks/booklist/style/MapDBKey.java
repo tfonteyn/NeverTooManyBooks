@@ -83,6 +83,7 @@ public final class MapDBKey {
             Map.entry(DBKey.READ_START__DATE, R.string.lbl_read_start),
             Map.entry(DBKey.READ__BOOL, R.string.lbl_read),
             Map.entry(DBKey.READ_PROGRESS, R.string.lbl_track_progress),
+            Map.entry(DBKey.TAG, R.string.lbl_tags),
             Map.entry(DBKey.SIGNED__BOOL, R.string.lbl_signed),
             Map.entry(DBKey.TITLE, R.string.lbl_title),
             Map.entry(DBKey.TITLE_ORIGINAL_LANG, R.string.lbl_original_title),
