@@ -25,12 +25,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -46,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -84,6 +87,10 @@ public class BookCoder {
     private static final String LEGACY_BOOKSHELF_ID = "bookshelf_id";
     /** Obsolete/alternative header only used by NTMB pre-1.2 versions: bookshelf name. */
     private static final String LEGACY_BOOKSHELF_1_1 = "bookshelf";
+    /** Obsolete header from BC. */
+    private static final String LEGACY_LAST_GOODREADS_SYNC_DATE = "last_goodreads_sync_date";
+    /** Migrated to tags starting in app version 7.0. */
+    public static final String LEGACY_GENRE = "genre";
 
     @NonNull
     private final StringList<Author> authorCoder;
@@ -104,14 +111,12 @@ public class BookCoder {
     private final Style defaultStyle;
     private final FullDateParser dateParser;
     private final Locale userLocale;
+    private final RatingParser ratingParser;
+    private final TagMapper tagMapper = new TagMapper();
     @Nullable
     private Goodreads goodreads;
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
-
-    private final RatingParser ratingParser;
-
-    private final TagMapper tagMapper = new TagMapper();
 
     /**
      * Constructor.
@@ -171,6 +176,7 @@ public class BookCoder {
 
         // never used, remove if present
         book.remove(LEGACY_BOOKSHELF_ID);
+        book.remove(LEGACY_LAST_GOODREADS_SYNC_DATE);
 
         // we MUST have a title.
         if (book.getTitle().isEmpty()) {
@@ -191,6 +197,7 @@ public class BookCoder {
         processRating(book);
         processDescriptionAndNotes(book);
         processGenre(context, book);
+        processExternalIds(book);
 
         verifyDates(book, DBKey.DATETIME_KEYS, false);
         verifyDates(book, DBKey.DATE_KEYS, true);
@@ -516,9 +523,6 @@ public class BookCoder {
     private void processCalibreData(@NonNull final Book book) {
         // we need to convert the string id to the row id.
         final String stringId = book.getString(DBKey.CALIBRE_LIBRARY_STRING_ID, null);
-        // and discard the string-id
-        book.remove(DBKey.CALIBRE_LIBRARY_STRING_ID);
-
         if (stringId != null && !stringId.isEmpty()) {
             if (calibreLibraryStr2IdMap == null) {
                 calibreLibraryStr2IdMap = new HashMap<>();
@@ -535,6 +539,9 @@ public class BookCoder {
                 // Don't try to recover; just remove all calibre keys from this book.
                 book.setCalibreLibrary(null);
             }
+
+            // and discard the string-id
+            book.remove(DBKey.CALIBRE_LIBRARY_STRING_ID);
         }
     }
 
@@ -568,14 +575,44 @@ public class BookCoder {
             }
             notes += review;
             book.putString(DBKey.PERSONAL_NOTES, notes);
+            book.remove(Goodreads.MY_REVIEW);
         }
     }
 
     private void processGenre(@NonNull final Context context,
                               @NonNull final Book book) {
-        final String genre = book.getString("genre");
+        final String genre = book.getString(LEGACY_GENRE);
         if (!genre.isEmpty()) {
             book.getTags().addAll(tagMapper.migrateGenre(context, genre, userLocale));
+            book.remove(LEGACY_GENRE);
+        }
+    }
+
+    /**
+     * We have no certainty about the csv columns containing external {@link Identifier} keys.
+     * What we CAN do is simply check the keys present against the known identifier keys.
+     * <p>
+     * It's up to the user to add an unknown {@link Identifier} key <strong>before</strong>
+     * doing the csv import.
+     *
+     * @param book the book
+     */
+    private void processExternalIds(@NonNull final Book book) {
+        final Set<String> known = ServiceLocator.getInstance().getIdentifierDao().getAll()
+                                                .stream().map(Identifier::getKey)
+                                                .collect(Collectors.toSet());
+        final List<Identifier.Value> ivs = new ArrayList<>();
+        book.keySet().forEach(key -> {
+            if (known.contains(key)) {
+                final String sid = book.getString(key);
+                if (!sid.isEmpty() && !"0".equals(sid)) {
+                    ivs.add(new Identifier.Value(key, sid));
+                }
+                book.remove(key);
+            }
+        });
+        if (!ivs.isEmpty()) {
+            book.setIdentifiers(ivs);
         }
     }
 

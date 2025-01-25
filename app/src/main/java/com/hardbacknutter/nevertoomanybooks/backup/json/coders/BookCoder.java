@@ -20,12 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import android.content.Context;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -77,7 +75,7 @@ public class BookCoder
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
     private final JsonCoder<Tag> tagCoder;
-    private final IdentifierCoder identifierCoder = new IdentifierCoder();
+    private final JsonCoder<Identifier.Value> identifierCoder = new IdentifierCoder();
     @NonNull
     private final RealNumberParser realNumberParser;
     private final Locale userLocale;
@@ -109,41 +107,9 @@ public class BookCoder
     public JSONObject encode(@NonNull final Book book)
             throws JSONException {
 
-        // Collect Identifier key/value pairs as we meet them
-        final List<Pair<String, String>> identifiers = new ArrayList<>();
-
         final JSONObject out = new JSONObject();
-        for (final String key : book.keySet()) {
-            if (identifierCoder.contains(key)) {
-                book.getIdentifierValue(key).ifPresent(identifierValue -> {
-                    identifiers.add(new Pair<>(key, identifierValue));
-
-                    encodeIdentifier(out, book, identifierValue);
-                });
-            } else {
-                encode(out, book, key);
-            }
-        }
-
-        // Add the set of Identifiers
-        if (!identifiers.isEmpty()) {
-            out.put(Book.BKEY_IDENTIFIER_LIST, identifierCoder.encode(identifiers));
-        }
+        book.keySet().forEach(key -> encode(out, book, key));
         return out;
-    }
-
-    private void encodeIdentifier(@NonNull final JSONObject out,
-                                  @NonNull final Book book,
-                                  @NonNull final String identifierValue) {
-        switch (identifierValue) {
-            case Identifier.SID_STRIP_INFO: {
-                book.getStripInfoCollectionData().ifPresent(
-                        scd ->
-                                out.put(StripInfoCollectionData.BKEY,
-                                        stripInfoDataCoder.encode(scd)));
-                break;
-            }
-        }
     }
 
     private void encode(@NonNull final JSONObject out,
@@ -195,6 +161,13 @@ public class BookCoder
                 }
                 return;
             }
+            case Book.BKEY_IDENTIFIER_LIST: {
+                final List<Identifier.Value> list = book.getIdentifiers();
+                if (!list.isEmpty()) {
+                    out.put(key, identifierCoder.encode(list));
+                }
+                return;
+            }
             case DBKey.FK_CALIBRE_LIBRARY: {
                 // The presence of FK_CALIBRE_LIBRARY indicates there IS a calibre library
                 // for this book but there is no actual library data on the book itself.
@@ -204,6 +177,12 @@ public class BookCoder
                         .put(DBKey.FK_CALIBRE_LIBRARY,
                              calibreLibraryCoder.encodeReference(library)));
                 return;
+            }
+            case StripInfoCollectionData.BKEY: {
+                book.getStripInfoCollectionData().ifPresent(scd -> out.put(
+                        StripInfoCollectionData.BKEY, stripInfoDataCoder.encode(scd)));
+                return;
+
             }
         }
 
@@ -247,6 +226,10 @@ public class BookCoder
         while (it.hasNext()) {
             final String key = it.next();
             switch (key) {
+                case Book.BKEY_AUTHOR_LIST: {
+                    book.setAuthors(authorCoder.decode(data.getJSONArray(key)));
+                    break;
+                }
                 case DBKey.FK_BOOKSHELF: {
                     // Reference as written by archive version 4+
                     // If the reference is not found,
@@ -254,17 +237,8 @@ public class BookCoder
                     book.setBookshelves(bookshelfCoder.decodeReference(data.getJSONArray(key)));
                     break;
                 }
-                case DBKey.FK_CALIBRE_LIBRARY: {
-                    // Reference as written by archive version 4+
-                    // If the reference is not found,
-                    // the Calibre data is removed from the book
-                    book.setCalibreLibrary(
-                            calibreLibraryCoder.decodeReference(data.getJSONObject(key))
-                                               .orElse(null));
-                    break;
-                }
-                case Book.BKEY_AUTHOR_LIST: {
-                    book.setAuthors(authorCoder.decode(data.getJSONArray(key)));
+                case Book.BKEY_IDENTIFIER_LIST: {
+                    book.setIdentifiers(identifierCoder.decode(data.getJSONArray(key)));
                     break;
                 }
                 case Book.BKEY_PUBLISHER_LIST: {
@@ -275,18 +249,22 @@ public class BookCoder
                     book.setSeries(seriesCoder.decode(data.getJSONArray(key)));
                     break;
                 }
-                case Book.BKEY_TOC_LIST: {
-                    book.setToc(tocEntryCoder.decode(data.getJSONArray(key)));
-                    break;
-                }
                 case Book.BKEY_TAG_LIST: {
                     book.setTags(tagCoder.decode(data.getJSONArray(key)));
                     break;
                 }
-                case Book.BKEY_IDENTIFIER_LIST: {
-                    // Archive v8+: Just unpack as individual keys
-                    identifierCoder.decode(data.getJSONArray(key))
-                                   .forEach(p -> book.put(p.first, p.second));
+                case Book.BKEY_TOC_LIST: {
+                    book.setToc(tocEntryCoder.decode(data.getJSONArray(key)));
+                    break;
+                }
+
+                case DBKey.FK_CALIBRE_LIBRARY: {
+                    // Reference as written by archive version 4+
+                    // If the reference is not found,
+                    // the Calibre data is removed from the book
+                    book.setCalibreLibrary(
+                            calibreLibraryCoder.decodeReference(data.getJSONObject(key))
+                                               .orElse(null));
                     break;
                 }
                 case StripInfoCollectionData.BKEY: {
