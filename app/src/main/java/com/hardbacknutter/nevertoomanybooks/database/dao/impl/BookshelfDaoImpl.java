@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.BookshelfMergeHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
@@ -416,7 +416,7 @@ public class BookshelfDaoImpl
         }
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final BookshelfMergeHelper mergeHelper = new BookshelfMergeHelper();
+        final EntityMergeHelper<Bookshelf> mergeHelper = new EntityMergeHelper<>();
         return mergeHelper.merge(context, list, current -> userLocale,
                                  // Don't lookup the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, locale));

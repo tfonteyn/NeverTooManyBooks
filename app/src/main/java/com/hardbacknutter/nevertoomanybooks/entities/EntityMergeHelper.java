@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
 
+import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 
-public abstract class EntityMergeHelper<T extends Mergeable> {
+public class EntityMergeHelper<T extends Mergeable> {
 
     /** Keep track of id. */
     private final Map<Long, T> idCodes = new HashMap<>();
@@ -48,6 +49,9 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
      * <p>
      * This method is called after we determined that the "name" fields of the object are
      * matching. This method should try to merge the non-name fields and the id if possible.
+     * <p>
+     * <strong>The default implementation ONLY handles the id. You MUST override
+     * if the {@link Mergeable} has more attributes to consider.</strong>
      *
      * @param context        Current context
      * @param previous       element
@@ -57,11 +61,19 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
      *
      * @return {@code true} if the list was modified in any way
      */
-    protected abstract boolean merge(@NonNull Context context,
-                                     @NonNull T previous,
-                                     @NonNull Locale previousLocale,
-                                     @NonNull T current,
-                                     @NonNull Locale currentLocale);
+    @EmptySuper
+    protected boolean merge(@NonNull final Context context,
+                            @NonNull final T previous,
+                            @NonNull final Locale previousLocale,
+                            @NonNull final T current,
+                            @NonNull final Locale currentLocale) {
+        if (current.getId() > 0) {
+            previous.setId(current.getId());
+        }
+
+        // no other attributes, so we can always merge
+        return true;
+    }
 
     /**
      * Loop over the list and try to find and merge duplicates.
