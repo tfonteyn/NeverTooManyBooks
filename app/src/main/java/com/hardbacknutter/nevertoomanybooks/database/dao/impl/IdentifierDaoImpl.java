@@ -29,11 +29,12 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
@@ -136,7 +137,8 @@ public class IdentifierDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Book book)
+    public void insertOrUpdate(@IntRange(from = 1) final long bookId,
+                               @NonNull final Collection<Identifier.Value> list)
             throws DaoInsertException, DaoUpdateException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -145,12 +147,7 @@ public class IdentifierDaoImpl
             }
         }
 
-        final long bookId = book.getId();
-
-        // Collect KNOWN identifiers
-        final Map<Long, String> identifiers = new HashMap<>();
-        getAll().forEach(identifier -> book.getIdentifierValue(identifier.getKey()).ifPresent(
-                sid -> identifiers.put(identifier.getId(), sid)));
+        pruneList(list);
 
         // Just delete all current links
         try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
@@ -159,20 +156,55 @@ public class IdentifierDaoImpl
         }
 
         // is there anything to insert ?
-        if (identifiers.isEmpty()) {
+        if (list.isEmpty()) {
             return;
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
-            for (final Map.Entry<Long, String> entry : identifiers.entrySet()) {
+            for (final Identifier.Value iv : list) {
+
+                Identifier identifier = findByKey(iv.getKey()).orElse(null);
+                if (identifier == null) {
+                    // We do NOT want to speculate it might be TYPE_LONG!
+                    // See docs on the Identifier class for usage.
+                    identifier = new Identifier(iv.getKey(), Identifier.TYPE_STRING, "");
+                    insert(identifier);
+                }
                 stmt.bindLong(1, bookId);
-                stmt.bindLong(2, entry.getKey());
-                stmt.bindString(3, entry.getValue());
+                stmt.bindLong(2, identifier.getId());
+                stmt.bindString(3, iv.getSid());
                 if (stmt.executeInsert() == -1) {
                     throw new DaoInsertException("insert Book-Identifier");
                 }
             }
         }
+    }
+
+    @Override
+    public boolean pruneList(@NonNull final Collection<Identifier.Value> list) {
+        if (list.isEmpty()) {
+            return false;
+        }
+
+        final Set<String> keysFound = new HashSet<>();
+        final List<Identifier.Value> result = new ArrayList<>();
+        list.forEach(iv -> {
+            if (!keysFound.contains(iv.getKey())) {
+                final String sid = iv.getSid();
+                // Not just a sanity check: we MUST check for null!
+                //noinspection ConstantValue
+                if (sid != null && !sid.isEmpty() && !"0".equals(sid)) {
+                    keysFound.add(iv.getKey());
+                    result.add(iv);
+                }
+            }
+        });
+        if (list.equals(result)) {
+            return false;
+        }
+        list.clear();
+        list.addAll(result);
+        return true;
     }
 
     @Override
@@ -244,7 +276,7 @@ public class IdentifierDaoImpl
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Identifier.Value(
-                        new Identifier(rowData.getLong(DBKey.PK_ID), rowData),
+                        rowData.getString(DBKey.IDENT_KEY),
                         rowData.getString(DBKey.IDENT_SID)));
             }
         }
@@ -320,11 +352,6 @@ public class IdentifierDaoImpl
         static final String FIND_BY_KEY =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_KEY) + "=?";
-
-        static final String FIND_BOOK_ID_BY_IDENTIFIER_ID_AND_SID =
-                SELECT_ + DBKey.FK_BOOK
-                + _FROM_ + TBL_BOOK_IDENTIFIER.getName()
-                + _WHERE_ + DBKey.FK_IDENTIFIER + "=?" + _AND_ + DBKey.IDENT_SID + "=?";
 
         static final String FIND_BOOK_ID_BY_IDENTIFIER_KEY_AND_SID =
                 SELECT_ + DBKey.FK_BOOK

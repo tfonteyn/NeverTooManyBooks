@@ -20,56 +20,31 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
-import android.util.Pair;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 public class IdentifierCoder
-        implements JsonCoder<Pair<String, String>> {
-
-    private final Set<String> keys;
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public IdentifierCoder() {
-        keys = ServiceLocator.getInstance()
-                             .getIdentifierDao()
-                             .getAll()
-                             .stream()
-                             .collect(Collectors.toMap(
-                                     Identifier::getKey,
-                                     Function.identity())).keySet();
-    }
-
-    boolean contains(@NonNull final String key) {
-        return keys.contains(key);
-    }
+        implements JsonCoder<Identifier.Value> {
 
     @Override
     @NonNull
-    public JSONObject encode(@NonNull final Pair<String, String> element)
+    public JSONObject encode(@NonNull final Identifier.Value element)
             throws JSONException {
         final JSONObject out = new JSONObject();
-        out.put(DBKey.IDENT_KEY, element.first);
-        out.put(DBKey.IDENT_SID, element.second);
+        out.put(DBKey.IDENT_KEY, element.getKey());
+        out.put(DBKey.IDENT_SID, element.getSid());
         return out;
     }
 
     @Override
     @NonNull
-    public Pair<String, String> decode(@NonNull final JSONObject data)
+    public Identifier.Value decode(@NonNull final JSONObject data)
             throws JSONException {
-        return new Pair<>(data.getString(DBKey.IDENT_KEY),
-                          data.getString(DBKey.IDENT_SID));
+        return new Identifier.Value(data.getString(DBKey.IDENT_KEY),
+                                    data.getString(DBKey.IDENT_SID));
     }
 }

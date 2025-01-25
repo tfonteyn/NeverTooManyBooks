@@ -319,19 +319,25 @@ public class Identifier
         };
 
         @NonNull
-        private final Identifier identifier;
+        private final String key;
         @NonNull
         private final String sid;
 
-        public Value(@NonNull final Identifier identifier,
+        public Value(@NonNull final String key,
                      @NonNull final String sid) {
-            this.identifier = identifier;
+            this.key = key;
             this.sid = sid;
+        }
+
+        public Value(@NonNull final String key,
+                     final long sid) {
+            this.key = key;
+            this.sid = String.valueOf(sid);
         }
 
         private Value(@NonNull final Parcel in) {
             //noinspection DataFlowIssue
-            identifier = in.readParcelable(getClass().getClassLoader());
+            key = in.readString();
             //noinspection DataFlowIssue
             sid = in.readString();
         }
@@ -339,7 +345,7 @@ public class Identifier
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
-            dest.writeParcelable(identifier, flags);
+            dest.writeString(key);
             dest.writeString(sid);
         }
 
@@ -354,8 +360,8 @@ public class Identifier
          * @return key
          */
         @NonNull
-        public Identifier getIdentifier() {
-            return identifier;
+        public String getKey() {
+            return key;
         }
 
         /**
@@ -372,14 +378,14 @@ public class Identifier
         @NonNull
         public String toString() {
             return "Value{"
-                   + "identifier=" + identifier
-                   + ", value='" + sid + '\''
+                   + "key=" + key
+                   + ", sid=`" + sid + '`'
                    + '}';
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(identifier, sid);
+            return Objects.hash(key, sid);
         }
 
         @Override
@@ -391,7 +397,7 @@ public class Identifier
                 return false;
             }
             final Value that = (Value) o;
-            return Objects.equals(identifier, that.identifier)
+            return Objects.equals(key, that.key)
                    && Objects.equals(sid, that.sid);
         }
     }

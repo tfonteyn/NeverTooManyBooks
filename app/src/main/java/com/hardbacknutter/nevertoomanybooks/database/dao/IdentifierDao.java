@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,6 +103,8 @@ public interface IdentifierDao {
      */
     boolean delete(@NonNull Identifier identifier);
 
+    boolean pruneList(@NonNull Collection<Identifier.Value> list);
+
     /**
      * Find a {@link Identifier} by using the <strong>name</strong> field.
      * If found, updates <strong>ONLY</strong> the id with the one found in the database.
@@ -111,15 +114,19 @@ public interface IdentifierDao {
     void fixId(@NonNull Identifier identifier);
 
     /**
-     * Insert or update a list of {@link Identifier}'s linked to a single {@link Book}.
+     * Insert or update a list of {@link Identifier.Value}s linked to a single {@link Book}.
+     * New {@link Identifier}s are added to the {@link Identifier} table,
+     * existing ones are NOT updated (nothing to do).
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param book to use
+     * @param bookId of the book
+     * @param list   the list of {@link Identifier.Value}s
      *
      * @throws DaoWriteException on failure
      */
-    void insertOrUpdate(@NonNull Book book)
+    void insertOrUpdate(@IntRange(from = 1) long bookId,
+                        @NonNull Collection<Identifier.Value> list)
             throws DaoWriteException;
 
     /**
