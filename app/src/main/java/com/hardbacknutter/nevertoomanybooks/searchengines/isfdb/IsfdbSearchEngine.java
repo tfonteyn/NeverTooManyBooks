@@ -201,6 +201,9 @@ public class IsfdbSearchEngine
      * @see #CGI_ADV_SEARCH_PREFIX
      */
     private static final String USE = "&USE_%1$s=%2$s&O_%1$s=contains&TERM_%1$s=%3$s";
+    /**
+     * URGENT See calibre data table "identifier_sites".
+     */
     private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
             // https://openlibrary.org/books/OL7524037M
             Map.entry("openlibrary.org", Identifier.SID_OPEN_LIBRARY),
@@ -1503,30 +1506,6 @@ public class IsfdbSearchEngine
                             }
                         });
                     }
-
-//                    } else if (url.contains("audible.com")) {
-                    // https://www.audible.com/pd/B00HJZAQPI
-//                    } else if (url.contains("tercerafundacion.net")) {
-                    // Spanish
-                    // https://tercerafundacion.net/biblioteca/ver/libro/2329
-//                    } else if (url.contains("sfbg.us")) {
-                    // Bulgarian
-                    // http://www.sfbg.us/book/KAME-BFN-023X
-//                    } else if (url.contains("fantlab.ru")) {
-                    // Russian
-                    // https://fantlab.ru/edition169821
-//                    } else if (url.contains("chitanka.info")) {
-                    // Russian
-                    // https://biblioman.chitanka.info/books/12668
-//                    } else if (url.contains("libris.kb.se")) {
-                    // Swedish; a single book can have multiple libris.kb.se links!
-                    // https://libris.kb.se/bib/7626661
-                    // https://libris.kb.se/resource/bib/7626661
-                    // https://libris.kb.se/katalogisering/p60w3h3112v1wsm
-                    // https://libris.kb.se/p60w3h3112v1wsm
-//                    } else if (url.contains("noosfere.org")) {
-                    // French
-                    // https://www.noosfere.org/livres/niourf.asp?numlivre=-323033
                 });
 
         if (!ivs.isEmpty()) {
