@@ -43,29 +43,19 @@
     <string name="lbl_isbn"
             translatable="false">ISBN</string>
 
-    <!-- External sites  -->
+    <!-- region ========== {@link SearchEngine} names. -->
     <string name="site_amazon"
             translatable="false">Amazon</string>
     <string name="site_bedetheque"
             translatable="false">Bedetheque</string>
     <string name="site_bertrand_pt"
             translatable="false">Bertrand.pt</string>
-    <!-- Bibliothèque nationale de France -->
-    <string name="site_bnf"
-            translatable="false">BnF.fr</string>
     <string name="site_bol_com"
             translatable="false">bol.com</string>
     <string name="site_bookfinder"
             translatable="false">BookFinder</string>
-    <string name="site_british_library"
-            translatable="false">The British Library</string>
-    <!-- Deutschen Nationalbibliothek -->
     <string name="site_dnb_de"
             translatable="false">DNB.DE</string>
-    <!-- Digital Object Identifier
-         https://www.doi.org/ -->
-    <string name="site_doi"
-            translatable="false">Digital Object Identifier)</string>
     <string name="site_douban"
             translatable="false">Douban</string>
     <string name="site_goodreads"
@@ -78,8 +68,6 @@
             translatable="false">KB.NL</string>
     <string name="site_lastdodo_nl"
             translatable="false">LastDodo</string>
-    <string name="site_lccn"
-            translatable="false">Library of Congress (USA)</string>
     <string name="site_library_thing"
             translatable="false">LibraryThing</string>
     <string name="site_open_library"
@@ -88,20 +76,69 @@
             translatable="false">StripInfo</string>
     <string name="site_stripweb_be"
             translatable="false">StripWeb</string>
-    <string name="site_worldcat"
-            translatable="false">WorldCat</string>
 
-    <!-- https://calibre-ebook.com -->
+    <!-- Synchronization provider.
+     https://calibre-ebook.com -->
     <string name="site_calibre"
             translatable="false">Calibre</string>
+    <!-- endregion -->
 
-    <!-- Citation format. -->
+    <!-- region ========== Predefined {@link Identifier} names. -->
+    <string name="identifier_amazon_asin"
+            translatable="false">Amazon ASIN</string>
+    <string name="identifier_amazon_mobi_asin"
+            translatable="false">Amazon mobi ASIN</string>
+    <string name="identifier_bedetheque"
+            translatable="false">Bedetheque</string>
+    <string name="identifier_bnf"
+            translatable="false">Bibliothèque nationale de France</string>
+    <string name="identifier_british_library"
+            translatable="false">The British Library</string>
+    <string name="identifier_dnb"
+            translatable="false">Deutschen Nationalbibliothek</string>
+    <string name="identifier_doi"
+            translatable="false">Digital Object Identifier</string>
+    <string name="identifier_douban"
+            translatable="false">豆瓣 (Douban)</string>
+    <string name="identifier_goodreads"
+            translatable="false">Goodreads</string>
+    <string name="identifier_google_books"
+            translatable="false">Google Books</string>
+    <string name="identifier_isfdb"
+            translatable="false">The Internet Speculative Fiction Database</string>
+    <string name="identifier_kb_nl"
+            translatable="false">De nationale bibliotheek van Nederland</string>
+    <string name="identifier_lastdodo_nl"
+            translatable="false">LastDodo</string>
+    <string name="identifier_lccn"
+            translatable="false">Library of Congress (USA)</string>
+    <string name="identifier_library_thing"
+            translatable="false">LibraryThing</string>
+    <string name="identifier_open_library"
+            translatable="false">OpenLibrary</string>
+    <string name="identifier_stripinfo_be"
+            translatable="false">StripInfo</string>
+    <string name="identifier_stripweb_be"
+            translatable="false">StripWeb</string>
+    <string name="identifier_uri"
+            translatable="false">URI</string>
+    <string name="identifier_url"
+            translatable="false">URL</string>
+    <string name="identifier_wikidata"
+            translatable="false">Wikidata</string>
+    <string name="identifier_worldcat"
+            translatable="false">WorldCat</string>
+    <!-- endregion -->
+
+
+    <!-- region ========== Citation format. -->
     <string name="lbl_citation_type_bibtex"
             translatable="false">BibTex</string>
     <string name="lbl_citation_type_mla"
             translatable="false">MLA</string>
     <string name="lbl_citation_type_ris"
             translatable="false">RIS</string>
+    <!-- endregion -->
 
     <!-- The project which inspired us. -->
     <string name="lbl_book_catalogue"
@@ -116,7 +153,7 @@
     <!--</string>-->
     <!---->
 
-    <!-- debug user visible strings, not normally seen; here to please lint. -->
+    <!-- region ========== debug user visible strings, not normally seen; here to please lint. -->
     <string name="debug"
             translatable="false">Debug</string>
     <string name="debug_sq_shell"
@@ -133,4 +170,5 @@
             translatable="false">Rows affected: %1$d</string>
     <string name="debug_sq_shell_warning_updates_not_allowed"
             translatable="false">Updates are not allowed</string>
+    <!-- endregion -->
 </resources>

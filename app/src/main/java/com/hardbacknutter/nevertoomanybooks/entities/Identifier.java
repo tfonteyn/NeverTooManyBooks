@@ -39,7 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * <ul>
  * <li>key: a unique keyword; never to be changed; used as bundle keys and import/export</li>
  * <li>type: {@code 'L'} or {@code 'S'}, see below.</li>
- * <li>name: a non-localized short name to show to the user. Can be empty.</li>
+ * <li>name: a non-localized short name to show to the user.
+ *           Can be empty for user created key.</li>
  * <li>sid: the actual value of the identifier field</li>
  * </ul>
  * The type is used in two situations only.
@@ -60,14 +61,19 @@ public class Identifier
 
     public static final String SID_ASIN = "asin";
     public static final String SID_BEDETHEQUE = "bedetheque";
+    /** <a href="https://www.bnf.fr">www.bnf.fr</a>. */
     public static final String SID_BNF = "bnf";
+    /** <a href="https://www.bl.uk/">www.bl.uk</a>. */
     public static final String SID_BRITISH_LIBRARY = "bl";
+    /** <a href="https://www.dnb.de">www.dnb.de</a>. */
     public static final String SID_DNB = "dnb";
+    /** <a href="https://www.doi.org">www.doi.org</a>. */
     public static final String SID_DOI = "doi";
     public static final String SID_DOUBAN = "douban";
     public static final String SID_GOODREADS_BOOK = "goodreads";
     public static final String SID_GOOGLE = "google";
     public static final String SID_ISFDB = "isfdb";
+    /** <a href="https://www.kb.nl">www.kb.nl</a>. */
     public static final String SID_KBNL = "ppn";
     public static final String SID_LAST_DODO_NL = "lastdodo";
     public static final String SID_LCCN = "lccn";
@@ -78,6 +84,8 @@ public class Identifier
     public static final String SID_STRIP_INFO = "stripinfo";
     public static final String SID_STRIPWEB = "stripweb";
     public static final String SID_URI = "uri";
+    public static final String SID_URL = "url";
+    /** <a href="https://www.wikidata.org">www.wikidata.org</a>. */
     public static final String SID_WIKIDATA = "wikidata";
 
     public static final char TYPE_LONG = 'L';
@@ -99,14 +107,12 @@ public class Identifier
     };
 
     public static final int MAX_KEY_LEN = 15;
-
-    private long id;
     @NonNull
     private final String key;
     @NonNull
     private final String name;
-
     private final char type;
+    private long id;
 
     /**
      * Constructor.
@@ -161,45 +167,49 @@ public class Identifier
     public static List<Identifier> createInitialList(@NonNull final Context context) {
         return List.of(
                 new Identifier(SID_ASIN, TYPE_STRING,
-                               context.getString(R.string.site_amazon)),
+                               context.getString(R.string.identifier_amazon_asin)),
                 new Identifier(SID_BEDETHEQUE, TYPE_LONG,
-                               context.getString(R.string.site_bedetheque)),
+                               context.getString(R.string.identifier_bedetheque)),
                 new Identifier(SID_BNF, TYPE_STRING,
-                               context.getString(R.string.site_bnf)),
+                               context.getString(R.string.identifier_bnf)),
                 new Identifier(SID_BRITISH_LIBRARY, TYPE_LONG,
-                               context.getString(R.string.site_british_library)),
+                               context.getString(R.string.identifier_british_library)),
                 new Identifier(SID_DNB, TYPE_LONG,
-                               context.getString(R.string.site_dnb_de)),
+                               context.getString(R.string.identifier_dnb)),
                 new Identifier(SID_DOI, TYPE_STRING,
-                               context.getString(R.string.site_doi)),
+                               context.getString(R.string.identifier_doi)),
                 new Identifier(SID_DOUBAN, TYPE_LONG,
-                               context.getString(R.string.site_douban)),
+                               context.getString(R.string.identifier_douban)),
                 new Identifier(SID_GOODREADS_BOOK, TYPE_LONG,
-                               context.getString(R.string.site_goodreads)),
+                               context.getString(R.string.identifier_goodreads)),
                 new Identifier(SID_GOOGLE, TYPE_STRING,
-                               context.getString(R.string.site_google_books)),
+                               context.getString(R.string.identifier_google_books)),
                 new Identifier(SID_ISFDB, TYPE_LONG,
-                               context.getString(R.string.site_isfdb)),
+                               context.getString(R.string.identifier_isfdb)),
                 new Identifier(SID_KBNL, TYPE_LONG,
-                               context.getString(R.string.site_kb_nl)),
+                               context.getString(R.string.identifier_kb_nl)),
                 new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
-                               context.getString(R.string.site_lastdodo_nl)),
+                               context.getString(R.string.identifier_lastdodo_nl)),
                 new Identifier(SID_LCCN, TYPE_STRING,
-                               context.getString(R.string.site_lccn)),
+                               context.getString(R.string.identifier_lccn)),
                 new Identifier(SID_LIBRARY_THING, TYPE_LONG,
-                               context.getString(R.string.site_library_thing)),
+                               context.getString(R.string.identifier_library_thing)),
                 new Identifier(SID_MOBI_ASIN, TYPE_STRING,
-                               context.getString(R.string.site_amazon)),
+                               context.getString(R.string.identifier_amazon_mobi_asin)),
                 new Identifier(SID_OCLC, TYPE_STRING,
-                               context.getString(R.string.site_worldcat)),
+                               context.getString(R.string.identifier_worldcat)),
                 new Identifier(SID_OPEN_LIBRARY, TYPE_STRING,
-                               context.getString(R.string.site_open_library)),
+                               context.getString(R.string.identifier_open_library)),
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
-                               context.getString(R.string.site_stripinfo_be)),
+                               context.getString(R.string.identifier_stripinfo_be)),
                 new Identifier(SID_STRIPWEB, TYPE_LONG,
-                               context.getString(R.string.site_stripweb_be)),
+                               context.getString(R.string.identifier_stripweb_be)),
                 new Identifier(SID_URI, TYPE_STRING,
-                               "URI/URL")
+                               context.getString(R.string.identifier_uri)),
+                new Identifier(SID_URL, TYPE_STRING,
+                               context.getString(R.string.identifier_url)),
+                new Identifier(SID_WIKIDATA, TYPE_STRING,
+                               context.getString(R.string.identifier_wikidata))
         );
     }
 
@@ -269,9 +279,9 @@ public class Identifier
     public String toString() {
         return "Identifier{"
                + "id=" + id
-               + ", key='" + key + '\''
-               + ", type='" + type + '\''
-               + ", name='" + name + '\''
+               + ", key=`" + key + '`'
+               + ", type=`" + type + '`'
+               + ", name=`" + name + '`'
                + '}';
     }
 
