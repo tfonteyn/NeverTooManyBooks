@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreCustomFiel
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.DeletedBooksCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.IdentifierCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
@@ -61,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -84,6 +86,7 @@ import com.hardbacknutter.org.json.JSONObject;
  *      <li>{@link RecordType#Styles}</li>
  *      <li>{@link RecordType#Preferences}</li>
  *      <li>{@link RecordType#Certificates}</li>
+ *      <li>{@link RecordType#Identifiers}</li>
  *      <li>{@link RecordType#Tags}</li>
  *      <li>{@link RecordType#Bookshelves}</li>
  *      <li>{@link RecordType#CalibreLibraries}</li>
@@ -227,6 +230,20 @@ public class JsonRecordWriter
                 if (!certificates.isEmpty()) {
                     jsonData.put(RecordType.Certificates.getName(), certificates);
                 }
+            }
+
+            if (recordTypes.contains(RecordType.Identifiers)
+                && !progressListener.isCancelled()) {
+                progressListener.publishProgress(1, context.getString(
+                        R.string.lbl_identifiers));
+
+                final List<Identifier> fields =
+                        ServiceLocator.getInstance().getIdentifierDao().getAll();
+                if (!fields.isEmpty()) {
+                    jsonData.put(RecordType.Identifiers.getName(),
+                                 new IdentifierCoder().encode(fields));
+                }
+                results.identifiers = fields.size();
             }
 
             if (recordTypes.contains(RecordType.Tags)

@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreCustomFiel
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.DeletedBooksCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.IdentifierCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
@@ -68,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagMappingDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -94,6 +96,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *         <li>{@link RecordType#Styles}</li>
  *         <li>{@link RecordType#Preferences}</li>
  *         <li>{@link RecordType#Certificates}</li>
+ *         <li>{@link RecordType#Identifiers}</li>
  *         <li>{@link RecordType#Tags}</li>
  *         <li>{@link RecordType#Bookshelves}</li>
  *         <li>{@link RecordType#CalibreLibraries}</li>
@@ -111,6 +114,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *              <li>{@link RecordType#Styles}</li>
  *              <li>{@link RecordType#Preferences}</li>
  *              <li>{@link RecordType#Certificates}</li>
+ *              <li>{@link RecordType#Identifiers}</li>
  *              <li>{@link RecordType#Tags}</li>
  *              <li>{@link RecordType#Bookshelves}</li>
  *              <li>{@link RecordType#CalibreLibraries}</li>
@@ -304,10 +308,14 @@ public class JsonRecordReader
                         }
                     }
 
+                    if (recordType == RecordType.Identifiers
+                        || recordType == RecordType.AutoDetect) {
+                        readIdentifiers(root);
+                    }
+
                     if (recordType == RecordType.Books
                         || recordType == RecordType.AutoDetect) {
-                        readBooks(context, root, defaultStyle,
-                                  progressListener);
+                        readBooks(context, root, defaultStyle, progressListener);
                     }
                 }
             } catch (@NonNull final JSONException | UncheckedDaoWriteException e) {
@@ -521,6 +529,41 @@ public class JsonRecordReader
                                                            .getDeletedBooksDao()
                                                            .importRecords(list);
             }
+        }
+    }
+
+    private void readIdentifiers(@NonNull final JSONObject root) {
+        final JSONArray jsonRoot = root.optJSONArray(RecordType.Identifiers.getName());
+        if (jsonRoot != null) {
+            final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
+
+            new IdentifierCoder()
+                    .decode(jsonRoot)
+                    .forEach(identifier -> {
+                        dao.fixId(identifier);
+                        if (identifier.getId() > 0) {
+                            // The field already exists
+                            switch (getUpdateOption()) {
+                                case Overwrite: {
+                                    try {
+                                        dao.update(identifier);
+                                    } catch (@NonNull final DaoWriteException e) {
+                                        throw new UncheckedDaoWriteException(e);
+                                    }
+                                    break;
+                                }
+                                case OnlyNewer:
+                                case Skip:
+                                    break;
+                            }
+                        } else {
+                            try {
+                                dao.insert(identifier);
+                            } catch (@NonNull final DaoWriteException e) {
+                                throw new UncheckedDaoWriteException(e);
+                            }
+                        }
+                    });
         }
     }
 

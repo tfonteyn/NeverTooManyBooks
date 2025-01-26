@@ -76,6 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
  *
  *     <li>These depend on other types being included or not</li>
  *     <li>{@link RecordType#Certificates}</li>
+ *     <li>{@link RecordType#Identifiers}</li>
  *     <li>{@link RecordType#Tags}</li>
  *     <li>{@link RecordType#Bookshelves}</li>
  *     <li>{@link RecordType#CalibreLibraries}</li>
@@ -203,8 +204,7 @@ public class ZipArchiveWriter
                     RecordType.Styles,
                     RecordType.Preferences,
                     RecordType.Certificates,
-                    // write tags before Bookshelves, Authors, ...
-                    // we might use them in future versions
+                    RecordType.Identifiers,
                     RecordType.Tags,
                     // Bookshelves before Calibre as the latter can refer to them
                     RecordType.Bookshelves,
@@ -326,6 +326,7 @@ public class ZipArchiveWriter
      *     <li>{@link RecordType#Styles}</li>
      *     <li>{@link RecordType#Preferences}</li>
      *     <li>{@link RecordType#Certificates}</li>
+     *     <li>{@link RecordType#Identifiers}</li>
      *     <li>{@link RecordType#Tags}</li>
      *     <li>{@link RecordType#Bookshelves}</li>
      *     <li>{@link RecordType#CalibreLibraries}</li>

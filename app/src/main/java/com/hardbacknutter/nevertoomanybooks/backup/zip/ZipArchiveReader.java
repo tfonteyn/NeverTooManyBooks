@@ -64,13 +64,15 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  * <ul>
  *     <li>
  *         v8: app version 7.0.0
- *              Drops the individual identifier fields on the Book level, and
- *              groups them in a new array key.
+ *              Adds {@link RecordType#Identifiers}.
  *              Adds {@link RecordType#Tags} which contains
  *                  {@link com.hardbacknutter.nevertoomanybooks.entities.Tag}. and
  *                  {@link com.hardbacknutter.nevertoomanybooks.entities.TagMapping}s.
+ *
  *              Adds book {@link com.hardbacknutter.nevertoomanybooks.entities.Tag} lists.
  *              Adds book {@link com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData}.
+ *              Drops the individual identifier fields on the Book level, and
+ *  *              groups them in a new array key.
  *     </li>
  *     <li>
  *         v7: app version 5.0.0
@@ -413,6 +415,11 @@ public class ZipArchiveReader
                     } else if (type == RecordType.Tags && recordTypes.contains(type)) {
                         progressListener.publishProgress(
                                 1, context.getString(R.string.lbl_tags));
+                        readRecord(context, recordTypes, record, progressListener);
+
+                    } else if (type == RecordType.Identifiers && recordTypes.contains(type)) {
+                        progressListener.publishProgress(
+                                1, context.getString(R.string.lbl_identifiers));
                         readRecord(context, recordTypes, record, progressListener);
 
                     } else if ((type == RecordType.CalibreLibraries

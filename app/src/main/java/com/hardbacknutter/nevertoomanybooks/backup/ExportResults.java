@@ -69,6 +69,8 @@ public class ExportResults
     public int certificates;
     /** #tags we exported. In reality just a 0 or 1 value. Don't use to display to the user! */
     public int tags;
+    /** #identifiers we exported. */
+    public int identifiers;
 
     /** #bookshelves we exported. */
     public int bookshelves;
@@ -104,6 +106,7 @@ public class ExportResults
         styles = in.readInt();
         preferences = in.readInt();
         certificates = in.readInt();
+        identifiers = in.readInt();
         tags = in.readInt();
         database = in.readByte() != 0;
     }
@@ -135,6 +138,8 @@ public class ExportResults
                 return deletedBooks > 0;
             case Tags:
                 return tags > 0;
+            case Identifiers:
+                return identifiers > 0;
             case Books:
                 return getBookCount() > 0;
             case Cover:
@@ -159,6 +164,7 @@ public class ExportResults
         return styles == 0
                && preferences == 0
                && certificates == 0
+               && identifiers == 0
                && tags == 0
                && bookshelves == 0
                && calibreLibraries == 0
@@ -184,6 +190,7 @@ public class ExportResults
         styles += results.styles;
         preferences += results.preferences;
         certificates += results.certificates;
+        identifiers += results.identifiers;
         tags += results.tags;
 
         if (results.database) {
@@ -250,6 +257,7 @@ public class ExportResults
         dest.writeInt(styles);
         dest.writeInt(preferences);
         dest.writeInt(certificates);
+        dest.writeInt(identifiers);
         dest.writeInt(tags);
         dest.writeByte((byte) (database ? 1 : 0));
     }
@@ -272,6 +280,7 @@ public class ExportResults
                + ", styles=" + styles
                + ", preferences=" + preferences
                + ", certificates=" + certificates
+               + ", identifiers=" + identifiers
                + ", tags=" + tags
                + ", database=" + database
                + '}';

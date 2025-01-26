@@ -88,6 +88,12 @@ public enum RecordType {
     Tags("tags"),
 
     /**
+     * Collection of Identifiers.
+     * ONLY ONE PER ARCHIVE.
+     */
+    Identifiers("identifiers"),
+
+    /**
      * Collection of named Certificates.
      * ONLY ONE PER ARCHIVE.
      */
@@ -203,14 +209,15 @@ public enum RecordType {
         // If we're doing preferences, then implicitly handle these as well
         if (recordTypes.contains(Preferences)) {
             all.add(CalibreCustomFields);
+            all.add(Identifiers);
             all.add(Tags);
-
         }
 
         // If we're doing books, then we must do its dependencies:
         if (recordTypes.contains(Books)) {
             all.add(Bookshelves);
             all.add(CalibreLibraries);
+            all.add(Identifiers);
             all.add(Tags);
             all.add(DeletedBooks);
         }
