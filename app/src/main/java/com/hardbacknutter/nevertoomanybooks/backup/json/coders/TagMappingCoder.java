@@ -39,6 +39,7 @@ public class TagMappingCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
+        out.put(DBKey.PK_ID, tagMapping.getId());
         out.put(DBKey.TAG, tagMapping.getName());
         // yes, out.put(@NonNull String key, @Nullable Collection<?> value)
         // would have worked. But this makes it blatantly clear how decode must work.
@@ -61,6 +62,8 @@ public class TagMappingCoder
             mappings.add(a.getString(i));
         }
 
-        return new TagMapping(name, mappings);
+        final TagMapping tagMapping = new TagMapping(name, mappings);
+        tagMapping.setId(data.getLong(DBKey.PK_ID));
+        return tagMapping;
     }
 }
