@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -106,6 +106,11 @@
  *     // (29,'PORBASE','Biblioteca Nacional de Portugal'),
  *     // (30,'Libris','Libris - National Library of Sweden'),
  *     // (31,'Libris XL','Libris XL - National Library of Sweden (new interface)');
+ *     // (32,'Biblioman','&#1041;&#1080;&#1073;&#1083;&#1080;&#1086;&#1084;&#1072;&#1085; (Biblioman)');
+ *     // (33,'COBISS.BG','Co-operative Online Bibliographic Systems and Services - Bulgaria');
+ *     // (34,'COBISS.SR','Co-operative Online Bibliographic Systems and Services - Serbia');
+ *     // (35,'FMI','The FictionMags Index');
+ *
  * </pre>
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
