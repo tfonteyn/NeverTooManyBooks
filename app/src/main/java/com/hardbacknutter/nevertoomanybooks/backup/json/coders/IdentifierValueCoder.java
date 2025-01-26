@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
-public class IdentifierCoder
+public class IdentifierValueCoder
         implements JsonCoder<Identifier.Value> {
 
     @Override

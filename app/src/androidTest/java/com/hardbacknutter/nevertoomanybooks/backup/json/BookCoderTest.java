@@ -25,7 +25,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.json.coders.IdentifierCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.IdentifierValueCoder;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -52,7 +52,7 @@ public class BookCoderTest
 
     private Book book;
     private BookCoder bookCoder;
-    private IdentifierCoder identifierCoder;
+    private IdentifierValueCoder identifierValueCoder;
 
     @Before
     public void setup()
@@ -60,7 +60,7 @@ public class BookCoderTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
         book = new Book();
         bookCoder = new BookCoder(context, serviceLocator.getStyles().getDefault());
-        identifierCoder = new IdentifierCoder();
+        identifierValueCoder = new IdentifierValueCoder();
     }
 
     @Test
@@ -119,7 +119,7 @@ public class BookCoderTest
         final JSONArray identifiers = encodedBook.optJSONArray(Book.BKEY_IDENTIFIER_LIST);
         assertNotNull(identifiers);
 
-        final List<Identifier.Value> list = identifierCoder.decode(identifiers);
+        final List<Identifier.Value> list = identifierValueCoder.decode(identifiers);
         assertEquals(2, list.size());
 
         final Book decodedBook = bookCoder.decode(encodedBook);
