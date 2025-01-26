@@ -773,15 +773,13 @@ public class CalibreContentServerReader
 
             final Iterator<String> it = remotes.keys();
             while (it.hasNext()) {
-                final String key = it.next();
-                if (!remotes.isNull(key)) {
-                    final String sid = remotes.optString(key);
+                final String calKey = it.next();
+                if (!remotes.isNull(calKey)) {
+                    final String sid = remotes.optString(calKey);
                     if (sid != null && !sid.isEmpty()) {
-                        final CalibreIdentifier calId = CalibreIdentifier.MAP.get(key);
-                        if (calId != null) {
-                            ivs.add(new Identifier.Value(calId.getLocal(), sid));
-
-                        } else if (key.startsWith("amazon")) {
+                        if (CalibreContentServer.IDENTIFIER_ISBN.equals(calKey)) {
+                            book.setIsbn(sid);
+                        } else if (calKey.length() > 6 && calKey.startsWith("amazon")) {
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
                             // The actual ASIN is always the same,
@@ -789,6 +787,14 @@ public class CalibreContentServerReader
                             if (book.getIdentifierValue(Identifier.SID_ASIN).isEmpty()) {
                                 ivs.add(new Identifier.Value(Identifier.SID_ASIN, sid));
                             }
+                        } else {
+                            // Map the calKey to our key, or if not found,
+                            // just use the calKey itself
+                            String key = CalibreContentServer.IDENTIFIER_MAPPING.get(calKey);
+                            if (key == null) {
+                                key = calKey;
+                            }
+                            ivs.add(new Identifier.Value(key, sid));
                         }
                     }
                 }

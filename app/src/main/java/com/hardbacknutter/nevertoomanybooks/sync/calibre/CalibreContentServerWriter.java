@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -368,32 +369,44 @@ public class CalibreContentServerWriter
         // https://github.com/kovidgoyal/calibre/blob/master/src/calibre/db/write.py#L480
         // So, we send a combination of changes + the identifiers we don't know back to the server.
 
+        // Mirror the map
+        final Map<String, String> idMappings = CalibreContentServer
+                .IDENTIFIER_MAPPING.entrySet().stream().collect(
+                        Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
         // Collect all known local Identifiers
         final JSONObject localIdentifiers = new JSONObject();
-        CalibreIdentifier.MAP.values().forEach(
-                cId -> localBook.getIdentifierValue(cId.getLocal())
-                                .ifPresent(sid -> localIdentifiers.put(cId.getRemote(), sid)));
+        localBook.getIdentifiers().forEach(iv -> {
+            // Map the our key to the calibre key, or if not found,
+            // just use the key itself
+            String calKey = idMappings.get(iv.getKey());
+            if (calKey == null) {
+                calKey = iv.getKey();
+            }
+            localIdentifiers.put(calKey, iv.getSid());
+        });
+
+        // add the ISBN which Calibre treats as just another identifier
+        final String isbn = localBook.getIsbn();
+        if (!isbn.isEmpty()) {
+            localIdentifiers.put(CalibreContentServer.IDENTIFIER_ISBN, isbn);
+        }
 
         if (!localIdentifiers.isEmpty()) {
-            if (calibreBookIdentifiers != null) {
+            if (calibreBookIdentifiers == null) {
+                // no remotes, just send all locals
+                return localIdentifiers;
+            } else {
                 // overwrite remotes with locals
                 final Iterator<String> it = localIdentifiers.keys();
                 while (it.hasNext()) {
                     final String key = it.next();
                     calibreBookIdentifiers.put(key, localIdentifiers.get(key));
                 }
-                // send the combination
-                return calibreBookIdentifiers;
-
-            } else {
-                // no remotes, just send all locals
-                return localIdentifiers;
             }
-        } else {
-            //TEST: 2025-01-03: added this due to paranoia... it's very unlikely
-            // we would have a remote set of Identifiers but no local set... flw
-            return calibreBookIdentifiers;
         }
+        // send the combined set
+        return calibreBookIdentifiers;
     }
 
     private void collectCustomFields(@NonNull final CalibreLibrary library,

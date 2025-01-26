@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -58,6 +59,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -87,6 +89,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.org.json.JSONArray;
@@ -136,8 +139,7 @@ public final class CalibreContentServer
 
     /** CA certificate identifier. */
     public static final String SERVER_CA = "CalibreContentServer.ca";
-    /** Response root tag: The array of book ids returned in 'this' call. */
-    static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
+
     /** Preferences prefix. */
     static final String PREF_KEY = "calibre";
 
@@ -145,8 +147,23 @@ public final class CalibreContentServer
     static final String PK_HOST_URL = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
     static final String PK_HOST_USER = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_USER;
     static final String PK_HOST_PASS = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
-    /** Response root tag: Total number of items found in a query. */
-    static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
+    private static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
+
+    /**
+     * Key's that do not need mapping are not listed.
+     * This list only maps <strong>known</strong> keys
+     * from the predefined list at app install time.
+     */
+    static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
+            Map.entry("amazon", Identifier.SID_ASIN),
+            Map.entry("ppn", Identifier.SID_KBNL)
+    );
+    /**
+     * Calibre treats the ISBN as just another identifier.
+     * "isbn_10", "isbn_13" are also used, in particular by the ISFDB plugin for Calibre
+     * We're ignoring them as the "isbn" should take precedence really
+     */
+    static final String IDENTIFIER_ISBN = "isbn";
 
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
@@ -156,10 +173,6 @@ public final class CalibreContentServer
     /** Custom field for {@link SyncReaderMetaData}. */
     public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
     static final String BKEY_EXT_INSTALLED = TAG + ":extInst";
-
-    /** Response root tag. */
-    private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
-    private static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
 
     /**
      * The buffer used for all small reads.
@@ -195,24 +208,79 @@ public final class CalibreContentServer
      * on the server.
      * <p>
      * We're also calling this for connection validation.
+     * <p>
+     * Param 1: serverUri
      */
-    private static final String ULR_AJAX_LIBRARY_INFO = "/ajax/library-info";
+    private static final String GET_LIBRARY_INFO = "%1$s/ajax/library-info";
 
     /**
-     * Present in the response from {@link #ULR_AJAX_LIBRARY_INFO}.
+     * Request the list of virtual libraries.
+     * <p>
+     * Param 1: serverUri
+     * Param 2: csv list of book ids
+     * Param 3: libraryStringId
+     */
+    private static final String NTMB_VIRTUAL_LIBRARIES_FOR_BOOKS =
+            "%1$s/ntmb/virtual-libraries-for-books/%2$s/%3$s";
+
+    private static final String SEARCH = "%1$s/ajax/search/%2$s?num=%3$d&offset=%4$d&query=%5$s";
+
+    /**
+     * Request a file download.
+     * <p>
+     * Param 1: serverUri
+     * Param 2: file format
+     * Param 3: calibre book id
+     * Param 4: libraryStringId
+     */
+    private static final String FETCH_FILE = "%1$s/get/%2$s/%3$d/%4$s";
+
+    private static final String GET_BOOKS = "%1$s/ajax/books/%2$s?category_urls=false&ids=%3$s";
+
+    /**
+     * Param 1: serverUri
+     * Param 2: libraryStringId
+     * Param 3: number of books
+     * Param 4: offset to start fetching from
+     *
+     * @see #getBookIds(String, int, int)
+     */
+    private static final String GET_BOOK_IDS =
+            "%1$s/ajax/category/616c6c626f6f6b73/%2$s?num=%3$d&offset=%4$d";
+
+    /**
+     * Param 1: serverUri
+     * Param 2: book UUID
+     * Param 3: libraryStringId
+     */
+    private static final String GET_BOOK_BY_UUID = "%1$s/ajax/book/%2$s/%3$s?id_is_uuid=true";
+
+    /**
+     * Param 1: serverUri
+     * Param 2: book id
+     * Param 3: libraryStringId
+     */
+    private static final String GET_BOOK_BY_ID = "%1$s/ajax/book/%2$d/%3$s";
+
+    /** Response root tag: Total number of items found in a query. */
+    static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
+    /** Response root tag: The array of book ids returned in 'this' call. */
+    static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
+    /** Response root tag. */
+    private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
+    /**
+     * Present in the response from {@link #GET_LIBRARY_INFO}.
      * Contains the {@link #RESPONSE_TAG_DEFAULT_LIBRARY} and a list of key=value
      * pairs with the libraries.
      */
     private static final String RESPONSE_TAG_LIBRARY_MAP = "library_map";
-
     /**
      * Present in {@link #RESPONSE_TAG_LIBRARY_MAP} containing the name of
      * the default library.
      */
     private static final String RESPONSE_TAG_DEFAULT_LIBRARY = "default_library";
-
     /**
-     * Potentially present in the response from {@link #ULR_AJAX_LIBRARY_INFO}
+     * Potentially present in the response from {@link #GET_LIBRARY_INFO}
      * when our calibre ajax extension is installed on the server.
      * This JSONObject will contain extra information:
      * - library uuid.
@@ -278,10 +346,10 @@ public final class CalibreContentServer
         }
 
         connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREF_KEY + "." + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
+                context, PREF_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
                 CONNECT_TIMEOUT_IN_MS);
         readTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREF_KEY + "." + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
+                context, PREF_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
 
         calibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()
@@ -491,7 +559,8 @@ public final class CalibreContentServer
     public boolean validateConnection(@NonNull final Context context)
             throws StorageException,
                    IOException {
-        return !fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL).isEmpty();
+        final String url = String.format(GET_LIBRARY_INFO, serverUri);
+        return !fetch(url, BUFFER_SMALL).isEmpty();
     }
 
     /**
@@ -549,8 +618,8 @@ public final class CalibreContentServer
                                                     .map(Bookshelf::getId)
                                                     .orElse((long) Bookshelf.HARD_DEFAULT);
 
-        final JSONObject source = new JSONObject(
-                fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));
+        final String url = String.format(GET_LIBRARY_INFO, serverUri);
+        final JSONObject source = new JSONObject(fetch(url, BUFFER_SMALL));
 
         final JSONObject libraryMap = source.getJSONObject(RESPONSE_TAG_LIBRARY_MAP);
         final String defaultLibraryId = source.getString(RESPONSE_TAG_DEFAULT_LIBRARY);
@@ -778,8 +847,8 @@ public final class CalibreContentServer
             return null;
         }
 
-        final String url = serverUri + "/ntmb/virtual-libraries-for-books/"
-                           + getCsvIds(calibreIds) + "/" + libraryStringId;
+        final String url = String.format(NTMB_VIRTUAL_LIBRARIES_FOR_BOOKS, serverUri,
+                                         getCsvIds(calibreIds), libraryStringId);
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
 
@@ -826,8 +895,8 @@ public final class CalibreContentServer
                    IOException,
                    JSONException {
 
-        final String url = serverUri + "/ajax/category/616c6c626f6f6b73/" + libraryStringId
-                           + "?num=" + num + "&offset=" + offset;
+        @SuppressLint("DefaultLocale")
+        final String url = String.format(GET_BOOK_IDS, serverUri, libraryStringId, num, offset);
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
 
@@ -881,8 +950,8 @@ public final class CalibreContentServer
                    IOException,
                    JSONException {
 
-        final String url = serverUri + "/ajax/search/" + libraryId
-                           + "?num=" + num + "&offset=" + offset + "&query=" + query;
+        @SuppressLint("DefaultLocale")
+        final String url = String.format(SEARCH, serverUri, libraryId, num, offset, query);
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
 
@@ -1170,8 +1239,8 @@ public final class CalibreContentServer
                    IOException,
                    JSONException {
 
-        final String url = serverUri + "/ajax/books/" + libraryStringId
-                           + "?category_urls=false&ids=" + getCsvIds(calibreIds);
+        final String url = String.format(GET_BOOKS, serverUri, libraryStringId,
+                                         getCsvIds(calibreIds));
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
 
@@ -1215,8 +1284,7 @@ public final class CalibreContentServer
                               @NonNull final String calibreUuid)
             throws StorageException, IOException, JSONException {
 
-        final String url = serverUri + "/ajax/book/" + calibreUuid + '/' + libraryStringId
-                           + "?id_is_uuid=true";
+        final String url = String.format(GET_BOOK_BY_UUID, serverUri, calibreUuid, libraryStringId);
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
@@ -1239,7 +1307,8 @@ public final class CalibreContentServer
                               final int calibreId)
             throws StorageException, IOException, JSONException {
 
-        final String url = serverUri + "/ajax/book/" + calibreId + '/' + libraryStringId;
+        @SuppressLint("DefaultLocale")
+        final String url = String.format(GET_BOOK_BY_ID, serverUri, calibreId, libraryStringId);
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
@@ -1347,8 +1416,9 @@ public final class CalibreContentServer
                         context.getString(R.string.error_file_not_found,
                                           String.valueOf(libraryId))));
 
-        final String url = serverUri + "/get/" + format + "/" + id + "/"
-                           + calibreLibrary.getLibraryStringId();
+        @SuppressLint("DefaultLocale")
+        final String url = String.format(FETCH_FILE, serverUri, format, id,
+                                         calibreLibrary.getLibraryStringId());
 
         final Uri destUri = destFile.getUri();
 
@@ -1424,7 +1494,7 @@ public final class CalibreContentServer
         final String fileExt = book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
 
         // FIRST check if it exists using the format extension
-        DocumentFile bookFile = authorFolder.findFile(fileName + "." + fileExt);
+        DocumentFile bookFile = authorFolder.findFile(fileName + '.' + fileExt);
         if (bookFile == null) {
             if (creating) {
                 // when creating, we must NOT directly use the extension,
