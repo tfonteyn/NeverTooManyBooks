@@ -125,6 +125,7 @@ class IsfdbPublicationListHandler
     private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
             Map.entry("1", Identifier.SID_ASIN),
             Map.entry("2", Identifier.SID_BRITISH_LIBRARY),
+            Map.entry("4", Identifier.SID_BNF),
             Map.entry("6", Identifier.SID_DNB),
             Map.entry("8", Identifier.SID_GOODREADS_BOOK),
             Map.entry("10", Identifier.SID_LCCN),
