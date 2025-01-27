@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,8 @@ public class SearchEditionsTask
 
     /** Log tag. */
     private static final String TAG = "SearchEditionsTask";
-    /** the book to look up. */
+
+    /** The isbn we're looking up. */
     private String validIsbn;
 
     /**
@@ -71,7 +72,6 @@ public class SearchEditionsTask
         }
 
         this.validIsbn = validIsbn;
-
         execute();
     }
 
@@ -81,7 +81,6 @@ public class SearchEditionsTask
     protected Collection<AltEdition> doWork()
             throws NetworkUnavailableException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-
 
         // keep the order, but eliminate duplicates.
         final Collection<AltEdition> editions = new LinkedHashSet<>();
@@ -97,9 +96,10 @@ public class SearchEditionsTask
                 .stream()
                 .filter(Site::isActive)
                 .map(site -> site.getEngineId().createSearchEngine(context))
-                .map(se -> ((SearchEngine.AlternativeEditions<? extends AltEdition>) se))
+                .map(se -> (SearchEngine.AlternativeEditions<? extends AltEdition>) se)
                 .forEach(searchEngine -> {
                     searchEngine.setCaller(this);
+                    //noinspection CheckStyle
                     try {
                         // can we reach the site ?
                         searchEngine.ping(context);

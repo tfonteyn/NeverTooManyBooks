@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@ import androidx.annotation.WorkerThread;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -40,7 +41,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 
 /**
  * This task is bypassing {@link SearchEngine.AlternativeEditions}
- * as in this particular circumstance it's faster.
+ * and uses {@link IsfdbSearchEngine#fetchEditionsByIsbn(Context, String)}
+ * directly. The former strips the full book document (on purpose),
+ * while the latter does not which saves us from an unneeded
+ * round trip fetching the same info twice.
+ * <p>
+ * This is basically a stripped down, single engine, variant of
+ * {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask}.
+ * <p>
+ * Exceptions ARE returned.
  */
 public class IsfdbGetEditionsTask
         extends MTask<List<AltEditionIsfdb>> {
@@ -49,7 +58,7 @@ public class IsfdbGetEditionsTask
     private static final String TAG = "IsfdbGetEditionsTask";
 
     /** The isbn we're looking up. */
-    private String isbn;
+    private String validIsbn;
 
     @Nullable
     private IsfdbSearchEngine searchEngine;
@@ -68,7 +77,12 @@ public class IsfdbGetEditionsTask
      */
     @UiThread
     public void search(@NonNull final ISBN isbn) {
-        this.isbn = isbn.asText();
+        // sanity check
+        if (BuildConfig.DEBUG /* always */) {
+            ISBN.requireValidIsbn(validIsbn);
+        }
+
+        this.validIsbn = isbn.asText();
         execute();
     }
 
@@ -93,6 +107,6 @@ public class IsfdbGetEditionsTask
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(this);
 
-        return searchEngine.fetchEditionsByIsbn(context, isbn);
+        return searchEngine.fetchEditionsByIsbn(context, validIsbn);
     }
 }

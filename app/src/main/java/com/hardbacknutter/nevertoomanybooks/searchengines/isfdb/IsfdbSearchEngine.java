@@ -467,9 +467,9 @@ public class IsfdbSearchEngine
                                                            @NonNull final String validIsbn)
             throws SearchException, CredentialsException {
 
+        final List<AltEditionIsfdb> list = fetchEditionsByIsbn(context, validIsbn);
         // We strip the potential document (which can be large)
         // as the caller does not use it for now
-        final List<AltEditionIsfdb> list = fetchEditionsByIsbn(context, validIsbn);
         list.forEach(AltEditionIsfdb::clearDocument);
 
         return list;
