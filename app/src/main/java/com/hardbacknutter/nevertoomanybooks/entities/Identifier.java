@@ -60,6 +60,7 @@ public class Identifier
         implements Parcelable {
 
     public static final String SID_ASIN = "asin";
+    public static final String SID_AUDIBLE_ASIN = "audible-asin";
     public static final String SID_BEDETHEQUE = "bedetheque";
     /** <a href="https://www.bnf.fr">www.bnf.fr</a>. */
     public static final String SID_BNF = "bnf";
@@ -168,6 +169,8 @@ public class Identifier
         return List.of(
                 new Identifier(SID_ASIN, TYPE_STRING,
                                context.getString(R.string.identifier_amazon_asin)),
+                new Identifier(SID_AUDIBLE_ASIN, TYPE_STRING,
+                               context.getString(R.string.identifier_audible_asin)),
                 new Identifier(SID_BEDETHEQUE, TYPE_LONG,
                                context.getString(R.string.identifier_bedetheque)),
                 new Identifier(SID_BNF, TYPE_STRING,
