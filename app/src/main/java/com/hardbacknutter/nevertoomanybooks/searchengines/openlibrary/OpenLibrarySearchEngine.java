@@ -130,28 +130,21 @@ public class OpenLibrarySearchEngine
     private static final int COVER_BY_ISBN_REQUEST_DELAY = 3_000;
 
     /**
-     * Do NOT REORDER. Some keys are duplicates.
-     * e.g. "oclc_numbers" is current/preferred, "oclc" is legacy.
+     * Key's that do not need mapping are not listed.
+     * This list only maps <strong>known</strong> keys
+     * from the predefined list at app install time.
      * <p>
-     * Seen but not supported:
+     * Other keys we've seen now and then:
      * "better_world_books"
      * "paperback_swap"
      * "alibris_id"
-     * "amazon.co.uk_asin"
      * "depu00f3sito_legal"
      * ...
      */
     private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
             Map.entry("amazon", Identifier.SID_ASIN),
-            Map.entry("dnb", Identifier.SID_DNB),
-            Map.entry("doi", Identifier.SID_DOI),
-            Map.entry("goodreads", Identifier.SID_GOODREADS_BOOK),
-            Map.entry("google", Identifier.SID_GOOGLE),
-            Map.entry("lccn", Identifier.SID_LCCN),
-            Map.entry("librarything", Identifier.SID_LIBRARY_THING),
-            Map.entry("oclc_numbers", Identifier.SID_OCLC),
-            Map.entry("oclc", Identifier.SID_OCLC),
-            Map.entry("wikidata", Identifier.SID_WIKIDATA)
+            Map.entry("amazon.co.uk_asin", Identifier.SID_ASIN),
+            Map.entry("oclc_numbers", Identifier.SID_OCLC)
     );
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
@@ -634,9 +627,8 @@ public class OpenLibrarySearchEngine
             parseLanguages(a, book);
         }
 
-        // Identifiers can be found both at root level and in the "identifiers" key.
-        // (ISBN is only found in the root)
-        parseIdentifiers(document, book);
+        parseIsbn(document, book);
+
         // "identifiers" contains foreign-site codes (e.g. amazon ASIN)
         element = document.optJSONObject("identifiers");
         if (element != null) {
@@ -906,13 +898,10 @@ public class OpenLibrarySearchEngine
         }
     }
 
-    private void parseIdentifiers(@NonNull final JSONObject element,
-                                  @NonNull final Book book) {
-
-        JSONArray a;
-
+    private void parseIsbn(@NonNull final JSONObject element,
+                           @NonNull final Book book) {
         // get the 'longest' ISBN available
-        a = element.optJSONArray("isbn_13");
+        JSONArray a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
             // Overwrite
             book.putString(DBKey.BOOK_ISBN, a.getString(0));
@@ -925,16 +914,48 @@ public class OpenLibrarySearchEngine
                 }
             }
         }
+    }
+
+    /**
+     * <pre>
+     *     {
+     *   "identifiers": {
+     *     "goodreads": [
+     *       "596906"
+     *     ],
+     *     "librarything": [
+     *       "1044504"
+     *     ],
+     *     "wikidata": [
+     *       "Q108810998"
+     *     ]
+     *   }
+     * </pre>
+     *
+     * @param element to parse
+     * @param book    to update
+     */
+    private void parseIdentifiers(@NonNull final JSONObject element,
+                                  @NonNull final Book book) {
 
         // the SID_OPEN_LIBRARY should already be there, so get the current list!
         final List<Identifier.Value> ivs = book.getIdentifiers();
-        IDENTIFIER_MAPPING.forEach((olKey, key) -> {
+
+        element.keySet().forEach(olKey -> {
             final JSONArray data = element.optJSONArray(olKey);
             if (data != null && !data.isEmpty()) {
-                    // each identifier on the site can be an array, just grab the first entry
-                ivs.add(new Identifier.Value(key, data.getString(0)));
+                // Map the olKey to our key, or if not found,
+                // just use the olKey itself
+                String key = IDENTIFIER_MAPPING.get(olKey);
+                if (key == null) {
+                    key = olKey;
                 }
+                // The site supports multiple identifier of the same type.
+                // We just grab the first entry in their array.
+                ivs.add(new Identifier.Value(key, data.getString(0)));
+            }
         });
+
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
