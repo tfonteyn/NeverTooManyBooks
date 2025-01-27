@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,60 +31,6 @@ import java.util.Arrays;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
-/**
- * Edition data is returned by {@code https://openlibrary.org/works/OL5725956W/editions.json}.
- * <pre>
- *     {
- *       "type": {
- *         "key": "/type/edition"
- *       },
- *       "authors": [
- *         {
- *           "key": "/authors/OL1392395A"
- *         }
- *       ],
- *       "local_id": [
- *         "urn:bwbsku:KO-252-870"
- *       ],
- *       "publish_date": "2001-01-01",
- *       "publishers": [
- *         "Viking"
- *       ],
- *       "source_records": [
- *         "promise:bwb_daily_pallets_2020-11-19"
- *       ],
- *       "title": "ARTEMIS FOWL",
- *       "full_title": "ARTEMIS FOWL",
- *       "works": [
- *         {
- *           "key": "/works/OL5725956W"
- *         }
- *       ],
- *       "key": "/books/OL43570585M",
- *       "covers": [
- *         13075137
- *       ],
- *       "identifiers": {},
- *       "isbn_10": [
- *         "0670911836"
- *       ],
- *       "isbn_13": [
- *         "9780670911837"
- *       ],
- *       "classifications": {},
- *       "latest_revision": 4,
- *       "revision": 4,
- *       "created": {
- *         "type": "/type/datetime",
- *         "value": "2022-12-09T13:51:21.522166"
- *       },
- *       "last_modified": {
- *         "type": "/type/datetime",
- *         "value": "2022-12-14T19:46:05.463571"
- *       }
- *     },
- * </pre>
- */
 public class AltEditionOpenLibrary
         implements AltEdition {
 

@@ -666,20 +666,7 @@ public class OpenLibrarySearchEngine
             addPublicationDate(context, getLocale(context), s, book);
         }
 
-        s = document.optString("first_publish_date", null);
-        if (s != null && !s.isEmpty()) {
-            addFirstPublicationDate(context, getLocale(context), s, book);
-        } else {
-            //  "copyright_date": "1982, 1994",
-            //  "copyright_date": "2022",
-            s = document.optString("copyright_date", null);
-            if (s != null && !s.isEmpty()) {
-                // grab the first, we'll assume it will the earlier date.
-                // Given OL track record of structure we'll probably be wrong sometimes
-                final String[] split = s.split(",");
-                addFirstPublicationDate(context, getLocale(context), split[0], book);
-            }
-        }
+        parseFirstPublicationDate(context, document, book);
 
         // ENHANCE: "subjects" could be used for tags...
         //  but the subject list for a single book can be very large
@@ -704,28 +691,7 @@ public class OpenLibrarySearchEngine
         //    "Action & Adventure"
         //  ]
 
-        // "notes" is a specific (set of) remarks on this particular edition of the book.
-        // There are two known formats returned
-        //
-        // "notes": "Includes bibliographical references and index.",
-        // "notes": {"type": "/type/text", "value": "Mit zahlreichen farbigen Illustrationen"}
-        //
-        element = document.optJSONObject("notes");
-        if (element != null) {
-            // Sanity check, no idea if there are others types
-            if ("/type/text".equals(element.optString("type"))) {
-                s = element.optString("value", null);
-                if (s != null && !s.isEmpty()) {
-                    book.putString(DBKey.DESCRIPTION, s);
-                }
-            }
-        } else {
-            // Try the plain string format
-            s = document.optString("notes", null);
-            if (s != null && !s.isEmpty()) {
-                book.putString(DBKey.DESCRIPTION, s);
-            }
-        }
+        parseNotes(document, book);
 
         a = document.optJSONArray("table_of_contents");
         if (a != null && !a.isEmpty()) {
@@ -742,23 +708,6 @@ public class OpenLibrarySearchEngine
         a = document.optJSONArray("covers");
         if (a != null && !a.isEmpty()) {
             fetchCoverByCoverId(context, a, fetchCovers, book);
-        }
-    }
-
-    private void fetchCoverByCoverId(@NonNull final Context context,
-                                     @NonNull final JSONArray coverIds,
-                                     @NonNull final boolean[] fetchCovers,
-                                     @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
-            if (fetchCovers[cIdx] && coverIds.length() > cIdx) {
-                final int coverId = coverIds.optInt(cIdx);
-                if (coverId > 0) {
-                    final int finalCIdx = cIdx;
-                    searchBestCover(context, "id", String.valueOf(coverId), cIdx).ifPresent(
-                            fileSpec -> CoverFileSpecArray.setFileSpec(book, finalCIdx, fileSpec));
-                }
-            }
         }
     }
 
@@ -894,6 +843,58 @@ public class OpenLibrarySearchEngine
         }
     }
 
+    private void parseFirstPublicationDate(@NonNull final Context context,
+                                           @NonNull final JSONObject document,
+                                           @NonNull final Book book) {
+        String s;
+        s = document.optString("first_publish_date", null);
+        if (s != null && !s.isEmpty()) {
+            addFirstPublicationDate(context, getLocale(context), s, book);
+        } else {
+            //  "copyright_date": "1982, 1994",
+            //  "copyright_date": "2022",
+            s = document.optString("copyright_date", null);
+            if (s != null && !s.isEmpty()) {
+                // grab the first, we'll assume it will the earlier date.
+                // Given OL track record of structure we'll probably be wrong sometimes
+                final String[] split = s.split(",");
+                addFirstPublicationDate(context, getLocale(context), split[0], book);
+            }
+        }
+    }
+
+    /**
+     * "notes" is a specific (set of) remarks on this particular edition of the book.
+     * There are two known formats returned
+     * <pre>
+     *      "notes": "Includes bibliographical references and index.",
+     *      "notes": {"type": "/type/text", "value": "Mit zahlreichen farbigen Illustrationen"}
+     * </pre>
+     *
+     * @param document to parse
+     * @param book     to update
+     */
+    private void parseNotes(@NonNull final JSONObject document,
+                            @NonNull final Book book) {
+
+        final JSONObject element = document.optJSONObject("notes");
+        if (element != null) {
+            // Sanity check, no idea if there are others types
+            if ("/type/text".equals(element.optString("type"))) {
+                final String s = element.optString("value", null);
+                if (s != null && !s.isEmpty()) {
+                    book.putString(DBKey.DESCRIPTION, s);
+                }
+            }
+        } else {
+            // Try the plain string format
+            final String s = document.optString("notes", null);
+            if (s != null && !s.isEmpty()) {
+                book.putString(DBKey.DESCRIPTION, s);
+            }
+        }
+    }
+
     private void parseLanguages(@NonNull final JSONArray a,
                                 @NonNull final Book book) {
         final JSONObject element = a.optJSONObject(0);
@@ -968,6 +969,24 @@ public class OpenLibrarySearchEngine
         }
     }
 
+    private void fetchCoverByCoverId(@NonNull final Context context,
+                                     @NonNull final JSONArray coverIds,
+                                     @NonNull final boolean[] fetchCovers,
+                                     @NonNull final Book book)
+            throws StorageException, SearchException, CredentialsException {
+        for (int cIdx = 0; cIdx < 2; cIdx++) {
+            if (fetchCovers[cIdx] && coverIds.length() > cIdx) {
+                final int coverId = coverIds.optInt(cIdx);
+                // We have seen cover id "-1", so check!
+                if (coverId > 0) {
+                    final int finalCIdx = cIdx;
+                    searchBestCover(context, "id", String.valueOf(coverId), cIdx).ifPresent(
+                            fileSpec -> CoverFileSpecArray.setFileSpec(book, finalCIdx, fileSpec));
+                }
+            }
+        }
+    }
+
     /**
      * {@code https://openlibrary.org/isbn/9780141339092.json}
      * => redirects to: {@code https://openlibrary.org/books/OL27104332M.json}
@@ -983,7 +1002,7 @@ public class OpenLibrarySearchEngine
      *   }
      * </pre>
      * Now issue: {@code https://openlibrary.org/works/OL5725956W/editions.json}
-     * and continue in {@link #parseWorks(JSONObject)}.
+     * and continue in {@link #parseEditions(JSONObject)}.
      *
      * @param context   Current context
      * @param validIsbn to search for, <strong>must</strong> be valid.
@@ -1011,7 +1030,7 @@ public class OpenLibrarySearchEngine
                 url = getHostUrl(context) + worksKey + "/editions.json";
                 response = futureHttpGet.get(url, (con, is) ->
                         readResponseStream(is));
-                return parseWorks(new JSONObject(response));
+                return parseEditions(new JSONObject(response));
             }
         } catch (@NonNull final StorageException | IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
@@ -1023,70 +1042,89 @@ public class OpenLibrarySearchEngine
     }
 
     /**
+     * Parse the edition data as retrieved by {@link #searchAlternativeEditions(Context, String)}.
      * <pre>
+     * {
+     *   "links": {
+     *     "self": "/works/OL5725956W/editions.json",
+     *     "work": "/works/OL5725956W",
+     *     "next": "/works/OL5725956W/editions.json?offset=50"
+     *   },
+     *   "size": 93,
+     *   "entries": [
      *     {
-     *         ...
-     *         "size": 87,
-     *          "entries": [
-     *     {
+     *         "type": {
+     *         "key": "/type/edition"
+     *       },
+     *       "title": "Artemis Fowl",
+     *       "authors": [
+     *         {
+     *           "key": "/authors/OL1392395A"
+     *         },
+     *         {
+     *           "key": "/authors/OL9169368A"
+     *         },
+     *         {
+     *           "key": "/authors/OL7980735A"
+     *         }
+     *       ],
+     *       "publish_date": "Mar 11, 2020",
+     *       "source_records": [
+     *         "amazon:8491378251"
+     *       ],
+     *       "number_of_pages": 320,
+     *       "publishers": [
+     *         "Estrella Polar"
+     *       ],
+     *       "physical_format": "hardcover",
+     *       "full_title": "Artemis Fowl",
+     *       "covers": [
+     *         14080792
+     *       ],
      *       "works": [
      *         {
      *           "key": "/works/OL5725956W"
      *         }
      *       ],
-     *       "title": "Artemis Fowl",
-     *       "publishers": [
-     *         "Carlsen"
-     *       ],
-     *       "publish_date": "2009",
-     *       "key": "/books/OL49350279M",
-     *       "type": {
-     *         "key": "/type/edition"
-     *       },
+     *       "key": "/books/OL47473653M",
      *       "identifiers": {},
-     *       "covers": [
-     *         14414864
+     *       "isbn_10": [
+     *         "8491378251"
      *       ],
      *       "isbn_13": [
-     *         "9783551357793"
+     *         "9788491378259"
      *       ],
      *       "classifications": {},
-     *       "physical_format": "Taschenbuch",
-     *       "translation_of": "Artemis Fowl",
      *       "languages": [
      *         {
-     *           "key": "/languages/ger"
+     *           "key": "/languages/cat"
      *         }
      *       ],
-     *       "copyright_date": "2001; 2003, 2004",
-     *       "edition_name": "2. Auflage",
      *       "translated_from": [
      *         {
      *           "key": "/languages/eng"
      *         }
      *       ],
-     *       "number_of_pages": 237,
-     *       "latest_revision": 3,
-     *       "revision": 3,
+     *       "latest_revision": 4,
+     *       "revision": 4,
      *       "created": {
      *         "type": "/type/datetime",
-     *         "value": "2023-08-26T12:46:10.568538"
+     *         "value": "2023-04-17T05:27:07.889785"
      *       },
      *       "last_modified": {
      *         "type": "/type/datetime",
-     *         "value": "2023-08-26T12:48:34.820086"
+     *         "value": "2024-09-02T08:05:47.184003"
      *       }
-     *     },
-     *     .... and 86 more
      *     }
+     *     ...
      * </pre>
      *
      * @param works object
      *
-     * @return the list with Editions.
+     * @return a list with {@link AltEditionOpenLibrary}s.
      */
     @NonNull
-    private List<AltEditionOpenLibrary> parseWorks(@NonNull final JSONObject works) {
+    private List<AltEditionOpenLibrary> parseEditions(@NonNull final JSONObject works) {
         final int size = works.optInt("size");
         if (size <= 0) {
             return List.of();
@@ -1100,62 +1138,74 @@ public class OpenLibrarySearchEngine
         final List<AltEditionOpenLibrary> editionList = new ArrayList<>();
 
         for (int i = 0; i < entries.length(); i++) {
-            final JSONObject work = entries.optJSONObject(i);
-            if (work != null) {
-                String olid;
-                String isbn = null;
-                String langIso3 = null;
-                String publisher = null;
-                final long[] covers = new long[2];
-
-                JSONArray a;
-                JSONObject o;
-
-                olid = work.optString("key", null);
+            final JSONObject edition = entries.optJSONObject(i);
+            if (edition != null) {
+                // Get the root level book key.
+                // i.e. not the works key!
+                String olid = edition.optString("key", null);
                 if (olid != null && olid.startsWith("/books/")) {
                     olid = olid.substring("/books/".length());
-                }
-
-                a = work.optJSONArray("isbn_13");
-                if (a != null && !a.isEmpty()) {
-                    isbn = a.optString(0);
-                }
-                if (isbn == null || isbn.isEmpty()) {
-                    a = work.optJSONArray("isbn_10");
-                    if (a != null && !a.isEmpty()) {
-                        isbn = a.optString(0);
+                    if (!olid.isEmpty()) {
+                        editionList.add(parseEdition(edition, olid));
                     }
-                }
-
-                a = work.optJSONArray("languages");
-                if (a != null && !a.isEmpty()) {
-                    o = a.optJSONObject(0);
-                    if (o != null) {
-                        langIso3 = o.optString("key", null);
-                        if (langIso3 != null && langIso3.startsWith("/languages/")) {
-                            langIso3 = langIso3.substring("/languages/".length());
-                        }
-                    }
-                }
-                a = work.optJSONArray("publishers");
-                if (a != null && !a.isEmpty()) {
-                    publisher = a.optString(0);
-                }
-                a = work.optJSONArray("covers");
-                if (a != null && !a.isEmpty()) {
-                    covers[0] = a.optInt(0);
-                    if (a.length() > 1) {
-                        covers[1] = a.optInt(1);
-                    }
-                }
-                if (olid != null && !olid.isEmpty()) {
-                    editionList.add(new AltEditionOpenLibrary(olid, isbn, langIso3, publisher,
-                                                              covers));
                 }
             }
         }
 
         return editionList;
+    }
+
+    /**
+     * Given a single entry of the edition "entries" list,
+     * extract the information needed for our {@link AltEditionOpenLibrary}.
+     *
+     * @param entry to parse
+     * @param olid  pre-parsed OL ID for the book.
+     *
+     * @return instance
+     */
+    @NonNull
+    private AltEditionOpenLibrary parseEdition(@NonNull final JSONObject entry,
+                                               @NonNull final String olid) {
+        String isbn = null;
+        String langIso3 = null;
+        String publisher = null;
+        final long[] covers = new long[2];
+        JSONArray a;
+
+        a = entry.optJSONArray("isbn_13");
+        if (a != null && !a.isEmpty()) {
+            isbn = a.optString(0);
+        }
+        if (isbn == null || isbn.isEmpty()) {
+            a = entry.optJSONArray("isbn_10");
+            if (a != null && !a.isEmpty()) {
+                isbn = a.optString(0);
+            }
+        }
+
+        a = entry.optJSONArray("languages");
+        if (a != null && !a.isEmpty()) {
+            final JSONObject o = a.optJSONObject(0);
+            if (o != null) {
+                langIso3 = o.optString("key", null);
+                if (langIso3 != null && langIso3.startsWith("/languages/")) {
+                    langIso3 = langIso3.substring("/languages/".length());
+                }
+            }
+        }
+        a = entry.optJSONArray("publishers");
+        if (a != null && !a.isEmpty()) {
+            publisher = a.optString(0);
+        }
+        a = entry.optJSONArray("covers");
+        if (a != null && !a.isEmpty()) {
+            covers[0] = a.optInt(0);
+            if (a.length() > 1) {
+                covers[1] = a.optInt(1);
+            }
+        }
+        return new AltEditionOpenLibrary(olid, isbn, langIso3, publisher, covers);
     }
 
     /**
