@@ -26,12 +26,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -100,12 +102,22 @@ public class IsfdbGetEditionsTask
     @Override
     @WorkerThread
     protected List<AltEditionIsfdb> doWork()
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException,
+                   SearchException,
+                   CredentialsException,
+                   IOException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
+            throw new NetworkUnavailableException(this.getClass().getName());
+        }
 
         // create a new instance just for our own use
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(this);
+
+        // can we reach the site ?
+        searchEngine.ping(context);
 
         return searchEngine.fetchEditionsByIsbn(context, validIsbn);
     }
