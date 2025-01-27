@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * <p>
  * Features provides are:
  * <ul>
- *      <li>Handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
+ *      <li>Handling of visibility via preferences / 'usedKey' property of a field.</li>
  *      <li>Understanding of kinds of views (setting a Checkbox (Checkable) value to 'true'
  *          will work as expected as will setting the value of an ExposedDropDownMenu).
  *          As new view types are added, it will be necessary to add new {@link Field}
@@ -48,6 +48,21 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *      <li>Data formatters to provide application-specific data rules.</li>
  *      <li>Simplified extraction of data.</li>
  * </ul>
+ * <p>
+ * Main interaction calls:
+ * <ol>
+ *     <li>Load the value from the {@link DataManager} into the field:
+ *         {@link #load(Context, DataManager, RealNumberParser)}
+ *     </li>
+ *     <li>{@link #setValue(Object)}</li>
+ *     <li>{@link #getValue()}</li>
+ *     <li>{@link #isEmpty()}</li>
+ *     <li>
+ *          Save the value from the field into the {@link DataManager}:
+ *          {@link #save(DataManager)}
+ *     </li>
+ * </ol>
+ *
  * <p>
  * Formatters
  * <p>
@@ -65,11 +80,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * Data flows to and from a view as follows:
  * <ul>
  *      <li>IN  (no formatter ):<br>
- *          {@link Field#setInitialValue(Context, DataManager, RealNumberParser)} ->
+ *          {@link Field#load(Context, DataManager, RealNumberParser)} ->
  *          {@link Field#setValue(Object)} ->
  *          populates the View.</li>
  *      <li>IN  (with FieldFormatter):<br>
- *          {@link Field#setInitialValue(Context, DataManager, RealNumberParser)} ->
+ *          {@link Field#load(Context, DataManager, RealNumberParser)} ->
  *          {@link Field#setValue(Object)} ->
  *          {@link FieldFormatter#apply} ->
  *          populates the View.</li>
@@ -77,12 +92,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *       <li>OUT (no formatter ):
  *          View ->
  *          {@link Field#getValue()} ->
- *          {@link Field#putValue(DataManager)}</li>
+ *          {@link Field#save(DataManager)}</li>
  *      <li>OUT (with EditFieldFormatter):
  *          View ->
  *          {@link EditFieldFormatter#extract(Context, String)} ->
  *          {@link Field#getValue()} ->
- *          {@link Field#putValue(DataManager)}</li>
+ *          {@link Field#save(DataManager)}</li>
  * </ul>
  *
  * @param <T> type of Field value.
@@ -162,7 +177,6 @@ public interface Field<T, V extends View> {
      */
     boolean isAutoPopulated();
 
-
     /**
      * Load the field from the passed {@link DataManager}.
      * <p>
@@ -172,10 +186,12 @@ public interface Field<T, V extends View> {
      * @param context          Current context
      * @param source           DataManager to load the Field objects from
      * @param realNumberParser to use for parsing
+     *
+     * @see #save(DataManager)
      */
-    void setInitialValue(@NonNull Context context,
-                         @NonNull DataManager source,
-                         @NonNull RealNumberParser realNumberParser);
+    void load(@NonNull Context context,
+              @NonNull DataManager source,
+              @NonNull RealNumberParser realNumberParser);
 
     /**
      * Get the value from the view associated with the Field.
@@ -202,8 +218,10 @@ public interface Field<T, V extends View> {
      * Put the <strong>native typed value</strong> in the passed {@link DataManager}.
      *
      * @param target {@link DataManager} to save the Field value into.
+     *
+     * @see #load(Context, DataManager, RealNumberParser)
      */
-    void putValue(@NonNull DataManager target);
+    void save(@NonNull DataManager target);
 
     /**
      * Check if the current value is considered to be 'empty'.

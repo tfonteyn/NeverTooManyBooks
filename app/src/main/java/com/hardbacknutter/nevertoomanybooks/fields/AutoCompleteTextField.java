@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,6 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -88,10 +87,5 @@ public class AutoCompleteTextField
                 parent.getContext(),
                 listSupplier.get(),
                 formatter));
-    }
-
-    @Override
-    boolean isEmpty(@Nullable final String value) {
-        return value == null || value.isEmpty();
     }
 }

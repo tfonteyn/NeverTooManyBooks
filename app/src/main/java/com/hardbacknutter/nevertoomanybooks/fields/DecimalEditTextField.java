@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,11 +68,6 @@ public class DecimalEditTextField
         super.setParentView(parent);
         // do not keep a strong reference to the watcher
         requireView().addTextChangedListener(new DecimalTextWatcher(requireView()));
-    }
-
-    @Override
-    boolean isEmpty(@Nullable final Number value) {
-        return value == null || value.doubleValue() == 0.0d;
     }
 
     /**

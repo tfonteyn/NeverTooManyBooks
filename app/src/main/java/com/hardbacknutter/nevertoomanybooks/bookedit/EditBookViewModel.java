@@ -319,7 +319,7 @@ public class EditBookViewModel
                     @NonNull final Book book) {
         getFields(fragmentId).stream()
                              .filter(Field::isAutoPopulated)
-                             .forEach(field -> field.putValue(book));
+                             .forEach(field -> field.save(book));
     }
 
     /**

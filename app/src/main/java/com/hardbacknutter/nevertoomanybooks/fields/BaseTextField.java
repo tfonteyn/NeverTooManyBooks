@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *            {@link DataManager} should work (if not -> bug).
  * @param <V> type of Field View, must extend TextView
  */
-public abstract class BaseTextField<T, V extends TextView>
+abstract class BaseTextField<T, V extends TextView>
         extends BaseField<T, V> {
 
     @NonNull
@@ -113,15 +113,12 @@ public abstract class BaseTextField<T, V extends TextView>
     }
 
     @Override
-    public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source,
-                                @NonNull final RealNumberParser realNumberParser) {
-        final Object obj = source.get(getFieldKey(), realNumberParser);
-        if (obj != null) {
-            //noinspection unchecked
-            initialValue = (T) obj;
-            setValue(initialValue);
-        }
+    public void load(@NonNull final Context context,
+                     @NonNull final DataManager source,
+                     @NonNull final RealNumberParser realNumberParser) {
+        // We don't know the type <T>, so just cast it. If that fails -> BUG
+        //noinspection unchecked
+        internalLoad((T) source.get(getFieldKey(), realNumberParser));
     }
 
     @Override
@@ -140,24 +137,25 @@ public abstract class BaseTextField<T, V extends TextView>
     }
 
     @Override
-    void internalPutValue(@NonNull final DataManager target) {
+    void internalSave(@NonNull final DataManager target) {
         // We don't know the type <T> so put as Object (DataManager will auto-detect).
         target.put(getFieldKey(), getValue());
     }
 
     /**
      * Check if the given value is considered to be 'empty'.
-     * The encapsulated type decides what 'empty' means.
+     * The {@code T} type decides what 'empty' means.
      * <p>
      * An Object is considered to be empty if:
      * <ul>
      *      <li>{@code null}</li>
+     *      <li>{@code String.isEmpty()}</li>
      *      <li>{@code Money.isZero()}</li>
      *      <li>{@code Number.doubleValue() == 0.0d}</li>
      *      <li>{@code Boolean == false}</li>
      *      <li>{@code Collection.isEmpty}</li>
      *      <li>{@code !Checkable.isChecked()}</li>
-     *      <li>{@code String.isEmpty()}</li>
+     *      <li>{@link Object#toString()}#isEmpty()</li>
      * </ul>
      *
      * @return {@code true} if empty.

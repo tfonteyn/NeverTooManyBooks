@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,15 +68,14 @@ public class RatingBarField
     }
 
     @Override
-    public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source,
-                                @NonNull final RealNumberParser realNumberParser) {
-        initialValue = source.getFloat(getFieldKey(), realNumberParser);
-        setValue(initialValue);
+    public void load(@NonNull final Context context,
+                     @NonNull final DataManager source,
+                     @NonNull final RealNumberParser realNumberParser) {
+        internalLoad(source.getFloat(getFieldKey(), realNumberParser));
     }
 
     @Override
-    void internalPutValue(@NonNull final DataManager target) {
+    void internalSave(@NonNull final DataManager target) {
         target.putFloat(getFieldKey(), getValue());
     }
 

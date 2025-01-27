@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,6 +77,6 @@ public class FieldTest
                                          doubleNumberFormatter);
 
         //FIXME: there is no view, so format is not called - this test is meaningless...
-        moneyField.setInitialValue(context, dataManager, realNumberParser);
+        moneyField.load(context, dataManager, realNumberParser);
     }
 }

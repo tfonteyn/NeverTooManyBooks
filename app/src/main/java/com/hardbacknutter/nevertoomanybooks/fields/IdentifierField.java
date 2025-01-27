@@ -25,8 +25,6 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 
-import java.util.Optional;
-
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -50,18 +48,14 @@ public class IdentifierField<V extends EditText>
     }
 
     @Override
-    void internalPutValue(@NonNull final DataManager target) {
+    void internalSave(@NonNull final DataManager target) {
         ((Book) target).setIdentifierValue(getFieldKey(), getValue());
     }
 
     @Override
-    public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source,
-                                @NonNull final RealNumberParser realNumberParser) {
-        final Optional<String> obj = ((Book) source).getIdentifierValue(getFieldKey());
-        if (obj.isPresent()) {
-            initialValue = obj.get();
-            setValue(initialValue);
-        }
+    public void load(@NonNull final Context context,
+                     @NonNull final DataManager source,
+                     @NonNull final RealNumberParser realNumberParser) {
+        internalLoad(((Book) source).getIdentifierValue(getFieldKey()).orElse(null));
     }
 }

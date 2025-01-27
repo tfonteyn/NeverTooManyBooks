@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -83,15 +83,14 @@ public class BooleanIndicatorField
     }
 
     @Override
-    public void setInitialValue(@NonNull final Context context,
-                                @NonNull final DataManager source,
-                                @NonNull final RealNumberParser realNumberParser) {
-        initialValue = source.getBoolean(getFieldKey());
-        setValue(initialValue);
+    public void load(@NonNull final Context context,
+                     @NonNull final DataManager source,
+                     @NonNull final RealNumberParser realNumberParser) {
+        internalLoad(source.getBoolean(getFieldKey()));
     }
 
     @Override
-    void internalPutValue(@NonNull final DataManager target) {
+    void internalSave(@NonNull final DataManager target) {
         target.putBoolean(getFieldKey(), getValue());
     }
 

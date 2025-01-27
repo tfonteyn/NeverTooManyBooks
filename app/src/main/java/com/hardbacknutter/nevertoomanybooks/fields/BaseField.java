@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -85,20 +87,24 @@ public abstract class BaseField<T, V extends View>
     @IdRes
     private final int fieldViewId;
 
-    /** The value as originally loaded from the database. */
-    @Nullable
-    T initialValue;
-
     /**
      * The value which is currently held in memory.
      * If there is no current View, then this value *is* the correct current value.
      * If there is a View, then the View will contain the correct current value.
      * i.e. always try the View first before using this value.
      * <p>
-     * Updated by the user and/or {@link #setValue(Object)}.
+     * Updated by the user through the UI and/or {@link #setValue(Object)}.
      */
     @Nullable
     T rawValue;
+
+    /**
+     * The value as originally loaded from the database.
+     *
+     * @see #internalLoad(Object)
+     */
+    @Nullable
+    private T initialValue;
 
     @SuppressWarnings("FieldNotUsedInToString")
     @IdRes
@@ -219,16 +225,34 @@ public abstract class BaseField<T, V extends View>
      *
      * @param target {@link DataManager} to save the Field value into.
      *
-     * @see #putValue(DataManager)
+     * @see #save(DataManager)
      */
-    abstract void internalPutValue(@NonNull DataManager target);
+    abstract void internalSave(@NonNull DataManager target);
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * final, override/implement {@link #internalSave(DataManager)} instead.
+     *
+     * @param target {@link DataManager} to save the Field value into.
+     */
     @Override
-    public void putValue(@NonNull final DataManager target) {
-        internalPutValue(target);
+    public final void save(@NonNull final DataManager target) {
+        internalSave(target);
         if (validator != null) {
             validator.validate(this);
         }
+    }
+
+    /**
+     * Should be called from the implementation of
+     * {@link #load(Context, DataManager, RealNumberParser)} instead.
+     *
+     * @param value to set
+     */
+    final void internalLoad(@Nullable final T value) {
+        initialValue = value;
+        setValue(initialValue);
     }
 
     @CallSuper
@@ -355,8 +379,15 @@ public abstract class BaseField<T, V extends View>
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * final, implement {@link #isEmpty(T)} instead.
+     *
+     * @return {@code true} if empty.
+     */
     @Override
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
         try {
             return isEmpty(getValue());
         } catch (@NonNull final ClassCastException e) {
@@ -429,10 +460,10 @@ public abstract class BaseField<T, V extends View>
                + ", usedKey=" + usedKey
                + ": fragmentId=" + fragmentId
                + ", relatedViews=" + relatedViews
-               + ", initialValue=`" + initialValue + "`"
-               + ", rawValue=`" + rawValue + "`"
-               + ", getValue=`" + getValue() + "`"
-               + ", errorText=`" + errorText + "`"
+               + ", initialValue=`" + initialValue + '`'
+               + ", rawValue=`" + rawValue + '`'
+               + ", getValue=`" + getValue() + '`'
+               + ", errorText=`" + errorText + '`'
                + ", validator=" + validator
                + '}';
     }
