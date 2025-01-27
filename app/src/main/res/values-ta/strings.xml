@@ -54,6 +54,7 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
+    <string name="brackets">(%1$s)</string>
     <string name="ellipsize">%1$s…</string>
     <string name="list_semicolon">"; "</string>
     <string name="warning_no_matching_book_found">பொருந்தக்கூடிய நூல் எதுவும் கிடைக்கவில்லை</string>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -88,6 +89,7 @@
         <item quantity="one">%1$d bók</item>
         <item quantity="other">%1$d bøkur</item>
     </plurals>
+    <string name="brackets">(%1$s)</string>
     <string name="ellipsize">%1$s…</string>
     <string name="list_semicolon">"; "</string>
     <string name="list_element">• %s</string>

@@ -75,6 +75,9 @@
     <!-- generic "label: value"; support for RTL languages -->
     <string name="name_colon_value">%1$s: %2$s</string>
 
+    <!-- show text between brackets. Some languages use different bracket characters. -->
+    <string name="brackets">(%1$s)</string>
+
     <!-- Append (or prepend) the ellipsis character to another string.
          Support for RTL languages;
          Allows translations to use language specific ellipsis character.
