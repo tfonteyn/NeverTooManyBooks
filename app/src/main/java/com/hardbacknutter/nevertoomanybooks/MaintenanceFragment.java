@@ -31,7 +31,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
@@ -56,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
-import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -122,14 +120,11 @@ public class MaintenanceFragment
         vb.btnCreateBugReport.setOnClickListener(this::onCreateBugReport);
         vb.btnDebugSqShell.setOnClickListener(this::onDebugSqShell);
 
-        vb.btnIdentifiers.setOnClickListener(this::onIdentifiers);
-
         vb.btnDebug.setOnClickListener(v -> {
             vm.incDebugClicks();
 
             if (vm.isShowDbgOptions()) {
                 vb.btnDebugSqShell.setVisibility(View.VISIBLE);
-                vb.btnIdentifiers.setVisibility(View.VISIBLE);
             }
 
             if (vm.isDebugSqLiteAllowsUpdates()) {
@@ -359,18 +354,6 @@ public class MaintenanceFragment
                 .replace(R.id.main_fragment,
                          SqliteShellFragment.create(vm.isDebugSqLiteAllowsUpdates()),
                          SqliteShellFragment.TAG)
-                .commit();
-    }
-
-    private void onIdentifiers(@NonNull final View v) {
-        final Fragment fragment = new IdentifiersEditorFragment();
-        getParentFragmentManager()
-                .beginTransaction()
-                .setReorderingAllowed(true)
-                .addToBackStack(IdentifiersEditorFragment.TAG)
-                .replace(R.id.main_fragment,
-                         fragment,
-                         IdentifiersEditorFragment.TAG)
                 .commit();
     }
 }
