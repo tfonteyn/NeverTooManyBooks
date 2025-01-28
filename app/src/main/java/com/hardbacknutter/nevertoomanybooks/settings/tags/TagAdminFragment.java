@@ -41,9 +41,11 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminTagsBinding;
+import com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorFragment;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
@@ -124,6 +126,7 @@ public class TagAdminFragment
 
     }
 
+    // URGENT: TEMPORARILY ADDED THE IDENTIFIERS as a 3rd page in DEBUG. Will be moved when final.
     private static class TabAdapter
             extends FragmentStateAdapter {
 
@@ -138,6 +141,9 @@ public class TagAdminFragment
 
         @Override
         public int getItemCount() {
+            if (BuildConfig.DEBUG) {
+                return 3;
+            }
             return 2;
         }
 
@@ -150,6 +156,8 @@ public class TagAdminFragment
                     return new TagEditorFragment();
                 case 1:
                     return new TagMappingEditorFragment();
+                case 2:
+                    return new IdentifiersEditorFragment();
             }
             throw new IllegalArgumentException("position=" + position);
         }
@@ -161,6 +169,8 @@ public class TagAdminFragment
                     return R.string.lbl_tags;
                 case 1:
                     return R.string.lbl_substitutions;
+                case 2:
+                    return R.string.lbl_identifiers;
             }
             throw new IllegalArgumentException("position=" + position);
         }
