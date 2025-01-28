@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditIdentifiersBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditIdentifierBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class IdentifiersEditorFragment
@@ -99,18 +100,30 @@ public class IdentifiersEditorFragment
         private final RowEditIdentifierBinding vb;
         @NonNull
         private final Map<Character, String> typeMap;
+        @NonNull
+        private final HtmlFormatter<String> htmlFormatter;
 
         Holder(@NonNull final RowEditIdentifierBinding vb,
-               @NonNull final Map<Character, String> typeMap) {
+               @NonNull final Map<Character, String> typeMap,
+               @NonNull final HtmlFormatter<String> htmlFormatter) {
             super(vb.getRoot());
             this.vb = vb;
             this.typeMap = typeMap;
+            this.htmlFormatter = htmlFormatter;
         }
 
         void onBind(@NonNull final Identifier identifier) {
             vb.key.setText(identifier.getKey());
             vb.type.setText(typeMap.get(identifier.getType()));
             vb.name.setText(identifier.getName());
+
+            final String siteUrl = identifier.getSiteUrl();
+            if (siteUrl != null && !siteUrl.isEmpty()) {
+                htmlFormatter.apply(siteUrl, vb.siteUrl);
+                vb.siteUrl.setVisibility(View.VISIBLE);
+            } else {
+                vb.siteUrl.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -121,6 +134,7 @@ public class IdentifiersEditorFragment
         private final List<Identifier> identifiers;
         private final LayoutInflater inflater;
         private final Map<Character, String> typeMap;
+        private final HtmlFormatter<String> htmlFormatter;
 
         IdentifierAdapter(@NonNull final Context context,
                           @NonNull final List<Identifier> identifiers) {
@@ -129,6 +143,9 @@ public class IdentifiersEditorFragment
 
             typeMap = Map.of(Identifier.TYPE_STRING, context.getString(R.string.lbl_text),
                              Identifier.TYPE_LONG, context.getString(R.string.lbl_numeric));
+
+            htmlFormatter = new HtmlFormatter<String>()
+                    .setEnableLinks(true);
         }
 
         @NonNull
@@ -137,7 +154,7 @@ public class IdentifiersEditorFragment
                                          final int viewType) {
             final RowEditIdentifierBinding vb = RowEditIdentifierBinding
                     .inflate(inflater, parent, false);
-            return new Holder(vb, typeMap);
+            return new Holder(vb, typeMap, htmlFormatter);
         }
 
         @Override

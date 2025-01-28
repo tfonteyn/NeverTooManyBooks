@@ -66,8 +66,12 @@ public final class DBKey {
     public static final String IDENT_KEY = "key";
     /** {@link DBDefinitions#TBL_IDENTIFIERS}. Type: a char: S or L. */
     public static final String IDENT_TYPE = "type";
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. A short name; i.e. website name. Localized. */
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. A short name; i.e. website name. Not Localized. */
     public static final String IDENT_NAME = "name";
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. URL to the main page of the site. */
+    public static final String IDENT_SITE_URL = "site_url";
+    /** {@link DBDefinitions#TBL_IDENTIFIERS}. URL with a "%s" taking a sid. */
+    public static final String IDENT_BOOK_URL = "book_url";
 
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
     public static final String IDENT_SID = "sid";

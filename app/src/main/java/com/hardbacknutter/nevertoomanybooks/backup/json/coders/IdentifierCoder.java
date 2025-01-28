@@ -38,6 +38,9 @@ public class IdentifierCoder
         out.put(DBKey.IDENT_KEY, identifier.getKey());
         out.put(DBKey.IDENT_TYPE, String.valueOf(identifier.getType()));
         out.put(DBKey.IDENT_NAME, identifier.getName());
+        // null urls will be discarded
+        out.put(DBKey.IDENT_SITE_URL, identifier.getSiteUrl());
+        out.put(DBKey.IDENT_BOOK_URL, identifier.getBookUrl());
         return out;
     }
 
@@ -48,8 +51,11 @@ public class IdentifierCoder
         final String key = data.getString(DBKey.IDENT_KEY);
         final char type = data.getString(DBKey.IDENT_TYPE).charAt(0);
         final String name = data.getString(DBKey.IDENT_NAME);
+        // nulls allowed
+        final String siteUrl = data.optString(DBKey.IDENT_SITE_URL, null);
+        final String bookUrl = data.optString(DBKey.IDENT_BOOK_URL, null);
 
-        final Identifier identifier = new Identifier(key, type, name);
+        final Identifier identifier = new Identifier(key, type, name, siteUrl, bookUrl);
         identifier.setId(data.getLong(DBKey.PK_ID));
         return identifier;
     }

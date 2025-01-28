@@ -95,6 +95,8 @@ public class IdentifierDaoImpl
         stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindString(2, String.valueOf(identifier.getType()));
         stmt.bindString(3, identifier.getName());
+        stmt.bindString(4, identifier.getSiteUrl());
+        stmt.bindString(5, identifier.getBookUrl());
         return stmt.executeInsert();
     }
 
@@ -167,7 +169,7 @@ public class IdentifierDaoImpl
                 if (identifier == null) {
                     // We do NOT want to speculate it might be TYPE_LONG!
                     // See docs on the Identifier class for usage.
-                    identifier = new Identifier(iv.getKey(), Identifier.TYPE_STRING, "");
+                    identifier = new Identifier(iv.getKey());
                     insert(identifier);
                 }
                 stmt.bindLong(1, bookId);
@@ -241,8 +243,10 @@ public class IdentifierDaoImpl
             stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
             stmt.bindString(2, String.valueOf(identifier.getType()));
             stmt.bindString(3, identifier.getName());
+            stmt.bindString(4, identifier.getSiteUrl());
+            stmt.bindString(5, identifier.getBookUrl());
 
-            stmt.bindLong(4, identifier.getId());
+            stmt.bindLong(6, identifier.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
 
@@ -321,7 +325,9 @@ public class IdentifierDaoImpl
                 + '(' + DBKey.IDENT_KEY
                 + ',' + DBKey.IDENT_TYPE
                 + ',' + DBKey.IDENT_NAME
-                + ") VALUES(?,?,?)";
+                + ',' + DBKey.IDENT_SITE_URL
+                + ',' + DBKey.IDENT_BOOK_URL
+                + ") VALUES(?,?,?,?,?)";
 
         /** Update an {@link Identifier}. */
         static final String UPDATE =
@@ -329,6 +335,8 @@ public class IdentifierDaoImpl
                 + _SET_ + DBKey.IDENT_KEY + "=?"
                 + ',' + DBKey.IDENT_TYPE + "=?"
                 + ',' + DBKey.IDENT_NAME + "=?"
+                + ',' + DBKey.IDENT_SITE_URL + "=?"
+                + ',' + DBKey.IDENT_BOOK_URL + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Identifier}. */
@@ -339,7 +347,9 @@ public class IdentifierDaoImpl
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID,
                                                 DBKey.IDENT_KEY,
                                                 DBKey.IDENT_TYPE,
-                                                DBKey.IDENT_NAME);
+                                                DBKey.IDENT_NAME,
+                                                DBKey.IDENT_SITE_URL,
+                                                DBKey.IDENT_BOOK_URL);
 
         static final String SELECT_ALL_ORDERED_BY_KEY =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()

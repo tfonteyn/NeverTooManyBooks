@@ -28,17 +28,6 @@
     <string name="app_name"
             translatable="false">&APP_NAME;</string>
 
-    <string name="lbl_github"
-            translatable="false">GitHub</string>
-    <string name="github_project_url"
-            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
-    <string name="github_help_url"
-            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki</string>
-    <string name="github_help_calibre_url"
-            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki#calibre</string>
-    <string name="github_issues_url"
-            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/issues</string>
-
     <!--  acronyms -->
     <string name="lbl_isbn"
             translatable="false">ISBN</string>
@@ -92,6 +81,8 @@
             translatable="false">Amazon mobi ASIN</string>
     <string name="identifier_bedetheque"
             translatable="false">Bedetheque</string>
+    <string name="identifier_kbr"
+            translatable="false">Koninklijke Bibliotheek van België / Bibliothèque royale de Belgique</string>
     <string name="identifier_bnf"
             translatable="false">Bibliothèque nationale de France</string>
     <string name="identifier_british_library"
@@ -102,6 +93,8 @@
             translatable="false">Digital Object Identifier</string>
     <string name="identifier_douban"
             translatable="false">豆瓣 (Douban)</string>
+    <string name="identifier_fantlab"
+            translatable="false">Fantlab (Russian)</string>
     <string name="identifier_goodreads"
             translatable="false">Goodreads</string>
     <string name="identifier_google_books"
@@ -116,12 +109,16 @@
             translatable="false">Library of Congress (USA)</string>
     <string name="identifier_library_thing"
             translatable="false">LibraryThing</string>
+    <string name="identifier_noosfere"
+            translatable="false">nooSFere</string>
     <string name="identifier_open_library"
             translatable="false">OpenLibrary</string>
     <string name="identifier_stripinfo_be"
             translatable="false">StripInfo</string>
     <string name="identifier_stripweb_be"
             translatable="false">StripWeb</string>
+    <string name="identifier_tercerafundacion"
+            translatable="false">La Tercera Fundación</string>
     <string name="identifier_uri"
             translatable="false">URI</string>
     <string name="identifier_url"
@@ -132,7 +129,6 @@
             translatable="false">WorldCat</string>
     <!-- endregion -->
 
-
     <!-- region ========== Citation format. -->
     <string name="lbl_citation_type_bibtex"
             translatable="false">BibTex</string>
@@ -142,11 +138,21 @@
             translatable="false">RIS</string>
     <!-- endregion -->
 
+
+    <string name="lbl_github"
+            translatable="false">GitHub</string>
+    <string name="github_project_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
+    <string name="github_help_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki</string>
+    <string name="github_help_calibre_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/wiki#calibre</string>
+    <string name="github_issues_url"
+            translatable="false">https://github.com/tfonteyn/NeverTooManyBooks/issues</string>
+
     <!-- The project which inspired us. -->
     <string name="lbl_book_catalogue"
             translatable="false">Book Catalogue</string>
-    <string name="brackets"
-            translatable="false">(%1$s)</string>
 
     <!--&lt;!&ndash; Regular expression with all possible prefixes-->
     <!--(as seen in the wild) for a Series number. &ndash;&gt;-->

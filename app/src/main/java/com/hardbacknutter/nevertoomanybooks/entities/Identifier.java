@@ -61,32 +61,30 @@ public class Identifier
 
     public static final String SID_ASIN = "asin";
     public static final String SID_AUDIBLE_ASIN = "audible-asin";
+    public static final String SID_KBR = "kbr";
     public static final String SID_BEDETHEQUE = "bedetheque";
-    /** <a href="https://www.bnf.fr">www.bnf.fr</a>. */
     public static final String SID_BNF = "bnf";
-    /** <a href="https://www.bl.uk/">www.bl.uk</a>. */
     public static final String SID_BRITISH_LIBRARY = "bl";
-    /** <a href="https://www.dnb.de">www.dnb.de</a>. */
     public static final String SID_DNB = "dnb";
-    /** <a href="https://www.doi.org">www.doi.org</a>. */
     public static final String SID_DOI = "doi";
     public static final String SID_DOUBAN = "douban";
+    public static final String SID_FANTLAB = "fantlab";
     public static final String SID_GOODREADS_BOOK = "goodreads";
     public static final String SID_GOOGLE = "google";
     public static final String SID_ISFDB = "isfdb";
-    /** <a href="https://www.kb.nl">www.kb.nl</a>. */
     public static final String SID_KBNL = "ppn";
     public static final String SID_LAST_DODO_NL = "lastdodo";
     public static final String SID_LCCN = "lccn";
     public static final String SID_LIBRARY_THING = "librarything";
     public static final String SID_MOBI_ASIN = "mobi-asin";
+    public static final String SID_NOOSFERE = "noosfere";
     public static final String SID_OCLC = "oclc";
     public static final String SID_OPEN_LIBRARY = "openlibrary";
     public static final String SID_STRIP_INFO = "stripinfo";
     public static final String SID_STRIPWEB = "stripweb";
+    public static final String SID_TERCERA_FUNDACION = "ltf";
     public static final String SID_URI = "uri";
     public static final String SID_URL = "url";
-    /** <a href="https://www.wikidata.org">www.wikidata.org</a>. */
     public static final String SID_WIKIDATA = "wikidata";
 
     public static final char TYPE_LONG = 'L';
@@ -112,24 +110,49 @@ public class Identifier
     private final String key;
     @NonNull
     private final String name;
+    @Nullable
+    private final String siteUrl;
+    @Nullable
+    private final String bookUrl;
     private final char type;
     private long id;
 
     /**
-     * Constructor.
+     * Constructor to add unknown Identifiers as found in book searches.
      *
-     * @param key  a key(word) for this Identifier. e.g. "oclc"
-     *             The size is not enforced, but should be {@link #MAX_KEY_LEN}
-     *             characters max, preferably less.
-     * @param type {@link #TYPE_STRING} or {@link #TYPE_LONG}
-     * @param name the NOT-LOCALIZED short name
+     * @param key a key(word) for this Identifier
+     */
+    public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key) {
+        this.key = key;
+        this.type = TYPE_STRING;
+        this.name = key;
+        this.siteUrl = null;
+        this.bookUrl = null;
+    }
+
+    /**
+     * Constructor for the predefined Identifiers.
+     * Will be used when updated app versions bring new and TESTED urls.
+     *
+     * @param key     a key(word) for this Identifier. e.g. "oclc"
+     *                The size is not enforced, but should be {@link #MAX_KEY_LEN}
+     *                characters max, preferably less.
+     * @param type    {@link #TYPE_STRING} or {@link #TYPE_LONG}
+     * @param name    a short name
+     * @param siteUrl url to the main website page
+     * @param bookUrl a url with a {@code %s%} placeholder for the sid,
+     *                to view a book on the site
      */
     public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key,
                       final char type,
-                      @NonNull final String name) {
+                      @NonNull final String name,
+                      @Nullable final String siteUrl,
+                      @Nullable final String bookUrl) {
         this.key = key;
         this.type = type;
         this.name = name;
+        this.siteUrl = siteUrl;
+        this.bookUrl = bookUrl;
     }
 
     /**
@@ -144,6 +167,8 @@ public class Identifier
         key = rowData.getString(DBKey.IDENT_KEY);
         type = rowData.getString(DBKey.IDENT_TYPE).charAt(0);
         name = rowData.getString(DBKey.IDENT_NAME);
+        siteUrl = rowData.getString(DBKey.IDENT_SITE_URL, null);
+        bookUrl = rowData.getString(DBKey.IDENT_BOOK_URL, null);
     }
 
     protected Identifier(@NonNull final Parcel in) {
@@ -153,11 +178,15 @@ public class Identifier
         type = (char) in.readInt();
         //noinspection DataFlowIssue
         name = in.readString();
+        siteUrl = in.readString();
+        bookUrl = in.readString();
     }
 
     /**
      * Used only at <strong>installation/upgrade</strong> time to create the initial set
      * in the database.
+     * <p>
+     * TODO: stick these in an sql batch file
      *
      * @param context Current context
      *
@@ -168,51 +197,119 @@ public class Identifier
     public static List<Identifier> createInitialList(@NonNull final Context context) {
         return List.of(
                 new Identifier(SID_ASIN, TYPE_STRING,
-                               context.getString(R.string.identifier_amazon_asin)),
+                               context.getString(R.string.identifier_amazon_asin),
+                               // both empty on purpose
+                               null,
+                               null),
                 new Identifier(SID_AUDIBLE_ASIN, TYPE_STRING,
-                               context.getString(R.string.identifier_audible_asin)),
+                               context.getString(R.string.identifier_audible_asin),
+                               "https://www.audible.com",
+                               "https://www.audible.com/pd/%s"),
                 new Identifier(SID_BEDETHEQUE, TYPE_LONG,
-                               context.getString(R.string.identifier_bedetheque)),
+                               context.getString(R.string.identifier_bedetheque),
+                               "https://www.bedetheque.com",
+                               "https://www.bedetheque.com/BD-x-%s.html"),
+                new Identifier(SID_KBR, TYPE_LONG,
+                               context.getString(R.string.identifier_kbr),
+                               "https://opac.kbr.be",
+                               "https://opac.kbr.be/Library/doc/SYRACUSE/%s/"),
                 new Identifier(SID_BNF, TYPE_STRING,
-                               context.getString(R.string.identifier_bnf)),
+                               context.getString(R.string.identifier_bnf),
+                               "https://www.bnf.fr",
+                               "https://catalogue.bnf.fr/ark:/12148/%s"),
                 new Identifier(SID_BRITISH_LIBRARY, TYPE_LONG,
-                               context.getString(R.string.identifier_british_library)),
+                               context.getString(R.string.identifier_british_library),
+                               "https://www.bl.uk",
+                               // FIXME: BL is disabled for now due
+                               //  to https://www.bl.uk/cyber-incident/
+                               null),
                 new Identifier(SID_DNB, TYPE_LONG,
-                               context.getString(R.string.identifier_dnb)),
+                               context.getString(R.string.identifier_dnb),
+                               "https://www.dnb.de",
+                               "https://d-nb.info/%s"),
                 new Identifier(SID_DOI, TYPE_STRING,
-                               context.getString(R.string.identifier_doi)),
+                               context.getString(R.string.identifier_doi),
+                               "https://www.doi.org",
+                               // FIXME: openlibrary  https://www.doi.org/%s
+                               // but none of the openlibrary provided doi numbers
+                               // we tried are resolving, so leaving field empty on purpose.
+                               null),
                 new Identifier(SID_DOUBAN, TYPE_LONG,
-                               context.getString(R.string.identifier_douban)),
+                               context.getString(R.string.identifier_douban),
+                               "https://book.douban.com",
+                               "https://book.douban.com/subject/%s"),
+                new Identifier(SID_FANTLAB, TYPE_STRING,
+                               context.getString(R.string.identifier_fantlab),
+                               "https://fantlab.ru",
+                               "https://fantlab.ru/edition%s"),
                 new Identifier(SID_GOODREADS_BOOK, TYPE_LONG,
-                               context.getString(R.string.identifier_goodreads)),
+                               context.getString(R.string.identifier_goodreads),
+                               "https://www.goodreads.com",
+                               "https://www.goodreads.com/book/show/%s"),
                 new Identifier(SID_GOOGLE, TYPE_STRING,
-                               context.getString(R.string.identifier_google_books)),
+                               context.getString(R.string.identifier_google_books),
+                               "https://books.google.com",
+                               "https://books.google.co.uk/books?id=%s"),
                 new Identifier(SID_ISFDB, TYPE_LONG,
-                               context.getString(R.string.identifier_isfdb)),
+                               context.getString(R.string.identifier_isfdb),
+                               "https://www.isfdb.org",
+                               "https://www.isfdb.org/cgi-bin/pl.cgi?%s"),
                 new Identifier(SID_KBNL, TYPE_LONG,
-                               context.getString(R.string.identifier_kb_nl)),
+                               context.getString(R.string.identifier_kb_nl),
+                               "https://www.kb.nl",
+                               "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s"),
                 new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
-                               context.getString(R.string.identifier_lastdodo_nl)),
+                               context.getString(R.string.identifier_lastdodo_nl),
+                               "https://www.lastdodo.nl",
+                               "https://www.lastdodo.nl/nl/items/%s"),
                 new Identifier(SID_LCCN, TYPE_STRING,
-                               context.getString(R.string.identifier_lccn)),
+                               context.getString(R.string.identifier_lccn),
+                               "https://catalog.loc.gov",
+                               "https://lccn.loc.gov/%s"),
                 new Identifier(SID_LIBRARY_THING, TYPE_LONG,
-                               context.getString(R.string.identifier_library_thing)),
+                               context.getString(R.string.identifier_library_thing),
+                               "https://www.librarything.com",
+                               "https://www.librarything.com/work/%s"),
                 new Identifier(SID_MOBI_ASIN, TYPE_STRING,
-                               context.getString(R.string.identifier_amazon_mobi_asin)),
+                               context.getString(R.string.identifier_amazon_mobi_asin),
+                               null,
+                               null),
+                new Identifier(SID_NOOSFERE, TYPE_LONG,
+                               context.getString(R.string.identifier_noosfere),
+                               "https://www.noosfere.org",
+                               "https://www.noosfere.org/livres/niourf.asp?numlivre=%s"),
                 new Identifier(SID_OCLC, TYPE_STRING,
-                               context.getString(R.string.identifier_worldcat)),
+                               context.getString(R.string.identifier_worldcat),
+                               "https://search.worldcat.org",
+                               "https://www.worldcat.org/oclc/%s"),
                 new Identifier(SID_OPEN_LIBRARY, TYPE_STRING,
-                               context.getString(R.string.identifier_open_library)),
+                               context.getString(R.string.identifier_open_library),
+                               "https://openlibrary.org",
+                               "https://openlibrary.org/books/%s"),
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
-                               context.getString(R.string.identifier_stripinfo_be)),
+                               context.getString(R.string.identifier_stripinfo_be),
+                               "https://stripinfo.be",
+                               "https://stripinfo.be/reeks/strip/%s"),
                 new Identifier(SID_STRIPWEB, TYPE_LONG,
-                               context.getString(R.string.identifier_stripweb_be)),
+                               context.getString(R.string.identifier_stripweb_be),
+                               "https://www.stripweb.be",
+                               null),
+                new Identifier(SID_TERCERA_FUNDACION, TYPE_LONG,
+                               context.getString(R.string.identifier_tercerafundacion),
+                               "https://tercerafundacion.net",
+                               "https://tercerafundacion.net/biblioteca/ver/libro/%s"),
                 new Identifier(SID_URI, TYPE_STRING,
-                               context.getString(R.string.identifier_uri)),
+                               context.getString(R.string.identifier_uri),
+                               null,
+                               null),
                 new Identifier(SID_URL, TYPE_STRING,
-                               context.getString(R.string.identifier_url)),
+                               context.getString(R.string.identifier_url),
+                               null,
+                               "%s"),
                 new Identifier(SID_WIKIDATA, TYPE_STRING,
-                               context.getString(R.string.identifier_wikidata))
+                               context.getString(R.string.identifier_wikidata),
+                               "https://www.wikidata.org",
+                               "https://www.wikidata.org/wiki/%s")
         );
     }
 
@@ -223,6 +320,8 @@ public class Identifier
         dest.writeString(key);
         dest.writeInt(type);
         dest.writeString(name);
+        dest.writeString(siteUrl);
+        dest.writeString(bookUrl);
     }
 
     @Override
@@ -277,6 +376,16 @@ public class Identifier
         return name;
     }
 
+    @Nullable
+    public String getSiteUrl() {
+        return siteUrl;
+    }
+
+    @Nullable
+    public String getBookUrl() {
+        return bookUrl;
+    }
+
     @Override
     @NonNull
     public String toString() {
@@ -285,12 +394,14 @@ public class Identifier
                + ", key=`" + key + '`'
                + ", type=`" + type + '`'
                + ", name=`" + name + '`'
+               + ", siteUrl=`" + siteUrl + '`'
+               + ", bookUrl=`" + bookUrl + '`'
                + '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, key, type, name);
+        return Objects.hash(id, key, type, name, siteUrl, bookUrl);
     }
 
     @Override
@@ -310,7 +421,9 @@ public class Identifier
         // The ids MAY be different, but at least one is != 0
         return Objects.equals(key, that.key)
                && type == that.type
-               && Objects.equals(name, that.name);
+               && Objects.equals(name, that.name)
+               && Objects.equals(siteUrl, that.siteUrl)
+               && Objects.equals(bookUrl, that.bookUrl);
     }
 
     public static class Value
