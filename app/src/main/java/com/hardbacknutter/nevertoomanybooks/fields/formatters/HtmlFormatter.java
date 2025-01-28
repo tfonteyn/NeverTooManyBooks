@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,30 +52,9 @@ public class HtmlFormatter<T>
     private static final Pattern LINEFEED_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
     /** Whether to make links clickable. */
-    private final boolean enableLinks;
+    private boolean enableLinks;
 
-    private final boolean convertLineFeeds;
-
-    /**
-     * Constructor.
-     */
-    HtmlFormatter() {
-        enableLinks = false;
-        convertLineFeeds = false;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param enableLinks      {@code true} to enable links.
-     *                         Ignored if the View has an onClickListener
-     * @param convertLineFeeds set to {@code true} to convert '\n' characters to '<br>'
-     */
-    public HtmlFormatter(final boolean enableLinks,
-                         final boolean convertLineFeeds) {
-        this.enableLinks = enableLinks;
-        this.convertLineFeeds = convertLineFeeds;
-    }
+    private boolean convertLineFeeds;
 
     /**
      * Linkify partial HTML. Linkify methods remove all spans before building links,
@@ -114,6 +93,33 @@ public class HtmlFormatter<T>
             buffer.setSpan(span, text.getSpanStart(span), text.getSpanEnd(span), 0);
         }
         return buffer;
+    }
+
+    /**
+     * Enable link.
+     *
+     * @param enableLinks {@code true} to enable links.
+     *                    Ignored if the View has an onClickListener
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public HtmlFormatter<T> setEnableLinks(final boolean enableLinks) {
+        this.enableLinks = enableLinks;
+        return this;
+    }
+
+    /**
+     * Convert line feeds.
+     *
+     * @param convertLineFeeds set to {@code true} to convert '\n' characters to '<br>'
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public HtmlFormatter<T> setConvertLineFeeds(final boolean convertLineFeeds) {
+        this.convertLineFeeds = convertLineFeeds;
+        return this;
     }
 
     @Override

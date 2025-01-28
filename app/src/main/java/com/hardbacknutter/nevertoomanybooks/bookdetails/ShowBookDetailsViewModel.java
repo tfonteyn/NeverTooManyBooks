@@ -263,8 +263,9 @@ public class ShowBookDetailsViewModel
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale, false);
         final FieldFormatter<String> dateUtcFormatter = new DateFieldFormatter(userLocale, true);
         final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);
-        final FieldFormatter<String> notesFormatter =
-                new HtmlFormatter<>(true, true);
+        final FieldFormatter<String> notesFormatter = new HtmlFormatter<String>()
+                .setEnableLinks(true)
+                .setConvertLineFeeds(true);
         final FieldFormatter<String> languageFormatter =
                 new LanguageFormatter(userLocale, languages);
         final ListFormatter<Entity> normalDetailListFormatter =
