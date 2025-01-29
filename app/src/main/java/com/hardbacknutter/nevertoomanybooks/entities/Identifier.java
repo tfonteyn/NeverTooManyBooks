@@ -79,12 +79,13 @@ public class Identifier
     public static final String SID_LIBRARY_THING = "librarything";
     public static final String SID_LIBRIS = "onr";
     public static final String SID_LIBRIS_XL = "libris";
-    public static final String SID_MOBI_ASIN = "mobi-asin";
     public static final String SID_NILF = "nilf";
     public static final String SID_NOOSFERE = "noosfere";
     public static final String SID_OCLC = "oclc";
     public static final String SID_OPEN_LIBRARY = "openlibrary";
     public static final String SID_PORBASE = "porbase";
+    public static final String SID_REGINALD_1 = "reginald-1";
+    public static final String SID_REGINALD_3 = "reginald-3";
     public static final String SID_STRIPWEB = "stripweb";
     public static final String SID_STRIP_INFO = "stripinfo";
     public static final String SID_TERCERA_FUNDACION = "ltf";
@@ -227,6 +228,7 @@ public class Identifier
                                "https://www.bnf.fr",
                                "http://ark.bnf.fr/ark:/12148/%s"),
                 // FIXME: BL link disabled for now due to https://www.bl.uk/cyber-incident/
+                // The British National Bibliography ??
                 new Identifier(SID_BRITISH_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_british_library),
                                "https://www.bl.uk",
@@ -303,11 +305,6 @@ public class Identifier
                                context.getString(R.string.identifier_libris),
                                "https://libris.kb.se/katalogisering",
                                "https://libris.kb.se/%s"),
-                // both links empty on purpose
-                new Identifier(SID_MOBI_ASIN, TYPE_STRING,
-                               context.getString(R.string.identifier_amazon_mobi_asin),
-                               null,
-                               null),
                 // bookUrl: 2025-01-29
                 new Identifier(SID_NILF, TYPE_LONG,
                                context.getString(R.string.identifier_nilf),
@@ -334,6 +331,16 @@ public class Identifier
                                context.getString(R.string.identifier_porbase),
                                "https://porbase.bnportugal.gov.pt",
                                "http://id.bnportugal.gov.pt/bib/porbase/%s"),
+
+                // "paper" reference work
+                new Identifier(SID_REGINALD_1, TYPE_STRING,
+                               context.getString(R.string.identifier_reginald_1),
+                               null, null),
+                // "paper" reference work
+                new Identifier(SID_REGINALD_3, TYPE_STRING,
+                               context.getString(R.string.identifier_reginald_3),
+                               null, null),
+
                 // bookUrl: 2025-01-29
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
                                context.getString(R.string.identifier_stripinfo_be),

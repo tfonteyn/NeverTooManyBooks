@@ -121,6 +121,10 @@
             translatable="false">OpenLibrary</string>
     <string name="identifier_porbase"
             translatable="false">Biblioteca Nacional de Portugal</string>
+    <string name="identifier_reginald_1"
+            translatable="false">Reginald-1</string>
+    <string name="identifier_reginald_3"
+            translatable="false">Reginald-3</string>
     <string name="identifier_stripinfo_be"
             translatable="false">StripInfo</string>
     <string name="identifier_stripweb_be"
