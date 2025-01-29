@@ -125,13 +125,39 @@ class IsfdbPublicationListHandler
     private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
             Map.entry("1", Identifier.SID_ASIN),
             Map.entry("2", Identifier.SID_BRITISH_LIBRARY),
+            Map.entry("3", "bnb"),
             Map.entry("4", Identifier.SID_BNF),
+            // 5 COPAC (defunct)
             Map.entry("6", Identifier.SID_DNB),
+            Map.entry("7", Identifier.SID_FANTLAB),
             Map.entry("8", Identifier.SID_GOODREADS_BOOK),
+            Map.entry("9", "jpno"),
+
             Map.entry("10", Identifier.SID_LCCN),
+            Map.entry("11", "ndl"),
             Map.entry("12", Identifier.SID_OCLC),
             Map.entry("13", Identifier.SID_OPEN_LIBRARY),
-            Map.entry("16", Identifier.SID_KBNL)
+            Map.entry("14", "sfbg"),
+            Map.entry("15", Identifier.SID_BARNES_AND_NOBLE),
+            Map.entry("16", Identifier.SID_KBNL),
+            Map.entry("17", Identifier.SID_AUDIBLE_ASIN),
+            Map.entry("18", Identifier.SID_TERCERA_FUNDACION),
+            Map.entry("19", Identifier.SID_KBR),
+
+            Map.entry("20", Identifier.SID_REGINALD_1),
+            Map.entry("21", Identifier.SID_REGINALD_3),
+            Map.entry("25", Identifier.SID_NILF),
+            Map.entry("26", Identifier.SID_NOOSFERE),
+            Map.entry("27", "sf-leihbuch"),
+            Map.entry("28", "nla"),
+            Map.entry("29", Identifier.SID_PORBASE),
+
+            Map.entry("30", Identifier.SID_LIBRIS),
+            Map.entry("31", Identifier.SID_LIBRIS_XL),
+            Map.entry("32", "biblioman"),
+            Map.entry("33", "cobiss.bg"),
+            Map.entry("34", "cobiss.sr"),
+            Map.entry("35", "fmi")
     );
     @NonNull
     private final Context context;
