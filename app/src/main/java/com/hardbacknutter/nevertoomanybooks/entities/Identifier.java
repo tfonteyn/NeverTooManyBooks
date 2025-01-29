@@ -61,7 +61,7 @@ public class Identifier
 
     public static final String SID_ASIN = "asin";
     public static final String SID_AUDIBLE_ASIN = "audible-asin";
-    public static final String SID_KBR = "kbr";
+    public static final String SID_BARNES_AND_NOBLE = "bn";
     public static final String SID_BEDETHEQUE = "bedetheque";
     public static final String SID_BNF = "bnf";
     public static final String SID_BRITISH_LIBRARY = "bl";
@@ -73,15 +73,20 @@ public class Identifier
     public static final String SID_GOOGLE = "google";
     public static final String SID_ISFDB = "isfdb";
     public static final String SID_KBNL = "ppn";
+    public static final String SID_KBR = "kbr";
     public static final String SID_LAST_DODO_NL = "lastdodo";
     public static final String SID_LCCN = "lccn";
     public static final String SID_LIBRARY_THING = "librarything";
+    public static final String SID_LIBRIS = "onr";
+    public static final String SID_LIBRIS_XL = "libris";
     public static final String SID_MOBI_ASIN = "mobi-asin";
+    public static final String SID_NILF = "nilf";
     public static final String SID_NOOSFERE = "noosfere";
     public static final String SID_OCLC = "oclc";
     public static final String SID_OPEN_LIBRARY = "openlibrary";
-    public static final String SID_STRIP_INFO = "stripinfo";
+    public static final String SID_PORBASE = "porbase";
     public static final String SID_STRIPWEB = "stripweb";
+    public static final String SID_STRIP_INFO = "stripinfo";
     public static final String SID_TERCERA_FUNDACION = "ltf";
     public static final String SID_URI = "uri";
     public static final String SID_URL = "url";
@@ -196,116 +201,165 @@ public class Identifier
     @NonNull
     public static List<Identifier> createInitialList(@NonNull final Context context) {
         return List.of(
+                // both links empty on purpose
                 new Identifier(SID_ASIN, TYPE_STRING,
                                context.getString(R.string.identifier_amazon_asin),
-                               // both empty on purpose
                                null,
                                null),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_AUDIBLE_ASIN, TYPE_STRING,
                                context.getString(R.string.identifier_audible_asin),
                                "https://www.audible.com",
                                "https://www.audible.com/pd/%s"),
+                // bookUrl: 2025-01-29
+                new Identifier(SID_BARNES_AND_NOBLE, TYPE_LONG,
+                               context.getString(R.string.identifier_barnesandnoble),
+                               "https://www.barnesandnoble.com",
+                               "https://www\\.barnesandnoble\\.com/w/%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_BEDETHEQUE, TYPE_LONG,
                                context.getString(R.string.identifier_bedetheque),
                                "https://www.bedetheque.com",
                                "https://www.bedetheque.com/BD-x-%s.html"),
-                new Identifier(SID_KBR, TYPE_LONG,
-                               context.getString(R.string.identifier_kbr),
-                               "https://opac.kbr.be",
-                               "https://opac.kbr.be/Library/doc/SYRACUSE/%s/"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_BNF, TYPE_STRING,
                                context.getString(R.string.identifier_bnf),
                                "https://www.bnf.fr",
-                               "https://catalogue.bnf.fr/ark:/12148/%s"),
-                new Identifier(SID_BRITISH_LIBRARY, TYPE_LONG,
+                               "http://ark.bnf.fr/ark:/12148/%s"),
+                // FIXME: BL link disabled for now due to https://www.bl.uk/cyber-incident/
+                new Identifier(SID_BRITISH_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_british_library),
                                "https://www.bl.uk",
-                               // FIXME: BL is disabled for now due
-                               //  to https://www.bl.uk/cyber-incident/
                                null),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_DNB, TYPE_LONG,
                                context.getString(R.string.identifier_dnb),
                                "https://www.dnb.de",
                                "https://d-nb.info/%s"),
+                // FIXME: openlibrary  https://www.doi.org/%s
+                // but none of the openlibrary provided doi numbers
+                // we tried are resolving, so leaving bookUrl empty on purpose.
                 new Identifier(SID_DOI, TYPE_STRING,
                                context.getString(R.string.identifier_doi),
                                "https://www.doi.org",
-                               // FIXME: openlibrary  https://www.doi.org/%s
-                               // but none of the openlibrary provided doi numbers
-                               // we tried are resolving, so leaving field empty on purpose.
                                null),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_DOUBAN, TYPE_LONG,
                                context.getString(R.string.identifier_douban),
                                "https://book.douban.com",
                                "https://book.douban.com/subject/%s"),
-                new Identifier(SID_FANTLAB, TYPE_STRING,
+                // bookUrl: 2025-01-29
+                new Identifier(SID_FANTLAB, TYPE_LONG,
                                context.getString(R.string.identifier_fantlab),
                                "https://fantlab.ru",
                                "https://fantlab.ru/edition%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_GOODREADS_BOOK, TYPE_LONG,
                                context.getString(R.string.identifier_goodreads),
                                "https://www.goodreads.com",
                                "https://www.goodreads.com/book/show/%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_GOOGLE, TYPE_STRING,
                                context.getString(R.string.identifier_google_books),
                                "https://books.google.com",
                                "https://books.google.co.uk/books?id=%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_ISFDB, TYPE_LONG,
                                context.getString(R.string.identifier_isfdb),
                                "https://www.isfdb.org",
                                "https://www.isfdb.org/cgi-bin/pl.cgi?%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_KBNL, TYPE_LONG,
                                context.getString(R.string.identifier_kb_nl),
                                "https://www.kb.nl",
                                "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s"),
+                // bookUrl: 2025-01-29
+                new Identifier(SID_KBR, TYPE_LONG,
+                               context.getString(R.string.identifier_kbr),
+                               "https://opac.kbr.be",
+                               "https://opac.kbr.be/Library/doc/SYRACUSE/%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
                                context.getString(R.string.identifier_lastdodo_nl),
                                "https://www.lastdodo.nl",
                                "https://www.lastdodo.nl/nl/items/%s"),
-                new Identifier(SID_LCCN, TYPE_STRING,
+                // bookUrl: 2025-01-29
+                new Identifier(SID_LCCN, TYPE_LONG,
                                context.getString(R.string.identifier_lccn),
                                "https://catalog.loc.gov",
                                "https://lccn.loc.gov/%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_LIBRARY_THING, TYPE_LONG,
                                context.getString(R.string.identifier_library_thing),
                                "https://www.librarything.com",
                                "https://www.librarything.com/work/%s"),
+                // bookUrl: 2025-01-29
+                new Identifier(SID_LIBRIS, TYPE_LONG,
+                               context.getString(R.string.identifier_libris),
+                               "https://libris.kb.se",
+                               "https://libris.kb.se/bib/%s"),
+                // bookUrl: 2025-01-29
+                new Identifier(SID_LIBRIS_XL, TYPE_STRING,
+                               context.getString(R.string.identifier_libris),
+                               "https://libris.kb.se/katalogisering",
+                               "https://libris.kb.se/%s"),
+                // both links empty on purpose
                 new Identifier(SID_MOBI_ASIN, TYPE_STRING,
                                context.getString(R.string.identifier_amazon_mobi_asin),
                                null,
                                null),
+                // bookUrl: 2025-01-29
+                new Identifier(SID_NILF, TYPE_LONG,
+                               context.getString(R.string.identifier_nilf),
+                               "https://www.fantascienza.com/catalogo/",
+                               "https://www.fantascienza.com/catalogo/volumi/NILF%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_NOOSFERE, TYPE_LONG,
                                context.getString(R.string.identifier_noosfere),
                                "https://www.noosfere.org",
                                "https://www.noosfere.org/livres/niourf.asp?numlivre=%s"),
-                new Identifier(SID_OCLC, TYPE_STRING,
+                // bookUrl: 2025-01-29
+                new Identifier(SID_OCLC, TYPE_LONG,
                                context.getString(R.string.identifier_worldcat),
                                "https://search.worldcat.org",
                                "https://www.worldcat.org/oclc/%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_OPEN_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_open_library),
                                "https://openlibrary.org",
                                "https://openlibrary.org/books/%s"),
+
+                // bookUrl: 2025-01-29
+                new Identifier(SID_PORBASE, TYPE_LONG,
+                               context.getString(R.string.identifier_porbase),
+                               "https://porbase.bnportugal.gov.pt",
+                               "http://id.bnportugal.gov.pt/bib/porbase/%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
                                context.getString(R.string.identifier_stripinfo_be),
                                "https://stripinfo.be",
                                "https://stripinfo.be/reeks/strip/%s"),
+                // bookUrl: 2025-01-29  a permalink to the product nr is not possible
                 new Identifier(SID_STRIPWEB, TYPE_LONG,
                                context.getString(R.string.identifier_stripweb_be),
                                "https://www.stripweb.be",
                                null),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_TERCERA_FUNDACION, TYPE_LONG,
                                context.getString(R.string.identifier_tercerafundacion),
                                "https://tercerafundacion.net",
                                "https://tercerafundacion.net/biblioteca/ver/libro/%s"),
+                // both links empty on purpose
                 new Identifier(SID_URI, TYPE_STRING,
                                context.getString(R.string.identifier_uri),
                                null,
                                null),
+                // both links empty on purpose
                 new Identifier(SID_URL, TYPE_STRING,
                                context.getString(R.string.identifier_url),
                                null,
                                "%s"),
+                // bookUrl: 2025-01-29
                 new Identifier(SID_WIKIDATA, TYPE_STRING,
                                context.getString(R.string.identifier_wikidata),
                                "https://www.wikidata.org",
