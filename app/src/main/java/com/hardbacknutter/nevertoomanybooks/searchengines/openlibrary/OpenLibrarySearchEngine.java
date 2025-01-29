@@ -98,6 +98,8 @@ public class OpenLibrarySearchEngine
                                                 + "q=%1$s"
                                                 + "&fields=key,editions";
 
+    private static final String SEARCH_BY_EXTERNAL_ID = "/books/%1$s.json";
+
     /**
      * The covers are available in 3 sizes:
      * <p>
@@ -234,9 +236,22 @@ public class OpenLibrarySearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(BASE_BOOK_URL, externalId);
+        final String url = getHostUrl(context) + String.format(SEARCH_BY_EXTERNAL_ID, externalId);
 
-        fetchBook(context, url, fetchCovers, book);
+        futureHttpGet = createGetDocumentRequest(context);
+        try {
+            final String response = futureHttpGet.get(url, (con, is) ->
+                    readResponseStream(is));
+
+            parse(context, new JSONObject(response), fetchCovers, book);
+
+        } catch (@NonNull final IOException | JSONException e) {
+            throw new SearchException(getEngineId(), e);
+        } finally {
+            futureHttpGet = null;
+        }
+
+        Series.checkForSeriesNameInTitle(book);
         return book;
     }
 
@@ -351,7 +366,6 @@ public class OpenLibrarySearchEngine
                                        .getJSONObject(0)
                                        .getString("key");
 
-
             // "/books/OL22853304M.json"
             final String editionUrl = getHostUrl(context) + key + ".json";
             response = futureHttpGet.get(editionUrl, (con, is) ->
@@ -359,13 +373,13 @@ public class OpenLibrarySearchEngine
 
             parse(context, new JSONObject(response), fetchCovers, book);
 
-            Series.checkForSeriesNameInTitle(book);
-
         } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
             futureHttpGet = null;
         }
+
+        Series.checkForSeriesNameInTitle(book);
     }
 
     /**
