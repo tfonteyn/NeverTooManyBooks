@@ -773,10 +773,13 @@ public class CalibreContentServerReader
 
             final Iterator<String> it = remotes.keys();
             while (it.hasNext()) {
-                final String calKey = it.next();
+                String calKey = it.next();
                 if (!remotes.isNull(calKey)) {
                     final String sid = remotes.optString(calKey);
                     if (sid != null && !sid.isEmpty()) {
+                        // MUST be converted to lc before we try and map
+                        calKey = calKey.toLowerCase(Locale.ENGLISH);
+
                         if (CalibreContentServer.IDENTIFIER_ISBN.equals(calKey)) {
                             book.setIsbn(sid);
                         } else if (calKey.length() > 6 && calKey.startsWith("amazon")) {
