@@ -32,49 +32,48 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
- * Collects all sites supporting {@link SearchEngine.ViewBookByExternalId}
- * and builds/displays a menu suitable for a given {@link Book}.
+ * Collects all {@link Identifier}s present
+ * and builds/displays a menu suitable for the given {@link Book}.
  * <p>
- * We handle all engines in a single instance as we need to hide the entire submenu
- * if there are no relevant engines (i.e. external book ids).
+ * We hide the entire submenu if there are none.
  */
 class ViewBookOnSiteMenuHandler
         implements MenuHandler {
 
-    private final Map<Integer, EngineId> menuIds = new HashMap<>();
+    private final Map<Integer, String> menuIds = new HashMap<>();
 
     @NonNull
-    private static Optional<String> getExternalId(@NonNull final DataHolder rowData,
-                                                  final String identifierKey) {
-        final Optional<String> oid = DataHolderUtils.getExternalId(rowData, identifierKey);
-        if (oid.isPresent()) {
-            // found it
-            return oid;
-        }
+    private static List<Identifier.Value> getExternalIds(@NonNull final DataHolder rowData) {
+        final List<Identifier.Value> ivs = DataHolderUtils.getExternalIds(rowData);
 
-        //URGENT: is this a good idea? The browser/amazon gives a 404 if the isbn is not found
-        // When looking for the Amazon ASIN, fallback on an Isbn code if possible
-//        if (Identifier.SID_ASIN.equals(identifierKey)
-//            && rowData.contains(DBKey.BOOK_ISBN)) {
-//            final String isbnStr = rowData.getString(DBKey.BOOK_ISBN);
-//            final ISBN isbn = new ISBN(isbnStr, true);
-//            if (isbn.isValid(true)) {
-//                final String asin = isbn.isIsbn10Compat() ? isbn.asText(ISBN.Type.Isbn10)
-//                                                          : isbn.asText();
-//                return Optional.of(asin);
-//            }
-//        }
-        return oid;
+        if (ivs.stream().map(Identifier.Value::getKey).noneMatch(Identifier.SID_ASIN::equals)) {
+            //URGENT: is this a good idea? The browser/amazon gives a 404 if the isbn is not found
+            // When looking for the Amazon ASIN, fallback on an Isbn code if possible
+            if (rowData.contains(DBKey.BOOK_ISBN)) {
+                final String isbnStr = rowData.getString(DBKey.BOOK_ISBN);
+                final ISBN isbn = new ISBN(isbnStr, true);
+                if (isbn.isValid(true) && isbn.isIsbn10Compat()) {
+                    ivs.add(new Identifier.Value(Identifier.SID_ASIN,
+                                                 isbn.asText(ISBN.Type.Isbn10)));
+                }
+            }
+        }
+        return ivs;
     }
 
     @Override
@@ -91,31 +90,34 @@ class ViewBookOnSiteMenuHandler
 
             final SubMenu subMenu = menuItem.getSubMenu();
 
-            // The menu will have options for ALL engines!
-            // Visibility is set in onPrepareMenu.
-            EngineId.getViewOnSite().forEach(engineId -> {
-                // generate a random id, and map it to the engine
-                final int menuItemId = View.generateViewId();
-                menuIds.put(menuItemId, engineId);
+            // add to the menu if the Identifier has a valid bookUrl
+            getExternalIds(rowData)
+                    .stream()
+                    .map(Identifier.Value::getKey)
+                    .map(key -> ServiceLocator
+                            .getInstance().getIdentifierDao().findByKey(key))
+                    .flatMap(Optional::stream)
+                    .forEach(identifier -> {
+                                 if (identifier.getBookUrl(context) != null) {
+                                     // generate a random id, and map it to the key
+                                     final int menuItemId = View.generateViewId();
+                                     menuIds.put(menuItemId, identifier.getKey());
 
-                //noinspection DataFlowIssue
-                subMenu.add(R.id.MENU_GROUP_BOOK, menuItemId, 0, engineId.getLabelResId())
-                       .setIcon(R.drawable.link_24px);
-            });
+                                     //noinspection DataFlowIssue
+                                     subMenu.add(R.id.MENU_GROUP_BOOK, menuItemId, 0,
+                                                 identifier.getName())
+                                            .setIcon(R.drawable.link_24px);
+                                 }
+                             }
+                    );
         }
     }
 
-    /**
-     * Populate the OpenOnWebsiteMenu sub menu (if present) for a book
-     * with the sites for which the book has a valid external-id.
-     *
-     * @param menu    root menu
-     * @param rowData the row data
-     */
     @Override
-    public void onPrepareMenu(@NonNull final Context context,
-                              @NonNull final Menu menu,
-                              @NonNull final DataHolder rowData) {
+    public void onPrepareMenu(
+            @NonNull final Context context,
+            @NonNull final Menu menu,
+            @NonNull final DataHolder rowData) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
         if (subMenuItem == null) {
@@ -123,50 +125,40 @@ class ViewBookOnSiteMenuHandler
             return;
         }
 
-        final SubMenu subMenu = subMenuItem.getSubMenu();
-        boolean subMenuVisible = false;
-        // Set the visibility of each menu item.
-        // If all items are invisible, make the submenu invisible as well
         //noinspection DataFlowIssue
-        for (int i = 0; i < subMenu.size(); i++) {
-            final MenuItem menuItem = subMenu.getItem(i);
-            //noinspection DataFlowIssue
-            final String identifierKey = menuIds.get(menuItem.getItemId()).getIdentifierKey();
-            //noinspection DataFlowIssue
-            final boolean visible = getExternalId(rowData, identifierKey).isPresent();
-
-            menuItem.setVisible(visible);
-            if (visible) {
-                // at least one menu item is visible, show the menu
-                subMenuVisible = true;
-            }
-        }
-        subMenuItem.setVisible(subMenuVisible);
+        subMenuItem.setVisible(subMenuItem.getSubMenu().size() > 0);
     }
 
     @Override
-    public boolean onMenuItemSelected(@NonNull final Context context,
-                                      @IdRes final int menuItemId,
-                                      @NonNull final DataHolder rowData) {
+    public boolean onMenuItemSelected(
+            @NonNull final Context context,
+            @IdRes final int menuItemId,
+            @NonNull final DataHolder rowData) {
 
-        final EngineId engineId = menuIds.get(menuItemId);
-        if (engineId == null) {
+        final String key = menuIds.get(menuItemId);
+        if (key == null) {
             // Not ours to handle
             return false;
         }
 
-        final String identifierKey = engineId.getIdentifierKey();
-        // Sanity check
-        if (identifierKey == null) {
+        final Optional<String> oBookUrl = ServiceLocator.getInstance()
+                                                        .getIdentifierDao()
+                                                        .findByKey(key)
+                                                        .map(identifier -> identifier.getBookUrl(
+                                                                context));
+        // Sanity check, it should be there!
+        if (oBookUrl.isEmpty()) {
             return false;
         }
 
-        getExternalId(rowData, identifierKey).ifPresent(sid -> {
-            final SearchEngine.ViewBookByExternalId searchEngine =
-                    (SearchEngine.ViewBookByExternalId) engineId.createSearchEngine(context);
-            final String url = searchEngine.createViewOnSiteUrl(context, sid);
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-        });
+        final Optional<String> oSid = DataHolderUtils.getExternalId(rowData, key);
+        // Sanity check, it should be there!
+        if (oSid.isEmpty()) {
+            return false;
+        }
+
+        final String url = String.format(oBookUrl.get(), oSid.get());
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         return true;
     }
 }
