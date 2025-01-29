@@ -132,7 +132,7 @@ public class OpenLibrarySearchEngine
     private static final int COVER_BY_ISBN_REQUEST_DELAY = 3_000;
 
     /**
-     * Key's that do not need mapping are not listed.
+     * Key's that map 1:1 are not listed.
      * This list only maps <strong>known</strong> keys
      * from the predefined list at app install time.
      * <p>
