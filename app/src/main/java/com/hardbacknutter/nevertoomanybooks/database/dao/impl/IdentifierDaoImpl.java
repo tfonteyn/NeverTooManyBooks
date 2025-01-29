@@ -81,7 +81,7 @@ public class IdentifierDaoImpl
         final List<Identifier> identifierList = Identifier.createInitialList(context);
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Identifier identifier : identifierList) {
-                doInsert(identifier, stmt);
+                doInsert(context, identifier, stmt);
             }
         } catch (@NonNull final SQLException e) {
             // log, but just rethrow insert errors... we're in a real mess now
@@ -90,13 +90,14 @@ public class IdentifierDaoImpl
         }
     }
 
-    private static long doInsert(@NonNull final Identifier identifier,
+    private static long doInsert(@NonNull final Context context,
+                                 @NonNull final Identifier identifier,
                                  @NonNull final ExtSQLiteStatement stmt) {
         stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindString(2, String.valueOf(identifier.getType()));
         stmt.bindString(3, identifier.getName());
         stmt.bindString(4, identifier.getSiteUrl());
-        stmt.bindString(5, identifier.getBookUrl());
+        stmt.bindString(5, identifier.getBookUrl(context));
         return stmt.executeInsert();
     }
 
@@ -139,7 +140,8 @@ public class IdentifierDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@IntRange(from = 1) final long bookId,
+    public void insertOrUpdate(@NonNull final Context context,
+                               @IntRange(from = 1) final long bookId,
                                @NonNull final Collection<Identifier.Value> list)
             throws DaoInsertException, DaoUpdateException {
 
@@ -170,7 +172,7 @@ public class IdentifierDaoImpl
                     // We do NOT want to speculate it might be TYPE_LONG!
                     // See docs on the Identifier class for usage.
                     identifier = new Identifier(iv.getKey());
-                    insert(identifier);
+                    insert(context, identifier);
                 }
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, identifier.getId());
@@ -218,12 +220,13 @@ public class IdentifierDaoImpl
 
     @IntRange(from = 1)
     @Override
-    public long insert(@NonNull final Identifier identifier)
+    public long insert(@NonNull final Context context,
+                       @NonNull final Identifier identifier)
             throws DaoInsertException {
 
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            iId = doInsert(identifier, stmt);
+            iId = doInsert(context, identifier, stmt);
         }
 
         if (iId != -1) {
@@ -236,7 +239,8 @@ public class IdentifierDaoImpl
     }
 
     @Override
-    public void update(@NonNull final Identifier identifier)
+    public void update(@NonNull final Context context,
+                       @NonNull final Identifier identifier)
             throws DaoUpdateException {
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
@@ -244,7 +248,7 @@ public class IdentifierDaoImpl
             stmt.bindString(2, String.valueOf(identifier.getType()));
             stmt.bindString(3, identifier.getName());
             stmt.bindString(4, identifier.getSiteUrl());
-            stmt.bindString(5, identifier.getBookUrl());
+            stmt.bindString(5, identifier.getBookUrl(context));
 
             stmt.bindLong(6, identifier.getId());
             rowsAffected = stmt.executeUpdateDelete();

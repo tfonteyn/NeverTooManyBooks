@@ -55,7 +55,7 @@ public class IdentifierTest
             assertFalse("Duplicate key: " + key, keys.contains(key));
             keys.add(key);
 
-            final String bookUrl = i.getBookUrl();
+            final String bookUrl = i.getBookUrl(context);
             if (bookUrl != null) {
                 assertEquals("Invalid bookUrl key: " + key, 1,
                              PATTERN.split(bookUrl, -1).length - 1);

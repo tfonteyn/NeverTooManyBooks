@@ -563,7 +563,7 @@ public class BookDaoImpl
             // Instead we always work with the String key.
             // We will insert new entries
             // but there is nothing to update as such.
-            identifierDaoSupplier.get().insertOrUpdate(book.getId(),
+            identifierDaoSupplier.get().insertOrUpdate(context, book.getId(),
                                                        book.getIdentifiers());
         }
 

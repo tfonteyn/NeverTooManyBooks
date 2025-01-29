@@ -310,7 +310,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Identifiers
                         || recordType == RecordType.AutoDetect) {
-                        readIdentifiers(root);
+                        readIdentifiers(context, root);
                     }
 
                     if (recordType == RecordType.Books
@@ -532,12 +532,13 @@ public class JsonRecordReader
         }
     }
 
-    private void readIdentifiers(@NonNull final JSONObject root) {
+    private void readIdentifiers(@NonNull final Context context,
+                                 @NonNull final JSONObject root) {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Identifiers.getName());
         if (jsonRoot != null) {
             final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
 
-            new IdentifierCoder()
+            new IdentifierCoder(context)
                     .decode(jsonRoot)
                     .forEach(identifier -> {
                         dao.fixId(identifier);
@@ -546,7 +547,7 @@ public class JsonRecordReader
                             switch (getUpdateOption()) {
                                 case Overwrite: {
                                     try {
-                                        dao.update(identifier);
+                                        dao.update(context, identifier);
                                     } catch (@NonNull final DaoWriteException e) {
                                         throw new UncheckedDaoWriteException(e);
                                     }
@@ -558,7 +559,7 @@ public class JsonRecordReader
                             }
                         } else {
                             try {
-                                dao.insert(identifier);
+                                dao.insert(context, identifier);
                             } catch (@NonNull final DaoWriteException e) {
                                 throw new UncheckedDaoWriteException(e);
                             }

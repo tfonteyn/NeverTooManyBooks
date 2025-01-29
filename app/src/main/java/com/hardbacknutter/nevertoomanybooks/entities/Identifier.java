@@ -33,6 +33,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 /**
  * External website id's (site-id, sid).
@@ -443,8 +444,15 @@ public class Identifier
     }
 
     @Nullable
-    public String getBookUrl() {
-        return bookUrl;
+    public String getBookUrl(@NonNull final Context context) {
+        if (bookUrl != null) {
+            return bookUrl;
+        } else if (SID_ASIN.equals(key)) {
+            //noinspection DataFlowIssue
+            return EngineId.Amazon.getConfig().getHostUrl(context);
+        } else {
+            return null;
+        }
     }
 
     @Override

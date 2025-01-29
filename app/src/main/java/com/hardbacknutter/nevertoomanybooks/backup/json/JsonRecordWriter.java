@@ -241,7 +241,7 @@ public class JsonRecordWriter
                         ServiceLocator.getInstance().getIdentifierDao().getAll();
                 if (!fields.isEmpty()) {
                     jsonData.put(RecordType.Identifiers.getName(),
-                                 new IdentifierCoder().encode(fields));
+                                 new IdentifierCoder(context).encode(fields));
                 }
                 results.identifiers = fields.size();
             }

@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -29,6 +31,14 @@ import com.hardbacknutter.org.json.JSONObject;
 
 public class IdentifierCoder
         implements JsonCoder<Identifier> {
+
+    @NonNull
+    private final Context context;
+
+    public IdentifierCoder(@NonNull final Context context) {
+        this.context = context;
+    }
+
     @NonNull
     @Override
     public JSONObject encode(@NonNull final Identifier identifier)
@@ -40,7 +50,7 @@ public class IdentifierCoder
         out.put(DBKey.IDENT_NAME, identifier.getName());
         // null urls will be discarded
         out.put(DBKey.IDENT_SITE_URL, identifier.getSiteUrl());
-        out.put(DBKey.IDENT_BOOK_URL, identifier.getBookUrl());
+        out.put(DBKey.IDENT_BOOK_URL, identifier.getBookUrl(context));
         return out;
     }
 
