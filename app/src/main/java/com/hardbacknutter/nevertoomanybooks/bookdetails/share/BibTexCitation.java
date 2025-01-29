@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,9 +29,11 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -69,6 +71,7 @@ class BibTexCitation
     private static final String PUBLISHER = "publisher = {";
     private static final String SERIES = "series    = {";
     private static final String TITLE = "title     = {";
+    private static final String URL = "url       = {";
     private static final String YEAR = "year      = {";
 
     /** concat 2 authors. */
@@ -127,6 +130,17 @@ class BibTexCitation
                     sj.add(NUMBER + number + '}');
                 }
             });
+
+        final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
+        book.getIdentifiers().forEach(iv -> {
+            identifierDao.findByKey(iv.getKey()).ifPresent(identifier -> {
+                final String bookUrl = identifier.getBookUrl();
+                if (bookUrl != null) {
+                    final String url = String.format(bookUrl, iv.getSid());
+                    sj.add(URL + url + '}');
+                }
+            });
+        });
 
         return sj.toString() + '\n' + '}';
     }
