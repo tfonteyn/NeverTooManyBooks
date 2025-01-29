@@ -327,4 +327,27 @@ public final class DataHolderUtils {
         // e.g. if this method was called in error on for example a Series.
         return Optional.empty();
     }
+
+    @NonNull
+    public static List<Identifier.Value> getExternalIds(@NonNull final DataHolder dataHolder) {
+
+        // The cursor REFERENCES a book
+        // This is the common case used by the BoB
+        if (dataHolder.contains(DBKey.FK_BOOK)) {
+            final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
+            if (bookId > 0) {
+                return ServiceLocator.getInstance().getIdentifierDao().getByBookId(bookId);
+            }
+        }
+
+        // If the row IS a Book; This is the case used with the book details screen
+        if (dataHolder instanceof Book) {
+            return ((Book) dataHolder).getIdentifiers();
+        }
+
+        // Paranoia.. DO NOT throw here; Not entirely sure we can never get here..
+        // e.g. if this method was called in error
+        return List.of();
+    }
+
 }
