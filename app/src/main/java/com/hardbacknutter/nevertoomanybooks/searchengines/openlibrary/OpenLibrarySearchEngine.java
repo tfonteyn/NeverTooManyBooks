@@ -139,6 +139,7 @@ public class OpenLibrarySearchEngine
      * "paperback_swap"
      * "alibris_id"
      * "depu00f3sito_legal"
+     * "bookbrainz"
      * ...
      */
     private static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
