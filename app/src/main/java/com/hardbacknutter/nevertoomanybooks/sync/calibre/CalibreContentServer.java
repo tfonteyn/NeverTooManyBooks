@@ -150,13 +150,18 @@ public final class CalibreContentServer
     private static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
 
     /**
-     * Key's that do not need mapping are not listed.
+     * Key's that map 1:1 are not listed.
      * This list only maps <strong>known</strong> keys
      * from the predefined list at app install time.
+     * <p>
+     * Other keys we've seen now and then:
+     * "epl"
+     * "kobo"
+     *
      */
     static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
             Map.entry("amazon", Identifier.SID_ASIN),
-            Map.entry("ppn", Identifier.SID_KBNL)
+            Map.entry("mobi-asin", Identifier.SID_ASIN)
     );
     /**
      * Calibre treats the ISBN as just another identifier.
