@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,10 +37,12 @@ public interface MenuHandler {
      * @param context  Current context
      * @param menu     The Menu to inflate into
      * @param inflater to use
+     * @param rowData  the row data
      */
     void onCreateMenu(@NonNull Context context,
                       @NonNull Menu menu,
-                      @NonNull MenuInflater inflater);
+                      @NonNull MenuInflater inflater,
+                      @NonNull DataHolder rowData);
 
     /**
      * Prepare the menu before opening it.

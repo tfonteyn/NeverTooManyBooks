@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,8 @@ class SiteSearchMenuHandler
     @Override
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
-                             @NonNull final MenuInflater inflater) {
+                             @NonNull final MenuInflater inflater,
+                             @NonNull final DataHolder rowData) {
         // Sanity check
         MenuItem menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
         if (menuItem == null) {

@@ -645,8 +645,11 @@ public class ShowBookDetailsFragment
             }
 
             final Context context = getContext();
+            final Book book = vm.getBook();
+
             //noinspection DataFlowIssue
-            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater));
+            vm.getMenuHandlers().forEach(
+                    h -> h.onCreateMenu(context, menu, inflater, book));
         }
 
         @Override

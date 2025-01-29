@@ -1984,7 +1984,7 @@ public class BooksOnBookshelf
             if (calibreHandler != null) {
                 calibreHandler.onCreateMenu(menu, inflater);
             }
-            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater));
+            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
 
             final boolean isRead = rowData.getBoolean(DBKey.READ__BOOL);
             menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
@@ -2090,7 +2090,7 @@ public class BooksOnBookshelf
                                @NonNull final Menu menu) {
             final MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.author, menu);
-            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater));
+            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
 
             final boolean complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
             menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
@@ -2151,7 +2151,7 @@ public class BooksOnBookshelf
             if (rowData.getLong(DBKey.FK_SERIES) != 0) {
                 final MenuInflater inflater = getMenuInflater();
                 inflater.inflate(R.menu.series, menu);
-                vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater));
+                vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
 
                 final boolean complete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
                 menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);

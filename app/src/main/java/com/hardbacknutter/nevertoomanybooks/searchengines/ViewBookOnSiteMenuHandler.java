@@ -80,7 +80,8 @@ class ViewBookOnSiteMenuHandler
     @Override
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
-                             @NonNull final MenuInflater inflater) {
+                             @NonNull final MenuInflater inflater,
+                             @NonNull final DataHolder rowData) {
         // Sanity check
         MenuItem menuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
         if (menuItem == null) {
