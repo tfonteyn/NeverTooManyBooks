@@ -37,6 +37,7 @@ import java.net.CookieManager;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -959,11 +960,12 @@ public class OpenLibrarySearchEngine
         element.keySet().forEach(olKey -> {
             final JSONArray data = element.optJSONArray(olKey);
             if (data != null && !data.isEmpty()) {
-                // Map the olKey to our key, or if not found,
-                // just use the olKey itself
-                String key = IDENTIFIER_MAPPING.get(olKey);
+                // MUST be converted to lc before we try and map
+                final String olKeyLc = olKey.toLowerCase(Locale.ENGLISH);
+                // Map the olKeyLc to our key, or if not found, just use the olKeyLc itself
+                String key = IDENTIFIER_MAPPING.get(olKeyLc);
                 if (key == null) {
-                    key = olKey;
+                    key = olKeyLc;
                 }
                 // The site supports multiple identifier of the same type.
                 // We just grab the first entry in their array.
