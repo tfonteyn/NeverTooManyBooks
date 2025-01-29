@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
@@ -92,6 +93,18 @@ public class RISCitation
                 sj.add("Y1  - " + isoDate.substring(0, 4));
             }
         }
+
+        final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
+        book.getIdentifiers().forEach(iv -> {
+            identifierDao.findByKey(iv.getKey()).ifPresent(identifier -> {
+                final String bookUrl = identifier.getBookUrl();
+                if (bookUrl != null) {
+                    final String url = String.format(bookUrl, iv.getSid());
+                    sj.add("UR  - " + url);
+                }
+            });
+        });
+
 
         sj.add("ER  -");
         return sj.toString();
