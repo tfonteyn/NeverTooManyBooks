@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BaseDragDropRecyclerViewAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.CheckableDragDropViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -360,7 +361,8 @@ public class PreferredStylesFragment
     }
 
     private static class Holder
-            extends CheckableDragDropViewHolder {
+            extends CheckableDragDropViewHolder
+            implements BindableViewHolder<Style> {
 
         @NonNull
         private final RowEditPreferredStylesBinding vb;
@@ -368,6 +370,17 @@ public class PreferredStylesFragment
         Holder(@NonNull final RowEditPreferredStylesBinding vb) {
             super(vb.getRoot());
             this.vb = vb;
+        }
+
+        @Override
+        public void onBind(@NonNull final Style style) {
+            final Context context = itemView.getContext();
+            vb.styleName.setText(style.getLabel(context));
+            vb.type.setText(style.getType().getLabel(context));
+            vb.groups.setText(style.getGroupsSummaryText(context));
+
+            // set the 'preferred' state of the current row
+            setChecked(style.isPreferred());
         }
     }
 
@@ -412,16 +425,8 @@ public class PreferredStylesFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      @SuppressLint("RecyclerView") final int position) {
             super.onBindViewHolder(holder, position);
-            final Context context = holder.itemView.getContext();
 
-            final Style style = getItem(position);
-
-            holder.vb.styleName.setText(style.getLabel(context));
-            holder.vb.type.setText(style.getType().getLabel(context));
-            holder.vb.groups.setText(style.getGroupsSummaryText(context));
-
-            // set the 'preferred' state of the current row
-            holder.setChecked(style.isPreferred());
+            holder.onBind(getItem(position));
 
             // set the 'selected' state of the current row
             holder.itemView.setSelected(position == positionHandler.getSelectedPosition());
