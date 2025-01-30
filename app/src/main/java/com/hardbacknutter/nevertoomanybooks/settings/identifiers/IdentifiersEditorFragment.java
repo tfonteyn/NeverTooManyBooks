@@ -117,7 +117,7 @@ public class IdentifiersEditorFragment
             vb.type.setText(typeMap.get(identifier.getType()));
             vb.name.setText(identifier.getName());
 
-            final String siteUrl = identifier.getSiteUrl();
+            final String siteUrl = identifier.getSiteUrl(itemView.getContext());
             if (siteUrl != null && !siteUrl.isEmpty()) {
                 htmlFormatter.apply(siteUrl, vb.siteUrl);
                 vb.siteUrl.setVisibility(View.VISIBLE);

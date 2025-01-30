@@ -438,21 +438,42 @@ public class Identifier
         return name;
     }
 
+    /**
+     * Get the main/home page for this Identifier.
+     * This it not necessarily the home page.
+     *
+     * @param context Current context
+     *
+     * @return url
+     */
     @Nullable
-    public String getSiteUrl() {
+    public String getSiteUrl(@NonNull final Context context) {
+        // Always overrule the db stored url for amazon
+        if (SID_ASIN.equals(key)) {
+            //noinspection DataFlowIssue
+            return EngineId.Amazon.getConfig().getHostUrl(context);
+        }
+
         return siteUrl;
     }
 
+    /**
+     * Get the url for viewing a book on the site.
+     * The url will have a single {@code %s} placeholder where the Identifier value needs to go.
+     *
+     * @param context Current context
+     *
+     * @return url
+     */
     @Nullable
     public String getBookUrl(@NonNull final Context context) {
-        if (bookUrl != null) {
-            return bookUrl;
-        } else if (SID_ASIN.equals(key)) {
+        // Always overrule the db stored url for amazon
+        if (SID_ASIN.equals(key)) {
             //noinspection DataFlowIssue
-            return EngineId.Amazon.getConfig().getHostUrl(context);
-        } else {
-            return null;
+            return EngineId.Amazon.getConfig().getHostUrl(context) + "/dp/%s";
         }
+
+        return bookUrl;
     }
 
     @Override

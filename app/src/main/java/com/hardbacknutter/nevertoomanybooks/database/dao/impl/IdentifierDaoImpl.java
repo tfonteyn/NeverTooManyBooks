@@ -96,7 +96,7 @@ public class IdentifierDaoImpl
         stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindString(2, String.valueOf(identifier.getType()));
         stmt.bindString(3, identifier.getName());
-        stmt.bindString(4, identifier.getSiteUrl());
+        stmt.bindString(4, identifier.getSiteUrl(context));
         stmt.bindString(5, identifier.getBookUrl(context));
         return stmt.executeInsert();
     }
@@ -247,7 +247,7 @@ public class IdentifierDaoImpl
             stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
             stmt.bindString(2, String.valueOf(identifier.getType()));
             stmt.bindString(3, identifier.getName());
-            stmt.bindString(4, identifier.getSiteUrl());
+            stmt.bindString(4, identifier.getSiteUrl(context));
             stmt.bindString(5, identifier.getBookUrl(context));
 
             stmt.bindLong(6, identifier.getId());

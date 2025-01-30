@@ -49,7 +49,7 @@ public class IdentifierCoder
         out.put(DBKey.IDENT_TYPE, String.valueOf(identifier.getType()));
         out.put(DBKey.IDENT_NAME, identifier.getName());
         // null urls will be discarded
-        out.put(DBKey.IDENT_SITE_URL, identifier.getSiteUrl());
+        out.put(DBKey.IDENT_SITE_URL, identifier.getSiteUrl(context));
         out.put(DBKey.IDENT_BOOK_URL, identifier.getBookUrl(context));
         return out;
     }

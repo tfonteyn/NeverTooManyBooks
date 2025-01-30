@@ -47,7 +47,8 @@
         <TextView
             android:id="@+id/name"
             style="@style/RowEditor.Text.Secondary"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/key"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/lbl_name" />
@@ -55,7 +56,8 @@
         <TextView
             android:id="@+id/site_url"
             style="@style/RowEditor.Text.Secondary"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/name"
             app:layout_constraintTop_toBottomOf="@id/name"
             tools:text="https://blah.info"
