@@ -144,8 +144,6 @@ class IsfdbPublicationListHandler
             Map.entry("18", Identifier.SID_TERCERA_FUNDACION),
             Map.entry("19", Identifier.SID_KBR),
 
-            Map.entry("20", Identifier.SID_REGINALD_1),
-            Map.entry("21", Identifier.SID_REGINALD_3),
             Map.entry("25", Identifier.SID_NILF),
             Map.entry("26", Identifier.SID_NOOSFERE),
             Map.entry("27", "sf-leihbuch"),

@@ -85,8 +85,6 @@ public class Identifier
     public static final String SID_OCLC = "oclc";
     public static final String SID_OPEN_LIBRARY = "openlibrary";
     public static final String SID_PORBASE = "porbase";
-    public static final String SID_REGINALD_1 = "reginald-1";
-    public static final String SID_REGINALD_3 = "reginald-3";
     public static final String SID_STRIPWEB = "stripweb";
     public static final String SID_STRIP_INFO = "stripinfo";
     public static final String SID_TERCERA_FUNDACION = "ltf";
@@ -331,15 +329,6 @@ public class Identifier
                                context.getString(R.string.identifier_porbase),
                                "https://porbase.bnportugal.gov.pt",
                                "http://id.bnportugal.gov.pt/bib/porbase/%s"),
-
-                // "paper" reference work
-                new Identifier(SID_REGINALD_1, TYPE_STRING,
-                               context.getString(R.string.identifier_reginald_1),
-                               null, null),
-                // "paper" reference work
-                new Identifier(SID_REGINALD_3, TYPE_STRING,
-                               context.getString(R.string.identifier_reginald_3),
-                               null, null),
 
                 // bookUrl: 2025-01-29
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
