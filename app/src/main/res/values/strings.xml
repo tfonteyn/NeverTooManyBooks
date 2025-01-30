@@ -1131,8 +1131,9 @@
     <!-- Label for tagging a book (i.e assign a set of labels/tags to a book: Romance, Crime, etc..)
         Plural. -->
     <string name="lbl_tags">Tags</string>
-
-    <!-- context: substitutions of one item to another item  -->
+    <!-- screen/menu title -->
+    <string name="lbl_tag_maintenance">Tag Maintenance</string>
+    <!-- screen/menu title: substitutions of one item to another item  -->
     <string name="lbl_substitutions">Substitutions</string>
 
     <!-- is this book signed by the author? -->

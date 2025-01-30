@@ -60,7 +60,7 @@
     <item
         android:id="@id/MENU_MANAGE_TAGS"
         android:icon="@drawable/tag_24px"
-        android:title="@string/lbl_tags" />
+        android:title="@string/lbl_tag_maintenance" />
 
     <item
         android:id="@id/MENU_HELP"
