@@ -76,6 +76,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TA
  * The generated list is used to display books in a list control and perform operation like
  * 'expand/collapse' on nodes in the list.
  * <p>
+ * As a general remark: the list-table is a compromise between data-availability
+ * (i.e. data must explicitly be copied) and performance during scrolling
+ * through a large amount of books.
+ * <p>
  * The {@link Booklist} "owns" the temporary database tables.
  * They get deleted when {@link Booklist#close()} is called.
  * A {@link Booklist} has a 1:1 relation to {@link BooklistCursor} objects.
@@ -916,17 +920,14 @@ class BooklistBuilder {
         /**
          * Create the FROM clause based on the {@link BooklistGroup}s and extra criteria.
          * <ul>Always joined are:
-         *      <li>{@link DBDefinitions#TBL_BOOK_AUTHOR}
-         *      + {@link DBDefinitions#TBL_AUTHORS}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_AUTHOR} + {@link DBDefinitions#TBL_AUTHORS}</li>
+         *      <li>{@link #leftOuterJoins}</li>
          * </ul>
          * <ul>Optionally joined with:
-         *      <li>{@link DBDefinitions#TBL_BOOK_SERIES}
-         *      + {@link DBDefinitions#TBL_SERIES}</li>
-         *      <li>{@link DBDefinitions#TBL_BOOK_PUBLISHER}
-         *      + {@link DBDefinitions#TBL_PUBLISHERS}</li>
-         *      <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}
-         *      + {@link DBDefinitions#TBL_BOOKSHELF}</li>
-         *      <li>{@link #leftOuterJoins}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF} + {@link DBDefinitions#TBL_BOOKSHELF}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_PUBLISHER} + {@link DBDefinitions#TBL_PUBLISHERS}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_SERIES} + {@link DBDefinitions#TBL_SERIES}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_TAG} + {@link DBDefinitions#TBL_TAGS}</li>
          * </ul>
          *
          * @param leftOuterJoins tables to be added as a LEFT OUTER JOIN
@@ -958,8 +959,18 @@ class BooklistBuilder {
                 joinWithPublishers(sb);
             }
 
-            if (style.hasGroup(BooklistGroup.TAGS_GENRE)
-                || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)) {
+            if (style.hasGroup(BooklistGroup.TAGS_GENRE)) {
+                // ONLY join with the tags if we actually are grouping by them.
+                // Do NOT join with
+                //    || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)
+                // as each book would be shown "#tags"-amount of times
+                // due to there not being a "primary tag" concept.
+                // This DOES mean that we cannot show tags on the book-level !
+                // ... a compromise which is fine
+                // TODO: tags on book-level: another argument for live-joins
+                //  between a reduced list-table column usage and the actual tables.
+                //  But that's another performance question to-be-measured/solved
+                //  for later...
                 joinWithTags(sb);
             }
 
@@ -1038,6 +1049,9 @@ class BooklistBuilder {
         private void joinWithTags(@NonNull final StringBuilder sb) {
             // Join with the link table between Book and Tags.
             sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_TAG));
+            // Note we're ALWAYS showing books under all it's tags because:
+            // 1) that's IMHO always desired
+            // 2) there is no 'primary tag' concept
             // Join with Tags to make the names available
             sb.append(TBL_BOOK_TAG.leftOuterJoin(TBL_TAGS));
         }
