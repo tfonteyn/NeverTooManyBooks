@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBooks
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
@@ -322,7 +323,8 @@ public class EditBookshelvesFragment
     }
 
     public static class Holder
-            extends RowViewHolder {
+            extends RowViewHolder
+            implements BindableViewHolder<Bookshelf> {
 
         @NonNull
         private final RowEditBookshelfBinding vb;
@@ -330,6 +332,11 @@ public class EditBookshelvesFragment
         Holder(@NonNull final RowEditBookshelfBinding vb) {
             super(vb.getRoot());
             this.vb = vb;
+        }
+
+        @Override
+        public void onBind(@NonNull final Bookshelf bookshelf) {
+            vb.bookshelfName.setText(bookshelf.getName());
         }
     }
 
@@ -409,7 +416,7 @@ public class EditBookshelvesFragment
                 holder.vb.bookshelfName.setVisibility(View.VISIBLE);
 
                 final Bookshelf bookshelf = bookshelfList.get(listIndex);
-                holder.vb.bookshelfName.setText(bookshelf.getName());
+                holder.onBind(bookshelf);
                 holder.itemView.setSelected(listIndex == positionHandler.getSelectedPosition());
             }
         }
