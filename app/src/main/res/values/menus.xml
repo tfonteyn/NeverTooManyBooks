@@ -257,8 +257,6 @@
           type="id" />
     <item name="MENU_MANAGE_BOOKSHELVES"
           type="id" />
-    <item name="MENU_MANAGE_TAGS"
-          type="id" />
     <item name="MENU_MANAGE_LIST_STYLES"
           type="id" />
     <item name="MENU_FILE_EXPORT"

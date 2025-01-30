@@ -139,7 +139,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
-import com.hardbacknutter.nevertoomanybooks.settings.tags.TagAdminContract;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
@@ -249,14 +248,9 @@ public class BooksOnBookshelf
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel vm;
 
-    /**
-     * Edit the app settings.
-     */
+    /** Edit the app settings. */
     private final ActivityResultLauncher<String> editSettingsLauncher =
             registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
-                    this::onSettingsChanged));
-    private final ActivityResultLauncher<Void> manageTagsLauncher =
-            registerForActivityResult(new TagAdminContract(), o -> o.ifPresent(
                     this::onSettingsChanged));
 
     /** Do an import. */
@@ -849,10 +843,6 @@ public class BooksOnBookshelf
             manageBookshelvesLauncher.launch(vm.getBookshelf().getId());
             return true;
 
-        } else if (menuItemId == R.id.MENU_MANAGE_TAGS) {
-            manageTagsLauncher.launch(null);
-            return true;
-
         } else if (menuItemId == R.id.MENU_SETTINGS) {
             editSettingsLauncher.launch(null);
             return true;
@@ -1187,7 +1177,6 @@ public class BooksOnBookshelf
                  .stream()
                  .anyMatch(h -> h.onMenuItemSelected(this, menuItemId, rowData));
     }
-
 
     /**
      * Handle {@link R.id#MENU_SET_BOOKSHELVES}.

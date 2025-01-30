@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
+import com.hardbacknutter.nevertoomanybooks.settings.tags.TagAdminContract;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -83,10 +84,12 @@ public class SettingsFragment
     /** Fragment/Log tag. */
     private static final String TAG = "SettingsFragment";
 
-    private static final String PSK_USER_INTERFACE = "psk_user_interface";
+    private static final String PSK_CALIBRE = "psk_calibre";
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
     private static final String PSK_STYLE_DEFAULTS = "psk_style_defaults";
-    private static final String PSK_CALIBRE = "psk_calibre";
+    private static final String PSK_TAGS = "psk_tags";
+    private static final String PSK_USER_INTERFACE = "psk_user_interface";
+
     private static final int ANDROID_9 = 9;
 
     private final ActivityResultLauncher<Void> editSitesLauncher =
@@ -94,6 +97,14 @@ public class SettingsFragment
                                       success -> { /* ignore */ });
 
     private SettingsViewModel vm;
+
+    private final ActivityResultLauncher<Void> manageTagsLauncher =
+            registerForActivityResult(new TagAdminContract(), o -> o.ifPresent(
+                    settingsOutput -> {
+                        if (settingsOutput.isForceRebuildBooklist()) {
+                            vm.setForceRebuildBooklist();
+                        }
+                    }));
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -132,6 +143,12 @@ public class SettingsFragment
         //noinspection DataFlowIssue
         findPreference(PSK_SEARCH_SITE_ORDER).setOnPreferenceClickListener(p -> {
             editSitesLauncher.launch(null);
+            return true;
+        });
+
+        //noinspection DataFlowIssue
+        findPreference(PSK_TAGS).setOnPreferenceClickListener(p -> {
+            manageTagsLauncher.launch(null);
             return true;
         });
 

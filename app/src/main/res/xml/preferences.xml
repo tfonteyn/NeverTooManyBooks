@@ -43,6 +43,7 @@
     <PreferenceCategory
         android:title="@string/pc_search">
 
+        <!-- starts custom Activity. -->
         <Preference
             android:icon="@drawable/search_24px"
             android:key="psk_search_site_order"
@@ -182,6 +183,13 @@
 
     <PreferenceCategory
         android:title="@string/pc_advanced_options">
+
+        <!-- starts custom Activity. -->
+        <Preference
+            android:icon="@drawable/tag_24px"
+            android:key="psk_tags"
+            android:title="@string/lbl_tags"
+            />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.identifiers.IdentifiersEditorFragment"

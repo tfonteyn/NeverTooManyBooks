@@ -109,7 +109,7 @@ public class TagAdminFragment
                              .systemGestures()
                              .apply();
 
-        toolbar.setTitle(R.string.lbl_tag_maintenance);
+        toolbar.setTitle(R.string.lbl_tags);
         toolbar.setSubtitle("");
 
         tabAdapter = new TabAdapter(getActivity());
