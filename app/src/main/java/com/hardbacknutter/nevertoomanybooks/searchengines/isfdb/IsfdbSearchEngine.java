@@ -281,8 +281,7 @@ public class IsfdbSearchEngine
                       Identifier.SID_GOODREADS_BOOK),
             // 16
             // "https://lccn.loc.gov/%s"
-            // remove the '-' from the id by concatenating group(1) and (2)
-            Map.entry(Pattern.compile("https://lccn\\.loc\\.gov/(\\d+)-?(\\d*)",
+            Map.entry(Pattern.compile("https://lccn\\.loc\\.gov/(.*)",
                                       Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE),
                       Identifier.SID_LCCN),
             // 31

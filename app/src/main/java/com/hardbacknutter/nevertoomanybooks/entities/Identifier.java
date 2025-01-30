@@ -284,7 +284,7 @@ public class Identifier
                                "https://www.lastdodo.nl",
                                "https://www.lastdodo.nl/nl/items/%s"),
                 // bookUrl: 2025-01-29
-                new Identifier(SID_LCCN, TYPE_LONG,
+                new Identifier(SID_LCCN, TYPE_STRING,
                                context.getString(R.string.identifier_lccn),
                                "https://catalog.loc.gov",
                                "https://lccn.loc.gov/%s"),

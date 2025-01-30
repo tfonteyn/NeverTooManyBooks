@@ -147,9 +147,12 @@ public class SidTest
         iv = searchEngine.parseSid("https://lccn.loc.gov/2021008848").orElseThrow();
         assertEquals(Identifier.SID_LCCN, iv.getKey());
         assertEquals("2021008848", iv.getSid());
-        iv = searchEngine.parseSid("https://lccn.loc.gov/20-21008848").orElseThrow();
+        iv = searchEngine.parseSid("https://lccn.loc.gov/66-12593").orElseThrow();
         assertEquals(Identifier.SID_LCCN, iv.getKey());
-        assertEquals("2021008848", iv.getSid());
+        assertEquals("66-12593", iv.getSid());
+        iv = searchEngine.parseSid("https://lccn.loc.gov/gm71002450").orElseThrow();
+        assertEquals(Identifier.SID_LCCN, iv.getKey());
+        assertEquals("gm71002450", iv.getSid());
 
         iv = searchEngine.parseSid("https://www.fantascienza.com/catalogo/volumi/NILF100327")
                          .orElseThrow();
