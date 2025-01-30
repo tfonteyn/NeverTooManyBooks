@@ -782,6 +782,7 @@ public class CalibreContentServerReader
 
                         if (CalibreContentServer.IDENTIFIER_ISBN.equals(calKey)) {
                             book.setIsbn(sid);
+
                         } else if (calKey.length() > 6 && calKey.startsWith("amazon")) {
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
@@ -793,7 +794,7 @@ public class CalibreContentServerReader
                         } else {
                             // Map the calKey to our key, or if not found,
                             // just use the calKey itself
-                            String key = CalibreContentServer.IDENTIFIER_MAPPING.get(calKey);
+                            String key = CalibreContentServer.IDENTIFIER_MAPPING_READER.get(calKey);
                             if (key == null) {
                                 key = calKey;
                             }

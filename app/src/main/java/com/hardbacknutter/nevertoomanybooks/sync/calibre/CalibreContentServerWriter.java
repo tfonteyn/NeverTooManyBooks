@@ -34,7 +34,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -369,17 +368,11 @@ public class CalibreContentServerWriter
         // https://github.com/kovidgoyal/calibre/blob/master/src/calibre/db/write.py#L480
         // So, we send a combination of changes + the identifiers we don't know back to the server.
 
-        // Mirror the map
-        final Map<String, String> idMappings = CalibreContentServer
-                .IDENTIFIER_MAPPING.entrySet().stream().collect(
-                        Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
-
         // Collect all known local Identifiers
         final JSONObject localIdentifiers = new JSONObject();
         localBook.getIdentifiers().forEach(iv -> {
-            // Map the our key to the calibre key, or if not found,
-            // just use the key itself
-            String calKey = idMappings.get(iv.getKey());
+            // Map our key to the calibre key, or if not found, just use the key itself
+            String calKey = CalibreContentServer.IDENTIFIER_MAPPING_WRITER.get(iv.getKey());
             if (calKey == null) {
                 calKey = iv.getKey();
             }
@@ -392,6 +385,7 @@ public class CalibreContentServerWriter
             localIdentifiers.put(CalibreContentServer.IDENTIFIER_ISBN, isbn);
         }
 
+        // add the remotes, overwriting with locals as needed.
         if (!localIdentifiers.isEmpty()) {
             if (calibreBookIdentifiers == null) {
                 // no remotes, just send all locals

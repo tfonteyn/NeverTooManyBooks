@@ -55,10 +55,10 @@ public class IdentifierTest
             assertFalse("Duplicate key: " + key, keys.contains(key));
             keys.add(key);
 
-            final String bookUrl = i.getBookUrl(context);
-            if (bookUrl != null) {
-                assertEquals("Invalid bookUrl key: " + key, 1,
-                             PATTERN.split(bookUrl, -1).length - 1);
+            final String bookUri = i.getBookUri(context);
+            if (bookUri != null) {
+                assertEquals("Invalid bookUri key: " + key, 1,
+                             PATTERN.split(bookUri, -1).length - 1);
             }
         });
 

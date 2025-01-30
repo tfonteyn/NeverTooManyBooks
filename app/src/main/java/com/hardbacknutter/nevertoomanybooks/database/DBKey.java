@@ -70,8 +70,11 @@ public final class DBKey {
     public static final String IDENT_NAME = "name";
     /** {@link DBDefinitions#TBL_IDENTIFIERS}. URL to the main page of the site. */
     public static final String IDENT_SITE_URL = "site_url";
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. URL with a "%s" taking a sid. */
-    public static final String IDENT_BOOK_URL = "book_url";
+    /**
+     * {@link DBDefinitions#TBL_IDENTIFIERS}. <strong>URI</strong> with a "%s" taking a sid.
+     * Typically a url, but we allow/use all uri style values.
+     */
+    public static final String IDENT_BOOK_URI = "book_uri";
 
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
     public static final String IDENT_SID = "sid";

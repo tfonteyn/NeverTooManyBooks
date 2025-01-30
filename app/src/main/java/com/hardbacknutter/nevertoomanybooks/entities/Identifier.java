@@ -91,7 +91,6 @@ public class Identifier
     public static final String SID_STRIP_INFO = "stripinfo";
     public static final String SID_TERCERA_FUNDACION = "ltf";
     public static final String SID_URI = "uri";
-    public static final String SID_URL = "url";
     public static final String SID_WIKIDATA = "wikidata";
 
     public static final char TYPE_LONG = 'L';
@@ -120,7 +119,7 @@ public class Identifier
     @Nullable
     private final String siteUrl;
     @Nullable
-    private final String bookUrl;
+    private final String bookUri;
     private final char type;
     private long id;
 
@@ -134,7 +133,7 @@ public class Identifier
         this.type = TYPE_STRING;
         this.name = key;
         this.siteUrl = null;
-        this.bookUrl = null;
+        this.bookUri = null;
     }
 
     /**
@@ -147,19 +146,19 @@ public class Identifier
      * @param type    {@link #TYPE_STRING} or {@link #TYPE_LONG}
      * @param name    a short name
      * @param siteUrl url to the main website page
-     * @param bookUrl a url with a {@code %s%} placeholder for the sid,
+     * @param bookUri a url with a {@code %s%} placeholder for the sid,
      *                to view a book on the site
      */
     public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key,
                       final char type,
                       @NonNull final String name,
                       @Nullable final String siteUrl,
-                      @Nullable final String bookUrl) {
+                      @Nullable final String bookUri) {
         this.key = key;
         this.type = type;
         this.name = name;
         this.siteUrl = siteUrl;
-        this.bookUrl = bookUrl;
+        this.bookUri = bookUri;
     }
 
     /**
@@ -175,7 +174,7 @@ public class Identifier
         type = rowData.getString(DBKey.IDENT_TYPE).charAt(0);
         name = rowData.getString(DBKey.IDENT_NAME);
         siteUrl = rowData.getString(DBKey.IDENT_SITE_URL, null);
-        bookUrl = rowData.getString(DBKey.IDENT_BOOK_URL, null);
+        bookUri = rowData.getString(DBKey.IDENT_BOOK_URI, null);
     }
 
     protected Identifier(@NonNull final Parcel in) {
@@ -186,7 +185,7 @@ public class Identifier
         //noinspection DataFlowIssue
         name = in.readString();
         siteUrl = in.readString();
-        bookUrl = in.readString();
+        bookUri = in.readString();
     }
 
     /**
@@ -357,14 +356,9 @@ public class Identifier
                                context.getString(R.string.identifier_tercerafundacion),
                                "https://tercerafundacion.net",
                                "https://tercerafundacion.net/biblioteca/ver/libro/%s"),
-                // both links empty on purpose
+                // the bookUrl IS the sid
                 new Identifier(SID_URI, TYPE_STRING,
                                context.getString(R.string.identifier_uri),
-                               null,
-                               null),
-                // both links empty on purpose
-                new Identifier(SID_URL, TYPE_STRING,
-                               context.getString(R.string.identifier_url),
                                null,
                                "%s"),
                 // bookUrl: 2025-01-29
@@ -383,7 +377,7 @@ public class Identifier
         dest.writeInt(type);
         dest.writeString(name);
         dest.writeString(siteUrl);
-        dest.writeString(bookUrl);
+        dest.writeString(bookUri);
     }
 
     @Override
@@ -458,22 +452,22 @@ public class Identifier
     }
 
     /**
-     * Get the url for viewing a book on the site.
-     * The url will have a single {@code %s} placeholder where the Identifier value needs to go.
+     * Get the <strong>uri</strong> for viewing a book on the site.
+     * The uri will have a single {@code %s} placeholder where the Identifier value needs to go.
      *
      * @param context Current context
      *
-     * @return url
+     * @return uri
      */
     @Nullable
-    public String getBookUrl(@NonNull final Context context) {
+    public String getBookUri(@NonNull final Context context) {
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
             //noinspection DataFlowIssue
             return EngineId.Amazon.getConfig().getHostUrl(context) + "/dp/%s";
         }
 
-        return bookUrl;
+        return bookUri;
     }
 
     @Override
@@ -485,13 +479,13 @@ public class Identifier
                + ", type=`" + type + '`'
                + ", name=`" + name + '`'
                + ", siteUrl=`" + siteUrl + '`'
-               + ", bookUrl=`" + bookUrl + '`'
+               + ", bookUri=`" + bookUri + '`'
                + '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, key, type, name, siteUrl, bookUrl);
+        return Objects.hash(id, key, type, name, siteUrl, bookUri);
     }
 
     @Override
@@ -513,7 +507,7 @@ public class Identifier
                && type == that.type
                && Objects.equals(name, that.name)
                && Objects.equals(siteUrl, that.siteUrl)
-               && Objects.equals(bookUrl, that.bookUrl);
+               && Objects.equals(bookUri, that.bookUri);
     }
 
     public static class Value

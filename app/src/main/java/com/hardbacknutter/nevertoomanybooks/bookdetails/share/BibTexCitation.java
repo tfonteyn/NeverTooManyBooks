@@ -134,10 +134,9 @@ class BibTexCitation
         final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
         book.getIdentifiers().forEach(iv -> {
             identifierDao.findByKey(iv.getKey()).ifPresent(identifier -> {
-                final String bookUrl = identifier.getBookUrl(context);
-                if (bookUrl != null) {
-                    final String url = String.format(bookUrl, iv.getSid());
-                    sj.add(URL + url + '}');
+                final String bookUri = identifier.getBookUri(context);
+                if (bookUri != null) {
+                    sj.add(URL + String.format(bookUri, iv.getSid()) + '}');
                 }
             });
         });

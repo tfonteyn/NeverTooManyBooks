@@ -157,12 +157,28 @@ public final class CalibreContentServer
      * Other keys we've seen now and then:
      * "epl"
      * "kobo"
-     *
      */
-    static final Map<String, String> IDENTIFIER_MAPPING = Map.ofEntries(
+    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
+    static final Map<String, String> IDENTIFIER_MAPPING_READER = Map.ofEntries(
+            // I'm not clear on why calibre prefers 'amazon' above 'asin'
+            // but heck, just convert it.
             Map.entry("amazon", Identifier.SID_ASIN),
-            Map.entry("mobi-asin", Identifier.SID_ASIN)
+            // mobi is obsolete so we always map it to pure 'asin'
+            Map.entry("mobi-asin", Identifier.SID_ASIN),
+            // Calibre typically uses 'uri' but sometimes we see 'url
+            Map.entry("url", Identifier.SID_URI)
     );
+
+    /**
+     * Key's that map 1:1 are not listed.
+     */
+    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
+    static final Map<String, String> IDENTIFIER_MAPPING_WRITER = Map.ofEntries(
+            // I'm not clear on why calibre prefers 'amazon' above 'asin'
+            // but heck, just convert it.
+            Map.entry(Identifier.SID_ASIN, "amazon")
+    );
+
     /**
      * Calibre treats the ISBN as just another identifier.
      * "isbn_10", "isbn_13" are also used, in particular by the ISFDB plugin for Calibre

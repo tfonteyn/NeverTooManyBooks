@@ -235,7 +235,7 @@ public final class DBDefinitions {
     public static final Domain DOM_IDENT_TYPE;
     public static final Domain DOM_IDENT_NAME;
     public static final Domain DOM_IDENT_SITE_URL;
-    public static final Domain DOM_IDENT_BOOK_URL;
+    public static final Domain DOM_IDENT_BOOK_URI;
 
     public static final Domain DOM_IDENT_SID;
 
@@ -1046,8 +1046,8 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.IDENT_SITE_URL, SqLiteDataType.Text)
                         .build();
 
-        DOM_IDENT_BOOK_URL =
-                new Domain.Builder(DBKey.IDENT_BOOK_URL, SqLiteDataType.Text)
+        DOM_IDENT_BOOK_URI =
+                new Domain.Builder(DBKey.IDENT_BOOK_URI, SqLiteDataType.Text)
                         .build();
 
         DOM_IDENT_SID =
@@ -1455,7 +1455,7 @@ public final class DBDefinitions {
                             DOM_IDENT_TYPE,
                             DOM_IDENT_NAME,
                             DOM_IDENT_SITE_URL,
-                            DOM_IDENT_BOOK_URL)
+                            DOM_IDENT_BOOK_URI)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.IDENT_KEY, true, DOM_IDENT_KEY);
         ALL_TABLES.put(TBL_IDENTIFIERS.getName(), TBL_IDENTIFIERS);

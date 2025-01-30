@@ -98,7 +98,7 @@ class ViewBookOnSiteMenuHandler
                             .getInstance().getIdentifierDao().findByKey(key))
                     .flatMap(Optional::stream)
                     .forEach(identifier -> {
-                                 if (identifier.getBookUrl(context) != null) {
+                        if (identifier.getBookUri(context) != null) {
                                      // generate a random id, and map it to the key
                                      final int menuItemId = View.generateViewId();
                                      menuIds.put(menuItemId, identifier.getKey());
@@ -114,10 +114,9 @@ class ViewBookOnSiteMenuHandler
     }
 
     @Override
-    public void onPrepareMenu(
-            @NonNull final Context context,
-            @NonNull final Menu menu,
-            @NonNull final DataHolder rowData) {
+    public void onPrepareMenu(@NonNull final Context context,
+                              @NonNull final Menu menu,
+                              @NonNull final DataHolder rowData) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
         if (subMenuItem == null) {
@@ -130,10 +129,9 @@ class ViewBookOnSiteMenuHandler
     }
 
     @Override
-    public boolean onMenuItemSelected(
-            @NonNull final Context context,
-            @IdRes final int menuItemId,
-            @NonNull final DataHolder rowData) {
+    public boolean onMenuItemSelected(@NonNull final Context context,
+                                      @IdRes final int menuItemId,
+                                      @NonNull final DataHolder rowData) {
 
         final String key = menuIds.get(menuItemId);
         if (key == null) {
@@ -141,13 +139,13 @@ class ViewBookOnSiteMenuHandler
             return false;
         }
 
-        final Optional<String> oBookUrl = ServiceLocator.getInstance()
-                                                        .getIdentifierDao()
-                                                        .findByKey(key)
-                                                        .map(identifier -> identifier.getBookUrl(
-                                                                context));
+        final Optional<String> oBookUri = ServiceLocator
+                .getInstance()
+                .getIdentifierDao()
+                .findByKey(key)
+                .map(identifier -> identifier.getBookUri(context));
         // Sanity check, it should be there!
-        if (oBookUrl.isEmpty()) {
+        if (oBookUri.isEmpty()) {
             return false;
         }
 
@@ -157,8 +155,8 @@ class ViewBookOnSiteMenuHandler
             return false;
         }
 
-        final String url = String.format(oBookUrl.get(), oSid.get());
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        final Uri uri = Uri.parse(String.format(oBookUri.get(), oSid.get()));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
         return true;
     }
 }

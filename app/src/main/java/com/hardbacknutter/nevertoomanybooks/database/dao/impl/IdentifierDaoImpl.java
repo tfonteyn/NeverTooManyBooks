@@ -97,7 +97,7 @@ public class IdentifierDaoImpl
         stmt.bindString(2, String.valueOf(identifier.getType()));
         stmt.bindString(3, identifier.getName());
         stmt.bindString(4, identifier.getSiteUrl(context));
-        stmt.bindString(5, identifier.getBookUrl(context));
+        stmt.bindString(5, identifier.getBookUri(context));
         return stmt.executeInsert();
     }
 
@@ -248,7 +248,7 @@ public class IdentifierDaoImpl
             stmt.bindString(2, String.valueOf(identifier.getType()));
             stmt.bindString(3, identifier.getName());
             stmt.bindString(4, identifier.getSiteUrl(context));
-            stmt.bindString(5, identifier.getBookUrl(context));
+            stmt.bindString(5, identifier.getBookUri(context));
 
             stmt.bindLong(6, identifier.getId());
             rowsAffected = stmt.executeUpdateDelete();
@@ -330,7 +330,7 @@ public class IdentifierDaoImpl
                 + ',' + DBKey.IDENT_TYPE
                 + ',' + DBKey.IDENT_NAME
                 + ',' + DBKey.IDENT_SITE_URL
-                + ',' + DBKey.IDENT_BOOK_URL
+                + ',' + DBKey.IDENT_BOOK_URI
                 + ") VALUES(?,?,?,?,?)";
 
         /** Update an {@link Identifier}. */
@@ -340,7 +340,7 @@ public class IdentifierDaoImpl
                 + ',' + DBKey.IDENT_TYPE + "=?"
                 + ',' + DBKey.IDENT_NAME + "=?"
                 + ',' + DBKey.IDENT_SITE_URL + "=?"
-                + ',' + DBKey.IDENT_BOOK_URL + "=?"
+                + ',' + DBKey.IDENT_BOOK_URI + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Identifier}. */
@@ -353,7 +353,7 @@ public class IdentifierDaoImpl
                                                 DBKey.IDENT_TYPE,
                                                 DBKey.IDENT_NAME,
                                                 DBKey.IDENT_SITE_URL,
-                                                DBKey.IDENT_BOOK_URL);
+                                                DBKey.IDENT_BOOK_URI);
 
         static final String SELECT_ALL_ORDERED_BY_KEY =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
