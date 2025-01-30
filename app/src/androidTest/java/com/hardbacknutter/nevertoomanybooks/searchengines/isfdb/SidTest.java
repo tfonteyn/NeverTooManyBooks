@@ -108,7 +108,7 @@ public class SidTest
         Identifier.Value iv;
 
         iv = searchEngine.parseSid("https://www.audible.com/pd/B017V568SY").orElseThrow();
-        assertEquals(Identifier.SID_AUDIBLE_ASIN, iv.getKey());
+        assertEquals(Identifier.SID_AUDIBLE, iv.getKey());
         assertEquals("B017V568SY", iv.getSid());
 
         iv = searchEngine.parseSid("https://www.barnesandnoble.com/s/1100340602").orElseThrow();

@@ -61,7 +61,7 @@ public class Identifier
         implements Parcelable {
 
     public static final String SID_ASIN = "asin";
-    public static final String SID_AUDIBLE_ASIN = "audible-asin";
+    public static final String SID_AUDIBLE = "audible-asin";
     public static final String SID_BARNES_AND_NOBLE = "bn";
     public static final String SID_BEDETHEQUE = "bedetheque";
     public static final String SID_BNF = "bnf";
@@ -205,19 +205,19 @@ public class Identifier
         return List.of(
                 // both links empty on purpose
                 new Identifier(SID_ASIN, TYPE_STRING,
-                               context.getString(R.string.identifier_amazon_asin),
+                               context.getString(R.string.identifier_amazon),
                                null,
                                null),
                 // bookUrl: 2025-01-29
-                new Identifier(SID_AUDIBLE_ASIN, TYPE_STRING,
-                               context.getString(R.string.identifier_audible_asin),
+                new Identifier(SID_AUDIBLE, TYPE_STRING,
+                               context.getString(R.string.identifier_audible),
                                "https://www.audible.com",
                                "https://www.audible.com/pd/%s"),
                 // bookUrl: 2025-01-29
                 new Identifier(SID_BARNES_AND_NOBLE, TYPE_LONG,
                                context.getString(R.string.identifier_barnesandnoble),
                                "https://www.barnesandnoble.com",
-                               "https://www\\.barnesandnoble\\.com/w/%s"),
+                               "https://www.barnesandnoble.com/w/%s"),
                 // bookUrl: 2025-01-29
                 new Identifier(SID_BEDETHEQUE, TYPE_LONG,
                                context.getString(R.string.identifier_bedetheque),

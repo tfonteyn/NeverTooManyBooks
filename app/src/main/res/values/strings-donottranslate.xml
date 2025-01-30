@@ -73,12 +73,10 @@
     <!-- endregion -->
 
     <!-- region ========== Predefined {@link Identifier} names. -->
-    <string name="identifier_amazon_asin"
-            translatable="false">Amazon ASIN</string>
-    <string name="identifier_audible_asin"
-            translatable="false">Audible ASIN</string>
-    <string name="identifier_amazon_mobi_asin"
-            translatable="false">Amazon mobi ASIN</string>
+    <string name="identifier_amazon"
+            translatable="false">Amazon</string>
+    <string name="identifier_audible"
+            translatable="false">Audible</string>
     <string name="identifier_barnesandnoble"
             translatable="false">Barnes and Noble</string>
     <string name="identifier_bedetheque"

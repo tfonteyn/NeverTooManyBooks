@@ -289,7 +289,7 @@ public class IsfdbSearchEngine
             // "https://www.audible.com/pd/%s"
             Map.entry(Pattern.compile("https://www\\.audible\\.com/pd/(.*)",
                                       Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE),
-                      Identifier.SID_AUDIBLE_ASIN),
+                      Identifier.SID_AUDIBLE),
             // 12
             // "https://d-nb.info/%s"
             Map.entry(Pattern.compile("https://d-nb\\.info/(\\d*)",

@@ -140,7 +140,7 @@ class IsfdbPublicationListHandler
             Map.entry("14", "sfbg"),
             Map.entry("15", Identifier.SID_BARNES_AND_NOBLE),
             Map.entry("16", Identifier.SID_KBNL),
-            Map.entry("17", Identifier.SID_AUDIBLE_ASIN),
+            Map.entry("17", Identifier.SID_AUDIBLE),
             Map.entry("18", Identifier.SID_TERCERA_FUNDACION),
             Map.entry("19", Identifier.SID_KBR),
 
