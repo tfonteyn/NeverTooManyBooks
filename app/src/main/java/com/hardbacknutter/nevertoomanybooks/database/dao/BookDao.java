@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import androidx.core.util.Pair;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -408,6 +409,21 @@ public interface BookDao {
      */
     @NonNull
     Optional<LocalDateTime> getLastUpdateDate(@IntRange(from = 1) long id);
+
+    /**
+     * Find all books with tags, and apply the currently configured
+     * tag-mapping rules.
+     *
+     * @param context Current context
+     * @param locale  to use
+     *
+     * @return number of books modified
+     *
+     * @throws DaoWriteException on any failure
+     */
+    int applyTagMappings(@NonNull Context context,
+                         @NonNull Locale locale)
+            throws DaoWriteException;
 
     /**
      * Flags used during {@link #insert(Context, Book, Set)}
