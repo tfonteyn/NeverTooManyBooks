@@ -517,7 +517,7 @@ public class DBHelper
 
             TBL_TAGS.create(db, true);
             TBL_BOOK_TAG.create(db, true);
-            LegacyUpgrades.migrateV35Genre(context, db);
+            LegacyUpgrades.migrateV35Genre(db);
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
 
             // StripInfo collection support was never finished nor activated in a release build.

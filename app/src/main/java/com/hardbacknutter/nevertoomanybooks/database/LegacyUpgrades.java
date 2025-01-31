@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -58,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -94,6 +92,8 @@ public final class LegacyUpgrades {
             "show.author.name.given_first";
     private static final String PK_SORT_AUTHOR_NAME_GIVEN_FIRST =
             "sort.author.name.given_first";
+    /** Genre string migration splitter characters. */
+    private static final Pattern GENRE_SPLITTER_PATTERN = Pattern.compile("[/,;>]");
 
     private LegacyUpgrades() {
     }
@@ -555,11 +555,7 @@ public final class LegacyUpgrades {
                                .collect(Collectors.joining(",")));
     }
 
-    static void migrateV35Genre(@NonNull final Context context,
-                                @NonNull final SQLiteDatabase db) {
-
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final Map<String, Long> done = new HashMap<>();
+    static void migrateV35Genre(@NonNull final SQLiteDatabase db) {
 
         // all books with a genre set
         final String sqlSelect = "SELECT " + DBKey.PK_ID + ',' + DBKEY_GENRE
@@ -576,31 +572,36 @@ public final class LegacyUpgrades {
                 + ',' + DBKey.FK_TAG
                 + ") VALUES(?,?)";
 
-        final TagMapper tagMapper = new TagMapper();
-
+        final Map<String, Long> done = new HashMap<>();
         try (Cursor cursor = db.rawQuery(sqlSelect, null);
              SQLiteStatement insert = db.compileStatement(sqlInsertTag);
              SQLiteStatement linkBook = db.compileStatement(sqlLinkBook)) {
             while (cursor.moveToNext()) {
                 final long bookId = cursor.getLong(0);
                 final String genre = cursor.getString(1);
-                final List<Tag> tags = tagMapper.migrateGenre(context, genre, userLocale);
 
-                for (final Tag tag : tags) {
-                    // insert tags we don't have yet
-                    // All tags will get ids
-                    if (done.containsKey(tag.getName())) {
+                // just convert; NO mapping during this upgrade.
+                final List<String> tagNames = Arrays.stream(GENRE_SPLITTER_PATTERN.split(genre))
+                                                    .map(String::strip)
+                                                    .collect(Collectors.toList());
+
+                for (final String tagName : tagNames) {
+                    final long tagId;
+                    if (done.containsKey(tagName)) {
+                        // copy the id from a tag we inserted before
                         //noinspection DataFlowIssue
-                        tag.setId(done.get(tag.getName()));
+                        tagId = done.get(tagName);
                     } else {
-                        insert.bindString(1, tag.getName());
-                        tag.setId(insert.executeInsert());
-                        done.put(tag.getName(), tag.getId());
+                        // insert tags we don't have yet
+                        insert.bindString(1, tagName);
+                        tagId = insert.executeInsert();
+                        // remember
+                        done.put(tagName, tagId);
                     }
 
-                    // link the book
+                    // link the two
                     linkBook.bindLong(1, bookId);
-                    linkBook.bindLong(2, tag.getId());
+                    linkBook.bindLong(2, tagId);
                     linkBook.executeInsert();
                 }
             }
@@ -613,6 +614,25 @@ public final class LegacyUpgrades {
         db.execSQL("DELETE FROM " + DBDefinitions.TBL_BOOKSHELF_FILTERS.getName()
                    + " WHERE " + DBKey.BOOKSHELF_FILTER_NAME + "='" + DBKEY_GENRE + "'");
 
+    }
+
+    /**
+     * Convert the {@code genre} string to a list of {@link Tag}s.
+     *
+     * @param genre to convert
+     *
+     * @return a list of new Tags, with id {@code 0}
+     */
+    @NonNull
+    public static List<Tag> migrateGenre(@NonNull final String genre) {
+        // sanity
+        if (genre.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(GENRE_SPLITTER_PATTERN.split(genre))
+                     .map(String::strip)
+                     .map(Tag::new)
+                     .collect(Collectors.toList());
     }
 
     /**

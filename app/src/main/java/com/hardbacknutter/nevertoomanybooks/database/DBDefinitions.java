@@ -1009,10 +1009,10 @@ public final class DBDefinitions {
                         .withDefault(true)
                         .build();
 
+        // localized but with non-unique index, so these are case-sensitive and diacritic aware
         DOM_TAG =
                 new Domain.Builder(DBKey.TAG, SqLiteDataType.Text)
                         .notNull()
-                        .unique()
                         .localized()
                         .build();
 
@@ -1026,10 +1026,11 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  Book identifiers
          * ====================================================================================== */
+
+        // not localized!
         DOM_IDENT_KEY =
                 new Domain.Builder(DBKey.IDENT_KEY, SqLiteDataType.Text)
                         .notNull()
-                        .unique()
                         .build();
         DOM_IDENT_TYPE =
                 new Domain.Builder(DBKey.IDENT_TYPE, SqLiteDataType.Text)
@@ -1464,7 +1465,7 @@ public final class DBDefinitions {
                 .addDomains(DOM_PK_ID,
                             DOM_TAG)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.TAG, true, DOM_TAG);
+                .addIndex(DBKey.TAG, false, DOM_TAG);
         ALL_TABLES.put(TBL_TAGS.getName(), TBL_TAGS);
 
         TBL_TAG_MAPPINGS
@@ -1472,7 +1473,7 @@ public final class DBDefinitions {
                             DOM_TAG,
                             DOM_TAG_MAPPING)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.TAG, true, DOM_TAG);
+                .addIndex(DBKey.TAG, false, DOM_TAG);
         ALL_TABLES.put(TBL_TAG_MAPPINGS.getName(), TBL_TAG_MAPPINGS);
 
         TBL_AUTHORS
