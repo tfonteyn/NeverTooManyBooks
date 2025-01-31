@@ -25,6 +25,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -59,13 +60,26 @@ public class TagMapper
     @Override
     public void map(@NonNull final Context context,
                     @NonNull final Book book) {
-        final List<Tag> tags = book.getTags();
-        if (tags.isEmpty() || mappings.isEmpty()) {
-            return;
+        book.setTags(map(context, book.getTags()));
+    }
+
+    /**
+     * Run the mappings on the given list.
+     *
+     * @param context Current context
+     * @param source  tags to map
+     *
+     * @return mapped tags
+     */
+    @NonNull
+    public List<Tag> map(@NonNull final Context context,
+                         @NonNull final Collection<Tag> source) {
+        if (source.isEmpty() || mappings.isEmpty()) {
+            return List.of();
         }
 
         final List<Tag> result = new ArrayList<>();
-        tags.forEach(tag -> {
+        source.forEach(tag -> {
             final List<Tag> replacement = mappings
                     .stream()
                     .filter(tm -> tm.getName().equalsIgnoreCase(tag.getName()))
@@ -81,7 +95,6 @@ public class TagMapper
         });
 
         tagDao.pruneList(context, result, tag -> locale);
-
-        book.setTags(result);
+        return result;
     }
 }
