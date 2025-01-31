@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -127,7 +127,7 @@
             android:id="@+id/fab1_search_isbn"
             style="@style/Widget.App.ExtendedFloatingActionButton"
             android:text="@string/option_fab_add_book_by_isbn"
-            app:icon="@drawable/apps_24px"
+            app:icon="@drawable/dialpad_24px"
             app:layout_anchor="@id/fab"
             tools:translationX="@dimen/fab_menu_translationX_2"
             tools:translationY="@dimen/fab_menu_translationY_2"

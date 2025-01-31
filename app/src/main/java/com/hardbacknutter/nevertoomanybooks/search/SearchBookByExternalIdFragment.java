@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -211,8 +211,8 @@ public class SearchBookByExternalIdFragment
             inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
 
         } else {
-            // display a (sort of) numeric keyboard icon
-            keyboardIcon = R.drawable.apps_24px;
+            // display a numeric keyboard icon
+            keyboardIcon = R.drawable.dialpad_24px;
             inputType = InputType.TYPE_CLASS_NUMBER;
 
             // if the user switched from a text input, clean the input

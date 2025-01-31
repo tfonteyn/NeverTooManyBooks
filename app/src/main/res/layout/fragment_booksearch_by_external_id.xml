@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -187,7 +187,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/external_id"
                 style="@style/TIE.Generic"
-                android:drawableStart="@drawable/apps_24px"
+                android:drawableStart="@drawable/dialpad_24px"
                 android:enabled="false"
                 android:imeOptions="actionSearch"
                 android:inputType="number"
