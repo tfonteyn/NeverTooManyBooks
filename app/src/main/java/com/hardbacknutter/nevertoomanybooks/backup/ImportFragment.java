@@ -421,14 +421,14 @@ public class ImportFragment
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.process(progress -> {
-            closeProgressDialog();
-            //noinspection DataFlowIssue
-            progressDelegate = new ProgressDelegate(getProgressFrame())
-                    .setTitle(R.string.lbl_importing)
-                    .setPreventSleep(true)
-                    .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
-                    .show(() -> getActivity().getWindow());
-
+            if (progressDelegate == null) {
+                //noinspection DataFlowIssue
+                progressDelegate = new ProgressDelegate(getProgressFrame())
+                        .setTitle(R.string.lbl_importing)
+                        .setPreventSleep(true)
+                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
+                        .show(() -> getActivity().getWindow());
+            }
             progressDelegate.onProgress(progress);
         });
     }
