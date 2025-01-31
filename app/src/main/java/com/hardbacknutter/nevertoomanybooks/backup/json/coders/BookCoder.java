@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -78,11 +77,10 @@ public class BookCoder
     private final JsonCoder<Identifier.Value> identifierCoder = new IdentifierValueCoder();
     @NonNull
     private final RealNumberParser realNumberParser;
-    private final Locale userLocale;
     @NonNull
     private final Context context;
 
-    private final TagMapper tagMapper = new TagMapper();
+    private final TagMapper tagMapper;
 
     /**
      * Constructor.
@@ -93,12 +91,13 @@ public class BookCoder
     public BookCoder(@NonNull final Context context,
                      @NonNull final Style defaultStyle) {
 
-        userLocale = context.getResources().getConfiguration().getLocales().get(0);
         this.context = context;
 
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
-        this.realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
+        realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
+
+        tagMapper = new TagMapper(context);
     }
 
     @Override
@@ -311,7 +310,8 @@ public class BookCoder
             case "genre": {
                 // Archive v7 and older used a single string for the genre
                 final String genre = data.getString(key);
-                book.getTags().addAll(tagMapper.migrateGenre(context, genre, userLocale));
+                book.getTags().addAll(LegacyUpgrades.migrateGenre(genre));
+                tagMapper.map(context, book);
                 return true;
             }
             default: {

@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -110,9 +111,8 @@ public class BookCoder {
     @NonNull
     private final Style defaultStyle;
     private final FullDateParser dateParser;
-    private final Locale userLocale;
     private final RatingParser ratingParser;
-    private final TagMapper tagMapper = new TagMapper();
+    private final TagMapper tagMapper;
     @Nullable
     private Goodreads goodreads;
     @Nullable
@@ -140,12 +140,12 @@ public class BookCoder {
 
         unknownAuthor = Author.createUnknownAuthor(context);
 
-        userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context);
         dateParser = new FullDateParser(systemLocale, locales);
-
         ratingParser = origin.createRatingParser();
+
+        tagMapper = new TagMapper(context);
     }
 
     /**
@@ -583,7 +583,8 @@ public class BookCoder {
                               @NonNull final Book book) {
         final String genre = book.getString(LEGACY_GENRE);
         if (!genre.isEmpty()) {
-            book.getTags().addAll(tagMapper.migrateGenre(context, genre, userLocale));
+            book.getTags().addAll(LegacyUpgrades.migrateGenre(genre));
+            tagMapper.map(context, book);
             book.remove(LEGACY_GENRE);
         }
     }

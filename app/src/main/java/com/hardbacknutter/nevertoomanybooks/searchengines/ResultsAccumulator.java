@@ -90,7 +90,7 @@ class ResultsAccumulator {
 
         ColorMapper.create(context).ifPresent(mappers::add);
         FormatMapper.create(context).ifPresent(mappers::add);
-        mappers.add(new TagMapper());
+        mappers.add(new TagMapper(context));
     }
 
     private static void dbgLogValueCopied(@NonNull final String method,

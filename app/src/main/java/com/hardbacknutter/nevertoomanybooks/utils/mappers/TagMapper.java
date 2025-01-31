@@ -25,55 +25,48 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 
+/**
+ * Maps tags case-insensitive to a set of other tags as defined by the user.
+ */
 public class TagMapper
         implements Mapper {
 
-    /** Genre string migration splitter characters. */
-    private static final Pattern SPLITTER_PATTERN = Pattern.compile("[/,;>]");
+    private final List<TagMapping> mappings;
+    private final Locale locale;
+    private final TagDao tagDao;
+
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
+    public TagMapper(@NonNull final Context context) {
+        locale = context.getResources().getConfiguration().getLocales().get(0);
+        tagDao = ServiceLocator.getInstance().getTagDao();
+        mappings = ServiceLocator.getInstance().getTagMappingDao().getAll();
+    }
 
     @Override
     public void map(@NonNull final Context context,
                     @NonNull final Book book) {
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-        book.setTags(map(context, book.getTags(), locale));
-    }
-
-    /**
-     * Process the list of tags according to the user registered mappings.
-     *
-     * @param context Current context
-     * @param tags    to process
-     * @param locale  for case manipulations
-     *
-     * @return list
-     */
-    @NonNull
-    private List<Tag> map(@NonNull final Context context,
-                          @NonNull final List<Tag> tags,
-                          @NonNull final Locale locale) {
-        if (tags.isEmpty()) {
-            return List.of();
-        }
-
-        final List<TagMapping> all = ServiceLocator.getInstance().getTagMappingDao().getAll();
-        if (all.isEmpty()) {
-            return List.of();
+        final List<Tag> tags = book.getTags();
+        if (tags.isEmpty() || mappings.isEmpty()) {
+            return;
         }
 
         final List<Tag> result = new ArrayList<>();
         tags.forEach(tag -> {
-            final List<Tag> replacement = all
+            final List<Tag> replacement = mappings
                     .stream()
                     .filter(tm -> tm.getName().equalsIgnoreCase(tag.getName()))
                     .flatMap(tm -> tm.getMappings().stream())
@@ -87,22 +80,8 @@ public class TagMapper
             }
         });
 
-        ServiceLocator.getInstance().getTagDao().pruneList(context, result, tag -> locale);
-        return result;
-    }
+        tagDao.pruneList(context, result, tag -> locale);
 
-    @NonNull
-    public List<Tag> migrateGenre(@NonNull final Context context,
-                                  @NonNull final String genre,
-                                  @NonNull final Locale locale) {
-        // sanity
-        if (genre.isBlank()) {
-            return List.of();
-        }
-        final List<Tag> tags = Arrays.stream(SPLITTER_PATTERN.split(genre))
-                                     .map(String::strip)
-                                     .map(Tag::new)
-                                     .collect(Collectors.toList());
-        return map(context, tags, locale);
+        book.setTags(result);
     }
 }
