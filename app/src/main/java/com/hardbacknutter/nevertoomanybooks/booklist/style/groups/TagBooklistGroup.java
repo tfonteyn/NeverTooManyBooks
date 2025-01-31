@@ -57,7 +57,7 @@ class TagBooklistGroup
         // group/sort domain from the GroupKey
         displayDomainExpression = new DomainExpression(DBDefinitions.DOM_TAG,
                                                        DBDefinitions.TBL_TAGS,
-                                                       Sort.Asc);
+                                                       Sort.Unsorted);
     }
 
     @Override
