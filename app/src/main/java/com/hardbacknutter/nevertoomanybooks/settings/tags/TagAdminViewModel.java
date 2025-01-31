@@ -20,13 +20,73 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.tags;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+
+import java.util.Locale;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 
 @SuppressWarnings("WeakerAccess")
 public class TagAdminViewModel
         extends ViewModel {
 
+    private static final String TAG = "TagAdminViewModel";
+
+    private final MapperTask mapperTask = new MapperTask();
     private boolean modified;
+
+    @Override
+    protected void onCleared() {
+        mapperTask.cancel();
+        super.onCleared();
+    }
+
+    /**
+     * Observable to receive progress.
+     *
+     * @return a {@link TaskProgress} with the progress counter, a text message, ...
+     */
+    @NonNull
+    public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
+        return mapperTask.onProgress();
+    }
+
+    /**
+     * Observable to receive failure.
+     *
+     * @return the result is the Exception
+     */
+    @NonNull
+    public LiveData<LiveDataEvent<Throwable>> onTagMapperFailure() {
+        return mapperTask.onFailure();
+    }
+
+    @NonNull
+    public LiveData<LiveDataEvent<Integer>> onTagMapperCancelled() {
+        return mapperTask.onCancelled();
+    }
+
+    @NonNull
+    public LiveData<LiveDataEvent<Integer>> onTagMapperFinished() {
+        return mapperTask.onFinished();
+    }
+
+    void startTagMapper() {
+        mapperTask.start();
+    }
+
+    void cancelTagMapper() {
+        mapperTask.cancel();
+    }
 
     boolean isModified() {
         return modified;
@@ -34,5 +94,28 @@ public class TagAdminViewModel
 
     void setModified() {
         this.modified = true;
+    }
+
+    private static class MapperTask
+            extends MTask<Integer> {
+
+        MapperTask() {
+            super(R.id.TASK_ID_TAG_MAPPER, TAG);
+        }
+
+        void start() {
+            execute();
+        }
+
+        @NonNull
+        @Override
+        protected Integer doWork()
+                throws DaoWriteException {
+            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
+            // TODO: allow progress messages
+            return ServiceLocator.getInstance().getBookDao().applyTagMappings(context, locale);
+        }
     }
 }

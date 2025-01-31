@@ -82,6 +82,8 @@
           type="id" />
     <item name="MENU_SEARCH"
           type="id" />
+    <item name="MENU_APPLY"
+          type="id" />
 
     <!-- A SINGLE book; i.e. from the book-details screen.
          The 10" landscape layout can display both 'node' and 'single' options

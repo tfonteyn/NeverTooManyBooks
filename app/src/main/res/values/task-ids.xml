@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -57,6 +57,9 @@
     <item name="TASK_ID_BUILD_LANG_MAP" type="id" />
 
     <item name="TASK_ID_VOLUME_MOVER" type="id" />
+
+    <item name="TASK_ID_TAG_MAPPER"
+          type="id" />
 
     <!-- Database maintenance tasks. -->
     <item name="TASK_ID_DB_CLEANER" type="id" />

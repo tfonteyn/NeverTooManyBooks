@@ -24,15 +24,21 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -45,6 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagMappingsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagMappingBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -53,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLaunc
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.tagmapping.EditTagMappingLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -84,9 +93,16 @@ public class TagMappingEditorFragment
     private ExtMenuLauncher menuLauncher;
     private EditTagMappingLauncher editLauncher;
 
+    private TagAdminViewModel vm;
+    @Nullable
+    private ProgressDelegate progressDelegate;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //noinspection DataFlowIssue
+        vm = new ViewModelProvider(getActivity()).get(TagAdminViewModel.class);
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -114,6 +130,15 @@ public class TagMappingEditorFragment
         InsetsListenerBuilder.apply(vb.tagList);
 
         final Context context = getContext();
+
+        getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
+                                     Lifecycle.State.RESUMED);
+
+        vm.onTagMapperFinished().observe(getViewLifecycleOwner(), this::onMappingFinished);
+        vm.onTagMapperCancelled().observe(getViewLifecycleOwner(), this::onMappingCancelled);
+        vm.onTagMapperFailure().observe(getViewLifecycleOwner(), this::onMappingFailure);
+
+        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
         mappings = ServiceLocator.getInstance().getTagMappingDao().getAll();
         //noinspection DataFlowIssue
@@ -301,6 +326,74 @@ public class TagMappingEditorFragment
         });
     }
 
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
+        message.process(progress -> {
+            if (progressDelegate == null) {
+                //noinspection DataFlowIssue
+                progressDelegate = new ProgressDelegate(getProgressFrame())
+                        .setTitle(R.string.lbl_substitutions)
+                        .setPreventSleep(true)
+                        .setOnCancelListener(v -> vm.cancelTagMapper())
+                        .show(() -> getActivity().getWindow());
+            }
+            progressDelegate.onProgress(progress);
+        });
+    }
+
+    private void onMappingFailure(@NonNull final LiveDataEvent<Throwable> message) {
+        closeProgressDialog();
+        message.process(e -> {
+            //noinspection DataFlowIssue
+            ErrorDialog.show(getContext(), TAG, e, getString(R.string.lbl_substitutions),
+                             (d, w) -> getActivity().finish());
+        });
+    }
+
+    // TODO: use a dedicated message
+    private void onMappingCancelled(@NonNull final LiveDataEvent<Integer> message) {
+        closeProgressDialog();
+        message.process(count -> {
+            if (count > 0) {
+                vm.setModified();
+                final String msg = getString(R.string.name_colon_value,
+                                             getString(R.string.cancelled),
+                                             getString(R.string.progress_msg_x_updated, count));
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
+            } else {
+                final String msg = getString(R.string.name_colon_value,
+                                             getString(R.string.cancelled),
+                                             getString(R.string.info_nothing_to_do));
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    // TODO: use a dedicated message
+    private void onMappingFinished(@NonNull final LiveDataEvent<Integer> message) {
+        closeProgressDialog();
+        message.process(count -> {
+            if (count > 0) {
+                vm.setModified();
+                final String msg = getString(R.string.progress_msg_x_updated, count);
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
+            } else {
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), R.string.info_nothing_to_do, Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void closeProgressDialog() {
+        if (progressDelegate != null) {
+            //noinspection DataFlowIssue
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
+        }
+    }
+
     /**
      * Holder for each row.
      */
@@ -388,6 +481,33 @@ public class TagMappingEditorFragment
         @Override
         public int getItemCount() {
             return items.size();
+        }
+    }
+
+    private final class ToolbarMenuProvider
+            implements MenuProvider {
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menu.add(Menu.NONE, R.id.MENU_APPLY, Menu.NONE, R.string.action_apply)
+                .setIcon(R.drawable.find_replace_24px)
+                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_APPLY) {
+                //noinspection DataFlowIssue
+                new MaterialAlertDialogBuilder(getContext())
+                        .setTitle(R.string.lbl_substitutions)
+                        .setMessage(R.string.confirm_apply_substitutions)
+                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.ok, (d, w) -> vm.startTagMapper())
+                        .create()
+                        .show();
+                return true;
+            }
+            return false;
         }
     }
 }
