@@ -248,6 +248,7 @@
           <option value="MethodOnlyUsedFromInnerClass" />
           <option value="RedundantFieldInitialization" />
           <option value="StaticVariableMayNotBeInitialized" />
+          <option value="SlowListContainsAll" />
         </list>
       </option>
     </inspection_tool>
