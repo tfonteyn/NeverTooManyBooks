@@ -77,6 +77,7 @@
     <string name="action_add_with_details">Přidejte podrobnosti</string>
     <string name="action_clear">Vymazat</string>
     <string name="action_create">Vytvořit</string>
+    <string name="action_apply">Použít</string>
     <string name="action_delete">Smazat</string>
     <string name="action_discard">Zahodit</string>
     <string name="action_done">Hotovo</string>
@@ -845,4 +846,5 @@
     <string name="lbl_assign_location">Přiřazení umístění</string>
     <string name="lbl_identifier">Identifikátor</string>
     <string name="lbl_identifiers">Identifikátory</string>
+    <string name="confirm_apply_substitutions">Použít pravidla substituce? Všechny příslušné knihy budou aktualizovány.</string>
 </resources>

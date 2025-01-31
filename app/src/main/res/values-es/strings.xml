@@ -73,6 +73,7 @@
     <string name="action_add_with_details">Agregar con detalles</string>
     <string name="action_clear">Borrar</string>
     <string name="action_create">Crear</string>
+    <string name="action_apply">Aplicar</string>
     <string name="action_delete">Eliminar</string>
     <string name="action_discard">Descartar</string>
     <string name="action_done">Listo</string>
@@ -828,4 +829,5 @@
     <string name="info_bulk_set_location">Seleccione la ubicación que desea asignar a todos los libros listados en el nodo seleccionado.</string>
     <string name="lbl_identifier">Identificador</string>
     <string name="lbl_identifiers">Identificadores</string>
+    <string name="confirm_apply_substitutions">¿Aplicar las normas de sustitución? Se actualizarán todos los libros aplicables.</string>
 </resources>

@@ -73,6 +73,7 @@
     <string name="action_add_with_details">Aggiungi con i dettagli</string>
     <string name="action_clear">Cancella</string>
     <string name="action_create">Crea</string>
+    <string name="action_apply">Applica</string>
     <string name="action_delete">Elimina</string>
     <string name="action_discard">Ignora</string>
     <string name="action_done">Atlikta</string>
@@ -829,4 +830,5 @@
     <string name="lbl_assign_location">Assegnare la posizione</string>
     <string name="lbl_identifier">Identificatore</string>
     <string name="lbl_identifiers">Identificatori</string>
+    <string name="confirm_apply_substitutions">Applicare le regole di sostituzione? Tutti i libri applicabili saranno aggiornati.</string>
 </resources>

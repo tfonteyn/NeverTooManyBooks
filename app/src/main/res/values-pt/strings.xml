@@ -60,6 +60,7 @@
     <string name="action_add">Adicionar</string>
     <string name="action_clear">Limpar</string>
     <string name="action_create">Criar</string>
+    <string name="action_apply">Aplicar</string>
     <string name="action_delete">Excluir</string>
     <string name="action_discard">Descartar</string>
     <string name="action_done">Concluído</string>
@@ -855,4 +856,5 @@
     <string name="lbl_assign_location">Atribuir localização</string>
     <string name="lbl_identifier">Identificador</string>
     <string name="lbl_identifiers">Identificadores</string>
+    <string name="confirm_apply_substitutions">Aplicar as regras de substituição? Todos os livros aplicáveis serão actualizados.</string>
 </resources>

@@ -81,6 +81,7 @@
     <string name="action_clear_queue">清空队列</string>
     <string name="action_create">创建</string>
     <string name="action_crop">"剪裁"</string>
+    <string name="action_apply">应用</string>
     <string name="action_delete">删除</string>
     <string name="action_disable_message">禁用消息</string>
     <string name="action_discard">舍弃</string>

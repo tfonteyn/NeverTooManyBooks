@@ -71,6 +71,7 @@
     <string name="action_add_with_details">Προσθήκη με λεπτομέρειες</string>
     <string name="action_clear">Διαγραφή</string>
     <string name="action_create">Δημιουργία</string>
+    <string name="action_apply">Εφαρμογή</string>
     <string name="action_delete">Διαγραφή</string>
     <string name="action_discard">Απόρριψη</string>
     <string name="action_done">Τέλος</string>
@@ -826,4 +827,5 @@
     <string name="lbl_assign_location">Ανάθεση τοποθεσίας</string>
     <string name="lbl_identifier">Αναγνωριστικό</string>
     <string name="lbl_identifiers">Αναγνωριστικά</string>
+    <string name="confirm_apply_substitutions">Εφαρμόζετε τους κανόνες υποκατάστασης; Όλα τα ισχύοντα βιβλία θα ενημερωθούν.</string>
 </resources>

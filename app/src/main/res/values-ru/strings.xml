@@ -76,6 +76,7 @@
     <string name="action_add_with_details">Добавить с подробностями</string>
     <string name="action_clear">Очистить</string>
     <string name="action_create">Создать</string>
+    <string name="action_apply">Применить</string>
     <string name="action_delete">Удалить</string>
     <string name="action_discard">Отменить</string>
     <string name="action_done">Готово</string>
@@ -846,4 +847,5 @@
     <string name="lbl_assign_location">Назначить местоположение</string>
     <string name="lbl_identifier">Идентификатор</string>
     <string name="lbl_identifiers">Идентификаторы</string>
+    <string name="confirm_apply_substitutions">Применить правила замены? Все применимые книги будут обновлены.</string>
 </resources>

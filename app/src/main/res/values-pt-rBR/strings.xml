@@ -240,4 +240,5 @@
     <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tags</string>
     <string name="info_tap_to_move_tag">Toque em uma tag para movê-la de/para o livro.</string>
+    <string name="confirm_apply_substitutions">Aplicar as regras de substituição? Todos os livros aplicáveis serão atualizados.</string>
 </resources>

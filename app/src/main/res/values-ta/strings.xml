@@ -419,6 +419,7 @@
     <string name="action_edit">தொகு</string>
     <string name="action_edit_ellipsis">திருத்து…</string>
     <string name="action_edit_defaults">இயல்புநிலை அமைப்புகளைத் திருத்தவும்</string>
+    <string name="action_apply">பயன்படுத்து</string>
     <string name="action_delete">நீக்கு</string>
     <string name="action_save">சேமி</string>
     <string name="action_discard">நிராகரிக்கவும்</string>

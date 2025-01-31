@@ -77,6 +77,7 @@
     <string name="action_add_with_details">Dodaj ze szczegółami</string>
     <string name="action_clear">Wyczyść</string>
     <string name="action_create">Utwórz</string>
+    <string name="action_apply">Zastosuj</string>
     <string name="action_delete">Usuń</string>
     <string name="action_discard">Odrzuć</string>
     <string name="action_done">Gotowe</string>
@@ -848,4 +849,5 @@
     <string name="lbl_assign_location">Przypisywanie lokalizacji</string>
     <string name="lbl_identifier">Identyfikator</string>
     <string name="lbl_identifiers">Identyfikatory</string>
+    <string name="confirm_apply_substitutions">Stosować zasady zastępowania? Wszystkie odpowiednie książki zostaną zaktualizowane.</string>
 </resources>

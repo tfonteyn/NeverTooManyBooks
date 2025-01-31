@@ -890,6 +890,9 @@
 
     <!-- Show when the user searches for books which have no cover (with the intention to add one) -->
     <string name="confirm_no_missing_covers_search_from_top">All books below this row have covers. Search again from the top?</string>
+    <!-- Shown on the admin page where the user can edit and apply rules to automatically substitute tags with others. -->
+    <string name="confirm_apply_substitutions">Apply the substitution rules? All applicable books will be updated.</string>
+
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the sorting information in the database needs to be rebuild. -->
     <string name="confirm_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue?</string>
@@ -910,6 +913,9 @@
     <string name="action_edit_ellipsis">Edit…</string>
 
     <string name="action_edit_defaults">Edit default settings</string>
+
+    <!-- [VERIFIED] -->
+    <string name="action_apply">Apply</string>
 
     <!-- [VERIFIED] -->
     <string name="action_delete">Delete</string>

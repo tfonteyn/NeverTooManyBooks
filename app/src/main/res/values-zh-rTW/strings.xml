@@ -82,6 +82,7 @@
     <string name="action_clear_queue">清除佇列</string>
     <string name="action_create">建立</string>
     <string name="action_crop">裁剪</string>
+    <string name="action_apply">套用</string>
     <string name="action_delete">刪除</string>
     <string name="action_disable_message">停用訊息</string>
     <string name="action_discard">捨棄</string>

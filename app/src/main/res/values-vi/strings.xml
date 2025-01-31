@@ -75,6 +75,7 @@
     <string name="action_clear_queue">Xóa hàng đợi</string>
     <string name="action_create">Tạo</string>
     <string name="action_crop">Cắt</string>
+    <string name="action_apply">Áp dụng</string>
     <string name="action_delete">Xóa</string>
     <string name="action_disable_message">Tắt tin nhắn</string>
     <string name="action_discard">Loại bỏ</string>
