@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -826,4 +823,5 @@
     <string name="confirm_delete_tag_from_x_books">删除 “%1$s” 标签？\n\n将从设置了该标签的 %2$s 处删除它。书籍本身不会被删除。</string>
     <string name="confirm_delete_substitutions">删除 “%1$s” 的替代？</string>
     <string name="lbl_substitutions">替代</string>
+    <string name="confirm_apply_substitutions">应用替换规则吗？所有适用规则的书籍都将被更新。</string>
 </resources>
