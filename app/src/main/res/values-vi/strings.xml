@@ -170,6 +170,7 @@
     <string name="confirm_overwrite_cover">Thao tác này sẽ cập nhật các trường đã chọn như được hiển thị nhưng có thể tùy ý tải xuống hình ảnh cho TẤT CẢ sách.\n\nBạn có muốn ghi đè tất cả hình ảnh hiện có không? Cảnh báo, việc này có thể mất nhiều thời gian.</string>
     <string name="confirm_rebuild_fts">Điều này sẽ xây dựng lại dữ liệu chỉ mục tìm kiếm khi ứng dụng được khởi động lại. Bạn có chắc chắn muốn tiếp tục không?</string>
     <string name="confirm_rebuild_index">Điều này sẽ xây dựng lại các chỉ mục khi ứng dụng được khởi động lại. Bạn có chắc chắn muốn tiếp tục không?</string>
+    <string name="confirm_apply_substitutions">Áp dụng các quy tắc thay thế? Tất cả các sách áp dụng sẽ được cập nhật.</string>
     <string name="confirm_rebuild_orderby_columns">Điều này sẽ xây dựng lại dữ liệu sắp xếp khi ứng dụng được khởi động lại. Bạn có chắc chắn muốn tiếp tục không?</string>
     <string name="confirm_registration_benefits">Tính năng này được hưởng lợi từ việc đăng ký với %1$s. Bạn có muốn xem thêm thông tin hay tắt thông báo này không?\n Bạn có thể tìm thấy thông tin này sau này trong phần “%2$s” trong thiết đặt.</string>
     <string name="confirm_registration_required">Tính năng này yêu cầu đăng ký với %1$s. Bạn có muốn xem thêm thông tin không?</string>
