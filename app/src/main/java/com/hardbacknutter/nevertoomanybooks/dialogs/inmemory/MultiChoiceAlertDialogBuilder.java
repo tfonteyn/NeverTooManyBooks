@@ -31,6 +31,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -45,16 +46,16 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAd
 /**
  * This is a wrapper for a {@link MaterialAlertDialogBuilder}
  * with a suitable RecyclerView/Adapter and builtin listener.
- * Items are handled as {@code List} and {@code Set}s of {@code Number} values
+ * Items are handled as {@code List} and {@code Set}s of {@code T} values
  * (usually and id of some sort) and matching labels.
  * <p>
  * It will <strong>NOT</strong> survive device rotations.
  * <p>
  * For rotation-safe behaviour, use {@link MultiChoiceLauncher} and related classes.
  *
- * @param <T> type of id based on {@code Number}
+ * @param <T> type of value/id
  */
-public class MultiChoiceAlertDialogBuilder<T extends Number> {
+public class MultiChoiceAlertDialogBuilder<T> {
 
     @NonNull
     private final LayoutInflater layoutInflater;
@@ -171,7 +172,8 @@ public class MultiChoiceAlertDialogBuilder<T extends Number> {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public MultiChoiceAlertDialogBuilder<T> setSelectedItems(@Nullable final Set<T> selectedItems) {
+    public MultiChoiceAlertDialogBuilder<T> setSelectedItems(
+            @Nullable final Collection<T> selectedItems) {
         this.selectedItems.clear();
         if (selectedItems != null) {
             this.selectedItems.addAll(selectedItems);
