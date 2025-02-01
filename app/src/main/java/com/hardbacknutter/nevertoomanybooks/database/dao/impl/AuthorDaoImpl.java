@@ -664,10 +664,12 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public void moveBooks(@NonNull final Context context,
-                          @NonNull final Author source,
-                          @NonNull final Author target)
+    public int moveBooks(@NonNull final Context context,
+                         @NonNull final Author source,
+                         @NonNull final Author target)
             throws DaoWriteException {
+
+        int booksMoved;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -683,7 +685,10 @@ public class AuthorDaoImpl
 
             // Relink books with the target Author,
             // respecting the position of the Author in the list for each book.
-            for (final long bookId : getBookIds(source.getId())) {
+            final List<Long> bookIds = getBookIds(source.getId());
+            booksMoved = bookIds.size();
+
+            for (final long bookId : bookIds) {
                 final Book book = Book.from(bookId);
 
                 final List<Author> fromBook = book.getAuthors();
@@ -719,6 +724,8 @@ public class AuthorDaoImpl
                 db.endTransaction(txLock);
             }
         }
+
+        return booksMoved;
     }
 
     @Override

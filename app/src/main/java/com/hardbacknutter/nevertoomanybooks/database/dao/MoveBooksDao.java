@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,10 +48,12 @@ public interface MoveBooksDao<T extends Entity> {
      * @param source  from where to move
      * @param target  to move to
      *
+     * @return amount of books moved
+     *
      * @throws DaoWriteException on failure
      */
-    void moveBooks(@NonNull Context context,
-                   @NonNull T source,
-                   @NonNull T target)
+    int moveBooks(@NonNull Context context,
+                  @NonNull T source,
+                  @NonNull T target)
             throws DaoWriteException;
 }

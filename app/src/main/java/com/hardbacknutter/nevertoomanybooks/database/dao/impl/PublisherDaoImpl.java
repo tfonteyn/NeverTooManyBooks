@@ -370,10 +370,12 @@ public class PublisherDaoImpl
     }
 
     @Override
-    public void moveBooks(@NonNull final Context context,
+    public int moveBooks(@NonNull final Context context,
                           @NonNull final Publisher source,
                           @NonNull final Publisher target)
-            throws DaoWriteException {
+            throws DaoInsertException, DaoUpdateException {
+
+        int booksMoved;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -383,7 +385,10 @@ public class PublisherDaoImpl
 
             // Relink books with the target Publisher,
             // respecting the position of the Publisher in the list for each book.
-            for (final long bookId : getBookIds(source.getId())) {
+            final List<Long> bookIds = getBookIds(source.getId());
+            booksMoved = bookIds.size();
+
+            for (final long bookId : bookIds) {
                 final Book book = Book.from(bookId);
 
                 final List<Publisher> fromBook = book.getPublishers();
@@ -417,6 +422,8 @@ public class PublisherDaoImpl
                 db.endTransaction(txLock);
             }
         }
+
+        return booksMoved;
     }
 
     @Override
@@ -429,7 +436,7 @@ public class PublisherDaoImpl
 
     @Override
     public int fixPositions(@NonNull final Context context)
-            throws DaoWriteException {
+            throws DaoInsertException, DaoUpdateException {
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {

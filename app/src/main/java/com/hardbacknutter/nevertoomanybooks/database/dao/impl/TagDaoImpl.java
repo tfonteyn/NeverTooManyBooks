@@ -291,10 +291,12 @@ public class TagDaoImpl
     }
 
     @Override
-    public void moveBooks(@NonNull final Context context,
-                          @NonNull final Tag source,
-                          @NonNull final Tag target)
+    public int moveBooks(@NonNull final Context context,
+                         @NonNull final Tag source,
+                         @NonNull final Tag target)
             throws DaoInsertException, DaoUpdateException {
+
+        int booksMoved;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -304,7 +306,10 @@ public class TagDaoImpl
 
             // Relink books with the target Tag,
             // respecting the position of the Tag in the list for each book.
-            for (final long bookId : getBookIds(source.getId())) {
+            final List<Long> bookIds = getBookIds(source.getId());
+            booksMoved = bookIds.size();
+
+            for (final long bookId : bookIds) {
                 final Book book = Book.from(bookId);
 
                 final List<Tag> fromBook = book.getTags();
@@ -338,6 +343,8 @@ public class TagDaoImpl
                 db.endTransaction(txLock);
             }
         }
+
+        return booksMoved;
     }
 
     @Override

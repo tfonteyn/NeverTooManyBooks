@@ -631,9 +631,11 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public void moveBooks(@NonNull final Context context,
-                          @NonNull final Bookshelf source,
-                          @NonNull final Bookshelf target) {
+    public int moveBooks(@NonNull final Context context,
+                         @NonNull final Bookshelf source,
+                         @NonNull final Bookshelf target) {
+
+        int booksMoved;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -645,8 +647,9 @@ public class BookshelfDaoImpl
             // We don't hold 'position' for bookshelves... just do a mass update
             final ContentValues cv = new ContentValues();
             cv.put(DBKey.FK_BOOKSHELF, target.getId());
-            db.update(TBL_BOOK_BOOKSHELF.getName(), cv, DBKey.FK_BOOKSHELF + "=?",
-                      new String[]{String.valueOf(source.getId())});
+            booksMoved = db.update(TBL_BOOK_BOOKSHELF.getName(), cv,
+                                   DBKey.FK_BOOKSHELF + "=?",
+                                   new String[]{String.valueOf(source.getId())});
 
             // delete the obsolete source.
             delete(context, source);
@@ -659,6 +662,8 @@ public class BookshelfDaoImpl
                 db.endTransaction(txLock);
             }
         }
+
+        return booksMoved;
     }
 
     @Override

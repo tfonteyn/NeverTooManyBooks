@@ -427,10 +427,12 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public void moveBooks(@NonNull final Context context,
-                          @NonNull final Series source,
-                          @NonNull final Series target)
-            throws DaoWriteException {
+    public int moveBooks(@NonNull final Context context,
+                         @NonNull final Series source,
+                         @NonNull final Series target)
+            throws DaoInsertException, DaoUpdateException {
+
+        int booksMoved;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -440,7 +442,10 @@ public class SeriesDaoImpl
 
             // Relink books with the target Series,
             // respecting the position of the Series in the list for each book.
-            for (final long bookId : getBookIds(source.getId())) {
+            final List<Long> bookIds = getBookIds(source.getId());
+            booksMoved = bookIds.size();
+
+            for (final long bookId : bookIds) {
                 final Book book = Book.from(bookId);
 
                 final List<Series> fromBook = book.getSeries();
@@ -475,6 +480,8 @@ public class SeriesDaoImpl
                 db.endTransaction(txLock);
             }
         }
+
+        return booksMoved;
     }
 
     @Override
@@ -487,7 +494,7 @@ public class SeriesDaoImpl
 
     @Override
     public int fixPositions(@NonNull final Context context)
-            throws DaoWriteException {
+            throws DaoInsertException, DaoUpdateException {
 
         final List<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
