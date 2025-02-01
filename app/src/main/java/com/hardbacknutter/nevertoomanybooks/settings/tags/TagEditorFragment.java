@@ -202,12 +202,12 @@ public class TagEditorFragment
                             extras);
     }
 
-    private void onEditEntryDone(@Nullable final String previous,
-                                 @NonNull final String currentName,
+    private void onEditEntryDone(@Nullable final String previousName,
+                                 @NonNull final String tagName,
                                  @Nullable final Bundle extras) {
 
         // anything actually changed ? If not, we're done.
-        if (currentName.equals(previous)) {
+        if (tagName.equals(previousName)) {
             return;
         }
 
@@ -216,19 +216,14 @@ public class TagEditorFragment
 
         try {
             Objects.requireNonNull(extras);
-            final int currentPos = extras.getInt(BKEY_POSITION);
+            final int position = extras.getInt(BKEY_POSITION);
 
-            // check by NAME it's not already in the list.
-            final int existingPos = tags.stream().map(Tag::getName)
-                                        .collect(Collectors.toList())
-                                        .indexOf(currentName);
-
-            if (currentPos == POS_NEW_ENTRY) {
+            if (position == POS_NEW_ENTRY) {
                 // User was adding a new tag
-                addEntry(currentName, existingPos);
+                addEntry(tagName);
             } else {
                 // User was editing an existing tag
-                updateEntry(currentName, currentPos, existingPos);
+                updateEntry(tagName, position);
             }
         } catch (@NonNull final DaoWriteException e) {
             //noinspection DataFlowIssue
@@ -236,9 +231,12 @@ public class TagEditorFragment
         }
     }
 
-    private void addEntry(@NonNull final String currentName,
-                          final int existingPos)
+    private void addEntry(@NonNull final String tagName)
             throws DaoWriteException {
+        // check by NAME it's not already in the list.
+        final int existingPos = tags.stream().map(Tag::getName)
+                                    .collect(Collectors.toList())
+                                    .indexOf(tagName);
         if (existingPos >= 0) {
             // Trying to add a NEW one already there. Just reject it...
             Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
@@ -246,7 +244,7 @@ public class TagEditorFragment
             vb.tagList.scrollToPosition(existingPos);
         } else {
             // It's a new entry, add it
-            final Tag tag = new Tag(currentName);
+            final Tag tag = new Tag(tagName);
             ServiceLocator.getInstance().getTagDao().insert(tag);
 
             // find insertion point using a brute-force sequential search...
@@ -260,34 +258,39 @@ public class TagEditorFragment
         }
     }
 
-    private void updateEntry(@NonNull final String currentName,
-                             final int currentPos,
-                             final int existingPos)
+    private void updateEntry(@NonNull final String tagName,
+                             final int position)
             throws DaoWriteException {
-        final Tag currentTag = tags.get(currentPos);
-        currentTag.setName(currentName);
+
+        final Tag tag = tags.get(position);
+        tag.setName(tagName);
+
+        // check by NAME it's not already in the list.
+        final int existingPos = tags.stream().map(Tag::getName)
+                                    .collect(Collectors.toList())
+                                    .indexOf(tagName);
 
         if (existingPos >= 0) {
             // Renaming a tag to have the same name as another, propose to merge
             final Context context = getContext();
             //noinspection DataFlowIssue
             StandardDialogs.askToMerge(context, R.string.confirm_merge_tags,
-                                       currentTag.getName(), () -> {
+                                       tag.getName(), () -> {
                         try {
                             ServiceLocator.getInstance().getTagDao()
-                                          .moveBooks(context, currentTag, tags.get(existingPos));
-                            adapter.notifyItemRemoved(currentPos);
+                                          .moveBooks(context, tag, tags.get(existingPos));
+                            adapter.notifyItemRemoved(position);
                             vb.tagList.scrollToPosition(existingPos);
                         } catch (@NonNull final DaoWriteException e) {
                             // log, but ignore - should never happen unless disk full
-                            LoggerFactory.getLogger().e(TAG, e, currentTag);
+                            LoggerFactory.getLogger().e(TAG, e, tag);
                         }
                     });
         } else {
             // update with the new data.
-            ServiceLocator.getInstance().getTagDao().update(currentTag);
-            adapter.notifyItemChanged(currentPos);
-            vb.tagList.scrollToPosition(currentPos);
+            ServiceLocator.getInstance().getTagDao().update(tag);
+            adapter.notifyItemChanged(position);
+            vb.tagList.scrollToPosition(position);
         }
     }
 
