@@ -39,6 +39,11 @@
         <item quantity="many">%1$s estrelas</item>
         <item quantity="other">%1$s estrelas</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d etiqueta</item>
+        <item quantity="many">%1$d etiquetas</item>
+        <item quantity="other">%1$d etiquetas</item>
+    </plurals>
     <string name="X_action_clear_credentials">Limpar credenciais</string>
     <string name="X_action_execute">Executar</string>
     <string name="X_action_go">Ir</string>
@@ -697,6 +702,8 @@
     <string name="pe_bob_row_menu_button">Mostre sempre um botão.</string>
     <string name="ps_bob_books_under_multiple_series_main_only">apenas nas suas séries principais</string>
     <string name="ps_bob_books_under_multiple_publishers_main_only">apenas sob o seu editor principal</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">Fusão de maiúsculas e minúsculas</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Eliminar etiquetas não utilizadas</string>
     <string name="lbl_connection_timeout">Tempo limite de conexão (segundos)</string>
     <string name="pt_bob_show_details">Detalhes do livro mostrados na lista</string>
     <string name="lbl_currency">Moeda</string>
@@ -857,4 +864,5 @@
     <string name="lbl_identifier">Identificador</string>
     <string name="lbl_identifiers">Identificadores</string>
     <string name="confirm_apply_substitutions">Aplicar as regras de substituição? Todos os livros aplicáveis serão actualizados.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Fundir etiquetas que apenas diferem em maiúsculas e minúsculas</string>
 </resources>

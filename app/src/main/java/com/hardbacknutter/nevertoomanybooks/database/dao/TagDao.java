@@ -29,12 +29,15 @@ import androidx.annotation.WorkerThread;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.settings.tags.TagMapperTask;
 
 public interface TagDao
         extends MoveBooksDao<Tag> {
@@ -80,6 +83,15 @@ public interface TagDao
                       @NonNull Function<Tag, Locale> localeSupplier);
 
     /**
+     * Delete orphaned records.
+     *
+     * @return the number of rows deleted,
+     *         or {@code -1} if an error occurred
+     */
+    @WorkerThread
+    int purge();
+
+    /**
      * Insert or update a list of {@link Tag}s linked to a single {@link Book}.
      * <p>
      * The list is pruned before storage.
@@ -120,6 +132,25 @@ public interface TagDao
      */
     @NonNull
     List<Long> getBookIds(@IntRange(from = 1) long itemId);
+
+    /**
+     * Find all books with tags, and apply the currently configured
+     * tag-mapping rules.
+     *
+     * @param context Current context
+     * @param locale  to use
+     * @param options a set of {@link TagMapperTask.Options}
+     *
+     * @return options + number of books modified
+     *
+     * @throws DaoWriteException on any failure
+     */
+    @NonNull
+    Map<TagMapperTask.Options, Integer> applyTagMappings(
+            @NonNull Context context,
+            @NonNull Locale locale,
+            @NonNull Set<TagMapperTask.Options> options)
+            throws DaoWriteException;
 
     /**
      * Bulk import the given list of {@link Tag}s.

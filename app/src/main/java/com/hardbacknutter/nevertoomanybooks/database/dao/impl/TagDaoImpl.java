@@ -22,19 +22,28 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -43,11 +52,14 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.settings.tags.TagMapperTask;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
@@ -151,6 +163,17 @@ public class TagDaoImpl
         return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
                                  (current, locale) -> fixId(current));
+    }
+
+    @Override
+    public int purge() {
+        final List<String> inUse = getColumnAsStringArrayList(
+                SELECT_DISTINCT_ + DBKey.FK_TAG + _FROM_ + TBL_BOOK_TAG);
+        try (SynchronizedStatement stmt = db.compileStatement(
+                DELETE_FROM_ + TBL_TAGS + _WHERE_ + DBKey.PK_ID
+                + _NOT_IN_ + '(' + String.join(",", inUse) + ')')) {
+            return stmt.executeUpdateDelete();
+        }
     }
 
     @Override
@@ -347,6 +370,146 @@ public class TagDaoImpl
         return booksMoved;
     }
 
+    @NonNull
+    @Override
+    public Map<TagMapperTask.Options, Integer> applyTagMappings(
+            @NonNull final Context context,
+            @NonNull final Locale locale,
+            @NonNull final Set<TagMapperTask.Options> options)
+            throws DaoInsertException, DaoUpdateException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (options.isEmpty()) {
+                throw new IllegalArgumentException("no action set");
+            }
+        }
+
+        final Map<TagMapperTask.Options, Integer> result =
+                new EnumMap<>(TagMapperTask.Options.class);
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            int caseMerges = 0;
+            // run merge first to reduce the number of tags to handle
+            if (options.contains(TagMapperTask.Options.MergeCaseDifferences)) {
+                caseMerges = mergeCaseDifferences(context);
+            }
+
+            if (options.contains(TagMapperTask.Options.ApplyMappings)) {
+                final int bookCount = applyTagMappings(context, locale);
+                result.put(TagMapperTask.Options.ApplyMappings, bookCount);
+            }
+
+            // run merge a second time as substitutions may have introduced new matches
+            if (options.contains(TagMapperTask.Options.MergeCaseDifferences)) {
+                caseMerges = mergeCaseDifferences(context);
+            }
+
+            if (options.contains(TagMapperTask.Options.PurgeUnusedTags)) {
+                final int tagCount = purge();
+                result.put(TagMapperTask.Options.PurgeUnusedTags, tagCount);
+            }
+
+            if (caseMerges > 0) {
+                result.put(TagMapperTask.Options.MergeCaseDifferences, caseMerges);
+            }
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
+
+        return result;
+    }
+
+    private int applyTagMappings(@NonNull final Context context,
+                                 @NonNull final Locale locale)
+            throws DaoInsertException, DaoUpdateException {
+
+        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        final TagMapper tagMapper = new TagMapper(context);
+        final Pattern csvSplitter = Pattern.compile("\\\\,");
+
+        // the modified book count
+        int bookCount = 0;
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BOOKS_WITH_TAGS, null)) {
+            while (cursor.moveToNext()) {
+                final long bookId = cursor.getLong(0);
+                final String csvTags = cursor.getString(1);
+
+                final List<Tag> before = Arrays
+                        .stream(csvSplitter.split(csvTags))
+                        .map(Tag::new)
+                        .collect(Collectors.toList());
+                final List<Tag> after = tagMapper.map(context, before);
+
+                // The lists are typically only a couple of elements, ignore lint warning
+                //noinspection SlowListContainsAll
+                if (before.size() != after.size()
+                    || !before.containsAll(after) || !after.containsAll(before)) {
+
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "ApplyMappings: " + before + " -> " + after);
+                    }
+                    insertOrUpdate(context, bookId, after, tag -> locale);
+                    bookDao.touch(bookId);
+
+                    bookCount++;
+                }
+            }
+        }
+        return bookCount;
+    }
+
+    /**
+     * Merge tags which are duplicates or only differ in letter case.
+     * Subsequent tags '1' + '2' merge to '1' while '2' is deleted.
+     * <p>
+     * Books will drop tag '2' and gain tag '1'.
+     *
+     * @param context Current context
+     *
+     * @return the number of books moved
+     *
+     * @throws DaoInsertException on failure
+     * @throws DaoUpdateException on failure
+     * @see #moveBooks(Context, Tag, Tag)
+     */
+    private int mergeCaseDifferences(@NonNull final Context context)
+            throws DaoInsertException, DaoUpdateException {
+        // the modified book count
+        int bookCount = 0;
+        final List<Tag> tags = getAll();
+        // we need at least 2 tags... duh
+        if (tags.size() > 1) {
+            final Iterator<Tag> it = tags.iterator();
+            Tag t1 = it.next();
+            while (it.hasNext()) {
+                final Tag t2 = it.next();
+                // try merging t2 into t1
+                if (t1.getName().equalsIgnoreCase(t2.getName())) {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "mergeCaseDifferences: " + t2 + " -> " + t1);
+                    }
+                    bookCount = moveBooks(context, t2, t1);
+                    // t2 was discarded, move on and compare t1 with t3
+                } else {
+                    // we could not merge, move on and compare t2 with t3
+                    t1 = t2;
+                }
+            }
+        }
+        return bookCount;
+    }
+
     @Override
     @WorkerThread
     public int importRecords(@NonNull final List<Tag> list) {
@@ -446,5 +609,18 @@ public class TagDaoImpl
         static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
                 DELETE_FROM_ + TBL_BOOK_TAG.getName()
                 + _WHERE_ + DBKey.FK_BOOK + "=?";
+
+        /**
+         * Find all books with tags for which a mapping exists.
+         * We get book id and a csv list of its tags.
+         * The csv separator matches the splitter regex pattern.
+         *
+         * @see #applyTagMappings(Context, Locale)
+         */
+        static final String FIND_BOOKS_WITH_TAGS =
+                SELECT_ + TBL_BOOK_TAG.dotAs(DBKey.FK_BOOK)
+                + ',' + "GROUP_CONCAT(" + TBL_TAGS.dot(DBKey.TAG) + ", '\\,')"
+                + _FROM_ + TBL_BOOK_TAG.ref() + TBL_BOOK_TAG.leftOuterJoin(TBL_TAGS)
+                + _GROUP_BY_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK);
     }
 }

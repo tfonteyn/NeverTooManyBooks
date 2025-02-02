@@ -36,6 +36,10 @@
         <item quantity="one">%1$s yıldız</item>
         <item quantity="other">%1$s yıldızlar</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d etiket</item>
+        <item quantity="other">%1$d etiketler</item>
+    </plurals>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="X_action_execute">Çalıştır</string>
     <string name="X_action_move">Taşı</string>
@@ -299,6 +303,8 @@
     <string name="lbl_condition_good">İyi</string>
     <string name="lbl_condition_reading_copy">Kopya okunuyor</string>
     <string name="lbl_condition_very_good">Çok iyi</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">Büyük/küçük harf birleştirme</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Kullanılmayan etiketleri silme</string>
     <string name="lbl_connection_timeout">Bağlantı zaman aşımı (saniye)</string>
     <string name="lbl_cover_back">Kitap arka kapağı</string>
     <string name="lbl_cover_front">Kitap kapağı</string>
@@ -838,4 +844,5 @@
     <string name="lbl_identifier">Tanımlayıcı</string>
     <string name="lbl_identifiers">Tanımlayıcılar</string>
     <string name="confirm_apply_substitutions">İkame kurallarını uyguluyor musunuz? Geçerli tüm kitaplar güncellenecektir.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Sadece büyük ve küçük harf farkı olan etiketleri birleştirme</string>
 </resources>

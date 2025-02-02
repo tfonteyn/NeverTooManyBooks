@@ -27,20 +27,26 @@
     <plurals name="n_books">
         <item quantity="one">%1$d kniha</item>
         <item quantity="few">%1$d knihy</item>
+        <item quantity="many">%1$d knihy</item>
         <item quantity="other">%1$d knih</item>
-        <item quantity="many">%1$d knih</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">Nalezena %1$d kniha</item>
-        <item quantity="few">Nalezeno %1$d knih</item>
+        <item quantity="few">Nalezeny  %1$d knihy</item>
+        <item quantity="many">Nalezeno %1$d knihy</item>
         <item quantity="other">Nalezeno %1$d knih</item>
-        <item quantity="many">Nalezeno %1$d knih</item>
     </plurals>
     <plurals name="n_stars">
-        <item quantity="one">%1$s hvězda</item>
+        <item quantity="one">%1$s hvězdička</item>
         <item quantity="few">%1$s hvězdičky</item>
-        <item quantity="other">%1$s hvězd</item>
-        <item quantity="many">%1$s hvězd</item>
+        <item quantity="many">%1$s hvězdičky</item>
+        <item quantity="other">%1$s hvězdiček</item>
+    </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d štítek</item>
+        <item quantity="few">%1$d značky</item>
+        <item quantity="many">%1$d značek</item>
+        <item quantity="other">%1$d štítků</item>
     </plurals>
     <string name="X_action_clear_credentials">Vymazat pověření</string>
     <string name="X_action_execute">Spustit</string>
@@ -308,6 +314,8 @@
     <string name="lbl_condition_good">Dobrý</string>
     <string name="lbl_condition_reading_copy">Čtení kopie</string>
     <string name="lbl_condition_very_good">Velmi dobře</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">Slučování velkých a malých písmen</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Odstranění nepoužívaných značek</string>
     <string name="lbl_connection_timeout">Časový limit připojení (sekundy)</string>
     <string name="lbl_cover_back">Zadní obálka knihy</string>
     <string name="lbl_cover_front">Obal knihy</string>
@@ -417,7 +425,7 @@
     <string name="lbl_series_multiple">Série</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Nastavení</string>
-    <string name="lbl_tag">Značka</string>
+    <string name="lbl_tag">Štítek</string>
     <string name="lbl_tags">Značky</string>
     <string name="lbl_substitutions">Náhrady</string>
     <string name="lbl_signed">Podepsaný</string>
@@ -847,4 +855,5 @@
     <string name="lbl_identifier">Identifikátor</string>
     <string name="lbl_identifiers">Identifikátory</string>
     <string name="confirm_apply_substitutions">Použít pravidla substituce? Všechny příslušné knihy budou aktualizovány.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Sloučení značek, které se liší pouze velkými a malými písmeny</string>
 </resources>

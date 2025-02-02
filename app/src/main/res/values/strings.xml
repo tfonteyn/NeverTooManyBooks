@@ -58,11 +58,16 @@
         <item quantity="other">%1$d books found</item>
     </plurals>
 
-    <!-- Short text for 'n stars' -->
     <plurals name="n_stars">
         <item quantity="one">%1$s star</item>
         <item quantity="other">%1$s stars</item>
     </plurals>
+
+    <plurals name="n_tags">
+        <item quantity="one">%1$d tag</item>
+        <item quantity="other">%1$d tags</item>
+    </plurals>
+
     <!-- endregion -->
 
     <!-- region ========== Order formatters. -->
@@ -1571,6 +1576,22 @@
     <string name="lbl_troubleshooting">Troubleshooting</string>
     <string name="pt_enable_extra_logging">Enable additional logging</string>
     <string name="lbl_troubleshooting_warning">Please do not enable the below options unless explicitly requested to do so by the app developer.</string>
+
+    <!-- Option (checkbox) -->
+    <string name="lbl_tag_mapper_apply_mappings"
+            translatable="false">@string/lbl_substitutions</string>
+    <!-- Label to report the result of "lbl_tag_mapper_apply_mappings".
+         On the screen followed with ": x books" -->
+    <string name="lbl_tag_mapper_apply_mappings_result"
+            translatable="false">@string/lbl_substitutions</string>
+    <!-- Option (checkbox) -->
+    <string name="lbl_tag_mapper_apply_merge_case">Merge tags which only differ in upper and lower case</string>
+    <!-- Label to report the result of "lbl_tag_mapper_apply_merge_case".
+         On the screen followed with ": x books" -->
+    <string name="lbl_tag_mapper_apply_merge_case_result">Upper/lower case merging</string>
+    <!-- Option (checkbox) -->
+    <string name="lbl_tag_mapper_apply_purge_unused">Delete unused tags</string>
+
     <!-- endregion -->
     <!-- region ========== Website settings. -->
     <string name="lbl_connection_timeout">Connection timeout (seconds)</string>

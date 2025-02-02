@@ -33,6 +33,9 @@
     <plurals name="n_stars">
         <item quantity="other">%1$s sao</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="other">%1$d nhãn</item>
+    </plurals>
     <string name="X_action_clear_credentials">Xóa thông tin xác thực</string>
     <string name="X_action_customize">Tùy chỉnh…</string>
     <string name="X_action_execute">Thực hiện</string>
@@ -330,6 +333,8 @@
     <string name="lbl_condition_good">Tốt</string>
     <string name="lbl_condition_reading_copy">Đọc bản sao</string>
     <string name="lbl_condition_very_good">Rất tốt</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">Ghép chữ hoa/thường</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Xóa các thẻ không sử dụng</string>
     <string name="lbl_connection_timeout">Hết thời gian kết nối (giây)</string>
     <string name="lbl_country">Quốc gia</string>
     <string name="lbl_cover_back">Bìa sau</string>
@@ -825,4 +830,5 @@
     <string name="yes">Có</string>
     <string name="lbl_identifier">Mã định danh</string>
     <string name="lbl_identifiers">Mã định danh</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Hợp nhất các thẻ chỉ khác nhau ở chữ hoa và chữ thường</string>
 </resources>

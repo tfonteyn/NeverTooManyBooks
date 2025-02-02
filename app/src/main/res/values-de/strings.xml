@@ -36,6 +36,10 @@
         <item quantity="one">%1$s Stern</item>
         <item quantity="other">%1$s Sterne</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d Tag</item>
+        <item quantity="other">%1$d Tags</item>
+    </plurals>
     <string name="X_action_clear_credentials">Anmeldedaten löschen</string>
     <string name="X_action_execute">Ausführen</string>
     <string name="X_action_move">Verschieben</string>
@@ -293,6 +297,8 @@
     <string name="lbl_condition_good">Gut</string>
     <string name="lbl_condition_reading_copy">Leseexemplar</string>
     <string name="lbl_condition_very_good">Sehr gut</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">Zusammenführung von Groß- und Kleinschreibung</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Nicht verwendete Tags löschen</string>
     <string name="lbl_connection_timeout">Zeitüberschreitung beim Verbindung (Sekunden)</string>
     <string name="lbl_cover_back">Buchrückseite</string>
     <string name="lbl_cover_front">Buchvorderseite</string>
@@ -827,4 +833,5 @@
     <string name="lbl_identifier">Identifikator</string>
     <string name="lbl_identifiers">Identifikatoren</string>
     <string name="confirm_apply_substitutions">Die Substitutionsregeln anwenden? Alle anwendbaren Bücher werden aktualisiert.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Zusammenführen von Tags, die sich nur in der Groß- und Kleinschreibung unterscheiden</string>
 </resources>

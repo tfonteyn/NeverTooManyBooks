@@ -36,6 +36,10 @@
         <item quantity="one">%1$s αστέρι</item>
         <item quantity="other">%1$s αστέρια</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d ετικέτας</item>
+        <item quantity="other">%1$d ετικέτες</item>
+    </plurals>
     <string name="X_action_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
     <string name="X_action_execute">Εκτέλεση</string>
     <string name="X_action_move">Μετακίνηση</string>
@@ -294,6 +298,8 @@
     <string name="lbl_condition_good">Καλός</string>
     <string name="lbl_condition_reading_copy">Ανάγνωση αντιγράφου</string>
     <string name="lbl_condition_very_good">Πολύ καλά</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">Συγχώνευση άνω/κάτω πεζών</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Διαγραφή αχρησιμοποίητων ετικετών</string>
     <string name="lbl_connection_timeout">Χρονικό όριο σύνδεσης (δευτερόλεπτα)</string>
     <string name="lbl_cover_back">κάλυμμα πίσω βιβλίου</string>
     <string name="lbl_cover_front">εξώφυλλο βιβλίου</string>
@@ -828,4 +834,5 @@
     <string name="lbl_identifier">Αναγνωριστικό</string>
     <string name="lbl_identifiers">Αναγνωριστικά</string>
     <string name="confirm_apply_substitutions">Εφαρμόζετε τους κανόνες υποκατάστασης; Όλα τα ισχύοντα βιβλία θα ενημερωθούν.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Συγχώνευση ετικετών που διαφέρουν μόνο σε κεφαλαία και πεζά γράμματα</string>
 </resources>

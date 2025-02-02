@@ -33,6 +33,9 @@
     <plurals name="n_stars">
         <item quantity="other">%1$s 顆星</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="other">%1$d 標籤</item>
+    </plurals>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
     <string name="ps_show_titles_reordered_on">將冠詞移到標題末尾，僅適用於使用冠詞的語言。 \n英文範例：「Lord of The Rings, The」</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
@@ -442,7 +445,7 @@
     <string name="lbl_series_num">不</string>
     <string name="lbl_settings">設定</string>
     <string name="lbl_tag">標籤</string>
-    <string name="lbl_tags">標記</string>
+    <string name="lbl_tags">標籤</string>
     <string name="lbl_substitutions">替代</string>
     <string name="lbl_signed">已簽署</string>
     <string name="lbl_site_book_id">網站圖書 ID</string>

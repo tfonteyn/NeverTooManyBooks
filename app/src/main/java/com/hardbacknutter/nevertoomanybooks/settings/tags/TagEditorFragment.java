@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.tags;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
@@ -149,10 +150,18 @@ public class TagEditorFragment
         vb.tagList.setAdapter(adapter);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onResume() {
         super.onResume();
         initFab();
+        // the tag list could have been modified from a sibling
+        // fragment in out host fragment (ViewPager)
+        if (vm.isModified()) {
+            tags.clear();
+            tags.addAll(ServiceLocator.getInstance().getTagDao().getAll());
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private void initFab() {

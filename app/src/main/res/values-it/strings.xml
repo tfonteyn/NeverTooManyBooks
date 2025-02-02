@@ -39,6 +39,11 @@
         <item quantity="many">%1$s stelle</item>
         <item quantity="other">%1$s stelle</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d tag</item>
+        <item quantity="many">%1$d tag</item>
+        <item quantity="other">%1$d tag</item>
+    </plurals>
     <string name="X_action_clear_credentials">Cancella credenziali</string>
     <string name="X_action_execute">Vykdyti</string>
     <string name="X_action_move">Sposta</string>
@@ -296,6 +301,8 @@
     <string name="lbl_condition_good">Buona</string>
     <string name="lbl_condition_reading_copy">Lettura copia</string>
     <string name="lbl_condition_very_good">Molto buona</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">Unione di maiuscole e minuscole</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Eliminare i tag inutilizzati</string>
     <string name="lbl_connection_timeout">Timeout connessione (secondi)</string>
     <string name="lbl_cover_back">Copertina posteriore</string>
     <string name="lbl_cover_front">Copertura</string>
@@ -831,4 +838,5 @@
     <string name="lbl_identifier">Identificatore</string>
     <string name="lbl_identifiers">Identificatori</string>
     <string name="confirm_apply_substitutions">Applicare le regole di sostituzione? Tutti i libri applicabili saranno aggiornati.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Unire tag che differiscono solo per le maiuscole e le minuscole</string>
 </resources>

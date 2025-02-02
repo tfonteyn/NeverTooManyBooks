@@ -29,7 +29,6 @@ import androidx.core.util.Pair;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -56,6 +55,17 @@ public interface BookDao {
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean touch(@NonNull Book book);
+
+    /**
+     * Update the 'last updated' of the given book.
+     * If successful, the book itself will also be updated with
+     * the current date-time (which will be very slightly 'later' than when we stored).
+     *
+     * @param bookId to update
+     *
+     * @return {@code true} on success
+     */
+    boolean touch(long bookId);
 
     /**
      * Create a new {@link Book}.
@@ -409,21 +419,6 @@ public interface BookDao {
      */
     @NonNull
     Optional<LocalDateTime> getLastUpdateDate(@IntRange(from = 1) long id);
-
-    /**
-     * Find all books with tags, and apply the currently configured
-     * tag-mapping rules.
-     *
-     * @param context Current context
-     * @param locale  to use
-     *
-     * @return number of books modified
-     *
-     * @throws DaoWriteException on any failure
-     */
-    int applyTagMappings(@NonNull Context context,
-                         @NonNull Locale locale)
-            throws DaoWriteException;
 
     /**
      * Flags used during {@link #insert(Context, Book, Set)}

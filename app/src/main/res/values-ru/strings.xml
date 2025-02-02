@@ -42,6 +42,12 @@
         <item quantity="many">%1$s звезд</item>
         <item quantity="other">%1$s звезд</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d тег</item>
+        <item quantity="few">%1$d теги</item>
+        <item quantity="many">%1$d теги</item>
+        <item quantity="other">%1$d теги</item>
+    </plurals>
     <string name="X_action_clear_credentials">Очистить учетные данные</string>
     <string name="X_action_execute">Выполнить</string>
     <string name="X_action_move">Перенести</string>
@@ -309,6 +315,8 @@
     <string name="lbl_condition_good">Хорошо</string>
     <string name="lbl_condition_reading_copy">Чтение копии</string>
     <string name="lbl_condition_very_good">Очень хорошо</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">Объединение верхнего и нижнего регистров</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Удаление неиспользуемых тегов</string>
     <string name="lbl_connection_timeout">Тайм-аут подключения (секунды)</string>
     <string name="lbl_cover_back">задняя обложка</string>
     <string name="lbl_cover_front">обложка</string>
@@ -848,4 +856,5 @@
     <string name="lbl_identifier">Идентификатор</string>
     <string name="lbl_identifiers">Идентификаторы</string>
     <string name="confirm_apply_substitutions">Применить правила замены? Все применимые книги будут обновлены.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Объединяйте теги, которые отличаются только верхним и нижним регистром</string>
 </resources>

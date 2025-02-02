@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
@@ -43,8 +44,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -52,12 +55,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagMappingsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagMappingBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.tagmapping.EditTagMappingLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
@@ -137,8 +140,6 @@ public class TagMappingEditorFragment
         vm.onTagMapperFinished().observe(getViewLifecycleOwner(), this::onMappingFinished);
         vm.onTagMapperCancelled().observe(getViewLifecycleOwner(), this::onMappingCancelled);
         vm.onTagMapperFailure().observe(getViewLifecycleOwner(), this::onMappingFailure);
-
-        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
         mappings = ServiceLocator.getInstance().getTagMappingDao().getAll();
         //noinspection DataFlowIssue
@@ -326,18 +327,18 @@ public class TagMappingEditorFragment
         });
     }
 
-    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.process(progress -> {
-            if (progressDelegate == null) {
-                //noinspection DataFlowIssue
-                progressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(R.string.lbl_substitutions)
-                        .setPreventSleep(true)
-                        .setOnCancelListener(v -> vm.cancelTagMapper())
-                        .show(() -> getActivity().getWindow());
-            }
-            progressDelegate.onProgress(progress);
-        });
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
+    private void startTagMapper(@NonNull final Set<TagMapperTask.Options> options) {
+        vm.startTagMapper(options);
+        // The task is typically very fast, and will not report progress
+        // This indeterminate-progress dialog might just flash up/away...
+        //noinspection DataFlowIssue
+        progressDelegate = new ProgressDelegate(getProgressFrame())
+                .setTitle(R.string.lbl_substitutions)
+                .setPreventSleep(true)
+                .setIndeterminate(true)
+                .setOnCancelListener(v -> vm.cancelTagMapper())
+                .show(() -> getActivity().getWindow());
     }
 
     private void onMappingFailure(@NonNull final LiveDataEvent<Throwable> message) {
@@ -349,41 +350,77 @@ public class TagMappingEditorFragment
         });
     }
 
-    // TODO: use a dedicated message
-    private void onMappingCancelled(@NonNull final LiveDataEvent<Integer> message) {
+    private void onMappingCancelled(
+            @NonNull final LiveDataEvent<Map<TagMapperTask.Options, Integer>> message) {
         closeProgressDialog();
-        message.process(count -> {
-            if (count > 0) {
-                vm.setModified();
-                final String msg = getString(R.string.name_colon_value,
-                                             getString(R.string.cancelled),
-                                             getString(R.string.progress_msg_x_updated, count));
-                //noinspection DataFlowIssue
-                Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
-            } else {
-                final String msg = getString(R.string.name_colon_value,
-                                             getString(R.string.cancelled),
-                                             getString(R.string.info_nothing_to_do));
-                //noinspection DataFlowIssue
-                Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
-            }
-        });
+        message.process(optionsCount -> reportMappingsDone(R.string.cancelled, optionsCount));
     }
 
-    // TODO: use a dedicated message
-    private void onMappingFinished(@NonNull final LiveDataEvent<Integer> message) {
+    private void onMappingFinished(
+            @NonNull final LiveDataEvent<Map<TagMapperTask.Options, Integer>> message) {
         closeProgressDialog();
-        message.process(count -> {
-            if (count > 0) {
-                vm.setModified();
-                final String msg = getString(R.string.progress_msg_x_updated, count);
+        message.process(optionsCount -> reportMappingsDone(R.string.action_done, optionsCount));
+    }
+
+    // as so often.. the reporting code is longer than the action code... is this really needed?
+    private void reportMappingsDone(@StringRes final int titleId,
+                                    @NonNull final Map<TagMapperTask.Options, Integer>
+                                            optionsCount) {
+
+        final int changes = optionsCount.values().stream().reduce(Integer::sum).orElse(0);
+        if (changes > 0) {
+            // - Flag up that returning to BoB will require a list rebuild
+            // - lets the sibling fragment (tag-list) know it needs to rebuild as well
+            vm.setModified();
+
+            final StringJoiner sj = new StringJoiner("\n");
+
+            if (optionsCount.containsKey(TagMapperTask.Options.ApplyMappings)) {
                 //noinspection DataFlowIssue
-                Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
-            } else {
-                //noinspection DataFlowIssue
-                Snackbar.make(getView(), R.string.info_nothing_to_do, Snackbar.LENGTH_LONG).show();
+                final int count = optionsCount.get(TagMapperTask.Options.ApplyMappings);
+                if (count > 0) {
+                    final String msg = getString(R.string.list_element, getString(
+                            R.string.name_colon_value,
+                            getString(R.string.lbl_tag_mapper_apply_mappings_result),
+                            getResources().getQuantityString(R.plurals.n_books, count, count)));
+                    sj.add(msg);
+                }
             }
-        });
+            if (optionsCount.containsKey(TagMapperTask.Options.MergeCaseDifferences)) {
+                //noinspection DataFlowIssue
+                final int count = optionsCount.get(TagMapperTask.Options.MergeCaseDifferences);
+                if (count > 0) {
+                    final String msg = getString(R.string.list_element, getString(
+                            R.string.name_colon_value,
+                            getString(R.string.lbl_tag_mapper_apply_merge_case_result),
+                            getResources().getQuantityString(R.plurals.n_books, count, count)));
+                    sj.add(msg);
+                }
+            }
+            if (optionsCount.containsKey(TagMapperTask.Options.PurgeUnusedTags)) {
+                //noinspection DataFlowIssue
+                final int count = optionsCount.get(TagMapperTask.Options.PurgeUnusedTags);
+                if (count > 0) {
+                    final String msg = getString(R.string.list_element, getString(
+                            R.string.name_colon_value,
+                            getString(R.string.lbl_tag_mapper_apply_purge_unused),
+                            getResources().getQuantityString(R.plurals.n_tags, count, count)));
+                    sj.add(msg);
+                }
+            }
+
+            //noinspection DataFlowIssue
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.info_24px)
+                    .setTitle(titleId)
+                    .setMessage(sj.toString())
+                    .setPositiveButton(R.string.action_done, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
+        } else {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.info_nothing_to_do, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void closeProgressDialog() {
@@ -497,13 +534,26 @@ public class TagMappingEditorFragment
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_APPLY) {
+                final Context context = getContext();
+
                 //noinspection DataFlowIssue
-                new MaterialAlertDialogBuilder(getContext())
+                new MultiChoiceAlertDialogBuilder<TagMapperTask.Options>(getContext())
                         .setTitle(R.string.lbl_substitutions)
                         .setMessage(R.string.confirm_apply_substitutions)
-                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(R.string.ok, (d, w) -> vm.startTagMapper())
-                        .create()
+                        .setSelectedItems(Set.of(TagMapperTask.Options.ApplyMappings,
+                                                 TagMapperTask.Options.MergeCaseDifferences))
+                        .setItems(List.of(TagMapperTask.Options.ApplyMappings,
+                                          TagMapperTask.Options.MergeCaseDifferences,
+                                          TagMapperTask.Options.PurgeUnusedTags),
+                                  List.of(context.getString(
+                                                  R.string.lbl_tag_mapper_apply_mappings),
+                                          context.getString(
+                                                  R.string.lbl_tag_mapper_apply_merge_case),
+                                          context.getString(
+                                                  R.string.lbl_tag_mapper_apply_purge_unused)))
+                        .setPositiveButton(R.string.ok,
+                                           TagMappingEditorFragment.this::startTagMapper)
+                        .build()
                         .show();
                 return true;
             }

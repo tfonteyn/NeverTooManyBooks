@@ -39,6 +39,11 @@
         <item quantity="many">%1$s estrelas</item>
         <item quantity="other">%1$s estrelas</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d tag</item>
+        <item quantity="many">%1$d tags</item>
+        <item quantity="other">%1$d tags</item>
+    </plurals>
     <string name="a_b">%1$s%2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="brackets">(%1$s)</string>
@@ -241,4 +246,7 @@
     <string name="lbl_tags">Tags</string>
     <string name="info_tap_to_move_tag">Toque em uma tag para movê-la de/para o livro.</string>
     <string name="confirm_apply_substitutions">Aplicar as regras de substituição? Todos os livros aplicáveis serão atualizados.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Mesclar tags que diferem apenas em letras maiúsculas e minúsculas</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">Combinação de letras maiúsculas e minúsculas</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Excluir tags não utilizadas</string>
 </resources>

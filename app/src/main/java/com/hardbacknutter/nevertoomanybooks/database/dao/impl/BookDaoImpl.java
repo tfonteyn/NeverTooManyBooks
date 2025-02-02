@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -40,7 +39,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
@@ -78,17 +76,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 
 /**
  * Database access helper class.
@@ -208,7 +202,8 @@ public class BookDaoImpl
         }
     }
 
-    private boolean touch(final long bookId) {
+    @Override
+    public boolean touch(final long bookId) {
         final boolean result;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.TOUCH)) {
             stmt.bindLong(1, bookId);
@@ -1051,73 +1046,8 @@ public class BookDaoImpl
         }
     }
 
-    @Override
-    public int applyTagMappings(@NonNull final Context context,
-                                @NonNull final Locale locale)
-            throws DaoWriteException {
-        final TagMapper tagMapper = new TagMapper(context);
-        final Pattern csvSplitter = Pattern.compile("\\\\,");
-
-        final TagDao tagDao = tagDaoSupplier.get();
-
-        // the modified book count
-        int bookCount = 0;
-
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-            try (Cursor cursor = db.rawQuery(Sql.FIND_BOOKS_WITH_TAGS, null)) {
-                while (cursor.moveToNext()) {
-                    final long bookId = cursor.getLong(0);
-                    final String csvTags = cursor.getString(1);
-
-                    final List<Tag> before = Arrays
-                            .stream(csvSplitter.split(csvTags))
-                            .map(Tag::new)
-                            .collect(Collectors.toList());
-                    final List<Tag> after = tagMapper.map(context, before);
-
-                    // The lists are typically only a couple of elements, ignore lint warning
-                    //noinspection SlowListContainsAll
-                    if (before.size() != after.size()
-                        || !before.containsAll(after) || !after.containsAll(before)) {
-
-                        tagDao.insertOrUpdate(context, bookId, after, tag -> locale);
-                        touch(bookId);
-
-                        bookCount++;
-                    }
-                }
-            }
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
-        }
-
-        return bookCount;
-    }
 
     private static final class Sql {
-
-        /**
-         * Find all books with tags for which a mapping exists.
-         * We get book id and a csv list of its tags.
-         * The csv separator matches the splitter regex pattern.
-         *
-         * @see #applyTagMappings(Context, Locale)
-         */
-        static final String FIND_BOOKS_WITH_TAGS =
-                SELECT_ + TBL_BOOK_TAG.dotAs(DBKey.FK_BOOK)
-                + ',' + "GROUP_CONCAT(" + TBL_TAGS.dot(DBKey.TAG) + ", '\\,')"
-                + _FROM_ + TBL_BOOK_TAG.ref() + TBL_BOOK_TAG.leftOuterJoin(TBL_TAGS)
-                + _GROUP_BY_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK);
 
         /** Delete a {@link Book}. */
         static final String DELETE_BY_UUID =
