@@ -32,7 +32,7 @@
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">Nalezena %1$d kniha</item>
-        <item quantity="few">Nalezeny  %1$d knihy</item>
+        <item quantity="few">Nalezeny %1$d knihy</item>
         <item quantity="many">Nalezeno %1$d knihy</item>
         <item quantity="other">Nalezeno %1$d knih</item>
     </plurals>
@@ -44,8 +44,8 @@
     </plurals>
     <plurals name="n_tags">
         <item quantity="one">%1$d štítek</item>
-        <item quantity="few">%1$d značky</item>
-        <item quantity="many">%1$d značek</item>
+        <item quantity="few">%1$d štítky</item>
+        <item quantity="many">%1$d štítků</item>
         <item quantity="other">%1$d štítků</item>
     </plurals>
     <string name="X_action_clear_credentials">Vymazat pověření</string>
@@ -163,8 +163,8 @@
     <string name="confirm_delete_series">Opravdu chcete smazat série „%1$s“?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
     <string name="confirm_delete_style">Smazat styl „%1$s“?</string>
     <string name="confirm_delete_substitutions">Smazat náhrady za „%1$s“?</string>
-    <string name="confirm_delete_tag">Smazat značku „%1$s“?\n\nBude vymazán ze všech knih, na kterých je nastaven. Knihy samotné smazány nebudou.</string>
-    <string name="confirm_delete_tag_from_x_books">Smazat značku „%1$s“?\n\nBude odstraněn z %2$s, na kterém je nastaven. Knihy samotné smazány nebudou.</string>
+    <string name="confirm_delete_tag">Smazat štítek „%1$s“?\n\nBude vymazán ze všech knih, na kterých je nastaven. Knihy samotné smazány nebudou.</string>
+    <string name="confirm_delete_tag_from_x_books">Smazat štítek „%1$s“?\n\nBude odstraněn z %2$s, na kterém je nastaven. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_toc_entry_everywhere">Odstraňte název „%1$s“ (z %2$s)? Bude odstraněn ze všech knih, ve kterých je uveden. Samotné knihy nebudou smazány.</string>
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
     <string name="confirm_email_file">Chcete tento soubor někomu poslat e-mailem?</string>
@@ -172,7 +172,7 @@
     <string name="confirm_merge_bookshelves">Regál, který upravujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_publishers">Vydavatel, kterého upravujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_series">Série, kterou upravujete, již existuje. Chcete je sloučit?</string>
-    <string name="confirm_merge_tags">Značka, kterou upravujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_tags">Upravovaný štítek již existuje. Chcete je sloučit?</string>
     <string name="confirm_overwrite_cover">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.
 \n
 \nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat.</string>
@@ -315,7 +315,7 @@
     <string name="lbl_condition_reading_copy">Čtení kopie</string>
     <string name="lbl_condition_very_good">Velmi dobře</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Slučování velkých a malých písmen</string>
-    <string name="lbl_tag_mapper_apply_purge_unused">Odstranění nepoužívaných značek</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">Odstranění nepoužívaných štítků</string>
     <string name="lbl_connection_timeout">Časový limit připojení (sekundy)</string>
     <string name="lbl_cover_back">Zadní obálka knihy</string>
     <string name="lbl_cover_front">Obal knihy</string>
@@ -426,7 +426,7 @@
     <string name="lbl_series_num">#</string>
     <string name="lbl_settings">Nastavení</string>
     <string name="lbl_tag">Štítek</string>
-    <string name="lbl_tags">Značky</string>
+    <string name="lbl_tags">Štítků</string>
     <string name="lbl_substitutions">Náhrady</string>
     <string name="lbl_signed">Podepsaný</string>
     <string name="lbl_site_book_id">ID webové stránky</string>
@@ -545,7 +545,7 @@
     <string name="pt_field_visibility">Spravovat viditelnost jednotlivých polí</string>
     <string name="preference_not_set">Nenastaveno</string>
     <string name="info_backup_successful">Zálohování proběhlo úspěšně</string>
-    <string name="info_tap_to_move_tag">Klepnutím na značku ji přesunete do/z knihy.</string>
+    <string name="info_tap_to_move_tag">Klepnutím na štítek jej přesunete do/z knihy.</string>
     <string name="info_substitutions_one_per_line">Přidejte jednu substituci na řádek</string>
     <string name="info_download_successful">Stahování bylo úspěšné</string>
     <string name="info_export_report">Ve vybrané složce byl vytvořen soubor %1$s s názvem „%2$s“. Měli byste jej ručně zkopírovat jinam, abyste ochránili data pro případ poškození, ztráty nebo krádeže zařízení.</string>
@@ -855,5 +855,5 @@
     <string name="lbl_identifier">Identifikátor</string>
     <string name="lbl_identifiers">Identifikátory</string>
     <string name="confirm_apply_substitutions">Použít pravidla substituce? Všechny příslušné knihy budou aktualizovány.</string>
-    <string name="lbl_tag_mapper_apply_merge_case">Sloučení značek, které se liší pouze velkými a malými písmeny</string>
+    <string name="lbl_tag_mapper_apply_merge_case">Sloučení štítků, které se liší pouze velkými a malými písmeny</string>
 </resources>

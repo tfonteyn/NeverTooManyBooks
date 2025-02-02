@@ -28,19 +28,19 @@
         <item quantity="one">%1$d книга</item>
         <item quantity="few">%1$d книги</item>
         <item quantity="many">%1$d книг</item>
-        <item quantity="other">%1$d книг</item>
+        <item quantity="other">%1$d книги</item>
     </plurals>
     <plurals name="n_books_found">
-        <item quantity="one">%1$d книга найдена</item>
-        <item quantity="few">%1$d книги найдено</item>
-        <item quantity="many">%1$d книги найдено</item>
-        <item quantity="other">%1$d книги найдено</item>
+        <item quantity="one">Найдена %1$d книга</item>
+        <item quantity="few">Найдено %1$d книги</item>
+        <item quantity="many">Найдено %1$d книг</item>
+        <item quantity="other">Найдено %1$d книги</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s звезда</item>
-        <item quantity="few">%1$s звезд</item>
+        <item quantity="few">%1$s звезды</item>
         <item quantity="many">%1$s звезд</item>
-        <item quantity="other">%1$s звезд</item>
+        <item quantity="other">%1$s звезды</item>
     </plurals>
     <plurals name="n_tags">
         <item quantity="one">%1$d тег</item>
