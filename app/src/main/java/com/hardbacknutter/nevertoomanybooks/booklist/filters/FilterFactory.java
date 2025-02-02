@@ -155,7 +155,7 @@ public final class FilterFactory {
             }
 
             case DBKey.FK_TOC_ENTRY: {
-                // FIXME: see note with SUPPORTED above
+                // TODO: see note with SUPPORTED above
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_book_type,
                         DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_CONTENT_TYPE,
@@ -204,7 +204,7 @@ public final class FilterFactory {
             }
 
             case DBKey.FK_TOC_ENTRY: {
-                // FIXME: see note with SUPPORTED above
+                // TODO: see note with SUPPORTED above
                 return FieldArrayAdapter.createEntityDropDown(
                         context, Book.ContentType.getAll());
             }

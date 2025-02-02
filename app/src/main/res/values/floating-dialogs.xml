@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -31,10 +31,10 @@
     <dimen name="floating_dialog_recycler_view_min_height">100dp</dimen>
 
     <!--
-    URGENT: re-evaluate the use of this
+    TODO: re-evaluate the use of this
         This is the corner radius used for our progress-dialogs
          and the DialogMode#Dialog flexible/floating dialogs.
-         TODO: figure out how to use the ?attr/shapeAppearanceCornerExtraLarge directly.
+         Figure out how to use the ?attr/shapeAppearanceCornerExtraLarge directly.
 
      Copied from Material 1.8 libs :
          <style name="ThemeOverlay.Material3.MaterialAlertDialog"

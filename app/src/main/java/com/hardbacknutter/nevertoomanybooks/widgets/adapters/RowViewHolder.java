@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 
 /**
  * Base for all ViewHolder classes.
- * URGENT: add generics T and onBind(T item) and eventually use a common adapter
+ * TODO: add generics T and onBind(T item) and eventually use a common adapter
  * <p>
  * Provides unified handling of clicks, long-clicks and an optional context menu button.
  * <p>

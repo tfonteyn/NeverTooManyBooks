@@ -58,8 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
 /**
  * Note: the keys for the CSV columns are not the same as the internal Book keys
  * due to backward compatibility.
- * TODO: make the current ones LEGACY, and start using the Books keys, but still support reading
- * the old ones.
  * <p>
  * <strong>LIMITATIONS:</strong> Calibre book data is handled, but Calibre library is NOT.
  * The Calibre native string-id is written out with the book.

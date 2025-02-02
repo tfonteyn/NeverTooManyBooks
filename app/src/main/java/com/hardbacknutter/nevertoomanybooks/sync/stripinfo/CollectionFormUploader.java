@@ -216,7 +216,7 @@ class CollectionFormUploader {
 
         final long collectionId = collectionData.getCollectionId();
         if (collectionId == 0) {
-            //URGENT: can we send the rating form with FF_STRIP_COLLECTIE_ID="" ?
+            //TEST: can we send the rating form with FF_STRIP_COLLECTIE_ID="" ?
             setOwned(book, collectionData);
         }
 

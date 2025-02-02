@@ -587,7 +587,7 @@ public class EditBookTocFragment
      * <p>
      * Show with the {@link Fragment#getChildFragmentManager()}
      * <p>
-     * URGENT: needs converting to Dialog/BottomSheet
+     * TODO: needs converting to Dialog/BottomSheet
      */
     public static class ConfirmTocDialogFragment
             extends DialogFragment {
