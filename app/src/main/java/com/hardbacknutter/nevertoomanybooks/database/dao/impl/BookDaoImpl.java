@@ -228,6 +228,7 @@ public class BookDaoImpl
             }
 
             final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,
+                                                                  identifierDaoSupplier,
                                                                   coverStorageSupplier,
                                                                   reorderHelperSupplier,
                                                                   book, true);
@@ -335,6 +336,7 @@ public class BookDaoImpl
             }
 
             final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,
+                                                                  identifierDaoSupplier,
                                                                   coverStorageSupplier,
                                                                   reorderHelperSupplier,
                                                                   book, false);

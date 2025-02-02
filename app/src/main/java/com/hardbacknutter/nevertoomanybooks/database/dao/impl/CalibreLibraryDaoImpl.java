@@ -29,9 +29,9 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -60,14 +60,19 @@ public class CalibreLibraryDaoImpl
 
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
+    @NonNull
+    private final Supplier<BookshelfDao> bookshelfDaoSupplier;
 
     /**
      * Constructor.
      *
-     * @param db Underlying database
+     * @param db                   Underlying database
+     * @param bookshelfDaoSupplier deferred supplier for the {@link BookshelfDao}
      */
-    public CalibreLibraryDaoImpl(@NonNull final SynchronizedDb db) {
+    public CalibreLibraryDaoImpl(@NonNull final SynchronizedDb db,
+                                 @NonNull final Supplier<BookshelfDao> bookshelfDaoSupplier) {
         super(db, TAG);
+        this.bookshelfDaoSupplier = bookshelfDaoSupplier;
     }
 
     @Override
@@ -135,7 +140,7 @@ public class CalibreLibraryDaoImpl
     public void fixId(@NonNull final Context context,
                       @NonNull final CalibreLibrary library) {
 
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+        final BookshelfDao bookshelfDao = bookshelfDaoSupplier.get();
 
         // using the mapped bookshelf-if, lookup the actual Bookshelf (with fallbacks)
         final Bookshelf libBookshelf = bookshelfDao.getBookshelf(context,

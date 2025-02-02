@@ -26,7 +26,6 @@ import android.os.Bundle;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -46,8 +45,6 @@ import static org.junit.Assert.assertTrue;
 
 public class BookDaoHelperTest
         extends BaseDBTest {
-
-    private static final String TAG = "BookDaoHelperTest";
 
     @Before
     public void setup()
@@ -81,14 +78,14 @@ public class BookDaoHelperTest
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_GOODREADS_BOOK,
                                                          "18306114")));
 
-        final ServiceLocator locator = ServiceLocator.getInstance();
         final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,
-                                                              locator::getCoverStorage,
-                                                              locator::getReorderHelper,
+                                                              serviceLocator::getIdentifierDao,
+                                                              serviceLocator::getCoverStorage,
+                                                              serviceLocator::getReorderHelper,
                                                               book, false);
         final ContentValues cv = bookDaoHelper
                 .process(context)
-                .filterValues(locator.getDb().getTableInfo(TBL_BOOKS));
+                .filterValues(serviceLocator.getDb().getTableInfo(TBL_BOOKS));
 
         assertEquals(5, cv.size());
         assertTrue(cv.containsKey(DBKey.DESCRIPTION));

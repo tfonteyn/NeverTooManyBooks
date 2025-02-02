@@ -566,6 +566,7 @@ public class ServiceLocator {
         synchronized (this) {
             if (bookshelfDao == null) {
                 bookshelfDao = new BookshelfDaoImpl(getDb(),
+                                                    this::getTagDao,
                                                     this::getStyles);
             }
         }
@@ -586,7 +587,7 @@ public class ServiceLocator {
     public CalibreLibraryDao getCalibreLibraryDao() {
         synchronized (this) {
             if (calibreLibraryDao == null) {
-                calibreLibraryDao = new CalibreLibraryDaoImpl(getDb());
+                calibreLibraryDao = new CalibreLibraryDaoImpl(getDb(), this::getBookshelfDao);
             }
         }
         return calibreLibraryDao;
@@ -740,7 +741,7 @@ public class ServiceLocator {
     public TagDao getTagDao() {
         synchronized (this) {
             if (tagDao == null) {
-                tagDao = new TagDaoImpl(getDb());
+                tagDao = new TagDaoImpl(getDb(), this::getBookDao);
             }
         }
         return tagDao;

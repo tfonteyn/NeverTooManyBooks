@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -117,7 +116,7 @@ public class TocEntryDaoImpl
         }
 
         if (normalize) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final ReorderHelper reorderHelper = reorderHelperSupplier.get();
             final List<Locale> locales = LocaleListUtils.asList(context);
             list.forEach(tocEntry -> {
                 final String title = reorderHelper.reverse(context, tocEntry.getTitle(),

@@ -76,6 +76,7 @@ public class BookTest
         book.putMoney(DBKey.PRICE_LISTED, money);
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
+                                                    () -> serviceLocator.getIdentifierDao(),
                                                     () -> serviceLocator.getCoverStorage(),
                                                     () -> serviceLocator.getReorderHelper(),
                                                     book, true);
@@ -100,6 +101,7 @@ public class BookTest
         // no PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
+                                                    () -> serviceLocator.getIdentifierDao(),
                                                     () -> serviceLocator.getCoverStorage(),
                                                     () -> serviceLocator.getReorderHelper(),
                                                     book,
@@ -128,6 +130,7 @@ public class BookTest
         // no PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
+                                                    () -> serviceLocator.getIdentifierDao(),
                                                     () -> serviceLocator.getCoverStorage(),
                                                     () -> serviceLocator.getReorderHelper(),
                                                     book,
@@ -155,6 +158,7 @@ public class BookTest
         book.putMoney(DBKey.PRICE_LISTED, money.get());
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
+                                                    () -> serviceLocator.getIdentifierDao(),
                                                     () -> serviceLocator.getCoverStorage(),
                                                     () -> serviceLocator.getReorderHelper(),
                                                     book,
@@ -190,6 +194,7 @@ public class BookTest
         // Not tested: null string for a string field..
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
+                                                    () -> serviceLocator.getIdentifierDao(),
                                                     () -> serviceLocator.getCoverStorage(),
                                                     () -> serviceLocator.getReorderHelper(),
                                                     book,
@@ -236,6 +241,7 @@ public class BookTest
 
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
+                                                    () -> serviceLocator.getIdentifierDao(),
                                                     () -> serviceLocator.getCoverStorage(),
                                                     () -> serviceLocator.getReorderHelper(),
                                                     book,
@@ -290,6 +296,7 @@ public class BookTest
         book.putDouble(DBKey.PRICE_PAID, 0);
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
+                                                    () -> serviceLocator.getIdentifierDao(),
                                                     () -> serviceLocator.getCoverStorage(),
                                                     () -> serviceLocator.getReorderHelper(),
                                                     book,
@@ -320,6 +327,7 @@ public class BookTest
         book.putDouble(DBKey.PRICE_PAID, 0);
 
         final BookDaoHelper bdh = new BookDaoHelper(context,
+                                                    () -> serviceLocator.getIdentifierDao(),
                                                     () -> serviceLocator.getCoverStorage(),
                                                     () -> serviceLocator.getReorderHelper(),
                                                     book,

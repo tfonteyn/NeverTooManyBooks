@@ -35,7 +35,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -222,7 +221,7 @@ public class SeriesDaoImpl
         }
 
         if (normalize) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final ReorderHelper reorderHelper = reorderHelperSupplier.get();
             final List<Locale> locales = LocaleListUtils.asList(context);
             list.forEach(series -> {
                 final String title = reorderHelper.reverse(context, series.getTitle(),
