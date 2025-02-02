@@ -78,11 +78,7 @@ public class TagMappingDaoImpl
                 new Pair<>("Sciencefiction", Set.of("Science Fiction")),
                 // splitting of combinations into multiple tags
                 new Pair<>("science fiction fantasy", Set.of("Science Fiction", "Fantasy")),
-                new Pair<>("Science Fiction & Fantasy", Set.of("Science Fiction", "Fantasy")),
-                // diacritic misspellings
-                new Pair<>("bandes-dessinees", Set.of("bandes-dessinées")),
-                new Pair<>("bande dessinee", Set.of("bandes-dessinées")),
-                new Pair<>("bande dessinée", Set.of("bandes-dessinées"))
+                new Pair<>("Science Fiction & Fantasy", Set.of("Science Fiction", "Fantasy"))
                 // and so on... up to the user to setup theirs obviously
         );
     }
