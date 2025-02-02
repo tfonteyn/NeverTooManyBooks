@@ -89,7 +89,7 @@ public class BookCoder {
     /** Obsolete header from BC. */
     private static final String LEGACY_LAST_GOODREADS_SYNC_DATE = "last_goodreads_sync_date";
     /** Migrated to tags starting in app version 7.0. */
-    public static final String LEGACY_GENRE = "genre";
+    private static final String LEGACY_GENRE = "genre";
 
     @NonNull
     private final StringList<Author> authorCoder;

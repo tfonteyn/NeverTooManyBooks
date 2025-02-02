@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  *              Adds {@link RecordType#Tags} which contains
  *                  {@link com.hardbacknutter.nevertoomanybooks.entities.Tag}. and
  *                  {@link com.hardbacknutter.nevertoomanybooks.entities.TagMapping}s.
- *
+ * <p>
  *              Adds book {@link com.hardbacknutter.nevertoomanybooks.entities.Tag} lists.
  *              Adds book {@link com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData}.
  *              Drops the individual identifier fields on the Book level, and
