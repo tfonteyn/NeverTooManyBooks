@@ -529,6 +529,7 @@
     <string name="preference_not_set">Nicht festgelegt</string>
     <string name="info_backup_successful">Sicherungskopie erfolgreich erstellt</string>
     <string name="info_tap_to_move_tag">Tippen Sie auf eine Tag, um sie in das Buch oder aus dem Buch zu verschieben.</string>
+    <string name="lbl_add_or_edit_substitution">Hinzufügen/Bearbeiten einer Substitutionsregel</string>
     <string name="info_substitutions_one_per_line">Eine Ersetzung pro Zeile hinzufügen</string>
     <string name="info_download_successful">Herunterladen erfolgreich</string>
     <string name="info_export_report">Eine %1$s-Datei namens “%2$s” wurde im ausgewählten Ordner erstellt. Sie sollten sie manuell an einen anderen Ort kopieren, um die Daten zu schützen, falls Ihr Gerät beschädigt wird, verloren geht oder gestohlen wird.</string>

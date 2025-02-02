@@ -532,6 +532,7 @@
     <string name="preference_not_set">Sin definir</string>
     <string name="info_backup_successful">Copia de seguridad correcta</string>
     <string name="info_tap_to_move_tag">Toca una etiqueta para moverla a/desde el libro.</string>
+    <string name="lbl_add_or_edit_substitution">Añadir/editar una regla de sustitución</string>
     <string name="info_substitutions_one_per_line">Añadir una sustitución por línea</string>
     <string name="info_download_successful">Descarga exitosa</string>
     <string name="info_export_report">Se ha creado un archivo %1$s llamado «%2$s» en la carpeta seleccionada. Deberías copiarlo manualmente en otro lugar para proteger los datos en caso de que tu dispositivo se dañe, se pierda o te lo roben.</string>

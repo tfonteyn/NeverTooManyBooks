@@ -530,6 +530,7 @@
     <string name="preference_not_set">Δεν έχει οριστεί</string>
     <string name="info_backup_successful">Η δημιουργία αντιγράφων ασφαλείας ήταν επιτυχής</string>
     <string name="info_tap_to_move_tag">Πατήστε μια ετικέτα για να τη μετακινήσετε από/προς το βιβλίο.</string>
+    <string name="lbl_add_or_edit_substitution">Προσθήκη/Επεξεργασία κανόνα υποκατάστασης</string>
     <string name="info_substitutions_one_per_line">Προσθέστε μία αντικατάσταση ανά γραμμή</string>
     <string name="info_download_successful">Η λήψη ήταν επιτυχής</string>
     <string name="info_export_report">Ένα αρχείο %1$s με όνομα «%2$s» δημιουργήθηκε στον επιλεγμένο φάκελο. Θα πρέπει να το αντιγράψετε με μη αυτόματο τρόπο σε άλλο μέρος για να προστατεύσετε τα δεδομένα σε περίπτωση που η συσκευή σας καταστραφεί, χαθεί ή κλαπεί.</string>

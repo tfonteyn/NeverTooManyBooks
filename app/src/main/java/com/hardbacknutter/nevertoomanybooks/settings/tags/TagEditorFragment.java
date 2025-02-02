@@ -134,6 +134,10 @@ public class TagEditorFragment
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
+                    menu.add(Menu.NONE, R.id.MENU_ACTION_ADD, 999,
+                             R.string.lbl_add_or_edit_substitution)
+                        .setIcon(R.drawable.add_24px);
+
                     //noinspection DataFlowIssue
                     final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
                     if (menuMode.isPopup()) {
@@ -188,6 +192,16 @@ public class TagEditorFragment
 
         } else if (menuItemId == R.id.MENU_DELETE) {
             deleteEntry(position);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_ACTION_ADD) {
+            getParentFragmentManager()
+                    .getFragments()
+                    .stream()
+                    .filter(f -> f instanceof TagAdminFragment)
+                    .findFirst()
+                    .ifPresent(f -> ((TagAdminFragment) f)
+                            .editOrCreateMapping(tags.get(position).getName()));
             return true;
         }
         return false;

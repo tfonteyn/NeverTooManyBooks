@@ -181,6 +181,21 @@ public class TagMappingEditorFragment
     }
 
     /**
+     * Called from {@link TagAdminFragment}.
+     *
+     * @param tagName for we want to create a new mapping (or edit existing).
+     */
+    void editOrCreateMapping(@NonNull final String tagName) {
+        for (int i = 0; i < mappings.size(); i++) {
+            if (mappings.get(i).getName().equalsIgnoreCase(tagName)) {
+                editEntry(mappings.get(i), i);
+                return;
+            }
+        }
+        editEntry(new TagMapping(tagName, Set.of()), POS_NEW_ENTRY);
+    }
+
+    /**
      * Menu selection listener.
      *
      * @param position   in the list

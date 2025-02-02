@@ -547,6 +547,7 @@
     <string name="preference_not_set">Не указано</string>
     <string name="info_backup_successful">Резервное копирование выполнено успешно</string>
     <string name="info_tap_to_move_tag">Нажмите на метку, чтобы переместить ее в книгу или из книги.</string>
+    <string name="lbl_add_or_edit_substitution">Добавление/редактирование правила подстановки</string>
     <string name="info_substitutions_one_per_line">Добавьте по одной подстановке на строку</string>
     <string name="info_download_successful">Загрузка прошла успешно</string>
     <string name="info_export_report">В выбранной папке был создан файл %1$s с именем «%2$s». Вы должны вручную скопировать его в другое место, чтобы защитить данные в случае повреждения, потери или кражи устройства.</string>

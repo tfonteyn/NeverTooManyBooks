@@ -124,6 +124,23 @@ public class TagAdminFragment
 
     }
 
+    /**
+     * Called from {@link TagEditorFragment}.
+     *
+     * @param tagName for we want to create a new mapping (or edit existing).
+     */
+    void editOrCreateMapping(@NonNull final String tagName) {
+        vb.pager.setCurrentItem(1);
+
+        getParentFragmentManager()
+                .getFragments()
+                .stream()
+                .filter(f -> f instanceof TagMappingEditorFragment)
+                .findFirst()
+                .ifPresent(f -> ((TagMappingEditorFragment) f)
+                        .editOrCreateMapping(tagName));
+    }
+
     private static class TabAdapter
             extends FragmentStateAdapter {
 

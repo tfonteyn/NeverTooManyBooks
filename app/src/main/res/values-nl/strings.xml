@@ -227,6 +227,7 @@
     <string name="info_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD-kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD-kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD-kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="info_tap_to_move_tag">Tik op een tag om deze te verplaatsen van/naar het boek.</string>
+    <string name="lbl_add_or_edit_substitution">Een substitutieregel toevoegen/bewerken</string>
     <string name="info_substitutions_one_per_line">Voeg één substitutie per regel toe</string>
     <string name="info_download_successful">Download succesvol</string>
     <string name="info_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up.</string>

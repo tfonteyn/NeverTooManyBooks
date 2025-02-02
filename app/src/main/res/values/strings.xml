@@ -385,9 +385,11 @@
     <string name="info_tap_to_select">Tap to select.</string>
     <!-- Header/help text in the tag-editor dialog -->
     <string name="info_tap_to_move_tag">Tap a tag to move it to/from the book.</string>
+
+    <!-- Menu option to add/edit a tag-substitution rule.-->
+    <string name="lbl_add_or_edit_substitution">Add/Edit a substitution rule</string>
     <!-- hint/label above a multi-line txt field where the user should
-         enter one Substitution text on each line.
-    -->
+         enter one Substitution text on each line. -->
     <string name="info_substitutions_one_per_line">Add one substitution per line</string>
 
     <string name="info_download_successful">Download successful</string>
