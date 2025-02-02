@@ -63,15 +63,6 @@
             tools:text="https://blah.info"
             />
 
-        <TextView
-            android:id="@+id/type"
-            style="@style/RowEditor.Text.Secondary"
-            android:layout_marginStart="@dimen/field_margin_start"
-            app:layout_constraintStart_toStartOf="@id/key"
-            app:layout_constraintTop_toBottomOf="@id/key"
-            tools:ignore="SelectableText"
-            tools:text="@string/lbl_text"
-            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.button.MaterialButton

@@ -35,7 +35,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.List;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -99,22 +98,17 @@ public class IdentifiersEditorFragment
         @NonNull
         private final RowEditIdentifierBinding vb;
         @NonNull
-        private final Map<Character, String> typeMap;
-        @NonNull
         private final HtmlFormatter<String> htmlFormatter;
 
         Holder(@NonNull final RowEditIdentifierBinding vb,
-               @NonNull final Map<Character, String> typeMap,
                @NonNull final HtmlFormatter<String> htmlFormatter) {
             super(vb.getRoot());
             this.vb = vb;
-            this.typeMap = typeMap;
             this.htmlFormatter = htmlFormatter;
         }
 
         void onBind(@NonNull final Identifier identifier) {
             vb.key.setText(identifier.getKey());
-            vb.type.setText(typeMap.get(identifier.getType()));
             vb.name.setText(identifier.getName());
 
             final String siteUrl = identifier.getSiteUrl(itemView.getContext());
@@ -133,16 +127,12 @@ public class IdentifiersEditorFragment
         @NonNull
         private final List<Identifier> identifiers;
         private final LayoutInflater inflater;
-        private final Map<Character, String> typeMap;
         private final HtmlFormatter<String> htmlFormatter;
 
         IdentifierAdapter(@NonNull final Context context,
                           @NonNull final List<Identifier> identifiers) {
             inflater = LayoutInflater.from(context);
             this.identifiers = identifiers;
-
-            typeMap = Map.of(Identifier.TYPE_STRING, context.getString(R.string.lbl_text),
-                             Identifier.TYPE_LONG, context.getString(R.string.lbl_numeric));
 
             htmlFormatter = new HtmlFormatter<String>()
                     .setEnableLinks(true);
@@ -154,7 +144,7 @@ public class IdentifiersEditorFragment
                                          final int viewType) {
             final RowEditIdentifierBinding vb = RowEditIdentifierBinding
                     .inflate(inflater, parent, false);
-            return new Holder(vb, typeMap, htmlFormatter);
+            return new Holder(vb, htmlFormatter);
         }
 
         @Override

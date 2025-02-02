@@ -1995,10 +1995,4 @@
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="lbl_numeric"
-            translatable="false">Numeric</string>
-    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
-    <string name="lbl_text"
-            translatable="false">Text</string>
 </resources>
