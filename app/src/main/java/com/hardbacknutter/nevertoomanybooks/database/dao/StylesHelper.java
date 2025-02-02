@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,12 +36,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -311,31 +308,9 @@ public class StylesHelper {
      */
     public boolean update(@NonNull final Context context,
                           @NonNull final Style... styles) {
-        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
-        Synchronizer.SyncLock txLock = null;
         try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
             // Update the database first, and commit the transaction
-            for (final Style style : styles) {
-                if (BuildConfig.DEBUG /* always */) {
-                    if (style.getUuid().isEmpty()) {
-                        throw new IllegalStateException(ERROR_MISSING_UUID);
-                    }
-                    // Reminder: do NOT require a positive value here!
-                    // It's perfectly fine to update builtin styles;
-                    // ONLY NEW styles must be rejected
-                    if (style.getId() == 0) {
-                        throw new IllegalStateException("A new Style cannot be updated");
-                    }
-                }
-
-                styleDaoSupplier.get().update(context, style);
-            }
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
+            styleDaoSupplier.get().update(context, List.of(styles));
             // Now update the caches.
             for (final Style style : styles) {
                 if (style.getType() == Style.Type.Global) {
@@ -352,10 +327,6 @@ public class StylesHelper {
         } catch (@NonNull final DaoWriteException e) {
             // ignore, but log it.
             LoggerFactory.getLogger().e(TAG, e);
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
         }
         return false;
     }

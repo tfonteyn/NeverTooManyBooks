@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
+import java.util.Collection;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -91,6 +92,18 @@ public interface StyleDao {
      */
     void update(@NonNull Context context,
                 @NonNull Style style)
+            throws DaoWriteException;
+
+    /**
+     * Update the given list of {@link Style}s.
+     *
+     * @param context Current context
+     * @param styles  to update
+     *
+     * @throws DaoWriteException on failure
+     */
+    void update(@NonNull Context context,
+                @NonNull Collection<Style> styles)
             throws DaoWriteException;
 
     /**

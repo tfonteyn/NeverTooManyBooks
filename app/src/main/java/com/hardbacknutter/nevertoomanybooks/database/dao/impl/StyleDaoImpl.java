@@ -30,6 +30,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -314,6 +315,43 @@ public class StyleDaoImpl
         }
 
         throw new DaoUpdateException(ERROR_UPDATE_FROM + style);
+    }
+
+    @Override
+    public void update(@NonNull final Context context,
+                       @NonNull final Collection<Style> styles)
+            throws DaoUpdateException {
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            for (final Style style : styles) {
+                if (BuildConfig.DEBUG /* always */) {
+                    if (style.getUuid().isEmpty()) {
+                        throw new IllegalStateException("ERROR_MISSING_UUID");
+                    }
+                    // Reminder: do NOT require a positive value here!
+                    // It's perfectly fine to update builtin styles;
+                    // ONLY NEW styles must be rejected
+                    if (style.getId() == 0) {
+                        throw new IllegalStateException("A new Style cannot be updated");
+                    }
+                }
+
+                update(context, style);
+            }
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
     }
 
     @Override
