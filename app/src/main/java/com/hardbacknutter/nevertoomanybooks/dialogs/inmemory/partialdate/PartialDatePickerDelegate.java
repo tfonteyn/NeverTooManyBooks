@@ -235,6 +235,9 @@ class PartialDatePickerDelegate
         }
 
         // 0: 'not set'
+        // ENHANCE: github #91: allow negative values for first-publication-date
+        //  currently not possible as the NumberPicker does not allow <0
+        //  So the whole partial-date-picker needs redoing.
         vb.year.setMinValue(0);
         // we're optimistic...
         vb.year.setMaxValue(2100);
