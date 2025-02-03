@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -90,6 +90,13 @@ public class ShowBookPagerViewModel
                     throw new IllegalArgumentException(BKEY_LIST_TABLE_ROW_ID);
                 }
                 final SynchronizedDb db = ServiceLocator.getInstance().getDb();
+                // URGENT: 2025-02-03 github #90
+                //  android.database.sqlite.SQLiteException: no such table: tmp_book_nav_49
+                //  (code 1 SQLITE_ERROR): while compiling: SELECT COUNT(*) FROM tmp_book_nav_49
+                // but we can only get here via ShowBookPagerContract, where
+                // BKEY_NAV_TABLE_NAME is set directly coming from the BoB ???
+                // (also from authorWorks, but there we pass in null for nav-table)
+                // Wait on reproducer.
                 navHelper = new BooklistNavigatorDao(db, navTableName);
                 initialPagerPosition = navHelper.getRowNumber(rowId) - 1;
             } else {
