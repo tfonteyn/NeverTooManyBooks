@@ -50,6 +50,10 @@
         <item quantity="one">%1$s விண்மீன்</item>
         <item quantity="other">%1$s நட்சத்திரங்கள்</item>
     </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d குறிச்சொல்</item>
+        <item quantity="other">%1$d குறிச்சொற்கள்</item>
+    </plurals>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -826,4 +830,11 @@
     <string name="X_info_not_authorized">ஏற்பு இல்லை</string>
     <string name="X_info_site_authorization_successful">%1$s அங்கீகார வெற்றிகரமாக</string>
     <string name="warning_import_csv_unescaped_quote">%1$d வரிசையில் வெளியிடப்படாத மேற்கோள், நிலை %2$d</string>
+
+    <string name="lbl_add_or_edit_substitution">மாற்று விதியைச் சேர்க்கவும்/திருத்தவும்</string>
+    <string name="confirm_apply_substitutions">மாற்று விதிகளைப் பயன்படுத்தவா? பொருந்தக்கூடிய அனைத்து புத்தகங்களும் புதுப்பிக்கப்படும்.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">பெரிய எழுத்து மற்றும் சிறிய எழுத்துக்களில் மட்டுமே வேறுபடும் குறிச்சொற்களை ஒன்றிணைக்கவும்.</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">பெரிய/சிறிய எழுத்து இணைப்பு</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">பயன்படுத்தப்படாத குறிச்சொற்களை நீக்கு</string>
+
 </resources>
