@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
@@ -254,12 +255,25 @@ public class TagEditorFragment
         }
     }
 
+    /**
+     * Case-sensitive.
+     *
+     * @param tagName to find
+     *
+     * @return position, or {@code -1} if not found
+     */
+    @IntRange(from = -1)
+    private int findByName(@NonNull final String tagName) {
+        return tags.stream().map(Tag::getName)
+                   .collect(Collectors.toList())
+                   .indexOf(tagName);
+    }
+
     private void addEntry(@NonNull final String tagName)
             throws DaoWriteException {
         // check by NAME it's not already in the list.
-        final int existingPos = tags.stream().map(Tag::getName)
-                                    .collect(Collectors.toList())
-                                    .indexOf(tagName);
+        final int existingPos = findByName(tagName);
+
         if (existingPos >= 0) {
             // Trying to add a NEW one already there. Just reject it...
             Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
@@ -285,38 +299,38 @@ public class TagEditorFragment
                              final int position)
             throws DaoWriteException {
 
-        final Tag tag = tags.get(position);
-        tag.setName(tagName);
-
         // check by NAME it's not already in the list.
-        final int existingPos = tags.stream().map(Tag::getName)
-                                    .collect(Collectors.toList())
-                                    .indexOf(tagName);
+        final int existingPos = findByName(tagName);
 
-        if (existingPos >= 0) {
-            // Renaming a tag to have the same name as another, propose to merge
-            final Context context = getContext();
-            //noinspection DataFlowIssue
-            StandardDialogs.askToMerge(context, R.string.confirm_merge_tags,
-                                       tag.getName(), () -> {
-                        try {
-                            ServiceLocator.getInstance().getTagDao()
-                                          .moveBooks(context, tag, tags.get(existingPos));
-                            adapter.notifyItemRemoved(position);
-                            vb.tagList.scrollToPosition(existingPos);
-                        } catch (@NonNull final DaoWriteException e) {
-                            // log, but ignore - should never happen unless disk full
-                            LoggerFactory.getLogger().e(TAG, e, tag);
-                        }
-                    });
-        } else {
+        // we only get here if the new name IS different from the previous name
+        // ... no need to compare positions
+        if (existingPos == -1) {
             // update with the new data.
+            final Tag tag = tags.get(position);
+            tag.setName(tagName);
+
             ServiceLocator.getInstance().getTagDao().update(tag);
             adapter.notifyItemChanged(position);
             vb.tagList.scrollToPosition(position);
+
+        } else {
+            // Renaming a tag to have the same name as another/existing tag, propose to merge
+            final Context context = getContext();
+            //noinspection DataFlowIssue
+            StandardDialogs.askToMerge(context, R.string.confirm_merge_tags, tagName, () -> {
+                final Tag source = tags.get(position);
+                final Tag target = tags.get(existingPos);
+                try {
+                    ServiceLocator.getInstance().getTagDao().moveBooks(context, source, target);
+                    adapter.notifyItemRemoved(position);
+                    vb.tagList.scrollToPosition(existingPos);
+                } catch (@NonNull final DaoWriteException e) {
+                    // log, but ignore - should never happen unless disk full
+                    LoggerFactory.getLogger().e(TAG, e, source);
+                }
+            });
         }
     }
-
 
     /**
      * Prompt the user to delete the given item.
