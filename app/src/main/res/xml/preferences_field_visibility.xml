@@ -142,7 +142,7 @@
         <!-- bit: 18 -->
         <SwitchPreference
             android:defaultValue="true"
-            android:key="tag"
+            android:key="tag_id"
             android:title="@string/lbl_tag" />
 
         <!-- bit: 19 -->
