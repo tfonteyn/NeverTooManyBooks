@@ -70,13 +70,6 @@ public abstract class BaseField<T, V extends View>
     @NonNull
     private final String fieldKey;
 
-    /**
-     * The preference key (field-name) to check if this Field is used or not.
-     * i.e. the key to be used for {@link Field#isUsed()}.
-     */
-    @NonNull
-    private final String usedKey;
-
     @NonNull
     private final FragmentId fragmentId;
 
@@ -98,6 +91,12 @@ public abstract class BaseField<T, V extends View>
     @Nullable
     T rawValue;
 
+    /**
+     * The preference key (field-name) to check if this Field is used or not.
+     * i.e. the key to be used for {@link Field#isUsed()}.
+     */
+    @NonNull
+    private String usedKey;
     /**
      * The value as originally loaded from the database.
      *
@@ -145,6 +144,23 @@ public abstract class BaseField<T, V extends View>
         this.fieldViewId = fieldViewId;
         this.fieldKey = fieldKey;
         usedKey = prefKey;
+    }
+
+    /**
+     * Set the "used" preference key.
+     * <p>
+     * Optional. By default set to the {@link #fieldKey}  in the constructor.
+     *
+     * @param prefKey The preference key to check if this Field is used or not
+     *
+     * @return {@code this} (for chaining)
+     *
+     * @see #isUsed()
+     */
+    @NonNull
+    public Field<T, V> setUsedKey(@NonNull final String prefKey) {
+        this.usedKey = prefKey;
+        return this;
     }
 
     /**
