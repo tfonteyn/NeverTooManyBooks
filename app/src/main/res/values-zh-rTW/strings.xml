@@ -251,6 +251,7 @@
     <string name="info_calibre_content_server_extension">沒有安裝Calibre內容伺服器擴充。不提供虛擬圖書館。</string>
     <string name="info_cleanup_files">可刪除檔案目前佔用 SD 卡 %1$s 空間。當您備份資料庫或應用程式崩潰時，會將日誌與其他資料檔案儲存在 SD 卡上。點擊下方按鈕以從 SD 卡刪除這些檔案。如果您遇到了崩潰或其他問題，請考慮先使用「%2$s」按鈕。</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d書，在 %2$d條目中</string>
+    <string name="lbl_add_or_edit_substitution">新增/編輯替換規則</string>
     <string name="info_substitutions_one_per_line">每行添加一個替代</string>
     <string name="info_download_successful">下載成功</string>
     <string name="info_export_books_option_since_last_full_backup">自上次完整備份後新增或更新的圖書。</string>
@@ -332,6 +333,7 @@
     <string name="lbl_condition_good">好</string>
     <string name="lbl_condition_reading_copy">閱讀拷貝</string>
     <string name="lbl_condition_very_good">非常好</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">刪除未使用的標籤</string>
     <string name="lbl_connection_timeout">連接逾時（秒）</string>
     <string name="lbl_country">國家/地區</string>
     <string name="lbl_cover_back">封底</string>
@@ -831,4 +833,6 @@
     <string name="confirm_delete_substitutions">刪除「%1$s」的替代？</string>
     <string name="confirm_delete_tag">刪除標籤「%1$s」？\n\n將從所有設定了該標籤的書籍處移除它。不會刪除書籍本身。</string>
     <string name="info_tap_to_move_tag">輕按標籤將其移動到書籍或從書籍移出。</string>
+    <string name="lbl_tag_mapper_apply_merge_case">合併只有字母大小寫不同的標籤</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">大/小寫合併</string>
 </resources>

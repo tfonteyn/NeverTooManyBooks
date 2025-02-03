@@ -833,7 +833,7 @@
 
     <string name="lbl_add_or_edit_substitution">மாற்று விதியைச் சேர்க்கவும்/திருத்தவும்</string>
     <string name="confirm_apply_substitutions">மாற்று விதிகளைப் பயன்படுத்தவா? பொருந்தக்கூடிய அனைத்து புத்தகங்களும் புதுப்பிக்கப்படும்.</string>
-    <string name="lbl_tag_mapper_apply_merge_case">பெரிய எழுத்து மற்றும் சிறிய எழுத்துக்களில் மட்டுமே வேறுபடும் குறிச்சொற்களை ஒன்றிணைக்கவும்.</string>
+    <string name="lbl_tag_mapper_apply_merge_case">பெரிய எழுத்து மற்றும் சிறிய எழுத்துக்களில் மட்டுமே வேறுபடும் குறிச்சொற்களை ஒன்றிணைக்கவும்</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">பெரிய/சிறிய எழுத்து இணைப்பு</string>
     <string name="lbl_tag_mapper_apply_purge_unused">பயன்படுத்தப்படாத குறிச்சொற்களை நீக்கு</string>
 
