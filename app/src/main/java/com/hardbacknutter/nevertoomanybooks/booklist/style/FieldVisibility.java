@@ -102,7 +102,9 @@ public class FieldVisibility {
             // bit 20..23
             DBKey.LOCATION,
             DBKey.PAGES,
+            // implies DBKey.PRICE_LISTED_CURRENCY
             DBKey.PRICE_LISTED,
+            // implies DBKey.PRICE_PAID_CURRENCY
             DBKey.PRICE_PAID,
 
             // bit 24..27
