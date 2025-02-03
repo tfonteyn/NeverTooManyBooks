@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,16 +28,16 @@ import androidx.annotation.WorkerThread;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface SeriesDao
-        extends EntityDao<Series>,
-                EntityOwningBooksDao<Series>,
-                MoveBooksDao<Series> {
+public interface SeriesDao {
 
     /**
      * Get a unique list of all {@link Series} titles.
@@ -109,4 +109,193 @@ public interface SeriesDao
      */
     @WorkerThread
     int purge();
+
+    /**
+     * Check for books which do not have a {@link Series} at position 1.
+     * For those that don't, read their list, and re-save them.
+     *
+     * @param context Current context
+     *
+     * @return the number of books processed
+     *
+     * @throws DaoWriteException on failure
+     */
+    int fixPositions(@NonNull Context context)
+            throws DaoWriteException;
+
+    /**
+     * Count the books for the given {@link Series}.
+     *
+     * @param item to count the books of
+     *
+     * @return the number of books
+     */
+    long countBooks(@NonNull Series item);
+
+    /**
+     * Get a list of book ID's for the given {@link Series}.
+     *
+     * @param itemId id of the item
+     *
+     * @return list with book ID's linked to this item
+     */
+    @NonNull
+    List<Long> getBookIds(long itemId);
+
+    /**
+     * Get a list of the {@link Series} for a book.
+     *
+     * @param bookId of the book
+     *
+     * @return list
+     */
+    @NonNull
+    List<Series> getByBookId(@IntRange(from = 1) long bookId);
+
+    /**
+     * Insert or update a list of {@link Series}'s linked to a single {@link Book}.
+     * <p>
+     * The list is pruned before storage.
+     * New {@link Series}'s are added to the {@link Series} table, existing ones are NOT updated
+     * unless explicitly allowed by the {@code doUpdates} parameter.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context        Current context
+     * @param bookId         of the book
+     * @param doUpdates      set to {@code true} to force each {@link Series} to be updated.
+     *                       <strong>ONLY</strong> set this when actually needed.
+     *                       Do not set this during for example an import.
+     * @param list           the list of {@link Series}'s
+     * @param localeSupplier a supplier to get the Locale; called for each item in the list
+     *
+     * @throws DaoWriteException on failure
+     */
+    void insertOrUpdate(@NonNull Context context,
+                        @IntRange(from = 1) long bookId,
+                        boolean doUpdates,
+                        @NonNull Collection<Series> list,
+                        @NonNull Function<Series, Locale> localeSupplier)
+            throws DaoWriteException;
+
+    /**
+     * Moves all books from the 'source' {@link Series}, to the 'target' {@link Series}.
+     * The (now unused) 'source' {@link Series} is deleted.
+     *
+     * @param context Current context
+     * @param source  from where to move
+     * @param target  to move to
+     *
+     * @return amount of books moved
+     *
+     * @throws DaoWriteException on failure
+     */
+    int moveBooks(@NonNull Context context,
+                  @NonNull Series source,
+                  @NonNull Series target)
+            throws DaoWriteException;
+
+    /**
+     * Find a {@link Series} based on the given id.
+     *
+     * @param id of {@link Series} to find
+     *
+     * @return the {@link Series}
+     */
+    @NonNull
+    Optional<Series> findById(@IntRange(from = 1) long id);
+
+    /**
+     * Find a {@link Series} by using the <strong>name</strong> fields of the given {@link Series}.
+     * The given {@link Series} is <strong>not</strong> modified.
+     *
+     * @param context Current context
+     * @param item    to find the id of
+     * @param locale  to use
+     *
+     * @return the {@link Series}
+     */
+    @NonNull
+    Optional<Series> findByName(@NonNull Context context,
+                                @NonNull Series item,
+                                @NonNull Locale locale);
+
+    /**
+     * Get a simple/total count of the items.
+     *
+     * @return count
+     */
+    long count();
+
+    /**
+     * Find a {@link Series} by using the <strong>name</strong> fields.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     * <p>
+     * If the item has child items, then implementations must propagate the call.
+     *
+     * @param context Current context
+     * @param item    to update
+     * @param locale  to use
+     */
+    void fixId(@NonNull Context context,
+               @NonNull Series item,
+               @NonNull Locale locale);
+
+    /**
+     * Refresh the passed {@link Series} from the database, if present.
+     * Used to ensure that the current record matches the content of the database
+     * should some other task have changed the {@link Series}.
+     * <p>
+     * Will <strong>NOT</strong> insert a new {@link Series} if not found;
+     * instead the id of the item will be set to {@code 0}, i.e. 'new'.
+     *
+     * @param context Current context
+     * @param item    to refresh
+     * @param locale  to use
+     */
+    void refresh(@NonNull Context context,
+                 @NonNull Series item,
+                 @NonNull Locale locale);
+
+    /**
+     * Insert a new {@link Series}.
+     *
+     * @param context Current context
+     * @param item    to insert. Will be updated with the id
+     * @param locale  The Locale of the item
+     *
+     * @return the row id of the newly inserted item
+     *
+     * @throws DaoWriteException on failure
+     */
+    @IntRange(from = 1)
+    long insert(@NonNull Context context,
+                @NonNull Series item,
+                @NonNull Locale locale)
+            throws DaoWriteException;
+
+    /**
+     * Update the given {@link Series}.
+     *
+     * @param context Current context
+     * @param item    to update
+     * @param locale  The Locale of the item
+     *
+     * @throws DaoWriteException on failure
+     */
+    void update(@NonNull Context context,
+                @NonNull Series item,
+                @NonNull Locale locale)
+            throws DaoWriteException;
+
+    /**
+     * Delete the given {@link Series}.
+     *
+     * @param context Current context
+     * @param item    to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
+    boolean delete(@NonNull Context context,
+                   @NonNull Series item);
 }

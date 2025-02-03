@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@ import androidx.annotation.WorkerThread;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -38,8 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-public interface TocEntryDao
-        extends EntityDao<TocEntry> {
+public interface TocEntryDao {
 
     /**
      * Check for books which do not have a {@link TocEntry} at position 1.
@@ -161,4 +161,108 @@ public interface TocEntryDao
      */
     @WorkerThread
     int purge();
+
+    /**
+     * Find a {@link TocEntry} based on the given id.
+     *
+     * @param id of {@link TocEntry} to find
+     *
+     * @return the {@link TocEntry}
+     */
+    @NonNull
+    Optional<TocEntry> findById(@IntRange(from = 1) long id);
+
+    /**
+     * Find a {@link TocEntry} by using the <strong>name</strong> fields of the given {@link TocEntry}.
+     * The given {@link TocEntry} is <strong>not</strong> modified.
+     *
+     * @param context Current context
+     * @param item    to find the id of
+     * @param locale  to use
+     *
+     * @return the {@link TocEntry}
+     */
+    @NonNull
+    Optional<TocEntry> findByName(@NonNull Context context,
+                                  @NonNull TocEntry item,
+                                  @NonNull Locale locale);
+
+    /**
+     * Get a simple/total count of the items.
+     *
+     * @return count
+     */
+    long count();
+
+    /**
+     * Find a {@link TocEntry} by using the <strong>name</strong> fields.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     * <p>
+     * If the item has child items, then implementations must propagate the call.
+     *
+     * @param context Current context
+     * @param item    to update
+     * @param locale  to use
+     */
+    void fixId(@NonNull Context context,
+               @NonNull TocEntry item,
+               @NonNull Locale locale);
+
+    /**
+     * Refresh the passed {@link TocEntry} from the database, if present.
+     * Used to ensure that the current record matches the content of the database
+     * should some other task have changed the {@link TocEntry}.
+     * <p>
+     * Will <strong>NOT</strong> insert a new {@link TocEntry} if not found;
+     * instead the id of the item will be set to {@code 0}, i.e. 'new'.
+     *
+     * @param context Current context
+     * @param item    to refresh
+     * @param locale  to use
+     */
+    void refresh(@NonNull Context context,
+                 @NonNull TocEntry item,
+                 @NonNull Locale locale);
+
+    /**
+     * Insert a new {@link TocEntry}.
+     *
+     * @param context Current context
+     * @param item    to insert. Will be updated with the id
+     * @param locale  The Locale of the item
+     *
+     * @return the row id of the newly inserted item
+     *
+     * @throws DaoWriteException on failure
+     */
+    @IntRange(from = 1)
+    long insert(@NonNull Context context,
+                @NonNull TocEntry item,
+                @NonNull Locale locale)
+            throws DaoWriteException;
+
+    /**
+     * Update the given {@link TocEntry}.
+     *
+     * @param context Current context
+     * @param item    to update
+     * @param locale  The Locale of the item
+     *
+     * @throws DaoWriteException on failure
+     */
+    void update(@NonNull Context context,
+                @NonNull TocEntry item,
+                @NonNull Locale locale)
+            throws DaoWriteException;
+
+    /**
+     * Delete the given {@link TocEntry}.
+     *
+     * @param context Current context
+     * @param item    to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
+    boolean delete(@NonNull Context context,
+                   @NonNull TocEntry item);
 }

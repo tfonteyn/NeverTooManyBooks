@@ -39,8 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.settings.tags.TagMapperTask;
 
-public interface TagDao
-        extends MoveBooksDao<Tag> {
+public interface TagDao {
 
     @NonNull
     Optional<Tag> findById(@IntRange(from = 1) long id);
@@ -162,4 +161,21 @@ public interface TagDao
      */
     @WorkerThread
     int importRecords(@NonNull List<Tag> list);
+
+    /**
+     * Moves all books from the 'source' {@link Tag}, to the 'target' {@link Tag}.
+     * The (now unused) 'source' {@link Tag} is deleted.
+     *
+     * @param context Current context
+     * @param source  from where to move
+     * @param target  to move to
+     *
+     * @return amount of books moved
+     *
+     * @throws DaoWriteException on failure
+     */
+    int moveBooks(@NonNull Context context,
+                  @NonNull Tag source,
+                  @NonNull Tag target)
+            throws DaoWriteException;
 }

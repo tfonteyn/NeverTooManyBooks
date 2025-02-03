@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
@@ -31,17 +32,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface AuthorDao
-        extends EntityDao<Author>,
-                EntityOwningBooksDao<Author>,
-                MoveBooksDao<Author> {
+public interface AuthorDao {
 
     /**
      * Get a unique list of {@link Author} names in the specified format.
@@ -110,6 +111,195 @@ public interface AuthorDao
      */
     @WorkerThread
     int purge();
+
+    /**
+     * Check for books which do not have a {@link Author} at position 1.
+     * For those that don't, read their list, and re-save them.
+     *
+     * @param context Current context
+     *
+     * @return the number of books processed
+     *
+     * @throws DaoWriteException on failure
+     */
+    int fixPositions(@NonNull Context context)
+            throws DaoWriteException;
+
+    /**
+     * Count the books for the given {@link Author}.
+     *
+     * @param item to count the books of
+     *
+     * @return the number of books
+     */
+    long countBooks(@NonNull Author item);
+
+    /**
+     * Get a list of book ID's for the given {@link Author}.
+     *
+     * @param itemId id of the item
+     *
+     * @return list with book ID's linked to this item
+     */
+    @NonNull
+    List<Long> getBookIds(long itemId);
+
+    /**
+     * Get a list of the {@link Author} for a book.
+     *
+     * @param bookId of the book
+     *
+     * @return list
+     */
+    @NonNull
+    List<Author> getByBookId(@IntRange(from = 1) long bookId);
+
+    /**
+     * Insert or update a list of {@link Author}'s linked to a single {@link Book}.
+     * <p>
+     * The list is pruned before storage.
+     * New {@link Author}'s are added to the {@link Author} table, existing ones are NOT updated
+     * unless explicitly allowed by the {@code doUpdates} parameter.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context        Current context
+     * @param bookId         of the book
+     * @param doUpdates      set to {@code true} to force each {@link Author} to be updated.
+     *                       <strong>ONLY</strong> set this when actually needed.
+     *                       Do not set this during for example an import.
+     * @param list           the list of {@link Author}'s
+     * @param localeSupplier a supplier to get the Locale; called for each item in the list
+     *
+     * @throws DaoWriteException on failure
+     */
+    void insertOrUpdate(@NonNull Context context,
+                        @IntRange(from = 1) long bookId,
+                        boolean doUpdates,
+                        @NonNull Collection<Author> list,
+                        @NonNull Function<Author, Locale> localeSupplier)
+            throws DaoWriteException;
+
+    /**
+     * Moves all books from the 'source' {@link Author}, to the 'target' {@link Author}.
+     * The (now unused) 'source' {@link Author} is deleted.
+     *
+     * @param context Current context
+     * @param source  from where to move
+     * @param target  to move to
+     *
+     * @return amount of books moved
+     *
+     * @throws DaoWriteException on failure
+     */
+    int moveBooks(@NonNull Context context,
+                  @NonNull Author source,
+                  @NonNull Author target)
+            throws DaoWriteException;
+
+    /**
+     * Find a {@link Author} based on the given id.
+     *
+     * @param id of {@link Author} to find
+     *
+     * @return the {@link Author}
+     */
+    @NonNull
+    Optional<Author> findById(@IntRange(from = 1) long id);
+
+    /**
+     * Find a {@link Author} by using the <strong>name</strong> fields of the given {@link Author}.
+     * The given {@link Author} is <strong>not</strong> modified.
+     *
+     * @param context Current context
+     * @param item    to find the id of
+     * @param locale  to use
+     *
+     * @return the {@link Author}
+     */
+    @NonNull
+    Optional<Author> findByName(@NonNull Context context,
+                                @NonNull Author item,
+                                @NonNull Locale locale);
+
+    /**
+     * Get a simple/total count of the items.
+     *
+     * @return count
+     */
+    long count();
+
+    /**
+     * Find a {@link Author} by using the <strong>name</strong> fields.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     * <p>
+     * If the item has child items, then implementations must propagate the call.
+     *
+     * @param context Current context
+     * @param item    to update
+     * @param locale  to use
+     */
+    void fixId(@NonNull Context context,
+               @NonNull Author item,
+               @NonNull Locale locale);
+
+    /**
+     * Refresh the passed {@link Author} from the database, if present.
+     * Used to ensure that the current record matches the content of the database
+     * should some other task have changed the {@link Author}.
+     * <p>
+     * Will <strong>NOT</strong> insert a new {@link Author} if not found;
+     * instead the id of the item will be set to {@code 0}, i.e. 'new'.
+     *
+     * @param context Current context
+     * @param item    to refresh
+     * @param locale  to use
+     */
+    void refresh(@NonNull Context context,
+                 @NonNull Author item,
+                 @NonNull Locale locale);
+
+    /**
+     * Insert a new {@link Author}.
+     *
+     * @param context Current context
+     * @param item    to insert. Will be updated with the id
+     * @param locale  The Locale of the item
+     *
+     * @return the row id of the newly inserted item
+     *
+     * @throws DaoWriteException on failure
+     */
+    @IntRange(from = 1)
+    long insert(@NonNull Context context,
+                @NonNull Author item,
+                @NonNull Locale locale)
+            throws DaoWriteException;
+
+    /**
+     * Update the given {@link Author}.
+     *
+     * @param context Current context
+     * @param item    to update
+     * @param locale  The Locale of the item
+     *
+     * @throws DaoWriteException on failure
+     */
+    void update(@NonNull Context context,
+                @NonNull Author item,
+                @NonNull Locale locale)
+            throws DaoWriteException;
+
+    /**
+     * Delete the given {@link Author}.
+     *
+     * @param context Current context
+     * @param item    to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
+    boolean delete(@NonNull Context context,
+                   @NonNull Author item);
 
     @StringDef({
             DBKey.TITLE_OB,

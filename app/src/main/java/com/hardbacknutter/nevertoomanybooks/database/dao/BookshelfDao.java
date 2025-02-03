@@ -33,12 +33,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface BookshelfDao
-        extends EntityDao<Bookshelf>,
-                MoveBooksDao<Bookshelf> {
+public interface BookshelfDao {
 
     /**
      * Set the given {@link Bookshelf} as the current/preferred.
@@ -75,8 +72,6 @@ public interface BookshelfDao
 
     /**
      * Find a {@link Bookshelf} with the given name.
-     * <p>
-     * Convenience method for {@link EntityDao#findByName(Context, Entity, Locale)}.
      *
      * @param name of bookshelf to find
      *
@@ -181,4 +176,125 @@ public interface BookshelfDao
                         @IntRange(from = 1) long bookId,
                         @NonNull Collection<Bookshelf> list)
             throws DaoWriteException;
+
+    /**
+     * Moves all books from the 'source' {@link Bookshelf}, to the 'target' {@link Bookshelf}.
+     * The (now unused) 'source' {@link Bookshelf} is deleted.
+     *
+     * @param context Current context
+     * @param source  from where to move
+     * @param target  to move to
+     *
+     * @return amount of books moved
+     *
+     * @throws DaoWriteException on failure
+     */
+    int moveBooks(@NonNull Context context,
+                  @NonNull Bookshelf source,
+                  @NonNull Bookshelf target)
+            throws DaoWriteException;
+
+    /**
+     * Find a {@link Bookshelf} based on the given id.
+     *
+     * @param id of {@link Bookshelf} to find
+     *
+     * @return the {@link Bookshelf}
+     */
+    @NonNull
+    Optional<Bookshelf> findById(@IntRange(from = 1) long id);
+
+    /**
+     * Find a {@link Bookshelf} by using the <strong>name</strong> fields of the given {@link Bookshelf}.
+     * The given {@link Bookshelf} is <strong>not</strong> modified.
+     *
+     * @param context Current context
+     * @param item    to find the id of
+     * @param locale  to use
+     *
+     * @return the {@link Bookshelf}
+     */
+    @NonNull
+    Optional<Bookshelf> findByName(@NonNull Context context,
+                                   @NonNull Bookshelf item,
+                                   @NonNull Locale locale);
+
+    /**
+     * Get a simple/total count of the items.
+     *
+     * @return count
+     */
+    long count();
+
+    /**
+     * Find a {@link Bookshelf} by using the <strong>name</strong> fields.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     * <p>
+     * If the item has child items, then implementations must propagate the call.
+     *
+     * @param context Current context
+     * @param item    to update
+     * @param locale  to use
+     */
+    void fixId(@NonNull Context context,
+               @NonNull Bookshelf item,
+               @NonNull Locale locale);
+
+    /**
+     * Refresh the passed {@link Bookshelf} from the database, if present.
+     * Used to ensure that the current record matches the content of the database
+     * should some other task have changed the {@link Bookshelf}.
+     * <p>
+     * Will <strong>NOT</strong> insert a new {@link Bookshelf} if not found;
+     * instead the id of the item will be set to {@code 0}, i.e. 'new'.
+     *
+     * @param context Current context
+     * @param item    to refresh
+     * @param locale  to use
+     */
+    void refresh(@NonNull Context context,
+                 @NonNull Bookshelf item,
+                 @NonNull Locale locale);
+
+    /**
+     * Insert a new {@link Bookshelf}.
+     *
+     * @param context Current context
+     * @param item    to insert. Will be updated with the id
+     * @param locale  The Locale of the item
+     *
+     * @return the row id of the newly inserted item
+     *
+     * @throws DaoWriteException on failure
+     */
+    @IntRange(from = 1)
+    long insert(@NonNull Context context,
+                @NonNull Bookshelf item,
+                @NonNull Locale locale)
+            throws DaoWriteException;
+
+    /**
+     * Update the given {@link Bookshelf}.
+     *
+     * @param context Current context
+     * @param item    to update
+     * @param locale  The Locale of the item
+     *
+     * @throws DaoWriteException on failure
+     */
+    void update(@NonNull Context context,
+                @NonNull Bookshelf item,
+                @NonNull Locale locale)
+            throws DaoWriteException;
+
+    /**
+     * Delete the given {@link Bookshelf}.
+     *
+     * @param context Current context
+     * @param item    to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
+    boolean delete(@NonNull Context context,
+                   @NonNull Bookshelf item);
 }
