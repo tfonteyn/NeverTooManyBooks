@@ -1100,7 +1100,10 @@ public class EditBookViewModel
                                        }
                                    });
                                }
-                           }));
+                           })
+                           .addRelatedViews(R.id.lbl_price_listed,
+                                            R.id.lbl_price_listed_currency,
+                                            R.id.price_listed_currency));
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.price_listed_currency,
                                              DBKey.PRICE_LISTED_CURRENCY,
@@ -1124,7 +1127,7 @@ public class EditBookViewModel
                                    });
                                }
                            })
-                           .addRelatedViews(R.id.lbl_price_listed, R.id.price_listed));
+                           .setUsedKey(DBKey.PRICE_LISTED));
 
         fields.add(new EditTextField<>(fragmentId, R.id.print_run, DBKey.PRINT_RUN)
                            .setTextInputLayoutId(R.id.lbl_print_run)
@@ -1153,13 +1156,16 @@ public class EditBookViewModel
         fields.add(new DecimalEditTextField(fragmentId, R.id.price_paid, DBKey.PRICE_PAID,
                                             doubleNumberFormatter)
                            .setTextInputLayoutId(R.id.lbl_price_paid)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
+                           .addRelatedViews(R.id.lbl_price_paid,
+                                            R.id.lbl_price_paid_currency,
+                                            R.id.price_paid_currency));
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.price_paid_currency,
                                              DBKey.PRICE_PAID_CURRENCY,
                                              this::getAllPricePaidCurrencyCodes)
                            .setTextInputLayoutId(R.id.lbl_price_paid_currency)
-                           .addRelatedViews(R.id.lbl_price_paid, R.id.price_paid));
+                           .setUsedKey(DBKey.PRICE_PAID));
 
         fields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition,
                                                     DBKey.BOOK_CONDITION,
