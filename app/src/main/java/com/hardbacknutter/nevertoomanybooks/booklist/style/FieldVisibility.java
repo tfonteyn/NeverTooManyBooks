@@ -123,7 +123,14 @@ public class FieldVisibility {
             DBKey.FK_AUTHOR_REAL_AUTHOR,
             // This is the detailed progress only.
             // The read/unread status is always displayed.
-            DBKey.READ_PROGRESS
+            DBKey.READ_PROGRESS,
+            DBKey.PRINT_RUN,
+
+            // bit 36..39
+            DBKey.DATE_ACQUIRED
+
+            // FIXME: PRICE_LISTED
+            // TODO: FK_TAG, FK_IDENTIFIER,
     );
 
     @NonNull
