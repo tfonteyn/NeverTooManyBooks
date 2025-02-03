@@ -56,6 +56,11 @@ public class EditStringViewModel
         }
     }
 
+    /**
+     * Case-sensitive.
+     *
+     * @return flag
+     */
     boolean isModified() {
         return !currentValue.equals(previousValue);
     }
