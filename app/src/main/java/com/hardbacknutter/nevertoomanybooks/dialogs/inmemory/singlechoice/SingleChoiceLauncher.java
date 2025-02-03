@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.singlechoice;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +33,14 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
-public class SingleChoiceLauncher<T extends Parcelable & Entity>
+/**
+ * Replacement for an AlertDialog with radio button setup.
+ *
+ * @param <T> An {@link Entity}: used in the {@link #launch} method
+ *            to prepare the lists of ids/labels for the choices
+ *            and the preselected id.
+ */
+public class SingleChoiceLauncher<T extends Entity>
         extends DialogLauncher {
 
     private static final String TAG = "SingleChoiceLauncher";

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +36,14 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
-public final class MultiChoiceLauncher<T extends Parcelable & Entity>
+/**
+ * Replacement for an AlertDialog with checkbox setup.
+ *
+ * @param <T> An {@link Entity}: used in the {@link #launch} method
+ *            to prepare the lists of ids/labels for the choices
+ *            and the list of preselected ids.
+ */
+public final class MultiChoiceLauncher<T extends Entity>
         extends DialogLauncher {
 
     private static final String TAG = "MultiChoiceLauncher";
