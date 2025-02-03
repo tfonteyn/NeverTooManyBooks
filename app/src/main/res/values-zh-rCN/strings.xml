@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -830,4 +827,8 @@
     <string name="confirm_delete_substitutions">删除 “%1$s” 的替代？</string>
     <string name="lbl_substitutions">替代</string>
     <string name="confirm_apply_substitutions">应用替换规则吗？所有适用规则的书籍都将被更新。</string>
+    <string name="lbl_add_or_edit_substitution">添加/编辑替换规则</string>
+    <string name="lbl_tag_mapper_apply_merge_case_result">大/小写合并</string>
+    <string name="lbl_tag_mapper_apply_merge_case">合并只有字母大小写不同的标签</string>
+    <string name="lbl_tag_mapper_apply_purge_unused">删除未使用的标签</string>
 </resources>
