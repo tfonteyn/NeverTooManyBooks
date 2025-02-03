@@ -6,6 +6,8 @@ NEW:
 - new UI language: Tamil, kindly contributed by [தமிழ்நேரம்](https://hosted.weblate.org/user/TamilNeram/)
 - Goodreads added as a search-site
 - The 'genre' field has been replaced by a versatile tag/keyword system.
+  There is a tag-substitution (mapping) rule editor which can map tags from websites
+  into your personal preference.
 - We're now collecting many more website book-id's and making most available
   as book-links to the original site and allow them to be used as direct/unique searches.
 - "Share" has been extended to provide several "Citation" formats.
