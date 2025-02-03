@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -243,14 +244,14 @@ public class TagMappingEditorFragment
 
         try {
             Objects.requireNonNull(extras);
-            final int originalPos = extras.getInt(BKEY_POSITION);
+            final int position = extras.getInt(BKEY_POSITION);
 
-            if (originalPos == POS_NEW_ENTRY) {
+            if (position == POS_NEW_ENTRY) {
                 // User was adding a new mapping
                 addEntry(edit);
             } else {
                 // User was editing an existing mapping
-                updateEntry(original, originalPos, edit);
+                updateEntry(original, position, edit);
             }
         } catch (@NonNull final DaoWriteException e) {
             //noinspection DataFlowIssue
@@ -258,17 +259,25 @@ public class TagMappingEditorFragment
         }
     }
 
-    private int findByName(@NonNull final String name) {
+    /**
+     * Case-sensitive.
+     *
+     * @param mappingName to find
+     *
+     * @return position, or {@code -1} if not found
+     */
+    @IntRange(from = -1)
+    private int findByName(@NonNull final String mappingName) {
         return mappings.stream().map(TagMapping::getName)
                        .collect(Collectors.toList())
-                       .indexOf(name);
+                       .indexOf(mappingName);
     }
 
-    private void addEntry(@NonNull final TagMapping edit)
+    private void addEntry(@NonNull final TagMapping tagMapping)
             throws DaoWriteException {
 
         // check by NAME it's not already in the list.
-        final int existingPos = findByName(edit.getName());
+        final int existingPos = findByName(tagMapping.getName());
 
         if (existingPos >= 0) {
             // Trying to add a NEW one already there.
@@ -279,36 +288,37 @@ public class TagMappingEditorFragment
             vb.tagList.scrollToPosition(existingPos);
         } else {
             // It's a new entry, add it
-            ServiceLocator.getInstance().getTagMappingDao().insert(edit);
+            ServiceLocator.getInstance().getTagMappingDao().insert(tagMapping);
 
             // find insertion point using a brute-force sequential search...
             int position = 0;
             while (position < mappings.size()
-                   && mappings.get(position).compareTo(edit) < 0) {
+                   && mappings.get(position).compareTo(tagMapping) < 0) {
                 position++;
             }
-            mappings.add(position, edit);
+            mappings.add(position, tagMapping);
             adapter.notifyItemInserted(position);
             vb.tagList.scrollToPosition(position);
         }
     }
 
     private void updateEntry(@NonNull final TagMapping original,
-                             final int originalPos,
-                             @NonNull final TagMapping edit)
+                             final int position,
+                             @NonNull final TagMapping tagMapping)
             throws DaoWriteException {
 
         // check by NAME it's not already in the list.
-        final int existingPos = findByName(edit.getName());
+        final int existingPos = findByName(tagMapping.getName());
 
         // == when the name was NOT modified and we found ourselves.
         // -1 when the name WAS modified and there is no other match
-        if (existingPos == originalPos || existingPos == -1) {
+        if (existingPos == position || existingPos == -1) {
             //  Update with the new data.
-            original.copyFrom(edit);
+            original.copyFrom(tagMapping);
+
             ServiceLocator.getInstance().getTagMappingDao().update(original);
-            adapter.notifyItemChanged(originalPos);
-            vb.tagList.scrollToPosition(originalPos);
+            adapter.notifyItemChanged(position);
+            vb.tagList.scrollToPosition(position);
 
         } else {
             // We found another entry with the same external tag-name.
