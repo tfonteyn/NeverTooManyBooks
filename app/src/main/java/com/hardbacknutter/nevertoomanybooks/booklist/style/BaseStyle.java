@@ -522,7 +522,8 @@ public abstract class BaseStyle
 
     @NonNull
     public Map<String, Sort> getBookLevelFieldsOrderBy() {
-        return Map.copyOf(bookLevelFieldsOrderBy);
+        // do NOT use Map.copyOf ! We'd loose the order!
+        return new LinkedHashMap<>(bookLevelFieldsOrderBy);
     }
 
     public void setBookLevelFieldsOrderBy(@NonNull final Map<String, Sort> map) {
