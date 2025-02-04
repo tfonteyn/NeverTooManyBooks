@@ -131,7 +131,6 @@ public class FieldVisibility {
             // bit 36..39
             DBKey.DATE_ACQUIRED
 
-            // FIXME: #89: DBKey.PRICE_LISTED / DBKey.PRICE_PAID ?
             // FIXME: DBKey.BOOK_CONTENT_TYPE: has the same DBKey column name as DBKey.FK_TOC_ENTRY
             //  book-edit: toc/content_type are shown/hidden in a single fragment
             //  book-details: toc is shown/hidden; content_type is always shown
