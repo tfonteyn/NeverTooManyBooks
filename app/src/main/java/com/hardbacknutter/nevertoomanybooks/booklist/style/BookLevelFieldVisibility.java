@@ -30,8 +30,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * TODO: merge with BaseStyle#bookLevelFieldsOrderBy
  * <p>
  * NEWTHINGS: BookLevelField: add field to FIELDS and optionally to DEFAULT.
- *  Keys must be kept in sync with {@link StyleDataStore}
- *  preference keys and "res/xml/preferences_style_book_details.xml".
+ *  Keys must be kept in sync with
+ *  {@link StyleDataStore} preference keys
+ *  com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle BOOK_LEVEL_FIELDS_DEFAULTS
+ *  "res/xml/preferences_style_book_details.xml"
  */
 public class BookLevelFieldVisibility
         extends FieldVisibility {

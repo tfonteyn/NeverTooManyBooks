@@ -66,7 +66,10 @@ public abstract class BaseStyle
     private static final String ERROR_UUID_IS_EMPTY = "uuid.isEmpty()";
 
     /*
-     * NEWTHINGS: BookLevelField: add mapping
+     * NEWTHINGS: BookLevelField: Keys must be kept in sync with
+     *  {@link StyleDataStore} preference keys
+     *  com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle BOOK_LEVEL_FIELDS_DEFAULTS
+     *  "res/xml/preferences_style_book_details.xml"
      */
     static {
         // The default is sorting by book title only
@@ -92,6 +95,9 @@ public abstract class BaseStyle
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.SIGNED__BOOL, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.EDITION__BITMASK, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOANEE_NAME, Sort.Unsorted);
+
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_BOOKSHELF, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LANGUAGE, Sort.Unsorted);
 
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.DATE_ADDED__UTC, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.DATE_LAST_UPDATED__UTC, Sort.Unsorted);

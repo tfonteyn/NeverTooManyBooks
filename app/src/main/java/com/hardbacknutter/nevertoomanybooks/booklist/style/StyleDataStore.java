@@ -38,9 +38,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 /**
  * Definitions and transmogrifying (Hi Calvin) API for preference keys and actual style values.
  * <p>
- *  NEWTHINGS: BookLevelField: Keys must be kept in sync with {@link StyleDataStore}
- *   preference keys and "res/xml/preferences_style_book_details.xml".
- *
+ * NEWTHINGS: BookLevelField: Keys must be kept in sync with
+ *  {@link StyleDataStore} preference keys
+ *  com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle BOOK_LEVEL_FIELDS_DEFAULTS
+ *  "res/xml/preferences_style_book_details.xml"
+
  * @see BookLevelFieldVisibility
  * @see BookDetailsFieldVisibility
  * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.UnderEach
