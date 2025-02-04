@@ -260,6 +260,7 @@
     <string name="lbl_add_filter">Dodaj filtr</string>
     <string name="lbl_date_added_day">Dodano dzień</string>
     <string name="lbl_date_added_month">Dodano miesiąc</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">Dodano rok</string>
     <string name="pc_lists">Listy</string>
     <string name="pc_advanced_options">Zaawansowane</string>
@@ -333,6 +334,7 @@
     <string name="lbl_date_acquired">Data nabycia</string>
     <string name="lbl_date_acquired_day">Dzień nabyty</string>
     <string name="lbl_date_acquired_month">Zakupiony miesiąc</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Rok nabycia</string>
     <string name="lbl_date_last_updated">Data ostatniej aktualizacji</string>
     <string name="lbl_date_published">Data wydania</string>
@@ -359,6 +361,7 @@
     <string name="option_field_usage_overwrite">Nadpisz istniejące dane</string>
     <string name="lbl_filter">Filtr</string>
     <string name="lbl_date_first_publication_month">Pierwszy miesiąc publikacji</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Pierwszy rok publikacji</string>
     <string name="lbl_date_first_publication">Pierwsza publikacja</string>
     <string name="lbl_format">Format</string>
@@ -462,6 +465,7 @@
     <string name="lbl_unread">Nieprzeczytane</string>
     <string name="lbl_date_last_updated_day">Dzień aktualizacji</string>
     <string name="lbl_date_last_updated_month">Zaktualizuj miesiąc</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Zaktualizuj rok</string>
     <string name="lbl_virtual_libraries">Biblioteki wirtualne w tej bibliotece</string>
     <string name="lbl_website_address">Adres witryny (URL)</string>

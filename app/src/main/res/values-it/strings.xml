@@ -242,6 +242,7 @@
     <string name="lbl_add_filter">Aggiungi filtro</string>
     <string name="lbl_date_added_day">Giorno di inserimento</string>
     <string name="lbl_date_added_month">Mese di inserimento</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">Anno di inserimento</string>
     <string name="pc_lists">Liste</string>
     <string name="pc_advanced_options">Avanzate</string>
@@ -315,6 +316,7 @@
     <string name="lbl_date_acquired">Data di acquisizione</string>
     <string name="lbl_date_acquired_day">Giorno acquisito</string>
     <string name="lbl_date_acquired_month">Mese acquisito</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Anno acquisito</string>
     <string name="lbl_date_last_updated">Data ultimo aggiornamento</string>
     <string name="lbl_date_published">Data di pubblicazione</string>
@@ -341,6 +343,7 @@
     <string name="option_field_usage_overwrite">Sovrascrivi dati esistenti</string>
     <string name="lbl_filter">Filtro</string>
     <string name="lbl_date_first_publication_month">Primo mese di pubblicazione</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Primo anno di pubblicazione</string>
     <string name="lbl_date_first_publication">Prima pubblicazione</string>
     <string name="lbl_format">Formato</string>
@@ -444,6 +447,7 @@
     <string name="lbl_unread">Da leggere</string>
     <string name="lbl_date_last_updated_day">Giorno di aggiornamento</string>
     <string name="lbl_date_last_updated_month">Mese di aggiornamento</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Anno di aggiornamento</string>
     <string name="lbl_virtual_libraries">Biblioteche virtuali in questa libreria</string>
     <string name="lbl_website_address">Διεύθυνση ιστότοπου (URL)</string>

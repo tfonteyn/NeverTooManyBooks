@@ -39,6 +39,8 @@
     Plurals:
     http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
         cardinal
+
+    https://www.omniglot.com/language/numerals.htm
 -->
 <!DOCTYPE resources [
     <!ENTITY APP_NAME "NeverTooManyBooks">
@@ -1201,6 +1203,12 @@
     <string name="lbl_day">Day</string>
     <!-- The date a book was added to the database. -->
     <string name="lbl_date_added">Date Added</string>
+    <!-- "The date the book was last updated." as a single unicode 9.0 character/symbol.
+         By default:  ➕  \u2795
+         (the color will be set by the app theme)
+     -->
+    <string name="lbl_date_added_as_single_char">\u2795</string>
+
     <string name="lbl_date_added_year">Year Added</string>
     <string name="lbl_date_added_month">Month Added</string>
     <string name="lbl_date_added_day">Day Added</string>
@@ -1213,11 +1221,22 @@
     <string name="lbl_read_end">Date finished reading</string>
     <!-- The date the book was last updated. -->
     <string name="lbl_date_last_updated">Date last updated</string>
+    <!-- "The date the book was last updated." as a single unicode 9.0 character/symbol.
+         By default:  🔄  u+0001f504 or in utf16: \ud83d\udd04
+         (the color will be set by the app theme)
+     -->
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Year last updated </string>
     <string name="lbl_date_last_updated_month">Month last updated </string>
     <string name="lbl_date_last_updated_day">Day last updated</string>
     <!-- The date a user acquired the book. -->
     <string name="lbl_date_acquired">Date Acquired</string>
+    <!-- "The date a user acquired the book." as a single unicode 9.0 character/symbol.
+         By default:  🏠  == u+0001f3e0 or in utf16: \ud83c\udfe0
+         (the color will be set by the app theme)
+         -->
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
+
     <string name="lbl_date_acquired_year">Year Acquired</string>
     <string name="lbl_date_acquired_month">Month Acquired</string>
     <string name="lbl_date_acquired_day">Day Acquired</string>
@@ -1227,6 +1246,11 @@
     <string name="lbl_date_published_month">Publication Month</string>
     <!-- First Publication Date for the CONTENT of the book. (e.g. magazine pub... etc... -->
     <string name="lbl_date_first_publication">First Publication</string>
+    <!-- "First Publication Date" as a single unicode 9.0 character/symbol.
+         By default:  1️⃣  == \u0031\ufe0f\u20e3
+         (the color will be set by the app theme)
+         -->
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">First Pub. Year</string>
     <string name="lbl_date_first_publication_month">First Pub. Month</string>
     <!-- endregion -->

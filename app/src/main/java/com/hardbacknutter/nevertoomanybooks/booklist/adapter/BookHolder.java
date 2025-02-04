@@ -30,9 +30,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -77,6 +79,9 @@ public class BookHolder
     /** Format string. */
     @NonNull
     private final String a_bracket_b_bracket;
+    /** Format string. */
+    @NonNull
+    private final String a_space_b;
 
     @NonNull
     private final BooksonbookshelfRowBookBinding vb;
@@ -93,6 +98,8 @@ public class BookHolder
     private final Style style;
     @Nullable
     private final CoverHelper coverHelper;
+    @NonNull
+    private final Locale locale;
     /** Only active when running in debug mode; displays the "position/rowId" for a book. */
     @Nullable
     private TextView dbgRowIdView;
@@ -127,6 +134,9 @@ public class BookHolder
         final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.lbl_book_condition);
         a_bracket_b_bracket = res.getString(R.string.a_bracket_b_bracket);
+        a_space_b = res.getString(R.string.a_space_b);
+
+        locale = res.getConfiguration().getLocales().get(0);
 
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
             final int maxWidth = coverScale.getMaxWidthInPixels(context, Style.Layout.List);
@@ -248,6 +258,21 @@ public class BookHolder
         if (usePub || usePubDate) {
             showOrHidePublisher(rowData, usePub, usePubDate);
         }
+        if (use.contains(DBKey.FIRST_PUBLICATION__DATE)) {
+            showOrHide(vb.dateFirstPublication, rowData, DBKey.FIRST_PUBLICATION__DATE,
+                       R.string.lbl_date_first_publication_as_single_char);
+        }
+
+        final boolean useDateAdded = use.contains(DBKey.DATE_ADDED__UTC);
+        final boolean useDateUpdated = use.contains(DBKey.DATE_LAST_UPDATED__UTC);
+        if (useDateAdded | useDateUpdated) {
+            showOrHideDateAddedAndLastUpdated(rowData, useDateAdded, useDateUpdated);
+        }
+
+        if (use.contains(DBKey.DATE_ACQUIRED)) {
+            showOrHide(vb.dateAcquired, rowData, DBKey.DATE_ACQUIRED,
+                       R.string.lbl_date_acquired_as_single_char);
+        }
 
         if (use.contains(DBKey.FK_BOOKSHELF)) {
             showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF_NAMES_AS_CSV));
@@ -326,6 +351,27 @@ public class BookHolder
     }
 
     /**
+     * Conditionally display the text.
+     *
+     * @param view    to populate
+     * @param rowData to read from
+     * @param dbKey   to read
+     * @param symbol  to combine/display
+     */
+    private void showOrHide(@NonNull final TextView view,
+                            @NonNull final DataHolder rowData,
+                            @NonNull final String dbKey,
+                            @StringRes final int symbol) {
+        final String text = rowData.getString(dbKey, null);
+        if (text != null && !text.isEmpty()) {
+            view.setText(formatDate(view.getContext(), symbol, text));
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
+    }
+
+    /**
      * Conditionally display 'text'.
      *
      * @param view to populate
@@ -390,7 +436,8 @@ public class BookHolder
                 if (rowData.contains(DBKey.BOOK_SERIES_NUMBER)) {
                     final String number = rowData.getString(DBKey.BOOK_SERIES_NUMBER);
                     if (!number.isBlank()) {
-                        seriesTitle = String.format(a_bracket_b_bracket, seriesTitle, number);
+                        seriesTitle = String.format(locale, a_bracket_b_bracket,
+                                                    seriesTitle, number);
                     }
                 }
                 vb.seriesTitle.setVisibility(View.VISIBLE);
@@ -456,18 +503,12 @@ public class BookHolder
         String date = null;
         if (showPubDate) {
             final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
-            date = partialDateParser
-                    .parse(dateStr)
-                    .map(d -> d.toDisplay(itemView.getContext().getResources()
-                                                  .getConfiguration().getLocales()
-                                                  .get(0),
-                                          dateStr))
-                    .orElse("");
+            date = formatDate(dateStr);
             showDate = !date.isBlank();
         }
 
         if (showName && showDate) {
-            showOrHide(vb.publisher, String.format(a_bracket_b_bracket, name, date));
+            showOrHide(vb.publisher, String.format(locale, a_bracket_b_bracket, name, date));
         } else if (showName) {
             showOrHide(vb.publisher, name);
         } else if (showDate) {
@@ -475,5 +516,75 @@ public class BookHolder
         } else {
             vb.publisher.setVisibility(View.GONE);
         }
+    }
+
+    private void showOrHideDateAddedAndLastUpdated(@NonNull final DataHolder rowData,
+                                                   final boolean useDateAdded,
+                                                   final boolean useDateLastUpdated) {
+        final Context context = vb.dateAddedAndLastUpdated.getContext();
+
+        String dateAdded = null;
+        if (useDateAdded) {
+            dateAdded = rowData.getString(DBKey.DATE_ADDED__UTC, null);
+            if (dateAdded != null) {
+                dateAdded = formatDate(context,
+                                       R.string.lbl_date_added_as_single_char,
+                                       dateAdded);
+            }
+        }
+
+        String dateLastUpdated = null;
+        if (useDateLastUpdated) {
+            dateLastUpdated = rowData.getString(DBKey.DATE_LAST_UPDATED__UTC, null);
+            if (dateLastUpdated != null) {
+                dateLastUpdated = formatDate(context,
+                                             R.string.lbl_date_last_updated_as_single_char,
+                                             dateLastUpdated);
+            }
+        }
+
+        final String text;
+        if (dateAdded != null && dateLastUpdated != null) {
+            text = context.getString(
+                    R.string.a_space_b, dateAdded, dateLastUpdated);
+        } else if (dateAdded != null) {
+            text = dateAdded;
+        } else {
+            text = dateLastUpdated;
+        }
+
+        showOrHide(vb.dateAddedAndLastUpdated, text);
+    }
+
+
+    /**
+     * Parse an ISO (partial) date and return a formatted version combined with the given symbol.
+     *
+     * @param context    Current context
+     * @param symbol     to add
+     * @param isoDateStr to parse
+     *
+     * @return formatted date
+     */
+    @NonNull
+    private String formatDate(@NonNull final Context context,
+                              @StringRes final int symbol,
+                              @NonNull final String isoDateStr) {
+        return String.format(locale, a_space_b, context.getString(symbol), formatDate(isoDateStr));
+    }
+
+    /**
+     * Parse an ISO (partial) date and return a formatted version.
+     *
+     * @param isoDateStr to parse
+     *
+     * @return formatted date
+     */
+    @NonNull
+    private String formatDate(final String isoDateStr) {
+        return partialDateParser
+                .parse(isoDateStr)
+                .map(d -> d.toDisplay(locale, isoDateStr))
+                .orElse("");
     }
 }

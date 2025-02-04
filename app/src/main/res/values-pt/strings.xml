@@ -443,6 +443,7 @@
     <string name="lbl_lend_out_to_name">Emprestado a %1$s</string>
     <string name="lbl_month">Mês</string>
     <string name="lbl_date_added">Data de Adição</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">Ano de Adição</string>
     <string name="pc_formatting">Formatação</string>
     <string name="pc_lists">Listas</string>
@@ -639,12 +640,15 @@
     <string name="lbl_date_added_day">Dia de Adição</string>
     <string name="lbl_date_read">Data de leitura</string>
     <string name="lbl_read_start">Data de início da leitura</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Ano de Atualização</string>
     <string name="lbl_date_last_updated_month">Mês de atualização</string>
     <string name="lbl_date_last_updated_day">Dia de Atualização</string>
     <string name="lbl_date_acquired">Data de Aquisição</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Ano de Aquisição</string>
     <string name="lbl_date_first_publication">Primeira Publicação</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Ano da 1ª Pub.</string>
     <string name="lbl_date_first_publication_month">Mês da 1ª Pub.</string>
     <string name="lbl_archive_format">Formato</string>

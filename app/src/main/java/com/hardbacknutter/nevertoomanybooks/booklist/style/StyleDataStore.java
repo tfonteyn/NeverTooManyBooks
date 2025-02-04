@@ -152,6 +152,9 @@ public class StyleDataStore
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "isbn", DBKey.BOOK_ISBN);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "publication.date",
                                          DBKey.BOOK_PUBLICATION__DATE);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "first.publication.date",
+                                         DBKey.FIRST_PUBLICATION__DATE);
+
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "format", DBKey.FORMAT);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "language", DBKey.LANGUAGE);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "location", DBKey.LOCATION);
@@ -162,6 +165,10 @@ public class StyleDataStore
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "edition", DBKey.EDITION__BITMASK);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "loanee", DBKey.LOANEE_NAME);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "reading.progress", DBKey.READ_PROGRESS);
+
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "date.added", DBKey.DATE_ADDED__UTC);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "date.updated", DBKey.DATE_LAST_UPDATED__UTC);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "date.acquired", DBKey.DATE_ACQUIRED);
     }
 
     static {

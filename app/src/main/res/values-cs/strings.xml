@@ -255,6 +255,7 @@
     <string name="lbl_add_filter">Přidat filtr</string>
     <string name="lbl_date_added_day">Den přidání</string>
     <string name="lbl_date_added_month">Měsíc přidání</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">Rok přidání</string>
     <string name="pc_lists">Seznamy</string>
     <string name="pc_advanced_options">Rozšířené nastavení</string>
@@ -328,6 +329,7 @@
     <string name="lbl_date_acquired">Datum Nabytí</string>
     <string name="lbl_date_acquired_day">Den Nabytí</string>
     <string name="lbl_date_acquired_month">Měsíc získaný</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Rok nabytí</string>
     <string name="lbl_date_last_updated">Datum poslední aktualizace</string>
     <string name="lbl_date_published">Datum vydání</string>
@@ -354,6 +356,7 @@
     <string name="option_field_usage_overwrite">Přepsat existující data</string>
     <string name="lbl_filter">Filtr</string>
     <string name="lbl_date_first_publication_month">První měsíc vydání</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Rok prvního vydání</string>
     <string name="lbl_date_first_publication">První publikace</string>
     <string name="lbl_format">Formát</string>
@@ -457,6 +460,7 @@
     <string name="lbl_unread">Nepřečtené</string>
     <string name="lbl_date_last_updated_day">Den poslední aktualizace</string>
     <string name="lbl_date_last_updated_month">Měsíc poslední aktualizace</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Rok poslední aktualizace</string>
     <string name="lbl_virtual_libraries">Virtuální knihovny v této knihovně</string>
     <string name="lbl_website_address">Adresa webu (URL)</string>

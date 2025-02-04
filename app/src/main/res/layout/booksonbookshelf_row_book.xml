@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -150,10 +150,10 @@
                 android:id="@+id/read_progress"
                 style="@style/BoB.Group.Book.ReadingProgress"
                 android:visibility="gone"
-                app:layout_goneMarginTop="@dimen/section_margin_top"
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
                 app:layout_constraintStart_toEndOf="@id/col1"
                 app:layout_constraintTop_toBottomOf="@id/rating"
+                app:layout_goneMarginTop="@dimen/section_margin_top"
                 tools:ignore="SelectableText"
                 tools:text="@sample/data.json/reading_progress/name"
                 tools:visibility="visible"
@@ -162,8 +162,8 @@
             <TextView
                 android:id="@+id/author"
                 style="@style/BoB.Group.Book.Text"
-                android:visibility="gone"
                 android:layout_marginTop="@dimen/section_margin_top"
+                android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
                 app:layout_constraintStart_toEndOf="@id/col1"
                 app:layout_constraintTop_toBottomOf="@id/read_progress"
@@ -173,17 +173,30 @@
                 />
 
             <TextView
-                android:id="@+id/isbn"
+                android:id="@+id/date_first_publication"
                 style="@style/BoB.Group.Book.Text"
                 android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
                 app:layout_constraintStart_toEndOf="@id/col1"
                 app:layout_constraintTop_toBottomOf="@id/author"
                 tools:ignore="SelectableText"
+                tools:text="\u0031\ufe0f\u20e3 1-apr-1950"
+                tools:visibility="visible"
+                />
+
+            <TextView
+                android:id="@+id/isbn"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/date_first_publication"
+                tools:ignore="SelectableText"
                 tools:text="@sample/data.json/isbn/d13"
                 tools:visibility="visible"
                 />
 
+            <!-- includes the book publication date -->
             <TextView
                 android:id="@+id/publisher"
                 style="@style/BoB.Group.Book.Text"
@@ -265,6 +278,36 @@
                 app:layout_constraintTop_toBottomOf="@id/location"
                 tools:ignore="SelectableText"
                 tools:text="@sample/data.json/shelves/name"
+                tools:visibility="visible"
+                />
+
+            <!-- this first date field uses "layout_marginTop"
+                 AND "layout_goneMarginTop"
+                 while subsequent field use only "layout_goneMarginTop" -->
+            <TextView
+                android:id="@+id/date_added_and_last_updated"
+                style="@style/BoB.Group.Book.Text"
+                android:layout_marginTop="@dimen/bob_book_date_field_top_margin"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/shelves"
+                app:layout_goneMarginTop="@dimen/bob_book_date_field_top_margin"
+                tools:ignore="SelectableText"
+                tools:text="\u2795 1-apr-1970 \ud83d\udd04 23-jun-2024"
+                tools:visibility="visible"
+                />
+
+            <TextView
+                android:id="@+id/date_acquired"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/date_added_and_last_updated"
+                app:layout_goneMarginTop="@dimen/bob_book_date_field_top_margin"
+                tools:ignore="SelectableText"
+                tools:text="\ud83c\udfe0 1-apr-1970"
                 tools:visibility="visible"
                 />
 

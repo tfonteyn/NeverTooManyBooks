@@ -86,6 +86,7 @@
     <string name="lbl_date_published_year">வெளியீட்டு ஆண்டு</string>
     <string name="lbl_date_published_month">வெளியீட்டு மாதம்</string>
     <string name="lbl_date_first_publication">முதல் வெளியீடு</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">முதல் பப். ஆண்டு</string>
     <string name="option_archive_type_csv">புத்தகங்கள் (.csv)</string>
     <string name="option_archive_type_json">சாதொபொகு ஏற்றுமதி (.JSON)</string>
@@ -536,6 +537,7 @@
     <string name="lbl_month">மாதம்</string>
     <string name="lbl_day">நாள்</string>
     <string name="lbl_date_added">தேதி சேர்க்கப்பட்டது</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">ஆண்டு சேர்க்கப்பட்டது</string>
     <string name="lbl_date_added_month">மாதம் சேர்க்கப்பட்டது</string>
     <string name="lbl_date_added_day">நாள் சேர்க்கப்பட்டது</string>
@@ -546,10 +548,12 @@
     <string name="lbl_read_start">தேதி படிக்கத் தொடங்கியது</string>
     <string name="lbl_read_end">தேதி முடிந்தது வாசிப்பு</string>
     <string name="lbl_date_last_updated">தேதி கடைசியாக புதுப்பிக்கப்பட்டது</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">ஆண்டு புதுப்பிக்கப்பட்டது</string>
     <string name="lbl_date_last_updated_month">கடைசியாக புதுப்பிக்கப்பட்டது</string>
     <string name="lbl_date_last_updated_day">கடைசி நாள் புதுப்பிக்கப்பட்டது</string>
     <string name="lbl_date_acquired">பெறப்பட்ட தேதி</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">ஆண்டு பெறப்பட்டது</string>
     <string name="lbl_date_acquired_month">மாதம் வாங்கியது</string>
     <string name="lbl_date_first_publication_month">முதல் பப். மாதம்</string>

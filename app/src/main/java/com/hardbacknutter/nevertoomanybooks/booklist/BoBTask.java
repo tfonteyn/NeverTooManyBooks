@@ -133,6 +133,38 @@ public class BoBTask
                                     sort)
                     );
                 }
+                case DBKey.FIRST_PUBLICATION__DATE: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_DATE_FIRST_PUBLICATION,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.DATE_ADDED__UTC: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_DATE_ADDED__UTC,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.DATE_LAST_UPDATED__UTC: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_LAST_UPDATED__UTC,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.DATE_ACQUIRED: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_BOOK_DATE_ACQUIRED,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
                 case DBKey.EDITION__BITMASK: {
                     return List.of(
                             new DomainExpression(

@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -171,6 +171,8 @@
     <dimen name="bob_book_card_margin">4dp</dimen>
     <!-- The content padding used for the CardView content displaying a Book. -->
     <dimen name="bob_book_card_content_padding">4dp</dimen>
+    <!-- margin between regular book fields and the date added/updated/acquired fields -->
+    <dimen name="bob_book_date_field_top_margin">4dp</dimen>
 
     <!-- the margin around the CardView. -->
     <dimen name="authorwork_card_margin">4dp</dimen>

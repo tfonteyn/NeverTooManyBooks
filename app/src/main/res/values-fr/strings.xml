@@ -243,6 +243,7 @@
     <string name="lbl_add_filter">Ajouter un filtre</string>
     <string name="lbl_date_added_day">Jour d’ajout</string>
     <string name="lbl_date_added_month">Mois d’ajout</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">Année d’ajout</string>
     <string name="pc_lists">Listes</string>
     <string name="pc_advanced_options">Paramètres avancés</string>
@@ -316,6 +317,7 @@
     <string name="lbl_date_acquired">Date d’acquisition</string>
     <string name="lbl_date_acquired_day">Jour acquis</string>
     <string name="lbl_date_acquired_month">Mois acquis</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Année d’acquisition</string>
     <string name="lbl_date_last_updated">Date de la dernière mise à jour</string>
     <string name="lbl_date_published">Date de publication</string>
@@ -342,6 +344,7 @@
     <string name="option_field_usage_overwrite">Remplacer les données existantes</string>
     <string name="lbl_filter">Filtre</string>
     <string name="lbl_date_first_publication_month">Premier mois de parution</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Première année de parution</string>
     <string name="lbl_date_first_publication">Première parution</string>
     <string name="lbl_format">Format</string>
@@ -445,6 +448,7 @@
     <string name="lbl_unread">Non lus</string>
     <string name="lbl_date_last_updated_day">Jour de mise à jour</string>
     <string name="lbl_date_last_updated_month">Mois de mise à Jour</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Année de mise à jour</string>
     <string name="lbl_virtual_libraries">Bibliothèques virtuelles dans cette bibliothèque</string>
     <string name="lbl_website_address">Adresse du site (URL)</string>

@@ -244,6 +244,7 @@
     <string name="lbl_add_filter">Filtre ekle</string>
     <string name="lbl_date_added_day">Eklendiği Gün</string>
     <string name="lbl_date_added_month">Eklendiği Ay</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">Eklendiği Yıl</string>
     <string name="pc_lists">Listeler</string>
     <string name="pc_advanced_options">Gelişmiş</string>
@@ -317,6 +318,7 @@
     <string name="lbl_date_acquired">Alındığı Tarih</string>
     <string name="lbl_date_acquired_day">Alındığı Gün</string>
     <string name="lbl_date_acquired_month">Alındığı Ay</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Alındığı Yıl</string>
     <string name="lbl_date_last_updated">Son güncellendiği tarih</string>
     <string name="lbl_date_published">Yayımlandığı Tarih</string>
@@ -343,6 +345,7 @@
     <string name="option_field_usage_overwrite">Bulunan verinin üstüne yazar</string>
     <string name="lbl_filter">Filtre</string>
     <string name="lbl_date_first_publication_month">Yayının İlk Ayı</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Yayının İlk Yılı</string>
     <string name="lbl_date_first_publication">İlk yayın</string>
     <string name="lbl_format">Biçim</string>
@@ -446,6 +449,7 @@
     <string name="lbl_unread">Okunmamış</string>
     <string name="lbl_date_last_updated_day">Son güncellendiği gün</string>
     <string name="lbl_date_last_updated_month">Son güncellendiği ay</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Son güncellendiği yıl</string>
     <string name="lbl_virtual_libraries">Bu kitaplıktaki sanal kitaplıklar</string>
     <string name="lbl_website_address">Site adresi (URL)</string>

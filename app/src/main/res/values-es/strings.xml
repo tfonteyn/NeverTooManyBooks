@@ -242,6 +242,7 @@
     <string name="lbl_add_filter">Añadir filtro</string>
     <string name="lbl_date_added_day">Día de inclusión</string>
     <string name="lbl_date_added_month">Mes de inclusión</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">Año de inclusión</string>
     <string name="pc_lists">Liza</string>
     <string name="pc_advanced_options">Ajustes avanzados</string>
@@ -315,6 +316,7 @@
     <string name="lbl_date_acquired">Fecha de adquisición</string>
     <string name="lbl_date_acquired_day">Día adquirido</string>
     <string name="lbl_date_acquired_month">Mes adquirido</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Año de adquisición</string>
     <string name="lbl_date_last_updated">Fecha de última actualización</string>
     <string name="lbl_date_published">Fecha de publicación</string>
@@ -341,6 +343,7 @@
     <string name="option_field_usage_overwrite">Sobreescribir los datos existentes</string>
     <string name="lbl_filter">Filtrar</string>
     <string name="lbl_date_first_publication_month">Primer mes de publicación</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Primer año de publicación</string>
     <string name="lbl_date_first_publication">Primera publicación</string>
     <string name="lbl_format">Formato</string>
@@ -444,6 +447,7 @@
     <string name="lbl_unread">No leído</string>
     <string name="lbl_date_last_updated_day">Día de actualización</string>
     <string name="lbl_date_last_updated_month">Mes de actualización</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Año de actualización</string>
     <string name="lbl_virtual_libraries">Bibliotecas virtuales en esta biblioteca</string>
     <string name="lbl_website_address">Dirección del sitio (URL)</string>

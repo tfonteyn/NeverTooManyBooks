@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -125,4 +127,8 @@
     <string name="lbl_identifier">Eyðkenni</string>
     <string name="lbl_identifiers">Eyðkenni</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
 </resources>

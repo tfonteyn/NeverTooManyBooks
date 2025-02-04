@@ -239,6 +239,7 @@
     <string name="lbl_add_filter">Προσθήκη φίλτρου</string>
     <string name="lbl_date_added_day">Ημέρα Πρόσθεσης</string>
     <string name="lbl_date_added_month">Μήνας Πρόσθεσης</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">Έτος Πρόσθεσης</string>
     <string name="pc_lists">Κονίστρα</string>
     <string name="pc_advanced_options">Για προχωρημένους</string>
@@ -312,6 +313,7 @@
     <string name="lbl_date_acquired">Ημερομηνία που αποκτήθηκαν</string>
     <string name="lbl_date_acquired_day">Ημέρα που αποκτήθηκε</string>
     <string name="lbl_date_acquired_month">Μήνας που αποκτήθηκε</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Έτος που έχει αποκτηθεί</string>
     <string name="lbl_date_last_updated">Ημερομηνία τελευταίας ενημέρωσης</string>
     <string name="lbl_date_published">Ημερομηνία έκδοσης</string>
@@ -338,6 +340,7 @@
     <string name="option_field_usage_overwrite">Αντικαθιστά υπάρχοντα δεδομένα</string>
     <string name="lbl_filter">Φίλτρο</string>
     <string name="lbl_date_first_publication_month">Πρώτος Μήνας Δημοσίευσης</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Πρώτο έτος δημοσίευσης</string>
     <string name="lbl_date_first_publication">Πρώτη δημοσίευση</string>
     <string name="lbl_format">Μορφή</string>
@@ -441,6 +444,7 @@
     <string name="lbl_unread">Μη αναγνωσμένα</string>
     <string name="lbl_date_last_updated_day">Ημέρα ενημέρωσης</string>
     <string name="lbl_date_last_updated_month">Μήνας ενημέρωσης</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Έτος ενημέρωσης</string>
     <string name="lbl_virtual_libraries">Εικονικές βιβλιοθήκες σε αυτήν τη βιβλιοθήκη</string>
     <string name="lbl_website_address">Διεύθυνση ιστότοπου (URL)</string>

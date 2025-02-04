@@ -238,6 +238,7 @@
     <string name="lbl_add_filter">Filter hinzufügen</string>
     <string name="lbl_date_added_day">Tag der Erfassung</string>
     <string name="lbl_date_added_month">Monat der Erfassung</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">Jahr der Erfassung</string>
     <string name="pc_lists">Listen</string>
     <string name="pc_advanced_options">Erweitert</string>
@@ -311,6 +312,7 @@
     <string name="lbl_date_acquired">Datum erworben</string>
     <string name="lbl_date_acquired_day">Tag erworben</string>
     <string name="lbl_date_acquired_month">Monat erworben</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">Jahr erworben</string>
     <string name="lbl_date_last_updated">Datum zuletzt aktualisiert</string>
     <string name="lbl_date_published">Datum der Veröffentlichung</string>
@@ -337,6 +339,7 @@
     <string name="option_field_usage_overwrite">überschreibt zusätzliche Daten</string>
     <string name="lbl_filter">Filter</string>
     <string name="lbl_date_first_publication_month">Erstveröffentlichungsmonat</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Erstes Veröffentlichungsjahr</string>
     <string name="lbl_date_first_publication">Erstveröffentlichung</string>
     <string name="lbl_format">Buchformat</string>
@@ -440,6 +443,7 @@
     <string name="lbl_unread">Ungelesen</string>
     <string name="lbl_date_last_updated_day">Änderungstag</string>
     <string name="lbl_date_last_updated_month">Anderungsmonat</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Änderungsjahr</string>
     <string name="lbl_virtual_libraries">Virtuelle Bibliotheken in dieser Bibliothek</string>
     <string name="lbl_website_address">Webadresse (URL)</string>

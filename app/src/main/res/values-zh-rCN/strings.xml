@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -340,17 +343,21 @@
     <string name="lbl_date_acquired">获得日期</string>
     <string name="lbl_date_acquired_day">获得日</string>
     <string name="lbl_date_acquired_month">获得月份</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_acquired_year">获得年份</string>
     <string name="lbl_date_added">收藏日期</string>
     <string name="lbl_date_added_day">添加日</string>
     <string name="lbl_date_added_month">添加月份</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_date_added_year">添加年份</string>
     <string name="lbl_date_first_publication">首次出版日期</string>
     <string name="lbl_date_first_publication_month">首次出版月份</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">首次出版年份</string>
     <string name="lbl_date_last_updated">最后更新日期</string>
     <string name="lbl_date_last_updated_day">最后更新日</string>
     <string name="lbl_date_last_updated_month">最后更新的月</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">最后更新的年</string>
     <string name="lbl_date_published">出版日期</string>
     <string name="lbl_date_published_month">出版月份</string>

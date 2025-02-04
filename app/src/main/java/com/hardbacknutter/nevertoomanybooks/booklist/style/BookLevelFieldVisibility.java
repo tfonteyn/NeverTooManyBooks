@@ -42,6 +42,8 @@ public class BookLevelFieldVisibility
             DBKey.BOOK_CONDITION,
             DBKey.BOOK_ISBN,
             DBKey.BOOK_PUBLICATION__DATE,
+            DBKey.FIRST_PUBLICATION__DATE,
+
             DBKey.COVER[0],
             DBKey.EDITION__BITMASK,
             DBKey.FK_AUTHOR,
@@ -56,7 +58,11 @@ public class BookLevelFieldVisibility
             DBKey.RATING,
             DBKey.SIGNED__BOOL,
             DBKey.TITLE_ORIGINAL_LANG,
-            DBKey.READ_PROGRESS
+            DBKey.READ_PROGRESS,
+
+            DBKey.DATE_ADDED__UTC,
+            DBKey.DATE_LAST_UPDATED__UTC,
+            DBKey.DATE_ACQUIRED
     );
 
     /** The fields which will be visible by default. */
