@@ -1,4 +1,4 @@
-### 7.0.0
+### 7.0.1
 
 NEW:
 
@@ -21,8 +21,7 @@ FIXES:
 
 - github #84 read default bookshelf from db as the user might have renamed it,
   or might have switched Locale (language)
-- github #89 field visibility: added "Print run" and "Date acquired",
-  fixed "Price paid" and "List price"
+- github #89, #92, #94 field visibility and sorting
 - 979 isbn numbers are now shown as 'valid'
 - some author names with multiple parts like "Kim Stanley Robinson" were wrongly parsed and split,
   i.e. we got "Kim" and "Stanley Robinson" instead of "Kim Stanley" and "Robinson".

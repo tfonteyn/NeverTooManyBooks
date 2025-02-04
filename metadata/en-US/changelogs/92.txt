@@ -1,0 +1,14 @@
+NEW:
+- new UI language: Tamil
+- Goodreads added as a search-site
+- The 'genre' field replaced by a versatile tag system.
+  Tag-substitution editor which can map tags from websites.
+- Collecting many more website book-id's and making most available
+  as book-links
+- "Share" allows several "Citation" formats.
+
+FIXES:
+- github #84 renaming default bookshelf
+- github #89, #92, #94 field visibility
+- 979 isbn numbers are now shown as 'valid'
+- some author names like "Kim Stanley Robinson" were wrongly parsed
