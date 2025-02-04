@@ -1,3 +1,34 @@
+### 7.0.0
+
+NEW:
+
+- new UI language: Tamil, kindly contributed
+  by [தமிழ்நேரம்](https://hosted.weblate.org/user/TamilNeram/)
+- Goodreads added as a search-site
+- The 'genre' field has been replaced by a versatile tag/keyword system.
+  There is a tag-substitution (mapping) rule editor which can map tags from websites
+  into your personal preference.
+- We're now collecting many more website book-id's and making most available
+  as book-links to the original site and allow them to be used as direct/unique searches.
+- "Share" has been extended to provide several "Citation" formats.
+  Configurable on a style: original ('I read...') / BibTex / MLA / RIS
+- Book list header now shows filter/search indicators even when the text is hidden
+- Enhanced parsing in series title/number to better detect titles with embedded digits
+- Parsing enhancement: IsfDb (Editor), KB.NL (Description, Pages, Translated titles)
+  Bol (original title), LastDodo (several author types), OpenLibrary (publication dates)
+
+FIXES:
+
+- github #84 read default bookshelf from db as the user might have renamed it,
+  or might have switched Locale (language)
+- github #89 field visibility: added "Print run" and "Date acquired",
+  fixed "Price paid" and "List price"
+- 979 isbn numbers are now shown as 'valid'
+- some author names with multiple parts like "Kim Stanley Robinson" were wrongly parsed and split,
+  i.e. we got "Kim" and "Stanley Robinson" instead of "Kim Stanley" and "Robinson".
+
+---
+
 ### 6.4.0
 
 NEW:

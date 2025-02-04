@@ -24,9 +24,9 @@ Add books by scanning their barcode, ISBN, or generic text searches.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
-### Download the latest release: 6.4.0
+### Download the latest release: 7.0.0
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v6.4.0/NeverTooManyBooks-6.4.0.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.0.0/NeverTooManyBooks-7.0.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
@@ -36,7 +36,8 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 
 - Chinese Simplified(CN), Chinese Traditional(TW),
   Dutch, English, French, German, Italian,
-  Portuguese, Portuguese(Brazil), Spanish, Turkish, Vietnamese.
+  Portuguese, Portuguese(Brazil),
+  Spanish, Tamil, Turkish, Vietnamese.
 - Machine translated, no guarantees for quality: Czech, Greek, Polish, Russian.
 
 Translations are editable on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
@@ -71,6 +72,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 - **BOL.com** (Dutch and more; Shop)
 - **dnb.de** (German; Catalogue)
 - **Douban.com** (Chinese; Catalogue)
+- **Goodreads** (English and more; Catalogue)
 - **Google Books** (English and more; Catalogue)
 - **ISFDB** (English and more; Catalogue; Fantasy and Science Fiction)
 - **KB.NL** (Dutch and more; Catalogue)
@@ -79,8 +81,6 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 - **StripInfo** (Dutch and more; Catalogue; European Comics)
 - **StripWeb** (Dutch/French; Shop; European Comics)
 - Supports synchronizing with a [Calibre](https://calibre-ebook.com/) Content Server.
-
-Please do not ask for GoodReads/LibraryThing/AbeBooks to be added.
 
 ## Device support:
 
@@ -106,6 +106,7 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 ## Thanks
 
+- Tamil translation: [தமிழ்நேரம்](https://hosted.weblate.org/user/TamilNeram/)
 - Portuguese(Brazil) translation: [Suburbanno](https://github.com/Suburbanno)
 - Chinese (Simplified) translation: [CloneWith](https://github.com/CloneWith)
   and [evoke322](https://github.com/evoke322)
