@@ -518,6 +518,9 @@ public class DBHelper
             TBL_TAGS.create(db, true);
             TBL_BOOK_TAG.create(db, true);
             LegacyUpgrades.migrateV35Genre(db);
+            ServiceLocator.getInstance().getGlobalFieldVisibility()
+                          .setVisible(DBKey.FK_TAG, true);
+
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
 
             // StripInfo collection support was never finished nor activated in a release build.
