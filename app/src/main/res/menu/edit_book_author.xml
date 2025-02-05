@@ -24,7 +24,7 @@
       xmlns:tools="http://schemas.android.com/tools">
 
     <item
-        android:id="@id/MENU_AUTHOR_TYPE_SWITCH"
+        android:id="@id/MENU_EDIT_BOOK_AUTHOR"
         android:title="x"
         app:actionLayout="@layout/toolbar_menu_edit_book_author"
         app:showAsAction="always"

@@ -141,6 +141,22 @@ class EditBookAuthorDelegate
         this.toolbar = toolbar;
     }
 
+    /**
+     * The menu is a set of buttons on an ActionView of a single MenuItem.
+     *
+     * @return parent view of the menu buttons
+     */
+    @NonNull
+    private View getToolbarMenuActionView() {
+        //noinspection DataFlowIssue
+        return toolbar.getMenu().findItem(R.id.MENU_EDIT_BOOK_AUTHOR).getActionView();
+    }
+
+    @NonNull
+    private CompoundButton getTypesSwitch() {
+        return getToolbarMenuActionView().findViewById(R.id.toolbar_btn_types);
+    }
+
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
@@ -149,9 +165,8 @@ class EditBookAuthorDelegate
             } else if (dialogType == DialogType.Floating) {
                 toolbar.inflateMenu(R.menu.edit_book_author);
                 // Hide duplicate buttons in favour of the bottom button-bar
-                toolbar.getMenu().findItem(R.id.MENU_AUTHOR_TYPE_SWITCH)
-                       .getActionView().findViewById(R.id.toolbar_btn_save)
-                       .setVisibility(View.GONE);
+                getToolbarMenuActionView().findViewById(R.id.toolbar_btn_save)
+                                          .setVisibility(View.GONE);
             }
             initToolbar(owner, dialogType, toolbar);
         }
@@ -272,12 +287,6 @@ class EditBookAuthorDelegate
      */
     private void showTypeButtons(final boolean enable) {
         vb.authorTypeGroup.setVisibility(enable ? View.VISIBLE : View.GONE);
-    }
-
-    @NonNull
-    private CompoundButton getTypesSwitch() {
-        return toolbar.getMenu().findItem(R.id.MENU_AUTHOR_TYPE_SWITCH)
-                      .getActionView().findViewById(R.id.toolbar_btn_types);
     }
 
     @Override
