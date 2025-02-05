@@ -24,9 +24,9 @@ Add books by scanning their barcode, ISBN, or generic text searches.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
-### Download the latest release: 7.0.1
+### Download the latest release: 7.0.2
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.0.1/NeverTooManyBooks-7.0.1.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.0.2/NeverTooManyBooks-7.0.2.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
