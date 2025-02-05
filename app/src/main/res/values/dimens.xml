@@ -226,7 +226,7 @@
     <dimen name="centered_max_width">600dp</dimen>
 
     <!-- Buttons *on* the toolbar get extra spacing for ease of use. -->
-    <dimen name="toolbar_button_start_margin">4dp</dimen>
+    <dimen name="toolbar_button_margin">4dp</dimen>
 
     <!-- the scaleX/scaleY scaling factor for the "3-dot" context menu button on a row. -->
     <item name="context_menu_button_scale"

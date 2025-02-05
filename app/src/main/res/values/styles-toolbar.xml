@@ -95,9 +95,17 @@
            parent="@style/Widget.Material3.Button.IconButton.Filled">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/toolbar_button_start_margin</item>
+        <item name="android:layout_marginStart">@dimen/toolbar_button_margin</item>
         <item name="iconTint">?attr/colorOnSurfaceVariant</item>
         <item name="backgroundTint">?attr/colorSecondaryContainer</item>
     </style>
 
+    <style name="Toolbar.Checkbox"
+           parent="@style/Widget.Material3.CompoundButton.CheckBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/toolbar_button_margin</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="backgroundTint">?attr/colorPrimaryContainer</item>
+    </style>
 </resources>
