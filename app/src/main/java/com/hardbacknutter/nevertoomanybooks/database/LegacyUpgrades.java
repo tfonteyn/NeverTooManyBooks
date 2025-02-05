@@ -581,9 +581,10 @@ public final class LegacyUpgrades {
                 final String genre = cursor.getString(1);
 
                 // just convert; NO mapping during this upgrade.
-                final List<String> tagNames = Arrays.stream(GENRE_SPLITTER_PATTERN.split(genre))
+                // Use a Set to eliminate duplicates
+                final Set<String> tagNames = Arrays.stream(GENRE_SPLITTER_PATTERN.split(genre))
                                                     .map(String::strip)
-                                                    .collect(Collectors.toList());
+                                                   .collect(Collectors.toSet());
 
                 for (final String tagName : tagNames) {
                     final long tagId;
