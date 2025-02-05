@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Copied/updated: 2024-07-13 (96438a56ed99d5f5d5917672dc433c864432ab08 ) from
+ * Last checked for diff: 2025-02-05
+ * 96438a56ed99d5f5d5917672dc433c864432ab08
  * <a href="https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-main/recyclerview/recyclerview/src/main/java/androidx/recyclerview/widget/FastScroller.java">
  * HEAD</a>
  * Class responsible to animate and provide a fast scroller.
