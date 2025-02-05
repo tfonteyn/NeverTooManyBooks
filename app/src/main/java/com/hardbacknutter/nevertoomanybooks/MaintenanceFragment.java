@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -41,8 +42,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
@@ -78,6 +79,16 @@ public class MaintenanceFragment
     /** View Binding. */
     private FragmentMaintenanceBinding vb;
 
+    @SuppressWarnings("WeakerAccess")
+    @NonNull
+    public static Intent createDebugReportIntent(@NonNull final Context context) {
+        final Intent intent = FragmentHostActivity
+                .createIntent(context, MaintenanceFragment.class);
+        intent.putExtra(MaintenanceViewModel.BKEY_CREATE_REPORT,
+                        new ArrayList<>(MaintenanceViewModel.BUG_REPORT_OPTIONS_ALL));
+        return intent;
+    }
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +97,7 @@ public class MaintenanceFragment
         settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
         vm = new ViewModelProvider(this).get(MaintenanceViewModel.class);
+        vm.init(getArguments());
     }
 
     @Nullable
@@ -107,6 +119,9 @@ public class MaintenanceFragment
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_settings);
 
+        vm.onAllowPurgeFiles().observe(getViewLifecycleOwner(),
+                                       m -> vb.btnPurgeFiles.setEnabled(m));
+
         vb.btnResetTips.setOnClickListener(this::onResetTips);
         vb.btnPurgeFiles.setOnClickListener(this::onPurgeFiles);
         vb.btnPurgeBlns.setOnClickListener(this::onPurgeNodeStates);
@@ -117,7 +132,7 @@ public class MaintenanceFragment
         vb.btnRebuildFts.setOnClickListener(this::onRebuildFts);
         vb.btnRebuildIndex.setOnClickListener(this::onRebuildIndex);
 
-        vb.btnCreateBugReport.setOnClickListener(this::onCreateBugReport);
+        vb.btnCreateBugReport.setOnClickListener(v -> onCreateBugReport());
         vb.btnDebugSqShell.setOnClickListener(this::onDebugSqShell);
 
         vb.btnDebug.setOnClickListener(v -> {
@@ -139,6 +154,16 @@ public class MaintenanceFragment
                 }
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Listen very carefully, I shall say this only once ...
+        if (vm.isCatastrophe()) {
+            onCreateBugReport();
+        }
     }
 
     private void onResetTips(final View v) {
@@ -298,23 +323,20 @@ public class MaintenanceFragment
                 .show();
     }
 
-    private void onCreateBugReport(@NonNull final View v) {
-        final Context context = v.getContext();
+    private void onCreateBugReport() {
+        final Context context = getContext();
 
         // We're keeping this as a Dialog:
         // - the user will/should very seldom need this (◔_◔)
         // - It's more explicit in offering a textual OK/Cancel choice.
         // - Note this is NOT rotation-safe
+        //noinspection DataFlowIssue
         new MultiChoiceAlertDialogBuilder<Integer>(context)
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.option_bug_report)
                 .setMessage(R.string.debug_select_items)
-                .setSelectedItems(Set.of(MaintenanceViewModel.DBG_SEND_LOGFILES,
-                                         MaintenanceViewModel.DBG_SEND_PREFERENCES))
-                .setItems(List.of(MaintenanceViewModel.DBG_SEND_DATABASE,
-                                  MaintenanceViewModel.DBG_SEND_DATABASE_UPGRADE,
-                                  MaintenanceViewModel.DBG_SEND_LOGFILES,
-                                  MaintenanceViewModel.DBG_SEND_PREFERENCES),
+                .setSelectedItems(vm.getBugReportOptions())
+                .setItems(MaintenanceViewModel.BUG_REPORT_OPTIONS_ALL,
                           List.of(context.getString(R.string.option_bug_report_database),
                                   context.getString(
                                           R.string.option_bug_report_database_upgrade),
@@ -322,7 +344,7 @@ public class MaintenanceFragment
                                   context.getString(R.string.option_bug_report_settings)))
 
                 .setPositiveButton(R.string.action_save, selection -> {
-                    vm.setDebugSelection(selection);
+                    vm.setBugReportOptions(selection);
                     final String fileName = "ntmb-debug-" + LocalDate
                             .now().format(DateTimeFormatter.ISO_LOCAL_DATE);
                     final String mimeType = FileUtils.getMimeTypeFromExtension("zip");

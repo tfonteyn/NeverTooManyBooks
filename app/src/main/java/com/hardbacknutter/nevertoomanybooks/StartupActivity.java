@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,16 +33,15 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.CatastropheDialog;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -240,37 +237,9 @@ public class StartupActivity
      */
     private void onFailure(@NonNull final Throwable e) {
         LoggerFactory.getLogger().e(TAG, e);
-
-        String msg = ExMsg
-                .map(this, e)
-                .orElseGet(() -> ExMsg.getUnexpectedErrorMessage(this));
-
-        if (BuildConfig.DEBUG /* always */) {
-            msg += "\n" + Arrays.toString(e.getStackTrace());
-        }
-
-        final ClipboardManager clipboard = (ClipboardManager)
-                getSystemService(Context.CLIPBOARD_SERVICE);
-        final ClipData clip = ClipData.newPlainText(getString(R.string.app_name), msg);
-        clipboard.setPrimaryClip(clip);
-
-        new MaterialAlertDialogBuilder(this)
-                .setIcon(R.drawable.error_24px)
-                .setTitle(R.string.app_name)
-                .setMessage(msg)
-                .setCancelable(false)
-                .setNegativeButton(R.string.cancel, (d, w) -> finishAndRemoveTask())
-                .setOnDismissListener(d -> finishAndRemoveTask())
-                .setPositiveButton(R.string.pt_maintenance, (d, w) -> {
-                    // We'll TRY to start the maintenance fragment
-                    // which gives access to debug options
-                    final Intent intent = FragmentHostActivity
-                            .createIntent(this, MaintenanceFragment.class);
-                    startActivity(intent);
-                    finish();
-                })
-                .create()
-                .show();
+        CatastropheDialog.show(this, e,
+                               this::finishAndRemoveTask,
+                               this::finishAndRemoveTask);
     }
 
     /**
