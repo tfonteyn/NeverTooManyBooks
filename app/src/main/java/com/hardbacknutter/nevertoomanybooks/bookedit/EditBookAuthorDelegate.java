@@ -223,7 +223,7 @@ class EditBookAuthorDelegate
     }
 
     private void createTypeButtonList() {
-        // NEWTHINGS: author type: add a button to the layout
+        // NEWTHINGS: author type: add layout button to the Map
         typeButtons.put(Author.TYPE_WRITER, vb.cbxAuthorTypeWriter);
         typeButtons.put(Author.TYPE_CONTRIBUTOR, vb.cbxAuthorTypeContributor);
         typeButtons.put(Author.TYPE_INTRODUCTION, vb.cbxAuthorTypeIntro);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -164,6 +164,7 @@
             app:layout_constraintTop_toBottomOf="@id/barrier_types_top"
             />
 
+        <!-- NEWTHINGS: author type: add a button to the layout + add it to the flow -->
         <!--suppress LongLine -->
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/author_type_group"
