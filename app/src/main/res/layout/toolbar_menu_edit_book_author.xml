@@ -19,36 +19,28 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Edit the Author details.
-    Names: global
-    isComplete: global
-
-    Type: book
-    -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:viewBindingIgnore="true"
-    >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:elevation="0dp"
-        >
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/toolbar_btn_types"
+        style="@style/Toolbar.Checkbox"
+        android:layout_marginEnd="16dp"
+        android:button="@drawable/selector_author_types"
+        android:text="@string/lbl_author_type"
+        tools:viewBindingIgnore="true"
+        />
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            style="@style/Toolbar.Dialog.Fullscreen"
-            app:menu="@menu/edit_book_author"
-            app:title="@string/lbl_author"
-            />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <include
-        layout="@layout/dialog_edit_book_author_content" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/toolbar_btn_save"
+        style="@style/Toolbar.Button"
+        android:contentDescription="@string/action_save"
+        app:icon="@drawable/save_24px"
+        tools:viewBindingIgnore="true"
+        />
+</LinearLayout>

@@ -114,6 +114,11 @@
             app:layout_constraintStart_toStartOf="@id/lbl_family_name"
             app:layout_constraintTop_toBottomOf="@id/lbl_given_names" />
 
+        <!-- We don't set this as a hint on the lbl_real_author
+             to make the relation between THIS author and
+             the 'real' author hopefully clearer to the user.
+             No complaints yet :)
+             -->
         <TextView
             android:id="@+id/lbl_real_author_header"
             android:layout_width="wrap_content"
@@ -143,27 +148,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/barrier_types_top"
-            style="@style/Widget.Material3.MaterialDivider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintTop_toBottomOf="@id/lbl_real_author"
-            />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/btn_use_author_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_margin_top"
-            android:checked="true"
-            android:text="@string/lbl_author_type"
-            app:layout_constraintStart_toStartOf="@id/flow_names"
-            app:layout_constraintTop_toBottomOf="@id/barrier_types_top"
-            />
-
         <!-- NEWTHINGS: author type: add a button to the layout + add it to the flow -->
         <!--suppress LongLine -->
         <androidx.constraintlayout.helper.widget.Flow
@@ -181,7 +165,7 @@
             app:flow_verticalGap="@dimen/field_margin_top"
             app:flow_wrapMode="aligned"
             app:layout_constraintStart_toStartOf="@id/flow_names"
-            app:layout_constraintTop_toBottomOf="@id/btn_use_author_type"
+            app:layout_constraintTop_toBottomOf="@id/lbl_real_author"
             />
 
         <CheckBox

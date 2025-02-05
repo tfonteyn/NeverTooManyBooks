@@ -26,6 +26,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Checkable;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
@@ -71,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
  * <li>Modifications are <strong>NOT STORED</strong> in the database</li>
  * <li>Returns the original + a new instance/copy with the modifications</li>
  * </ul>
- *
+ * <p>
  * In either of the above cases, the 'real' Author <strong>IS STORED</strong>
  * when applicable and explicitly allowed by the user.
  */
@@ -130,24 +131,29 @@ class EditBookAuthorDelegate
         return view;
     }
 
-    @Override
-    public void setToolbar(@Nullable final Toolbar toolbar) {
-        this.toolbar = toolbar;
-    }
-
     @NonNull
     public Toolbar getToolbar() {
         return Objects.requireNonNull(toolbar, "No toolbar set");
     }
 
     @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
+    @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
             if (dialogType == DialogType.BottomSheet) {
-                toolbar.inflateMenu(R.menu.toolbar_action_save);
+                toolbar.inflateMenu(R.menu.edit_book_author);
+            } else if (dialogType == DialogType.Floating) {
+                toolbar.inflateMenu(R.menu.edit_book_author);
+                // Hide duplicate buttons in favour of the bottom button-bar
+                toolbar.getMenu().findItem(R.id.MENU_AUTHOR_TYPE_SWITCH)
+                       .getActionView().findViewById(R.id.toolbar_btn_save)
+                       .setVisibility(View.GONE);
             }
             initToolbar(owner, dialogType, toolbar);
-            toolbar.setSubtitle(vm.getBook().getTitle());
         }
 
         final Context context = vb.getRoot().getContext();
@@ -197,28 +203,45 @@ class EditBookAuthorDelegate
     }
 
     private void setupAuthorTypeField(@Author.Type final int currentType) {
+        final CompoundButton typesSwitch = getTypesSwitch();
+
         if (authorVm.showAuthorType()) {
-            vb.btnUseAuthorType.setVisibility(View.VISIBLE);
-            vb.btnUseAuthorType.setOnCheckedChangeListener((v, isChecked) -> {
-                setTypeEnabled(isChecked);
-                vb.authorTypeGroup.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            });
+            typesSwitch.setVisibility(View.VISIBLE);
 
             createTypeButtonList();
 
             if (currentType == Author.TYPE_UNKNOWN) {
-                setTypeEnabled(false);
-                vb.authorTypeGroup.setVisibility(View.GONE);
+                typesSwitch.setChecked(false);
+                showTypeButtons(false);
+                // all typeButtons are obviously unchecked at this point
             } else {
-                setTypeEnabled(true);
-                vb.authorTypeGroup.setVisibility(View.VISIBLE);
+                // FIXME: here seems to be a bug in android with .setChecked...
+                // open dialog for author without type
+                //- type switch shows correct icon
+                //- flip type switch to expand, icon becomes "fold"
+                //- set one type
+                //- rotate dev
+                //- btn and types as expected
+                //- flip type switch to close, icon becomes "unfold"
+                //- rotate dev
+                //- icon is "unfold" (WRONG!) but types are shown
+                //- flip switch : icon changes to correct state, types stay visible
+                //  => ok
+                //- flip switch : icon changes to correct state, types are hidden
+                //  => ok
+                //
+                //so... after rotation,
+                //   typesSwitch.setChecked(true);
+                //   sets the state correctly but the button 'selector' is not updated
+                typesSwitch.setChecked(true);
+                showTypeButtons(true);
                 for (int i = 0; i < typeButtons.size(); i++) {
                     typeButtons.valueAt(i).setChecked((currentType & typeButtons.keyAt(i)) != 0);
                 }
             }
         } else {
-            vb.btnUseAuthorType.setVisibility(View.GONE);
-            vb.authorTypeGroup.setVisibility(View.GONE);
+            typesSwitch.setVisibility(View.GONE);
+            showTypeButtons(false);
         }
     }
 
@@ -247,13 +270,14 @@ class EditBookAuthorDelegate
      *
      * @param enable Flag
      */
-    private void setTypeEnabled(final boolean enable) {
-        // don't bother changing the 'checked' status, we'll ignore them anyhow.
-        // and this is more user friendly if they flip the switch more than once.
-        vb.btnUseAuthorType.setChecked(enable);
-        for (int i = 0; i < typeButtons.size(); i++) {
-            typeButtons.valueAt(i).setEnabled(enable);
-        }
+    private void showTypeButtons(final boolean enable) {
+        vb.authorTypeGroup.setVisibility(enable ? View.VISIBLE : View.GONE);
+    }
+
+    @NonNull
+    private CompoundButton getTypesSwitch() {
+        return toolbar.getMenu().findItem(R.id.MENU_AUTHOR_TYPE_SWITCH)
+                      .getActionView().findViewById(R.id.toolbar_btn_types);
     }
 
     @Override
@@ -265,7 +289,11 @@ class EditBookAuthorDelegate
     public boolean onToolbarButtonClick(@Nullable final View button) {
         if (button != null) {
             final int id = button.getId();
-            if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
+            if (id == R.id.toolbar_btn_types) {
+                showTypeButtons(((Checkable) button).isChecked());
+                return true;
+
+            } else if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
                 if (saveChanges(false)) {
                     owner.dismiss();
                 }
@@ -288,10 +316,9 @@ class EditBookAuthorDelegate
         }
 
         // invalidate the type if needed
-        if (!vb.btnUseAuthorType.isChecked()) {
+        if (!getTypesSwitch().isChecked()) {
             currentEdit.setType(Author.TYPE_UNKNOWN);
         }
-
 
         final Locale locale = ServiceLocator
                 .getInstance().getLanguages()
@@ -343,6 +370,9 @@ class EditBookAuthorDelegate
         }
 
         if (authorVm.showAuthorType()) {
+            // Always set these when globally enabled
+            // even when disabled for the current edit.
+            // This is more user friendly if the user flips the switch more than once.
             int type = Author.TYPE_UNKNOWN;
             for (int i = 0; i < typeButtons.size(); i++) {
                 if (typeButtons.valueAt(i).isChecked()) {

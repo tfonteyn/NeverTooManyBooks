@@ -141,6 +141,8 @@
           type="id" />
     <item name="MENU_AUTHOR_SET_INCOMPLETE"
           type="id" />
+    <item name="MENU_AUTHOR_TYPE_SWITCH"
+          type="id" />
 
     <item name="MENU_GROUP_AUTHOR_WORKS_SORT"
           type="id" />
