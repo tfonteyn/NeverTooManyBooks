@@ -20,13 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelffilters;
 
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
 
 public class BookshelfFiltersDialogFragment
@@ -45,12 +43,5 @@ public class BookshelfFiltersDialogFragment
 
         final BookshelfFiltersDelegate filtersDelegate = (BookshelfFiltersDelegate) delegate;
         adjustWindowSize(filtersDelegate.getRecyclerView(), 0.33f);
-
-        if (isFloatingDialog()) {
-            // Hide these duplicate buttons in favour of the bottom button-bar
-            final Menu menu = delegate.getToolbar().getMenu();
-            menu.findItem(R.id.MENU_ACTION_CLEAR).setVisible(false);
-            menu.findItem(R.id.MENU_ACTION_SELECT).setVisible(false);
-        }
     }
 }

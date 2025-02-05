@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelffilters;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -131,6 +132,15 @@ class BookshelfFiltersDelegate
         InsetsListenerBuilder.apply(vb.filterList);
 
         if (toolbar != null) {
+            if (dialogType == DialogType.BottomSheet) {
+                toolbar.inflateMenu(R.menu.edit_filters);
+            } else if (dialogType == DialogType.Floating) {
+                toolbar.inflateMenu(R.menu.edit_filters);
+                // Hide these duplicate buttons in favour of the bottom button-bar
+                final Menu menu = toolbar.getMenu();
+                menu.findItem(R.id.MENU_ACTION_CLEAR).setVisible(false);
+                menu.findItem(R.id.MENU_ACTION_SELECT).setVisible(false);
+            }
             initToolbar(owner, dialogType, toolbar);
             toolbar.setSubtitle(vm.getBookshelf().getName());
         }

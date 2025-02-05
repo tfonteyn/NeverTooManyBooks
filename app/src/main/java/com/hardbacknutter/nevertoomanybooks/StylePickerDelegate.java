@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,6 +100,14 @@ class StylePickerDelegate
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
         if (toolbar != null) {
+            if (dialogType == DialogType.BottomSheet) {
+                toolbar.inflateMenu(R.menu.style_picker);
+            } else if (dialogType == DialogType.Floating) {
+                toolbar.inflateMenu(R.menu.style_picker);
+                // Hide duplicate buttons in favour of the bottom button-bar
+                final Menu menu = toolbar.getMenu();
+                menu.findItem(R.id.MENU_ACTION_SELECT).setVisible(false);
+            }
             initToolbar(owner, dialogType, toolbar);
         }
 

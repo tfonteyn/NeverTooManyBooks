@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -44,11 +43,5 @@ public class StylePickerDialogFragment
 
         final StylePickerDelegate pickerDelegate = (StylePickerDelegate) delegate;
         adjustWindowSize(pickerDelegate.getRecyclerView(), 0.33f);
-
-        if (isFloatingDialog()) {
-            // Hide duplicate buttons in favour of the bottom button-bar
-            final Menu menu = delegate.getToolbar().getMenu();
-            menu.findItem(R.id.MENU_ACTION_SELECT).setVisible(false);
-        }
     }
 }
