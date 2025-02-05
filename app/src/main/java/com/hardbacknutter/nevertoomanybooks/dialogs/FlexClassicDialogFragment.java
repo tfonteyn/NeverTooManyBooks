@@ -115,10 +115,6 @@ public abstract class FlexClassicDialogFragment
         fullscreen = true;
     }
 
-    protected boolean isFloatingDialog() {
-        return !fullscreen;
-    }
-
     /**
      * Final. Override {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
      * and/or {@link #onViewCreated(View, Bundle)} instead.
