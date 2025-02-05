@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -433,11 +433,18 @@ public class BooklistAdapter
      * <br><br>{@inheritDoc}
      */
     @Override
-    @NonNull
-    public CharSequence[] getPopupText(final int position) {
-        return new CharSequence[]{
-                getLevelText(1, position),
-                getLevelText(2, position)};
+    @Nullable
+    public CharSequence getPopupText(final int position) {
+        final CharSequence lev1 = getLevelText(1, position);
+        if (lev1 == null) {
+            return null;
+        }
+
+        final CharSequence lev2 = getLevelText(2, position);
+        if (lev2 == null) {
+            return lev1;
+        }
+        return lev1.toString() + '\n' + lev2;
     }
 
     /**

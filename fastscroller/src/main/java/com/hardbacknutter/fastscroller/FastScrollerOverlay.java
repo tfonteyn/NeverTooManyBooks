@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -171,25 +171,13 @@ class FastScrollerOverlay
             return;
         }
 
-        final CharSequence[] popupLines = ((PopupTextProvider) adapter)
+        final CharSequence popupText = ((PopupTextProvider) adapter)
                 .getPopupText(position);
 
-        // Do we have at least one line of text ?
-        final boolean hasPopup = popupLines != null
-                                 && popupLines.length > 0
-                                 && popupLines[0] != null;
+        final boolean hasPopup = popupText != null && popupText.length() > 0;
 
         mPopupView.setVisibility(hasPopup ? View.VISIBLE : View.INVISIBLE);
         if (hasPopup) {
-            final StringBuilder popupText = new StringBuilder(popupLines[0]);
-            if (popupLines.length > 1) {
-                for (int line = 1; line < popupLines.length; line++) {
-                    if (popupLines[line] != null) {
-                        popupText.append('\n').append(popupLines[line]);
-                    }
-                }
-            }
-
             final int layoutDirection = mRecyclerView.getLayoutDirection();
             mPopupView.setLayoutDirection(layoutDirection);
 
@@ -203,8 +191,8 @@ class FastScrollerOverlay
                     mPopupView.getLayoutParams();
 
             // Only need to (re)measure if the text is different.
-            if (!Objects.equals(mPopupView.getText(), popupText.toString())) {
-                mPopupView.setText(popupText.toString());
+            if (!Objects.equals(mPopupView.getText(), popupText)) {
+                mPopupView.setText(popupText);
 
                 final int widthMeasureSpec = ViewGroup.getChildMeasureSpec(
                         View.MeasureSpec.makeMeasureSpec(viewWidth, View.MeasureSpec.EXACTLY),

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,15 +54,13 @@ public interface OverlayProvider {
     interface PopupTextProvider {
 
         /**
-         * Get the popup text lines for the given position.
+         * Get the popup text for the given position.
          *
          * @param position to use
          *
-         * @return an array with the lines. The length of the array is variable.
-         *         The array itself <strong>CAN BE {@code null}</strong>.
-         *         and individual lines in the array <strong>CAN BE {@code null}</strong>.
+         * @return the text
          */
         @Nullable
-        CharSequence[] getPopupText(int position);
+        CharSequence getPopupText(int position);
     }
 }

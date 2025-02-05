@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -170,9 +170,8 @@ public class AuthorWorksAdapter
 
     @NonNull
     @Override
-    public String[] getPopupText(final int position) {
-        return new String[]{works.get(position)
-                .getLabel(inflater.getContext(), Details.AutoSelect, style)};
+    public String getPopupText(final int position) {
+        return works.get(position).getLabel(inflater.getContext(), Details.AutoSelect, style);
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
