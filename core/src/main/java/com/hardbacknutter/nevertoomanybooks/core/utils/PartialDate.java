@@ -247,8 +247,13 @@ public class PartialDate
      *
      * @return year value
      */
-    public int getYearValue() {
-        return localDate.getYear();
+    @NonNull
+    public Optional<Integer> getYear() {
+        if (yearSet) {
+            return Optional.of(localDate.getYear());
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
