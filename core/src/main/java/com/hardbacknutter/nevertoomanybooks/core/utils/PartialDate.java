@@ -142,9 +142,29 @@ public class PartialDate
     }
 
     /**
+     * Format the year as either "YYYY" or "-YYYY" for negative years.
+     *
+     * @param year to format
+     *
+     * @return formatted string
+     */
+    @SuppressLint("DefaultLocale")
+    @NonNull
+    private static String formatYear(final int year) {
+        if (year >= 0) {
+            return String.format("%04d", year);
+        } else {
+            // allow for leading '-'
+            return String.format("%05d", year);
+        }
+    }
+
+    /**
      * Internal 'reset' to recover after parsing issues.
      */
     private void unset() {
+        // 0001/01/01 is not actually used, as we set the booleans all to false,
+        // but this way we don't have to take localDate == null into account
         localDate = LocalDate.of(1, 1, 1);
         yearSet = false;
         monthSet = false;
@@ -204,7 +224,7 @@ public class PartialDate
     public String getDelimString(@NonNull final String delimiter) {
         final StringJoiner sj = new StringJoiner(delimiter);
         if (yearSet) {
-            sj.add(String.format("%04d", localDate.getYear()));
+            sj.add(formatYear(localDate.getYear()));
             if (monthSet) {
                 sj.add(String.format("%02d", localDate.getMonthValue()));
                 if (daySet) {
@@ -233,10 +253,10 @@ public class PartialDate
 
         } else if (yearSet && monthSet) {
             return localDate.getMonth().getDisplayName(TextStyle.SHORT, locale)
-                   + ' ' + String.format(locale, "%04d", localDate.getYear());
+                   + ' ' + formatYear(localDate.getYear());
 
         } else if (yearSet) {
-            return String.format(locale, "%04d", localDate.getYear());
+            return formatYear(localDate.getYear());
 
         } else {
             return defValue != null ? defValue : "";
