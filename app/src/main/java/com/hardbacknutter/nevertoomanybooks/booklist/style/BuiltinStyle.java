@@ -304,8 +304,8 @@ public final class BuiltinStyle
         }
 
         final Style style = new BuiltinStyle(styleDef);
-        style.setPreferred(rowData.getBoolean(DBKey.STYLE_IS_PREFERRED));
-        style.setMenuPosition(rowData.getInt(DBKey.STYLE_MENU_POSITION));
+        style.setPreferred(rowData.getBoolean(DBKey.STYLE.IS_PREFERRED));
+        style.setMenuPosition(rowData.getInt(DBKey.STYLE.MENU_POSITION));
 
         return Optional.of(style);
     }

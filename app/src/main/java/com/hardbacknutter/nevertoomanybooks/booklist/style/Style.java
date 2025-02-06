@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -610,22 +610,22 @@ public interface Style {
      */
     enum UnderEach {
         Author(BooklistGroup.AUTHOR,
-               DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
+               DBKey.STYLE.GROUPS_AUTHOR_SHOW_UNDER_EACH,
                "style.booklist.group.authors.show.all"
         ),
 
         Series(BooklistGroup.SERIES,
-               DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
+               DBKey.STYLE.GROUPS_SERIES_SHOW_UNDER_EACH,
                "style.booklist.group.series.show.all"
         ),
 
         Publisher(BooklistGroup.PUBLISHER,
-                  DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
+                  DBKey.STYLE.GROUPS_PUBLISHER_SHOW_UNDER_EACH,
                   "style.booklist.group.publisher.show.all"
         ),
 
         Bookshelf(BooklistGroup.BOOKSHELF,
-                  DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
+                  DBKey.STYLE.GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
                   "style.booklist.group.bookshelf.show.all"
         );
 

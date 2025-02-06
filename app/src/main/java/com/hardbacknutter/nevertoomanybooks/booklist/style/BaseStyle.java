@@ -221,7 +221,7 @@ public abstract class BaseStyle
      * @throws IllegalArgumentException if the UUID is not a valid string
      */
     BaseStyle(@NonNull final DataHolder rowData) {
-        uuid = rowData.getString(DBKey.STYLE_UUID);
+        uuid = rowData.getString(DBKey.STYLE.UUID);
         id = rowData.getLong(DBKey.PK_ID);
 
         // Sanity check
@@ -229,40 +229,40 @@ public abstract class BaseStyle
             throw new IllegalArgumentException(ERROR_UUID_IS_EMPTY);
         }
 
-        preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
-        menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
+        preferred = rowData.getBoolean(DBKey.STYLE.IS_PREFERRED);
+        menuPosition = rowData.getInt(DBKey.STYLE.MENU_POSITION);
 
         // 'simple' options
-        setLayout(Style.Layout.byId(rowData.getInt(DBKey.STYLE_LAYOUT)));
+        setLayout(Style.Layout.byId(rowData.getInt(DBKey.STYLE.LAYOUT)));
         setCoverClickAction(Style.CoverClickAction.byId(
-                rowData.getInt(DBKey.STYLE_COVER_CLICK_ACTION)));
+                rowData.getInt(DBKey.STYLE.COVER_CLICK_ACTION)));
         setCoverLongClickAction(Style.CoverLongClickAction.byId(
-                rowData.getInt(DBKey.STYLE_COVER_LONG_CLICK_ACTION)));
-        setCoverScale(CoverScale.byId(rowData.getInt(DBKey.STYLE_COVER_SCALE)));
-        setTextScale(TextScale.byId(rowData.getInt(DBKey.STYLE_TEXT_SCALE)));
-        setCitationType(CitationType.byId(rowData.getInt(DBKey.STYLE_CITATION_TYPE)));
+                rowData.getInt(DBKey.STYLE.COVER_LONG_CLICK_ACTION)));
+        setCoverScale(CoverScale.byId(rowData.getInt(DBKey.STYLE.COVER_SCALE)));
+        setTextScale(TextScale.byId(rowData.getInt(DBKey.STYLE.TEXT_SCALE)));
+        setCitationType(CitationType.byId(rowData.getInt(DBKey.STYLE.CITATION_TYPE)));
 
-        groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
+        groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE.ROW_USES_PREF_HEIGHT);
 
-        setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE_LIST_HEADER));
+        setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE.LIST_HEADER));
         setBookLevelFieldsOrderBy(StyleCoder.decodeBookLevelFieldsOrderBy(
-                rowData.getString(DBKey.STYLE_BOOK_LIST_FIELD_ORDER_BY)));
+                rowData.getString(DBKey.STYLE.BOOK_LIST_FIELD_ORDER_BY)));
 
         fieldVisibility.put(FieldVisibility.Screen.List, new BookLevelFieldVisibility(
-                rowData.getLong(DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY)));
+                rowData.getLong(DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY)));
         fieldVisibility.put(FieldVisibility.Screen.Detail, new BookDetailsFieldVisibility(
-                rowData.getLong(DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY)));
+                rowData.getLong(DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY)));
 
-        sortAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME);
+        sortAuthorByGivenName = rowData.getBoolean(DBKey.STYLE.AUTHOR_SORT_BY_GIVEN_NAME);
 
-        showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME);
-        showReorderedTitle = rowData.getBoolean(DBKey.STYLE_TITLE_SHOW_REORDERED);
+        showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME);
+        showReorderedTitle = rowData.getBoolean(DBKey.STYLE.TITLE_SHOW_REORDERED);
 
-        useReadProgress = rowData.getBoolean(DBKey.STYLE_READ_STATUS_WITH_PROGRESS);
+        useReadProgress = rowData.getBoolean(DBKey.STYLE.READ_STATUS_WITH_PROGRESS);
 
         // groups
-        expansionLevel = rowData.getInt(DBKey.STYLE_EXP_LEVEL);
-        final String groupsAsCsv = rowData.getString(DBKey.STYLE_GROUPS);
+        expansionLevel = rowData.getInt(DBKey.STYLE.EXP_LEVEL);
+        final String groupsAsCsv = rowData.getString(DBKey.STYLE.GROUPS);
         if (!groupsAsCsv.isEmpty()) {
             List<Integer> groupIds;
             try {
@@ -276,7 +276,7 @@ public abstract class BaseStyle
             setGroupIds(groupIds);
         }
         // group-options
-        setPrimaryAuthorType(rowData.getInt(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE));
+        setPrimaryAuthorType(rowData.getInt(DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE));
         for (final Style.UnderEach item : Style.UnderEach.values()) {
             setShowBooksUnderEachGroup(item.getGroupId(), rowData.getBoolean(item.getDbKey()));
         }

@@ -268,42 +268,42 @@ public class StyleDaoImpl
         final ContentValues cv = new ContentValues();
         // Note that the Style.Type is NEVER updated.
 
-        cv.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
-        cv.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
+        cv.put(DBKey.STYLE.IS_PREFERRED, style.isPreferred());
+        cv.put(DBKey.STYLE.MENU_POSITION, style.getMenuPosition());
 
         if (style.getType() != Style.Type.Builtin) {
-            cv.put(DBKey.STYLE_NAME, style.getLabel(context));
+            cv.put(DBKey.STYLE.NAME, style.getLabel(context));
 
-            cv.put(DBKey.STYLE_EXP_LEVEL, style.getExpansionLevel());
-            cv.put(DBKey.STYLE_GROUPS, getGroupIdsAsCsv(style));
-            cv.put(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
+            cv.put(DBKey.STYLE.EXP_LEVEL, style.getExpansionLevel());
+            cv.put(DBKey.STYLE.GROUPS, getGroupIdsAsCsv(style));
+            cv.put(DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
             for (final Style.UnderEach item : Style.UnderEach.values()) {
                 cv.put(item.getDbKey(), style.isShowBooksUnderEachGroup(item.getGroupId()));
             }
 
-            cv.put(DBKey.STYLE_LAYOUT, style.getLayout().getId());
-            cv.put(DBKey.STYLE_COVER_CLICK_ACTION, style.getCoverClickAction().getId());
-            cv.put(DBKey.STYLE_COVER_LONG_CLICK_ACTION, style.getCoverLongClickAction().getId());
-            cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale().getId());
-            cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale().getId());
-            cv.put(DBKey.STYLE_ROW_USES_PREF_HEIGHT, style.isGroupRowUsesPreferredHeight());
+            cv.put(DBKey.STYLE.LAYOUT, style.getLayout().getId());
+            cv.put(DBKey.STYLE.COVER_CLICK_ACTION, style.getCoverClickAction().getId());
+            cv.put(DBKey.STYLE.COVER_LONG_CLICK_ACTION, style.getCoverLongClickAction().getId());
+            cv.put(DBKey.STYLE.COVER_SCALE, style.getCoverScale().getId());
+            cv.put(DBKey.STYLE.TEXT_SCALE, style.getTextScale().getId());
+            cv.put(DBKey.STYLE.ROW_USES_PREF_HEIGHT, style.isGroupRowUsesPreferredHeight());
 
-            cv.put(DBKey.STYLE_LIST_HEADER, style.getHeaderFieldVisibilityValue());
-            cv.put(DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY,
+            cv.put(DBKey.STYLE.LIST_HEADER, style.getHeaderFieldVisibilityValue());
+            cv.put(DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY,
                    style.getFieldVisibilityValue(FieldVisibility.Screen.List));
-            cv.put(DBKey.STYLE_BOOK_LIST_FIELD_ORDER_BY,
+            cv.put(DBKey.STYLE.BOOK_LIST_FIELD_ORDER_BY,
                    StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
-            cv.put(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
+            cv.put(DBKey.STYLE.AUTHOR_SORT_BY_GIVEN_NAME,
                    style.isSortAuthorByGivenName());
 
-            cv.put(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME, style.isShowAuthorByGivenName());
-            cv.put(DBKey.STYLE_TITLE_SHOW_REORDERED, style.isShowReorderedTitle());
+            cv.put(DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME, style.isShowAuthorByGivenName());
+            cv.put(DBKey.STYLE.TITLE_SHOW_REORDERED, style.isShowReorderedTitle());
 
-            cv.put(DBKey.STYLE_READ_STATUS_WITH_PROGRESS, style.useReadProgress());
+            cv.put(DBKey.STYLE.READ_STATUS_WITH_PROGRESS, style.useReadProgress());
 
-            cv.put(DBKey.STYLE_CITATION_TYPE, style.getCitationType().getId());
+            cv.put(DBKey.STYLE.CITATION_TYPE, style.getCitationType().getId());
 
-            cv.put(DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY,
+            cv.put(DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY,
                    style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
         }
 
@@ -402,10 +402,10 @@ public class StyleDaoImpl
         static final String INSERT_BUILTIN_STYLE =
                 INSERT_INTO_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
                 + '(' + DBKey.PK_ID
-                + ',' + DBKey.STYLE_UUID
-                + ',' + DBKey.STYLE_TYPE
-                + ',' + DBKey.STYLE_IS_PREFERRED
-                + ',' + DBKey.STYLE_MENU_POSITION
+                + ',' + DBKey.STYLE.UUID
+                + ',' + DBKey.STYLE.TYPE
+                + ',' + DBKey.STYLE.IS_PREFERRED
+                + ',' + DBKey.STYLE.MENU_POSITION
                 + ") VALUES(?,?,?,?,?)";
 
         /** Insert a {@link Style}. */
@@ -424,13 +424,13 @@ public class StyleDaoImpl
          */
         static final String FIND_BY_TYPE =
                 SELECT_ + "*" + _FROM_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
-                + _WHERE_ + DBKey.STYLE_TYPE + "=?"
+                + _WHERE_ + DBKey.STYLE.TYPE + "=?"
                 + _ORDER_BY_ + DBKey.PK_ID;
 
         /** Find the id of a {@link Style} by its UUID. */
         static final String FIND_STYLE_ID_BY_UUID =
                 SELECT_ + DBKey.PK_ID + _FROM_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
-                + _WHERE_ + DBKey.STYLE_UUID + "=?";
+                + _WHERE_ + DBKey.STYLE.UUID + "=?";
 
         static final String DELETE_NODE_STATE_BY_STYLE_ID =
                 DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE.getName()
@@ -439,35 +439,35 @@ public class StyleDaoImpl
         static {
             final StringBuilder tmp = new StringBuilder(
                     INSERT_INTO_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
-                    + '(' + DBKey.STYLE_UUID
-                    + ',' + DBKey.STYLE_TYPE
-                    + ',' + DBKey.STYLE_IS_PREFERRED
-                    + ',' + DBKey.STYLE_MENU_POSITION
-                    + ',' + DBKey.STYLE_NAME
+                    + '(' + DBKey.STYLE.UUID
+                    + ',' + DBKey.STYLE.TYPE
+                    + ',' + DBKey.STYLE.IS_PREFERRED
+                    + ',' + DBKey.STYLE.MENU_POSITION
+                    + ',' + DBKey.STYLE.NAME
 
-                    + ',' + DBKey.STYLE_LAYOUT
-                    + ',' + DBKey.STYLE_COVER_CLICK_ACTION
-                    + ',' + DBKey.STYLE_COVER_LONG_CLICK_ACTION
-                    + ',' + DBKey.STYLE_COVER_SCALE
-                    + ',' + DBKey.STYLE_TEXT_SCALE
-                    + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT
+                    + ',' + DBKey.STYLE.LAYOUT
+                    + ',' + DBKey.STYLE.COVER_CLICK_ACTION
+                    + ',' + DBKey.STYLE.COVER_LONG_CLICK_ACTION
+                    + ',' + DBKey.STYLE.COVER_SCALE
+                    + ',' + DBKey.STYLE.TEXT_SCALE
+                    + ',' + DBKey.STYLE.ROW_USES_PREF_HEIGHT
 
-                    + ',' + DBKey.STYLE_LIST_HEADER
-                    + ',' + DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY
-                    + ',' + DBKey.STYLE_BOOK_LIST_FIELD_ORDER_BY
-                    + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
+                    + ',' + DBKey.STYLE.LIST_HEADER
+                    + ',' + DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY
+                    + ',' + DBKey.STYLE.BOOK_LIST_FIELD_ORDER_BY
+                    + ',' + DBKey.STYLE.AUTHOR_SORT_BY_GIVEN_NAME
 
-                    + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
-                    + ',' + DBKey.STYLE_TITLE_SHOW_REORDERED
+                    + ',' + DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME
+                    + ',' + DBKey.STYLE.TITLE_SHOW_REORDERED
 
-                    + ',' + DBKey.STYLE_READ_STATUS_WITH_PROGRESS
-                    + ',' + DBKey.STYLE_CITATION_TYPE
+                    + ',' + DBKey.STYLE.READ_STATUS_WITH_PROGRESS
+                    + ',' + DBKey.STYLE.CITATION_TYPE
 
-                    + ',' + DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY
+                    + ',' + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
 
-                    + ',' + DBKey.STYLE_EXP_LEVEL
-                    + ',' + DBKey.STYLE_GROUPS
-                    + ',' + DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE);
+                    + ',' + DBKey.STYLE.EXP_LEVEL
+                    + ',' + DBKey.STYLE.GROUPS
+                    + ',' + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE);
 
             for (final Style.UnderEach item : Style.UnderEach.values()) {
                 tmp.append(',').append(item.getDbKey());

@@ -137,7 +137,7 @@ public final class LegacyUpgrades {
         final List<String> uuids = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
                 "SELECT uuid FROM " + TBL_BOOKLIST_STYLES.getName()
-                + " WHERE " + DBKey.STYLE_TYPE + "=" + Style.Type.User.getId(), null)) {
+                + " WHERE " + DBKey.STYLE.TYPE + "=" + Style.Type.User.getId(), null)) {
             while (cursor.moveToNext()) {
                 uuids.add(cursor.getString(0));
             }
@@ -145,26 +145,26 @@ public final class LegacyUpgrades {
 
         try (SQLiteStatement stmt = db.compileStatement(
                 "UPDATE " + TBL_BOOKLIST_STYLES.getName() + " SET "
-                + DBKey.STYLE_NAME + "=?, "
+                + DBKey.STYLE.NAME + "=?, "
 
-                + DBKey.STYLE_GROUPS + "=?,"
-                + DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH + "=?,"
-                + DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE + "=?,"
-                + DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH + "=?,"
-                + DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH + "=?,"
-                + DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH + "=?,"
+                + DBKey.STYLE.GROUPS + "=?,"
+                + DBKey.STYLE.GROUPS_AUTHOR_SHOW_UNDER_EACH + "=?,"
+                + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE + "=?,"
+                + DBKey.STYLE.GROUPS_SERIES_SHOW_UNDER_EACH + "=?,"
+                + DBKey.STYLE.GROUPS_PUBLISHER_SHOW_UNDER_EACH + "=?,"
+                + DBKey.STYLE.GROUPS_BOOKSHELF_SHOW_UNDER_EACH + "=?,"
 
-                + DBKey.STYLE_EXP_LEVEL + "=?,"
-                + DBKey.STYLE_ROW_USES_PREF_HEIGHT + "=?,"
-                + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME + "=?,"
-                + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME + "=?,"
-                + DBKey.STYLE_TEXT_SCALE + "=?,"
-                + DBKey.STYLE_COVER_SCALE + "=?,"
-                + DBKey.STYLE_LIST_HEADER + "=?,"
-                + DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY + "=?,"
-                + DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY + "=?"
+                + DBKey.STYLE.EXP_LEVEL + "=?,"
+                + DBKey.STYLE.ROW_USES_PREF_HEIGHT + "=?,"
+                + DBKey.STYLE.AUTHOR_SORT_BY_GIVEN_NAME + "=?,"
+                + DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME + "=?,"
+                + DBKey.STYLE.TEXT_SCALE + "=?,"
+                + DBKey.STYLE.COVER_SCALE + "=?,"
+                + DBKey.STYLE.LIST_HEADER + "=?,"
+                + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY + "=?,"
+                + DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY + "=?"
 
-                + " WHERE " + DBKey.STYLE_UUID + "=?")) {
+                + " WHERE " + DBKey.STYLE.UUID + "=?")) {
 
             // Preference keys are hardcoded, as this is for backwards compatibility.
             uuids.forEach(uuid -> {
@@ -494,7 +494,7 @@ public final class LegacyUpgrades {
         // (including the builtin which is pointless but easier)
         try (SQLiteStatement stmt = db.compileStatement(
                 "UPDATE " + TBL_BOOKLIST_STYLES.getName() + " SET "
-                + DBKey.STYLE_TITLE_SHOW_REORDERED + "=?")) {
+                + DBKey.STYLE.TITLE_SHOW_REORDERED + "=?")) {
             stmt.bindLong(1, value);
             stmt.executeUpdateDelete();
         }
@@ -714,8 +714,8 @@ public final class LegacyUpgrades {
 
         final boolean install;
         try (SQLiteStatement stmt = db.compileStatement(
-                "SELECT COUNT(" + DBKey.STYLE_TYPE + ") FROM " + TBL_BOOKLIST_STYLES
-                + " WHERE " + DBKey.STYLE_TYPE + "=2")) {
+                "SELECT COUNT(" + DBKey.STYLE.TYPE + ") FROM " + TBL_BOOKLIST_STYLES
+                + " WHERE " + DBKey.STYLE.TYPE + "=2")) {
             install = 0 == stmt.simpleQueryForLong();
         }
 

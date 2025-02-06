@@ -759,7 +759,7 @@ public class BookshelfDaoImpl
                                               DBKey.BOOKSHELF_BL_TOP_POS,
                                               DBKey.BOOKSHELF_BL_TOP_OFFSET,
                                               DBKey.FK_STYLE)
-                + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
+                + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE.UUID)
                 + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOKLIST_STYLES);
 
         /**
@@ -793,7 +793,7 @@ public class BookshelfDaoImpl
                                                        DBKey.BOOKSHELF_BL_TOP_POS,
                                                        DBKey.BOOKSHELF_BL_TOP_OFFSET,
                                                        DBKey.FK_STYLE)
-                + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
+                + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE.UUID)
 
                 + _FROM_ + TBL_BOOK_BOOKSHELF.startJoin(TBL_BOOKSHELF, TBL_BOOKLIST_STYLES)
                 + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + "=?"

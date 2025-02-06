@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -91,7 +91,7 @@ public class TocFragment
         final Fragment fragment = new TocFragment();
         final Bundle args = new Bundle(6);
         args.putBoolean(BKEY_EMBEDDED, embedded);
-        args.putString(DBKey.STYLE_UUID, style.getUuid());
+        args.putString(DBKey.STYLE.UUID, style.getUuid());
         args.putLong(DBKey.FK_BOOK, book.getId());
         // TODO: maybe don't bother... and just load the Book again in the vm.init() call?
         args.putString(DBKey.TITLE, book.getTitle());

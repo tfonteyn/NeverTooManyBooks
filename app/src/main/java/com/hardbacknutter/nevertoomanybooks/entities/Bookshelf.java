@@ -151,7 +151,7 @@ public class Bookshelf
                      @NonNull final DataHolder rowData) {
         this.id = id;
         name = rowData.getString(DBKey.BOOKSHELF_NAME);
-        styleUuid = rowData.getString(DBKey.STYLE_UUID);
+        styleUuid = rowData.getString(DBKey.STYLE.UUID);
 
         topRowAdapterPosition = new TopRowListPosition(rowData.getInt(DBKey.BOOKSHELF_BL_TOP_POS),
                                                        rowData.getInt(

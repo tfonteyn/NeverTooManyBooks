@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,11 +111,11 @@ public class StyleCoder
 
         final Style.Type type = style.getType();
 
-        out.put(DBKey.STYLE_TYPE, type.getId());
-        out.put(DBKey.STYLE_UUID, style.getUuid());
+        out.put(DBKey.STYLE.TYPE, type.getId());
+        out.put(DBKey.STYLE.UUID, style.getUuid());
 
-        out.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
-        out.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
+        out.put(DBKey.STYLE.IS_PREFERRED, style.isPreferred());
+        out.put(DBKey.STYLE.MENU_POSITION, style.getMenuPosition());
 
         if (type == Style.Type.Builtin) {
             // We're done
@@ -123,7 +123,7 @@ public class StyleCoder
         }
 
         if (type == Style.Type.User) {
-            out.put(DBKey.STYLE_NAME, ((UserStyle) style).getName());
+            out.put(DBKey.STYLE.NAME, ((UserStyle) style).getName());
         }
 
         // The settings will be stored under a new JSON object 'STYLE_SETTINGS'
@@ -214,12 +214,12 @@ public class StyleCoder
     public Style decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final String uuid = data.getString(DBKey.STYLE_UUID);
+        final String uuid = data.getString(DBKey.STYLE.UUID);
 
         final Style.Type type;
-        if (data.has(DBKey.STYLE_TYPE)) {
+        if (data.has(DBKey.STYLE.TYPE)) {
             // Version 5.1 archives store the type; just use it.
-            type = Style.Type.byId(data.getInt(DBKey.STYLE_TYPE));
+            type = Style.Type.byId(data.getInt(DBKey.STYLE.TYPE));
         } else {
             // without a STYLE_TYPE, we're reading a version 5.0 or earlier
             // Use the UUID to check if we're reading a builtin Style.
@@ -235,8 +235,8 @@ public class StyleCoder
         switch (type) {
             case User: {
                 style = UserStyle.createForImport(uuid, stylesHelper.getGlobalStyle());
-                if (data.has(DBKey.STYLE_NAME)) {
-                    ((UserStyle) style).setName(data.getString(DBKey.STYLE_NAME));
+                if (data.has(DBKey.STYLE.NAME)) {
+                    ((UserStyle) style).setName(data.getString(DBKey.STYLE.NAME));
                 }
                 break;
             }
@@ -255,8 +255,8 @@ public class StyleCoder
                 throw new IllegalArgumentException(String.valueOf(type));
         }
 
-        style.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
-        style.setMenuPosition(data.getInt(DBKey.STYLE_MENU_POSITION));
+        style.setPreferred(data.getBoolean(DBKey.STYLE.IS_PREFERRED));
+        style.setMenuPosition(data.getInt(DBKey.STYLE.MENU_POSITION));
 
         if (data.has(STYLE_SETTINGS)) {
             // any element in the source which we don't know, will simply be ignored.

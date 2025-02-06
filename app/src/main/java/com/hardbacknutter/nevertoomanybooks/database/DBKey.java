@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -279,72 +278,6 @@ public final class DBKey {
     /** {@link DBDefinitions#TBL_BOOK_LOANEE}. */
     public static final String LOANEE_NAME = "loaned_to";
 
-    /** {@link DBDefinitions#TBL_BOOKLIST_STYLES}. */
-    public static final String STYLE_UUID = "uuid";
-    /**
-     * The name for a {@link com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle}.
-     */
-    public static final String STYLE_NAME = "name";
-    /**
-     * The type of Style.
-     * <p>
-     * Note the actual name of the column is incorrect.
-     * This used to be a boolean (0=user, 1=builtin).
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.Type
-     */
-    public static final String STYLE_TYPE = "builtin";
-    public static final String STYLE_IS_PREFERRED = "preferred";
-    public static final String STYLE_MENU_POSITION = "menu_order";
-    /**
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.Layout
-     */
-    public static final String STYLE_LAYOUT = "layout";
-    /**
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.CoverClickAction
-     */
-    public static final String STYLE_COVER_CLICK_ACTION = "cover_click_action";
-    /**
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.CoverLongClickAction
-     */
-    public static final String STYLE_COVER_LONG_CLICK_ACTION = "cover_long_click_action";
-    public static final String STYLE_EXP_LEVEL = "exp_level";
-    public static final String STYLE_ROW_USES_PREF_HEIGHT = "row_pref_height";
-    public static final String STYLE_AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";
-    public static final String STYLE_AUTHOR_SHOW_BY_GIVEN_NAME = "author_show_gn";
-    public static final String STYLE_TITLE_SHOW_REORDERED = "show_reorder_title";
-    public static final String STYLE_READ_STATUS_WITH_PROGRESS = "read_status_with_progress";
-    public static final String STYLE_CITATION_TYPE = "citation_style";
-
-    /**
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale
-     */
-    public static final String STYLE_TEXT_SCALE = "text_scale";
-    /**
-     * @see com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale
-     */
-    public static final String STYLE_COVER_SCALE = "cover_scale";
-    /**
-     * @see BooklistHeader
-     */
-    public static final String STYLE_LIST_HEADER = "list_header";
-    public static final String STYLE_BOOK_DETAIL_FIELD_VISIBILITY = "detail_fields_vis";
-    public static final String STYLE_BOOK_LIST_FIELD_VISIBILITY = "list_fields_vis";
-    public static final String STYLE_BOOK_LIST_FIELD_ORDER_BY = "list_fields_sort";
-
-    public static final String STYLE_GROUPS = "groups";
-    public static final String STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH =
-            "groups_author_under_each";
-    public static final String STYLE_GROUPS_AUTHOR_PRIMARY_TYPE =
-            "groups_author_prim_type";
-    public static final String STYLE_GROUPS_SERIES_SHOW_UNDER_EACH =
-            "groups_series_under_each";
-    public static final String STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH =
-            "groups_publisher_under_each";
-    public static final String STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH =
-            "groups_bookshelf_under_each";
-
-
     /** Alias. */
     public static final String BOOK_COUNT = "book_count";
 
@@ -436,4 +369,75 @@ public final class DBKey {
     private DBKey() {
     }
 
+    /**
+     * {@link DBDefinitions#TBL_BOOKLIST_STYLES}.
+     */
+    @SuppressWarnings("CheckStyle")
+    public static final class STYLE {
+
+        public static final String UUID = "uuid";
+        /**
+         * The name for a {@link com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle}.
+         */
+        public static final String NAME = "name";
+        /**
+         * The type of Style.
+         * <p>
+         * Note the actual name of the column is incorrect.
+         * This used to be a boolean (0=user, 1=builtin).
+         *
+         * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.Type
+         */
+        public static final String TYPE = "builtin";
+        public static final String IS_PREFERRED = "preferred";
+        public static final String MENU_POSITION = "menu_order";
+        /**
+         * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.Layout
+         */
+        public static final String LAYOUT = "layout";
+        /**
+         * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.CoverClickAction
+         */
+        public static final String COVER_CLICK_ACTION = "cover_click_action";
+        /**
+         * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.CoverLongClickAction
+         */
+        public static final String COVER_LONG_CLICK_ACTION = "cover_long_click_action";
+        public static final String EXP_LEVEL = "exp_level";
+        public static final String ROW_USES_PREF_HEIGHT = "row_pref_height";
+        public static final String AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";
+        public static final String AUTHOR_SHOW_BY_GIVEN_NAME = "author_show_gn";
+        public static final String TITLE_SHOW_REORDERED = "show_reorder_title";
+        public static final String READ_STATUS_WITH_PROGRESS = "read_status_with_progress";
+        public static final String CITATION_TYPE = "citation_style";
+        /**
+         * @see com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale
+         */
+        public static final String TEXT_SCALE = "text_scale";
+        /**
+         * @see com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale
+         */
+        public static final String COVER_SCALE = "cover_scale";
+        /**
+         * @see com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader
+         */
+        public static final String LIST_HEADER = "list_header";
+        public static final String BOOK_DETAIL_FIELD_VISIBILITY = "detail_fields_vis";
+        public static final String BOOK_LIST_FIELD_VISIBILITY = "list_fields_vis";
+        public static final String BOOK_LIST_FIELD_ORDER_BY = "list_fields_sort";
+        public static final String GROUPS = "groups";
+        public static final String GROUPS_AUTHOR_SHOW_UNDER_EACH =
+                "groups_author_under_each";
+        public static final String GROUPS_AUTHOR_PRIMARY_TYPE =
+                "groups_author_prim_type";
+        public static final String GROUPS_SERIES_SHOW_UNDER_EACH =
+                "groups_series_under_each";
+        public static final String GROUPS_PUBLISHER_SHOW_UNDER_EACH =
+                "groups_publisher_under_each";
+        public static final String GROUPS_BOOKSHELF_SHOW_UNDER_EACH =
+                "groups_bookshelf_under_each";
+
+        private STYLE() {
+        }
+    }
 }

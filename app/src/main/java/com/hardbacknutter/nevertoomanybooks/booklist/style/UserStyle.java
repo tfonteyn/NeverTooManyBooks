@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ public class UserStyle
      */
     private UserStyle(@NonNull final DataHolder rowData) {
         super(rowData);
-        name = rowData.getString(DBKey.STYLE_NAME);
+        name = rowData.getString(DBKey.STYLE.NAME);
     }
 
     /**

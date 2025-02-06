@@ -1225,69 +1225,69 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_STYLE_UUID =
-                new Domain.Builder(DBKey.STYLE_UUID, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.STYLE.UUID, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_STYLE_TYPE =
-                new Domain.Builder(DBKey.STYLE_TYPE, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.TYPE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Style.Type.User.getId())
                         .build();
 
         DOM_STYLE_IS_PREFERRED =
-                new Domain.Builder(DBKey.STYLE_IS_PREFERRED, SqLiteDataType.Boolean)
+                new Domain.Builder(DBKey.STYLE.IS_PREFERRED, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_MENU_POSITION =
-                new Domain.Builder(DBKey.STYLE_MENU_POSITION, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.MENU_POSITION, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Style.MENU_POSITION_NOT_PREFERRED)
                         .build();
 
 
         DOM_STYLE_NAME =
-                new Domain.Builder(DBKey.STYLE_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.STYLE.NAME, SqLiteDataType.Text)
                         .localized()
                         .build();
 
         DOM_STYLE_GROUPS =
-                new Domain.Builder(DBKey.STYLE_GROUPS, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.STYLE.GROUPS, SqLiteDataType.Text)
                         .build();
 
         DOM_STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH =
-                new Domain.Builder(DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
+                new Domain.Builder(DBKey.STYLE.GROUPS_AUTHOR_SHOW_UNDER_EACH,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE =
-                new Domain.Builder(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE,
+                new Domain.Builder(DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE,
                                    SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Author.TYPE_UNKNOWN)
                         .build();
 
         DOM_STYLE_GROUPS_SERIES_SHOW_UNDER_EACH =
-                new Domain.Builder(DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
+                new Domain.Builder(DBKey.STYLE.GROUPS_SERIES_SHOW_UNDER_EACH,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH =
-                new Domain.Builder(DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
+                new Domain.Builder(DBKey.STYLE.GROUPS_PUBLISHER_SHOW_UNDER_EACH,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH =
-                new Domain.Builder(DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
+                new Domain.Builder(DBKey.STYLE.GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
@@ -1295,102 +1295,102 @@ public final class DBDefinitions {
 
 
         DOM_STYLE_LAYOUT =
-                new Domain.Builder(DBKey.STYLE_LAYOUT, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.LAYOUT, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Style.Layout.List.getId())
                         .build();
 
         DOM_STYLE_COVER_CLICK_ACTION =
-                new Domain.Builder(DBKey.STYLE_COVER_CLICK_ACTION, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.COVER_CLICK_ACTION, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Style.CoverClickAction.Zoom.getId())
                         .build();
 
         DOM_STYLE_COVER_LONG_CLICK_ACTION =
-                new Domain.Builder(DBKey.STYLE_COVER_LONG_CLICK_ACTION, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.COVER_LONG_CLICK_ACTION, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Style.CoverLongClickAction.Ignore.getId())
                         .build();
 
         DOM_STYLE_EXP_LEVEL =
-                new Domain.Builder(DBKey.STYLE_EXP_LEVEL, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.EXP_LEVEL, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(1)
                         .build();
 
         DOM_STYLE_ROW_USES_PREF_HEIGHT =
-                new Domain.Builder(DBKey.STYLE_ROW_USES_PREF_HEIGHT,
+                new Domain.Builder(DBKey.STYLE.ROW_USES_PREF_HEIGHT,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(true)
                         .build();
 
         DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME =
-                new Domain.Builder(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
+                new Domain.Builder(DBKey.STYLE.AUTHOR_SORT_BY_GIVEN_NAME,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
         DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME =
-                new Domain.Builder(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
+                new Domain.Builder(DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_TITLE_SHOW_REORDERED =
-                new Domain.Builder(DBKey.STYLE_TITLE_SHOW_REORDERED,
+                new Domain.Builder(DBKey.STYLE.TITLE_SHOW_REORDERED,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_READ_STATUS_WITH_PROGRESS =
-                new Domain.Builder(DBKey.STYLE_READ_STATUS_WITH_PROGRESS,
+                new Domain.Builder(DBKey.STYLE.READ_STATUS_WITH_PROGRESS,
                                    SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_TEXT_SCALE =
-                new Domain.Builder(DBKey.STYLE_TEXT_SCALE, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.TEXT_SCALE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(TextScale.DEFAULT.getId())
                         .build();
         DOM_STYLE_COVER_SCALE =
-                new Domain.Builder(DBKey.STYLE_COVER_SCALE, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.COVER_SCALE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(CoverScale.DEFAULT.getId())
                         .build();
 
         DOM_STYLE_CITATION_TYPE =
-                new Domain.Builder(DBKey.STYLE_CITATION_TYPE, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.CITATION_TYPE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(CitationType.Default.getId())
                         .build();
 
         DOM_STYLE_LIST_HEADER =
-                new Domain.Builder(DBKey.STYLE_LIST_HEADER, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.LIST_HEADER, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(BooklistHeader.BITMASK_ALL)
                         .build();
 
         DOM_STYLE_BOOK_DETAIL_FIELD_VISIBILITY =
-                new Domain.Builder(DBKey.STYLE_BOOK_DETAIL_FIELD_VISIBILITY, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(FieldVisibility.getBitValue(
                                 BookDetailsFieldVisibility.DEFAULT))
                         .build();
 
         DOM_STYLE_BOOK_LIST_FIELD_VISIBILITY =
-                new Domain.Builder(DBKey.STYLE_BOOK_LIST_FIELD_VISIBILITY, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(FieldVisibility.getBitValue(
                                 BookLevelFieldVisibility.DEFAULT))
                         .build();
 
         DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY =
-                new Domain.Builder(DBKey.STYLE_BOOK_LIST_FIELD_ORDER_BY, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.STYLE.BOOK_LIST_FIELD_ORDER_BY, SqLiteDataType.Text)
                         .build();
 
         /* ======================================================================================
@@ -1430,9 +1430,9 @@ public final class DBDefinitions {
                             DOM_STYLE_BOOK_LIST_FIELD_VISIBILITY,
                             DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.STYLE_UUID, true, DOM_STYLE_UUID)
-                .addIndex(DBKey.STYLE_NAME, true, DOM_STYLE_NAME)
-                .addIndex(DBKey.STYLE_MENU_POSITION, false, DOM_STYLE_MENU_POSITION);
+                .addIndex(DBKey.STYLE.UUID, true, DOM_STYLE_UUID)
+                .addIndex(DBKey.STYLE.NAME, true, DOM_STYLE_NAME)
+                .addIndex(DBKey.STYLE.MENU_POSITION, false, DOM_STYLE_MENU_POSITION);
         ALL_TABLES.put(TBL_BOOKLIST_STYLES.getName(), TBL_BOOKLIST_STYLES);
 
         /* ======================================================================================
