@@ -69,12 +69,6 @@ public final class DBKey {
 
     // Adding new FK's...  make sure to name them "xxx_id" to avoid duplicate use of "xxx"
 
-    /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
-    public static final String BOOK_IDENTIFIER_SID = "sid";
-
-    /** {@link DBDefinitions#TBL_TOC_ENTRIES}. */
-    public static final String BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
-
     /** Suffix added to a price column name to create a joined currency column. */
     public static final String CURRENCY_SUFFIX = "_currency";
 
@@ -137,6 +131,13 @@ public final class DBKey {
 
     /** Flag: the user can 'lock' (i.e. set 'false') a book from being automatically updated. */
     public static final String AUTO_UPDATE = "auto_update";
+
+
+    /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
+    public static final String BOOK_IDENTIFIER_SID = "sid";
+
+    /** {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}. */
+    public static final String BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
 
     /** {@link DBDefinitions#TBL_BOOK_LOANEE}. */
     public static final String LOANEE_NAME = "loaned_to";
