@@ -48,10 +48,10 @@ public interface AuthorDao {
      * Get a unique list of {@link Author} names in the specified format.
      *
      * @param key type of name wanted, one of
-     *            {@link DBKey#AUTHOR_FAMILY_NAME},
-     *            {@link DBKey#AUTHOR_GIVEN_NAMES},
-     *            {@link DBKey#AUTHOR_FORMATTED},
-     *            {@link DBKey#AUTHOR_FORMATTED_GIVEN_FIRST}
+     *            {@link DBKey.AUTHOR#FAMILY_NAME},
+     *            {@link DBKey.AUTHOR#GIVEN_NAMES},
+     *            {@link DBKey.AUTHOR#FORMATTED_FULL_NAME},
+     *            {@link DBKey.AUTHOR#FORMATTED_FULL_NAME_GIVEN_FIRST}
      *
      * @return list of all author names.
      */

@@ -262,19 +262,19 @@ public class BookCoder {
         final List<Author> list = book.getAuthors();
 
         processAuthor(book, authorCoder, CSV_COLUMN_AUTHORS, list);
-        processAuthor(book, authorCoder, DBKey.AUTHOR_FORMATTED, list);
+        processAuthor(book, authorCoder, DBKey.AUTHOR.FORMATTED_FULL_NAME, list);
         processAuthor(book, authorCoder, LEGACY_AUTHOR_NAME, list);
         processAuthor(book, getGoodreads().getAuthorCoder(), Goodreads.ADDITIONAL_AUTHORS, list);
 
         // check for individual author family/given fields in the input
-        if (book.contains(DBKey.AUTHOR_FAMILY_NAME)) {
-            final String family = book.getString(DBKey.AUTHOR_FAMILY_NAME, null);
+        if (book.contains(DBKey.AUTHOR.FAMILY_NAME)) {
+            final String family = book.getString(DBKey.AUTHOR.FAMILY_NAME, null);
             if (family != null && !family.isEmpty()) {
-                final String given = book.getString(DBKey.AUTHOR_GIVEN_NAMES, null);
+                final String given = book.getString(DBKey.AUTHOR.GIVEN_NAMES, null);
                 list.add(new Author(family, given));
             }
-            book.remove(DBKey.AUTHOR_FAMILY_NAME);
-            book.remove(DBKey.AUTHOR_GIVEN_NAMES);
+            book.remove(DBKey.AUTHOR.FAMILY_NAME);
+            book.remove(DBKey.AUTHOR.GIVEN_NAMES);
         }
 
         // we MUST have an author.
@@ -645,7 +645,7 @@ public class BookCoder {
         public static final String PREFIX = "goodreads_";
 
         /**
-         * The Goodreads Author field will be mapped to {@link DBKey#AUTHOR_FORMATTED}.
+         * The Goodreads Author field will be mapped to {@link DBKey.AUTHOR#FORMATTED_FULL_NAME}.
          * Any additional authors come in this key and will need to be added.
          */
         public static final String ADDITIONAL_AUTHORS = PREFIX + "additional authors";

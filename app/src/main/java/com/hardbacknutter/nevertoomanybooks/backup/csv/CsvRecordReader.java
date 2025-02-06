@@ -515,7 +515,7 @@ public class CsvRecordReader
                         return DBKey.TITLE;
                     case "author l-f":
                         // Will be decoded during import
-                        return DBKey.AUTHOR_FORMATTED;
+                        return DBKey.AUTHOR.FORMATTED_FULL_NAME;
                     case "additional authors":
                         // Added in addition to the one above
                         return BookCoder.Goodreads.ADDITIONAL_AUTHORS;

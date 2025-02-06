@@ -2081,7 +2081,7 @@ public class BooksOnBookshelf
             inflater.inflate(R.menu.author, menu);
             vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
 
-            final boolean complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
+            final boolean complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
             menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
             menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
@@ -2113,7 +2113,7 @@ public class BooksOnBookshelf
                        || menuItemId == R.id.MENU_AUTHOR_SET_INCOMPLETE) {
                 final Author author = DataHolderUtils.requireAuthor(rowData);
                 // toggle the complete status
-                final boolean status = !rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
+                final boolean status = !rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
                 vm.setAuthorComplete(author, status);
                 return true;
 

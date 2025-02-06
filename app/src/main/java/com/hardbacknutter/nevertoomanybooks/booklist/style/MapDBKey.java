@@ -38,7 +38,7 @@ public final class MapDBKey {
             Map.entry(DBKey.COVER[0], DBKey.BOOK_UUID),
             Map.entry(DBKey.COVER[1], DBKey.BOOK_UUID),
 
-            Map.entry(DBKey.FK_AUTHOR, DBKey.AUTHOR_FORMATTED),
+            Map.entry(DBKey.FK_AUTHOR, DBKey.AUTHOR.FORMATTED_FULL_NAME),
             Map.entry(DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF.BOOK_BOOKSHELF_NAMES_AS_CSV),
             Map.entry(DBKey.FK_PUBLISHER, DBKey.PUBLISHER.NAME),
             Map.entry(DBKey.FK_SERIES, DBKey.SERIES.TITLE)
@@ -54,7 +54,7 @@ public final class MapDBKey {
             Map.entry(DBKey.COVER[0], R.string.lbl_cover_front),
             Map.entry(DBKey.COVER[1], R.string.lbl_cover_back),
 
-            Map.entry(DBKey.AUTHOR_TYPE__BITMASK, R.string.lbl_author_type),
+            Map.entry(DBKey.AUTHOR.BOOK_AUTHOR_TYPE, R.string.lbl_author_type),
             Map.entry(DBKey.BOOK_CONDITION, R.string.lbl_condition),
             Map.entry(DBKey.BOOK_CONDITION_COVER, R.string.lbl_dust_cover),
             Map.entry(DBKey.BOOK_ISBN, R.string.lbl_isbn),

@@ -293,10 +293,10 @@ public class FtsDaoImpl
             try (Cursor authors = db.rawQuery(Sql.GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
-                    colGivenNames = authors.getColumnIndexOrThrow(DBKey.AUTHOR_GIVEN_NAMES);
+                    colGivenNames = authors.getColumnIndexOrThrow(DBKey.AUTHOR.GIVEN_NAMES);
                 }
                 if (colFamilyName < 0) {
-                    colFamilyName = authors.getColumnIndexOrThrow(DBKey.AUTHOR_FAMILY_NAME);
+                    colFamilyName = authors.getColumnIndexOrThrow(DBKey.AUTHOR.FAMILY_NAME);
                 }
 
                 while (authors.moveToNext()) {
@@ -432,10 +432,10 @@ public class FtsDaoImpl
 
         /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_AUTHORS_BY_BOOK_ID =
-                SELECT_ + TBL_AUTHORS.dotAs(DBKey.AUTHOR_FAMILY_NAME, DBKey.AUTHOR_GIVEN_NAMES)
+                SELECT_ + TBL_AUTHORS.dotAs(DBKey.AUTHOR.FAMILY_NAME, DBKey.AUTHOR.GIVEN_NAMES)
                 + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION);
+                + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION);
 
         /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_PUBLISHERS_BY_BOOK_ID =

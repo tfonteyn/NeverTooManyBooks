@@ -473,7 +473,7 @@ public class EditBookViewModel
     List<String> getAllAuthorNames() {
         if (authorNamesFormatted == null) {
             authorNamesFormatted = ServiceLocator.getInstance().getAuthorDao()
-                                                 .getNames(DBKey.AUTHOR_FORMATTED);
+                                                 .getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME);
         }
         return authorNamesFormatted;
     }
@@ -487,7 +487,7 @@ public class EditBookViewModel
     List<String> getAllAuthorFamilyNames() {
         if (authorFamilyNames == null) {
             authorFamilyNames = ServiceLocator.getInstance().getAuthorDao()
-                                              .getNames(DBKey.AUTHOR_FAMILY_NAME);
+                                              .getNames(DBKey.AUTHOR.FAMILY_NAME);
         }
         return authorFamilyNames;
     }
@@ -501,7 +501,7 @@ public class EditBookViewModel
     List<String> getAllAuthorGivenNames() {
         if (authorGivenNames == null) {
             authorGivenNames = ServiceLocator.getInstance().getAuthorDao()
-                                             .getNames(DBKey.AUTHOR_GIVEN_NAMES);
+                                             .getNames(DBKey.AUTHOR.GIVEN_NAMES);
         }
         return authorGivenNames;
     }

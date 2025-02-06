@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 /**
  * Represents an Author.
  * <p>
- * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey#AUTHOR_TYPE__BITMASK}
+ * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey.AUTHOR#BOOK_AUTHOR_TYPE}
  * is based on <strong>global USAGE</strong>.
  *
  * <p>
@@ -321,12 +321,12 @@ public class Author
     public Author(final long id,
                   @NonNull final DataHolder rowData) {
         this.id = id;
-        familyName = rowData.getString(DBKey.AUTHOR_FAMILY_NAME);
-        givenNames = rowData.getString(DBKey.AUTHOR_GIVEN_NAMES);
-        complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
+        familyName = rowData.getString(DBKey.AUTHOR.FAMILY_NAME);
+        givenNames = rowData.getString(DBKey.AUTHOR.GIVEN_NAMES);
+        complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
 
-        if (rowData.contains(DBKey.AUTHOR_TYPE__BITMASK)) {
-            type = rowData.getInt(DBKey.AUTHOR_TYPE__BITMASK);
+        if (rowData.contains(DBKey.AUTHOR.BOOK_AUTHOR_TYPE)) {
+            type = rowData.getInt(DBKey.AUTHOR.BOOK_AUTHOR_TYPE);
         }
 
         if (rowData.contains(DBKey.FK_AUTHOR_REAL_AUTHOR)) {
@@ -724,7 +724,7 @@ public class Author
                     }
                 }
 
-                if (serviceLocator.isFieldEnabled(DBKey.AUTHOR_TYPE__BITMASK)) {
+                if (serviceLocator.isFieldEnabled(DBKey.AUTHOR.BOOK_AUTHOR_TYPE)) {
                     final String typeLabels = getTypeLabels(context);
                     if (!typeLabels.isEmpty()) {
                         label += smallerText(typeLabels);

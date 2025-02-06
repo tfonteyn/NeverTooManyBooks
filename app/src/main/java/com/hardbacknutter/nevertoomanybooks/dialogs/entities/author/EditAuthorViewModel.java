@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey#AUTHOR_TYPE__BITMASK}
+ * Visibility of the {@link DBKey#FK_AUTHOR_REAL_AUTHOR} and {@link DBKey.AUTHOR#BOOK_AUTHOR_TYPE}
  * is based on <strong>global USAGE</strong>.
  */
 @SuppressWarnings("WeakerAccess")
@@ -80,7 +80,7 @@ public class EditAuthorViewModel
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             useRealAuthorName = serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
-            useAuthorType = serviceLocator.isFieldEnabled(DBKey.AUTHOR_TYPE__BITMASK);
+            useAuthorType = serviceLocator.isFieldEnabled(DBKey.AUTHOR.BOOK_AUTHOR_TYPE);
 
             currentEdit = new Author(original, true);
             final Author tmp = currentEdit.getRealAuthor();

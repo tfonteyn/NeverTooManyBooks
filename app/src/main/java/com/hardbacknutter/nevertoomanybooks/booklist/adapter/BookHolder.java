@@ -239,7 +239,7 @@ public class BookHolder
 
         if (use.contains(DBKey.FK_AUTHOR)) {
             //ENHANCE: maybe add support for real-name
-            showOrHide(vb.author, rowData.getString(DBKey.AUTHOR_FORMATTED));
+            showOrHide(vb.author, rowData.getString(DBKey.AUTHOR.FORMATTED_FULL_NAME));
         }
 
         if (use.contains(DBKey.FK_SERIES)) {

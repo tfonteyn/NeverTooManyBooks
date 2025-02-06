@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -144,7 +144,7 @@ public class SearchBookByTextViewModel
         // search sites can cope with the formatted version.
         final List<String> dbNames =
                 ServiceLocator.getInstance().getAuthorDao()
-                              .getNames(DBKey.AUTHOR_FORMATTED_GIVEN_FIRST);
+                              .getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME_GIVEN_FIRST);
         return combineNames(context, dbNames, recentAuthorNames);
     }
 

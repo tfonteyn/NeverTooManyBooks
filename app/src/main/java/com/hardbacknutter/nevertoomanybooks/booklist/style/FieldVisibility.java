@@ -82,7 +82,7 @@ public class FieldVisibility {
             DBKey.LOANEE_NAME,
 
             // bit 8..11
-            DBKey.AUTHOR_TYPE__BITMASK,
+            DBKey.AUTHOR.BOOK_AUTHOR_TYPE,
             DBKey.BOOK_CONDITION,
             DBKey.BOOK_CONDITION_COVER,
             DBKey.BOOK_ISBN,

@@ -992,7 +992,7 @@ class BooklistBuilder {
                 final int primaryAuthorType = style.getPrimaryAuthorType();
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // The user has no specific type set, so just grab the first one (i.e. pos==1)
-                    sb.append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION)).append("=1");
+                    sb.append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1");
                 } else {
                     // grab the desired type, or if no such type, grab the first one anyway
                     //   (
@@ -1002,14 +1002,14 @@ class BooklistBuilder {
                     //   )
                     sb.append("(((")
                       // the type is an exact match
-                      .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
+                      .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_TYPE))
                       .append(" & ").append(primaryAuthorType).append(")<>0)")
                       .append(" OR (((")
                       // grab the first one
-                      .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
+                      .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_TYPE))
                       .append(" &~ ").append(primaryAuthorType).append(")=0)")
                       .append(_AND_)
-                      .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION)).append("=1))");
+                      .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1))");
                 }
             }
             // Join with Authors to make the names available

@@ -135,7 +135,7 @@ class EditTocEntryDelegate
                     context, R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic,
                     ServiceLocator.getInstance().getAuthorDao()
-                                  .getNames(DBKey.AUTHOR_FORMATTED));
+                                  .getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME));
             vb.author.setAdapter(authorAdapter);
             vb.author.setText(vm.getCurrentAuthorName());
             vb.author.selectAll();

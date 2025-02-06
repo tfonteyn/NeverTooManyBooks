@@ -65,33 +65,7 @@ public final class DBKey {
     public static final String BOOK_IDENTIFIER_SID = "sid";
 
 
-    /** {@link DBDefinitions#TBL_AUTHORS} */
-    public static final String AUTHOR_FAMILY_NAME = "family_name";
-    public static final String AUTHOR_GIVEN_NAMES = "given_names";
-    public static final String AUTHOR_IS_COMPLETE = "author_complete";
-
-
     /* Aliases for CASE expressions. */
-
-    /**
-     * Virtual column.
-     * <p>
-     * The first/family name order is determined in the SQL statement.
-     * Hence, reading the data from the cursor is <strong>always</strong>
-     * done using this key.
-     */
-    public static final String AUTHOR_FORMATTED = "author_formatted";
-    /**
-     * Virtual column: "GivenName FamilyName".
-     * <p>
-     * Only used for the special case.
-     * {@link com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment}
-     */
-    public static final String AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
-
-    /** {@link DBDefinitions#TBL_BOOK_AUTHOR}. */
-    public static final String AUTHOR_TYPE__BITMASK = "author_type";
-    public static final String BOOK_AUTHOR_POSITION = "author_position";
 
     /**
      * Foreign key.
@@ -222,8 +196,6 @@ public final class DBKey {
 
     /** Suffix added to a column name to create a specific 'order by' copy of that column. */
     private static final String ORDER_BY_SUFFIX = "_ob";
-    public static final String AUTHOR_FAMILY_NAME_OB = AUTHOR_FAMILY_NAME + ORDER_BY_SUFFIX;
-    public static final String AUTHOR_GIVEN_NAMES_OB = AUTHOR_GIVEN_NAMES + ORDER_BY_SUFFIX;
     public static final String TITLE_OB = TITLE + ORDER_BY_SUFFIX;
 
     /**
@@ -264,6 +236,48 @@ public final class DBKey {
         public static final String FILTER_VALUE = "filter_value";
 
         private BOOKSHELF() {
+        }
+    }
+
+    /**
+     * {@link DBDefinitions#TBL_AUTHORS}.
+     * {@link DBDefinitions#TBL_BOOK_AUTHOR}.
+     */
+    @SuppressWarnings("CheckStyle")
+    public static final class AUTHOR {
+
+        /** The name, as entered. */
+        public static final String FAMILY_NAME = "family_name";
+        /** The reordered name as per user preference for sorting. */
+        public static final String FAMILY_NAME_OB = FAMILY_NAME + ORDER_BY_SUFFIX;
+        /** The names, as entered. */
+        public static final String GIVEN_NAMES = "given_names";
+        /** The reordered name as per user preference for sorting. */
+        public static final String GIVEN_NAMES_OB = GIVEN_NAMES + ORDER_BY_SUFFIX;
+        /** Users "author is complete" flag. */
+        public static final String COMPLETE = "author_complete";
+        /**
+         * Virtual column.
+         * <p>
+         * The first/family name order is determined in the SQL statement.
+         * Hence, reading the data from the cursor is <strong>always</strong>
+         * done using this key.
+         */
+        public static final String FORMATTED_FULL_NAME = "author_formatted";
+        /**
+         * Virtual column: "GivenName FamilyName".
+         * <p>
+         * Only used for the special case.
+         * {@link com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment}
+         */
+        public static final String FORMATTED_FULL_NAME_GIVEN_FIRST = "author_formatted_given_first";
+
+        /** Bitmask of the type(s) of this author for a book. */
+        public static final String BOOK_AUTHOR_TYPE = "author_type";
+        /** The position in the ordered list of Authors for a book. */
+        public static final String BOOK_AUTHOR_POSITION = "author_position";
+
+        private AUTHOR() {
         }
     }
 

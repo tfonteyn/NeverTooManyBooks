@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -194,7 +194,7 @@ public class BookGridHolder
             vb.title.setText(rowData.getString(DBKey.TITLE));
             vb.title.setVisibility(View.VISIBLE);
             if (useAuthor) {
-                vb.author.setText(rowData.getString(DBKey.AUTHOR_FORMATTED));
+                vb.author.setText(rowData.getString(DBKey.AUTHOR.FORMATTED_FULL_NAME));
                 vb.author.setVisibility(View.VISIBLE);
             } else {
                 vb.author.setText(null);

@@ -500,7 +500,7 @@ public class Booklist
             if (sqlUpdateAuthorIsComplete == null) {
                 sqlUpdateAuthorIsComplete =
                         UPDATE_ + listTable.getName()
-                        + _SET_ + DBKey.AUTHOR_IS_COMPLETE + "=?"
+                        + _SET_ + DBKey.AUTHOR.COMPLETE + "=?"
                         + _WHERE_ + DBKey.FK_AUTHOR + "=?"
                         + _AND_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.AUTHOR;
             }

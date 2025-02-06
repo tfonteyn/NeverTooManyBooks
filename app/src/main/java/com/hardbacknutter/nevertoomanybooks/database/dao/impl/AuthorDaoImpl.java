@@ -176,16 +176,16 @@ public class AuthorDaoImpl
     @NonNull
     public List<String> getNames(@NonNull final String key) {
         switch (key) {
-            case DBKey.AUTHOR_FAMILY_NAME:
+            case DBKey.AUTHOR.FAMILY_NAME:
                 return getColumnAsStringArrayList(Sql.SELECT_ALL_FAMILY_NAMES);
 
-            case DBKey.AUTHOR_GIVEN_NAMES:
+            case DBKey.AUTHOR.GIVEN_NAMES:
                 return getColumnAsStringArrayList(Sql.SELECT_ALL_GIVEN_NAMES);
 
-            case DBKey.AUTHOR_FORMATTED:
+            case DBKey.AUTHOR.FORMATTED_FULL_NAME:
                 return getColumnAsStringArrayList(Sql.SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST);
 
-            case DBKey.AUTHOR_FORMATTED_GIVEN_FIRST:
+            case DBKey.AUTHOR.FORMATTED_FULL_NAME_GIVEN_FIRST:
                 return getColumnAsStringArrayList(Sql.SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST);
 
             default:
@@ -772,22 +772,22 @@ public class AuthorDaoImpl
         /** Insert an {@link Author}. */
         static final String INSERT =
                 INSERT_INTO_ + TBL_AUTHORS.getName()
-                + '(' + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_FAMILY_NAME_OB
-                + ',' + DBKey.AUTHOR_GIVEN_NAMES + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB
-                + ',' + DBKey.AUTHOR_IS_COMPLETE
+                + '(' + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.FAMILY_NAME_OB
+                + ',' + DBKey.AUTHOR.GIVEN_NAMES + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB
+                + ',' + DBKey.AUTHOR.COMPLETE
                 + ") VALUES (?,?,?,?,?)";
 
         /** Update an {@link Author}. */
         static final String UPDATE =
                 UPDATE_ + TBL_AUTHORS.getName()
-                + _SET_ + DBKey.AUTHOR_FAMILY_NAME + "=?," + DBKey.AUTHOR_FAMILY_NAME_OB + "=?"
-                + ',' + DBKey.AUTHOR_GIVEN_NAMES + "=?," + DBKey.AUTHOR_GIVEN_NAMES_OB + "=?"
-                + ',' + DBKey.AUTHOR_IS_COMPLETE + "=?"
+                + _SET_ + DBKey.AUTHOR.FAMILY_NAME + "=?," + DBKey.AUTHOR.FAMILY_NAME_OB + "=?"
+                + ',' + DBKey.AUTHOR.GIVEN_NAMES + "=?," + DBKey.AUTHOR.GIVEN_NAMES_OB + "=?"
+                + ',' + DBKey.AUTHOR.COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         static final String SET_COMPLETE =
                 UPDATE_ + TBL_AUTHORS.getName()
-                + _SET_ + DBKey.AUTHOR_IS_COMPLETE + "=?"
+                + _SET_ + DBKey.AUTHOR.COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete an {@link Author}. */
@@ -819,8 +819,8 @@ public class AuthorDaoImpl
                 INSERT_INTO_ + TBL_BOOK_AUTHOR.getName()
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_AUTHOR
-                + ',' + DBKey.BOOK_AUTHOR_POSITION
-                + ',' + DBKey.AUTHOR_TYPE__BITMASK
+                + ',' + DBKey.AUTHOR.BOOK_AUTHOR_POSITION
+                + ',' + DBKey.AUTHOR.BOOK_AUTHOR_TYPE
                 + ") VALUES(?,?,?,?)";
 
         /**
@@ -873,8 +873,8 @@ public class AuthorDaoImpl
          */
         static final String FIND_BY_NAME =
                 SELECT_ALL
-                + _WHERE_ + DBKey.AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
-                + _AND_ + DBKey.AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
+                + _WHERE_ + DBKey.AUTHOR.FAMILY_NAME_OB + "=?" + _COLLATION
+                + _AND_ + DBKey.AUTHOR.GIVEN_NAMES_OB + "=?" + _COLLATION;
 
         /**
          * All {@link Author}s for a {@link Book}.
@@ -882,18 +882,18 @@ public class AuthorDaoImpl
          */
         static final String FIND_BY_BOOK_ID =
                 SELECT_DISTINCT_ + TBL_AUTHORS.dotAs(DBKey.PK_ID,
-                                                     DBKey.AUTHOR_FAMILY_NAME,
-                                                     DBKey.AUTHOR_GIVEN_NAMES,
-                                                     DBKey.AUTHOR_IS_COMPLETE)
-                + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.BOOK_AUTHOR_POSITION,
-                                              DBKey.AUTHOR_TYPE__BITMASK)
+                                                     DBKey.AUTHOR.FAMILY_NAME,
+                                                     DBKey.AUTHOR.GIVEN_NAMES,
+                                                     DBKey.AUTHOR.COMPLETE)
+                + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.AUTHOR.BOOK_AUTHOR_POSITION,
+                                              DBKey.AUTHOR.BOOK_AUTHOR_TYPE)
 
                 + ',' + TBL_PSEUDONYM_AUTHOR.dotAs(DBKey.FK_AUTHOR_REAL_AUTHOR)
 
                 + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
                 + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR)
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION);
+                + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION);
 
         /** All {@link Book}s (id only!) for a given {@link Author}. */
         static final String FIND_BOOK_IDS_BY_AUTHOR_ID =
@@ -904,62 +904,62 @@ public class AuthorDaoImpl
 
         /** Column definition for sorting by given-names first. */
         static final String SORT_AUTHOR_GIVEN_FIRST =
-                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
-                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
-                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
-                + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
+                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB) + "=''"
+                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
+                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)
+                + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
                 + _END;
 
         /** Column definition for sorting by family-name first. */
         static final String SORT_AUTHOR_FAMILY_FIRST =
-                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
-                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
-                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
-                + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
+                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB) + "=''"
+                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
+                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
+                + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES_OB)
                 + _END;
 
         /** Column definition for displaying by given-names first. */
         static final String DISPLAY_AUTHOR_GIVEN_FIRST =
-                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES) + "=''"
-                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
-                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES)
-                + "||' '||" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
+                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES) + "=''"
+                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
+                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)
+                + "||' '||" + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
                 + _END;
 
         /** Get a list of {@link Author} "given family" names for use in a dropdown selection. */
         static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
                 SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST
                 + _FROM_ + TBL_AUTHORS.ref()
-                + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
-                + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+                + _ORDER_BY_ + DBKey.AUTHOR.FAMILY_NAME_OB + _COLLATION
+                + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + _COLLATION;
 
         /** Column definition for displaying by family-name first. */
         static final String DISPLAY_AUTHOR_FAMILY_FIRST =
-                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES) + "=''"
-                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
-                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
-                + "||', '||" + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES)
+                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES) + "=''"
+                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
+                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME)
+                + "||', '||" + TBL_AUTHORS.dot(DBKey.AUTHOR.GIVEN_NAMES)
                 + _END;
 
         /** Get a list of {@link Author} "family, given" names for use in a dropdown selection. */
         static final String SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST =
                 SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST
                 + _FROM_ + TBL_AUTHORS.ref()
-                + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
-                + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+                + _ORDER_BY_ + DBKey.AUTHOR.FAMILY_NAME_OB + _COLLATION
+                + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + _COLLATION;
 
         /** Get a list of {@link Author} family names for use in a dropdown selection. */
         static final String SELECT_ALL_FAMILY_NAMES =
-                SELECT_DISTINCT_ + DBKey.AUTHOR_FAMILY_NAME
+                SELECT_DISTINCT_ + DBKey.AUTHOR.FAMILY_NAME
                 + _FROM_ + TBL_AUTHORS.getName()
-                + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION;
+                + _ORDER_BY_ + DBKey.AUTHOR.FAMILY_NAME_OB + _COLLATION;
 
         /** Get a list of {@link Author} given names for use in a dropdown selection. */
         static final String SELECT_ALL_GIVEN_NAMES =
-                SELECT_DISTINCT_ + DBKey.AUTHOR_GIVEN_NAMES
+                SELECT_DISTINCT_ + DBKey.AUTHOR.GIVEN_NAMES
                 + _FROM_ + TBL_AUTHORS.getName()
-                + _WHERE_ + DBKey.AUTHOR_GIVEN_NAMES_OB + "<> ''"
-                + _ORDER_BY_ + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+                + _WHERE_ + DBKey.AUTHOR.GIVEN_NAMES_OB + "<> ''"
+                + _ORDER_BY_ + DBKey.AUTHOR.GIVEN_NAMES_OB + _COLLATION;
 
         /**
          * All Book titles and their first pub. date, for an Author,
@@ -1007,7 +1007,7 @@ public class AuthorDaoImpl
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
                 + '(' + SELECT_ + DBKey.FK_BOOK
-                + ",MIN(" + DBKey.BOOK_AUTHOR_POSITION + ')' + _AS_ + "mp"
+                + ",MIN(" + DBKey.AUTHOR.BOOK_AUTHOR_POSITION + ')' + _AS_ + "mp"
                 + _FROM_ + TBL_BOOK_AUTHOR.getName()
                 + _GROUP_BY_ + DBKey.FK_BOOK
                 + ')'

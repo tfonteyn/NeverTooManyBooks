@@ -39,16 +39,16 @@ public class AuthorCoder
         final JSONObject out = new JSONObject();
 
         out.put(DBKey.PK_ID, author.getId());
-        out.put(DBKey.AUTHOR_FAMILY_NAME, author.getFamilyName());
+        out.put(DBKey.AUTHOR.FAMILY_NAME, author.getFamilyName());
 
         if (!author.getGivenNames().isEmpty()) {
-            out.put(DBKey.AUTHOR_GIVEN_NAMES, author.getGivenNames());
+            out.put(DBKey.AUTHOR.GIVEN_NAMES, author.getGivenNames());
         }
         if (author.isComplete()) {
-            out.put(DBKey.AUTHOR_IS_COMPLETE, true);
+            out.put(DBKey.AUTHOR.COMPLETE, true);
         }
         if (author.getType() != Author.TYPE_UNKNOWN) {
-            out.put(DBKey.AUTHOR_TYPE__BITMASK, author.getType());
+            out.put(DBKey.AUTHOR.BOOK_AUTHOR_TYPE, author.getType());
         }
         if (author.getRealAuthor() != null) {
             out.put(DBKey.FK_AUTHOR_REAL_AUTHOR, encode(author.getRealAuthor()));
@@ -62,20 +62,20 @@ public class AuthorCoder
     public Author decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final Author author = new Author(data.getString(DBKey.AUTHOR_FAMILY_NAME),
+        final Author author = new Author(data.getString(DBKey.AUTHOR.FAMILY_NAME),
                                          // optional
-                                         data.optString(DBKey.AUTHOR_GIVEN_NAMES));
+                                         data.optString(DBKey.AUTHOR.GIVEN_NAMES));
 
         author.setId(data.getLong(DBKey.PK_ID));
 
-        if (data.has(DBKey.AUTHOR_IS_COMPLETE)) {
-            author.setComplete(data.getBoolean(DBKey.AUTHOR_IS_COMPLETE));
+        if (data.has(DBKey.AUTHOR.COMPLETE)) {
+            author.setComplete(data.getBoolean(DBKey.AUTHOR.COMPLETE));
         } else if (data.has("complete")) {
             author.setComplete(data.getBoolean("complete"));
         }
 
-        if (data.has(DBKey.AUTHOR_TYPE__BITMASK)) {
-            author.setType(data.getInt(DBKey.AUTHOR_TYPE__BITMASK));
+        if (data.has(DBKey.AUTHOR.BOOK_AUTHOR_TYPE)) {
+            author.setType(data.getInt(DBKey.AUTHOR.BOOK_AUTHOR_TYPE));
         } else if (data.has("type")) {
             author.setType(data.getInt("type"));
         }

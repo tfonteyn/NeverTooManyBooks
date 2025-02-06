@@ -739,40 +739,40 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_AUTHOR_FAMILY_NAME =
-                new Domain.Builder(DBKey.AUTHOR_FAMILY_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.AUTHOR.FAMILY_NAME, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
         DOM_AUTHOR_FAMILY_NAME_OB =
-                new Domain.Builder(DBKey.AUTHOR_FAMILY_NAME_OB, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.AUTHOR.FAMILY_NAME_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_AUTHOR_GIVEN_NAMES =
-                new Domain.Builder(DBKey.AUTHOR_GIVEN_NAMES, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.AUTHOR.GIVEN_NAMES, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_AUTHOR_GIVEN_NAMES_OB =
-                new Domain.Builder(DBKey.AUTHOR_GIVEN_NAMES_OB, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.AUTHOR.GIVEN_NAMES_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_AUTHOR_IS_COMPLETE =
-                new Domain.Builder(DBKey.AUTHOR_IS_COMPLETE, SqLiteDataType.Boolean)
+                new Domain.Builder(DBKey.AUTHOR.COMPLETE, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_AUTHOR_FORMATTED =
-                new Domain.Builder(DBKey.AUTHOR_FORMATTED, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.AUTHOR.FORMATTED_FULL_NAME, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
@@ -1190,13 +1190,13 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_AUTHOR_TYPE_BITMASK =
-                new Domain.Builder(DBKey.AUTHOR_TYPE__BITMASK, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.AUTHOR.BOOK_AUTHOR_TYPE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Author.TYPE_UNKNOWN)
                         .build();
 
         DOM_BOOK_AUTHOR_POSITION =
-                new Domain.Builder(DBKey.BOOK_AUTHOR_POSITION, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.AUTHOR.BOOK_AUTHOR_POSITION, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
@@ -1492,10 +1492,10 @@ public final class DBDefinitions {
                             DOM_AUTHOR_GIVEN_NAMES_OB,
                             DOM_AUTHOR_IS_COMPLETE)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
-                .addIndex(DBKey.AUTHOR_FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
-                .addIndex(DBKey.AUTHOR_GIVEN_NAMES_OB, false, DOM_AUTHOR_GIVEN_NAMES_OB)
-                .addIndex(DBKey.AUTHOR_GIVEN_NAMES, false, DOM_AUTHOR_GIVEN_NAMES);
+                .addIndex(DBKey.AUTHOR.FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
+                .addIndex(DBKey.AUTHOR.FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
+                .addIndex(DBKey.AUTHOR.GIVEN_NAMES_OB, false, DOM_AUTHOR_GIVEN_NAMES_OB)
+                .addIndex(DBKey.AUTHOR.GIVEN_NAMES, false, DOM_AUTHOR_GIVEN_NAMES);
         ALL_TABLES.put(TBL_AUTHORS.getName(), TBL_AUTHORS);
 
         TBL_SERIES

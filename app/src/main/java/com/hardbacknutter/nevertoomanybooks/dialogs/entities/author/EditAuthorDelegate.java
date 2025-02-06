@@ -150,7 +150,7 @@ class EditAuthorDelegate
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKey.AUTHOR_FAMILY_NAME));
+                authorDao.getNames(DBKey.AUTHOR.FAMILY_NAME));
         vb.familyName.setText(currentEdit.getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
         TilUtil.autoRemoveError(vb.familyName, vb.lblFamilyName);
@@ -158,7 +158,7 @@ class EditAuthorDelegate
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKey.AUTHOR_GIVEN_NAMES));
+                authorDao.getNames(DBKey.AUTHOR.GIVEN_NAMES));
         vb.givenNames.setText(currentEdit.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
 
@@ -178,7 +178,7 @@ class EditAuthorDelegate
             final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
                     context, R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic,
-                    authorDao.getNames(DBKey.AUTHOR_FORMATTED));
+                    authorDao.getNames(DBKey.AUTHOR.FORMATTED_FULL_NAME));
             vb.realAuthor.setText(vm.getCurrentRealAuthorName(), false);
             vb.realAuthor.setAdapter(realNameAdapter);
             TilUtil.autoRemoveError(vb.realAuthor, vb.lblRealAuthor);

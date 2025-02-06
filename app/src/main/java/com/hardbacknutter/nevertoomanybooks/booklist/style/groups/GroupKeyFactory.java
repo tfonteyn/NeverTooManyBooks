@@ -395,7 +395,7 @@ public final class GroupKeyFactory {
                                                     .notNull()
                                                     .build(),
                                             "UPPER(SUBSTR("
-                                            + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
+                                            + TBL_AUTHORS.dot(DBKey.AUTHOR.FAMILY_NAME_OB)
                                             + ",1,1))",
                                             Sort.Asc));
             }

@@ -302,9 +302,9 @@ public final class LegacyUpgrades {
         // find the names for duplicate author; i.e. identical family and given names.
         final List<Pair<String, String>> authors = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
-                "SELECT " + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_GIVEN_NAMES
+                "SELECT " + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
                 + " FROM " + TBL_AUTHORS.getName()
-                + " GROUP BY " + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_GIVEN_NAMES
+                + " GROUP BY " + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
                 + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
             while (cursor.moveToNext()) {
                 authors.add(new Pair<>(cursor.getString(0), cursor.getString(1)));
@@ -319,8 +319,8 @@ public final class LegacyUpgrades {
         for (final Pair<String, String> a : authors) {
             try (Cursor cursor = db.rawQuery(
                     "SELECT " + DBKey.PK_ID + " FROM " + TBL_AUTHORS.getName()
-                    + " WHERE " + DBKey.AUTHOR_FAMILY_NAME + "=?"
-                    + " AND " + DBKey.AUTHOR_GIVEN_NAMES + "=?",
+                    + " WHERE " + DBKey.AUTHOR.FAMILY_NAME + "=?"
+                    + " AND " + DBKey.AUTHOR.GIVEN_NAMES + "=?",
                     new String[]{a.first, a.second})) {
                 final List<Long> ids = new ArrayList<>();
                 while (cursor.moveToNext()) {

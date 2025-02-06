@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,14 +75,14 @@ public class AuthorCoder
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
 
-                if (details.has(DBKey.AUTHOR_IS_COMPLETE)) {
-                    author.setComplete(details.optBoolean(DBKey.AUTHOR_IS_COMPLETE));
+                if (details.has(DBKey.AUTHOR.COMPLETE)) {
+                    author.setComplete(details.optBoolean(DBKey.AUTHOR.COMPLETE));
                 } else if (details.has("complete")) {
                     author.setComplete(details.optBoolean("complete"));
                 }
 
-                if (details.has(DBKey.AUTHOR_TYPE__BITMASK)) {
-                    author.setType(details.optInt(DBKey.AUTHOR_TYPE__BITMASK));
+                if (details.has(DBKey.AUTHOR.BOOK_AUTHOR_TYPE)) {
+                    author.setType(details.optInt(DBKey.AUTHOR.BOOK_AUTHOR_TYPE));
                 } else if (details.has("type")) {
                     author.setType(details.optInt("type"));
                 }
