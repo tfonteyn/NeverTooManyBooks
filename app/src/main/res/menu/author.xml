@@ -24,7 +24,7 @@
 
     <item
         android:id="@id/MENU_AUTHOR_WORKS_LIST"
-        android:icon="@drawable/details_24px"
+        android:icon="@drawable/person_24px"
         android:title="@string/option_author_details" />
 
     <item
