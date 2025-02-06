@@ -232,7 +232,7 @@ public class Identifier
                                "https://www.bl.uk",
                                null),
                 // bookUrl: 2025-01-29
-                new Identifier(SID_DNB, TYPE_LONG,
+                new Identifier(SID_DNB, TYPE_STRING,
                                context.getString(R.string.identifier_dnb),
                                "https://www.dnb.de",
                                "https://d-nb.info/%s"),
