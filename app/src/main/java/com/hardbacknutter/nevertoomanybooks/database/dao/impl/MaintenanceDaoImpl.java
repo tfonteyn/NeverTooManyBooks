@@ -60,13 +60,13 @@ public class MaintenanceDaoImpl
     /** Log tag. */
     private static final String TAG = "MaintenanceDaoImpl";
 
-    /** All Series for a rebuild of the {@link DBKey#SERIES_TITLE_OB} column. */
+    /** All Series for a rebuild of the {@link DBKey.SERIES#TITLE_OB} column. */
     private static final String SELECT_SERIES_FOR_ORDER_BY_REBUILD =
             // The index of PK_ID, SERIES_TITLE, SERIES_TITLE_OB is hardcoded
             // Don't change!
             SELECT_ + DBKey.PK_ID
-            + ',' + DBKey.SERIES_TITLE
-            + ',' + DBKey.SERIES_TITLE_OB
+            + ',' + DBKey.SERIES.TITLE
+            + ',' + DBKey.SERIES.TITLE_OB
             + _FROM_ + TBL_SERIES.getName();
 
     /** All Publishers for a rebuild of the {@link DBKey.PUBLISHER#NAME_OB} column. */
@@ -191,7 +191,7 @@ public class MaintenanceDaoImpl
             try (Cursor cursor = db.rawQuery(SELECT_SERIES_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, locales,
-                                               cursor, TBL_SERIES, DBKey.SERIES_TITLE_OB);
+                                               cursor, TBL_SERIES, DBKey.SERIES.TITLE_OB);
                 }
             }
 

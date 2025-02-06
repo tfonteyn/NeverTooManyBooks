@@ -305,7 +305,7 @@ public class SearchBookByTextFragment
             // do NOT use {@code Book.BKEY_SERIES_LIST}, that's reserved for verified names.
             book.putString(SearchCriteria.BKEY_SEARCH_TEXT_SERIES,
                            coordinator.getSeriesSearchText());
-            book.putString(DBKey.BOOK_SERIES_NUMBER,
+            book.putString(DBKey.SERIES.BOOK_SERIES_NUMBER,
                            coordinator.getSeriesNrSearchText());
         }
 

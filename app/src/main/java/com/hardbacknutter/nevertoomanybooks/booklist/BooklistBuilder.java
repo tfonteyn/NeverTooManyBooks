@@ -1025,7 +1025,7 @@ class BooklistBuilder {
             // the user wants the book to show under all its Series
             if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Series.getGroupId())) {
                 sb.append(_AND_)
-                  .append(TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION))
+                  .append(TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_POSITION))
                   .append("=1");
             }
             // Join with Series to make the titles available

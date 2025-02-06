@@ -116,7 +116,7 @@ public class BooksOnBookshelfViewModel
             Map.entry(BooklistGroup.SERIES,
                       new BLGRecord(DBKey.FK_SERIES,
                                     R.string.lbl_series,
-                                    DBKey.SERIES_TITLE,
+                                    DBKey.SERIES.TITLE,
                                     R.string.bob_empty_series)),
             Map.entry(BooklistGroup.PUBLISHER,
                       new BLGRecord(DBKey.FK_PUBLISHER,

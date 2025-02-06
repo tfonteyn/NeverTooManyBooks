@@ -530,7 +530,7 @@ public class Booklist
             if (sqlUpdateSeriesIsComplete == null) {
                 sqlUpdateSeriesIsComplete =
                         UPDATE_ + listTable.getName()
-                        + _SET_ + DBKey.SERIES_IS_COMPLETE + "=?"
+                        + _SET_ + DBKey.SERIES.COMPLETE + "=?"
                         + _WHERE_ + DBKey.FK_SERIES + "=?"
                         + _AND_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.SERIES;
             }

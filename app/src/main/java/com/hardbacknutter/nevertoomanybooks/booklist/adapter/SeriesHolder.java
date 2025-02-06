@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ public class SeriesHolder
     public void onBind(@NonNull final DataHolder rowData) {
         super.onBind(rowData);
 
-        completeView.setVisibility(rowData.getBoolean(DBKey.SERIES_IS_COMPLETE)
+        completeView.setVisibility(rowData.getBoolean(DBKey.SERIES.COMPLETE)
                                    ? View.VISIBLE : View.GONE);
     }
 }

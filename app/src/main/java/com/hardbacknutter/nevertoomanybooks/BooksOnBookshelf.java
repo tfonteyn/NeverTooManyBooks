@@ -2142,7 +2142,7 @@ public class BooksOnBookshelf
                 inflater.inflate(R.menu.series, menu);
                 vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
 
-                final boolean complete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
+                final boolean complete = rowData.getBoolean(DBKey.SERIES.COMPLETE);
                 menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
                 menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
@@ -2184,7 +2184,7 @@ public class BooksOnBookshelf
                 || menuItemId == R.id.MENU_SERIES_SET_INCOMPLETE) {
                 final Series series = DataHolderUtils.requireSeries(rowData);
                 // toggle the complete status
-                final boolean status = !rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
+                final boolean status = !rowData.getBoolean(DBKey.SERIES.COMPLETE);
                 vm.setSeriesComplete(series, status);
                 return true;
 

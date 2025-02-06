@@ -210,7 +210,7 @@ public final class GroupKeyFactory {
                                                 BooklistGroup.BlgDBKey.SORT_SERIES_TITLE,
                                                 SqLiteDataType.Text)
                                                 .build(),
-                                        TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
+                                        TBL_SERIES.dot(DBKey.SERIES.TITLE_OB),
                                         Sort.Asc))
                         .addGroupDomain(
                                 new DomainExpression(DOM_FK_SERIES,
@@ -233,7 +233,7 @@ public final class GroupKeyFactory {
                                                 SqLiteDataType.Real)
                                                 .build(),
                                         "CAST("
-                                        + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_NUMBER)
+                                        + TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_NUMBER)
                                         + " AS REAL)",
                                         Sort.Asc))
                         .addBaseDomain(
@@ -242,7 +242,7 @@ public final class GroupKeyFactory {
                                 // Covers non-numeric data (where the above float would fail)
                                 new DomainExpression(
                                         DOM_BOOK_SERIES_NUMBER,
-                                        TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_NUMBER),
+                                        TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_NUMBER),
                                         Sort.Asc));
             }
 
@@ -410,7 +410,7 @@ public final class GroupKeyFactory {
                                                     .notNull()
                                                     .build(),
                                             "UPPER(SUBSTR("
-                                            + TBL_SERIES.dot(DBKey.SERIES_TITLE_OB)
+                                            + TBL_SERIES.dot(DBKey.SERIES.TITLE_OB)
                                             + ",1,1))",
                                             Sort.Asc));
             }

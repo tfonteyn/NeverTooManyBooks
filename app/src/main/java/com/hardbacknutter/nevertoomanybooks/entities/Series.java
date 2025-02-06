@@ -248,11 +248,11 @@ public class Series
     public Series(final long id,
                   @NonNull final DataHolder rowData) {
         this.id = id;
-        title = rowData.getString(DBKey.SERIES_TITLE);
-        complete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
+        title = rowData.getString(DBKey.SERIES.TITLE);
+        complete = rowData.getBoolean(DBKey.SERIES.COMPLETE);
         // optional domain, not always used.
-        if (rowData.contains(DBKey.BOOK_SERIES_NUMBER)) {
-            number = rowData.getString(DBKey.BOOK_SERIES_NUMBER);
+        if (rowData.contains(DBKey.SERIES.BOOK_SERIES_NUMBER)) {
+            number = rowData.getString(DBKey.SERIES.BOOK_SERIES_NUMBER);
         } else {
             number = "";
         }

@@ -430,11 +430,11 @@ public class BookHolder
      * @param rowData with the data
      */
     private void showOrHideSeriesText(@NonNull final DataHolder rowData) {
-        if (rowData.contains(DBKey.SERIES_TITLE)) {
-            String seriesTitle = rowData.getString(DBKey.SERIES_TITLE);
+        if (rowData.contains(DBKey.SERIES.TITLE)) {
+            String seriesTitle = rowData.getString(DBKey.SERIES.TITLE);
             if (!seriesTitle.isBlank()) {
-                if (rowData.contains(DBKey.BOOK_SERIES_NUMBER)) {
-                    final String number = rowData.getString(DBKey.BOOK_SERIES_NUMBER);
+                if (rowData.contains(DBKey.SERIES.BOOK_SERIES_NUMBER)) {
+                    final String number = rowData.getString(DBKey.SERIES.BOOK_SERIES_NUMBER);
                     if (!number.isBlank()) {
                         seriesTitle = String.format(locale, a_bracket_b_bracket,
                                                     seriesTitle, number);
@@ -460,8 +460,8 @@ public class BookHolder
      * @param rowData with the data
      */
     private void showOrHideSeriesNumber(@NonNull final DataHolder rowData) {
-        if (rowData.contains(DBKey.BOOK_SERIES_NUMBER)) {
-            final String number = rowData.getString(DBKey.BOOK_SERIES_NUMBER);
+        if (rowData.contains(DBKey.SERIES.BOOK_SERIES_NUMBER)) {
+            final String number = rowData.getString(DBKey.SERIES.BOOK_SERIES_NUMBER);
             if (!number.isBlank()) {
                 // Display it in one of the views, based on the size of the text.
                 if (number.length() > SHORT_SERIES_NUMBER) {

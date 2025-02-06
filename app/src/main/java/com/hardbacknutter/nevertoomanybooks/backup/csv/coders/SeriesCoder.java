@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,8 +52,8 @@ public class SeriesCoder
         if (parts.size() > 1) {
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
-                if (details.has(DBKey.SERIES_IS_COMPLETE)) {
-                    series.setComplete(details.optBoolean(DBKey.SERIES_IS_COMPLETE));
+                if (details.has(DBKey.SERIES.COMPLETE)) {
+                    series.setComplete(details.optBoolean(DBKey.SERIES.COMPLETE));
                 } else if (details.has("complete")) {
                     series.setComplete(details.optBoolean("complete"));
                 }

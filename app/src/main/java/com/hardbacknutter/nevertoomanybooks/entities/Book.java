@@ -898,9 +898,9 @@ public class Book
         if (seriesList.isEmpty()) {
             final String searchText = getString(SearchCriteria.BKEY_SEARCH_TEXT_SERIES);
             if (!searchText.isEmpty()) {
-                seriesList.add(Series.from(searchText, getString(DBKey.BOOK_SERIES_NUMBER)));
+                seriesList.add(Series.from(searchText, getString(DBKey.SERIES.BOOK_SERIES_NUMBER)));
                 remove(SearchCriteria.BKEY_SEARCH_TEXT_SERIES);
-                remove(DBKey.BOOK_SERIES_NUMBER);
+                remove(DBKey.SERIES.BOOK_SERIES_NUMBER);
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }

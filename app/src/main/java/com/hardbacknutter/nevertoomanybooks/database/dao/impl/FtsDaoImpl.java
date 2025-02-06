@@ -317,7 +317,7 @@ public class FtsDaoImpl
             try (Cursor series = db.rawQuery(Sql.GET_SERIES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colSeriesTitle < 0) {
-                    colSeriesTitle = series.getColumnIndexOrThrow(DBKey.SERIES_TITLE);
+                    colSeriesTitle = series.getColumnIndexOrThrow(DBKey.SERIES.TITLE);
                 }
 
                 while (series.moveToNext()) {
@@ -381,7 +381,7 @@ public class FtsDaoImpl
         static final String INSERT_BODY =
                 " (" + DBKey.TITLE
                 + ',' + DBKey.FTS.AUTHOR_NAME
-                + ',' + DBKey.SERIES_TITLE
+                + ',' + DBKey.SERIES.TITLE
                 + ',' + DBKey.DESCRIPTION
                 + ',' + DBKey.PERSONAL_NOTES
                 + ',' + DBKey.PUBLISHER.NAME
@@ -407,7 +407,7 @@ public class FtsDaoImpl
                 UPDATE_ + TBL_FTS_BOOKS.getName()
                 + _SET_ + DBKey.TITLE + "=?"
                 + ',' + DBKey.FTS.AUTHOR_NAME + "=?"
-                + ',' + DBKey.SERIES_TITLE + "=?"
+                + ',' + DBKey.SERIES.TITLE + "=?"
                 + ',' + DBKey.DESCRIPTION + "=?"
                 + ',' + DBKey.PERSONAL_NOTES + "=?"
                 + ',' + DBKey.PUBLISHER.NAME + "=?"
@@ -453,12 +453,12 @@ public class FtsDaoImpl
 
         /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_SERIES_BY_BOOK_ID =
-                SELECT_ + TBL_SERIES.dot(DBKey.SERIES_TITLE) + "||' '||"
-                + " COALESCE(" + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_NUMBER) + ",'')"
-                + _AS_ + DBKey.SERIES_TITLE
+                SELECT_ + TBL_SERIES.dot(DBKey.SERIES.TITLE) + "||' '||"
+                + " COALESCE(" + TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_NUMBER) + ",'')"
+                + _AS_ + DBKey.SERIES.TITLE
                 + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_SERIES)
                 + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_BOOK) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION);
+                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_POSITION);
 
         /** Advanced Local-search. */
         static final String SEARCH =

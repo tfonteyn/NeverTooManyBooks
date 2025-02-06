@@ -793,20 +793,20 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_SERIES_TITLE =
-                new Domain.Builder(DBKey.SERIES_TITLE, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.SERIES.TITLE, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
         DOM_SERIES_TITLE_OB =
-                new Domain.Builder(DBKey.SERIES_TITLE_OB, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.SERIES.TITLE_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_SERIES_IS_COMPLETE =
-                new Domain.Builder(DBKey.SERIES_IS_COMPLETE, SqLiteDataType.Boolean)
+                new Domain.Builder(DBKey.SERIES.COMPLETE, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
@@ -1201,12 +1201,12 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_SERIES_POSITION =
-                new Domain.Builder(DBKey.BOOK_SERIES_POSITION, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.SERIES.BOOK_SERIES_POSITION, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
         DOM_BOOK_SERIES_NUMBER =
-                new Domain.Builder(DBKey.BOOK_SERIES_NUMBER, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.SERIES.BOOK_SERIES_NUMBER, SqLiteDataType.Text)
                         .localized()
                         .build();
 
@@ -1505,8 +1505,8 @@ public final class DBDefinitions {
                             DOM_SERIES_IS_COMPLETE)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("id", true, DOM_PK_ID)
-                .addIndex(DBKey.SERIES_TITLE_OB, false, DOM_SERIES_TITLE_OB)
-                .addIndex(DBKey.SERIES_TITLE, false, DOM_SERIES_TITLE);
+                .addIndex(DBKey.SERIES.TITLE_OB, false, DOM_SERIES_TITLE_OB)
+                .addIndex(DBKey.SERIES.TITLE, false, DOM_SERIES_TITLE);
         ALL_TABLES.put(TBL_SERIES.getName(), TBL_SERIES);
 
         TBL_PUBLISHERS

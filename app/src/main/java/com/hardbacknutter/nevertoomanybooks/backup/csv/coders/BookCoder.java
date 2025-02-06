@@ -344,16 +344,16 @@ public class BookCoder {
         processSeries(book, seriesCoder, CSV_COLUMN_SERIES, list);
 
         // check for individual series title/number fields in the input
-        if (book.contains(DBKey.SERIES_TITLE)) {
-            final String title = book.getString(DBKey.SERIES_TITLE, null);
+        if (book.contains(DBKey.SERIES.TITLE)) {
+            final String title = book.getString(DBKey.SERIES.TITLE, null);
             if (title != null && !title.isEmpty()) {
                 final Series series = new Series(title);
                 // number will be "" if it's not present
-                series.setNumber(book.getString(DBKey.BOOK_SERIES_NUMBER, null));
+                series.setNumber(book.getString(DBKey.SERIES.BOOK_SERIES_NUMBER, null));
                 list.add(series);
             }
-            book.remove(DBKey.SERIES_TITLE);
-            book.remove(DBKey.BOOK_SERIES_NUMBER);
+            book.remove(DBKey.SERIES.TITLE);
+            book.remove(DBKey.SERIES.BOOK_SERIES_NUMBER);
         }
 
         Series.checkForSeriesNameInTitle(book);

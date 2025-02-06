@@ -527,22 +527,22 @@ public class SeriesDaoImpl
         /** Insert a {@link Series}. */
         static final String INSERT =
                 INSERT_INTO_ + TBL_SERIES.getName()
-                + '(' + DBKey.SERIES_TITLE
-                + ',' + DBKey.SERIES_TITLE_OB
-                + ',' + DBKey.SERIES_IS_COMPLETE
+                + '(' + DBKey.SERIES.TITLE
+                + ',' + DBKey.SERIES.TITLE_OB
+                + ',' + DBKey.SERIES.COMPLETE
                 + ") VALUES (?,?,?)";
 
         /** Update a {@link Series}. */
         static final String UPDATE =
                 UPDATE_ + TBL_SERIES.getName()
-                + _SET_ + DBKey.SERIES_TITLE + "=?"
-                + ',' + DBKey.SERIES_TITLE_OB + "=?"
-                + ',' + DBKey.SERIES_IS_COMPLETE + "=?"
+                + _SET_ + DBKey.SERIES.TITLE + "=?"
+                + ',' + DBKey.SERIES.TITLE_OB + "=?"
+                + ',' + DBKey.SERIES.COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         static final String SET_COMPLETE =
                 UPDATE_ + TBL_SERIES.getName()
-                + _SET_ + DBKey.SERIES_IS_COMPLETE + "=?"
+                + _SET_ + DBKey.SERIES.COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Series}. */
@@ -562,8 +562,8 @@ public class SeriesDaoImpl
                 INSERT_INTO_ + TBL_BOOK_SERIES.getName()
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_SERIES
-                + ',' + DBKey.BOOK_SERIES_NUMBER
-                + ',' + DBKey.BOOK_SERIES_POSITION
+                + ',' + DBKey.SERIES.BOOK_SERIES_NUMBER
+                + ',' + DBKey.SERIES.BOOK_SERIES_POSITION
                 + ") VALUES(?,?,?,?)";
         /**
          * Delete the link between a {@link Book} and a {@link Series}.
@@ -596,8 +596,8 @@ public class SeriesDaoImpl
          */
         static final String FIND_BY_NAME =
                 SELECT_ALL
-                + _WHERE_ + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION
-                + _OR_ + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION;
+                + _WHERE_ + DBKey.SERIES.TITLE_OB + "=?" + _COLLATION
+                + _OR_ + DBKey.SERIES.TITLE_OB + "=?" + _COLLATION;
 
         /**
          * All {@link Series}s for a {@link Book}.
@@ -605,15 +605,15 @@ public class SeriesDaoImpl
          */
         static final String FIND_BY_BOOK_ID =
                 SELECT_DISTINCT_ + TBL_SERIES.dotAs(DBKey.PK_ID,
-                                                    DBKey.SERIES_TITLE,
-                                                    DBKey.SERIES_TITLE_OB,
-                                                    DBKey.SERIES_IS_COMPLETE)
-                + ',' + TBL_BOOK_SERIES.dotAs(DBKey.BOOK_SERIES_NUMBER,
-                                              DBKey.BOOK_SERIES_POSITION)
+                                                    DBKey.SERIES.TITLE,
+                                                    DBKey.SERIES.TITLE_OB,
+                                                    DBKey.SERIES.COMPLETE)
+                + ',' + TBL_BOOK_SERIES.dotAs(DBKey.SERIES.BOOK_SERIES_NUMBER,
+                                              DBKey.SERIES.BOOK_SERIES_POSITION)
 
                 + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_SERIES)
                 + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_BOOK) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION);
+                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_POSITION);
 
 
         /** All {@link Book}s (id only) for a given {@link Series}. */
@@ -624,10 +624,10 @@ public class SeriesDaoImpl
 
         /** Get a list of {@link Series} names for use in a dropdown selection. */
         static final String SELECT_ALL_NAMES =
-                SELECT_DISTINCT_ + DBKey.SERIES_TITLE
-                + ',' + DBKey.SERIES_TITLE_OB
+                SELECT_DISTINCT_ + DBKey.SERIES.TITLE
+                + ',' + DBKey.SERIES.TITLE_OB
                 + _FROM_ + TBL_SERIES.getName()
-                + _ORDER_BY_ + DBKey.SERIES_TITLE_OB + _COLLATION;
+                + _ORDER_BY_ + DBKey.SERIES.TITLE_OB + _COLLATION;
 
         /**
          * Get the language (ISO3) code for a Series.
@@ -637,14 +637,14 @@ public class SeriesDaoImpl
                 SELECT_ + TBL_BOOKS.dotAs(DBKey.LANGUAGE)
                 + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_BOOKS)
                 + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_SERIES) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_NUMBER)
+                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_NUMBER)
                 + " LIMIT 1";
 
         static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
                 + '(' + SELECT_ + DBKey.FK_BOOK
-                + ",MIN(" + DBKey.BOOK_SERIES_POSITION + ')' + _AS_ + "mp"
+                + ",MIN(" + DBKey.SERIES.BOOK_SERIES_POSITION + ')' + _AS_ + "mp"
                 + _FROM_ + TBL_BOOK_SERIES.getName()
                 + _GROUP_BY_ + DBKey.FK_BOOK
                 + ')'
