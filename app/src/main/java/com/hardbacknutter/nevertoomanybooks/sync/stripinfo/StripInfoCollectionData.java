@@ -84,13 +84,13 @@ public class StripInfoCollectionData
     }
 
     public StripInfoCollectionData(@NonNull final DataHolder rowData) {
-        sid = rowData.getLong(DBKey.STRIP_INFO_BOOK_ID);
-        collectionId = rowData.getLong(DBKey.STRIP_INFO_COLLECTION_ID);
-        wanted = rowData.getBoolean(DBKey.STRIP_INFO_WANTED);
-        owned = rowData.getBoolean(DBKey.STRIP_INFO_OWNED);
-        digital = rowData.getBoolean(DBKey.STRIP_INFO_DIGITAL);
-        amount = rowData.getInt(DBKey.STRIP_INFO_AMOUNT);
-        lastSync = rowData.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC, null);
+        sid = rowData.getLong(DBKey.STRIP_INFO.BOOK_ID);
+        collectionId = rowData.getLong(DBKey.STRIP_INFO.COLLECTION_ID);
+        wanted = rowData.getBoolean(DBKey.STRIP_INFO.WANTED);
+        owned = rowData.getBoolean(DBKey.STRIP_INFO.OWNED);
+        digital = rowData.getBoolean(DBKey.STRIP_INFO.DIGITAL);
+        amount = rowData.getInt(DBKey.STRIP_INFO.AMOUNT);
+        lastSync = rowData.getString(DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC, null);
     }
 
     private StripInfoCollectionData(@NonNull final Parcel in) {

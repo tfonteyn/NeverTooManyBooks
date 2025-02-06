@@ -1068,39 +1068,39 @@ public final class DBDefinitions {
          *  StripInfo.be synchronization domains
          * ====================================================================================== */
         DOM_STRIP_INFO_BOOK_ID =
-                new Domain.Builder(DBKey.STRIP_INFO_BOOK_ID, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STRIP_INFO.BOOK_ID, SqLiteDataType.Integer)
                         .build();
 
         DOM_STRIP_INFO_COLLECTION_ID =
-                new Domain.Builder(DBKey.STRIP_INFO_COLLECTION_ID, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STRIP_INFO.COLLECTION_ID, SqLiteDataType.Integer)
                         .build();
 
         DOM_STRIP_INFO_WANTED =
-                new Domain.Builder(DBKey.STRIP_INFO_WANTED, SqLiteDataType.Boolean)
+                new Domain.Builder(DBKey.STRIP_INFO.WANTED, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STRIP_INFO_OWNED =
-                new Domain.Builder(DBKey.STRIP_INFO_OWNED, SqLiteDataType.Boolean)
+                new Domain.Builder(DBKey.STRIP_INFO.OWNED, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STRIP_INFO_DIGITAL =
-                new Domain.Builder(DBKey.STRIP_INFO_DIGITAL, SqLiteDataType.Boolean)
+                new Domain.Builder(DBKey.STRIP_INFO.DIGITAL, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STRIP_INFO_AMOUNT =
-                new Domain.Builder(DBKey.STRIP_INFO_AMOUNT, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.STRIP_INFO.AMOUNT, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(1)
                         .build();
 
         DOM_STRIP_INFO_LAST_SYNC__UTC =
-                new Domain.Builder(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC,
+                new Domain.Builder(DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC,
                                    SqLiteDataType.DateTime)
                         .notNull()
                         .withDefaultEmptyString()
@@ -1788,7 +1788,7 @@ public final class DBDefinitions {
                             DOM_STRIP_INFO_LAST_SYNC__UTC)
                 .setPrimaryKey(DOM_FK_BOOK)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                .addIndex(DBKey.STRIP_INFO_BOOK_ID, true, DOM_STRIP_INFO_BOOK_ID);
+                .addIndex(DBKey.STRIP_INFO.BOOK_ID, true, DOM_STRIP_INFO_BOOK_ID);
         ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(), TBL_STRIPINFO_COLLECTION);
     }
 

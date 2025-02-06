@@ -78,31 +78,6 @@ public final class DBKey {
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
     public static final String IDENT_SID = "sid";
 
-    /**
-     * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - The book id (sid).
-     * This is a (redundant) copy of the same value stored in
-     * {@link DBDefinitions#TBL_BOOK_IDENTIFIER} for
-     * {@link com.hardbacknutter.nevertoomanybooks.entities.Identifier#SID_STRIP_INFO}.
-     */
-    public static final String STRIP_INFO_BOOK_ID = "si_book_id";
-    /**
-     * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION}.
-     * The "CollectieId"; a secondary id used by the website for all books flagged
-     * as being in the users collection. This is the case as soon as they set "some"
-     * private date/flags on it.
-     */
-    public static final String STRIP_INFO_COLLECTION_ID = "si_coll_id";
-    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - The user wants this book. */
-    public static final String STRIP_INFO_WANTED = "si_coll_wanted";
-    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - Owned as a physical book. */
-    public static final String STRIP_INFO_OWNED = "si_coll_owned";
-    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - Owned as a digital book. */
-    public static final String STRIP_INFO_DIGITAL = "si_coll_digital";
-    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - The amount of copies owned. */
-    public static final String STRIP_INFO_AMOUNT = "si_coll_amount";
-    /** {@link DBDefinitions#TBL_STRIPINFO_COLLECTION} - DateTimeStamp of last sync. */
-    public static final String STRIP_INFO_LAST_SYNC_DATE__UTC = "si_coll_last_sync";
-
     /** {@link DBDefinitions#TBL_CALIBRE_CUSTOM_FIELDS}. */
     public static final String CALIBRE_CUSTOM_FIELD_NAME = "clb_cf_name";
     public static final String CALIBRE_CUSTOM_FIELD_TYPE = "clb_cf_type";
@@ -447,6 +422,41 @@ public final class DBKey {
         public static final String TOC_ENTRY_TITLE = "toc_title";
 
         private FTS() {
+        }
+    }
+
+
+    /**
+     * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION}.
+     */
+    @SuppressWarnings("CheckStyle")
+    public static final class STRIP_INFO {
+
+        /**
+         * The book id (sid).
+         * This is a (redundant) copy of the same value stored in
+         * {@link DBDefinitions#TBL_BOOK_IDENTIFIER} for
+         * {@link com.hardbacknutter.nevertoomanybooks.entities.Identifier#SID_STRIP_INFO}.
+         */
+        public static final String BOOK_ID = "si_book_id";
+        /**
+         * The "CollectieId"; a secondary id used by the website for all books flagged
+         * as being in the users collection. This is the case as soon as they set "some"
+         * private date/flags on it.
+         */
+        public static final String COLLECTION_ID = "si_coll_id";
+        /** The user wants this book. */
+        public static final String WANTED = "si_coll_wanted";
+        /** Owned as a physical book. */
+        public static final String OWNED = "si_coll_owned";
+        /** Owned as a digital book. */
+        public static final String DIGITAL = "si_coll_digital";
+        /** The amount of copies owned. */
+        public static final String AMOUNT = "si_coll_amount";
+        /** DateTimeStamp of last sync. */
+        public static final String LAST_SYNC_DATE__UTC = "si_coll_last_sync";
+
+        private STRIP_INFO() {
         }
     }
 }

@@ -882,25 +882,28 @@ public class BookDaoImpl
 
         if (sinceDateTime == null) {
             whereClause =
-                    TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_COLLECTION_ID) + " IS NOT NULL";
+                    TBL_STRIPINFO_COLLECTION.dot(
+                            DBKey.STRIP_INFO.COLLECTION_ID) + " IS NOT NULL";
             selectionArgs = null;
         } else {
             whereClause =
-                    TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_COLLECTION_ID) + " IS NOT NULL"
+                    TBL_STRIPINFO_COLLECTION.dot(
+                            DBKey.STRIP_INFO.COLLECTION_ID) + " IS NOT NULL"
                     + _AND_
-                    + TBL_STRIPINFO_COLLECTION.dot(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC) + ">=?";
+                    + TBL_STRIPINFO_COLLECTION.dot(
+                            DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC) + ">=?";
             selectionArgs = new String[]{SqlEncode.dateTime(sinceDateTime)};
         }
 
         final String sql = Sql.SELECT_BOOK
                            + ',' + TBL_STRIPINFO_COLLECTION
-                                   .dotAs(DBKey.STRIP_INFO_BOOK_ID,
-                                          DBKey.STRIP_INFO_COLLECTION_ID,
-                                          DBKey.STRIP_INFO_OWNED,
-                                          DBKey.STRIP_INFO_DIGITAL,
-                                          DBKey.STRIP_INFO_WANTED,
-                                          DBKey.STRIP_INFO_AMOUNT,
-                                          DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC)
+                                   .dotAs(DBKey.STRIP_INFO.BOOK_ID,
+                                          DBKey.STRIP_INFO.COLLECTION_ID,
+                                          DBKey.STRIP_INFO.OWNED,
+                                          DBKey.STRIP_INFO.DIGITAL,
+                                          DBKey.STRIP_INFO.WANTED,
+                                          DBKey.STRIP_INFO.AMOUNT,
+                                          DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC)
                            + _FROM_ + TBL_BOOKS.ref()
                            + TBL_BOOKS.leftOuterJoin(TBL_STRIPINFO_COLLECTION)
                            + _WHERE_ + whereClause

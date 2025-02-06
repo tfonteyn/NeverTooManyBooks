@@ -35,15 +35,15 @@ public class StripInfoDataCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        out.put(DBKey.STRIP_INFO_BOOK_ID, field.getSid());
-        out.put(DBKey.STRIP_INFO_COLLECTION_ID, field.getCollectionId());
-        out.put(DBKey.STRIP_INFO_WANTED, field.isWanted());
-        out.put(DBKey.STRIP_INFO_OWNED, field.isOwned());
-        out.put(DBKey.STRIP_INFO_DIGITAL, field.isDigital());
-        out.put(DBKey.STRIP_INFO_AMOUNT, field.getAmount());
+        out.put(DBKey.STRIP_INFO.BOOK_ID, field.getSid());
+        out.put(DBKey.STRIP_INFO.COLLECTION_ID, field.getCollectionId());
+        out.put(DBKey.STRIP_INFO.WANTED, field.isWanted());
+        out.put(DBKey.STRIP_INFO.OWNED, field.isOwned());
+        out.put(DBKey.STRIP_INFO.DIGITAL, field.isDigital());
+        out.put(DBKey.STRIP_INFO.AMOUNT, field.getAmount());
         final String lastSync = field.getLastSync();
         if (lastSync != null) {
-            out.put(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC, lastSync);
+            out.put(DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC, lastSync);
         }
         return out;
     }
@@ -54,12 +54,12 @@ public class StripInfoDataCoder
             throws JSONException {
 
         return new StripInfoCollectionData(
-                data.getLong(DBKey.STRIP_INFO_BOOK_ID),
-                data.getLong(DBKey.STRIP_INFO_COLLECTION_ID),
-                data.getBoolean(DBKey.STRIP_INFO_WANTED),
-                data.getBoolean(DBKey.STRIP_INFO_OWNED),
-                data.getBoolean(DBKey.STRIP_INFO_DIGITAL),
-                data.getInt(DBKey.STRIP_INFO_AMOUNT),
-                data.optString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC, null));
+                data.getLong(DBKey.STRIP_INFO.BOOK_ID),
+                data.getLong(DBKey.STRIP_INFO.COLLECTION_ID),
+                data.getBoolean(DBKey.STRIP_INFO.WANTED),
+                data.getBoolean(DBKey.STRIP_INFO.OWNED),
+                data.getBoolean(DBKey.STRIP_INFO.DIGITAL),
+                data.getInt(DBKey.STRIP_INFO.AMOUNT),
+                data.optString(DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC, null));
     }
 }

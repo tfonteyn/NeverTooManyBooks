@@ -136,24 +136,24 @@ public class StripInfoDaoImpl
         static final String INSERT =
                 INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
                 + '(' + DBKey.FK_BOOK
-                + ',' + DBKey.STRIP_INFO_BOOK_ID
-                + ',' + DBKey.STRIP_INFO_COLLECTION_ID
-                + ',' + DBKey.STRIP_INFO_OWNED
-                + ',' + DBKey.STRIP_INFO_DIGITAL
-                + ',' + DBKey.STRIP_INFO_WANTED
-                + ',' + DBKey.STRIP_INFO_AMOUNT
-                + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
+                + ',' + DBKey.STRIP_INFO.BOOK_ID
+                + ',' + DBKey.STRIP_INFO.COLLECTION_ID
+                + ',' + DBKey.STRIP_INFO.OWNED
+                + ',' + DBKey.STRIP_INFO.DIGITAL
+                + ',' + DBKey.STRIP_INFO.WANTED
+                + ',' + DBKey.STRIP_INFO.AMOUNT
+                + ',' + DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC
                 + ") VALUES (?,?,?,?,?,?,?,?)";
 
         static final String FIND_BY_LOCAL_BOOK_ID =
                 SELECT_ + DBKey.FK_BOOK
-                + ',' + DBKey.STRIP_INFO_BOOK_ID
-                + ',' + DBKey.STRIP_INFO_COLLECTION_ID
-                + ',' + DBKey.STRIP_INFO_OWNED
-                + ',' + DBKey.STRIP_INFO_DIGITAL
-                + ',' + DBKey.STRIP_INFO_WANTED
-                + ',' + DBKey.STRIP_INFO_AMOUNT
-                + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
+                + ',' + DBKey.STRIP_INFO.BOOK_ID
+                + ',' + DBKey.STRIP_INFO.COLLECTION_ID
+                + ',' + DBKey.STRIP_INFO.OWNED
+                + ',' + DBKey.STRIP_INFO.DIGITAL
+                + ',' + DBKey.STRIP_INFO.WANTED
+                + ',' + DBKey.STRIP_INFO.AMOUNT
+                + ',' + DBKey.STRIP_INFO.LAST_SYNC_DATE__UTC
                 + _FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
                 + _WHERE_ + DBKey.FK_BOOK + "=?";
 
