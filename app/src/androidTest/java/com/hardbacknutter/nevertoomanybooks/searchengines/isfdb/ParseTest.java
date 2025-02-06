@@ -281,7 +281,7 @@ public class ParseTest
         final List<Series> series = book.getSeries();
         assertNotNull(series);
         assertEquals(1, series.size());
-        assertEquals("Tiffany Aching", series.get(0).getTitle());
+        assertEquals("Discworld", series.get(0).getTitle());
         assertEquals("41", series.get(0).getNumber());
 
         final List<TocEntry> toc = book.getToc();
