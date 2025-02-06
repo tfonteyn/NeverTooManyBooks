@@ -231,13 +231,14 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOKSHELF_FILTER_NAME;
     public static final Domain DOM_BOOKSHELF_FILTER_VALUE;
 
-    public static final Domain DOM_IDENT_KEY;
-    public static final Domain DOM_IDENT_TYPE;
-    public static final Domain DOM_IDENT_NAME;
-    public static final Domain DOM_IDENT_SITE_URL;
-    public static final Domain DOM_IDENT_BOOK_URI;
-
-    public static final Domain DOM_IDENT_SID;
+    /** {@link #TBL_IDENTIFIERS}. */
+    public static final Domain DOM_IDENTIFIER_KEY;
+    public static final Domain DOM_IDENTIFIER_TYPE;
+    public static final Domain DOM_IDENTIFIER_NAME;
+    public static final Domain DOM_IDENTIFIER_SITE_URL;
+    public static final Domain DOM_IDENTIFIER_BOOK_URI;
+    /** {@link #TBL_BOOK_IDENTIFIER}. */
+    public static final Domain DOM_BOOK_IDENTIFIER_SID;
 
     /** {@link #TBL_TAGS}. */
     public static final Domain DOM_TAG;
@@ -254,6 +255,7 @@ public final class DBDefinitions {
     public static final Domain DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
+
     /**
      * {@link #TBL_PSEUDONYM_AUTHOR}.
      * <p>
@@ -319,10 +321,19 @@ public final class DBDefinitions {
      */
     public static final Domain DOM_TITLE_ORIGINAL_LANG;
 
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_BOOK_ISBN;
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
     public static final Domain DOM_DATE_FIRST_PUBLICATION;
+
+    /** {@link #TBL_BOOKS} added to the collection. */
+    public static final Domain DOM_DATE_ADDED__UTC;
+    /** {@link #TBL_BOOKS}. */
+    public static final Domain DOM_LAST_UPDATED__UTC;
+
+    /** {@link #TBL_BOOKS}. */
+    public static final Domain DOM_AUTO_UPDATE;
+
+    /** {@link #TBL_BOOKS}. */
+    public static final Domain DOM_BOOK_ISBN;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_DATE_PUBLISHED;
     /** {@link #TBL_BOOKS}. */
@@ -360,10 +371,6 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_PRICE_PAID_CURRENCY;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_DATE_ACQUIRED;
-    /** {@link #TBL_BOOKS} added to the collection. */
-    public static final Domain DOM_DATE_ADDED__UTC;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_LAST_UPDATED__UTC;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_LOCATION;
     /** {@link #TBL_BOOKS}. */
@@ -388,23 +395,19 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_CONDITION;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_CONDITION_DUST_COVER;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_AUTO_UPDATE;
 
     /**
      * {@link #TBL_CALIBRE_LIBRARIES}.
      * The physical Calibre library ID as needed in ajax calls.
      */
     public static final Domain DOM_CALIBRE_LIBRARY_STRING_ID;
-
     /** {@link #TBL_CALIBRE_LIBRARIES}. */
     public static final Domain DOM_CALIBRE_LIBRARY_LAST_SYNC__UTC;
-
     /** {@link #TBL_CALIBRE_LIBRARIES}. */
     public static final Domain DOM_CALIBRE_LIBRARY_UUID;
+
     /** {@link #TBL_CALIBRE_LIBRARIES} {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. Display name. */
     public static final Domain DOM_CALIBRE_LIBRARY_NAME;
-
     /** {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. Expression or {@code null} for the physical lib. */
     public static final Domain DOM_CALIBRE_VIRT_LIB_EXPR;
 
@@ -424,9 +427,9 @@ public final class DBDefinitions {
 
     /**
      * {@link #TBL_STRIPINFO_COLLECTION}.
-     * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_IDENT_SID}
+     * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_BOOK_IDENTIFIER_SID}
      * for rows where the {@link #DOM_FK_IDENTIFIER} == "stripinfo"
-     * from {@link #TBL_IDENTIFIERS} column {@link #DOM_IDENT_KEY}
+     * from {@link #TBL_IDENTIFIERS} column {@link #DOM_IDENTIFIER_KEY}
      */
     public static final Domain DOM_STRIP_INFO_BOOK_ID;
     /** {@link #TBL_STRIPINFO_COLLECTION}. */
@@ -1009,6 +1012,10 @@ public final class DBDefinitions {
                         .withDefault(true)
                         .build();
 
+        /* ======================================================================================
+         *  Tags
+         * ====================================================================================== */
+
         // localized but with non-unique index, so these are case-sensitive and diacritic aware
         DOM_TAG =
                 new Domain.Builder(DBKey.TAG, SqLiteDataType.Text)
@@ -1016,6 +1023,7 @@ public final class DBDefinitions {
                         .localized()
                         .build();
 
+        // localized but with non-unique index, so these are case-sensitive and diacritic aware
         DOM_TAG_MAPPING =
                 new Domain.Builder(DBKey.TAG_MAPPING, SqLiteDataType.Text)
                         .notNull()
@@ -1028,30 +1036,30 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         // not localized!
-        DOM_IDENT_KEY =
+        DOM_IDENTIFIER_KEY =
                 new Domain.Builder(DBKey.IDENT_KEY, SqLiteDataType.Text)
                         .notNull()
                         .build();
-        DOM_IDENT_TYPE =
+        DOM_IDENTIFIER_TYPE =
                 new Domain.Builder(DBKey.IDENT_TYPE, SqLiteDataType.Text)
                         .notNull()
                         .withDefault("'" + Identifier.TYPE_STRING + "'")
                         .build();
-        DOM_IDENT_NAME =
+        DOM_IDENTIFIER_NAME =
                 new Domain.Builder(DBKey.IDENT_NAME, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
-        DOM_IDENT_SITE_URL =
+        DOM_IDENTIFIER_SITE_URL =
                 new Domain.Builder(DBKey.IDENT_SITE_URL, SqLiteDataType.Text)
                         .build();
 
-        DOM_IDENT_BOOK_URI =
+        DOM_IDENTIFIER_BOOK_URI =
                 new Domain.Builder(DBKey.IDENT_BOOK_URI, SqLiteDataType.Text)
                         .build();
 
-        DOM_IDENT_SID =
+        DOM_BOOK_IDENTIFIER_SID =
                 new Domain.Builder(DBKey.IDENT_SID, SqLiteDataType.Text)
                         .notNull()
                         .build();
@@ -1452,13 +1460,13 @@ public final class DBDefinitions {
 
         TBL_IDENTIFIERS
                 .addDomains(DOM_PK_ID,
-                            DOM_IDENT_KEY,
-                            DOM_IDENT_TYPE,
-                            DOM_IDENT_NAME,
-                            DOM_IDENT_SITE_URL,
-                            DOM_IDENT_BOOK_URI)
+                            DOM_IDENTIFIER_KEY,
+                            DOM_IDENTIFIER_TYPE,
+                            DOM_IDENTIFIER_NAME,
+                            DOM_IDENTIFIER_SITE_URL,
+                            DOM_IDENTIFIER_BOOK_URI)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.IDENT_KEY, true, DOM_IDENT_KEY);
+                .addIndex(DBKey.IDENT_KEY, true, DOM_IDENTIFIER_KEY);
         ALL_TABLES.put(TBL_IDENTIFIERS.getName(), TBL_IDENTIFIERS);
 
         TBL_TAGS
@@ -1712,7 +1720,7 @@ public final class DBDefinitions {
         TBL_BOOK_IDENTIFIER
                 .addDomains(DOM_FK_BOOK,
                             DOM_FK_IDENTIFIER,
-                            DOM_IDENT_SID)
+                            DOM_BOOK_IDENTIFIER_SID)
                 .setPrimaryKey(DOM_FK_BOOK, DOM_FK_IDENTIFIER)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_IDENTIFIERS, DOM_FK_IDENTIFIER)
