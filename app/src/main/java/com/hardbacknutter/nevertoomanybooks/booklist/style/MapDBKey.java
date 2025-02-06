@@ -45,13 +45,15 @@ public final class MapDBKey {
     );
 
     /**
+     * TEST: should Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lending)
+     *  be R.string.lbl_lend_out instead?
+     *
      * @see BooklistGroup.BlgDBKey
      */
     private static final Map<String, Integer> DB_KEY_TO_LABEL_RES_ID = Map.ofEntries(
             Map.entry(DBKey.COVER[0], R.string.lbl_cover_front),
             Map.entry(DBKey.COVER[1], R.string.lbl_cover_back),
 
-            Map.entry(DBKey.FK_AUTHOR_REAL_AUTHOR, R.string.lbl_author_pseudonym),
             Map.entry(DBKey.AUTHOR_TYPE__BITMASK, R.string.lbl_author_type),
             Map.entry(DBKey.BOOK_CONDITION, R.string.lbl_condition),
             Map.entry(DBKey.BOOK_CONDITION_COVER, R.string.lbl_dust_cover),
@@ -65,6 +67,7 @@ public final class MapDBKey {
             Map.entry(DBKey.EDITION__BITMASK, R.string.lbl_edition),
             Map.entry(DBKey.FIRST_PUBLICATION__DATE, R.string.lbl_date_first_publication),
             Map.entry(DBKey.FK_AUTHOR, R.string.lbl_author),
+            Map.entry(DBKey.FK_AUTHOR_REAL_AUTHOR, R.string.lbl_author_pseudonym),
             Map.entry(DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf),
             Map.entry(DBKey.FK_IDENTIFIER, R.string.lbl_identifiers),
             Map.entry(DBKey.FK_PUBLISHER, R.string.lbl_publisher),
@@ -73,7 +76,6 @@ public final class MapDBKey {
             Map.entry(DBKey.FK_TOC_ENTRY, R.string.lbl_table_of_content),
             Map.entry(DBKey.FORMAT, R.string.lbl_format),
             Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
-            // TEST: should this be R.string.lbl_lend_out instead?
             Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lending),
             Map.entry(DBKey.LOCATION, R.string.lbl_location),
             Map.entry(DBKey.PAGES, R.string.lbl_pages),
