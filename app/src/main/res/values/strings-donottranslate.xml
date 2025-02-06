@@ -88,7 +88,7 @@
     <string name="identifier_british_library"
             translatable="false">The British Library</string>
     <string name="identifier_dnb"
-            translatable="false">Deutschen Nationalbibliothek</string>
+            translatable="false">Deutsche Nationalbibliothek</string>
     <string name="identifier_doi"
             translatable="false">Digital Object Identifier</string>
     <string name="identifier_douban"
