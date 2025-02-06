@@ -228,6 +228,7 @@ public interface SearchEngine
     }
 
     /** Optional. */
+    @Deprecated(forRemoval = true)
     interface ViewBookByExternalId
             extends SearchEngine {
 
@@ -236,7 +237,7 @@ public interface SearchEngine
          * <p>
          * {@link SearchEngine.Login} will NOT be called upon.
          * <p>
-         * TODO: ViewBookByExternalId functionality should be moved to the EngineId class
+         * ViewBookByExternalId functionality should be moved to the EngineId class
          *  This will eliminate having to create a SearchEngine instance just to open
          *  a browser link. See {@link ViewBookOnSiteMenuHandler#onMenuItemSelected}.
          *
@@ -245,6 +246,7 @@ public interface SearchEngine
          *
          * @return url
          */
+        @Deprecated
         @AnyThread
         @NonNull
         String createViewOnSiteUrl(@NonNull Context context,
