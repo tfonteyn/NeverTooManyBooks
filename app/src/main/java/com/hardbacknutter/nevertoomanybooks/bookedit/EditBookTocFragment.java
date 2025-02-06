@@ -797,12 +797,12 @@ public class EditBookTocFragment
             vb.title.setText(tocEntry.getTitle());
             vb.author.setText(tocEntry.getPrimaryAuthor().getLabel(context));
 
-            final PartialDate date = tocEntry.getFirstPublicationDate();
-            if (date.isPresent()) {
+            // cut the date to just the year.
+            final Optional<String> year = tocEntry.getFirstPublicationDate().getYear()
+                                                  .map(String::valueOf);
+            if (year.isPresent()) {
+                vb.year.setText(context.getString(R.string.brackets, year.get()));
                 vb.year.setVisibility(View.VISIBLE);
-                // cut the date to just the year.
-                vb.year.setText(context.getString(R.string.brackets,
-                                                  String.valueOf(date.getYearValue())));
             } else {
                 vb.year.setVisibility(View.GONE);
             }

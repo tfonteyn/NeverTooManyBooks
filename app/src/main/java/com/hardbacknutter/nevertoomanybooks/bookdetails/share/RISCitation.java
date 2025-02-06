@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -81,18 +80,13 @@ public class RISCitation
             }
         });
 
-        book.getPrimaryPublisher().ifPresent(publisher ->
-                                                     sj.add("PB  - " + publisher.getName()));
+        book.getPrimaryPublisher()
+            .ifPresent(publisher -> sj.add("PB  - " + publisher.getName()));
 
-        final PartialDate firstPublicationDate = book.getFirstPublicationDate();
-        if (firstPublicationDate.isPresent()) {
-            sj.add("Y1  - " + firstPublicationDate.getDelimString("/"));
-        } else {
-            final String isoDate = book.getString(DBKey.PUBLICATION_DATE);
-            if (isoDate.length() >= 4) {
-                sj.add("Y1  - " + isoDate.substring(0, 4));
-            }
-        }
+        // need the year only
+        book.getFirstPublicationDate().getYear()
+            .or(() -> book.getPublicationDate().getYear())
+            .ifPresent(year -> sj.add("Y1  - " + year));
 
         final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
         book.getIdentifiers().forEach(iv -> {
@@ -103,7 +97,6 @@ public class RISCitation
                 }
             });
         });
-
 
         sj.add("ER  -");
         return sj.toString();

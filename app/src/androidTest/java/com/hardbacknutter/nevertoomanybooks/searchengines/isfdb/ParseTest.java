@@ -25,6 +25,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -147,12 +148,17 @@ public class ParseTest
         //119 • Exposure • (1950) • short story by Eric Frank Russell
         //141 • Ultima Thule • (1951) • short story by Eric Frank Russell
         assertEquals(7, toc.size());
+
+        final Optional<Integer> fpd;
+
         // just check one.
-        final TocEntry entry = toc.get(3);
-        assertEquals("Into Your Tent I'll Creep", entry.getTitle());
-        assertEquals(1957, entry.getFirstPublicationDate().getYearValue());
-        assertEquals("Russell", entry.getPrimaryAuthor().getFamilyName());
-        assertEquals("Eric Frank", entry.getPrimaryAuthor().getGivenNames());
+        final TocEntry tocEntry = toc.get(3);
+        assertEquals("Into Your Tent I'll Creep", tocEntry.getTitle());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(1957, (long) fpd.get());
+        assertEquals("Russell", tocEntry.getPrimaryAuthor().getFamilyName());
+        assertEquals("Eric Frank", tocEntry.getPrimaryAuthor().getGivenNames());
     }
 
     @Test
@@ -213,11 +219,16 @@ public class ParseTest
         final List<TocEntry> toc = book.getToc();
         assertNotNull(toc);
         assertEquals(1, toc.size());
-        final TocEntry entry = toc.get(0);
-        assertEquals("Mort", entry.getTitle());
-        assertEquals(1987, entry.getFirstPublicationDate().getYearValue());
-        assertEquals("Pratchett", entry.getPrimaryAuthor().getFamilyName());
-        assertEquals("Terry", entry.getPrimaryAuthor().getGivenNames());
+
+        final Optional<Integer> fpd;
+
+        final TocEntry tocEntry = toc.get(0);
+        assertEquals("Mort", tocEntry.getTitle());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(1987, (long) fpd.get());
+        assertEquals("Pratchett", tocEntry.getPrimaryAuthor().getFamilyName());
+        assertEquals("Terry", tocEntry.getPrimaryAuthor().getGivenNames());
     }
 
     @Test
@@ -276,16 +287,23 @@ public class ParseTest
         final List<TocEntry> toc = book.getToc();
         assertNotNull(toc);
         assertEquals(2, toc.size());
-        TocEntry entry = toc.get(0);
-        assertEquals("The Shepherd's Crown", entry.getTitle());
-        assertEquals(2015, entry.getFirstPublicationDate().getYearValue());
-        assertEquals("Pratchett", entry.getPrimaryAuthor().getFamilyName());
-        assertEquals("Terry", entry.getPrimaryAuthor().getGivenNames());
-        entry = toc.get(1);
-        assertEquals("Afterword (The Shepherd's Crown)", entry.getTitle());
-        assertEquals(2015, entry.getFirstPublicationDate().getYearValue());
-        assertEquals("Wilkins", entry.getPrimaryAuthor().getFamilyName());
-        assertEquals("Rob", entry.getPrimaryAuthor().getGivenNames());
+
+        Optional<Integer> fpd;
+
+        TocEntry tocEntry = toc.get(0);
+        assertEquals("The Shepherd's Crown", tocEntry.getTitle());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(2015, (long) fpd.get());
+        assertEquals("Pratchett", tocEntry.getPrimaryAuthor().getFamilyName());
+        assertEquals("Terry", tocEntry.getPrimaryAuthor().getGivenNames());
+        tocEntry = toc.get(1);
+        assertEquals("Afterword (The Shepherd's Crown)", tocEntry.getTitle());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(2015, (long) fpd.get());
+        assertEquals("Wilkins", tocEntry.getPrimaryAuthor().getFamilyName());
+        assertEquals("Rob", tocEntry.getPrimaryAuthor().getGivenNames());
     }
 
     @Test

@@ -33,12 +33,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.OverlayProvider;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowAuthorWorkBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.InfoPopup;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -295,13 +295,12 @@ public class AuthorWorksAdapter
             final Context context = itemView.getContext();
             vb.title.setText(work.getLabel(context, Details.AutoSelect, style));
 
-            final PartialDate date = work.getFirstPublicationDate();
-            if (date.isPresent()) {
-                // screen space is at a premium here, and books can have 'yyyy-mm-dd' dates,
-                // cut the date to just the year.
-                final String fp = context.getString(R.string.brackets,
-                                                    String.valueOf(date.getYearValue()));
-                vb.year.setText(fp);
+            // screen space is at a premium here, and books can have 'yyyy-mm-dd' dates,
+            // cut the date to just the year.
+            final Optional<String> year = work.getFirstPublicationDate().getYear()
+                                              .map(String::valueOf);
+            if (year.isPresent()) {
+                vb.year.setText(context.getString(R.string.brackets, year.get()));
                 vb.year.setVisibility(View.VISIBLE);
             } else {
                 vb.year.setVisibility(View.GONE);

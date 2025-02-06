@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -108,18 +107,12 @@ class BibTexCitation
             sj.add(PUBLISHER + formatPublishers(publishers) + '}');
         }
 
-        final PartialDate firstPublicationDate = book.getFirstPublicationDate();
-        if (firstPublicationDate.isPresent()) {
-            sj.add(YEAR + firstPublicationDate.getYearValue() + '}');
-        } else {
-            final String isoDate = book.getString(DBKey.PUBLICATION_DATE);
-            if (isoDate.length() >= 4) {
-                sj.add(YEAR + isoDate.substring(0, 4) + '}');
-            } else {
-                // mandatory field ...
-                sj.add(YEAR + "0}");
-            }
-        }
+        // need the year only
+        final int year = book.getFirstPublicationDate().getYear()
+                             .or(() -> book.getPublicationDate().getYear())
+                             // mandatory field ...
+                             .orElse(0);
+        sj.add(YEAR + year + '}');
 
         //TODO: check bibtex series format when multiple series
         book.getPrimarySeries()

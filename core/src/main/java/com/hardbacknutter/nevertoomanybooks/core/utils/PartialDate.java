@@ -242,8 +242,7 @@ public class PartialDate
     }
 
     /**
-     * Get the year field. Will be {@code 1} if the field was not set.
-     * A call to {@link #isPresent()} ()} should be made before.
+     * Get the year field.
      *
      * @return year value
      */

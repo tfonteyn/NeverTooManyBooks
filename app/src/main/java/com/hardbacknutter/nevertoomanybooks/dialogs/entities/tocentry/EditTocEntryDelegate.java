@@ -37,7 +37,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocContentBinding;
@@ -125,10 +124,8 @@ class EditTocEntryDelegate
         EditTextField.Capitalization.Title.apply(vb.title);
         TilUtil.autoRemoveError(vb.title, vb.lblTitle);
 
-        final PartialDate firstPublicationDate = currentEdit.getFirstPublicationDate();
-        if (firstPublicationDate.isPresent()) {
-            vb.firstPublication.setText(String.valueOf(firstPublicationDate.getYearValue()));
-        }
+        currentEdit.getFirstPublicationDate().getYear()
+                   .ifPresent(integer -> vb.firstPublication.setText(String.valueOf(integer)));
 
         if (vm.isAnthology()) {
             final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(

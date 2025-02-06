@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -49,11 +47,10 @@ class MLACitation
         implements Citation {
 
     @NonNull
-    @Override
-    public String cite(@NonNull final Context context,
-                       @NonNull final Book book) {
-        final List<Author> authors = book.getAuthors();
+    private static String getAutorInformation(@NonNull final Context context,
+                                              @NonNull final Book book) {
         final String authorStr;
+        final List<Author> authors = book.getAuthors();
         switch (authors.size()) {
             case 1: {
                 authorStr = authors.get(0).getFormattedName(false);
@@ -68,27 +65,34 @@ class MLACitation
                 authorStr = context.getString(R.string.and_others_textual,
                                               authors.get(0).getFormattedName(false));
         }
+        return authorStr;
+    }
 
-        final StringJoiner p2sj = new StringJoiner(", ");
+    @NonNull
+    private static String getPublishingInformation(@NonNull final Book book) {
+        final StringJoiner sj = new StringJoiner(", ");
 
-        book.getPrimaryPublisher().ifPresent(publisher -> p2sj.add(publisher.getName()));
+        book.getPrimaryPublisher().ifPresent(publisher -> sj.add(publisher.getName()));
 
-        final PartialDate firstPublicationDate = book.getFirstPublicationDate();
-        if (firstPublicationDate.isPresent()) {
-            p2sj.add(String.valueOf(firstPublicationDate.getYearValue()));
-        } else {
-            final String isoDate = book.getString(DBKey.PUBLICATION_DATE);
-            if (isoDate.length() >= 4) {
-                p2sj.add(isoDate.substring(0, 4));
-            }
-        }
-        final String p2 = p2sj.toString();
+        // need the year only
+        book.getFirstPublicationDate().getYear()
+            .or(() -> book.getPublicationDate().getYear())
+            .ifPresent(year -> sj.add(String.valueOf(year)));
 
+        return sj.toString();
+    }
 
-        final StringBuilder sb = new StringBuilder(authorStr);
+    @NonNull
+    @Override
+    public String cite(@NonNull final Context context,
+                       @NonNull final Book book) {
+        final String autorInformation = getAutorInformation(context, book);
+        final String publishingInformation = getPublishingInformation(book);
+
+        final StringBuilder sb = new StringBuilder(autorInformation);
         sb.append(" <i>").append(book.getTitle()).append("</i>.");
-        if (!p2.isEmpty()) {
-            sb.append(" ").append(p2).append(".");
+        if (!publishingInformation.isEmpty()) {
+            sb.append(" ").append(publishingInformation).append(".");
         }
 
         return sb.toString();

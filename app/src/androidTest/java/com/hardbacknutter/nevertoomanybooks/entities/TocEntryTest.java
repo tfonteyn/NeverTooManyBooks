@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import androidx.test.filters.MediumTest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -94,15 +95,21 @@ public class TocEntryTest
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
 
+        Optional<Integer> fpd;
+
         // first element is the first "title 1" but with the data from the second entry
         tocEntry = list.get(0);
         assertEquals("title 1", tocEntry.getTitle());
-        assertEquals(1978, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(1978, (long) fpd.get());
 
         // second element is the first "title 2"
         tocEntry = list.get(1);
         assertEquals("title 2", tocEntry.getTitle());
-        assertEquals(2019, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(2019, (long) fpd.get());
     }
 
     @Test
@@ -142,17 +149,23 @@ public class TocEntryTest
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
 
+        Optional<Integer> fpd;
+
         // first element is the first "title 1" but with the data from the second entry
         tocEntry = list.get(0);
         assertEquals(0, tocEntry.getId());
         assertEquals("title 1", tocEntry.getTitle());
-        assertEquals(1978, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(1978, (long) fpd.get());
 
         // second element is the first "title 2"
         tocEntry = list.get(1);
         assertEquals(0, tocEntry.getId());
         assertEquals("title 2", tocEntry.getTitle());
-        assertEquals(2019, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(2019, (long) fpd.get());
     }
 
 
@@ -212,37 +225,51 @@ public class TocEntryTest
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 6, list.size());
 
+        Optional<Integer> fpd;
+
         // first element is the first "title 1" but with the data from the second entry
         tocEntry = list.get(0);
         assertEquals(0, tocEntry.getId());
         assertEquals("title 1", tocEntry.getTitle());
-        assertEquals(1978, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(1978, (long) fpd.get());
 
         // second element is the first "title 2"
         tocEntry = list.get(1);
         assertEquals(0, tocEntry.getId());
         assertEquals("title 2", tocEntry.getTitle());
-        assertEquals(2019, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(2019, (long) fpd.get());
 
         // this is the third "title 2" with the id reset to 0
         tocEntry = list.get(2);
         assertEquals(0, tocEntry.getId());
         assertEquals("title 2", tocEntry.getTitle());
-        assertEquals(1880, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(1880, (long) fpd.get());
 
         tocEntry = list.get(3);
         assertEquals(0, tocEntry.getId());
         assertEquals("title 3", tocEntry.getTitle());
-        assertEquals(1955, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(1955, (long) fpd.get());
 
         tocEntry = list.get(4);
         assertEquals(0, tocEntry.getId());
         assertEquals("title 3", tocEntry.getTitle());
-        assertEquals(1965, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(1965, (long) fpd.get());
 
         tocEntry = list.get(5);
         assertEquals(0, tocEntry.getId());
         assertEquals("title 3", tocEntry.getTitle());
-        assertEquals(1975, tocEntry.getFirstPublicationDate().getYearValue());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isPresent());
+        assertEquals(1975, (long) fpd.get());
     }
 }

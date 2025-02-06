@@ -574,6 +574,12 @@ public class Book
         }
     }
 
+    @NonNull
+    public PartialDate getPublicationDate() {
+        return partialDateParser.parse(getString(DBKey.PUBLICATION_DATE))
+                                .orElse(PartialDate.NOT_SET);
+    }
+
     @Override
     @NonNull
     public PartialDate getFirstPublicationDate() {
