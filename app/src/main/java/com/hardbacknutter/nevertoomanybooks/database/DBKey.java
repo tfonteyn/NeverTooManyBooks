@@ -282,27 +282,6 @@ public final class DBKey {
     public static final String BOOK_COUNT = "book_count";
 
 
-    /** {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE}. */
-    public static final String BL_NODE_KEY = "node_key";
-    /** {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE}. */
-    public static final String BL_NODE_LEVEL = "node_level";
-    public static final String BL_NODE_GROUP = "node_group";
-    public static final String BL_NODE_VISIBLE = "node_visible";
-    public static final String BL_NODE_EXPANDED = "node_expanded";
-
-
-    /**
-     * Column alias.
-     * <p>
-     * Booklist: an alias for the rowId
-     * listViewRowPosition = BL_LIST_VIEW_ROW_ID - 1.
-     * <p>
-     * DOM_BL_LIST_VIEW_ROW_ID =
-     * new Domain.Builder(BL_LIST_VIEW_ROW_ID, ColumnInfo.TYPE_INTEGER)
-     * .notNull().build();
-     */
-    public static final String BL_LIST_VIEW_NODE_ROW_ID = "lv_node_row_id";
-
     /** Column alias for {@link AuthorWork.Type}. */
     public static final String AUTHOR_WORK_TYPE = "work_type";
 
@@ -424,6 +403,30 @@ public final class DBKey {
                 "groups_bookshelf_under_each";
 
         private STYLE() {
+        }
+    }
+
+    @SuppressWarnings("CheckStyle")
+    public static final class BL_NODE {
+
+        /** {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE}. */
+        public static final String KEY = "node_key";
+        /** {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE}. */
+        public static final String LEVEL = "node_level";
+        public static final String GROUP = "node_group";
+        public static final String VISIBLE = "node_visible";
+        public static final String EXPANDED = "node_expanded";
+        /**
+         * Column alias.
+         * <p>
+         * Booklist: an alias for the rowId
+         * listViewRowPosition = BL_LIST_VIEW_ROW_ID - 1.
+         * <p>
+         * See {@link com.hardbacknutter.nevertoomanybooks.booklist.Booklist}#sqlGetOffsetCursor
+         */
+        public static final String ROW_ID = "lv_node_row_id";
+
+        private BL_NODE() {
         }
     }
 

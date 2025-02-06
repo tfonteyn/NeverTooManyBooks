@@ -430,14 +430,14 @@ class BooklistBuilder {
             // {@link BooklistGroup#GroupKey}.
             // The actual value is set on a by-group/book basis.
             listTable.addDomains(DBDefinitions.DOM_BL_NODE_KEY)
-                     .addIndex(DBKey.BL_NODE_KEY, false, DBDefinitions.DOM_BL_NODE_KEY);
+                     .addIndex(DBKey.BL_NODE.KEY, false, DBDefinitions.DOM_BL_NODE_KEY);
 
             // flags used by {@link BooklistNodeDao}.
             listTable.addDomains(DBDefinitions.DOM_BL_NODE_EXPANDED)
-                     .addIndex(DBKey.BL_NODE_EXPANDED, false,
+                     .addIndex(DBKey.BL_NODE.EXPANDED, false,
                                DBDefinitions.DOM_BL_NODE_EXPANDED)
                      .addDomains(DBDefinitions.DOM_BL_NODE_VISIBLE)
-                     .addIndex(DBKey.BL_NODE_VISIBLE, false,
+                     .addIndex(DBKey.BL_NODE.VISIBLE, false,
                                DBDefinitions.DOM_BL_NODE_VISIBLE);
 
             // Always sort by level first; no expression, as this does not represent a value.
@@ -452,7 +452,7 @@ class BooklistBuilder {
             addDomainExpression(new DomainExpression(DBDefinitions.DOM_BL_NODE_GROUP,
                                                      String.valueOf(BooklistGroup.BOOK),
                                                      Sort.Unsorted));
-            listTable.addIndex(DBKey.BL_NODE_GROUP, false, DBDefinitions.DOM_BL_NODE_GROUP);
+            listTable.addIndex(DBKey.BL_NODE.GROUP, false, DBDefinitions.DOM_BL_NODE_GROUP);
 
             // The book id itself
             addDomainExpression(new DomainExpression(DBDefinitions.DOM_FK_BOOK,
@@ -563,7 +563,7 @@ class BooklistBuilder {
                        + " (" + DBKey.FK_BOOK + ',' + FK_BL_ROW_ID + ") "
                        + SELECT_ + DBKey.FK_BOOK + ',' + DBKey.PK_ID
                        + _FROM_ + listTable.getName()
-                       + _WHERE_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                       + _WHERE_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK
                        + _ORDER_BY_ + DBKey.PK_ID);
 
             return new Pair<>(listTable, navTable);
@@ -661,11 +661,11 @@ class BooklistBuilder {
 
                 // Create the INSERT columns clause for the next level up
                 final StringJoiner listColumns = new StringJoiner(",", "(", ")")
-                        .add(DBKey.BL_NODE_LEVEL)
-                        .add(DBKey.BL_NODE_GROUP)
-                        .add(DBKey.BL_NODE_KEY)
-                        .add(DBKey.BL_NODE_EXPANDED)
-                        .add(DBKey.BL_NODE_VISIBLE);
+                        .add(DBKey.BL_NODE.LEVEL)
+                        .add(DBKey.BL_NODE.GROUP)
+                        .add(DBKey.BL_NODE.KEY)
+                        .add(DBKey.BL_NODE.EXPANDED)
+                        .add(DBKey.BL_NODE.VISIBLE);
 
                 // RebuildBooklist.Expanded must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
@@ -675,7 +675,7 @@ class BooklistBuilder {
                 final StringJoiner listValues = new StringJoiner(",", "(", ")")
                         .add(String.valueOf(level))
                         .add(String.valueOf(group.getId()))
-                        .add("NEW." + DBKey.BL_NODE_KEY)
+                        .add("NEW." + DBKey.BL_NODE.KEY)
                         .add(expVis)
                         // level 1 is always visible. THIS IS CRITICAL!
                         .add(level == 1 ? "1" : expVis);
@@ -705,7 +705,7 @@ class BooklistBuilder {
                 final String levelTgSql =
                         "CREATE TEMPORARY TRIGGER " + triggerHelperLevelTriggerName[index]
                         + " BEFORE INSERT ON " + listTable.getName() + " FOR EACH ROW"
-                        + " WHEN NEW." + DBKey.BL_NODE_LEVEL + '=' + (level + 1)
+                        + " WHEN NEW." + DBKey.BL_NODE.LEVEL + '=' + (level + 1)
                         + " AND NOT EXISTS("
                         + /* */ "SELECT 1 FROM " + triggerHelperTable.ref() + _WHERE_ + whereClause
                         + /* */ ')'
@@ -765,7 +765,7 @@ class BooklistBuilder {
             final String currentValueTgSql =
                     "CREATE TEMPORARY TRIGGER " + triggerHelperCurrentValueTriggerName
                     + " AFTER INSERT ON " + listTable.getName() + " FOR EACH ROW"
-                    + " WHEN NEW." + DBKey.BL_NODE_LEVEL + '=' + groupCount
+                    + " WHEN NEW." + DBKey.BL_NODE.LEVEL + '=' + groupCount
                     + " BEGIN"
                     + "  DELETE FROM " + triggerHelperTable.getName() + ';'
                     + "  INSERT INTO " + triggerHelperTable.getName()
@@ -899,7 +899,7 @@ class BooklistBuilder {
         }
 
         /**
-         * Create the expression for the {@link DBKey#BL_NODE_KEY} column of a Book.
+         * Create the expression for the {@link DBKey.BL_NODE#KEY} column of a Book.
          * <p>
          * This string value contains one key-value pair for each each group level, and
          * ALWAYS ends with a '/'.

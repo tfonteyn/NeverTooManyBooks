@@ -259,7 +259,7 @@ public class BooklistAdapter
     public int getItemViewType(final int position) {
         if (cursor != null && cursor.moveToPosition(position)) {
             //noinspection DataFlowIssue
-            return rowData.getInt(DBKey.BL_NODE_GROUP);
+            return rowData.getInt(DBKey.BL_NODE.GROUP);
         } else {
             // bogus, should not happen
             return BooklistGroup.BOOK;
@@ -294,7 +294,7 @@ public class BooklistAdapter
         final View itemView = inflater.inflate(layoutId, parent, false);
 
         //noinspection DataFlowIssue
-        final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
+        final int level = rowData.getInt(DBKey.BL_NODE.LEVEL);
 
         if (groupId != BooklistGroup.BOOK) {
             // set an indentation depending on level (2..)

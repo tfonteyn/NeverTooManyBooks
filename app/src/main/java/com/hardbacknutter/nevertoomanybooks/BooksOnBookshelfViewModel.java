@@ -398,7 +398,7 @@ public class BooksOnBookshelfViewModel
     String getRowLabel(@NonNull final Context context,
                        @NonNull final DataHolder rowData) {
         @BooklistGroup.Id
-        final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+        final int rowGroupId = rowData.getInt(DBKey.BL_NODE.GROUP);
 
         final BooklistGroup group = getStyle().requireGroupById(rowGroupId);
         final String domainName = group.getDisplayDomainExpression()
@@ -866,7 +866,7 @@ public class BooksOnBookshelfViewModel
             final boolean onlyThisShelf) {
 
         @BooklistGroup.Id
-        final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+        final int groupId = rowData.getInt(DBKey.BL_NODE.GROUP);
         final BLGRecord blgRecord = Objects.requireNonNull(
                 BLG_RECORD.get(groupId),
                 () -> ERROR_GROUP_NOT_DEFINED + groupId);
@@ -877,8 +877,8 @@ public class BooksOnBookshelfViewModel
         // the id should never be 0. But paranoia...
         if (onlyThisShelf || id == 0) {
             // We're going to update all book under THIS node only (regardless of node type).
-            final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
-            final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
+            final String nodeKey = rowData.getString(DBKey.BL_NODE.KEY);
+            final int level = rowData.getInt(DBKey.BL_NODE.LEVEL);
 
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
             books = booklist.getBookIdsForNodeKey(nodeKey, level);
@@ -930,14 +930,14 @@ public class BooksOnBookshelfViewModel
             @NonNull final Context context,
             @NonNull final DataHolder rowData) {
 
-        final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
-        final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
+        final String nodeKey = rowData.getString(DBKey.BL_NODE.KEY);
+        final int level = rowData.getInt(DBKey.BL_NODE.LEVEL);
 
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         final List<Long> books = booklist.getBookIdsForNodeKey(nodeKey, level);
 
         @BooklistGroup.Id
-        final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+        final int groupId = rowData.getInt(DBKey.BL_NODE.GROUP);
         final BLGDateRecord blgRecord = Objects.requireNonNull(
                 BLG_DATE_RECORD.get(groupId),
                 () -> ERROR_GROUP_NOT_DEFINED + groupId);

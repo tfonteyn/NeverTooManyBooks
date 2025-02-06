@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -177,7 +177,7 @@ public class GenericStringHolder
 
         if (DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
             final String dbgText = " " + getBindingAdapterPosition() + '/'
-                                   + rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
+                                   + rowData.getLong(DBKey.BL_NODE.ROW_ID);
 
             // just hang it of the existing text view.
             final CharSequence text = textView.getText();

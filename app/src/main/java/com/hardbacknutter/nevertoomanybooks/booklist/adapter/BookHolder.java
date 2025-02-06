@@ -344,7 +344,7 @@ public class BookHolder
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
             if (dbgRowIdView != null) {
                 final String txt = String.valueOf(getBindingAdapterPosition()) + '/'
-                                   + rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
+                                   + rowData.getLong(DBKey.BL_NODE.ROW_ID);
                 dbgRowIdView.setText(txt);
             }
         }

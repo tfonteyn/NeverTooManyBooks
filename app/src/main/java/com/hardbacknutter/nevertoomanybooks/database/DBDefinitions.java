@@ -1797,26 +1797,26 @@ public final class DBDefinitions {
         TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings", "bl_ns");
 
         DOM_BL_NODE_KEY =
-                new Domain.Builder(DBKey.BL_NODE_KEY, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.BL_NODE.KEY, SqLiteDataType.Text)
                         .build();
 
         DOM_BL_NODE_GROUP =
-                new Domain.Builder(DBKey.BL_NODE_GROUP, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.BL_NODE.GROUP, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
         DOM_BL_NODE_LEVEL =
-                new Domain.Builder(DBKey.BL_NODE_LEVEL, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.BL_NODE.LEVEL, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
         DOM_BL_NODE_VISIBLE =
-                new Domain.Builder(DBKey.BL_NODE_VISIBLE, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.BL_NODE.VISIBLE, SqLiteDataType.Integer)
                         .withDefault(false)
                         .build();
 
         DOM_BL_NODE_EXPANDED =
-                new Domain.Builder(DBKey.BL_NODE_EXPANDED, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.BL_NODE.EXPANDED, SqLiteDataType.Integer)
                         .withDefault(false)
                         .build();
 

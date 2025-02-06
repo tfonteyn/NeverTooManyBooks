@@ -93,7 +93,7 @@ public final class DataHolderUtils {
             if (!list.isEmpty()) {
                 author = list.get(0);
             }
-        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (dataHolder.getInt(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
             final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             // sanity check
@@ -137,7 +137,7 @@ public final class DataHolderUtils {
             if (!list.isEmpty()) {
                 series = list.get(0);
             }
-        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (dataHolder.getInt(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
             final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             // sanity check
@@ -182,7 +182,7 @@ public final class DataHolderUtils {
             if (!list.isEmpty()) {
                 bookshelf = list.get(0);
             }
-        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (dataHolder.getInt(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
             final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             // sanity check
@@ -228,7 +228,7 @@ public final class DataHolderUtils {
             if (!list.isEmpty()) {
                 result = list.get(0);
             }
-        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (dataHolder.getInt(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
             final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             // sanity check
@@ -272,7 +272,7 @@ public final class DataHolderUtils {
             if (!list.isEmpty()) {
                 result = list.get(0);
             }
-        } else if (dataHolder.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (dataHolder.getInt(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
             final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             // sanity check

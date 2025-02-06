@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -184,9 +184,9 @@ public class BooklistNodeDao {
         // levelOperand is concatenated!!!
         final String sql =
                 Sql.UPDATE_ + listTable.getName()
-                + Sql._SET_ + DBKey.BL_NODE_EXPANDED + "=?," + DBKey.BL_NODE_VISIBLE
+                + Sql._SET_ + DBKey.BL_NODE.EXPANDED + "=?," + DBKey.BL_NODE.VISIBLE
                 + "=?"
-                + Sql._WHERE_ + DBKey.BL_NODE_LEVEL + levelOperand + "?";
+                + Sql._WHERE_ + DBKey.BL_NODE.LEVEL + levelOperand + "?";
 
         final int rowsUpdated;
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
@@ -580,20 +580,20 @@ public class BooklistNodeDao {
                 + Sql._AND_
                 + TBL_BOOK_LIST_NODE_STATE.dot(DBKey.FK_STYLE) + "=?"
                 + Sql._AND_
-                + listTable.dot(DBKey.BL_NODE_KEY) + "="
-                + TBL_BOOK_LIST_NODE_STATE.dot(DBKey.BL_NODE_KEY)
+                + listTable.dot(DBKey.BL_NODE.KEY) + "="
+                + TBL_BOOK_LIST_NODE_STATE.dot(DBKey.BL_NODE.KEY)
                 + Sql._AND_
-                + listTable.dot(DBKey.BL_NODE_LEVEL) + "="
-                + TBL_BOOK_LIST_NODE_STATE.dot(DBKey.BL_NODE_LEVEL)
+                + listTable.dot(DBKey.BL_NODE.LEVEL) + "="
+                + TBL_BOOK_LIST_NODE_STATE.dot(DBKey.BL_NODE.LEVEL)
                 + Sql._AND_
-                + listTable.dot(DBKey.BL_NODE_GROUP) + "="
-                + TBL_BOOK_LIST_NODE_STATE.dot(DBKey.BL_NODE_GROUP)
+                + listTable.dot(DBKey.BL_NODE.GROUP) + "="
+                + TBL_BOOK_LIST_NODE_STATE.dot(DBKey.BL_NODE.GROUP)
                 + Sql._AND_
                 + TBL_BOOK_LIST_NODE_STATE.dot("%s") + "=1"
                 + ")";
 
-        restoreSavedState(sqlTemplate, DBKey.BL_NODE_EXPANDED);
-        restoreSavedState(sqlTemplate, DBKey.BL_NODE_VISIBLE);
+        restoreSavedState(sqlTemplate, DBKey.BL_NODE.EXPANDED);
+        restoreSavedState(sqlTemplate, DBKey.BL_NODE.VISIBLE);
 
         adjustVisibility();
     }
@@ -708,22 +708,22 @@ public class BooklistNodeDao {
         private static final String SAVE_ALL_NODES =
                 "INSERT INTO " + TBL_BOOK_LIST_NODE_STATE
                 + " (" + DBKey.FK_BOOKSHELF + ',' + DBKey.FK_STYLE
-                + ',' + DBKey.BL_NODE_KEY
-                + ',' + DBKey.BL_NODE_LEVEL
-                + ',' + DBKey.BL_NODE_GROUP
-                + ',' + DBKey.BL_NODE_EXPANDED
-                + ',' + DBKey.BL_NODE_VISIBLE
+                + ',' + DBKey.BL_NODE.KEY
+                + ',' + DBKey.BL_NODE.LEVEL
+                + ',' + DBKey.BL_NODE.GROUP
+                + ',' + DBKey.BL_NODE.EXPANDED
+                + ',' + DBKey.BL_NODE.VISIBLE
                 + ") "
                 + SELECT_DISTINCT_ + "?,?"
-                + ',' + DBKey.BL_NODE_KEY
-                + ',' + DBKey.BL_NODE_LEVEL
-                + ',' + DBKey.BL_NODE_GROUP
-                + ',' + DBKey.BL_NODE_EXPANDED
-                + ',' + DBKey.BL_NODE_VISIBLE
+                + ',' + DBKey.BL_NODE.KEY
+                + ',' + DBKey.BL_NODE.LEVEL
+                + ',' + DBKey.BL_NODE.GROUP
+                + ',' + DBKey.BL_NODE.EXPANDED
+                + ',' + DBKey.BL_NODE.VISIBLE
 
                 + _FROM_ + /* listTable.getName() */ "%s"
-                + _WHERE_ + "(" + DBKey.BL_NODE_EXPANDED + "=1 OR "
-                + DBKey.BL_NODE_VISIBLE + "=1)";
+                + _WHERE_ + "(" + DBKey.BL_NODE.EXPANDED + "=1 OR "
+                + DBKey.BL_NODE.VISIBLE + "=1)";
         /** Insert statement for {@link #saveNodesBetween}. */
         private static final String SAVE_NODES_BETWEEN =
                 SAVE_ALL_NODES + _AND_ + DBKey.PK_ID + ">=? AND " + DBKey.PK_ID + "<?";
@@ -733,16 +733,16 @@ public class BooklistNodeDao {
                 DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
                 + _WHERE_ + DBKey.FK_BOOKSHELF + "=?" + _AND_ + DBKey.FK_STYLE + "=?"
                 // but leave the parent levels untouched
-                + _AND_ + DBKey.BL_NODE_LEVEL + ">=?"
+                + _AND_ + DBKey.BL_NODE.LEVEL + ">=?"
                 // and only between the given nodes
-                + _AND_ + DBKey.BL_NODE_KEY + " IN ("
-                + SELECT_DISTINCT_ + DBKey.BL_NODE_KEY + _FROM_
+                + _AND_ + DBKey.BL_NODE.KEY + " IN ("
+                + SELECT_DISTINCT_ + DBKey.BL_NODE.KEY + _FROM_
                 + /* listTable.getName() */ "%s"
                 + _WHERE_ + DBKey.PK_ID + ">=? AND " + DBKey.PK_ID + "<? )";
         /** {@link #findNextNode}. */
         private static final String FIND_NEXT_NODE =
                 SELECT_ + DBKey.PK_ID + _FROM_ + /* listTable.getName() */ "%s"
-                + _WHERE_ + DBKey.PK_ID + ">?" + _AND_ + DBKey.BL_NODE_LEVEL + "<=?"
+                + _WHERE_ + DBKey.PK_ID + ">?" + _AND_ + DBKey.BL_NODE.LEVEL + "<=?"
                 + _ORDER_BY_ + DBKey.PK_ID + " LIMIT 1";
 
         /**
@@ -751,7 +751,7 @@ public class BooklistNodeDao {
          */
         private static final String COLLAPSE_AND_HIDE_NODES_BETWEEN =
                 UPDATE_ + /* listTable.getName() */ "%s"
-                + _SET_ + DBKey.BL_NODE_VISIBLE + "=0," + DBKey.BL_NODE_EXPANDED + "=0"
+                + _SET_ + DBKey.BL_NODE.VISIBLE + "=0," + DBKey.BL_NODE.EXPANDED + "=0"
                 + _WHERE_ + DBKey.PK_ID + ">?" + _AND_ + DBKey.PK_ID + "<?";
 
         /**
@@ -760,9 +760,9 @@ public class BooklistNodeDao {
          */
         private static final String UPDATE_NODES_BETWEEN_1 =
                 UPDATE_ + /* listTable.getName() */ "%s"
-                + _SET_ + DBKey.BL_NODE_VISIBLE + "=1," + DBKey.BL_NODE_EXPANDED + "=1"
+                + _SET_ + DBKey.BL_NODE.VISIBLE + "=1," + DBKey.BL_NODE.EXPANDED + "=1"
                 + _WHERE_ + DBKey.PK_ID + ">?" + _AND_ + DBKey.PK_ID + "<?"
-                + _AND_ + DBKey.BL_NODE_LEVEL + "<?";
+                + _AND_ + DBKey.BL_NODE.LEVEL + "<?";
 
         /**
          * {@link #showAndExpandNodesBetween}.
@@ -770,33 +770,33 @@ public class BooklistNodeDao {
          */
         private static final String UPDATE_NODES_BETWEEN_2 =
                 UPDATE_ + /* listTable.getName() */ "%s"
-                + _SET_ + DBKey.BL_NODE_VISIBLE + "=1," + DBKey.BL_NODE_EXPANDED + "=0"
+                + _SET_ + DBKey.BL_NODE.VISIBLE + "=1," + DBKey.BL_NODE.EXPANDED + "=0"
                 + _WHERE_ + DBKey.PK_ID + ">?" + _AND_ + DBKey.PK_ID + "<?"
-                + _AND_ + DBKey.BL_NODE_LEVEL + "=?";
+                + _AND_ + DBKey.BL_NODE.LEVEL + "=?";
 
 
         /** {@link #updateNode}. */
         private static final String UPDATE_NODE =
                 UPDATE_ + /* listTable.getName() */ "%s"
-                + _SET_ + DBKey.BL_NODE_EXPANDED + "=?"
-                + ',' + DBKey.BL_NODE_VISIBLE + "=1"
+                + _SET_ + DBKey.BL_NODE.EXPANDED + "=?"
+                + ',' + DBKey.BL_NODE.VISIBLE + "=1"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** {@link #adjustVisibility()}. */
         private static final String ADJUST_VISIBILITY_1 =
-                SELECT_DISTINCT_ + DBKey.BL_NODE_KEY + ',' + DBKey.BL_NODE_LEVEL
+                SELECT_DISTINCT_ + DBKey.BL_NODE.KEY + ',' + DBKey.BL_NODE.LEVEL
                 + _FROM_ + /* listTable.getName() */ "%s"
-                + _WHERE_ + DBKey.BL_NODE_VISIBLE + "=1"
+                + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=1"
                 // Groups only - Don't do books
-                + _AND_ + DBKey.BL_NODE_LEVEL + " BETWEEN 2 AND ?";
+                + _AND_ + DBKey.BL_NODE.LEVEL + " BETWEEN 2 AND ?";
 
         /** {@link #adjustVisibility()}. */
         private static final String ADJUST_VISIBILITY_2 =
                 UPDATE_ + /* listTable.getName() */ "%s"
-                + _SET_ + DBKey.BL_NODE_VISIBLE + "=1"
-                + _WHERE_ + DBKey.BL_NODE_VISIBLE + "=0"
-                + _AND_ + DBKey.BL_NODE_LEVEL + "=?"
-                + _AND_ + DBKey.BL_NODE_KEY + " LIKE ?";
+                + _SET_ + DBKey.BL_NODE.VISIBLE + "=1"
+                + _WHERE_ + DBKey.BL_NODE.VISIBLE + "=0"
+                + _AND_ + DBKey.BL_NODE.LEVEL + "=?"
+                + _AND_ + DBKey.BL_NODE.KEY + " LIKE ?";
 
         /** Maintenance/debug usage. Simple clear all state data. */
         private static final String DELETE_ALL = DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE;
