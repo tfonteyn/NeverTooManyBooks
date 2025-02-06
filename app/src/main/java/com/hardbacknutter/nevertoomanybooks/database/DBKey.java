@@ -36,6 +36,20 @@ public final class DBKey {
     public static final String FK_BOOK = "book";
     /** Foreign key. */
     public static final String FK_AUTHOR = "author";
+    /**
+     * Foreign key.
+     * {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR}.
+     * References {@link DBDefinitions#TBL_AUTHORS}.
+     */
+    public static final String FK_AUTHOR_PSEUDONYM = "pseudonym";
+    /**
+     * Foreign key.
+     * {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR}.
+     * References {@link DBDefinitions#TBL_AUTHORS}.
+     * Dev. note: We SHOULD have used FK_AUTHOR key.
+     */
+    public static final String FK_AUTHOR_REAL_AUTHOR = "real_author";
+
     /** Foreign key. */
     public static final String FK_SERIES = "series_id";
     /** Foreign key. */
@@ -55,40 +69,14 @@ public final class DBKey {
 
     // Adding new FK's...  make sure to name them "xxx_id" to avoid duplicate use of "xxx"
 
-    /*
-     * ======================================================================================
-     * External Site id's.
-     * ======================================================================================
-     */
-
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
     public static final String BOOK_IDENTIFIER_SID = "sid";
-
-
-    /* Aliases for CASE expressions. */
-
-    /**
-     * Foreign key.
-     * {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR}.
-     * This is a FK to {@link DBDefinitions#TBL_AUTHORS}.
-     */
-    public static final String FK_AUTHOR_PSEUDONYM = "pseudonym";
-    /**
-     * Foreign key.
-     * {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR}.
-     * This is a FK to {@link DBDefinitions#TBL_AUTHORS}.
-     * Dev. note: We SHOULD just have used "author" for the column name,
-     * i.e. we SHOULD have used FK_AUTHOR key.
-     */
-    public static final String FK_AUTHOR_REAL_AUTHOR = "real_author";
 
     /** {@link DBDefinitions#TBL_TOC_ENTRIES}. */
     public static final String BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
 
-
     /** Suffix added to a price column name to create a joined currency column. */
     public static final String CURRENCY_SUFFIX = "_currency";
-
 
     /** {@link DBDefinitions#TBL_BOOKS}. */
     public static final String DATE_ADDED__UTC = "date_added";
@@ -131,7 +119,6 @@ public final class DBKey {
      */
     public static final String BOOK_CONTENT_TYPE = "anthology";
 
-
     /** {@link DBDefinitions#TBL_BOOKS} Personal data. */
     public static final String PRICE_PAID = "price_paid";
     public static final String PRICE_PAID_CURRENCY = PRICE_PAID + CURRENCY_SUFFIX;
@@ -162,7 +149,6 @@ public final class DBKey {
 
     /** Alias. */
     public static final String BOOK_COUNT = "book_count";
-
 
     /** Column alias for {@link AuthorWork.Type}. */
     public static final String AUTHOR_WORK_TYPE = "work_type";
