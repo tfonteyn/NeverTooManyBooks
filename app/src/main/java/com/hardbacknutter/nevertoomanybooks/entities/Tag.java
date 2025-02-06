@@ -83,7 +83,7 @@ public class Tag
     public Tag(final long id,
                @NonNull final DataHolder rowData) {
         this.id = id;
-        name = rowData.getString(DBKey.TAG);
+        name = rowData.getString(DBKey.TAGS.TAG);
     }
 
     private Tag(@NonNull final Parcel in) {

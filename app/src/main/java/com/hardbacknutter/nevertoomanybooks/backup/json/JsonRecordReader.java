@@ -570,7 +570,7 @@ public class JsonRecordReader
 
     private void readTags(@NonNull final JSONObject root) {
         // a sub container for {@link Tag} objects.
-        final JSONArray elements = root.optJSONArray(DBKey.TAG);
+        final JSONArray elements = root.optJSONArray(DBKey.TAGS.TAG);
         if (elements != null) {
             final List<Tag> list = new TagCoder().decode(elements);
             if (!list.isEmpty()) {
@@ -582,7 +582,7 @@ public class JsonRecordReader
 
     private void readTagMappings(@NonNull final JSONObject root) {
         // a sub container for {@link TagMapping} objects.
-        final JSONArray elements = root.optJSONArray(DBKey.TAG_MAPPING);
+        final JSONArray elements = root.optJSONArray(DBKey.TAGS.TAG_MAPPING);
         if (elements != null) {
             final TagMappingDao dao = ServiceLocator.getInstance().getTagMappingDao();
 

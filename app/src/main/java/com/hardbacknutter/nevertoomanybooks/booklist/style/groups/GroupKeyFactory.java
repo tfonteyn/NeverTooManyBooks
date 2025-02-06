@@ -310,7 +310,7 @@ public final class GroupKeyFactory {
                                                 BooklistGroup.BlgDBKey.SORT_TAG,
                                                 SqLiteDataType.Text)
                                                 .build(),
-                                        TBL_TAGS.dot(DBKey.TAG),
+                                        TBL_TAGS.dot(DBKey.TAGS.TAG),
                                         Sort.Asc))
                         .addGroupDomain(
                                 new DomainExpression(DOM_FK_TAG,

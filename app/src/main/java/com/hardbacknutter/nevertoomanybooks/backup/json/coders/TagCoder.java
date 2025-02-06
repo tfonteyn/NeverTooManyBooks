@@ -35,7 +35,7 @@ public class TagCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
         out.put(DBKey.PK_ID, tag.getId());
-        out.put(DBKey.TAG, tag.getName());
+        out.put(DBKey.TAGS.TAG, tag.getName());
         return out;
     }
 
@@ -43,7 +43,7 @@ public class TagCoder
     @NonNull
     public Tag decode(@NonNull final JSONObject data)
             throws JSONException {
-        final Tag tag = new Tag(data.getString(DBKey.TAG));
+        final Tag tag = new Tag(data.getString(DBKey.TAGS.TAG));
         tag.setId(data.getLong(DBKey.PK_ID));
         return tag;
     }

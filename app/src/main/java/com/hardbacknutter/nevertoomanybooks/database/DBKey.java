@@ -138,12 +138,6 @@ public final class DBKey {
     /** Flag: the user can 'lock' (i.e. set 'false') a book from being automatically updated. */
     public static final String AUTO_UPDATE = "auto_update";
 
-    /** {@link DBDefinitions#TBL_TAGS}. Localized. */
-    public static final String TAG = "tag";
-
-    /** {@link DBDefinitions#TBL_TAG_MAPPINGS}. Localized. */
-    public static final String TAG_MAPPING = "mapping";
-
     /** {@link DBDefinitions#TBL_BOOK_LOANEE}. */
     public static final String LOANEE_NAME = "loaned_to";
 
@@ -448,6 +442,32 @@ public final class DBKey {
         public static final String BOOK_URI = "book_uri";
 
         private IDENTIFIERS() {
+        }
+    }
+
+    public static final class TAGS {
+
+        /**
+         * {@link DBDefinitions#TBL_TAGS}.
+         * {@link DBDefinitions#TBL_TAG_MAPPINGS}.
+         * <p>
+         * The tag itself + the name of the tag-mapping.
+         * The tables are linked by this text field in joins,
+         * but NOT enforced by reference.
+         * <p>
+         * Localized.
+         */
+        public static final String TAG = "tag";
+        /**
+         * {@link DBDefinitions#TBL_TAG_MAPPINGS}.
+         * <p>
+         * The encoded list of mappings.
+         * <p>
+         * Localized.
+         */
+        public static final String TAG_MAPPING = "mapping";
+
+        private TAGS() {
         }
     }
 

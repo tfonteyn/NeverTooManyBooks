@@ -256,13 +256,14 @@ public class JsonRecordWriter
                 // a sub container for {@link Tag} objects.
                 final List<Tag> tags = ServiceLocator.getInstance().getTagDao().getAll();
                 if (!tags.isEmpty()) {
-                    container.put(DBKey.TAG, new TagCoder().encode(tags));
+                    container.put(DBKey.TAGS.TAG, new TagCoder().encode(tags));
                 }
                 // a sub container for {@link TagMapping} objects.
                 final List<TagMapping> tagMappings =
                         ServiceLocator.getInstance().getTagMappingDao().getAll();
                 if (!tagMappings.isEmpty()) {
-                    container.put(DBKey.TAG_MAPPING, new TagMappingCoder().encode(tagMappings));
+                    container.put(DBKey.TAGS.TAG_MAPPING,
+                                  new TagMappingCoder().encode(tagMappings));
                 }
 
                 // write the outer container as needed.

@@ -553,18 +553,18 @@ public class TagDaoImpl
         /** Insert a {@link Tag}. */
         static final String INSERT =
                 INSERT_INTO_ + TBL_TAGS.getName()
-                + '(' + DBKey.TAG
+                + '(' + DBKey.TAGS.TAG
                 + ") VALUES (?)";
 
         static final String INSERT_BULK =
                 INSERT_OR_IGNORE_INTO_ + TBL_TAGS.getName()
-                + "(" + DBKey.TAG
+                + "(" + DBKey.TAGS.TAG
                 + ") VALUES (?)";
 
         /** Update a {@link Tag}. */
         static final String UPDATE =
                 UPDATE_ + TBL_TAGS.getName()
-                + _SET_ + DBKey.TAG + "=?"
+                + _SET_ + DBKey.TAGS.TAG + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Tag}. */
@@ -572,26 +572,26 @@ public class TagDaoImpl
                 DELETE_FROM_ + TBL_TAGS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
         static final String GET_ALL =
-                SELECT_ + DBKey.PK_ID + ',' + DBKey.TAG
+                SELECT_ + DBKey.PK_ID + ',' + DBKey.TAGS.TAG
                 + _FROM_ + TBL_TAGS.getName()
-                + _ORDER_BY_ + DBKey.TAG;
+                + _ORDER_BY_ + DBKey.TAGS.TAG;
 
         static final String FIND_BY_ID =
-                SELECT_ + DBKey.PK_ID + ',' + DBKey.TAG
+                SELECT_ + DBKey.PK_ID + ',' + DBKey.TAGS.TAG
                 + _FROM_ + TBL_TAGS.getName()
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         static final String FIND_BY_NAME =
-                SELECT_ + DBKey.PK_ID + ',' + DBKey.TAG
+                SELECT_ + DBKey.PK_ID + ',' + DBKey.TAGS.TAG
                 + _FROM_ + TBL_TAGS.getName()
-                + _WHERE_ + DBKey.TAG + "=?";
+                + _WHERE_ + DBKey.TAGS.TAG + "=?";
 
         static final String FIND_BY_BOOK_ID =
                 SELECT_ + TBL_TAGS.dotAs(DBKey.PK_ID)
-                + ',' + TBL_TAGS.dotAs(DBKey.TAG)
+                + ',' + TBL_TAGS.dotAs(DBKey.TAGS.TAG)
                 + _FROM_ + TBL_BOOK_TAG.startJoin(TBL_TAGS)
                 + _WHERE_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK) + "=?"
-                + _ORDER_BY_ + DBKey.TAG;
+                + _ORDER_BY_ + DBKey.TAGS.TAG;
 
         /** Insert the link between a {@link Book} and a {@link Identifier}. */
         static final String INSERT_BOOK_LINK =
@@ -624,7 +624,7 @@ public class TagDaoImpl
          */
         static final String FIND_BOOKS_WITH_TAGS =
                 SELECT_ + TBL_BOOK_TAG.dotAs(DBKey.FK_BOOK)
-                + ',' + "GROUP_CONCAT(" + TBL_TAGS.dot(DBKey.TAG) + ", '\\,')"
+                + ',' + "GROUP_CONCAT(" + TBL_TAGS.dot(DBKey.TAGS.TAG) + ", '\\,')"
                 + _FROM_ + TBL_BOOK_TAG.ref() + TBL_BOOK_TAG.leftOuterJoin(TBL_TAGS)
                 + _GROUP_BY_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK);
     }

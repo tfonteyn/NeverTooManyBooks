@@ -564,7 +564,7 @@ public final class LegacyUpgrades {
 
         final String sqlInsertTag =
                 "INSERT INTO " + DBDefinitions.TBL_TAGS.getName()
-                + '(' + DBKey.TAG + ") VALUES (?)";
+                + '(' + DBKey.TAGS.TAG + ") VALUES (?)";
 
         final String sqlLinkBook =
                 "INSERT INTO " + DBDefinitions.TBL_BOOK_TAG.getName()

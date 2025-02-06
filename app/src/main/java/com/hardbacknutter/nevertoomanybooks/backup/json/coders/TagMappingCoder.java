@@ -40,12 +40,12 @@ public class TagMappingCoder
         final JSONObject out = new JSONObject();
 
         out.put(DBKey.PK_ID, tagMapping.getId());
-        out.put(DBKey.TAG, tagMapping.getName());
+        out.put(DBKey.TAGS.TAG, tagMapping.getName());
         // yes, out.put(@NonNull String key, @Nullable Collection<?> value)
         // would have worked. But this makes it blatantly clear how decode must work.
         final JSONArray a = new JSONArray();
         tagMapping.getMappings().forEach(a::put);
-        out.put(DBKey.TAG_MAPPING, a);
+        out.put(DBKey.TAGS.TAG_MAPPING, a);
 
         return out;
     }
@@ -54,10 +54,10 @@ public class TagMappingCoder
     @NonNull
     public TagMapping decode(@NonNull final JSONObject data)
             throws JSONException {
-        final String name = data.getString(DBKey.TAG);
+        final String name = data.getString(DBKey.TAGS.TAG);
         final Set<String> mappings = new HashSet<>();
 
-        final JSONArray a = data.getJSONArray(DBKey.TAG_MAPPING);
+        final JSONArray a = data.getJSONArray(DBKey.TAGS.TAG_MAPPING);
         for (int i = 0; i < a.length(); i++) {
             mappings.add(a.getString(i));
         }

@@ -192,21 +192,21 @@ public class TagMappingDaoImpl
 
         static final String FIND_BY_NAME =
                 SELECT_ + DBKey.PK_ID
-                + ',' + DBKey.TAG
-                + ',' + DBKey.TAG_MAPPING
+                + ',' + DBKey.TAGS.TAG
+                + ',' + DBKey.TAGS.TAG_MAPPING
                 + _FROM_ + TBL_TAG_MAPPINGS.getName()
-                + _WHERE_ + DBKey.TAG + "=?";
+                + _WHERE_ + DBKey.TAGS.TAG + "=?";
 
         static final String INSERT =
                 INSERT_INTO_ + TBL_TAG_MAPPINGS.getName()
-                + '(' + DBKey.TAG
-                + ',' + DBKey.TAG_MAPPING
+                + '(' + DBKey.TAGS.TAG
+                + ',' + DBKey.TAGS.TAG_MAPPING
                 + ") VALUES(?,?)";
 
         static final String UPDATE =
                 UPDATE_ + TBL_TAG_MAPPINGS.getName()
-                + _SET_ + DBKey.TAG + "=?"
-                + ',' + DBKey.TAG_MAPPING + "=?"
+                + _SET_ + DBKey.TAGS.TAG + "=?"
+                + ',' + DBKey.TAGS.TAG_MAPPING + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         static final String DELETE_BY_ID =
@@ -215,9 +215,9 @@ public class TagMappingDaoImpl
 
         static final String GET_ALL =
                 SELECT_ + DBKey.PK_ID
-                + ',' + DBKey.TAG
-                + ',' + DBKey.TAG_MAPPING
+                + ',' + DBKey.TAGS.TAG
+                + ',' + DBKey.TAGS.TAG_MAPPING
                 + _FROM_ + TBL_TAG_MAPPINGS.getName()
-                + _ORDER_BY_ + DBKey.TAG;
+                + _ORDER_BY_ + DBKey.TAGS.TAG;
     }
 }

@@ -89,8 +89,8 @@ public class TagMapping
     public TagMapping(final long id,
                       @NonNull final DataHolder rowData) {
         this.id = id;
-        name = rowData.getString(DBKey.TAG);
-        final String tmp = rowData.getString(DBKey.TAG_MAPPING);
+        name = rowData.getString(DBKey.TAGS.TAG);
+        final String tmp = rowData.getString(DBKey.TAGS.TAG_MAPPING);
         mappings = decodeMappingString(tmp);
     }
 
