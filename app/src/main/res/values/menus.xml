@@ -154,7 +154,7 @@
 
     <item name="MENU_GROUP_AUTHOR_WORKS"
           type="id" />
-    <item name="MENU_AUTHOR_WORKS_FILTER"
+    <item name="MENU_AUTHOR_WORKS_LIST"
           type="id" />
     <item name="MENU_AUTHOR_WORKS_FILTER_ALL"
           type="id" />

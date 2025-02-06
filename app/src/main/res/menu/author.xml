@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -23,7 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@id/MENU_AUTHOR_WORKS_FILTER"
+        android:id="@id/MENU_AUTHOR_WORKS_LIST"
         android:icon="@drawable/details_24px"
         android:title="@string/option_author_details" />
 

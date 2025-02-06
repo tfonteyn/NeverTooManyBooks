@@ -2102,7 +2102,7 @@ public class BooksOnBookshelf
         private boolean onAuthor(@NonNull final Context context,
                                  @IdRes final int menuItemId,
                                  @NonNull final DataHolder rowData) {
-            if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER) {
+            if (menuItemId == R.id.MENU_AUTHOR_WORKS_LIST) {
                 authorWorksLauncher.launch(new AuthorWorksContract.Input(
                         rowData.getLong(DBKey.FK_AUTHOR),
                         vm.getBookshelf().getId(),

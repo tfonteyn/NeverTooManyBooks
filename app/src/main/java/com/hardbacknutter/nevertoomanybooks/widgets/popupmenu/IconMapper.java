@@ -64,7 +64,7 @@ final class IconMapper {
 
 
             // R.menu.author
-            Map.entry(R.id.MENU_AUTHOR_WORKS_FILTER, R.drawable.details_24px),
+            Map.entry(R.id.MENU_AUTHOR_WORKS_LIST, R.drawable.details_24px),
             Map.entry(R.id.MENU_AUTHOR_SET_COMPLETE, R.drawable.check_box_24px),
             Map.entry(R.id.MENU_AUTHOR_SET_INCOMPLETE, R.drawable.check_box_outline_blank_24px),
             Map.entry(R.id.MENU_AUTHOR_EDIT, R.drawable.edit_24px),
