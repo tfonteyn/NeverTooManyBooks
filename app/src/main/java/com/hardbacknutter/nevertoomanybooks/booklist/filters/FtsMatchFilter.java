@@ -46,7 +46,7 @@ public class FtsMatchFilter
     public String getExpression() {
         return '(' + TBL_BOOKS.dot(DBKey.PK_ID) + " IN ("
                // fetch the ID's only
-               + "SELECT " + DBKey.FTS_BOOK_ID
+               + "SELECT " + DBKey.FTS.PK_BOOK_ID
                + " FROM " + TBL_FTS_BOOKS.getName()
                + " WHERE " + TBL_FTS_BOOKS.getName()
                + " MATCH '" + matchClause + "')"

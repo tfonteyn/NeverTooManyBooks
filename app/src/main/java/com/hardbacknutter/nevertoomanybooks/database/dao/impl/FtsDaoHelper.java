@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -164,7 +164,7 @@ public final class FtsDaoHelper {
                                                      @Nullable final String keywords) {
 
         final String query = (prepareSearchText(keywords, null)
-                              + prepareSearchText(author, DBKey.FTS_AUTHOR_NAME)
+                              + prepareSearchText(author, DBKey.FTS.AUTHOR_NAME)
                               + prepareSearchText(bookTitle, DBKey.TITLE)
                               + prepareSearchText(seriesTitle, DBKey.SERIES_TITLE)
                               + prepareSearchText(publisherName, DBKey.PUBLISHER_NAME)

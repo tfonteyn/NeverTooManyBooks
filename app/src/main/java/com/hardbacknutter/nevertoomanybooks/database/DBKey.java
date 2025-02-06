@@ -306,20 +306,6 @@ public final class DBKey {
     /** Column alias for {@link AuthorWork.Type}. */
     public static final String AUTHOR_WORK_TYPE = "work_type";
 
-    /** FTS Primary key. */
-    public static final String FTS_BOOK_ID = "docid";
-    /**
-     * {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Authors.
-     * Example: "stephen baxter;arthur c. clarke;"
-     */
-    public static final String FTS_AUTHOR_NAME = "author_name";
-    /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Series. */
-    public static final String FTS_SERIES_NAMES = "series_name";
-    /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Publishers. */
-    public static final String FTS_PUBLISHER_NAMES = "publisher_name";
-    /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated TOC titles. */
-    public static final String FTS_TOC_ENTRY_TITLE = "toc_title";
-
 
     /**
      * All money keys.
@@ -438,6 +424,26 @@ public final class DBKey {
                 "groups_bookshelf_under_each";
 
         private STYLE() {
+        }
+    }
+
+    public static final class FTS {
+
+        /** FTS Primary key. */
+        public static final String PK_BOOK_ID = "docid";
+        /**
+         * {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Authors.
+         * Example: "stephen baxter;arthur c. clarke;"
+         */
+        public static final String AUTHOR_NAME = "author_name";
+        /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Series. */
+        public static final String SERIES_NAMES = "series_name";
+        /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated Publishers. */
+        public static final String PUBLISHER_NAMES = "publisher_name";
+        /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated TOC titles. */
+        public static final String TOC_ENTRY_TITLE = "toc_title";
+
+        private FTS() {
         }
     }
 }

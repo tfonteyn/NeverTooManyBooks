@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,10 +81,10 @@ public class SearchSuggestionProvider
     /** Standard Local-search. */
     private static final String SEARCH_SUGGESTIONS =
             // FTS_BOOK_ID is the _id into the books table.
-            "SELECT " + DBKey.FTS_BOOK_ID + " AS " + DBKey.PK_ID
+            "SELECT " + DBKey.FTS.PK_BOOK_ID + " AS " + DBKey.PK_ID
             + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.TITLE)
                      + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1)
-            + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.FTS_AUTHOR_NAME)
+            + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.FTS.AUTHOR_NAME)
                      + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2)
             + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.TITLE)
                      + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA)

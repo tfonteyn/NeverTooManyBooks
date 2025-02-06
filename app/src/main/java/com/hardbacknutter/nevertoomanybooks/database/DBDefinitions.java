@@ -1855,19 +1855,19 @@ public final class DBDefinitions {
 
     static {
         DOM_FTS_AUTHOR_NAME =
-                new Domain.Builder(DBKey.FTS_AUTHOR_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.FTS.AUTHOR_NAME, SqLiteDataType.Text)
                         .build();
 
         DOM_FTS_SERIES_NAMES =
-                new Domain.Builder(DBKey.FTS_SERIES_NAMES, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.FTS.SERIES_NAMES, SqLiteDataType.Text)
                         .build();
 
         DOM_FTS_PUBLISHER_NAMES =
-                new Domain.Builder(DBKey.FTS_PUBLISHER_NAMES, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.FTS.PUBLISHER_NAMES, SqLiteDataType.Text)
                         .build();
 
         DOM_FTS_TOC_ENTRY_TITLE =
-                new Domain.Builder(DBKey.FTS_TOC_ENTRY_TITLE, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.FTS.TOC_ENTRY_TITLE, SqLiteDataType.Text)
                         .build();
 
         TBL_FTS_BOOKS = createFtsTableDefinition("books_fts");

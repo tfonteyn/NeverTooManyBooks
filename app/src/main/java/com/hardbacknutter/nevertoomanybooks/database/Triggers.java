@@ -254,7 +254,7 @@ final class Triggers {
                + " FOR EACH ROW"
                + " BEGIN"
                + " DELETE FROM " + TBL_FTS_BOOKS.getName()
-               + "  WHERE " + DBKey.FTS_BOOK_ID + "=OLD." + DBKey.PK_ID + ';'
+               + "  WHERE " + DBKey.FTS.PK_BOOK_ID + "=OLD." + DBKey.PK_ID + ';'
                // we must use IGNORE for when we do a sync. i.e.
                // the TBL_DELETED_BOOKS contains a UUID which we imported from another device,
                // and we're syncing the delete on the local device.

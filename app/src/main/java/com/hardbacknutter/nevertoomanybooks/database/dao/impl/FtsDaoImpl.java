@@ -380,16 +380,16 @@ public class FtsDaoImpl
         /** the body of an INSERT INTO [table]. Used more than once. */
         static final String INSERT_BODY =
                 " (" + DBKey.TITLE
-                + ',' + DBKey.FTS_AUTHOR_NAME
+                + ',' + DBKey.FTS.AUTHOR_NAME
                 + ',' + DBKey.SERIES_TITLE
                 + ',' + DBKey.DESCRIPTION
                 + ',' + DBKey.PERSONAL_NOTES
                 + ',' + DBKey.PUBLISHER_NAME
                 + ',' + DBKey.LOCATION
                 + ',' + DBKey.BOOK_ISBN
-                + ',' + DBKey.FTS_TOC_ENTRY_TITLE
+                + ',' + DBKey.FTS.TOC_ENTRY_TITLE
 
-                + ',' + DBKey.FTS_BOOK_ID
+                + ',' + DBKey.FTS.PK_BOOK_ID
                 + ") VALUES (?,?,?,?,?,?,?,?,?, ?)";
 
         /**
@@ -406,16 +406,16 @@ public class FtsDaoImpl
         static final String UPDATE =
                 UPDATE_ + TBL_FTS_BOOKS.getName()
                 + _SET_ + DBKey.TITLE + "=?"
-                + ',' + DBKey.FTS_AUTHOR_NAME + "=?"
+                + ',' + DBKey.FTS.AUTHOR_NAME + "=?"
                 + ',' + DBKey.SERIES_TITLE + "=?"
                 + ',' + DBKey.DESCRIPTION + "=?"
                 + ',' + DBKey.PERSONAL_NOTES + "=?"
                 + ',' + DBKey.PUBLISHER_NAME + "=?"
                 + ',' + DBKey.LOCATION + "=?"
                 + ',' + DBKey.BOOK_ISBN + "=?"
-                + ',' + DBKey.FTS_TOC_ENTRY_TITLE + "=?"
+                + ',' + DBKey.FTS.TOC_ENTRY_TITLE + "=?"
 
-                + _WHERE_ + DBKey.FTS_BOOK_ID + "=?";
+                + _WHERE_ + DBKey.FTS.PK_BOOK_ID + "=?";
 
         /** Used during a full FTS rebuild. Minimal column list. */
         static final String ALL_BOOKS =
@@ -463,7 +463,7 @@ public class FtsDaoImpl
         /** Advanced Local-search. */
         static final String SEARCH =
                 // FTS_BOOK_ID is the _id into the books table.
-                SELECT_ + DBKey.FTS_BOOK_ID
+                SELECT_ + DBKey.FTS.PK_BOOK_ID
                 + _FROM_ + TBL_FTS_BOOKS.getName()
                 + _WHERE_ + TBL_FTS_BOOKS.getName()
                 + " MATCH ? LIMIT ?";
