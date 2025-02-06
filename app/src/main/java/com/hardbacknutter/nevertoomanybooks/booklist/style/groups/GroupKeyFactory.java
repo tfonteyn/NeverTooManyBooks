@@ -262,7 +262,7 @@ public final class GroupKeyFactory {
                                                 BooklistGroup.BlgDBKey.SORT_PUBLISHER,
                                                 SqLiteDataType.Text)
                                                 .build(),
-                                        TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB),
+                                        TBL_PUBLISHERS.dot(DBKey.PUBLISHER.NAME_OB),
                                         Sort.Asc))
                         .addGroupDomain(
                                 new DomainExpression(DOM_FK_PUBLISHER,
@@ -425,7 +425,7 @@ public final class GroupKeyFactory {
                                                     .notNull()
                                                     .build(),
                                             "UPPER(SUBSTR("
-                                            + TBL_BOOKS.dot(DBKey.PUBLISHER_NAME_OB)
+                                            + TBL_BOOKS.dot(DBKey.PUBLISHER.NAME_OB)
                                             + ",1,1))",
                                             Sort.Asc));
             }

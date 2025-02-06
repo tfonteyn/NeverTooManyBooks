@@ -329,7 +329,7 @@ public class FtsDaoImpl
             try (Cursor publishers = db.rawQuery(Sql.GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colPublisherName < 0) {
-                    colPublisherName = publishers.getColumnIndexOrThrow(DBKey.PUBLISHER_NAME);
+                    colPublisherName = publishers.getColumnIndexOrThrow(DBKey.PUBLISHER.NAME);
                 }
 
                 while (publishers.moveToNext()) {
@@ -384,7 +384,7 @@ public class FtsDaoImpl
                 + ',' + DBKey.SERIES_TITLE
                 + ',' + DBKey.DESCRIPTION
                 + ',' + DBKey.PERSONAL_NOTES
-                + ',' + DBKey.PUBLISHER_NAME
+                + ',' + DBKey.PUBLISHER.NAME
                 + ',' + DBKey.LOCATION
                 + ',' + DBKey.BOOK_ISBN
                 + ',' + DBKey.FTS.TOC_ENTRY_TITLE
@@ -410,7 +410,7 @@ public class FtsDaoImpl
                 + ',' + DBKey.SERIES_TITLE + "=?"
                 + ',' + DBKey.DESCRIPTION + "=?"
                 + ',' + DBKey.PERSONAL_NOTES + "=?"
-                + ',' + DBKey.PUBLISHER_NAME + "=?"
+                + ',' + DBKey.PUBLISHER.NAME + "=?"
                 + ',' + DBKey.LOCATION + "=?"
                 + ',' + DBKey.BOOK_ISBN + "=?"
                 + ',' + DBKey.FTS.TOC_ENTRY_TITLE + "=?"
@@ -439,10 +439,10 @@ public class FtsDaoImpl
 
         /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_PUBLISHERS_BY_BOOK_ID =
-                SELECT_ + TBL_PUBLISHERS.dotAs(DBKey.PUBLISHER_NAME)
+                SELECT_ + TBL_PUBLISHERS.dotAs(DBKey.PUBLISHER.NAME)
                 + _FROM_ + TBL_BOOK_PUBLISHER.startJoin(TBL_PUBLISHERS)
                 + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION);
+                + _ORDER_BY_ + TBL_BOOK_PUBLISHER.dot(DBKey.PUBLISHER.BOOK_PUBLISHER_POSITION);
 
         /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_TOC_TITLES_BY_BOOK_ID =

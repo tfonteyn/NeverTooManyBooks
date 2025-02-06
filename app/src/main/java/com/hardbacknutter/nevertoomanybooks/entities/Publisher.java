@@ -90,7 +90,7 @@ public class Publisher
     public Publisher(final long id,
                      @NonNull final DataHolder rowData) {
         this.id = id;
-        name = rowData.getString(DBKey.PUBLISHER_NAME);
+        name = rowData.getString(DBKey.PUBLISHER.NAME);
     }
 
     /**

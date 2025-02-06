@@ -115,13 +115,6 @@ public final class DBKey {
     public static final String BOOK_SERIES_NUMBER = "series_num";
     public static final String BOOK_SERIES_POSITION = "series_position";
 
-    /** {@link DBDefinitions#TBL_PUBLISHERS}. */
-    public static final String PUBLISHER_NAME = "publisher_name";
-    /** {@link DBDefinitions#TBL_BOOK_PUBLISHER}. */
-    public static final String BOOK_PUBLISHER_POSITION = "publisher_position";
-    /** Alias: a list of publisher names as a comma separated list. */
-    public static final String PUBLISHER_NAMES_AS_CSV = "pub_name_csv";
-
     /** {@link DBDefinitions#TBL_TOC_ENTRIES}. */
     public static final String BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
 
@@ -239,7 +232,6 @@ public final class DBKey {
     public static final String AUTHOR_FAMILY_NAME_OB = AUTHOR_FAMILY_NAME + ORDER_BY_SUFFIX;
     public static final String AUTHOR_GIVEN_NAMES_OB = AUTHOR_GIVEN_NAMES + ORDER_BY_SUFFIX;
     public static final String SERIES_TITLE_OB = SERIES_TITLE + ORDER_BY_SUFFIX;
-    public static final String PUBLISHER_NAME_OB = PUBLISHER_NAME + ORDER_BY_SUFFIX;
     public static final String TITLE_OB = TITLE + ORDER_BY_SUFFIX;
 
     /**
@@ -280,6 +272,27 @@ public final class DBKey {
         public static final String FILTER_VALUE = "filter_value";
 
         private BOOKSHELF() {
+        }
+    }
+
+    /**
+     * {@link DBDefinitions#TBL_PUBLISHERS}.
+     * {@link DBDefinitions#TBL_BOOK_PUBLISHER}.
+     */
+    @SuppressWarnings("CheckStyle")
+    public static final class PUBLISHER {
+
+        /** The name, as entered. */
+        public static final String NAME = "publisher_name";
+        /** The reordered name as per user preference for sorting. */
+        public static final String NAME_OB = NAME + ORDER_BY_SUFFIX;
+
+        /** The position in the ordered list of publishers for a book. */
+        public static final String BOOK_PUBLISHER_POSITION = "publisher_position";
+        /** Alias: a list of publisher {@link #NAME}s as a comma separated list. */
+        public static final String BOOK_PUBLISHER_NAMES_AS_CSV = "pub_name_csv";
+
+        private PUBLISHER() {
         }
     }
 

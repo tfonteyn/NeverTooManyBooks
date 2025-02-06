@@ -395,7 +395,7 @@ public class BookCoder {
         final List<Publisher> list = book.getPublishers();
 
         processPublisher(book, publisherCoder, CSV_COLUMN_PUBLISHERS, list);
-        processPublisher(book, publisherCoder, DBKey.PUBLISHER_NAME, list);
+        processPublisher(book, publisherCoder, DBKey.PUBLISHER.NAME, list);
 
         if (!list.isEmpty()) {
             book.setPublishers(list);

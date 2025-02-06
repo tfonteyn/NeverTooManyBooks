@@ -106,7 +106,7 @@ public final class LegacyUpgrades {
         final boolean visSeries = global.getBoolean(
                 PK_FIELDS_VISIBILITY_KEYS + DBKey.SERIES_TITLE, true);
         final boolean visPublisher = global.getBoolean(
-                PK_FIELDS_VISIBILITY_KEYS + DBKey.PUBLISHER_NAME, true);
+                PK_FIELDS_VISIBILITY_KEYS + DBKey.PUBLISHER.NAME, true);
 
         global.edit()
               .putBoolean(PK_FIELDS_VISIBILITY_KEYS + DBKey.FK_SERIES, visSeries)

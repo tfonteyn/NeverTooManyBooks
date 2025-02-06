@@ -125,7 +125,7 @@ final class TestConstants {
         final String list = Arrays.stream(PUBLISHER)
                                   .map(n -> "'" + n + "'")
                                   .collect(Collectors.joining(","));
-        db.delete(TBL_PUBLISHERS.getName(), DBKey.PUBLISHER_NAME
+        db.delete(TBL_PUBLISHERS.getName(), DBKey.PUBLISHER.NAME
                                             + " IN (" + list + ")", null);
     }
 

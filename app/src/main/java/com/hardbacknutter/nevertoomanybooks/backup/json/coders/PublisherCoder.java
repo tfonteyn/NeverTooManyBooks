@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,7 @@ public class PublisherCoder
         final JSONObject out = new JSONObject();
 
         out.put(DBKey.PK_ID, publisher.getId());
-        out.put(DBKey.PUBLISHER_NAME, publisher.getName());
+        out.put(DBKey.PUBLISHER.NAME, publisher.getName());
         return out;
     }
 
@@ -48,7 +48,7 @@ public class PublisherCoder
     public Publisher decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final Publisher publisher = new Publisher(data.getString(DBKey.PUBLISHER_NAME));
+        final Publisher publisher = new Publisher(data.getString(DBKey.PUBLISHER.NAME));
         publisher.setId(data.getLong(DBKey.PK_ID));
         return publisher;
     }

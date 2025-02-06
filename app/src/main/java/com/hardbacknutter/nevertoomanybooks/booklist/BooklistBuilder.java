@@ -1039,7 +1039,7 @@ class BooklistBuilder {
             // the user wants the book to show under all its Publishers
             if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Publisher.getGroupId())) {
                 sb.append(_AND_)
-                  .append(TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION))
+                  .append(TBL_BOOK_PUBLISHER.dot(DBKey.PUBLISHER.BOOK_PUBLISHER_POSITION))
                   .append("=1");
             }
             // Join with Publishers to make the names available

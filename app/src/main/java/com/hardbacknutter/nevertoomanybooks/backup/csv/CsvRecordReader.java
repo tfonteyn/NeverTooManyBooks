@@ -529,7 +529,7 @@ public class CsvRecordReader
                     case "average rating":
                         return BookCoder.Goodreads.AVERAGE_RATING;
                     case "publisher":
-                        return DBKey.PUBLISHER_NAME;
+                        return DBKey.PUBLISHER.NAME;
                     case "binding":
                         return DBKey.FORMAT;
                     case "number of pages":

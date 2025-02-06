@@ -167,7 +167,7 @@ public final class FtsDaoHelper {
                               + prepareSearchText(author, DBKey.FTS.AUTHOR_NAME)
                               + prepareSearchText(bookTitle, DBKey.TITLE)
                               + prepareSearchText(seriesTitle, DBKey.SERIES_TITLE)
-                              + prepareSearchText(publisherName, DBKey.PUBLISHER_NAME)
+                              + prepareSearchText(publisherName, DBKey.PUBLISHER.NAME)
         ).trim();
 
         if (query.isEmpty()) {

@@ -496,7 +496,7 @@ public class BookHolder
 
         String name = null;
         if (showPubName) {
-            name = rowData.getString(DBKey.PUBLISHER_NAME);
+            name = rowData.getString(DBKey.PUBLISHER.NAME);
             showName = !name.isBlank();
         }
 

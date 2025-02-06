@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -69,13 +69,13 @@ public class MaintenanceDaoImpl
             + ',' + DBKey.SERIES_TITLE_OB
             + _FROM_ + TBL_SERIES.getName();
 
-    /** All Publishers for a rebuild of the {@link DBKey#PUBLISHER_NAME_OB} column. */
+    /** All Publishers for a rebuild of the {@link DBKey.PUBLISHER#NAME_OB} column. */
     private static final String SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD =
             // The index of PK_ID, PUBLISHER_NAME, PUBLISHER_NAME_OB is hardcoded
             // Don't change!
             SELECT_ + DBKey.PK_ID
-            + ',' + DBKey.PUBLISHER_NAME
-            + ',' + DBKey.PUBLISHER_NAME_OB
+            + ',' + DBKey.PUBLISHER.NAME
+            + ',' + DBKey.PUBLISHER.NAME_OB
             + _FROM_ + TBL_PUBLISHERS.getName();
 
     /** All Book titles for a rebuild of the {@link DBKey#TITLE_OB} column. */
@@ -199,7 +199,7 @@ public class MaintenanceDaoImpl
             try (Cursor cursor = db.rawQuery(SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, locales,
-                                               cursor, TBL_PUBLISHERS, DBKey.PUBLISHER_NAME_OB);
+                                               cursor, TBL_PUBLISHERS, DBKey.PUBLISHER.NAME_OB);
                 }
             }
 

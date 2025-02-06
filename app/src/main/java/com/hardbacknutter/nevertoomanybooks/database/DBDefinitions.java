@@ -815,20 +815,20 @@ public final class DBDefinitions {
          *  Publisher domains
          * ====================================================================================== */
         DOM_PUBLISHER_NAME =
-                new Domain.Builder(DBKey.PUBLISHER_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.PUBLISHER.NAME, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
         DOM_PUBLISHER_NAME_OB =
-                new Domain.Builder(DBKey.PUBLISHER_NAME_OB, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.PUBLISHER.NAME_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_PUBLISHER_NAMES_AS_CSV =
-                new Domain.Builder(DBKey.PUBLISHER_NAMES_AS_CSV, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.PUBLISHER.BOOK_PUBLISHER_NAMES_AS_CSV, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
@@ -1211,7 +1211,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_PUBLISHER_POSITION =
-                new Domain.Builder(DBKey.BOOK_PUBLISHER_POSITION, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.PUBLISHER.BOOK_PUBLISHER_POSITION, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
@@ -1515,8 +1515,8 @@ public final class DBDefinitions {
                             DOM_PUBLISHER_NAME_OB)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("id", true, DOM_PK_ID)
-                .addIndex(DBKey.PUBLISHER_NAME_OB, false, DOM_PUBLISHER_NAME_OB)
-                .addIndex(DBKey.PUBLISHER_NAME, false, DOM_PUBLISHER_NAME);
+                .addIndex(DBKey.PUBLISHER.NAME_OB, false, DOM_PUBLISHER_NAME_OB)
+                .addIndex(DBKey.PUBLISHER.NAME, false, DOM_PUBLISHER_NAME);
         ALL_TABLES.put(TBL_PUBLISHERS.getName(), TBL_PUBLISHERS);
 
         TBL_BOOKS
@@ -1847,7 +1847,8 @@ public final class DBDefinitions {
                 + ')';
 
         EXP_PUBLISHER_NAME_CSV =
-                "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME) + ",', ')"
+                "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(
+                        DBKey.PUBLISHER.NAME) + ",', ')"
                 + _FROM_ + TBL_PUBLISHERS.startJoin(TBL_BOOK_PUBLISHER)
                 + _WHERE_
                 + TBL_BOOKS.dot(DBKey.PK_ID) + '=' + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK)
