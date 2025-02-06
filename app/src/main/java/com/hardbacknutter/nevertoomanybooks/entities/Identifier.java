@@ -168,11 +168,11 @@ public class Identifier
     public Identifier(final long id,
                       @NonNull final DataHolder rowData) {
         this.id = id;
-        key = rowData.getString(DBKey.IDENT_KEY);
-        type = rowData.getString(DBKey.IDENT_TYPE).charAt(0);
-        name = rowData.getString(DBKey.IDENT_NAME);
-        siteUrl = rowData.getString(DBKey.IDENT_SITE_URL, null);
-        bookUri = rowData.getString(DBKey.IDENT_BOOK_URI, null);
+        key = rowData.getString(DBKey.IDENTIFIERS.KEY);
+        type = rowData.getString(DBKey.IDENTIFIERS.TYPE).charAt(0);
+        name = rowData.getString(DBKey.IDENTIFIERS.NAME);
+        siteUrl = rowData.getString(DBKey.IDENTIFIERS.SITE_URL, null);
+        bookUri = rowData.getString(DBKey.IDENTIFIERS.BOOK_URI, null);
     }
 
     protected Identifier(@NonNull final Parcel in) {

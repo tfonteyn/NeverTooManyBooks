@@ -1037,30 +1037,30 @@ public final class DBDefinitions {
 
         // not localized!
         DOM_IDENTIFIER_KEY =
-                new Domain.Builder(DBKey.IDENT_KEY, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.IDENTIFIERS.KEY, SqLiteDataType.Text)
                         .notNull()
                         .build();
         DOM_IDENTIFIER_TYPE =
-                new Domain.Builder(DBKey.IDENT_TYPE, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.IDENTIFIERS.TYPE, SqLiteDataType.Text)
                         .notNull()
                         .withDefault("'" + Identifier.TYPE_STRING + "'")
                         .build();
         DOM_IDENTIFIER_NAME =
-                new Domain.Builder(DBKey.IDENT_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.IDENTIFIERS.NAME, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
         DOM_IDENTIFIER_SITE_URL =
-                new Domain.Builder(DBKey.IDENT_SITE_URL, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.IDENTIFIERS.SITE_URL, SqLiteDataType.Text)
                         .build();
 
         DOM_IDENTIFIER_BOOK_URI =
-                new Domain.Builder(DBKey.IDENT_BOOK_URI, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.IDENTIFIERS.BOOK_URI, SqLiteDataType.Text)
                         .build();
 
         DOM_BOOK_IDENTIFIER_SID =
-                new Domain.Builder(DBKey.IDENT_SID, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.BOOK_IDENTIFIER_SID, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
@@ -1466,7 +1466,7 @@ public final class DBDefinitions {
                             DOM_IDENTIFIER_SITE_URL,
                             DOM_IDENTIFIER_BOOK_URI)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.IDENT_KEY, true, DOM_IDENTIFIER_KEY);
+                .addIndex(DBKey.IDENTIFIERS.KEY, true, DOM_IDENTIFIER_KEY);
         ALL_TABLES.put(TBL_IDENTIFIERS.getName(), TBL_IDENTIFIERS);
 
         TBL_TAGS

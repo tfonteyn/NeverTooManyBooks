@@ -505,7 +505,7 @@ public final class LegacyUpgrades {
         final Collection<String> legacyValues = IDENTIFIERS.values();
 
         final Map<String, Integer> predef = new HashMap<>();
-        final String predefSql = "SELECT " + DBKey.PK_ID + ',' + DBKey.IDENT_KEY
+        final String predefSql = "SELECT " + DBKey.PK_ID + ',' + DBKey.IDENTIFIERS.KEY
                                  + " FROM " + DBDefinitions.TBL_IDENTIFIERS.getName();
         try (Cursor cursor = db.rawQuery(predefSql, null)) {
             while (cursor.moveToNext()) {
@@ -526,7 +526,7 @@ public final class LegacyUpgrades {
         final String sqlInsert = "INSERT INTO " + DBDefinitions.TBL_BOOK_IDENTIFIER.getName()
                                  + '(' + DBKey.FK_BOOK
                                  + ',' + DBKey.FK_IDENTIFIER
-                                 + ',' + DBKey.IDENT_SID
+                                 + ',' + DBKey.BOOK_IDENTIFIER_SID
                                  + ") VALUES(?,?,?)";
 
         try (Cursor cursor = db.rawQuery(sqlSelect, null);

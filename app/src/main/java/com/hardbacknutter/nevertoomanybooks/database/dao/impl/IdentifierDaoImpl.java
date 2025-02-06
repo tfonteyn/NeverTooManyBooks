@@ -284,8 +284,8 @@ public class IdentifierDaoImpl
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Identifier.Value(
-                        rowData.getString(DBKey.IDENT_KEY),
-                        rowData.getString(DBKey.IDENT_SID)));
+                        rowData.getString(DBKey.IDENTIFIERS.KEY),
+                        rowData.getString(DBKey.BOOK_IDENTIFIER_SID)));
             }
         }
         return list;
@@ -326,21 +326,21 @@ public class IdentifierDaoImpl
         /** Insert an {@link Identifier}. */
         static final String INSERT =
                 INSERT_INTO_ + TBL_IDENTIFIERS.getName()
-                + '(' + DBKey.IDENT_KEY
-                + ',' + DBKey.IDENT_TYPE
-                + ',' + DBKey.IDENT_NAME
-                + ',' + DBKey.IDENT_SITE_URL
-                + ',' + DBKey.IDENT_BOOK_URI
+                + '(' + DBKey.IDENTIFIERS.KEY
+                + ',' + DBKey.IDENTIFIERS.TYPE
+                + ',' + DBKey.IDENTIFIERS.NAME
+                + ',' + DBKey.IDENTIFIERS.SITE_URL
+                + ',' + DBKey.IDENTIFIERS.BOOK_URI
                 + ") VALUES(?,?,?,?,?)";
 
         /** Update an {@link Identifier}. */
         static final String UPDATE =
                 UPDATE_ + TBL_IDENTIFIERS.getName()
-                + _SET_ + DBKey.IDENT_KEY + "=?"
-                + ',' + DBKey.IDENT_TYPE + "=?"
-                + ',' + DBKey.IDENT_NAME + "=?"
-                + ',' + DBKey.IDENT_SITE_URL + "=?"
-                + ',' + DBKey.IDENT_BOOK_URI + "=?"
+                + _SET_ + DBKey.IDENTIFIERS.KEY + "=?"
+                + ',' + DBKey.IDENTIFIERS.TYPE + "=?"
+                + ',' + DBKey.IDENTIFIERS.NAME + "=?"
+                + ',' + DBKey.IDENTIFIERS.SITE_URL + "=?"
+                + ',' + DBKey.IDENTIFIERS.BOOK_URI + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Identifier}. */
@@ -349,15 +349,15 @@ public class IdentifierDaoImpl
 
         static final String SELECT_ALL =
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID,
-                                                DBKey.IDENT_KEY,
-                                                DBKey.IDENT_TYPE,
-                                                DBKey.IDENT_NAME,
-                                                DBKey.IDENT_SITE_URL,
-                                                DBKey.IDENT_BOOK_URI);
+                                                DBKey.IDENTIFIERS.KEY,
+                                                DBKey.IDENTIFIERS.TYPE,
+                                                DBKey.IDENTIFIERS.NAME,
+                                                DBKey.IDENTIFIERS.SITE_URL,
+                                                DBKey.IDENTIFIERS.BOOK_URI);
 
         static final String SELECT_ALL_ORDERED_BY_KEY =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
-                + _ORDER_BY_ + DBKey.IDENT_KEY;
+                + _ORDER_BY_ + DBKey.IDENTIFIERS.KEY;
 
         static final String FIND_BY_ID =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
@@ -365,32 +365,32 @@ public class IdentifierDaoImpl
 
         static final String FIND_BY_KEY =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
-                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_KEY) + "=?";
+                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
 
         static final String FIND_BOOK_ID_BY_IDENTIFIER_KEY_AND_SID =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
-                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_KEY) + "=?"
-                + _AND_ + TBL_BOOK_IDENTIFIER.dot(DBKey.IDENT_SID) + "=?";
+                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?"
+                + _AND_ + TBL_BOOK_IDENTIFIER.dot(DBKey.BOOK_IDENTIFIER_SID) + "=?";
 
         static final String FIND_BY_BOOK_ID =
                 SELECT_ALL
-                + ',' + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENT_SID)
+                + ',' + TBL_BOOK_IDENTIFIER.dotAs(DBKey.BOOK_IDENTIFIER_SID)
                 + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
                 + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_BOOK) + "=?";
 
         static final String FIND_SID_BY_BOOK_ID_AND_IDENTIFIER_KEY =
-                SELECT_ + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENT_SID)
+                SELECT_ + TBL_BOOK_IDENTIFIER.dotAs(DBKey.BOOK_IDENTIFIER_SID)
                 + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
                 + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_BOOK) + "=?"
-                + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENT_KEY) + "=?";
+                + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
 
         /** Insert the link between a {@link Book} and a {@link Identifier}. */
         static final String INSERT_BOOK_LINK =
                 INSERT_INTO_ + TBL_BOOK_IDENTIFIER.getName()
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_IDENTIFIER
-                + ',' + DBKey.IDENT_SID
+                + ',' + DBKey.BOOK_IDENTIFIER_SID
                 + ") VALUES(?,?,?)";
 
         /**

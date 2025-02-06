@@ -45,12 +45,12 @@ public class IdentifierCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
         out.put(DBKey.PK_ID, identifier.getId());
-        out.put(DBKey.IDENT_KEY, identifier.getKey());
-        out.put(DBKey.IDENT_TYPE, String.valueOf(identifier.getType()));
-        out.put(DBKey.IDENT_NAME, identifier.getName());
+        out.put(DBKey.IDENTIFIERS.KEY, identifier.getKey());
+        out.put(DBKey.IDENTIFIERS.TYPE, String.valueOf(identifier.getType()));
+        out.put(DBKey.IDENTIFIERS.NAME, identifier.getName());
         // null urls will be discarded
-        out.put(DBKey.IDENT_SITE_URL, identifier.getSiteUrl(context));
-        out.put(DBKey.IDENT_BOOK_URI, identifier.getBookUri(context));
+        out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl(context));
+        out.put(DBKey.IDENTIFIERS.BOOK_URI, identifier.getBookUri(context));
         return out;
     }
 
@@ -58,12 +58,12 @@ public class IdentifierCoder
     @Override
     public Identifier decode(@NonNull final JSONObject data)
             throws JSONException {
-        final String key = data.getString(DBKey.IDENT_KEY);
-        final char type = data.getString(DBKey.IDENT_TYPE).charAt(0);
-        final String name = data.getString(DBKey.IDENT_NAME);
+        final String key = data.getString(DBKey.IDENTIFIERS.KEY);
+        final char type = data.getString(DBKey.IDENTIFIERS.TYPE).charAt(0);
+        final String name = data.getString(DBKey.IDENTIFIERS.NAME);
         // nulls allowed
-        final String siteUrl = data.optString(DBKey.IDENT_SITE_URL, null);
-        final String bookUrl = data.optString(DBKey.IDENT_BOOK_URI, null);
+        final String siteUrl = data.optString(DBKey.IDENTIFIERS.SITE_URL, null);
+        final String bookUrl = data.optString(DBKey.IDENTIFIERS.BOOK_URI, null);
 
         final Identifier identifier = new Identifier(key, type, name, siteUrl, bookUrl);
         identifier.setId(data.getLong(DBKey.PK_ID));

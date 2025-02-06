@@ -61,22 +61,8 @@ public final class DBKey {
      * ======================================================================================
      */
 
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. The keyword. Not localized. */
-    public static final String IDENT_KEY = "key";
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. Type: a char: S or L. */
-    public static final String IDENT_TYPE = "type";
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. A short name; i.e. website name. Not Localized. */
-    public static final String IDENT_NAME = "name";
-    /** {@link DBDefinitions#TBL_IDENTIFIERS}. URL to the main page of the site. */
-    public static final String IDENT_SITE_URL = "site_url";
-    /**
-     * {@link DBDefinitions#TBL_IDENTIFIERS}. <strong>URI</strong> with a "%s" taking a sid.
-     * Typically a url, but we allow/use all uri style values.
-     */
-    public static final String IDENT_BOOK_URI = "book_uri";
-
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
-    public static final String IDENT_SID = "sid";
+    public static final String BOOK_IDENTIFIER_SID = "sid";
 
 
     /** {@link DBDefinitions#TBL_BOOKSHELF}. The name of the bookshelf. */
@@ -397,6 +383,30 @@ public final class DBKey {
         public static final String TOC_ENTRY_TITLE = "toc_title";
 
         private FTS() {
+        }
+    }
+
+    /**
+     * {@link DBDefinitions#TBL_IDENTIFIERS}.
+     */
+    @SuppressWarnings("CheckStyle")
+    public static final class IDENTIFIERS {
+
+        /** The keyword. Not localized. */
+        public static final String KEY = "key";
+        /** Type: a char: S or L. */
+        public static final String TYPE = "type";
+        /** A short name; i.e. website name. Not Localized. */
+        public static final String NAME = "name";
+        /** URL to the main page of the site. */
+        public static final String SITE_URL = "site_url";
+        /**
+         * <strong>URI</strong> with a "%s" taking a sid.
+         * Typically a url, but we allow/use all uri style values.
+         */
+        public static final String BOOK_URI = "book_uri";
+
+        private IDENTIFIERS() {
         }
     }
 
