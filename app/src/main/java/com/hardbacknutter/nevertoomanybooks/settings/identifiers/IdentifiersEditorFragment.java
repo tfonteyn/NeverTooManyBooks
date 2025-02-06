@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -44,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
+@Keep
 public class IdentifiersEditorFragment
         extends BaseFragment {
 
