@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,9 +40,6 @@ import java.util.StringJoiner;
  * Provides storage for an partial/incomplete date.
  * <strong>Immutable</strong>.
  * A partial date can consist of just a year, a year+month, or year+month+day value.
- * <p>
- * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
- * seems to be fixed, but the bug was never closed?
  */
 public class PartialDate
         implements Parcelable {
