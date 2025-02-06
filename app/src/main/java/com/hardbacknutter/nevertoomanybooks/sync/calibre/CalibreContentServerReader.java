@@ -221,7 +221,7 @@ public class CalibreContentServerReader
     private static SyncReaderProcessor getDefaultSyncProcessor(@NonNull final Context context) {
         final SortedMap<String, String[]> map = new TreeMap<>();
         map.put(context.getString(R.string.site_calibre),
-                new String[]{DBKey.CALIBRE_BOOK_ID});
+                new String[]{DBKey.CALIBRE.BOOK_ID});
 
         map.put(context.getString(R.string.lbl_date_last_updated),
                 new String[]{DBKey.DATE_LAST_UPDATED__UTC});
@@ -258,7 +258,7 @@ public class CalibreContentServerReader
 
         // The site specific fields
         map.put(context.getString(R.string.lbl_ebook_file_type),
-                new String[]{DBKey.CALIBRE_BOOK_MAIN_FORMAT});
+                new String[]{DBKey.CALIBRE.BOOK_MAIN_FORMAT});
 
         // The site specific CustomFields
         ServiceLocator.getInstance()
@@ -285,7 +285,7 @@ public class CalibreContentServerReader
 
         builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
-               .addRelatedField(DBKey.CALIBRE_BOOK_ID, DBKey.CALIBRE_BOOK_UUID);
+               .addRelatedField(DBKey.CALIBRE.BOOK_ID, DBKey.CALIBRE.BOOK_UUID);
 
         return builder.build();
     }
@@ -461,7 +461,7 @@ public class CalibreContentServerReader
             throws StorageException,
                    IOException {
         try {
-            final String calibreUuid = calibreBook.getString(DBKey.CALIBRE_BOOK_UUID);
+            final String calibreUuid = calibreBook.getString(DBKey.CALIBRE.BOOK_UUID);
             // check if we already have the calibre book in the local database
             final long databaseBookId = calibreLibraryDao.getBookIdFromCalibreUuid(calibreUuid);
             if (databaseBookId > 0) {
@@ -495,7 +495,7 @@ public class CalibreContentServerReader
                                 LoggerFactory.getLogger().d(
                                         TAG, "importBook", updateOption, "Skip",
                                         "calibreUuid="
-                                        + calibreBook.getString(DBKey.CALIBRE_BOOK_UUID),
+                                        + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID),
                                         "book=" + book.getId(), book.getTitle());
                             }
                         }
@@ -507,7 +507,7 @@ public class CalibreContentServerReader
                             LoggerFactory.getLogger().d(
                                     TAG, "importBook", updateOption, "Skip",
                                     "calibreUuid="
-                                    + calibreBook.getString(DBKey.CALIBRE_BOOK_UUID),
+                                    + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID),
                                     calibreBook.getString(CalibreBookJsonKey.TITLE));
                         }
                         break;
@@ -545,7 +545,7 @@ public class CalibreContentServerReader
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                 LoggerFactory.getLogger().d(
                         TAG, "updateBook", updateOption,
-                        "calibreUuid=" + calibreBook.getString(DBKey.CALIBRE_BOOK_UUID),
+                        "calibreUuid=" + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID),
                         "book=" + book.getId(), book.getTitle());
             }
         }
@@ -568,7 +568,7 @@ public class CalibreContentServerReader
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
             LoggerFactory.getLogger().d(
                     TAG, "insertBook", updateOption,
-                    "calibreUuid=" + book.getString(DBKey.CALIBRE_BOOK_UUID),
+                    "calibreUuid=" + book.getString(DBKey.CALIBRE.BOOK_UUID),
                     "book=" + book.getId(), book.getTitle());
         }
     }
@@ -595,8 +595,8 @@ public class CalibreContentServerReader
         book.setStage(EntityStage.Stage.Dirty);
 
         final int calibreBookId = calibreBook.getInt(CalibreBookJsonKey.ID);
-        book.putInt(DBKey.CALIBRE_BOOK_ID, calibreBookId);
-        book.putString(DBKey.CALIBRE_BOOK_UUID, calibreBook.getString(CalibreBookJsonKey.UUID));
+        book.putInt(DBKey.CALIBRE.BOOK_ID, calibreBookId);
+        book.putString(DBKey.CALIBRE.BOOK_UUID, calibreBook.getString(CalibreBookJsonKey.UUID));
 
         // Always add the current library; i.e. the library the book came from.
         book.setCalibreLibrary(library);
@@ -855,7 +855,7 @@ public class CalibreContentServerReader
             if (it.hasNext()) {
                 final String format = it.next();
                 if (format != null && !format.isEmpty()) {
-                    book.putString(DBKey.CALIBRE_BOOK_MAIN_FORMAT, format);
+                    book.putString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, format);
                 }
             }
         }

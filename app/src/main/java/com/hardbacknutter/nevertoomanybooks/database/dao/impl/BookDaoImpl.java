@@ -578,7 +578,7 @@ public class BookDaoImpl
         }
 
         // Handle synchronization field.
-        if (book.contains(DBKey.CALIBRE_BOOK_UUID)) {
+        if (book.contains(DBKey.CALIBRE.BOOK_UUID)) {
             // Calibre libraries will be inserted if new, but not updated
             calibreDaoSupplier.get().insertOrUpdate(context, book);
         }
@@ -742,9 +742,9 @@ public class BookDaoImpl
                            + _AS_ + DBKey.LOANEE_NAME
 
                            // LEFT OUTER JOIN, columns default to NULL
-                           + ',' + TBL_CALIBRE_BOOKS.dotAs(DBKey.CALIBRE_BOOK_ID,
-                                                           DBKey.CALIBRE_BOOK_UUID,
-                                                           DBKey.CALIBRE_BOOK_MAIN_FORMAT,
+                           + ',' + TBL_CALIBRE_BOOKS.dotAs(DBKey.CALIBRE.BOOK_ID,
+                                                           DBKey.CALIBRE.BOOK_UUID,
+                                                           DBKey.CALIBRE.BOOK_MAIN_FORMAT,
                                                            DBKey.FK_CALIBRE_LIBRARY)
 
                            + _FROM_ + TBL_BOOKS.ref()
@@ -856,9 +856,9 @@ public class BookDaoImpl
 
         final String sql = Sql.SELECT_BOOK
                            + ',' + TBL_CALIBRE_BOOKS
-                                   .dotAs(DBKey.CALIBRE_BOOK_ID,
-                                          DBKey.CALIBRE_BOOK_UUID,
-                                          DBKey.CALIBRE_BOOK_MAIN_FORMAT,
+                                   .dotAs(DBKey.CALIBRE.BOOK_ID,
+                                          DBKey.CALIBRE.BOOK_UUID,
+                                          DBKey.CALIBRE.BOOK_MAIN_FORMAT,
                                           DBKey.FK_CALIBRE_LIBRARY)
 
                            + _FROM_ + TBL_BOOKS.ref()

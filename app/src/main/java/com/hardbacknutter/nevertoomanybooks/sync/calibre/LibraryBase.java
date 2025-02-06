@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,7 +71,7 @@ abstract class LibraryBase
     LibraryBase(final long id,
                 @NonNull final DataHolder rowData) {
         this.id = id;
-        name = rowData.getString(DBKey.CALIBRE_LIBRARY_NAME);
+        name = rowData.getString(DBKey.CALIBRE.LIBRARY_NAME);
         mappedBookshelfId = rowData.getLong(DBKey.FK_BOOKSHELF);
     }
 

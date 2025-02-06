@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,9 +36,9 @@ public class CalibreCustomFieldCoder
         final JSONObject out = new JSONObject();
 
         out.put(DBKey.PK_ID, field.getId());
-        out.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, field.getCalibreKey());
-        out.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, field.getType());
-        out.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, field.getDbKey());
+        out.put(DBKey.CALIBRE.CUSTOM_FIELD_NAME, field.getCalibreKey());
+        out.put(DBKey.CALIBRE.CUSTOM_FIELD_TYPE, field.getType());
+        out.put(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING, field.getDbKey());
         return out;
     }
 
@@ -48,9 +48,9 @@ public class CalibreCustomFieldCoder
             throws JSONException {
 
         final CalibreCustomField field = new CalibreCustomField(
-                data.getString(DBKey.CALIBRE_CUSTOM_FIELD_NAME),
-                data.getString(DBKey.CALIBRE_CUSTOM_FIELD_TYPE),
-                data.getString(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING));
+                data.getString(DBKey.CALIBRE.CUSTOM_FIELD_NAME),
+                data.getString(DBKey.CALIBRE.CUSTOM_FIELD_TYPE),
+                data.getString(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING));
         field.setId(data.getLong(DBKey.PK_ID));
         return field;
     }

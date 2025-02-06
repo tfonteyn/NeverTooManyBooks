@@ -1278,9 +1278,9 @@ public class Book
             remove(CalibreBookData.BKEY);
 
             remove(DBKey.FK_CALIBRE_LIBRARY);
-            remove(DBKey.CALIBRE_BOOK_ID);
-            remove(DBKey.CALIBRE_BOOK_UUID);
-            remove(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
+            remove(DBKey.CALIBRE.BOOK_ID);
+            remove(DBKey.CALIBRE.BOOK_UUID);
+            remove(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
         }
     }
 
@@ -1289,13 +1289,13 @@ public class Book
         // temp hack...
         if (!contains(CalibreBookData.BKEY)
             && contains(DBKey.FK_CALIBRE_LIBRARY)
-            && contains(DBKey.CALIBRE_BOOK_ID)) {
+            && contains(DBKey.CALIBRE.BOOK_ID)) {
 
             final CalibreBookData calibreBookData = new CalibreBookData(
                     getLong(DBKey.FK_CALIBRE_LIBRARY),
-                    getLong(DBKey.CALIBRE_BOOK_ID),
-                    getString(DBKey.CALIBRE_BOOK_UUID),
-                    getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT, null));
+                    getLong(DBKey.CALIBRE.BOOK_ID),
+                    getString(DBKey.CALIBRE.BOOK_UUID),
+                    getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT, null));
             putParcelable(CalibreBookData.BKEY, calibreBookData);
             return Optional.of(calibreBookData);
         }
@@ -1328,9 +1328,9 @@ public class Book
             remove(CalibreBookData.BKEY);
 
             remove(DBKey.FK_CALIBRE_LIBRARY);
-            remove(DBKey.CALIBRE_BOOK_ID);
-            remove(DBKey.CALIBRE_BOOK_UUID);
-            remove(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
+            remove(DBKey.CALIBRE.BOOK_ID);
+            remove(DBKey.CALIBRE.BOOK_UUID);
+            remove(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
         }
     }
 

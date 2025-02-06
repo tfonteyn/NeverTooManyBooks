@@ -1425,8 +1425,8 @@ public final class CalibreContentServer
 
         final DocumentFile destFile = getDocumentFile(context, book, folder, true);
 
-        final int id = book.getInt(DBKey.CALIBRE_BOOK_ID);
-        final String format = book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
+        final int id = book.getInt(DBKey.CALIBRE.BOOK_ID);
+        final String format = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
         final long libraryId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
 
         final CalibreLibrary calibreLibrary = libraries
@@ -1512,7 +1512,7 @@ public final class CalibreContentServer
         }
 
         final String fileName = createFilename(context, book);
-        final String fileExt = book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
+        final String fileExt = book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
 
         // FIRST check if it exists using the format extension
         DocumentFile bookFile = authorFolder.findFile(fileName + '.' + fileExt);

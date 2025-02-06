@@ -220,8 +220,8 @@ public class CalibreContentServerWriter
                           @NonNull final Book book)
             throws IOException, StorageException, JSONException {
 
-        final int calibreId = book.getInt(DBKey.CALIBRE_BOOK_ID);
-        final String calibreUuid = book.getString(DBKey.CALIBRE_BOOK_UUID);
+        final int calibreId = book.getInt(DBKey.CALIBRE.BOOK_ID);
+        final String calibreUuid = book.getString(DBKey.CALIBRE.BOOK_UUID);
 
         // ENHANCE: full sync in one go.
         //  The logic below is slow as we fetch each book individually

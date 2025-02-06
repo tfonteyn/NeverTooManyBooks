@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,9 +80,9 @@ public class CalibreCustomFieldDaoImpl
         final ContentValues cv = new ContentValues();
         for (final String[] row : all) {
             cv.clear();
-            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, row[0]);
-            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, row[1]);
-            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, row[2]);
+            cv.put(DBKey.CALIBRE.CUSTOM_FIELD_NAME, row[0]);
+            cv.put(DBKey.CALIBRE.CUSTOM_FIELD_TYPE, row[1]);
+            cv.put(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING, row[2]);
             db.insert(TBL_CALIBRE_CUSTOM_FIELDS.getName(), null, cv);
         }
     }
@@ -120,9 +120,9 @@ public class CalibreCustomFieldDaoImpl
             throws DaoUpdateException {
 
         final ContentValues cv = new ContentValues();
-        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, calibreCustomField.getCalibreKey());
-        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, calibreCustomField.getType());
-        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, calibreCustomField.getDbKey());
+        cv.put(DBKey.CALIBRE.CUSTOM_FIELD_NAME, calibreCustomField.getCalibreKey());
+        cv.put(DBKey.CALIBRE.CUSTOM_FIELD_TYPE, calibreCustomField.getType());
+        cv.put(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING, calibreCustomField.getDbKey());
 
         final int rowsAffected = db.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
                                            DBKey.PK_ID + "=?",
@@ -177,9 +177,9 @@ public class CalibreCustomFieldDaoImpl
         /** Insert a {@link CalibreCustomField}. */
         static final String INSERT =
                 INSERT_INTO_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
-                + '(' + DBKey.CALIBRE_CUSTOM_FIELD_NAME
-                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_TYPE
-                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_MAPPING
+                + '(' + DBKey.CALIBRE.CUSTOM_FIELD_NAME
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_TYPE
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_MAPPING
                 + ") VALUES(?,?,?)";
 
         /** Delete a {@link CalibreCustomField}. */
@@ -190,20 +190,20 @@ public class CalibreCustomFieldDaoImpl
 
         static final String BASE_SELECT =
                 SELECT_ + DBKey.PK_ID
-                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_NAME
-                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_TYPE
-                + ',' + DBKey.CALIBRE_CUSTOM_FIELD_MAPPING
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_NAME
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_TYPE
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_MAPPING
                 + _FROM_ + TBL_CALIBRE_CUSTOM_FIELDS.getName();
 
         /** A list of all {@link CalibreCustomField}s, ordered by name. */
         static final String SELECT_ALL =
-                BASE_SELECT + _ORDER_BY_ + DBKey.CALIBRE_CUSTOM_FIELD_NAME + _COLLATION;
+                BASE_SELECT + _ORDER_BY_ + DBKey.CALIBRE.CUSTOM_FIELD_NAME + _COLLATION;
 
         /**
          * Find a {@link CalibreCustomField} by name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
          */
         static final String FIND_BY_NAME =
-                BASE_SELECT + _WHERE_ + DBKey.CALIBRE_CUSTOM_FIELD_NAME + "=?";
+                BASE_SELECT + _WHERE_ + DBKey.CALIBRE.CUSTOM_FIELD_NAME + "=?";
     }
 }

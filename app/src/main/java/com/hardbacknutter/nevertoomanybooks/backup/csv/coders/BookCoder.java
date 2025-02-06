@@ -520,7 +520,7 @@ public class BookCoder {
 
     private void processCalibreData(@NonNull final Book book) {
         // we need to convert the string id to the row id.
-        final String stringId = book.getString(DBKey.CALIBRE_LIBRARY_STRING_ID, null);
+        final String stringId = book.getString(DBKey.CALIBRE.LIBRARY_STRING_ID, null);
         if (stringId != null && !stringId.isEmpty()) {
             if (calibreLibraryStr2IdMap == null) {
                 calibreLibraryStr2IdMap = new HashMap<>();
@@ -539,7 +539,7 @@ public class BookCoder {
             }
 
             // and discard the string-id
-            book.remove(DBKey.CALIBRE_LIBRARY_STRING_ID);
+            book.remove(DBKey.CALIBRE.LIBRARY_STRING_ID);
         }
     }
 

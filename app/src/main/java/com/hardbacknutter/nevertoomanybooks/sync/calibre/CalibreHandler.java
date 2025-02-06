@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -122,9 +122,9 @@ public class CalibreHandler {
      * @return {@code true} is this book <strong>is</strong> a CalibreBook
      */
     static boolean isCalibreBook(@NonNull final Book book) {
-        return book.contains(DBKey.CALIBRE_BOOK_ID)
-               && !book.getString(DBKey.CALIBRE_BOOK_UUID).isEmpty()
-               && !book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT).isEmpty()
+        return book.contains(DBKey.CALIBRE.BOOK_ID)
+               && !book.getString(DBKey.CALIBRE.BOOK_UUID).isEmpty()
+               && !book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT).isEmpty()
                && book.contains(DBKey.FK_CALIBRE_LIBRARY);
     }
 
@@ -215,7 +215,7 @@ public class CalibreHandler {
                 menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
                     .setTitle(context.getString(
                             R.string.option_download_ebook_format,
-                            book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT)))
+                            book.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT)))
                     .setVisible(true);
 
                 // don't show

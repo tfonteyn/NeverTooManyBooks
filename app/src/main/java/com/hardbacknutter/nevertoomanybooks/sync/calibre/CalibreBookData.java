@@ -81,9 +81,9 @@ public class CalibreBookData
 
     public CalibreBookData(@NonNull final DataHolder rowData) {
         libraryId = rowData.getLong(DBKey.FK_CALIBRE_LIBRARY);
-        calibreBookId = rowData.getLong(DBKey.CALIBRE_BOOK_ID);
-        calibreBookUuid = rowData.getString(DBKey.CALIBRE_BOOK_UUID);
-        fileFormat = rowData.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
+        calibreBookId = rowData.getLong(DBKey.CALIBRE.BOOK_ID);
+        calibreBookUuid = rowData.getString(DBKey.CALIBRE.BOOK_UUID);
+        fileFormat = rowData.getString(DBKey.CALIBRE.BOOK_MAIN_FORMAT);
     }
 
     private CalibreBookData(@NonNull final Parcel in) {

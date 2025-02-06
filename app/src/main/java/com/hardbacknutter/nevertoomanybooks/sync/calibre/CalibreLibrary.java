@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -130,9 +130,9 @@ public class CalibreLibrary
                           @NonNull final DataHolder rowData) {
         super(id, rowData);
 
-        libraryStringId = rowData.getString(DBKey.CALIBRE_LIBRARY_STRING_ID);
-        uuid = rowData.getString(DBKey.CALIBRE_LIBRARY_UUID);
-        lastSyncDate = rowData.getString(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC);
+        libraryStringId = rowData.getString(DBKey.CALIBRE.LIBRARY_STRING_ID);
+        uuid = rowData.getString(DBKey.CALIBRE.LIBRARY_UUID);
+        lastSyncDate = rowData.getString(DBKey.CALIBRE.LIBRARY_LAST_SYNC_DATE__UTC);
     }
 
     /**

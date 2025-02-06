@@ -1110,44 +1110,44 @@ public final class DBDefinitions {
          *  Calibre bridge table domains
          * ====================================================================================== */
         DOM_CALIBRE_BOOK_UUID =
-                new Domain.Builder(DBKey.CALIBRE_BOOK_UUID, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.BOOK_UUID, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_BOOK_ID =
-                new Domain.Builder(DBKey.CALIBRE_BOOK_ID, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.CALIBRE.BOOK_ID, SqLiteDataType.Integer)
                         .build();
 
         DOM_CALIBRE_BOOK_MAIN_FORMAT =
-                new Domain.Builder(DBKey.CALIBRE_BOOK_MAIN_FORMAT, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.BOOK_MAIN_FORMAT, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_CALIBRE_CUSTOM_FIELD_NAME =
-                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.CUSTOM_FIELD_NAME, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_CUSTOM_FIELD_TYPE =
-                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.CUSTOM_FIELD_TYPE, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_CUSTOM_FIELD_MAPPING =
-                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_LIBRARY_LAST_SYNC__UTC =
-                new Domain.Builder(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC,
+                new Domain.Builder(DBKey.CALIBRE.LIBRARY_LAST_SYNC_DATE__UTC,
                                    SqLiteDataType.DateTime)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_CALIBRE_LIBRARY_STRING_ID =
-                new Domain.Builder(DBKey.CALIBRE_LIBRARY_STRING_ID, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.LIBRARY_STRING_ID, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
@@ -1155,14 +1155,14 @@ public final class DBDefinitions {
 
         // can be empty when our Calibre extension is not installed
         DOM_CALIBRE_LIBRARY_UUID =
-                new Domain.Builder(DBKey.CALIBRE_LIBRARY_UUID, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.LIBRARY_UUID, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_CALIBRE_LIBRARY_NAME =
-                new Domain.Builder(DBKey.CALIBRE_LIBRARY_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.LIBRARY_NAME, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
@@ -1170,7 +1170,7 @@ public final class DBDefinitions {
 
         // not sure if we should allow empty?
         DOM_CALIBRE_VIRT_LIB_EXPR =
-                new Domain.Builder(DBKey.CALIBRE_VIRT_LIB_EXPR, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.CALIBRE.VIRT_LIB_EXPR, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -1749,7 +1749,7 @@ public final class DBDefinitions {
                             DOM_CALIBRE_LIBRARY_LAST_SYNC__UTC)
                 .setPrimaryKey(DOM_PK_ID)
                 .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
-                .addIndex(DBKey.CALIBRE_LIBRARY_NAME, true,
+                .addIndex(DBKey.CALIBRE.LIBRARY_NAME, true,
                           DOM_CALIBRE_LIBRARY_STRING_ID,
                           DOM_CALIBRE_LIBRARY_NAME);
         ALL_TABLES.put(TBL_CALIBRE_LIBRARIES.getName(), TBL_CALIBRE_LIBRARIES);
@@ -1763,7 +1763,7 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_PK_ID)
                 .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
                 .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
-                .addIndex(DBKey.CALIBRE_LIBRARY_NAME, true,
+                .addIndex(DBKey.CALIBRE.LIBRARY_NAME, true,
                           DOM_FK_CALIBRE_LIBRARY,
                           DOM_CALIBRE_LIBRARY_NAME);
         ALL_TABLES.put(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), TBL_CALIBRE_VIRTUAL_LIBRARIES);

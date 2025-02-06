@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,9 +101,9 @@ public class CalibreCustomField
     public CalibreCustomField(final long id,
                               @NonNull final DataHolder rowData) {
         this.id = id;
-        calibreKey = rowData.getString(DBKey.CALIBRE_CUSTOM_FIELD_NAME);
-        type = rowData.getString(DBKey.CALIBRE_CUSTOM_FIELD_TYPE);
-        dbKey = rowData.getString(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING);
+        calibreKey = rowData.getString(DBKey.CALIBRE.CUSTOM_FIELD_NAME);
+        type = rowData.getString(DBKey.CALIBRE.CUSTOM_FIELD_TYPE);
+        dbKey = rowData.getString(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING);
     }
 
     /**

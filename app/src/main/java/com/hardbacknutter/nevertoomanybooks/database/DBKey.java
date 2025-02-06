@@ -78,31 +78,6 @@ public final class DBKey {
     /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
     public static final String IDENT_SID = "sid";
 
-    /** {@link DBDefinitions#TBL_CALIBRE_CUSTOM_FIELDS}. */
-    public static final String CALIBRE_CUSTOM_FIELD_NAME = "clb_cf_name";
-    public static final String CALIBRE_CUSTOM_FIELD_TYPE = "clb_cf_type";
-    public static final String CALIBRE_CUSTOM_FIELD_MAPPING = "clb_cf_mapping";
-
-    /** {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}. */
-    public static final String CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC = "clb_lib_last_sync";
-    public static final String CALIBRE_LIBRARY_STRING_ID = "clb_lib_id";
-    public static final String CALIBRE_LIBRARY_UUID = "clb_lib_uuid";
-    /**
-     * {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}
-     * {@link DBDefinitions#TBL_CALIBRE_VIRTUAL_LIBRARIES}.
-     */
-    public static final String CALIBRE_LIBRARY_NAME = "clb_lib_name";
-    /** {@link DBDefinitions#TBL_CALIBRE_VIRTUAL_LIBRARIES}. */
-    public static final String CALIBRE_VIRT_LIB_EXPR = "clb_vlib_expr";
-    /**
-     * External to this app, but NOT an "external Site id"
-     * as it comes from a user importing their Calibre libraries.
-     * {@link DBDefinitions#TBL_CALIBRE_BOOKS}.
-     */
-    public static final String CALIBRE_BOOK_ID = "clb_book_id";
-    public static final String CALIBRE_BOOK_UUID = "clb_book_uuid";
-    public static final String CALIBRE_BOOK_MAIN_FORMAT = "clb_book_main_format";
-
 
     /** {@link DBDefinitions#TBL_BOOKSHELF}. The name of the bookshelf. */
     public static final String BOOKSHELF_NAME = "bookshelf_name";
@@ -425,6 +400,36 @@ public final class DBKey {
         }
     }
 
+    @SuppressWarnings("CheckStyle")
+    public static final class CALIBRE {
+
+        /** {@link DBDefinitions#TBL_CALIBRE_CUSTOM_FIELDS}. */
+        public static final String CUSTOM_FIELD_NAME = "clb_cf_name";
+        public static final String CUSTOM_FIELD_TYPE = "clb_cf_type";
+        public static final String CUSTOM_FIELD_MAPPING = "clb_cf_mapping";
+        /** {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}. */
+        public static final String LIBRARY_LAST_SYNC_DATE__UTC = "clb_lib_last_sync";
+        public static final String LIBRARY_STRING_ID = "clb_lib_id";
+        public static final String LIBRARY_UUID = "clb_lib_uuid";
+        /**
+         * {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}
+         * {@link DBDefinitions#TBL_CALIBRE_VIRTUAL_LIBRARIES}.
+         */
+        public static final String LIBRARY_NAME = "clb_lib_name";
+        /** {@link DBDefinitions#TBL_CALIBRE_VIRTUAL_LIBRARIES}. */
+        public static final String VIRT_LIB_EXPR = "clb_vlib_expr";
+        /**
+         * External to this app, but NOT an "external Site id"
+         * as it comes from a user importing their Calibre libraries.
+         * {@link DBDefinitions#TBL_CALIBRE_BOOKS}.
+         */
+        public static final String BOOK_ID = "clb_book_id";
+        public static final String BOOK_UUID = "clb_book_uuid";
+        public static final String BOOK_MAIN_FORMAT = "clb_book_main_format";
+
+        private CALIBRE() {
+        }
+    }
 
     /**
      * {@link DBDefinitions#TBL_STRIPINFO_COLLECTION}.

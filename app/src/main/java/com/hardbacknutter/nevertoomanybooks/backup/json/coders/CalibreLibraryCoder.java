@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,10 +73,10 @@ public class CalibreLibraryCoder
 
         final JSONObject data = new JSONObject();
         data.put(DBKey.PK_ID, library.getId());
-        data.put(DBKey.CALIBRE_LIBRARY_STRING_ID, library.getLibraryStringId());
-        data.put(DBKey.CALIBRE_LIBRARY_UUID, library.getUuid());
-        data.put(DBKey.CALIBRE_LIBRARY_NAME, library.getName());
-        data.put(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC, library.getLastSyncDateAsString());
+        data.put(DBKey.CALIBRE.LIBRARY_STRING_ID, library.getLibraryStringId());
+        data.put(DBKey.CALIBRE.LIBRARY_UUID, library.getUuid());
+        data.put(DBKey.CALIBRE.LIBRARY_NAME, library.getName());
+        data.put(DBKey.CALIBRE.LIBRARY_LAST_SYNC_DATE__UTC, library.getLastSyncDateAsString());
 
         final Bookshelf libraryBookshelf = bookshelfDao
                 .getBookshelf(context,
@@ -95,8 +95,8 @@ public class CalibreLibraryCoder
             for (final CalibreVirtualLibrary vLib : vLibs) {
                 final JSONObject vlData = new JSONObject();
                 vlData.put(DBKey.PK_ID, vLib.getId());
-                vlData.put(DBKey.CALIBRE_LIBRARY_NAME, vLib.getName());
-                vlData.put(DBKey.CALIBRE_VIRT_LIB_EXPR, vLib.getExpr());
+                vlData.put(DBKey.CALIBRE.LIBRARY_NAME, vLib.getName());
+                vlData.put(DBKey.CALIBRE.VIRT_LIB_EXPR, vLib.getExpr());
 
                 final Bookshelf vlibBookshelf = bookshelfDao
                         .getBookshelf(context, vLib.getMappedBookshelfId())
@@ -114,8 +114,8 @@ public class CalibreLibraryCoder
     /**
      * Encode a reference to the given {@link CalibreLibrary}.
      * <p>
-     * Reference is {@link DBKey#CALIBRE_LIBRARY_UUID} <strong>OR</strong>,
-     * if not available, the {@link DBKey#CALIBRE_LIBRARY_STRING_ID}.
+     * Reference is {@link DBKey.CALIBRE#LIBRARY_UUID} <strong>OR</strong>,
+     * if not available, the {@link DBKey.CALIBRE#LIBRARY_STRING_ID}.
      *
      * @param library to encode
      *
@@ -130,17 +130,17 @@ public class CalibreLibraryCoder
         final JSONObject data = new JSONObject();
         final String uuid = library.getUuid();
         if (uuid.isEmpty()) {
-            data.put(DBKey.CALIBRE_LIBRARY_STRING_ID, library.getLibraryStringId());
+            data.put(DBKey.CALIBRE.LIBRARY_STRING_ID, library.getLibraryStringId());
         } else {
             // The UUID is only present if our extension is installed on the CCS
-            data.put(DBKey.CALIBRE_LIBRARY_UUID, uuid);
+            data.put(DBKey.CALIBRE.LIBRARY_UUID, uuid);
         }
         return data;
     }
 
     /**
-     * Decode a {@link CalibreLibrary} referenced by {@link DBKey#CALIBRE_LIBRARY_UUID}
-     * <strong>OR</strong> the {@link DBKey#CALIBRE_LIBRARY_STRING_ID}.
+     * Decode a {@link CalibreLibrary} referenced by {@link DBKey.CALIBRE#LIBRARY_UUID}
+     * <strong>OR</strong> the {@link DBKey.CALIBRE#LIBRARY_STRING_ID}.
      *
      * @param data json object
      *
@@ -154,7 +154,7 @@ public class CalibreLibraryCoder
             throws JSONException {
 
         Optional<CalibreLibrary> library;
-        String s = data.optString(DBKey.CALIBRE_LIBRARY_UUID);
+        String s = data.optString(DBKey.CALIBRE.LIBRARY_UUID);
         if (s != null && !s.isEmpty()) {
             library = ServiceLocator.getInstance().getCalibreLibraryDao().findLibraryByUuid(s);
             if (library.isPresent()) {
@@ -162,7 +162,7 @@ public class CalibreLibraryCoder
             }
         }
 
-        s = data.optString(DBKey.CALIBRE_LIBRARY_STRING_ID);
+        s = data.optString(DBKey.CALIBRE.LIBRARY_STRING_ID);
         if (s != null && !s.isEmpty()) {
             library = ServiceLocator.getInstance().getCalibreLibraryDao().findLibraryByStringId(s);
             if (library.isPresent()) {
@@ -193,13 +193,13 @@ public class CalibreLibraryCoder
         bookshelfDao.fixId(context, libraryBookshelf, locale);
 
         final CalibreLibrary library = new CalibreLibrary(
-                data.getString(DBKey.CALIBRE_LIBRARY_UUID),
-                data.getString(DBKey.CALIBRE_LIBRARY_STRING_ID),
-                data.getString(DBKey.CALIBRE_LIBRARY_NAME),
+                data.getString(DBKey.CALIBRE.LIBRARY_UUID),
+                data.getString(DBKey.CALIBRE.LIBRARY_STRING_ID),
+                data.getString(DBKey.CALIBRE.LIBRARY_NAME),
                 libraryBookshelf);
         library.setId(data.getLong(DBKey.PK_ID));
 
-        library.setLastSyncDate(data.getString(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC));
+        library.setLastSyncDate(data.getString(DBKey.CALIBRE.LIBRARY_LAST_SYNC_DATE__UTC));
 
         final JSONArray vlArray = data.optJSONArray(TAG_VL);
         if (vlArray != null) {
@@ -213,8 +213,8 @@ public class CalibreLibraryCoder
 
                 final CalibreVirtualLibrary vLib = new CalibreVirtualLibrary(
                         library.getId(),
-                        vlData.getString(DBKey.CALIBRE_LIBRARY_NAME),
-                        vlData.getString(DBKey.CALIBRE_VIRT_LIB_EXPR),
+                        vlData.getString(DBKey.CALIBRE.LIBRARY_NAME),
+                        vlData.getString(DBKey.CALIBRE.VIRT_LIB_EXPR),
                         vlibBookshelf);
                 vLib.setId(vlData.getLong(DBKey.PK_ID));
 
@@ -237,31 +237,31 @@ public class CalibreLibraryCoder
                                     @NonNull final Locale locale)
             throws DaoWriteException {
 
-        final String libName = data.getString(DBKey.CALIBRE_LIBRARY_NAME);
+        final String libName = data.getString(DBKey.CALIBRE.LIBRARY_NAME);
 
         final long libBookshelfId = v3resolveBookshelf(data, libName, locale);
 
         final CalibreLibrary library = new CalibreLibrary(
-                data.getString(DBKey.CALIBRE_LIBRARY_UUID),
-                data.getString(DBKey.CALIBRE_LIBRARY_STRING_ID),
+                data.getString(DBKey.CALIBRE.LIBRARY_UUID),
+                data.getString(DBKey.CALIBRE.LIBRARY_STRING_ID),
                 libName,
                 libBookshelfId);
         library.setId(data.getLong(DBKey.PK_ID));
 
-        library.setLastSyncDate(data.getString(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC));
+        library.setLastSyncDate(data.getString(DBKey.CALIBRE.LIBRARY_LAST_SYNC_DATE__UTC));
 
         final JSONArray vlArray = data.optJSONArray(TAG_VL);
         if (vlArray != null) {
             final List<CalibreVirtualLibrary> vLibs = new ArrayList<>();
             for (int i = 0; i < vlArray.length(); i++) {
                 final JSONObject vlData = vlArray.getJSONObject(i);
-                final String vLibName = vlData.getString(DBKey.CALIBRE_LIBRARY_NAME);
+                final String vLibName = vlData.getString(DBKey.CALIBRE.LIBRARY_NAME);
                 final long vLibBookshelfId = v3resolveBookshelf(vlData, "v-" + libName, locale);
 
                 final CalibreVirtualLibrary vLib = new CalibreVirtualLibrary(
                         library.getId(),
                         vLibName,
-                        vlData.getString(DBKey.CALIBRE_VIRT_LIB_EXPR),
+                        vlData.getString(DBKey.CALIBRE.VIRT_LIB_EXPR),
                         vLibBookshelfId);
                 vLib.setId(vlData.getLong(DBKey.PK_ID));
 

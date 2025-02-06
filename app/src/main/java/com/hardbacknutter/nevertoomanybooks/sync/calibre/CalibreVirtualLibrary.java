@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,7 +101,7 @@ public class CalibreVirtualLibrary
         super(id, rowData);
 
         libraryId = rowData.getLong(DBKey.FK_CALIBRE_LIBRARY);
-        searchExpression = rowData.getString(DBKey.CALIBRE_VIRT_LIB_EXPR);
+        searchExpression = rowData.getString(DBKey.CALIBRE.VIRT_LIB_EXPR);
     }
 
     /**
