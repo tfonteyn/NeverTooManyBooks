@@ -47,8 +47,8 @@ public final class FilterFactory {
     @SuppressWarnings({"PublicStaticCollectionField",
             "NonFinalStaticVariableUsedInClassInitialization"})
     public static final Map<String, Integer> SUPPORTED = Map.ofEntries(
-            Map.entry(DBKey.BOOK_ISBN, R.string.lbl_isbn),
-            Map.entry(DBKey.EDITION__BITMASK, R.string.lbl_edition),
+            Map.entry(DBKey.ISBN, R.string.lbl_isbn),
+            Map.entry(DBKey.EDITION, R.string.lbl_edition),
             Map.entry(DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf),
             Map.entry(DBKey.FK_TAG, R.string.lbl_tag),
 
@@ -94,7 +94,7 @@ public final class FilterFactory {
 
 
             // Does the book have an ISBN (or any other code) or none.
-            case DBKey.BOOK_ISBN: {
+            case DBKey.ISBN: {
                 return new PHasValueFilter(
                         dbKey, R.string.lbl_isbn, R.array.lbl_bob_filter_isbn,
                         DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN);
@@ -133,7 +133,7 @@ public final class FilterFactory {
                         DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_LOCATION);
             }
 
-            case DBKey.EDITION__BITMASK: {
+            case DBKey.EDITION: {
                 return new PBitmaskFilter(
                         dbKey, R.string.lbl_edition,
                         DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_EDITION,

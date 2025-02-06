@@ -379,7 +379,7 @@ public class DnbSearchEngine
             }
 
             if (fetchCovers[0]) {
-                final String isbn = book.getString(DBKey.BOOK_ISBN);
+                final String isbn = book.getString(DBKey.ISBN);
                 parseCover(context, document, isbn, 0).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
             }
@@ -429,11 +429,11 @@ public class DnbSearchEngine
     private void parseIsbn(@NonNull final Element td,
                            @NonNull final Book book) {
         // Only add if not already there
-        if (!book.contains(DBKey.BOOK_ISBN)) {
+        if (!book.contains(DBKey.ISBN)) {
             final String isbnText = ISBN.cleanText(td.text());
             // (don't do a full ISBN test here, no need)
             if (isbnText.length() == 10 || isbnText.length() == 13) {
-                book.putString(DBKey.BOOK_ISBN, isbnText);
+                book.putString(DBKey.ISBN, isbnText);
             }
         }
     }

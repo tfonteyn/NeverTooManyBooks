@@ -110,7 +110,7 @@ public class BoBTask
                             Sort.Unsorted));
         } else {
             switch (dbKey) {
-                case DBKey.BOOK_CONDITION: {
+                case DBKey.CONDITION_BOOK: {
                     return List.of(
                             new DomainExpression(
                                     DBDefinitions.DOM_BOOK_CONDITION,
@@ -118,25 +118,17 @@ public class BoBTask
                                     sort)
                     );
                 }
-                case DBKey.BOOK_ISBN: {
+                case DBKey.ISBN: {
                     return List.of(
                             new DomainExpression(DBDefinitions.DOM_BOOK_ISBN,
                                                  DBDefinitions.TBL_BOOKS,
                                                  Sort.Unsorted)
                     );
                 }
-                case DBKey.BOOK_PUBLICATION__DATE: {
+                case DBKey.PUBLICATION_DATE: {
                     return List.of(
                             new DomainExpression(
                                     DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                                    DBDefinitions.TBL_BOOKS,
-                                    sort)
-                    );
-                }
-                case DBKey.FIRST_PUBLICATION__DATE: {
-                    return List.of(
-                            new DomainExpression(
-                                    DBDefinitions.DOM_DATE_FIRST_PUBLICATION,
                                     DBDefinitions.TBL_BOOKS,
                                     sort)
                     );
@@ -165,10 +157,18 @@ public class BoBTask
                                     sort)
                     );
                 }
-                case DBKey.EDITION__BITMASK: {
+                case DBKey.EDITION: {
                     return List.of(
                             new DomainExpression(
                                     DBDefinitions.DOM_BOOK_EDITION,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.FIRST_PUBLICATION_DATE: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_DATE_FIRST_PUBLICATION,
                                     DBDefinitions.TBL_BOOKS,
                                     sort)
                     );

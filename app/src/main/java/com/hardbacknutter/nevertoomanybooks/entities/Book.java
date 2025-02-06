@@ -409,7 +409,7 @@ public class Book
 
         duplicate.putString(DBKey.TITLE, getTitle());
         duplicate.putString(DBKey.TITLE_ORIGINAL_LANG, getString(DBKey.TITLE_ORIGINAL_LANG));
-        duplicate.putString(DBKey.BOOK_ISBN, getString(DBKey.BOOK_ISBN));
+        duplicate.putString(DBKey.ISBN, getString(DBKey.ISBN));
 
         if (duplicate.contains(BKEY_BOOKSHELF_LIST)) {
             duplicate.setBookshelves(getBookshelves());
@@ -433,11 +433,11 @@ public class Book
         // publication data
         duplicate.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));
         duplicate.setContentType(getContentType());
-        duplicate.putString(DBKey.BOOK_PUBLICATION__DATE, getString(DBKey.BOOK_PUBLICATION__DATE));
+        duplicate.putString(DBKey.PUBLICATION_DATE, getString(DBKey.PUBLICATION_DATE));
         duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED, realNumberParser));
         duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
-        duplicate.putString(DBKey.FIRST_PUBLICATION__DATE,
-                            getString(DBKey.FIRST_PUBLICATION__DATE));
+        duplicate.putString(DBKey.FIRST_PUBLICATION_DATE,
+                            getString(DBKey.FIRST_PUBLICATION_DATE));
 
         duplicate.putString(DBKey.FORMAT, getString(DBKey.FORMAT));
         duplicate.putString(DBKey.COLOR, getString(DBKey.COLOR));
@@ -467,8 +467,8 @@ public class Book
         duplicate.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID, realNumberParser));
         duplicate.putString(DBKey.PRICE_PAID_CURRENCY, getString(DBKey.PRICE_PAID_CURRENCY));
 
-        duplicate.putInt(DBKey.BOOK_CONDITION, getInt(DBKey.BOOK_CONDITION));
-        duplicate.putInt(DBKey.BOOK_CONDITION_COVER, getInt(DBKey.BOOK_CONDITION_COVER));
+        duplicate.putInt(DBKey.CONDITION_BOOK, getInt(DBKey.CONDITION_BOOK));
+        duplicate.putInt(DBKey.CONDITION_COVER, getInt(DBKey.CONDITION_COVER));
 
         return duplicate;
     }
@@ -541,10 +541,10 @@ public class Book
      */
     public void setPublicationDate(@Nullable final LocalDateTime date) {
         if (date != null) {
-            putString(DBKey.BOOK_PUBLICATION__DATE,
+            putString(DBKey.PUBLICATION_DATE,
                       date.format(DateTimeFormatter.ISO_LOCAL_DATE));
         } else {
-            remove(DBKey.BOOK_PUBLICATION__DATE);
+            remove(DBKey.PUBLICATION_DATE);
         }
     }
 
@@ -555,9 +555,9 @@ public class Book
      */
     public void setPublicationDate(@Nullable final PartialDate date) {
         if (date != null) {
-            putString(DBKey.BOOK_PUBLICATION__DATE, date.getIsoString());
+            putString(DBKey.PUBLICATION_DATE, date.getIsoString());
         } else {
-            remove(DBKey.BOOK_PUBLICATION__DATE);
+            remove(DBKey.PUBLICATION_DATE);
         }
     }
 
@@ -568,16 +568,16 @@ public class Book
      */
     public void setPublicationDate(@IntRange(from = 0) final int year) {
         if (year > 0) {
-            putString(DBKey.BOOK_PUBLICATION__DATE, String.valueOf(year));
+            putString(DBKey.PUBLICATION_DATE, String.valueOf(year));
         } else {
-            remove(DBKey.BOOK_PUBLICATION__DATE);
+            remove(DBKey.PUBLICATION_DATE);
         }
     }
 
     @Override
     @NonNull
     public PartialDate getFirstPublicationDate() {
-        return partialDateParser.parse(getString(DBKey.FIRST_PUBLICATION__DATE))
+        return partialDateParser.parse(getString(DBKey.FIRST_PUBLICATION_DATE))
                                 .orElse(PartialDate.NOT_SET);
     }
 
@@ -588,9 +588,9 @@ public class Book
      */
     public void setFirstPublicationDate(@IntRange(from = 0) final int year) {
         if (year > 0) {
-            putString(DBKey.FIRST_PUBLICATION__DATE, String.valueOf(year));
+            putString(DBKey.FIRST_PUBLICATION_DATE, String.valueOf(year));
         } else {
-            remove(DBKey.FIRST_PUBLICATION__DATE);
+            remove(DBKey.FIRST_PUBLICATION_DATE);
         }
     }
 
@@ -601,10 +601,10 @@ public class Book
      */
     public void setFirstPublicationDate(@Nullable final LocalDateTime date) {
         if (date != null) {
-            putString(DBKey.FIRST_PUBLICATION__DATE,
+            putString(DBKey.FIRST_PUBLICATION_DATE,
                       date.format(DateTimeFormatter.ISO_LOCAL_DATE));
         } else {
-            remove(DBKey.FIRST_PUBLICATION__DATE);
+            remove(DBKey.FIRST_PUBLICATION_DATE);
         }
     }
 
@@ -615,9 +615,9 @@ public class Book
      */
     public void setFirstPublicationDate(@Nullable final PartialDate date) {
         if (date != null && date.isPresent()) {
-            putString(DBKey.FIRST_PUBLICATION__DATE, date.getIsoString());
+            putString(DBKey.FIRST_PUBLICATION_DATE, date.getIsoString());
         } else {
-            remove(DBKey.FIRST_PUBLICATION__DATE);
+            remove(DBKey.FIRST_PUBLICATION_DATE);
         }
     }
 
@@ -627,7 +627,7 @@ public class Book
      * @return {@code true} if present
      */
     public boolean hasIsbn() {
-        final String isbnStr = getString(DBKey.BOOK_ISBN, null);
+        final String isbnStr = getString(DBKey.ISBN, null);
         return isbnStr != null && !isbnStr.isEmpty();
     }
 
@@ -638,7 +638,7 @@ public class Book
      */
     @NonNull
     public String getIsbn() {
-        return getString(DBKey.BOOK_ISBN);
+        return getString(DBKey.ISBN);
     }
 
     /**
@@ -648,9 +648,9 @@ public class Book
      */
     public void setIsbn(@Nullable final String isbnStr) {
         if (isbnStr != null && !isbnStr.isEmpty()) {
-            putString(DBKey.BOOK_ISBN, isbnStr);
+            putString(DBKey.ISBN, isbnStr);
         } else {
-            remove(DBKey.BOOK_ISBN);
+            remove(DBKey.ISBN);
         }
     }
 
@@ -1144,7 +1144,7 @@ public class Book
      */
     @NonNull
     public ContentType getContentType() {
-        return ContentType.byId(getInt(DBKey.BOOK_CONTENT_TYPE));
+        return ContentType.byId(getInt(DBKey.CONTENT_TYPE));
     }
 
     /**
@@ -1153,7 +1153,7 @@ public class Book
      * @param type to set
      */
     public void setContentType(@NonNull final ContentType type) {
-        putLong(DBKey.BOOK_CONTENT_TYPE, type.getId());
+        putLong(DBKey.CONTENT_TYPE, type.getId());
     }
 
     /**
@@ -1176,7 +1176,7 @@ public class Book
      */
     @Edition.Bitmask
     public long getEdition() {
-        return getLong(DBKey.EDITION__BITMASK) & Book.Edition.BITMASK_ALL_BITS;
+        return getLong(DBKey.EDITION) & Book.Edition.BITMASK_ALL_BITS;
     }
 
     /**
@@ -1187,7 +1187,7 @@ public class Book
      * @see Edition
      */
     public void setEdition(@Edition.Bitmask final long bitmask) {
-        putLong(DBKey.EDITION__BITMASK, bitmask & Book.Edition.BITMASK_ALL_BITS);
+        putLong(DBKey.EDITION, bitmask & Book.Edition.BITMASK_ALL_BITS);
     }
 
     /**
@@ -1758,9 +1758,9 @@ public class Book
         validatorConfig.addValidator(DBKey.LANGUAGE,
                                      nonBlankValidator, R.string.lbl_language);
 
-        validatorConfig.addValidator(DBKey.EDITION__BITMASK,
+        validatorConfig.addValidator(DBKey.EDITION,
                                      longValidator, R.string.lbl_edition);
-        validatorConfig.addValidator(DBKey.BOOK_CONTENT_TYPE,
+        validatorConfig.addValidator(DBKey.CONTENT_TYPE,
                                      longValidator, R.string.lbl_table_of_content);
 
         validatorConfig.addValidator(DBKey.PRICE_LISTED,
@@ -1892,7 +1892,7 @@ public class Book
     }
 
     /**
-     * Database representation of column {@link DBKey#BOOK_CONTENT_TYPE}.
+     * Database representation of column {@link DBKey#CONTENT_TYPE}.
      */
     public enum ContentType
             implements Entity, Parcelable {
@@ -1980,7 +1980,7 @@ public class Book
     }
 
     /**
-     * Database representation of column {@link DBKey#EDITION__BITMASK}.
+     * Database representation of column {@link DBKey#EDITION}.
      * <p>
      * 0b00000000 = a generic edition, or we simply don't know what edition it is.
      * 0b00000001 = first edition

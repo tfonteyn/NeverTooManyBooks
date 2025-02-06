@@ -925,10 +925,10 @@ public class BookDaoImpl
 
         if (isbnList.size() == 1) {
             // optimize for single book
-            return getBookCursor(TBL_BOOKS.dot(DBKey.BOOK_ISBN) + "=?",
+            return getBookCursor(TBL_BOOKS.dot(DBKey.ISBN) + "=?",
                                  new String[]{isbnList.get(0).asText()}, null);
         } else {
-            return getBookCursor(TBL_BOOKS.dot(DBKey.BOOK_ISBN)
+            return getBookCursor(TBL_BOOKS.dot(DBKey.ISBN)
                                  + " IN ("
                                  + isbnList.stream()
                                            .map(s -> '\'' + s.asText() + '\'')
@@ -1093,7 +1093,7 @@ public class BookDaoImpl
         /** Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13). */
         static final String FIND_BY_ISBN_10_OR_13 =
                 SELECT_ + DBKey.PK_ID + ',' + DBKey.TITLE + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + DBKey.BOOK_ISBN + " LIKE ? OR " + DBKey.BOOK_ISBN + " LIKE ?";
+                + _WHERE_ + DBKey.ISBN + " LIKE ? OR " + DBKey.ISBN + " LIKE ?";
 
         /**
          * Find the {@link Book} id+title based on a search for the ISBN.
@@ -1101,7 +1101,7 @@ public class BookDaoImpl
          */
         static final String FIND_BY_ISBN =
                 SELECT_ + DBKey.PK_ID + ',' + DBKey.TITLE + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + DBKey.BOOK_ISBN + " LIKE ?";
+                + _WHERE_ + DBKey.ISBN + " LIKE ?";
 
         /** Find the UUID of a {@link Book} by its id. */
         static final String FIND_UUID_BY_ID =
@@ -1128,14 +1128,14 @@ public class BookDaoImpl
                 + ')';
 
         /**
-         * Check if a {@link Book} exists with a single specified {@link DBKey#BOOK_ISBN}.
+         * Check if a {@link Book} exists with a single specified {@link DBKey#ISBN}.
          * The result will be {@code 0} or {@code 1}.
          */
         static final String BOOK_ISBN_EXISTS =
                 SELECT_EXISTS_ + '(' + FIND_BY_ISBN + ')';
 
         /**
-         * Check if a {@link Book} exists with a either a {@link DBKey#BOOK_ISBN}
+         * Check if a {@link Book} exists with a either a {@link DBKey#ISBN}
          * ISBN-10, or an ISBN-13 in the 978 range.
          * The result will be {@code 0} or {@code 1}.
          */
@@ -1159,18 +1159,18 @@ public class BookDaoImpl
                 SELECT_ + TBL_BOOKS.dotAs(
                         DBKey.PK_ID, DBKey.BOOK_UUID,
                         DBKey.TITLE, DBKey.TITLE_ORIGINAL_LANG,
-                        DBKey.BOOK_ISBN, DBKey.BOOK_CONTENT_TYPE,
-                        DBKey.BOOK_PUBLICATION__DATE, DBKey.PRINT_RUN,
+                        DBKey.ISBN, DBKey.CONTENT_TYPE,
+                        DBKey.PUBLICATION_DATE, DBKey.PRINT_RUN,
                         DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY,
-                        DBKey.FIRST_PUBLICATION__DATE,
+                        DBKey.FIRST_PUBLICATION_DATE,
                         DBKey.FORMAT, DBKey.COLOR, DBKey.LANGUAGE, DBKey.PAGES,
                         // Main/public description about the content/publication
                         DBKey.DESCRIPTION,
                         // partially edition info, partially user-owned info.
-                        DBKey.EDITION__BITMASK,
+                        DBKey.EDITION,
                         // user notes
                         DBKey.PERSONAL_NOTES,
-                        DBKey.BOOK_CONDITION, DBKey.BOOK_CONDITION_COVER,
+                        DBKey.CONDITION_BOOK, DBKey.CONDITION_COVER,
                         DBKey.LOCATION, DBKey.SIGNED__BOOL, DBKey.RATING,
                         DBKey.READ__BOOL, DBKey.READ_PROGRESS,
                         DBKey.READ_START__DATE, DBKey.READ_END__DATE,

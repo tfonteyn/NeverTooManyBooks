@@ -60,8 +60,8 @@ public class BookDaoHelperTest
         b.putString(DBKey.DESCRIPTION, "Six million years ago");
         b.putString(DBKey.PAGES, "516");
         b.putString(DBKey.LANGUAGE, "eng");
-        b.putString(DBKey.FIRST_PUBLICATION__DATE, "2008-04-17");
-        b.putString(DBKey.BOOK_PUBLICATION__DATE, "2009-06-02");
+        b.putString(DBKey.FIRST_PUBLICATION_DATE, "2008-04-17");
+        b.putString(DBKey.PUBLICATION_DATE, "2009-06-02");
 
         final Book book = new Book(b);
         final Author author0 = Author.from("Alastair Reynolds");
@@ -91,7 +91,7 @@ public class BookDaoHelperTest
         assertTrue(cv.containsKey(DBKey.DESCRIPTION));
         assertTrue(cv.containsKey(DBKey.PAGES));
         assertTrue(cv.containsKey(DBKey.LANGUAGE));
-        assertTrue(cv.containsKey(DBKey.FIRST_PUBLICATION__DATE));
-        assertTrue(cv.containsKey(DBKey.BOOK_PUBLICATION__DATE));
+        assertTrue(cv.containsKey(DBKey.FIRST_PUBLICATION_DATE));
+        assertTrue(cv.containsKey(DBKey.PUBLICATION_DATE));
     }
 }

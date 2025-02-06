@@ -150,12 +150,12 @@ public class StyleDataStore
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "bookshelves", DBKey.FK_BOOKSHELF);
 
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "original.title", DBKey.TITLE_ORIGINAL_LANG);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "condition", DBKey.BOOK_CONDITION);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "isbn", DBKey.BOOK_ISBN);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "condition", DBKey.CONDITION_BOOK);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "isbn", DBKey.ISBN);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "publication.date",
-                                         DBKey.BOOK_PUBLICATION__DATE);
+                                         DBKey.PUBLICATION_DATE);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "first.publication.date",
-                                         DBKey.FIRST_PUBLICATION__DATE);
+                                         DBKey.FIRST_PUBLICATION_DATE);
 
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "format", DBKey.FORMAT);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "language", DBKey.LANGUAGE);
@@ -164,7 +164,7 @@ public class StyleDataStore
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "pages", DBKey.PAGES);
 
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "signed", DBKey.SIGNED__BOOL);
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "edition", DBKey.EDITION__BITMASK);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "edition", DBKey.EDITION);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "loanee", DBKey.LOANEE_NAME);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "reading.progress", DBKey.READ_PROGRESS);
 

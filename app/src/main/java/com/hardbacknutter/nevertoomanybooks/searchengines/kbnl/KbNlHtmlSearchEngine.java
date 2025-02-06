@@ -425,7 +425,7 @@ public class KbNlHtmlSearchEngine
 
     private void parseIsbn(@NonNull final Element td,
                            @NonNull final Book book) {
-        if (!book.contains(DBKey.BOOK_ISBN)) {
+        if (!book.contains(DBKey.ISBN)) {
             final Elements spans = td.select("span");
             if (!spans.isEmpty()) {
                 // oh boy... aside of actual/valid ISBN numbers we've also seen things like
@@ -434,7 +434,7 @@ public class KbNlHtmlSearchEngine
                 // so we do a crude test on the length and hope for the best
                 // (don't do a full ISBN test here, no need)
                 if (isbnText.length() == 10 || isbnText.length() == 13) {
-                    book.putString(DBKey.BOOK_ISBN, isbnText);
+                    book.putString(DBKey.ISBN, isbnText);
                 }
                 if (spans.size() > 1) {
                     if (!book.contains(DBKey.FORMAT)) {
@@ -468,7 +468,7 @@ public class KbNlHtmlSearchEngine
 
     private void processDatePublished(@NonNull final Element td,
                                       @NonNull final Book book) {
-        if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
+        if (!book.contains(DBKey.PUBLICATION_DATE)) {
             final Element span = td.selectFirst("span");
             if (span != null) {
                 // It's not good... we've seen some different notations.

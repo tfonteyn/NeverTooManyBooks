@@ -432,7 +432,7 @@ public class GoodreadsSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
             final String url = o.optString("imageUrl");
             saveImage(context, url, isbn, 0, null).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));

@@ -41,13 +41,13 @@ public class BookLevelFieldVisibility
 
     /** The fields which are supported by this class. */
     private static final Set<String> FIELDS = Set.of(
-            DBKey.BOOK_CONDITION,
-            DBKey.BOOK_ISBN,
-            DBKey.BOOK_PUBLICATION__DATE,
-            DBKey.FIRST_PUBLICATION__DATE,
+            DBKey.CONDITION_BOOK,
+            DBKey.ISBN,
+            DBKey.PUBLICATION_DATE,
+            DBKey.FIRST_PUBLICATION_DATE,
 
             DBKey.COVER[0],
-            DBKey.EDITION__BITMASK,
+            DBKey.EDITION,
             DBKey.FK_AUTHOR,
             DBKey.FK_BOOKSHELF,
             DBKey.FK_PUBLISHER,
@@ -72,7 +72,7 @@ public class BookLevelFieldVisibility
             DBKey.COVER[0],
             DBKey.FK_SERIES,
             DBKey.SIGNED__BOOL,
-            DBKey.EDITION__BITMASK,
+            DBKey.EDITION,
             DBKey.LOANEE_NAME);
 
     /**

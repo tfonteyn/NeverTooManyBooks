@@ -92,10 +92,10 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("Wanted Lucky Luke", book.getString(DBKey.TITLE, null));
-        assertEquals("9782884719506", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9782884719506", book.getString(DBKey.ISBN, null));
         assertEquals("523041", book.requireIdentifierValue(Identifier.SID_STRIPWEB));
 
-        assertEquals("2021-10-05", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2021-10-05", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("72", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
@@ -171,10 +171,10 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("Valstrikken en emoties", book.getString(DBKey.TITLE, null));
-        assertEquals("9789085587187", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789085587187", book.getString(DBKey.ISBN, null));
         assertEquals("548714", book.requireIdentifierValue(Identifier.SID_STRIPWEB));
 
-        assertEquals("2024-02-13", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2024-02-13", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
@@ -289,10 +289,10 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("XIII- box Delen 1-3", book.getString(DBKey.TITLE, null));
-        assertEquals("3600121191341", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("3600121191341", book.getString(DBKey.ISBN, null));
         assertEquals("522632", book.requireIdentifierValue(Identifier.SID_STRIPWEB));
 
-        assertEquals("2020-09-25", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2020-09-25", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("48 x 3", book.getString(DBKey.PAGES, null));
         assertEquals("hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));

@@ -239,9 +239,9 @@ public class CsvArchiveReaderTest
         final Book book = Book.from(666000001);
         assertEquals(666000001, book.getId());
         assertEquals("Myths and Folk Tales of Ireland", book.getTitle());
-        assertEquals("0486224309", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("0486224309", book.getString(DBKey.ISBN, null));
         // "1975-06-01" => day will be dropped
-        assertEquals("1975-06", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("1975-06", book.getString(DBKey.PUBLICATION_DATE));
         assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0);
         assertFalse(book.isRead());
         assertEquals("272", book.getString(DBKey.PAGES));
@@ -296,8 +296,8 @@ public class CsvArchiveReaderTest
         final Book book = Book.from(666000002);
         assertEquals(666000002, book.getId());
         assertEquals("Dracula", book.getTitle());
-        assertEquals("9780141439846", book.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2003-04-29", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("9780141439846", book.getString(DBKey.ISBN, null));
+        assertEquals("2003-04-29", book.getString(DBKey.PUBLICATION_DATE));
         assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0);
         assertFalse(book.isRead());
         assertEquals("454", book.getString(DBKey.PAGES));

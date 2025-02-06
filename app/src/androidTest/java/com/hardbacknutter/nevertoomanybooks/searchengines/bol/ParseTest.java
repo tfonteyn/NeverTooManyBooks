@@ -89,9 +89,9 @@ public class ParseTest
         Log.d(TAG, book.toString());
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
-        assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789056478193", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2019-01-31", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("144", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
@@ -142,9 +142,9 @@ public class ParseTest
         assertEquals("Foundation", book.getString(DBKey.TITLE, null));
         assertEquals("Foundation / Foundation And Empire / Second Foundation",
                      book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
-        assertEquals("9780008117498", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9780008117498", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2016-09-22", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2016-09-22", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("240", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
@@ -206,9 +206,9 @@ public class ParseTest
         Log.d(TAG, book.toString());
 
         assertEquals("Alter ego", book.getString(DBKey.TITLE, null));
-        assertEquals("9789044652895", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789044652895", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2023-04-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2023-04-06", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("416", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
@@ -271,9 +271,9 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Europa", book.getString(DBKey.TITLE, null));
-        assertEquals("9789044544725", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789044544725", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2023-03-14", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2023-03-14", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("408", book.getString(DBKey.PAGES, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
@@ -339,9 +339,9 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
-        assertEquals("9789056478193", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789056478193", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2019-01-31", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("144", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
@@ -389,9 +389,9 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
-        assertEquals("9781841593326", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9781841593326", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2010-10-29", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2010-10-29", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("664", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));

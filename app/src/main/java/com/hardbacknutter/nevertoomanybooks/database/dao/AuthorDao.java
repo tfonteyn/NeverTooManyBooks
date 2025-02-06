@@ -303,7 +303,7 @@ public interface AuthorDao {
 
     @StringDef({
             DBKey.TITLE_OB,
-            DBKey.FIRST_PUBLICATION__DATE
+            DBKey.FIRST_PUBLICATION_DATE
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface WorksOrderBy {

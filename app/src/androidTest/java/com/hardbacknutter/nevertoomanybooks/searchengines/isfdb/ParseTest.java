@@ -99,12 +99,12 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Like Nothing on Earth", book.getString(DBKey.TITLE, null));
-        assertEquals("0413600106", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("0413600106", book.getString(DBKey.ISBN, null));
         assertEquals("9780413600103", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
         assertEquals("112781", book.requireIdentifierValue(Identifier.SID_ISFDB));
         assertEquals("13665857", book.requireIdentifierValue(Identifier.SID_OCLC));
 
-        assertEquals("1986-10", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1986-10", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(1.95d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("159", book.getString(DBKey.PAGES, null));
@@ -173,11 +173,11 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Mort", book.getString(DBKey.TITLE, null));
-        assertEquals("9781473200104", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9781473200104", book.getString(DBKey.ISBN, null));
         assertEquals("1473200105", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
         assertEquals("431964", book.requireIdentifierValue(Identifier.SID_ISFDB));
 
-        assertEquals("2013-11-07", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2013-11-07", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(9.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("257", book.getString(DBKey.PAGES, null));
@@ -238,13 +238,13 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("The Shepherd's Crown", book.getString(DBKey.TITLE, null));
-        assertEquals("9780062429995", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9780062429995", book.getString(DBKey.ISBN, null));
         assertEquals("006242999X", book.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
         assertEquals("542125", book.requireIdentifierValue(Identifier.SID_ISFDB));
         assertEquals("2015943558", book.requireIdentifierValue(Identifier.SID_LCCN));
         assertEquals("B00W2EBY8O", book.requireIdentifierValue(Identifier.SID_ASIN));
 
-        assertEquals("2015-09-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2015-09-01", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(11.99d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.USD, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));

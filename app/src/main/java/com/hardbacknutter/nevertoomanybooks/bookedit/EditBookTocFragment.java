@@ -475,7 +475,7 @@ public class EditBookTocFragment
             return;
         }
 
-        final String isbnStr = book.getString(DBKey.BOOK_ISBN);
+        final String isbnStr = book.getString(DBKey.ISBN);
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = new ISBN(isbnStr, true);
             if (isbn.isValid(true)) {
@@ -612,8 +612,8 @@ public class EditBookTocFragment
             tocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                 Book.BKEY_TOC_LIST);
 
-            bookContentType = Objects.requireNonNull(args.getParcelable(DBKey.BOOK_CONTENT_TYPE),
-                                                     DBKey.BOOK_CONTENT_TYPE);
+            bookContentType = Objects.requireNonNull(args.getParcelable(DBKey.CONTENT_TYPE),
+                                                     DBKey.CONTENT_TYPE);
             hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
@@ -705,7 +705,7 @@ public class EditBookTocFragment
                                   @NonNull final Book.ContentType bookContentType,
                                   @NonNull final List<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
-                result.putParcelable(DBKey.BOOK_CONTENT_TYPE, bookContentType);
+                result.putParcelable(DBKey.CONTENT_TYPE, bookContentType);
                 result.putParcelableArrayList(BKEY_TOC_LIST, new ArrayList<>(tocEntries));
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
@@ -734,7 +734,7 @@ public class EditBookTocFragment
 
                 final Bundle args = new Bundle(4);
                 args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(toc));
-                args.putParcelable(DBKey.BOOK_CONTENT_TYPE, bookContentType);
+                args.putParcelable(DBKey.CONTENT_TYPE, bookContentType);
                 args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
                 showDialog(context, args);
@@ -747,8 +747,8 @@ public class EditBookTocFragment
                     onSearchNextListener.searchNextEdition();
                 } else {
                     resultListener.onResult(
-                            Objects.requireNonNull(result.getParcelable(DBKey.BOOK_CONTENT_TYPE),
-                                                   DBKey.BOOK_CONTENT_TYPE),
+                            Objects.requireNonNull(result.getParcelable(DBKey.CONTENT_TYPE),
+                                                   DBKey.CONTENT_TYPE),
                             Objects.requireNonNull(result.getParcelableArrayList(BKEY_TOC_LIST),
                                                    BKEY_TOC_LIST));
                 }

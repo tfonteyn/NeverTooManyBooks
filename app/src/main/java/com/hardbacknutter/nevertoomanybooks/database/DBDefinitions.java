@@ -687,7 +687,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_DATE_FIRST_PUBLICATION =
-                new Domain.Builder(DBKey.FIRST_PUBLICATION__DATE, SqLiteDataType.Date)
+                new Domain.Builder(DBKey.FIRST_PUBLICATION_DATE, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -837,7 +837,7 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_ISBN =
-                new Domain.Builder(DBKey.BOOK_ISBN, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.ISBN, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -850,7 +850,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_DATE_PUBLISHED =
-                new Domain.Builder(DBKey.BOOK_PUBLICATION__DATE, SqLiteDataType.Date)
+                new Domain.Builder(DBKey.PUBLICATION_DATE, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -907,7 +907,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_CONTENT_TYPE =
-                new Domain.Builder(DBKey.BOOK_CONTENT_TYPE, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.CONTENT_TYPE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Book.ContentType.Book.getId())
                         .build();
@@ -923,7 +923,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_EDITION =
-                new Domain.Builder(DBKey.EDITION__BITMASK, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.EDITION, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Book.Edition.UNKNOWN)
                         .build();
@@ -996,12 +996,12 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_CONDITION =
-                new Domain.Builder(DBKey.BOOK_CONDITION, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.CONDITION_BOOK, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
         DOM_BOOK_CONDITION_DUST_COVER =
-                new Domain.Builder(DBKey.BOOK_CONDITION_COVER, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.CONDITION_COVER, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
@@ -1568,7 +1568,7 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.TITLE_OB, false, DOM_TITLE_OB)
                 .addIndex(DBKey.TITLE, false, DOM_TITLE)
-                .addIndex(DBKey.BOOK_ISBN, false, DOM_BOOK_ISBN)
+                .addIndex(DBKey.ISBN, false, DOM_BOOK_ISBN)
                 .addIndex(DBKey.BOOK_UUID, true, DOM_BOOK_UUID);
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 

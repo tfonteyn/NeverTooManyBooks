@@ -82,8 +82,8 @@ public abstract class BaseStyle
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_AUTHOR, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_SERIES, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_PUBLISHER, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_PUBLICATION__DATE, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FIRST_PUBLICATION__DATE, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.PUBLICATION_DATE, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FIRST_PUBLICATION_DATE, Sort.Unsorted);
 
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FORMAT, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOCATION, Sort.Unsorted);
@@ -91,9 +91,9 @@ public abstract class BaseStyle
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.READ_PROGRESS, Sort.Unsorted);
 
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.PAGES, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.BOOK_CONDITION, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.CONDITION_BOOK, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.SIGNED__BOOL, Sort.Unsorted);
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.EDITION__BITMASK, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.EDITION, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.LOANEE_NAME, Sort.Unsorted);
 
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_BOOKSHELF, Sort.Unsorted);

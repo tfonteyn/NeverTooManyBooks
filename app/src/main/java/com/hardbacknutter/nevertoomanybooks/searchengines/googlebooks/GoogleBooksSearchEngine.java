@@ -387,7 +387,7 @@ public class GoogleBooksSearchEngine
 
         final JSONObject imageLinks = volumeInfo.optJSONObject("imageLinks");
         if (imageLinks != null && fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
             searchBestCover(context, imageLinks, isbn).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
@@ -531,7 +531,7 @@ public class GoogleBooksSearchEngine
         Stream.of("ISBN_13", "ISBN_10", "ISSN")
               .filter(all::containsKey)
               .findFirst()
-              .ifPresent(key -> book.putString(DBKey.BOOK_ISBN, all.get(key)));
+              .ifPresent(key -> book.putString(DBKey.ISBN, all.get(key)));
     }
 
     @NonNull

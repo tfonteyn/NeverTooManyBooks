@@ -217,20 +217,20 @@ public class BookCoder {
      * @param book to process
      */
     private void processIsbn(@NonNull final Book book) {
-        if (!book.contains(DBKey.BOOK_ISBN) && book.contains(Goodreads.ISBN10)) {
-            book.putString(DBKey.BOOK_ISBN, book.getString(Goodreads.ISBN10));
+        if (!book.contains(DBKey.ISBN) && book.contains(Goodreads.ISBN10)) {
+            book.putString(DBKey.ISBN, book.getString(Goodreads.ISBN10));
             book.remove(Goodreads.ISBN10);
         }
 
-        if (book.contains(DBKey.BOOK_ISBN)) {
+        if (book.contains(DBKey.ISBN)) {
             // ALWAYS try to clean the ISBN.
-            final String raw = book.getString(DBKey.BOOK_ISBN);
+            final String raw = book.getString(DBKey.ISBN);
 
             // We have seen the string:  "9.78E+12"
             // The original writer must have been writing isbn numbers as floating-point values.
             // We're explicitly discarding these.
             if ("9.78E+12".equals(raw)) {
-                book.remove(DBKey.BOOK_ISBN);
+                book.remove(DBKey.ISBN);
                 return;
             }
 
@@ -241,9 +241,9 @@ public class BookCoder {
             // We want non-isbn string with simple numerical values to pass through
             final String isbnText = ISBN.cleanText(raw);
             if (isbnText.isEmpty()) {
-                book.remove(DBKey.BOOK_ISBN);
+                book.remove(DBKey.ISBN);
             } else {
-                book.putString(DBKey.BOOK_ISBN, isbnText);
+                book.putString(DBKey.ISBN, isbnText);
             }
         }
     }
@@ -650,7 +650,7 @@ public class BookCoder {
          */
         public static final String ADDITIONAL_AUTHORS = PREFIX + "additional authors";
         /**
-         * Data will have the Isbn13 field mapped to {@link DBKey#BOOK_ISBN}.
+         * Data will have the Isbn13 field mapped to {@link DBKey#ISBN}.
          * If empty, we get the Isbn10 code from this key.
          */
         public static final String ISBN10 = PREFIX + "isbn10";

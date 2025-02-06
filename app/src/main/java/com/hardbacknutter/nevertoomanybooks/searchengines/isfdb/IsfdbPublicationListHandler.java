@@ -321,7 +321,7 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_YEAR: {
-                    if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
+                    if (!book.contains(DBKey.PUBLICATION_DATE)) {
                         final String dateStr = builder.toString().strip();
                         // Ignore the locale, the format is always iso
                         partialDateParser.parse(dateStr)
@@ -332,7 +332,7 @@ class IsfdbPublicationListHandler
                 case XML_ISBN: {
                     final String isbnText = ISBN.cleanText(builder.toString().strip());
                     if (!isbnText.isEmpty()) {
-                        addIfNotPresent(DBKey.BOOK_ISBN, isbnText);
+                        addIfNotPresent(DBKey.ISBN, isbnText);
                     }
                     break;
                 }
@@ -340,7 +340,7 @@ class IsfdbPublicationListHandler
                     // use the ISBN if we have one, otherwise the catalog id
                     final String text = builder.toString().strip();
                     if (!text.isBlank()) {
-                        addIfNotPresent(DBKey.BOOK_ISBN, text);
+                        addIfNotPresent(DBKey.ISBN, text);
                     }
                     break;
                 }
@@ -397,7 +397,7 @@ class IsfdbPublicationListHandler
                             imageUrl = "https:" + imageUrl.substring(5);
                         }
                         try {
-                            final String isbn = book.getString(DBKey.BOOK_ISBN);
+                            final String isbn = book.getString(DBKey.ISBN);
                             searchEngine.saveImage(context, imageUrl, isbn, 0, null)
                                         .ifPresent(fileSpec -> CoverFileSpecArray
                                                 .setFileSpec(book, 0, fileSpec));

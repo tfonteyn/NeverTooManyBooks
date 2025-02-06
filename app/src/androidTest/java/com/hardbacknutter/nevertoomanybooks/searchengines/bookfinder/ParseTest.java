@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,9 +86,9 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Rule 34", book.getString(DBKey.TITLE, null));
-        assertEquals("9780441020348", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9780441020348", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2011", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2011", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1);

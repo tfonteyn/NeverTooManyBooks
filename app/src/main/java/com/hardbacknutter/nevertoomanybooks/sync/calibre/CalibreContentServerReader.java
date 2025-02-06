@@ -247,7 +247,7 @@ public class CalibreContentServerReader
                 new String[]{DBKey.FK_IDENTIFIER, Book.BKEY_IDENTIFIER_LIST});
 
         map.put(context.getString(R.string.lbl_date_published),
-                new String[]{DBKey.BOOK_PUBLICATION__DATE});
+                new String[]{DBKey.PUBLICATION_DATE});
 
         map.put(context.getString(R.string.lbl_format),
                 new String[]{DBKey.FORMAT});

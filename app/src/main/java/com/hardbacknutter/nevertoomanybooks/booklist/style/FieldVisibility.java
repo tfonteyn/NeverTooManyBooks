@@ -83,18 +83,18 @@ public class FieldVisibility {
 
             // bit 8..11
             DBKey.AUTHOR.BOOK_AUTHOR_TYPE,
-            DBKey.BOOK_CONDITION,
-            DBKey.BOOK_CONDITION_COVER,
-            DBKey.BOOK_ISBN,
+            DBKey.CONDITION_BOOK,
+            DBKey.CONDITION_COVER,
+            DBKey.ISBN,
 
             // bit 12..15
-            DBKey.BOOK_PUBLICATION__DATE,
+            DBKey.PUBLICATION_DATE,
             DBKey.COLOR,
             DBKey.DESCRIPTION,
-            DBKey.EDITION__BITMASK,
+            DBKey.EDITION,
 
             // bit 16..19
-            DBKey.FIRST_PUBLICATION__DATE,
+            DBKey.FIRST_PUBLICATION_DATE,
             DBKey.FORMAT,
             DBKey.FK_TAG,
             DBKey.LANGUAGE,

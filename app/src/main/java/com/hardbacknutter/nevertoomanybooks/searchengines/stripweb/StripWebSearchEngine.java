@@ -282,7 +282,7 @@ public class StripWebSearchEngine
                     case "ISBN nummer": {
                         final String isbnText = ISBN.cleanText(td.text());
                         if (!isbnText.isEmpty()) {
-                            book.putString(DBKey.BOOK_ISBN, isbnText);
+                            book.putString(DBKey.ISBN, isbnText);
                         }
                         break;
                     }
@@ -400,7 +400,7 @@ public class StripWebSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
             // start from 'main' !
             parseCover(context, main, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));

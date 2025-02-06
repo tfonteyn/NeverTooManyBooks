@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -485,7 +485,7 @@ public class SearchBookByIsbnFragment
             // While a crash is seldom, it can happen if the website(s) returns
             // bad/unexpected data - OpenLibrary being notorious...
             // If a user reports this crash, we'll have the ISBN to try and reproduce.
-            ACRA.getErrorReporter().putCustomData(DBKey.BOOK_ISBN, code.asText());
+            ACRA.getErrorReporter().putCustomData(DBKey.ISBN, code.asText());
             startSearch();
 
         } else {

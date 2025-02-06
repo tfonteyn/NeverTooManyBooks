@@ -288,7 +288,7 @@ public class ShowBookDetailsViewModel
                                        fullDetailListFormatter)
                            .addRelatedViews(R.id.lbl_series));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.isbn, DBKey.BOOK_ISBN)
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.isbn, DBKey.ISBN)
                            .addRelatedViews(R.id.lbl_isbn));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.description, DBKey.DESCRIPTION,
@@ -312,16 +312,16 @@ public class ShowBookDetailsViewModel
                                        normalDetailListFormatter));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.date_published,
-                                       DBKey.BOOK_PUBLICATION__DATE,
+                                       DBKey.PUBLICATION_DATE,
                                        dateFormatter)
                            .addRelatedViews(R.id.lbl_date_published));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.first_publication,
-                                       DBKey.FIRST_PUBLICATION__DATE,
+                                       DBKey.FIRST_PUBLICATION_DATE,
                                        dateFormatter)
                            .addRelatedViews(R.id.lbl_first_publication));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.edition, DBKey.EDITION__BITMASK,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.edition, DBKey.EDITION,
                                        new BitmaskFormatter(Details.Normal, Book.Edition::getAll))
                            .addRelatedViews(R.id.lbl_edition));
 
@@ -357,13 +357,13 @@ public class ShowBookDetailsViewModel
                                       DBKey.RATING));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.condition,
-                                       DBKey.BOOK_CONDITION,
+                                       DBKey.CONDITION_BOOK,
                                        new StringArrayResFormatter(
                                                context, R.array.lbl_book_condition))
                            .addRelatedViews(R.id.lbl_condition));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.condition_cover,
-                                       DBKey.BOOK_CONDITION_COVER,
+                                       DBKey.CONDITION_COVER,
                                        new StringArrayResFormatter(
                                                context, R.array.lbl_dust_cover_condition))
                            .addRelatedViews(R.id.lbl_condition_cover));

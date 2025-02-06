@@ -284,7 +284,7 @@ public class CalibreContentServerWriter
                     localBook.getString(DBKey.DESCRIPTION));
         // we don't read this field, but we DO write it.
         changes.put(CalibreBookJsonKey.DATE_PUBLISHED,
-                    localBook.getString(DBKey.BOOK_PUBLICATION__DATE));
+                    localBook.getString(DBKey.PUBLICATION_DATE));
         changes.put(CalibreBookJsonKey.LAST_MODIFIED,
                     localBook.getString(DBKey.DATE_LAST_UPDATED__UTC));
         changes.put(CalibreBookJsonKey.RATING,

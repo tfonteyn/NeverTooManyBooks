@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,7 +94,7 @@ public class CoverBrowserLauncher
 
         final Bundle args = new Bundle(4);
         args.putString(DBKey.TITLE, bookTitle);
-        args.putString(DBKey.BOOK_ISBN, isbn);
+        args.putString(DBKey.ISBN, isbn);
         args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
         showDialog(context, args);

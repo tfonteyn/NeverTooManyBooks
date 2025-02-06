@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,7 +77,7 @@ class MLACitation
         if (firstPublicationDate.isPresent()) {
             p2sj.add(String.valueOf(firstPublicationDate.getYearValue()));
         } else {
-            final String isoDate = book.getString(DBKey.BOOK_PUBLICATION__DATE);
+            final String isoDate = book.getString(DBKey.PUBLICATION_DATE);
             if (isoDate.length() >= 4) {
                 p2sj.add(isoDate.substring(0, 4));
             }

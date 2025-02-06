@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -69,7 +69,7 @@ public class SearchByIsbnTest
         assertNotNull(book);
         assertFalse(book.isEmpty());
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
-        assertEquals("2019-01-31", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2019-01-31", book.getString(DBKey.PUBLICATION_DATE, null));
         // this is good enough... the local junit tests do the full parse test
     }
 }

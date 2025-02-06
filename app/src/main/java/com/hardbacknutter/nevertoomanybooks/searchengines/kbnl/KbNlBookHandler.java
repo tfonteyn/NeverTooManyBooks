@@ -484,12 +484,12 @@ class KbNlBookHandler
     private void parseIsbn(@NonNull final List<String> currentData) {
         for (final String text : currentData) {
             if (Character.isDigit(text.charAt(0))) {
-                if (!book.contains(DBKey.BOOK_ISBN)) {
+                if (!book.contains(DBKey.ISBN)) {
                     final String isbnText = ISBN.cleanText(text.split(":")[0]);
                     // Do a crude test on the length and hope for the best
                     // (don't do a full ISBN test here, no need)
                     if (isbnText.length() == 10 || isbnText.length() == 13) {
-                        book.putString(DBKey.BOOK_ISBN, isbnText);
+                        book.putString(DBKey.ISBN, isbnText);
                     }
                 }
             } else if (text.charAt(0) == '(') {
@@ -575,7 +575,7 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      */
     private void parseDatePublished(@NonNull final List<String> currentData) {
-        if (!book.contains(DBKey.BOOK_PUBLICATION__DATE)) {
+        if (!book.contains(DBKey.PUBLICATION_DATE)) {
             // Grab the first bit before a comma, and strip it for digits + hope for the best
             final String year = SearchEngineUtils.digits(currentData.get(0).split(",")[0]);
             if (!year.isEmpty()) {

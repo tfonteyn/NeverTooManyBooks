@@ -197,7 +197,7 @@ public class TocEntryDaoImpl
                 SqlEncode.orderByColumn(obTitle, locale)})) {
             final CursorRow rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final String fpd = rowData.getString(DBKey.FIRST_PUBLICATION__DATE);
+                final String fpd = rowData.getString(DBKey.FIRST_PUBLICATION_DATE);
 
                 // Both the same date (or both empty)
                 // OR the existing row has a date and there was no search-date
@@ -478,7 +478,7 @@ public class TocEntryDaoImpl
                 + '(' + DBKey.FK_AUTHOR
                 + ',' + DBKey.TITLE
                 + ',' + DBKey.TITLE_OB
-                + ',' + DBKey.FIRST_PUBLICATION__DATE
+                + ',' + DBKey.FIRST_PUBLICATION_DATE
                 + ") VALUES (?,?,?,?)";
 
         /** Update a {@link TocEntry}. */
@@ -486,7 +486,7 @@ public class TocEntryDaoImpl
                 UPDATE_ + TBL_TOC_ENTRIES.getName()
                 + _SET_ + DBKey.TITLE + "=?"
                 + ',' + DBKey.TITLE_OB + "=?"
-                + ',' + DBKey.FIRST_PUBLICATION__DATE + "=?"
+                + ',' + DBKey.FIRST_PUBLICATION_DATE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link TocEntry}. */
@@ -542,7 +542,7 @@ public class TocEntryDaoImpl
                 TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
                                       DBKey.FK_AUTHOR,
                                       DBKey.TITLE,
-                                      DBKey.FIRST_PUBLICATION__DATE)
+                                      DBKey.FIRST_PUBLICATION_DATE)
                 + ',' + TBL_AUTHORS.dotAs(DBKey.AUTHOR.FAMILY_NAME,
                                           DBKey.AUTHOR.GIVEN_NAMES,
                                           DBKey.AUTHOR.COMPLETE)
@@ -583,7 +583,7 @@ public class TocEntryDaoImpl
                 + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.FK_AUTHOR) + "=?"
                 + _AND_ + '(' + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=? " + _COLLATION
                 + _OR_ + TBL_TOC_ENTRIES.dot(DBKey.TITLE_OB) + "=?" + _COLLATION + ')'
-                + _ORDER_BY_ + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION__DATE);
+                + _ORDER_BY_ + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION_DATE);
 
         /**
          * All {@link TocEntry}s for a {@link Book}.
@@ -610,7 +610,7 @@ public class TocEntryDaoImpl
                 SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID,
                                           DBKey.TITLE,
                                           DBKey.LANGUAGE,
-                                          DBKey.FIRST_PUBLICATION__DATE)
+                                          DBKey.FIRST_PUBLICATION_DATE)
                 + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_BOOKS)
                 + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?"
                 + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.TITLE_OB);

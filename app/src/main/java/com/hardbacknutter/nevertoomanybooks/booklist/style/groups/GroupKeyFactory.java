@@ -453,7 +453,7 @@ public final class GroupKeyFactory {
                                                     BooklistGroup.BlgDBKey.PUB_YEAR,
                                                     SqLiteDataType.Integer).build(),
                                             year(false,
-                                                 TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE)),
+                                                 TBL_BOOKS.dot(DBKey.PUBLICATION_DATE)),
                                             Sort.Desc))
                         .addBaseDomain(BD_DATE_PUBLISHED);
             }
@@ -465,7 +465,7 @@ public final class GroupKeyFactory {
                                                     BooklistGroup.BlgDBKey.PUB_MONTH,
                                                     SqLiteDataType.Integer).build(),
                                             month(false,
-                                                  TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE)),
+                                                  TBL_BOOKS.dot(DBKey.PUBLICATION_DATE)),
                                             Sort.Desc))
                         .addBaseDomain(BD_DATE_PUBLISHED);
             }
@@ -479,7 +479,7 @@ public final class GroupKeyFactory {
                                                     BooklistGroup.BlgDBKey.FIRST_PUB_YEAR,
                                                     SqLiteDataType.Integer).build(),
                                             year(false,
-                                                 TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE)),
+                                                 TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION_DATE)),
                                             Sort.Desc))
                         .addBaseDomain(BD_DATE_FIRST_PUBLICATION);
             }
@@ -491,7 +491,7 @@ public final class GroupKeyFactory {
                                                     BooklistGroup.BlgDBKey.FIRST_PUB_MONTH,
                                                     SqLiteDataType.Integer).build(),
                                             month(false,
-                                                  TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE)),
+                                                  TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION_DATE)),
                                             Sort.Desc))
                         .addBaseDomain(BD_DATE_FIRST_PUBLICATION);
             }

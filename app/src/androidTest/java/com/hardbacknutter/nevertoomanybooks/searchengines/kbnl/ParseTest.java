@@ -105,8 +105,8 @@ public class ParseTest
 
         assertEquals("De Foundation", book.getString(DBKey.TITLE, null));
 
-        assertEquals("1983", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("9022953351", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("1983", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("9022953351", book.getString(DBKey.ISBN, null));
         assertEquals("833191217", book.requireIdentifierValue(Identifier.SID_KBNL));
 
         assertEquals("geb.", book.getString(DBKey.FORMAT, null));
@@ -143,10 +143,10 @@ public class ParseTest
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_comic_1);
 
         assertEquals("De buitengewone reis", book.getString(DBKey.TITLE, null));
-        assertEquals("9789463731454", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789463731454", book.getString(DBKey.ISBN, null));
         assertEquals("422449148", book.requireIdentifierValue(Identifier.SID_KBNL));
 
-        assertEquals("2019", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2019", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
@@ -192,10 +192,10 @@ public class ParseTest
 
     static void verify9020612476(@NonNull final Book book) {
         assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
-        assertEquals("9020612476", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9020612476", book.getString(DBKey.ISBN, null));
         assertEquals("428377971", book.requireIdentifierValue(Identifier.SID_KBNL));
 
-        assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1973", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("157", book.getString(DBKey.PAGES, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
         assertEquals("zw. ill", book.getString(DBKey.COLOR, null));

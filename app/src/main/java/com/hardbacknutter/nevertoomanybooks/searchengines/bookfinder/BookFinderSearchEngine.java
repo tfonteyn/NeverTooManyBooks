@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -180,7 +180,7 @@ public class BookFinderSearchEngine
                         case "ISBN:": {
                             final String[] s = value.split("/");
                             if (s.length > 0 && !s[0].isBlank()) {
-                                book.putString(DBKey.BOOK_ISBN, s[0].strip());
+                                book.putString(DBKey.ISBN, s[0].strip());
                             }
                             break;
                         }
@@ -221,7 +221,7 @@ public class BookFinderSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
             parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }

@@ -404,7 +404,7 @@ public class BolSearchEngine
                         break;
                     }
                     case "EAN": {
-                        processText(value, DBKey.BOOK_ISBN, book);
+                        processText(value, DBKey.ISBN, book);
                         break;
                     }
                     case "Categorieën":
@@ -604,7 +604,7 @@ public class BolSearchEngine
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
             throws StorageException {
-        final String isbn = book.getString(DBKey.BOOK_ISBN);
+        final String isbn = book.getString(DBKey.ISBN);
 
         final Element imageSlotConfig = document.selectFirst(
                 "section[data-group-name='product-images'] script");

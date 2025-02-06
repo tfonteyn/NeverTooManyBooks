@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -162,8 +162,8 @@ public class CoverBrowserViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (baseIsbn == null) {
-            baseIsbn = SanityCheck.requireValue(args.getString(DBKey.BOOK_ISBN),
-                                                DBKey.BOOK_ISBN);
+            baseIsbn = SanityCheck.requireValue(args.getString(DBKey.ISBN),
+                                                DBKey.ISBN);
             cIdx = args.getInt(BKEY_FILE_INDEX);
 
             // optional

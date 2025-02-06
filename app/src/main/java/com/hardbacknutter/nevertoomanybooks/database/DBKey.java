@@ -21,9 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
-
 /**
  * Keys used as domain names / Bundle keys.
  */
@@ -86,13 +83,25 @@ public final class DBKey {
     /** The original-language title of a translated book. */
     public static final String TITLE_ORIGINAL_LANG = "title_original_lang";
 
-    public static final String BOOK_ISBN = "isbn";
-    /** {@link DBDefinitions#TBL_BOOKS} + {@link DBDefinitions#TBL_TOC_ENTRIES} */
-    public static final String FIRST_PUBLICATION__DATE = "first_publication";
-    public static final String BOOK_PUBLICATION__DATE = "date_published";
-    public static final String PRINT_RUN = "print_run";
-    public static final String PRICE_LISTED = "list_price";
-    public static final String PRICE_LISTED_CURRENCY = PRICE_LISTED + CURRENCY_SUFFIX;
+    public static final String COLOR = "color";
+    /**
+     * The column name is incorrect for historic reasons.
+     *
+     * @see com.hardbacknutter.nevertoomanybooks.entities.Book.ContentType
+     */
+    public static final String CONTENT_TYPE = "anthology";
+    public static final String DESCRIPTION = "description";
+    /**
+     * Bitmask value for the edition(s).
+     *
+     * @see com.hardbacknutter.nevertoomanybooks.entities.Book.Edition
+     */
+    public static final String EDITION = "edition_bm";
+    public static final String FORMAT = "format";
+    /** {@link DBDefinitions#TBL_BOOKS} + {@link DBDefinitions#TBL_TOC_ENTRIES}. */
+    public static final String FIRST_PUBLICATION_DATE = "first_publication";
+    public static final String ISBN = "isbn";
+    public static final String LANGUAGE = "language";
     /**
      * This field value is <strong>TEXT</strong> data by design to accommodate
      * sites which provide a description of the page structure.
@@ -100,36 +109,32 @@ public final class DBKey {
      * with an introduction, followed by 278 numbered content pages.
      */
     public static final String PAGES = "pages";
-    public static final String FORMAT = "format";
-    public static final String COLOR = "color";
-    public static final String LANGUAGE = "language";
-    public static final String DESCRIPTION = "description";
+    public static final String PRICE_LISTED = "list_price";
+    public static final String PRICE_LISTED_CURRENCY = PRICE_LISTED + CURRENCY_SUFFIX;
+    public static final String PRINT_RUN = "print_run";
+    public static final String PUBLICATION_DATE = "date_published";
 
-    public static final String EDITION__BITMASK = "edition_bm";
     /**
-     * The column name is incorrect for historic reasons.
-     *
-     * @see Book.ContentType
+     * {@link DBDefinitions#TBL_BOOKS} Personal data.
      */
-    public static final String BOOK_CONTENT_TYPE = "anthology";
-
-    /** {@link DBDefinitions#TBL_BOOKS} Personal data. */
+    public static final String CONDITION_BOOK = "cond_bk";
+    public static final String CONDITION_COVER = "cond_cvr";
     public static final String PRICE_PAID = "price_paid";
     public static final String PRICE_PAID_CURRENCY = PRICE_PAID + CURRENCY_SUFFIX;
     public static final String DATE_ACQUIRED = "date_acquired";
+    public static final String PERSONAL_NOTES = "notes";
     public static final String LOCATION = "location";
+    /** A rating goes from 1 to 5 stars, in 0.5 increments; 0 == not set. */
+    public static final String RATING = "rating";
     public static final String READ__BOOL = "read";
     public static final String READ_PROGRESS = "read_progress";
     public static final String READ_START__DATE = "read_start";
     public static final String READ_END__DATE = "read_end";
     public static final String SIGNED__BOOL = "signed";
-    /** A rating goes from 1 to 5 stars, in 0.5 increments; 0 == not set. */
-    public static final String RATING = "rating";
-    public static final String PERSONAL_NOTES = "notes";
-    public static final String BOOK_CONDITION = "cond_bk";
-    public static final String BOOK_CONDITION_COVER = "cond_cvr";
 
-    /** Flag: the user can 'lock' (i.e. set 'false') a book from being automatically updated. */
+    /**
+     * Flag: the user can 'lock' (i.e. set 'false') a book from being automatically updated.
+     */
     public static final String AUTO_UPDATE = "auto_update";
 
 
@@ -145,7 +150,11 @@ public final class DBKey {
     /** Alias. */
     public static final String BOOK_COUNT = "book_count";
 
-    /** Column alias for {@link AuthorWork.Type}. */
+    /**
+     * Column alias.
+     *
+     * @see com.hardbacknutter.nevertoomanybooks.entities.AuthorWork.Type
+     */
     public static final String AUTHOR_WORK_TYPE = "work_type";
 
 
@@ -162,8 +171,8 @@ public final class DBKey {
      * Used with {@code DATE_KEYS.contains(key)} to check if a key represents a date.
      */
     public static final Set<String> DATE_KEYS = Set.of(
-            BOOK_PUBLICATION__DATE,
-            FIRST_PUBLICATION__DATE,
+            PUBLICATION_DATE,
+            FIRST_PUBLICATION_DATE,
             DATE_ACQUIRED,
             READ_START__DATE,
             READ_END__DATE);
@@ -248,8 +257,9 @@ public final class DBKey {
         /**
          * Virtual column: "GivenName FamilyName".
          * <p>
-         * Only used for the special case.
-         * {@link com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment}
+         * Only used for a special case when searching for a book by text.
+         *
+         * @see com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment
          */
         public static final String FORMATTED_FULL_NAME_GIVEN_FIRST = "author_formatted_given_first";
 
@@ -314,7 +324,9 @@ public final class DBKey {
 
         public static final String UUID = "uuid";
         /**
-         * The name for a {@link com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle}.
+         * The name for a user defined style.
+         *
+         * @see com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle
          */
         public static final String NAME = "name";
         /**

@@ -460,7 +460,7 @@ public class StripInfoSearchEngine
                                 case "ISBN": {
                                     final String text = extractText(td);
                                     if (text != null) {
-                                        book.putString(DBKey.BOOK_ISBN, text);
+                                        book.putString(DBKey.ISBN, text);
                                         i++;
                                     }
                                     break;
@@ -593,7 +593,7 @@ public class StripInfoSearchEngine
             return;
         }
 
-        final String isbn = book.getString(DBKey.BOOK_ISBN);
+        final String isbn = book.getString(DBKey.ISBN);
 
         // front cover
         if (fetchCovers[0]) {
@@ -635,7 +635,7 @@ public class StripInfoSearchEngine
                 || isbnFromBarcode.asText().equals(searchIsbnText)) {
 
                 // Then the barcode always replaces the ISBN from the site!
-                book.putString(DBKey.BOOK_ISBN, isbnFromBarcode.asText());
+                book.putString(DBKey.ISBN, isbnFromBarcode.asText());
                 book.remove(SiteField.BARCODE);
             }
         }

@@ -100,7 +100,7 @@ public class SearchEngineConfig {
     public static final String PK_TAGS_IGNORE = "tags.ignore";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
-     * Whether to search by using the ISBN10 value or the original {@link DBKey#BOOK_ISBN}.
+     * Whether to search by using the ISBN10 value or the original {@link DBKey#ISBN}.
      * <p>
      * {@code boolean}
      */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -217,7 +217,7 @@ public class SearchCoordinator
                     // Replace the search text with the (we hope) exact ISBN/code
                     // Worst case, explicitly use an empty string
                     //noinspection DataFlowIssue
-                    isbnSearchText = result.getString(DBKey.BOOK_ISBN, "");
+                    isbnSearchText = result.getString(DBKey.ISBN, "");
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                         LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
@@ -408,7 +408,7 @@ public class SearchCoordinator
             sitesInOrder = determineBestOrder(completedOrder);
             // Add the ISBN we initially searched for.
             // This avoids overwriting with a potentially different isbn from the sites
-            book.putString(DBKey.BOOK_ISBN, isbnSearchText);
+            book.putString(DBKey.ISBN, isbnSearchText);
         } else {
             // We did not have an ISBN as a search criteria; use the default order
             sitesInOrder = new ArrayList<>(completedOrder);
@@ -432,9 +432,9 @@ public class SearchCoordinator
         resultsAccumulator.process(context, results, book);
 
         // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = book.getString(DBKey.BOOK_ISBN, null);
+        final String isbnStr = book.getString(DBKey.ISBN, null);
         if (isbnStr == null || isbnStr.isEmpty()) {
-            book.putString(DBKey.BOOK_ISBN, isbnSearchText);
+            book.putString(DBKey.ISBN, isbnSearchText);
         }
 
         // If we did not get a title, use the one we originally searched for.
@@ -495,9 +495,9 @@ public class SearchCoordinator
                         // so we SHOULD be pretty sure about the data...
                         sitesInOrder.add(engineId);
 
-                    } else if (result.contains(DBKey.BOOK_ISBN)) {
+                    } else if (result.contains(DBKey.ISBN)) {
                         // We did a general search with an ISBN; check if it matches
-                        final String isbnFound = result.getString(DBKey.BOOK_ISBN, null);
+                        final String isbnFound = result.getString(DBKey.ISBN, null);
                         if (isbnFound != null && !isbnFound.isEmpty()
                             && isbn.equals(new ISBN(isbnFound, strictIsbn))) {
                             sitesInOrder.add(engineId);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -293,7 +293,7 @@ public class AuthorWorksFragment
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE) {
                 menuItem.setChecked(true);
-                vm.setOrderByColumn(DBKey.FIRST_PUBLICATION__DATE);
+                vm.setOrderByColumn(DBKey.FIRST_PUBLICATION_DATE);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;

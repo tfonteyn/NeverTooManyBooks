@@ -561,7 +561,7 @@ public class LastDodoSearchEngine
                         if (!"Geen".equals(tmpString)) {
                             tmpString = ISBN.cleanText(tmpString);
                             if (!tmpString.isEmpty()) {
-                                book.putString(DBKey.BOOK_ISBN, tmpString);
+                                book.putString(DBKey.ISBN, tmpString);
                             }
                         }
                         break;
@@ -647,7 +647,7 @@ public class LastDodoSearchEngine
         }
 
         if (fetchCovers[0] || fetchCovers[1]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
             parseCovers(context, document, isbn, fetchCovers, book);
         }
     }

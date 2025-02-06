@@ -362,7 +362,7 @@ public class FtsDaoImpl
                 bindStringOrNull(stmt, 6, publisherList);
 
                 bindStringOrNull(stmt, 7, rowData.getString(DBKey.LOCATION));
-                bindStringOrNull(stmt, 8, rowData.getString(DBKey.BOOK_ISBN));
+                bindStringOrNull(stmt, 8, rowData.getString(DBKey.ISBN));
 
                 // FTS_TOC_ENTRY_TITLE
                 bindStringOrNull(stmt, 9, tocList);
@@ -386,7 +386,7 @@ public class FtsDaoImpl
                 + ',' + DBKey.PERSONAL_NOTES
                 + ',' + DBKey.PUBLISHER.NAME
                 + ',' + DBKey.LOCATION
-                + ',' + DBKey.BOOK_ISBN
+                + ',' + DBKey.ISBN
                 + ',' + DBKey.FTS.TOC_ENTRY_TITLE
 
                 + ',' + DBKey.FTS.PK_BOOK_ID
@@ -412,7 +412,7 @@ public class FtsDaoImpl
                 + ',' + DBKey.PERSONAL_NOTES + "=?"
                 + ',' + DBKey.PUBLISHER.NAME + "=?"
                 + ',' + DBKey.LOCATION + "=?"
-                + ',' + DBKey.BOOK_ISBN + "=?"
+                + ',' + DBKey.ISBN + "=?"
                 + ',' + DBKey.FTS.TOC_ENTRY_TITLE + "=?"
 
                 + _WHERE_ + DBKey.FTS.PK_BOOK_ID + "=?";
@@ -424,7 +424,7 @@ public class FtsDaoImpl
                 + ',' + DBKey.DESCRIPTION
                 + ',' + DBKey.PERSONAL_NOTES
                 + ',' + DBKey.LOCATION
-                + ',' + DBKey.BOOK_ISBN
+                + ',' + DBKey.ISBN
                 + _FROM_ + TBL_BOOKS.getName();
 
         /** Used during insert of a book. Minimal column list. */

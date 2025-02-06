@@ -180,15 +180,15 @@ public class SearchBookUpdatesViewModel
         map.put(context.getString(R.string.lbl_title),
                 new String[]{DBKey.TITLE});
         map.put(context.getString(R.string.lbl_isbn),
-                new String[]{DBKey.BOOK_ISBN});
+                new String[]{DBKey.ISBN});
         map.put(context.getString(R.string.lbl_description),
                 new String[]{DBKey.DESCRIPTION});
         map.put(context.getString(R.string.lbl_print_run),
                 new String[]{DBKey.PRINT_RUN});
         map.put(context.getString(R.string.lbl_date_published),
-                new String[]{DBKey.BOOK_PUBLICATION__DATE});
+                new String[]{DBKey.PUBLICATION_DATE});
         map.put(context.getString(R.string.lbl_date_first_publication),
-                new String[]{DBKey.FIRST_PUBLICATION__DATE});
+                new String[]{DBKey.FIRST_PUBLICATION_DATE});
         map.put(context.getString(R.string.lbl_price_listed),
                 new String[]{DBKey.PRICE_LISTED});
         map.put(context.getString(R.string.lbl_pages),
@@ -207,7 +207,7 @@ public class SearchBookUpdatesViewModel
         map.put(context.getString(R.string.lbl_series_multiple),
                 new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
         map.put(context.getString(R.string.lbl_table_of_content),
-                new String[]{DBKey.BOOK_CONTENT_TYPE, Book.BKEY_TOC_LIST});
+                new String[]{DBKey.CONTENT_TYPE, Book.BKEY_TOC_LIST});
         map.put(context.getString(R.string.lbl_publishers),
                 new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
         map.put(context.getString(R.string.lbl_identifiers),
@@ -374,7 +374,7 @@ public class SearchBookUpdatesViewModel
                     clearSearchCriteria();
                     boolean canSearch = false;
 
-                    final String isbnStr = currentBook.getString(DBKey.BOOK_ISBN, null);
+                    final String isbnStr = currentBook.getString(DBKey.ISBN, null);
                     if (isbnStr != null && !isbnStr.isEmpty()) {
                         setIsbnSearchText(isbnStr);
                         canSearch = true;

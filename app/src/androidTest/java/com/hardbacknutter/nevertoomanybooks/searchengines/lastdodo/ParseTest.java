@@ -79,10 +79,10 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
-        assertEquals("9789463064385", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789463064385", book.getString(DBKey.ISBN, null));
         assertEquals("7323911", book.requireIdentifierValue(Identifier.SID_LAST_DODO_NL));
 
-        assertEquals("2018", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2018", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -139,10 +139,10 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Schoot der aarde", book.getString(DBKey.TITLE, null));
-        assertEquals("9789463943109", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789463943109", book.getString(DBKey.ISBN, null));
         assertEquals("8838967", book.requireIdentifierValue(Identifier.SID_LAST_DODO_NL));
 
-        assertEquals("2021", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2021", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));

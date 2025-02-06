@@ -1189,7 +1189,7 @@ public class IsfdbSearchEngine
                                 tmpString = nextSibling.toString().trim();
                                 tmpString = ISBN.cleanText(tmpString);
                                 if (!tmpString.isEmpty()) {
-                                    book.putString(DBKey.BOOK_ISBN, tmpString);
+                                    book.putString(DBKey.ISBN, tmpString);
                                 }
 
                                 final Element nextElementSibling =
@@ -1368,7 +1368,7 @@ public class IsfdbSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
             parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }

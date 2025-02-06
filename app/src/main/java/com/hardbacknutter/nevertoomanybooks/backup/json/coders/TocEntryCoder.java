@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ public class TocEntryCoder
 
         final PartialDate firstPublicationDate = tocEntry.getFirstPublicationDate();
         if (firstPublicationDate.isPresent()) {
-            data.put(DBKey.FIRST_PUBLICATION__DATE, firstPublicationDate.getIsoString());
+            data.put(DBKey.FIRST_PUBLICATION_DATE, firstPublicationDate.getIsoString());
         }
 
         return data;
@@ -64,7 +64,7 @@ public class TocEntryCoder
         final TocEntry tocEntry = new TocEntry(
                 authorCoder.decode(data.getJSONObject(DBKey.FK_AUTHOR)),
                 data.getString(DBKey.TITLE),
-                partialDateParser.parse(data.optString(DBKey.FIRST_PUBLICATION__DATE))
+                partialDateParser.parse(data.optString(DBKey.FIRST_PUBLICATION_DATE))
                                  .orElse(PartialDate.NOT_SET));
 
         tocEntry.setId(data.getLong(DBKey.PK_ID));

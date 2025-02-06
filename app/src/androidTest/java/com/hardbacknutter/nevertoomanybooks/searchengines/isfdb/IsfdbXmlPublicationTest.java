@@ -144,13 +144,13 @@ public class IsfdbXmlPublicationTest
         assertNotNull(book);
 
         assertEquals("Triplanetary", book.getTitle());
-        assertEquals("0491001576", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("0491001576", book.getString(DBKey.ISBN, null));
         assertEquals("425189", book.requireIdentifierValue(Identifier.SID_ISFDB));
         assertEquals("16190406", book.requireIdentifierValue(Identifier.SID_OCLC));
 
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("hc", book.getString(DBKey.FORMAT, null));
-        assertEquals("1971-02-15", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1971-02-15", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("254", book.getString(DBKey.PAGES, null));
         // The parser apache/ExpatParser is not very good at eliminating whitespace.
         // In reality, the xml should parse into :

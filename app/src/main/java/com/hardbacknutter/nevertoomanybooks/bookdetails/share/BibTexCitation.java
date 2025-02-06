@@ -96,7 +96,7 @@ class BibTexCitation
         sj.add(TITLE + escape(book.getTitle()) + '}');
         sj.add(AUTHOR + formatAuthors(book.getAuthors()) + '}');
 
-        final String isbn = book.getString(DBKey.BOOK_ISBN);
+        final String isbn = book.getString(DBKey.ISBN);
         if (!isbn.isEmpty()) {
             sj.add(ISBN + isbn + '}');
         }
@@ -112,7 +112,7 @@ class BibTexCitation
         if (firstPublicationDate.isPresent()) {
             sj.add(YEAR + firstPublicationDate.getYearValue() + '}');
         } else {
-            final String isoDate = book.getString(DBKey.BOOK_PUBLICATION__DATE);
+            final String isoDate = book.getString(DBKey.PUBLICATION_DATE);
             if (isoDate.length() >= 4) {
                 sj.add(YEAR + isoDate.substring(0, 4) + '}');
             } else {

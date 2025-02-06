@@ -226,9 +226,9 @@ public class EditBookViewModel
                             book.putLocalDateTime(DBKey.DATE_ACQUIRED, LocalDateTime.now());
                         }
                         // if BOOK_CONDITION is wanted, assume the user got a new book.
-                        if (serviceLocator.isFieldEnabled(DBKey.BOOK_CONDITION)
-                            && !book.contains(DBKey.BOOK_CONDITION)) {
-                            book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
+                        if (serviceLocator.isFieldEnabled(DBKey.CONDITION_BOOK)
+                            && !book.contains(DBKey.CONDITION_BOOK)) {
+                            book.putInt(DBKey.CONDITION_BOOK, Book.CONDITION_AS_NEW);
                         }
                         // it's all new data, not saved yet, hence 'Dirty'
                         book.setStage(EntityStage.Stage.Dirty);
@@ -428,7 +428,7 @@ public class EditBookViewModel
      */
     boolean bookExists() {
         if (book.isNew()) {
-            final String isbnStr = book.getString(DBKey.BOOK_ISBN);
+            final String isbnStr = book.getString(DBKey.ISBN);
             if (!isbnStr.isEmpty()) {
                 return ServiceLocator.getInstance().getBookDao().bookExistsByIsbn(isbnStr);
             }
@@ -1018,7 +1018,7 @@ public class EditBookViewModel
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        fields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.BOOK_ISBN)
+        fields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.ISBN)
                            .setTextInputLayoutId(R.id.lbl_isbn));
         // don't do this for now. There is a scan icon as end-icon.
         //                  .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
@@ -1065,13 +1065,13 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_publisher));
 
         fields.add(new TextViewField<>(fragmentId, R.id.first_publication,
-                                       DBKey.FIRST_PUBLICATION__DATE,
+                                       DBKey.FIRST_PUBLICATION_DATE,
                                        dateFormatter)
                            .setTextInputLayoutId(R.id.lbl_first_publication)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new TextViewField<>(fragmentId, R.id.date_published,
-                                       DBKey.BOOK_PUBLICATION__DATE,
+                                       DBKey.PUBLICATION_DATE,
                                        dateFormatter)
                            .setTextInputLayoutId(R.id.lbl_date_published)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
@@ -1133,7 +1133,7 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_print_run)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        fields.add(new BitmaskChipGroupField(fragmentId, R.id.edition, DBKey.EDITION__BITMASK,
+        fields.add(new BitmaskChipGroupField(fragmentId, R.id.edition, DBKey.EDITION,
                                              Book.Edition::getAll)
                            .addRelatedViews(R.id.lbl_edition));
         return fields;
@@ -1168,12 +1168,12 @@ public class EditBookViewModel
                            .setUsedKey(DBKey.PRICE_PAID));
 
         fields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition,
-                                                    DBKey.BOOK_CONDITION,
+                                                    DBKey.CONDITION_BOOK,
                                                     context, R.array.lbl_book_condition)
                            .setTextInputLayoutId(R.id.lbl_condition));
 
         fields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition_cover,
-                                                    DBKey.BOOK_CONDITION_COVER,
+                                                    DBKey.CONDITION_COVER,
                                                     context, R.array.lbl_dust_cover_condition)
                            .setTextInputLayoutId(R.id.lbl_condition_cover));
 
@@ -1235,7 +1235,7 @@ public class EditBookViewModel
         final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
         fields.add(new EntityListDropDownMenuField<>(fragmentId, R.id.book_type,
-                                                     DBKey.BOOK_CONTENT_TYPE,
+                                                     DBKey.CONTENT_TYPE,
                                                      context,
                                                      Book.ContentType.getAll())
                            .setTextInputLayoutId(R.id.lbl_book_type));

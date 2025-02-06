@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -202,7 +202,7 @@ public class KbNlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ISBN isbn = new ISBN(book.getString(DBKey.BOOK_ISBN), true);
+            final ISBN isbn = new ISBN(book.getString(DBKey.ISBN), true);
             if (isbn.isValid(true)) {
                 final AltEdition edition = new AltEditionIsbn(isbn.asText());
                 searchBestCoverByEdition(context, edition, 0).ifPresent(

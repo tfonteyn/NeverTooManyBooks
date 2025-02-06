@@ -121,8 +121,8 @@ public class ResultsAccumulatorTest
                              new PartialDate(2015, 1, 1))));
 
         book.putString(DBKey.FORMAT, "tp");
-        book.putString(DBKey.FIRST_PUBLICATION__DATE, "2015");
-        book.putString(DBKey.BOOK_PUBLICATION__DATE, "2016-06-02");
+        book.putString(DBKey.FIRST_PUBLICATION_DATE, "2015");
+        book.putString(DBKey.PUBLICATION_DATE, "2016-06-02");
 
 //        final ArrayList<String> fileSpecs = new ArrayList<>();
 //        fileSpecs.add(
@@ -130,7 +130,7 @@ public class ResultsAccumulatorTest
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
-        book.putString(DBKey.BOOK_ISBN, "9780552574471");
+        book.putString(DBKey.ISBN, "9780552574471");
         book.putString(DBKey.PAGES, "332");
         book.putString(DBKey.TITLE, "The Shepherd's Crown");
         book.putString(DBKey.PRICE_LISTED, "7.99");
@@ -180,7 +180,7 @@ public class ResultsAccumulatorTest
         book.setSeries(List.of(new Series("Discworld Novels")));
         book.putString(DBKey.LANGUAGE, "English");
         book.putString(DBKey.FORMAT, "Paperback");
-        book.putString(DBKey.BOOK_ISBN, "978-0552574471");
+        book.putString(DBKey.ISBN, "978-0552574471");
         book.putString(DBKey.PAGES, "336");
         book.putString(DBKey.TITLE, "The Shepherd's Crown: A Discworld Novel, Volume 41");
         book.putString(DBKey.PRICE_LISTED, "7.29");
@@ -246,14 +246,14 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.LANGUAGE, "en");
         book.putString(DBKey.FORMAT, "Paperback");
         book.putFloat(DBKey.RATING, 4.8f);
-        book.putString(DBKey.BOOK_PUBLICATION__DATE, "2016-06-02");
+        book.putString(DBKey.PUBLICATION_DATE, "2016-06-02");
 
 //        final ArrayList<String> fileSpecs = new ArrayList<>();
 //        fileSpecs.add(
 //                "/storage/emulated/0/Android/data/com.hardbacknutter.nevertoomanybooks.debug/files/Pictures/tmp/1701443226896_bol_9780552574471_0_.jpg");
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
-        book.putString(DBKey.BOOK_ISBN, "9780552574471");
+        book.putString(DBKey.ISBN, "9780552574471");
         book.putString(DBKey.PAGES, "335");
         book.putString(DBKey.TITLE, "Shepherds Crown");
         book.putString(DBKey.PRICE_LISTED, "8.87");
@@ -365,8 +365,8 @@ public class ResultsAccumulatorTest
 
         book.putString(DBKey.FORMAT, "Trade Paperback");
         book.putFloat(DBKey.RATING, 4.8f);
-        book.putString(DBKey.FIRST_PUBLICATION__DATE, "2015");
-        book.putString(DBKey.BOOK_PUBLICATION__DATE, "2016-06-02");
+        book.putString(DBKey.FIRST_PUBLICATION_DATE, "2015");
+        book.putString(DBKey.PUBLICATION_DATE, "2016-06-02");
 
 //        final ArrayList<String> fileSpecs = new ArrayList<>();
 //        fileSpecs.add(
@@ -374,7 +374,7 @@ public class ResultsAccumulatorTest
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
-        book.putString(DBKey.BOOK_ISBN, "9780552574471");
+        book.putString(DBKey.ISBN, "9780552574471");
         book.putString(DBKey.PAGES, "332");
         book.putString(DBKey.TITLE, "The Shepherd's Crown");
         book.putDouble(DBKey.PRICE_LISTED, 7.99);
@@ -421,7 +421,7 @@ public class ResultsAccumulatorTest
         results.add(create03());
 
         final Book book = new Book();
-        book.putString(DBKey.BOOK_ISBN, SEARCH_ISBN);
+        book.putString(DBKey.ISBN, SEARCH_ISBN);
 
         resultsAccumulator.process(context, results, book);
 

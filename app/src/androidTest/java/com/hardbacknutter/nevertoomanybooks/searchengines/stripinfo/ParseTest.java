@@ -90,10 +90,10 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
-        assertEquals("9789463064385", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789463064385", book.getString(DBKey.ISBN, null));
         assertEquals("336348", book.requireIdentifierValue(Identifier.SID_STRIP_INFO));
 
-        assertEquals("2018", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2018", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -160,10 +160,10 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("De boom van de twee lentes", book.getString(DBKey.TITLE, null));
-        assertEquals("905581315X", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("905581315X", book.getString(DBKey.ISBN, null));
         assertEquals("2060", book.requireIdentifierValue(Identifier.SID_STRIP_INFO));
 
-        assertEquals("2000", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2000", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -306,10 +306,10 @@ public class ParseTest
 
         assertEquals("Het huis van verboden geneugten",
                      book.getString(DBKey.TITLE, null));
-        assertEquals("9789085522072", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789085522072", book.getString(DBKey.ISBN, null));
         assertEquals("181604", book.requireIdentifierValue(Identifier.SID_STRIP_INFO));
 
-        assertEquals("2012", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2012", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -370,10 +370,10 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("De integrale 5", book.getString(DBKey.TITLE, null));
-        assertEquals("9789055819485", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789055819485", book.getString(DBKey.ISBN, null));
         assertEquals("316016", book.requireIdentifierValue(Identifier.SID_STRIP_INFO));
 
-        assertEquals("2017", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2017", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("224", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -434,10 +434,10 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Red Dust", book.getString(DBKey.TITLE, null));
-        assertNull(book.getString(DBKey.BOOK_ISBN, null));
+        assertNull(book.getString(DBKey.ISBN, null));
         assertEquals("17030", book.requireIdentifierValue(Identifier.SID_STRIP_INFO));
 
-        assertEquals("1972", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1972", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
@@ -496,10 +496,10 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Spoken in de grot", book.getString(DBKey.TITLE, null));
-        assertNull(book.getString(DBKey.BOOK_ISBN, null));
+        assertNull(book.getString(DBKey.ISBN, null));
         assertEquals("8155", book.requireIdentifierValue(Identifier.SID_STRIP_INFO));
 
-        assertEquals("1977", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("1977", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Kleur", book.getString(DBKey.COLOR, null));
@@ -560,10 +560,10 @@ public class ParseTest
         // Log.d(TAG, book.toString());
 
         assertEquals("Le chant du pluvier", book.getString(DBKey.TITLE, null));
-        assertEquals("9782756010830", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9782756010830", book.getString(DBKey.ISBN, null));
         assertEquals("84392", book.requireIdentifierValue(Identifier.SID_STRIP_INFO));
 
-        assertEquals("2009", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2009", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("172", book.getString(DBKey.PAGES, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Frans", book.getString(DBKey.LANGUAGE, null));
@@ -624,11 +624,11 @@ public class ParseTest
         assertTrue(isbn.isType(ISBN.Type.Invalid));
 
         final Book book = new Book();
-        book.putString(DBKey.BOOK_ISBN, "9069692736");
+        book.putString(DBKey.ISBN, "9069692736");
         book.putString(StripInfoSearchEngine.SiteField.BARCODE, "9789069692739");
         searchEngine.processBarcode("9789069692739", book);
 
-        assertEquals("9789069692739", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789069692739", book.getString(DBKey.ISBN, null));
         assertFalse(book.contains(StripInfoSearchEngine.SiteField.BARCODE));
     }
 }

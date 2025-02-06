@@ -64,8 +64,8 @@ class ViewBookOnSiteMenuHandler
         if (ivs.stream().map(Identifier.Value::getKey).noneMatch(Identifier.SID_ASIN::equals)) {
             //URGENT: is this a good idea? The browser/amazon gives a 404 if the isbn is not found
             // When looking for the Amazon ASIN, fallback on an Isbn code if possible
-            if (rowData.contains(DBKey.BOOK_ISBN)) {
-                final String isbnStr = rowData.getString(DBKey.BOOK_ISBN);
+            if (rowData.contains(DBKey.ISBN)) {
+                final String isbnStr = rowData.getString(DBKey.ISBN);
                 final ISBN isbn = new ISBN(isbnStr, true);
                 if (isbn.isValid(true) && isbn.isIsbn10Compat()) {
                     ivs.add(new Identifier.Value(Identifier.SID_ASIN,

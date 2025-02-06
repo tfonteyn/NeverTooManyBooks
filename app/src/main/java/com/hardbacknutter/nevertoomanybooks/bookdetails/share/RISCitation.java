@@ -62,7 +62,7 @@ public class RISCitation
         book.getAuthors().forEach(author -> sj
                 .add("A1  - " + author.getFormattedName(false)));
 
-        final String isbn = book.getString(DBKey.BOOK_ISBN);
+        final String isbn = book.getString(DBKey.ISBN);
         if (!isbn.isEmpty()) {
             sj.add("SN  - " + isbn);
         }
@@ -88,7 +88,7 @@ public class RISCitation
         if (firstPublicationDate.isPresent()) {
             sj.add("Y1  - " + firstPublicationDate.getDelimString("/"));
         } else {
-            final String isoDate = book.getString(DBKey.BOOK_PUBLICATION__DATE);
+            final String isoDate = book.getString(DBKey.PUBLICATION_DATE);
             if (isoDate.length() >= 4) {
                 sj.add("Y1  - " + isoDate.substring(0, 4));
             }

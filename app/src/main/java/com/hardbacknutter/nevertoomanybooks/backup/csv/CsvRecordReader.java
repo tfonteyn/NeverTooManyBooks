@@ -523,7 +523,7 @@ public class CsvRecordReader
                         // ISBN-10; will be used if the "isbn13" field is empty
                         return BookCoder.Goodreads.ISBN10;
                     case "isbn13":
-                        return DBKey.BOOK_ISBN;
+                        return DBKey.ISBN;
                     case "my rating":
                         return BookCoder.Goodreads.MY_RATING;
                     case "average rating":
@@ -535,9 +535,9 @@ public class CsvRecordReader
                     case "number of pages":
                         return DBKey.PAGES;
                     case "year published":
-                        return DBKey.BOOK_PUBLICATION__DATE;
+                        return DBKey.PUBLICATION_DATE;
                     case "original publication year":
-                        return DBKey.FIRST_PUBLICATION__DATE;
+                        return DBKey.FIRST_PUBLICATION_DATE;
                     case "date read":
                         return DBKey.READ_END__DATE;
                     case "date added":

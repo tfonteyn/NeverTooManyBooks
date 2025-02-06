@@ -456,7 +456,7 @@ public class BedethequeSearchEngine
                     case "EAN/ISBN :": {
                         final Element span = label.nextElementSibling();
                         if (span != null) {
-                            book.putString(DBKey.BOOK_ISBN, span.text());
+                            book.putString(DBKey.ISBN, span.text());
                         }
                         break;
                     }
@@ -502,7 +502,7 @@ public class BedethequeSearchEngine
                 return;
             }
 
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
 
             if (fetchCovers[0]) {
                 parseCover(context, document, isbn, 0).ifPresent(

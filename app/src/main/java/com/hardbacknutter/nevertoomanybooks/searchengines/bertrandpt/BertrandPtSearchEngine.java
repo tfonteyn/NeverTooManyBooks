@@ -263,7 +263,7 @@ public class BertrandPtSearchEngine
         if (element != null) {
             s = element.text().strip();
             if (!s.isBlank()) {
-                book.putString(DBKey.BOOK_ISBN, s);
+                book.putString(DBKey.ISBN, s);
             }
         }
 
@@ -275,10 +275,10 @@ public class BertrandPtSearchEngine
                 final String[] split = s.split("-");
                 if (split.length == 1) {
                     // not seen during testing, but assume year only;
-                    book.putString(DBKey.BOOK_PUBLICATION__DATE, s);
+                    book.putString(DBKey.PUBLICATION_DATE, s);
                 } else if (split.length == 2) {
                     // as seen in testing: MM-YYYY, convert to YYYY-MM
-                    book.putString(DBKey.BOOK_PUBLICATION__DATE, split[1] + "-" + split[0]);
+                    book.putString(DBKey.PUBLICATION_DATE, split[1] + "-" + split[0]);
                 }
             }
         }
@@ -408,7 +408,7 @@ public class BertrandPtSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
             parseCovers(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }

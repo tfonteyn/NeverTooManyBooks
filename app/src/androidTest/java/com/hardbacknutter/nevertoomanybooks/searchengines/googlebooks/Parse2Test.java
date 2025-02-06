@@ -86,11 +86,11 @@ public class Parse2Test
         //Log.d(TAG, book.toString());
 
         assertEquals("Flowers for Algernon", book.getString(DBKey.TITLE, null));
-        assertEquals("9781857989380", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9781857989380", book.getString(DBKey.ISBN, null));
         assertEquals("64tuPwAACAAJ", book.requireIdentifierValue(Identifier.SID_GOOGLE));
 
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("2000", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2000", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("216", book.getString(DBKey.PAGES, null));
 
         // It's explicitly set as "isEbook=false"
@@ -154,11 +154,11 @@ public class Parse2Test
         //Log.d(TAG, book.toString());
 
         assertEquals("Space", book.getString(DBKey.TITLE, null));
-        assertEquals("9780007499793", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9780007499793", book.getString(DBKey.ISBN, null));
         assertEquals("lDihJsa19_gC", book.requireIdentifierValue(Identifier.SID_GOOGLE));
 
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("2012-11-22", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2012-11-22", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("441", book.getString(DBKey.PAGES, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
 

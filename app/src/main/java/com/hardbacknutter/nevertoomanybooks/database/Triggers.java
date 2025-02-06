@@ -268,10 +268,10 @@ final class Triggers {
         /*
          * If the ISBN of a {@link Book} is changed, reset external ID's.
          */
-        name = "after_update_of_" + DBKey.BOOK_ISBN + "_on_" + TBL_BOOKS.getName();
-        body = AFTER_UPDATE_OF_ + DBKey.BOOK_ISBN + " ON " + TBL_BOOKS.getName()
+        name = "after_update_of_" + DBKey.ISBN + "_on_" + TBL_BOOKS.getName();
+        body = AFTER_UPDATE_OF_ + DBKey.ISBN + " ON " + TBL_BOOKS.getName()
                + " FOR EACH ROW"
-               + " WHEN NEW." + DBKey.BOOK_ISBN + " <> OLD." + DBKey.BOOK_ISBN
+               + " WHEN NEW." + DBKey.ISBN + " <> OLD." + DBKey.ISBN
                + " BEGIN"
                + "  DELETE FROM " + TBL_BOOK_IDENTIFIER.getName()
                + "  WHERE " + DBKey.FK_BOOK + "=NEW." + DBKey.PK_ID + ";"

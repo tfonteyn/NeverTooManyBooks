@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -431,7 +431,7 @@ public final class CoverHandler {
         if (coverBrowserIsbnSupplier != null) {
             isbnStr = coverBrowserIsbnSupplier.get();
         } else {
-            isbnStr = book.getString(DBKey.BOOK_ISBN);
+            isbnStr = book.getString(DBKey.ISBN);
         }
 
         if (!isbnStr.isEmpty()) {

@@ -449,7 +449,7 @@ public class AmazonSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
             parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
 
@@ -559,10 +559,10 @@ public class AmazonSearchEngine
                     final String lcLabel = label.toLowerCase(siteLocale);
 
                     if (LABEL_ISBN_13.equals(lcLabel)) {
-                        book.putString(DBKey.BOOK_ISBN, data);
+                        book.putString(DBKey.ISBN, data);
 
-                    } else if (LABEL_ISBN_10.equals(lcLabel) && !book.contains(DBKey.BOOK_ISBN)) {
-                        book.putString(DBKey.BOOK_ISBN, data);
+                    } else if (LABEL_ISBN_10.equals(lcLabel) && !book.contains(DBKey.ISBN)) {
+                        book.putString(DBKey.ISBN, data);
 
                     } else if (LABEL_FORMAT.contains(lcLabel)) {
                         // we might already have the format, but we'll overwrite it - that's ok.

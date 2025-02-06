@@ -80,11 +80,11 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
-        assertEquals("9783453321892", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9783453321892", book.getString(DBKey.ISBN, null));
         assertEquals("1254682597", book.requireIdentifierValue(Identifier.SID_DNB));
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("2023-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2023-01", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("526", book.getString(DBKey.PAGES, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -137,11 +137,11 @@ public class ParseTest
 
         assertEquals("Totholz : was vergraben ist, ist nicht vergessen",
                      book.getString(DBKey.TITLE, null));
-        assertEquals("9783426226681", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9783426226681", book.getString(DBKey.ISBN, null));
         assertEquals("1308358113", book.requireIdentifierValue(Identifier.SID_DNB));
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("2024-06", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2024-06", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("378", book.getString(DBKey.PAGES, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -188,11 +188,11 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("Teurer Sieg", book.getString(DBKey.TITLE, null));
-        assertEquals("9783734163296", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9783734163296", book.getString(DBKey.ISBN, null));
         assertEquals("1272077195", book.requireIdentifierValue(Identifier.SID_DNB));
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2023", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("747", book.getString(DBKey.PAGES, null));
         assertEquals("Lesser evil", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
 
@@ -253,11 +253,11 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
-        assertEquals("9783641285166", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9783641285166", book.getString(DBKey.ISBN, null));
         assertEquals("1278243054", book.requireIdentifierValue(Identifier.SID_DNB));
 
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("2023", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2023", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("528", book.getString(DBKey.PAGES, null));
         assertEquals("ebook", book.getString(DBKey.FORMAT, null));
 

@@ -84,9 +84,9 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("A Livraria Cinnamon Bun", book.getString(DBKey.TITLE, null));
-        assertEquals("9789895812899", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789895812899", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2024-11", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2024-11", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("320", book.getString(DBKey.PAGES, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
@@ -157,9 +157,9 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("Fundação e Terra", book.getString(DBKey.TITLE, null));
-        assertEquals("9789897734939", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9789897734939", book.getString(DBKey.ISBN, null));
 
-        assertEquals("2023-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("2023-01", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("416", book.getString(DBKey.PAGES, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));

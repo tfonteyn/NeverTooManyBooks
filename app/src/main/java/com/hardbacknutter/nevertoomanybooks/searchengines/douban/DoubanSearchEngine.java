@@ -580,7 +580,7 @@ public class DoubanSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.ISBN);
             parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
@@ -620,7 +620,7 @@ public class DoubanSearchEngine
                     break;
 
                 case "book:isbn":
-                    book.putString(DBKey.BOOK_ISBN, content);
+                    book.putString(DBKey.ISBN, content);
                     break;
 
                 case "og:description":

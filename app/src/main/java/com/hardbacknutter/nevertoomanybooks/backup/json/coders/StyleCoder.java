@@ -427,7 +427,7 @@ public class StyleCoder
                                          source.getBoolean(LIST_PUBLISHER));
             }
             if (source.has(LIST_PUBLICATION_DATE)) {
-                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.BOOK_PUBLICATION__DATE,
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.PUBLICATION_DATE,
                                          source.getBoolean(LIST_PUBLICATION_DATE));
             }
             if (source.has(LIST_FORMAT)) {
@@ -451,7 +451,7 @@ public class StyleCoder
                                          source.getBoolean(LIST_BOOKSHELVES));
             }
             if (source.has(LIST_ISBN)) {
-                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.BOOK_ISBN,
+                style.setFieldVisibility(FieldVisibility.Screen.List, DBKey.ISBN,
                                          source.getBoolean(LIST_ISBN));
             }
             // reminder: this is for backwards compatibility - don't add new fields here!

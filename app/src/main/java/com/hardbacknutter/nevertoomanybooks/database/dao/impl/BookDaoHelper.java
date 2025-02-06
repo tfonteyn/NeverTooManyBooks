@@ -151,12 +151,12 @@ public class BookDaoHelper {
         }
 
         // normalize/store only valid bits
-        if (book.contains(DBKey.BOOK_CONTENT_TYPE)) {
+        if (book.contains(DBKey.CONTENT_TYPE)) {
             book.setContentType(book.getContentType());
         }
 
         // normalize/store only valid bits
-        if (book.contains(DBKey.EDITION__BITMASK)) {
+        if (book.contains(DBKey.EDITION)) {
             book.setEdition(book.getEdition());
         }
 
@@ -276,8 +276,8 @@ public class BookDaoHelper {
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_START__DATE}
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_END__DATE}
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_ACQUIRED}
-     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#BOOK_PUBLICATION__DATE}
-     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#FIRST_PUBLICATION__DATE}
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#PUBLICATION_DATE}
+     * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#FIRST_PUBLICATION_DATE}
      */
     @VisibleForTesting
     public void processDates() {

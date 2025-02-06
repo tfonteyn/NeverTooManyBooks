@@ -227,7 +227,7 @@ public final class LegacyUpgrades {
                     listFields.add(DBKey.FK_PUBLISHER);
                 }
                 if (stylePrefs.getBoolean("style.booklist.show.publication.date", true)) {
-                    listFields.add(DBKey.BOOK_PUBLICATION__DATE);
+                    listFields.add(DBKey.PUBLICATION_DATE);
                 }
                 if (stylePrefs.getBoolean("style.booklist.show.format", true)) {
                     listFields.add(DBKey.FORMAT);
@@ -242,7 +242,7 @@ public final class LegacyUpgrades {
                     listFields.add(DBKey.FK_BOOKSHELF);
                 }
                 if (stylePrefs.getBoolean("style.booklist.show.isbn", true)) {
-                    listFields.add(DBKey.BOOK_ISBN);
+                    listFields.add(DBKey.ISBN);
                 }
 
                 stmt.bindLong(++c, FieldVisibility.getBitValue(listFields));

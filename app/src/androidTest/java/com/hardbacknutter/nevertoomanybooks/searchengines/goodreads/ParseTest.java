@@ -92,7 +92,7 @@ public class ParseTest
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("L'Agent 212, Tome 01 : 24 heures sur 24",
                      book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
-        assertEquals("2007-12-01", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("2007-12-01", book.getString(DBKey.PUBLICATION_DATE));
         assertEquals(new PartialDate(1981, 1, 1), book.getFirstPublicationDate());
         assertEquals(4
                 , book.getFloat(DBKey.RATING, realNumberParser), 0);
@@ -168,7 +168,7 @@ public class ParseTest
         assertEquals("Kindle Edition", book.getString(DBKey.FORMAT));
         assertNull(book.getString(DBKey.PAGES, null));
         assertNull(book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
-        assertEquals("2024-10-21", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("2024-10-21", book.getString(DBKey.PUBLICATION_DATE));
         assertEquals(new PartialDate(2022, 10, 28), book.getFirstPublicationDate());
         assertEquals(3, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
@@ -236,7 +236,7 @@ public class ParseTest
         assertEquals("English", book.getString(DBKey.LANGUAGE));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT));
         assertEquals("416", book.getString(DBKey.PAGES));
-        assertEquals("2020-09-22", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("2020-09-22", book.getString(DBKey.PUBLICATION_DATE));
         assertEquals(new PartialDate(2020, 9, 22), book.getFirstPublicationDate());
         assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
@@ -328,7 +328,7 @@ public class ParseTest
         assertEquals("English", book.getString(DBKey.LANGUAGE));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT));
         assertEquals("256", book.getString(DBKey.PAGES));
-        assertEquals("2004-06-01", book.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("2004-06-01", book.getString(DBKey.PUBLICATION_DATE));
         assertEquals(new PartialDate(1952, 1, 1), book.getFirstPublicationDate());
         assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
@@ -412,11 +412,11 @@ public class ParseTest
 
         assertEquals("The Aenied", book.getTitle());
         assertEquals("Aeneis", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
-        assertNull(book.getString(DBKey.BOOK_ISBN, null));
+        assertNull(book.getString(DBKey.ISBN, null));
         assertNull(book.getString(DBKey.LANGUAGE, null));
         assertNull(book.getString(DBKey.FORMAT, null));
         assertNull(book.getString(DBKey.PAGES, null));
-        assertNull(book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertNull(book.getString(DBKey.PUBLICATION_DATE, null));
         // yes, that's the date on goodreads
         assertEquals(new PartialDate(-19, 1, 1), book.getFirstPublicationDate());
         assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);

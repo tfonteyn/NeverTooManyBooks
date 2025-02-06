@@ -254,12 +254,12 @@ public class BookHolder
         }
 
         final boolean usePub = use.contains(DBKey.FK_PUBLISHER);
-        final boolean usePubDate = use.contains(DBKey.BOOK_PUBLICATION__DATE);
+        final boolean usePubDate = use.contains(DBKey.PUBLICATION_DATE);
         if (usePub || usePubDate) {
             showOrHidePublisher(rowData, usePub, usePubDate);
         }
-        if (use.contains(DBKey.FIRST_PUBLICATION__DATE)) {
-            showOrHide(vb.dateFirstPublication, rowData, DBKey.FIRST_PUBLICATION__DATE,
+        if (use.contains(DBKey.FIRST_PUBLICATION_DATE)) {
+            showOrHide(vb.dateFirstPublication, rowData, DBKey.FIRST_PUBLICATION_DATE,
                        R.string.lbl_date_first_publication_as_single_char);
         }
 
@@ -282,8 +282,8 @@ public class BookHolder
             showOrHide(vb.originalTitle, rowData.getString(DBKey.TITLE_ORIGINAL_LANG));
         }
 
-        if (use.contains(DBKey.BOOK_CONDITION)) {
-            final int condition = rowData.getInt(DBKey.BOOK_CONDITION);
+        if (use.contains(DBKey.CONDITION_BOOK)) {
+            final int condition = rowData.getInt(DBKey.CONDITION_BOOK);
             if (condition > 0) {
                 showOrHide(vb.condition, conditionDescriptions[condition]);
             } else {
@@ -292,8 +292,8 @@ public class BookHolder
             }
         }
 
-        if (use.contains(DBKey.BOOK_ISBN)) {
-            showOrHide(vb.isbn, rowData.getString(DBKey.BOOK_ISBN));
+        if (use.contains(DBKey.ISBN)) {
+            showOrHide(vb.isbn, rowData.getString(DBKey.ISBN));
         }
 
         if (use.contains(DBKey.FORMAT)) {
@@ -332,8 +332,8 @@ public class BookHolder
             showOrHide(vb.iconSigned, rowData.getBoolean(DBKey.SIGNED__BOOL));
         }
 
-        if (use.contains(DBKey.EDITION__BITMASK)) {
-            showOrHide(vb.iconFirstEdition, (rowData.getLong(DBKey.EDITION__BITMASK)
+        if (use.contains(DBKey.EDITION)) {
+            showOrHide(vb.iconFirstEdition, (rowData.getLong(DBKey.EDITION)
                                              & Book.Edition.FIRST) != 0);
         }
 
@@ -502,7 +502,7 @@ public class BookHolder
 
         String date = null;
         if (showPubDate) {
-            final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
+            final String dateStr = rowData.getString(DBKey.PUBLICATION_DATE);
             date = formatDate(dateStr);
             showDate = !date.isBlank();
         }
