@@ -470,7 +470,7 @@ public class BookCoder {
     private void processBookshelves(@NonNull final Book book) {
         final List<Bookshelf> list = book.getBookshelves();
 
-        processBookshelf(book, bookshelfCoder, DBKey.BOOKSHELF_NAME, list);
+        processBookshelf(book, bookshelfCoder, DBKey.BOOKSHELF.NAME, list);
         processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_1_1, list);
         processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_TEXT, list);
 

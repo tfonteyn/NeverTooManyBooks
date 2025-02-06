@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,7 +60,7 @@ public class BookshelfCoder
         final JSONObject out = new JSONObject();
 
         out.put(DBKey.PK_ID, bookshelf.getId());
-        out.put(DBKey.BOOKSHELF_NAME, bookshelf.getName());
+        out.put(DBKey.BOOKSHELF.NAME, bookshelf.getName());
         if (!bookshelf.getStyleUuid().isEmpty()) {
             out.put(DBKey.FK_STYLE, bookshelf.getStyleUuid());
         }
@@ -70,7 +70,7 @@ public class BookshelfCoder
     /**
      * Encode a reference to the given {@link Bookshelf}.
      * <p>
-     * Reference is {@link DBKey#BOOKSHELF_NAME}.
+     * Reference is {@link DBKey.BOOKSHELF#NAME}.
      *
      * @param bookshelf to encode
      *
@@ -83,7 +83,7 @@ public class BookshelfCoder
     public JSONObject encodeReference(@NonNull final Bookshelf bookshelf)
             throws JSONException {
         final JSONObject out = new JSONObject();
-        out.put(DBKey.BOOKSHELF_NAME, bookshelf.getName());
+        out.put(DBKey.BOOKSHELF.NAME, bookshelf.getName());
         return out;
     }
 
@@ -93,7 +93,7 @@ public class BookshelfCoder
             throws JSONException {
 
         final Bookshelf bookshelf = new Bookshelf(
-                data.getString(DBKey.BOOKSHELF_NAME), defaultStyle);
+                data.getString(DBKey.BOOKSHELF.NAME), defaultStyle);
         bookshelf.setId(data.getLong(DBKey.PK_ID));
 
         // It's quite possible that the UUID is not a style we (currently) know.
@@ -108,7 +108,7 @@ public class BookshelfCoder
     }
 
     /**
-     * Decode a {@link Bookshelf} referenced by {@link DBKey#BOOKSHELF_NAME}.
+     * Decode a {@link Bookshelf} referenced by {@link DBKey.BOOKSHELF#NAME}.
      * If not found, the {@link Bookshelf#USER_DEFAULT} bookshelf is returned.
      *
      * @param data json object
@@ -123,7 +123,7 @@ public class BookshelfCoder
             throws JSONException {
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
-        final String name = data.optString(DBKey.BOOKSHELF_NAME);
+        final String name = data.optString(DBKey.BOOKSHELF.NAME);
         if (name != null && !name.isEmpty()) {
 
             final Optional<Bookshelf> bookshelf = bookshelfDao.findByName(name);

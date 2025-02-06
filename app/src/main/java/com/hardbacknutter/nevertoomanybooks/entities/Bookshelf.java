@@ -150,12 +150,12 @@ public class Bookshelf
     public Bookshelf(final long id,
                      @NonNull final DataHolder rowData) {
         this.id = id;
-        name = rowData.getString(DBKey.BOOKSHELF_NAME);
+        name = rowData.getString(DBKey.BOOKSHELF.NAME);
         styleUuid = rowData.getString(DBKey.STYLE.UUID);
 
-        topRowAdapterPosition = new TopRowListPosition(rowData.getInt(DBKey.BOOKSHELF_BL_TOP_POS),
+        topRowAdapterPosition = new TopRowListPosition(rowData.getInt(DBKey.BOOKSHELF.BL_TOP_POS),
                                                        rowData.getInt(
-                                                               DBKey.BOOKSHELF_BL_TOP_OFFSET));
+                                                               DBKey.BOOKSHELF.BL_TOP_OFFSET));
 
         filters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(this.id));
     }

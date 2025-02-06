@@ -275,7 +275,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.FK_BOOKSHELF)) {
-            showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF_NAMES_AS_CSV));
+            showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF.BOOK_BOOKSHELF_NAMES_AS_CSV));
         }
 
         if (use.contains(DBKey.TITLE_ORIGINAL_LANG)) {

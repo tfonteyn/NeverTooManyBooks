@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -109,7 +109,7 @@ final class TestConstants {
         final String list = Arrays.stream(BOOKSHELF)
                                   .map(n -> "'" + n + "'")
                                   .collect(Collectors.joining(","));
-        db.delete(TBL_BOOKSHELF.getName(), DBKey.BOOKSHELF_NAME
+        db.delete(TBL_BOOKSHELF.getName(), DBKey.BOOKSHELF.NAME
                                            + " IN (" + list + ")", null);
     }
 

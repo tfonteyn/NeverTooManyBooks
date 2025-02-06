@@ -65,20 +65,6 @@ public final class DBKey {
     public static final String BOOK_IDENTIFIER_SID = "sid";
 
 
-    /** {@link DBDefinitions#TBL_BOOKSHELF}. The name of the bookshelf. */
-    public static final String BOOKSHELF_NAME = "bookshelf_name";
-    /** {@link DBDefinitions#TBL_BOOKSHELF}. The booklist adapter position of current top row. */
-    public static final String BOOKSHELF_BL_TOP_POS = "bl_top_pos";
-    /** {@link DBDefinitions#TBL_BOOKSHELF}. The booklist adapter top row offset from view top. */
-    public static final String BOOKSHELF_BL_TOP_OFFSET = "bl_top_offset";
-    /** Alias: a list of bookshelf names as a comma separated list. */
-    public static final String BOOKSHELF_NAMES_AS_CSV = "bs_name_csv";
-
-    /** {@link DBDefinitions#TBL_BOOKSHELF_FILTERS}. */
-    public static final String BOOKSHELF_FILTER_NAME = "filter_name";
-    public static final String BOOKSHELF_FILTER_VALUE = "filter_value";
-
-
     /** {@link DBDefinitions#TBL_AUTHORS} */
     public static final String AUTHOR_FAMILY_NAME = "family_name";
     public static final String AUTHOR_GIVEN_NAMES = "given_names";
@@ -268,6 +254,33 @@ public final class DBKey {
     };
 
     private DBKey() {
+    }
+
+    /**
+     * {@link DBDefinitions#TBL_BOOKSHELF}.
+     * {@link DBDefinitions#TBL_BOOKSHELF_FILTERS}.
+     * {@link DBDefinitions#TBL_BOOK_BOOKSHELF}.
+     */
+    @SuppressWarnings("CheckStyle")
+    public static final class BOOKSHELF {
+
+        /** The name of the bookshelf. */
+        public static final String NAME = "bookshelf_name";
+        /** The booklist adapter position of current top row. */
+        public static final String BL_TOP_POS = "bl_top_pos";
+        /** The booklist adapter top row offset from view top. */
+        public static final String BL_TOP_OFFSET = "bl_top_offset";
+
+        /** Alias: a list of bookshelf names as a comma separated list. */
+        public static final String BOOK_BOOKSHELF_NAMES_AS_CSV = "bs_name_csv";
+
+        /** The name == DBKey of the field we'll filter on. */
+        public static final String FILTER_NAME = "filter_name";
+        /** The value depends on the name/DBKey. */
+        public static final String FILTER_VALUE = "filter_value";
+
+        private BOOKSHELF() {
+        }
     }
 
     /**

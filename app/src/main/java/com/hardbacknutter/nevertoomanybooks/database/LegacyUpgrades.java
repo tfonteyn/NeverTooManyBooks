@@ -613,7 +613,7 @@ public final class LegacyUpgrades {
 
         // Remove any genre based filters, they cannot be converted to a tag filter
         db.execSQL("DELETE FROM " + DBDefinitions.TBL_BOOKSHELF_FILTERS.getName()
-                   + " WHERE " + DBKey.BOOKSHELF_FILTER_NAME + "='" + DBKEY_GENRE + "'");
+                   + " WHERE " + DBKey.BOOKSHELF.FILTER_NAME + "='" + DBKEY_GENRE + "'");
 
     }
 

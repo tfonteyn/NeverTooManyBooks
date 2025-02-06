@@ -286,7 +286,7 @@ public final class GroupKeyFactory {
                                                 BooklistGroup.BlgDBKey.SORT_BOOKSHELF,
                                                 SqLiteDataType.Text)
                                                 .build(),
-                                        TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME),
+                                        TBL_BOOKSHELF.dot(DBKey.BOOKSHELF.NAME),
                                         Sort.Asc))
                         .addGroupDomain(
                                 new DomainExpression(DOM_FK_BOOKSHELF,

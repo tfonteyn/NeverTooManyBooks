@@ -39,8 +39,8 @@ public final class MapDBKey {
             Map.entry(DBKey.COVER[1], DBKey.BOOK_UUID),
 
             Map.entry(DBKey.FK_AUTHOR, DBKey.AUTHOR_FORMATTED),
-            Map.entry(DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF_NAMES_AS_CSV),
-            Map.entry(DBKey.FK_PUBLISHER, DBKey.PUBLISHER_NAME),
+            Map.entry(DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF.BOOK_BOOKSHELF_NAMES_AS_CSV),
+            Map.entry(DBKey.FK_PUBLISHER, DBKey.PUBLISHER.NAME),
             Map.entry(DBKey.FK_SERIES, DBKey.SERIES_TITLE)
     );
 

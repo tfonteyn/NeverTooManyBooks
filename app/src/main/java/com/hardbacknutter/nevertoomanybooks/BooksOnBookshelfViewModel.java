@@ -126,7 +126,7 @@ public class BooksOnBookshelfViewModel
             Map.entry(BooklistGroup.BOOKSHELF,
                       new BLGRecord(DBKey.FK_BOOKSHELF,
                                     R.string.lbl_bookshelf,
-                                    DBKey.BOOKSHELF_NAME,
+                                    DBKey.BOOKSHELF.NAME,
                                     // not used; Books are always on a shelf.
                                     R.string.lbl_bookshelf))
     );

@@ -703,35 +703,35 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOKSHELF_NAME =
-                new Domain.Builder(DBKey.BOOKSHELF_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.BOOKSHELF.NAME, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
         // Virtual, display only, unsorted
         DOM_BOOKSHELF_NAMES_AS_CSV =
-                new Domain.Builder(DBKey.BOOKSHELF_NAMES_AS_CSV, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.BOOKSHELF.BOOK_BOOKSHELF_NAMES_AS_CSV, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_BOOKSHELF_BL_TOP_POS =
-                new Domain.Builder(DBKey.BOOKSHELF_BL_TOP_POS, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.BOOKSHELF.BL_TOP_POS, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(RecyclerView.NO_POSITION)
                         .build();
 
         DOM_BOOKSHELF_BL_TOP_OFFSET =
-                new Domain.Builder(DBKey.BOOKSHELF_BL_TOP_OFFSET, SqLiteDataType.Integer)
+                new Domain.Builder(DBKey.BOOKSHELF.BL_TOP_OFFSET, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
 
         DOM_BOOKSHELF_FILTER_NAME =
-                new Domain.Builder(DBKey.BOOKSHELF_FILTER_NAME, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.BOOKSHELF.FILTER_NAME, SqLiteDataType.Text)
                         .notNull()
                         .build();
         DOM_BOOKSHELF_FILTER_VALUE =
-                new Domain.Builder(DBKey.BOOKSHELF_FILTER_VALUE, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.BOOKSHELF.FILTER_VALUE, SqLiteDataType.Text)
                         .build();
 
         /* ======================================================================================
@@ -1447,7 +1447,7 @@ public final class DBDefinitions {
                             DOM_BOOKSHELF_BL_TOP_OFFSET)
                 .setPrimaryKey(DOM_PK_ID)
                 .addReference(TBL_BOOKLIST_STYLES, DOM_FK_STYLE)
-                .addIndex(DBKey.BOOKSHELF_NAME, true, DOM_BOOKSHELF_NAME);
+                .addIndex(DBKey.BOOKSHELF.NAME, true, DOM_BOOKSHELF_NAME);
         ALL_TABLES.put(TBL_BOOKSHELF.getName(), TBL_BOOKSHELF);
 
         TBL_BOOKSHELF_FILTERS
@@ -1839,7 +1839,8 @@ public final class DBDefinitions {
 
 
         EXP_BOOKSHELF_NAME_CSV =
-                "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + ",', ')"
+                "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(
+                        DBKey.BOOKSHELF.NAME) + ",', ')"
                 + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF)
                 + _WHERE_
                 + TBL_BOOKS.dot(DBKey.PK_ID) + '=' + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK)
