@@ -72,7 +72,6 @@ public final class Prefs {
 
     public static final String PK_SCANNER_MODE_SINGLE = "scan.mode.single";
 
-    public static final String PK_BOOKLIST_REBUILD_STATE = "booklist.rebuild.state";
     /**
      * How ACCESS to context/row menus is provide.
      * <p>

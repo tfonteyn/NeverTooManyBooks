@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,16 +24,28 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public enum RebuildBooklist
         implements Parcelable {
 
+    /**
+     * Rebuild using the node-state as saved in a previous session.
+     */
     FromSaved(0),
+    /**
+     * Start with ever node expanded.
+     */
     Expanded(1),
+    /**
+     * Start with every node collapsed.
+     */
     Collapsed(2),
+    /**
+     * Apply the preferred level of expansion, and leave levels "below" as collapsed.
+     */
     Preferred(3);
 
     /** {@link Parcelable}. */
@@ -51,6 +63,12 @@ public enum RebuildBooklist
         }
     };
 
+    /**
+     * Global preference setting.
+     */
+    @VisibleForTesting
+    public static final String PK_BOOKLIST_REBUILD_STATE = "booklist.rebuild.state";
+
     private final int value;
 
     RebuildBooklist(final int value) {
@@ -66,7 +84,7 @@ public enum RebuildBooklist
      */
     @NonNull
     public static RebuildBooklist getPreferredMode(@NonNull final Context context) {
-        final int value = IntListPref.getInt(context, Prefs.PK_BOOKLIST_REBUILD_STATE,
+        final int value = IntListPref.getInt(context, PK_BOOKLIST_REBUILD_STATE,
                                              FromSaved.value);
         switch (value) {
             case 3:

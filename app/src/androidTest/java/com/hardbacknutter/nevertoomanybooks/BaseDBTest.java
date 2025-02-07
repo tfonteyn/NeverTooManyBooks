@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -110,7 +111,7 @@ public abstract class BaseDBTest {
                                   9223372036854775807L)
                          .putString(Prefs.PK_BOOKLIST_CONTEXT_MENU, "0")
                          .putString(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY, "3")
-                         .putString(Prefs.PK_BOOKLIST_REBUILD_STATE, "0")
+                         .putString(RebuildBooklist.PK_BOOKLIST_REBUILD_STATE, "0")
                          .putString(ISBN.PK_EDIT_BOOK_ISBN_CHECKS, "1")
                          .putString("search.siteOrder.data",
                                     "amazon,googlebooks,isfdb,bookfinder,openlibrary,stripinfo"
