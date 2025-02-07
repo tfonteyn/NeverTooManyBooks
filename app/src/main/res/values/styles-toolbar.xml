@@ -64,11 +64,17 @@
         <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
     </style>
 
-    <!-- A fullscreen Dialog toolbar with a 'close' or 'back' icon. -->
+    <!-- A fullscreen Dialog toolbar with a 'close' or 'back' icon.
+         This is only for very small/obsolete devices.
+         It's not always tested...
+         "android:background" as shown in the comment here makes all Fullscreen
+         screens look better, but will make the "author types" button
+         show a little bit weird. Not going to pursue... leaving all
+         screens as is.
+            <item name="android:background">?attr/colorPrimary</item>
+         -->
     <style name="Toolbar.Dialog.Fullscreen"
            parent="Base.Toolbar">
-        <!-- URGENT: make a decision on adding the bg -->
-        <!--        <item name="android:background">?attr/colorPrimary</item>-->
         <item name="titleTextColor">?attr/colorOnSurface</item>
         <item name="subtitleTextColor">?attr/colorOnSurface</item>
         <!-- The default icon, will be overridden with a 'back' icon when needed -->
