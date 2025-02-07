@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -47,25 +48,10 @@ class MLACitation
         implements Citation {
 
     @NonNull
-    private static String getAutorInformation(@NonNull final Context context,
-                                              @NonNull final Book book) {
-        final String authorStr;
-        final List<Author> authors = book.getAuthors();
-        switch (authors.size()) {
-            case 1: {
-                authorStr = authors.get(0).getFormattedName(false);
-                break;
-            }
-            case 2:
-                authorStr = authors.get(0).getFormattedName(false)
-                            + ' ' + context.getString(R.string.list_and)
-                            + ' ' + authors.get(1).getFormattedName(false);
-                break;
-            default:
-                authorStr = context.getString(R.string.and_others_textual,
-                                              authors.get(0).getFormattedName(false));
-        }
-        return authorStr;
+    private final Style style;
+
+    MLACitation(@NonNull final Style style) {
+        this.style = style;
     }
 
     @NonNull
@@ -80,6 +66,31 @@ class MLACitation
             .ifPresent(year -> sj.add(String.valueOf(year)));
 
         return sj.toString();
+    }
+
+    @NonNull
+    private String getAutorInformation(@NonNull final Context context,
+                                       @NonNull final Book book) {
+        final boolean byGivenName = style.isShowAuthorByGivenName();
+        final String authorStr;
+        final List<Author> authors = book.getAuthors();
+        switch (authors.size()) {
+            case 1: {
+                authorStr = authors.get(0).getFormattedName(byGivenName);
+                break;
+            }
+            case 2: {
+                authorStr = authors.get(0).getFormattedName(byGivenName)
+                            + ' ' + context.getString(R.string.list_and)
+                            + ' ' + authors.get(1).getFormattedName(byGivenName);
+                break;
+            }
+            default: {
+                authorStr = context.getString(R.string.and_others_textual,
+                                              authors.get(0).getFormattedName(byGivenName));
+            }
+        }
+        return authorStr;
     }
 
     @NonNull

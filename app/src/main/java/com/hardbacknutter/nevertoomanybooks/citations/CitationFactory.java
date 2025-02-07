@@ -43,7 +43,7 @@ public final class CitationFactory {
             case BibTeX:
                 return new BibTeXCitation(style);
             case MLA:
-                return new MLACitation();
+                return new MLACitation(style);
             case RIS:
                 return new RISCitation();
             case Default:
