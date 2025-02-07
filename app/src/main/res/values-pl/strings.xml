@@ -865,4 +865,5 @@
     <string name="lbl_identifiers">Identyfikatory</string>
     <string name="confirm_apply_substitutions">Stosować zasady zastępowania? Wszystkie odpowiednie książki zostaną zaktualizowane.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Scalanie tagów różniących się tylko wielkimi i małymi literami</string>
+    <string name="lbl_default_x">Domyślna: %1$s</string>
 </resources>

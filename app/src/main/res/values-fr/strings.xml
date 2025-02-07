@@ -845,4 +845,5 @@
     <string name="lbl_identifiers">Identifiants</string>
     <string name="confirm_apply_substitutions">Appliquer les règles de substitution ? Tous les livres applicables seront mis à jour.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Fusionner les balises qui ne diffèrent que par les majuscules et les minuscules</string>
+    <string name="lbl_default_x">Par défaut: %1$s</string>
 </resources>

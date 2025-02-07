@@ -836,4 +836,5 @@
     <string name="lbl_identifier">Mã định danh</string>
     <string name="lbl_identifiers">Mã định danh</string>
     <string name="lbl_tag_mapper_apply_merge_case">Hợp nhất các thẻ chỉ khác nhau ở chữ hoa và chữ thường</string>
+    <string name="lbl_default_x">Mặc định: %1$s</string>
 </resources>

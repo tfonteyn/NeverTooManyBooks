@@ -862,4 +862,5 @@
     <string name="lbl_identifiers">Идентификаторы</string>
     <string name="confirm_apply_substitutions">Применить правила замены? Все применимые книги будут обновлены.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Объединяйте теги, которые отличаются только верхним и нижним регистром</string>
+    <string name="lbl_default_x">По умолчанию: %1$s</string>
 </resources>

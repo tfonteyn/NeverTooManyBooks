@@ -1966,6 +1966,8 @@
 
     <!-- [VERIFIED] -->
     <string name="lbl_settings">Settings</string>
+    <!-- Show the user what the default value is -->
+    <string name="lbl_default_x">Default: %1$s</string>
     <!-- endregion -->
     <!-- region ========== Unused, but not removing as we have translations which might be useful later. -->
     <!-- [VERIFIED] -->
@@ -2020,5 +2022,7 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="confirm_strip_info_import_collection"
             translatable="false">Do you want to import all your owned comics from the StripInfo.be website? This could take some time. We strongly advice to take a backup before proceeding!</string>
-
+    <!-- NOT FINAL, DO NOT TRANSLATE YET -->
+    <string name="option_tuning"
+            translatable="false">Tuning</string>
 </resources>

@@ -839,4 +839,5 @@
     <string name="lbl_identifiers">Identificatoren</string>
     <string name="confirm_apply_substitutions">De substitutieregels toepassen? Alle toepasselijke boeken worden bijgewerkt.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Tags samenvoegen die alleen verschillen in hoofdletters en kleine letters</string>
+    <string name="lbl_default_x">Standaard: %1$s</string>
 </resources>

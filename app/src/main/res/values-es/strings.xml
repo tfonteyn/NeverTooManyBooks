@@ -843,4 +843,5 @@
     <string name="lbl_identifiers">Identificadores</string>
     <string name="confirm_apply_substitutions">¿Aplicar las normas de sustitución? Se actualizarán todos los libros aplicables.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Fusionar etiquetas que sólo difieren en mayúsculas y minúsculas</string>
+    <string name="lbl_default_x">Predeterminado: %1$s</string>
 </resources>

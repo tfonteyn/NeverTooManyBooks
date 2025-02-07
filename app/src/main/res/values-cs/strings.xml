@@ -861,4 +861,5 @@
     <string name="lbl_identifiers">Identifikátory</string>
     <string name="confirm_apply_substitutions">Použít pravidla substituce? Všechny příslušné knihy budou aktualizovány.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Sloučení štítků, které se liší pouze velkými a malými písmeny</string>
+    <string name="lbl_default_x">Výchozí: %1$s</string>
 </resources>

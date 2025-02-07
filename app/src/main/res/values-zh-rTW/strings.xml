@@ -839,4 +839,5 @@
     <string name="info_tap_to_move_tag">輕按標籤將其移動到書籍或從書籍移出。</string>
     <string name="lbl_tag_mapper_apply_merge_case">合併只有字母大小寫不同的標籤</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">大/小寫合併</string>
+    <string name="lbl_default_x">預設：%1$s</string>
 </resources>
