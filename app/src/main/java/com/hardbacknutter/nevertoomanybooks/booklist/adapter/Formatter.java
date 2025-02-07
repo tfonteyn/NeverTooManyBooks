@@ -223,16 +223,16 @@ class Formatter
                 }
             }
 
-
-            case BooklistGroup.FORMAT:
-            case BooklistGroup.TAGS_GENRE:
-            case BooklistGroup.LOCATION:
-            case BooklistGroup.BOOKSHELF:
-            case BooklistGroup.COLOR:
-            case BooklistGroup.BOOK_TITLE_1ST_CHAR:
-            case BooklistGroup.SERIES_TITLE_1ST_CHAR:
             case BooklistGroup.AUTHOR_FAMILY_NAME_1ST_CHAR:
+            case BooklistGroup.BOOKSHELF:
+            case BooklistGroup.BOOK_TITLE_1ST_CHAR:
+            case BooklistGroup.COLOR:
+            case BooklistGroup.FORMAT:
+            case BooklistGroup.IDENTIFIER:
+            case BooklistGroup.LOCATION:
             case BooklistGroup.PUBLISHER_NAME_1ST_CHAR:
+            case BooklistGroup.SERIES_TITLE_1ST_CHAR:
+            case BooklistGroup.TAGS_GENRE:
                 // BooklistGroup.BOOK only here to please lint
             case BooklistGroup.BOOK:
             default: {

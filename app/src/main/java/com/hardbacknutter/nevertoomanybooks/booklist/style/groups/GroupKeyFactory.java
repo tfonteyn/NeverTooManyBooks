@@ -49,6 +49,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_TAG;
@@ -61,10 +62,12 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
@@ -315,6 +318,29 @@ public final class GroupKeyFactory {
                         .addGroupDomain(
                                 new DomainExpression(DOM_FK_TAG,
                                                      TBL_BOOK_TAG,
+                                                     Sort.Unsorted));
+            }
+            case BooklistGroup.IDENTIFIER: {
+                // We use the foreign ID to create the key-domain.
+                // It is NOT used to display the data; instead we use
+                // IdentifierBooklistGroup#displayDomainExpression.
+                // We do NOT sort by the foreign-key display-domain; instead we use
+                // the name column, sorted, added as a group domain.
+                return new GroupKey(id, R.string.lbl_identifiers, "gkids",
+                                    new DomainExpression(DOM_FK_IDENTIFIER,
+                                                         TBL_IDENTIFIERS.dot(DBKey.PK_ID),
+                                                         Sort.Unsorted))
+                        .addGroupDomain(
+                                new DomainExpression(
+                                        new Domain.Builder(
+                                                BooklistGroup.BlgDBKey.SORT_IDENTIFIER,
+                                                SqLiteDataType.Text)
+                                                .build(),
+                                        TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY),
+                                        Sort.Asc))
+                        .addGroupDomain(
+                                new DomainExpression(DOM_FK_IDENTIFIER,
+                                                     TBL_BOOK_IDENTIFIER,
                                                      Sort.Unsorted));
             }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,8 +52,11 @@ public interface BooklistGroup {
     int AUTHOR = 1;
     /** {@link SeriesBooklistGroup}. */
     int SERIES = 2;
-    // 2025-01-17: Formerly the book table column "genre"
-    // Now the linked tags table
+    /**
+     * 2025-01-17: Formerly the book table column "genre".
+     * Now the linked tags table.
+     * {@link TagBooklistGroup}
+     */
     int TAGS_GENRE = 3;
     /** {@link PublisherBooklistGroup}. */
     int PUBLISHER = 4;
@@ -88,12 +91,13 @@ public interface BooklistGroup {
     int CONDITION = 31;
     int AUTHOR_FAMILY_NAME_1ST_CHAR = 32;
     int PUBLISHER_NAME_1ST_CHAR = 33;
+    int IDENTIFIER = 34;
     /**
      * NEWTHINGS: BooklistGroup
      * The highest valid index of id - ALWAYS to be updated after adding a group.
      */
     @VisibleForTesting
-    int GROUP_KEY_MAX = 33;
+    int GROUP_KEY_MAX = 34;
 
     /**
      * Factory constructor.
@@ -126,7 +130,8 @@ public interface BooklistGroup {
                 return new BookshelfBooklistGroup(groupKey);
             case TAGS_GENRE:
                 return new TagBooklistGroup(groupKey);
-
+            case IDENTIFIER:
+                return new IdentifierBooklistGroup(groupKey);
             default:
                 return new BooklistGroupImpl(groupKey);
         }
@@ -233,50 +238,43 @@ public interface BooklistGroup {
     @Nullable
     GroupPrefs getGroupPrefs();
 
-    @IntDef({BOOK,
-
+    // NEWTHINGS: BooklistGroup add IntDef
+    @IntDef({
             AUTHOR,
-            SERIES,
-            PUBLISHER,
-            BOOKSHELF,
-            READ_STATUS,
-
-            LENDING,
-
             AUTHOR_FAMILY_NAME_1ST_CHAR,
-            SERIES_TITLE_1ST_CHAR,
-            PUBLISHER_NAME_1ST_CHAR,
+            BOOK,
+            BOOKSHELF,
             BOOK_TITLE_1ST_CHAR,
-
-            TAGS_GENRE,
-            FORMAT,
             COLOR,
-            LOCATION,
-            LANGUAGE,
-            RATING,
-
             CONDITION,
-
-            DATE_PUBLISHED_YEAR,
-            DATE_PUBLISHED_MONTH,
-            DATE_FIRST_PUBLICATION_YEAR,
-            DATE_FIRST_PUBLICATION_MONTH,
-
-            DATE_READ_YEAR,
-            DATE_READ_MONTH,
-            DATE_READ_DAY,
-
-            DATE_ADDED_YEAR,
-            DATE_ADDED_MONTH,
-            DATE_ADDED_DAY,
-
-            DATE_LAST_UPDATE_YEAR,
-            DATE_LAST_UPDATE_MONTH,
-            DATE_LAST_UPDATE_DAY,
-
-            DATE_ACQUIRED_YEAR,
+            DATE_ACQUIRED_DAY,
             DATE_ACQUIRED_MONTH,
-            DATE_ACQUIRED_DAY
+            DATE_ACQUIRED_YEAR,
+            DATE_ADDED_DAY,
+            DATE_ADDED_MONTH,
+            DATE_ADDED_YEAR,
+            DATE_FIRST_PUBLICATION_MONTH,
+            DATE_FIRST_PUBLICATION_YEAR,
+            DATE_LAST_UPDATE_DAY,
+            DATE_LAST_UPDATE_MONTH,
+            DATE_LAST_UPDATE_YEAR,
+            DATE_PUBLISHED_MONTH,
+            DATE_PUBLISHED_YEAR,
+            DATE_READ_DAY,
+            DATE_READ_MONTH,
+            DATE_READ_YEAR,
+            FORMAT,
+            IDENTIFIER,
+            LANGUAGE,
+            LENDING,
+            LOCATION,
+            PUBLISHER,
+            PUBLISHER_NAME_1ST_CHAR,
+            RATING,
+            READ_STATUS,
+            SERIES,
+            SERIES_TITLE_1ST_CHAR,
+            TAGS_GENRE
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface Id {
@@ -291,28 +289,28 @@ public interface BooklistGroup {
     @SuppressWarnings("WeakerAccess")
     final class BlgDBKey {
 
-        public static final String PUB_YEAR = "blg_pub_y";
-        public static final String PUB_MONTH = "blg_pub_m";
-        public static final String ACQUIRED_YEAR = "blg_acq_y";
-        public static final String ACQUIRED_MONTH = "blg_acq_m";
         public static final String ACQUIRED_DAY = "blg_acq_d";
-        public static final String ADDED_YEAR = "blg_add_y";
-        public static final String ADDED_MONTH = "blg_add_m";
+        public static final String ACQUIRED_MONTH = "blg_acq_m";
+        public static final String ACQUIRED_YEAR = "blg_acq_y";
         public static final String ADDED_DAY = "blg_add_d";
-        public static final String LAST_UPD_YEAR = "blg_upd_y";
-        public static final String LAST_UPD_MONTH = "blg_upd_m";
-        public static final String LAST_UPD_DAY = "blg_upd_d";
-        public static final String READ_YEAR = "blg_rd_y";
-        public static final String READ_MONTH = "blg_rd_m";
-        public static final String READ_DAY = "blg_rd_d";
-        public static final String FIRST_PUB_YEAR = "blg_1pub_y";
+        public static final String ADDED_MONTH = "blg_add_m";
+        public static final String ADDED_YEAR = "blg_add_y";
         public static final String FIRST_PUB_MONTH = "blg_1pub_m";
+        public static final String FIRST_PUB_YEAR = "blg_1pub_y";
+        public static final String LAST_UPD_DAY = "blg_upd_d";
+        public static final String LAST_UPD_MONTH = "blg_upd_m";
+        public static final String LAST_UPD_YEAR = "blg_upd_y";
+        public static final String PUB_MONTH = "blg_pub_m";
+        public static final String PUB_YEAR = "blg_pub_y";
+        public static final String READ_DAY = "blg_rd_d";
+        public static final String READ_MONTH = "blg_rd_m";
+        public static final String READ_STATUS = "blg_rd_sts";
+        public static final String READ_YEAR = "blg_rd_y";
 
         public static final String AUTHOR_FAMILY_NAME_1CHAR = "blg_aut_fn_1ch";
-        public static final String SERIES_TITLE_1CHAR = "blg_ser_tit_1ch";
-        public static final String PUBLISHER_NAME_1CHAR = "blg_pub_1ch";
         public static final String BOOK_TITLE_1CHAR = "blg_tit_1ch";
-        public static final String READ_STATUS = "blg_rd_sts";
+        public static final String PUBLISHER_NAME_1CHAR = "blg_pub_1ch";
+        public static final String SERIES_TITLE_1CHAR = "blg_ser_tit_1ch";
 
         /**
          * Specific domains for sorting.
@@ -321,9 +319,10 @@ public interface BooklistGroup {
          */
         public static final String SORT_AUTHOR = "blg_sort_aut";
         public static final String SORT_BOOKSHELF = "blg_sort_shelf";
+        public static final String SORT_IDENTIFIER = "blg_sort_ident";
         public static final String SORT_PUBLISHER = "blg_sort_pub";
-        public static final String SORT_SERIES_TITLE = "blg_sort_ser";
         public static final String SORT_SERIES_NUM_FLOAT = "blg_sort_ser_num_f";
+        public static final String SORT_SERIES_TITLE = "blg_sort_ser";
         public static final String SORT_TAG = "blg_sort_tags";
 
         private BlgDBKey() {

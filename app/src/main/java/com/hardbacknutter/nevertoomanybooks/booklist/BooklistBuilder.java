@@ -63,9 +63,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
@@ -928,6 +930,7 @@ class BooklistBuilder {
          *      <li>{@link DBDefinitions#TBL_BOOK_PUBLISHER} + {@link DBDefinitions#TBL_PUBLISHERS}</li>
          *      <li>{@link DBDefinitions#TBL_BOOK_SERIES} + {@link DBDefinitions#TBL_SERIES}</li>
          *      <li>{@link DBDefinitions#TBL_BOOK_TAG} + {@link DBDefinitions#TBL_TAGS}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_IDENTIFIER} + {@link DBDefinitions#TBL_IDENTIFIERS}</li>
          * </ul>
          *
          * @param leftOuterJoins tables to be added as a LEFT OUTER JOIN
@@ -960,7 +963,7 @@ class BooklistBuilder {
             }
 
             if (style.hasGroup(BooklistGroup.TAGS_GENRE)) {
-                // ONLY join with the tags if we actually are grouping by them.
+                // ONLY join if we are grouping by them.
                 // Do NOT join with
                 //    || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)
                 // as each book would be shown "#tags"-amount of times
@@ -974,6 +977,10 @@ class BooklistBuilder {
                 joinWithTags(sb);
             }
 
+            if (style.hasGroup(BooklistGroup.IDENTIFIER)) {
+                // same remarks as for tags above
+                joinWithIdentifiers(sb);
+            }
             // Add LEFT OUTER JOIN tables as needed
             leftOuterJoins.forEach(table -> sb.append(TBL_BOOKS.leftOuterJoin(table)));
 
@@ -1054,6 +1061,16 @@ class BooklistBuilder {
             // 2) there is no 'primary tag' concept
             // Join with Tags to make the names available
             sb.append(TBL_BOOK_TAG.leftOuterJoin(TBL_TAGS));
+        }
+
+        private void joinWithIdentifiers(@NonNull final StringBuilder sb) {
+            // Join with the link table between Book and Identifiers.
+            sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_IDENTIFIER));
+            // Note we're ALWAYS showing books under all it's identifier because:
+            // 1) that's IMHO always desired
+            // 2) there is no 'primary identifier' concept
+            // Join with Identifiers to make the names available
+            sb.append(TBL_BOOK_IDENTIFIER.leftOuterJoin(TBL_IDENTIFIERS));
         }
 
         /**

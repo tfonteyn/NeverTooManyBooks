@@ -387,8 +387,6 @@ public class BoBTask
                                                Sort.Unsorted));
 
         // The domains for the book level, visibility and ordering according to style.
-        // WARNING: the field {@link DBKey#LOANEE_NAME} requires a {@code LEFT JOIN}
-        // with {@link DBDefinitions#TBL_BOOK_LOANEE}. See below
         style.getBookLevelFieldsOrderBy().entrySet()
              .stream()
              .filter(field -> style.isShowField(FieldVisibility.Screen.List, field.getKey()))
@@ -397,6 +395,8 @@ public class BoBTask
              .flatMap(List::stream)
              .forEach(builder::addDomain);
 
+        // If we're showing {@link DBKey#LOANEE_NAME} on the book level, we require
+        // a {@code LEFT JOIN} {@link DBDefinitions#TBL_BOOK_LOANEE}.
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
             builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
         }
