@@ -48,8 +48,7 @@
             android:icon="@drawable/search_24px"
             android:key="psk_search_site_order"
             android:summary="@string/pt_website_search_order_and_enable"
-            android:title="@string/lbl_websites">
-        </Preference>
+            android:title="@string/lbl_websites" />
 
         <SwitchPreference
             android:defaultValue="true"
@@ -242,8 +241,7 @@
             android:icon="@drawable/cloud_24px"
             android:key="psk_calibre"
             android:title="@string/pt_calibre_content_server"
-            tools:summary="@string/disabled">
-        </Preference>
+            tools:summary="@string/disabled" />
 
         <!-- entries/values are set from code;
              default 0 == internal 'shared' storage.
