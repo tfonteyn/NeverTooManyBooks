@@ -142,11 +142,13 @@ public class MaintenanceFragment
 
         vb.btnCreateBugReport.setOnClickListener(v -> onCreateBugReport());
         vb.btnDebugSqShell.setOnClickListener(this::onDebugSqShell);
+        vb.btnTuning.setOnClickListener(this::onTuning);
 
         vb.btnDebug.setOnClickListener(v -> {
             vm.incDebugClicks();
 
             if (vm.isShowDbgOptions()) {
+                vb.btnTuning.setVisibility(View.VISIBLE);
                 vb.btnDebugSqShell.setVisibility(View.VISIBLE);
             }
 
@@ -378,6 +380,20 @@ public class MaintenanceFragment
             Snackbar.make(getView(), R.string.error_export_failed,
                           Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    private void onTuning(@NonNull final View v) {
+        getParentFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .addToBackStack(TuningFragment.TAG)
+                .replace(R.id.main_fragment,
+                         new TuningFragment(),
+                         TuningFragment.TAG)
+                .commit();
+
+        // whether any actual tuning is done or not...
+        settingsVm.setForceRebuildBooklist();
     }
 
     private void onDebugSqShell(@NonNull final View v) {

@@ -146,6 +146,18 @@
             />
 
         <Button
+            android:id="@+id/btn_tuning"
+            style="@style/Button.Menu"
+            android:text="@string/option_tuning"
+            android:visibility="gone"
+            app:icon="@drawable/tune_24px"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col0"
+            app:layout_constraintTop_toBottomOf="@id/btn_create_bug_report"
+            tools:visibility="visible"
+            />
+
+        <Button
             android:id="@+id/btn_debug_sq_shell"
             style="@style/Button.Menu"
             android:text="@string/debug_sq_shell"
@@ -153,7 +165,7 @@
             app:icon="@drawable/keyboard_24px"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col0"
-            app:layout_constraintTop_toBottomOf="@id/btn_create_bug_report"
+            app:layout_constraintTop_toBottomOf="@id/btn_tuning"
             tools:visibility="visible"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
