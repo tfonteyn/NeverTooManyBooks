@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
 import android.content.Intent;
@@ -45,6 +45,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -55,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceAlertDialogBuilder;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsViewModel;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -71,6 +75,8 @@ public class MaintenanceFragment
 
     private SettingsViewModel settingsViewModel;
     private MaintenanceViewModel vm;
+    private SettingsViewModel settingsVm;
+
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<GetContentUriForWritingContract.Input>
             createDocumentLauncher =
@@ -98,6 +104,8 @@ public class MaintenanceFragment
 
         vm = new ViewModelProvider(this).get(MaintenanceViewModel.class);
         vm.init(getArguments());
+
+        settingsVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
     }
 
     @Nullable
@@ -250,6 +258,9 @@ public class MaintenanceFragment
                     //noinspection DataFlowIssue
                     Snackbar.make(getView(), getString(R.string.info_books_deleted, count),
                                   Snackbar.LENGTH_LONG).show();
+                    if (count > 0) {
+                        settingsVm.setForceRebuildBooklist();
+                    }
                 })
                 .create()
                 .show();
@@ -280,6 +291,7 @@ public class MaintenanceFragment
                     BooklistNodeDao.clearAll(ServiceLocator.getInstance().getDb());
                     //noinspection DataFlowIssue
                     Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT).show();
+                    settingsVm.setForceRebuildBooklist();
                 })
                 .create()
                 .show();

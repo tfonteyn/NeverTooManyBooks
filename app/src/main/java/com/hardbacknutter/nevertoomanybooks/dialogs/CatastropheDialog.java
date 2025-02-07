@@ -31,8 +31,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.MaintenanceFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.MaintenanceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public final class CatastropheDialog {

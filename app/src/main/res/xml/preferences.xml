@@ -253,7 +253,7 @@
             android:title="@string/pt_storage_volume" />
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.MaintenanceFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.MaintenanceFragment"
             android:icon="@drawable/settings_24px"
             android:key="psk_advanced_options"
             android:title="@string/pt_maintenance"
