@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,8 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.Optional;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -37,7 +35,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
 public class UserStyleTest
@@ -51,12 +48,11 @@ public class UserStyleTest
 
     @Test
     public void clone01() {
-        final Optional<Style> s1 = getTestStyle();
-        assertTrue(s1.isPresent());
+        final Style s1 = getBuiltinStyle();
 
         // clone a BuiltinStyle
-        final WritableStyle s2 = s1.get().clone(context);
-        compare(context, s1.get(), s2);
+        final WritableStyle s2 = s1.clone(context);
+        compare(context, s1, s2);
         // clone a UserStyle
         compare(context, s2, s2.clone(context));
     }

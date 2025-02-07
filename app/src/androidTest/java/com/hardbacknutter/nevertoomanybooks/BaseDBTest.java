@@ -39,6 +39,8 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -124,18 +126,35 @@ public abstract class BaseDBTest {
         serviceLocator.getCoverStorage().initDir();
 
         serviceLocator.getDb();
+
+        if (getUserStyle().isEmpty()) {
+            final Style style = getBuiltinStyle();
+            final UserStyle clone = (UserStyle) style.clone(context);
+            clone.setName("A user style");
+            serviceLocator.getStyles().insertOrUpdate(context, clone);
+        }
     }
 
     @NonNull
-    protected Optional<Style> getTestStyle() {
+    protected Style getBuiltinStyle() {
         return BuiltinStyle.ALL.stream()
                                .filter(def -> def.getId() == BuiltinStyle.ID_FOR_TESTING_ONLY)
                                .findFirst()
                                .map(BuiltinStyle.Definition::getUuid)
                                .map(uuid -> serviceLocator.getStyles().getStyle(uuid))
+                               .orElseThrow()
                                .orElseThrow();
     }
 
+    @NonNull
+    protected Optional<WritableStyle> getUserStyle() {
+        return serviceLocator.getStyles()
+                             .getStyles(true)
+                             .stream()
+                             .filter(def -> def.getType() == Style.Type.User)
+                             .map(style -> (WritableStyle) style)
+                             .findFirst();
+    }
 
     /** Load and parse a JSoup document from a raw html resource. */
     @NonNull

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
-import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -33,7 +32,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
 public class MapDBKeyTest
@@ -69,10 +67,9 @@ public class MapDBKeyTest
      */
     @Test
     public void sortableBookLevelKeysHaveLabels() {
-        final Optional<Style> s1 = getTestStyle();
-        assertTrue(s1.isPresent());
+        final Style s1 = getBuiltinStyle();
 
-        final Set<String> keys = s1.get().getBookLevelFieldsOrderBy().keySet();
+        final Set<String> keys = s1.getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());
 
         final long labelCount = keys
@@ -91,10 +88,9 @@ public class MapDBKeyTest
      */
     @Test
     public void visibilityKeysHaveDomainNames() {
-        final Optional<Style> s1 = getTestStyle();
-        assertTrue(s1.isPresent());
+        final Style s1 = getBuiltinStyle();
 
-        final Set<String> keys = s1.get().getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
+        final Set<String> keys = s1.getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
         assertFalse(keys.isEmpty());
 
         final long domainCount = keys
@@ -112,10 +108,9 @@ public class MapDBKeyTest
      */
     @Test
     public void sortableBookLevelKeysHaveDomainNames() {
-        final Optional<Style> s1 = getTestStyle();
-        assertTrue(s1.isPresent());
+        final Style s1 = getBuiltinStyle();
 
-        final Set<String> keys = s1.get().getBookLevelFieldsOrderBy().keySet();
+        final Set<String> keys = s1.getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());
 
         final long domainCount = keys

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -53,16 +52,14 @@ public class BoBTaskTest
      */
     @Test
     public void visibilityKeysHaveDomainExpressions() {
-        final Optional<Style> s1 = getTestStyle();
-        assertTrue(s1.isPresent());
+        final Style s1 = getBuiltinStyle();
 
-        final Set<String> keys = s1.get().getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
+        final Set<String> keys = s1.getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
         assertFalse(keys.isEmpty());
 
         final long expressionCount = keys
                 .stream()
-                .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted,
-                                                            s1.get()))
+                .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted, s1))
                 .filter(list -> !list.isEmpty())
                 .count();
 
@@ -77,16 +74,14 @@ public class BoBTaskTest
      */
     @Test
     public void sortableBookLevelKeysHaveDomainExpressions() {
-        final Optional<Style> s1 = getTestStyle();
-        assertTrue(s1.isPresent());
+        final Style s1 = getBuiltinStyle();
 
-        final Set<String> keys = s1.get().getBookLevelFieldsOrderBy().keySet();
+        final Set<String> keys = s1.getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());
 
         final long expressionCount = keys
                 .stream()
-                .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted,
-                                                            s1.get()))
+                .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted, s1))
                 .filter(list -> !list.isEmpty())
                 .count();
 
