@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.LocaleList;
@@ -260,6 +261,15 @@ public class ServiceLocator {
     @NonNull
     public Context getAppContext() {
         return appContext;
+    }
+
+    /**
+     * Get the Application Context Global Preferences.
+     *
+     * @return global SharedPreferences
+     */
+    public SharedPreferences getSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(appContext);
     }
 
     /**
