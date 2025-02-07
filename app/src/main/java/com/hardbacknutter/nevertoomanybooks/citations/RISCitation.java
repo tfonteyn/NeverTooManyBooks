@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
- * Example:
+ * Example.
  * <pre>
  *     TY  - BOOK
  *     T1  - The Meaning of Liff: The Original Dictionary Of Things There Should Be Words For
@@ -50,12 +50,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public class RISCitation
         implements Citation {
 
+    private static final String CRLF = "\r\n";
+
     @NonNull
     @Override
     public String cite(@NonNull final Context context,
                        @NonNull final Book book) {
 
-        final StringJoiner sj = new StringJoiner("\r\n");
+        final StringJoiner sj = new StringJoiner(CRLF);
         sj.add("TY  - BOOK");
         sj.add("T1  - " + book.getTitle());
         book.getAuthors().forEach(author -> sj
@@ -89,16 +91,15 @@ public class RISCitation
             .ifPresent(year -> sj.add("Y1  - " + year));
 
         final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
-        book.getIdentifiers().forEach(iv -> {
-            identifierDao.findByKey(iv.getKey()).ifPresent(identifier -> {
+        book.getIdentifiers()
+            .forEach(iv -> identifierDao.findByKey(iv.getKey()).ifPresent(identifier -> {
                 final String bookUri = identifier.getBookUri(context);
                 if (bookUri != null) {
                     sj.add("UR  - " + String.format(bookUri, iv.getSid()));
                 }
-            });
-        });
+            }));
 
         sj.add("ER  -");
-        return sj.toString();
+        return sj + CRLF;
     }
 }
