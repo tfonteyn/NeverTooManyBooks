@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
- * The BibTex format.
+ * The BibTeX format.
  *
  * <pre>
  *     book
@@ -50,36 +50,44 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * <pre>
  * {@code
  *      @book{NeverTooManyBooks,
- *          author    = {Douglas {Adams} and John {Lloyd}},
- *          title     = {The Deeper Meaning of Liff},
- *          publisher = {Pan Books},
- *          year      = {1990},
- *          series    = {The Meaning of Liff},
- *          number    = {2}
+ *        author    = {Douglas {Adams} and John {Lloyd}},
+ *        title     = {The Deeper Meaning of Liff},
+ *        publisher = {Pan Books},
+ *        year      = {1990},
+ *        series    = {The Meaning of Liff},
+ *        number    = {2}
+ *      }
  * }
  * </pre>
  *
  * @see <a href="https://en.wikipedia.org/wiki/BibTeX#Database_files">Database files</a>
+ * @see <a href="https://nwalsh.com/tex/texhelp/bibtx-23.html">texhelp/bibtx-23</a>
  */
-class BibTexCitation
+class BibTeXCitation
         implements Citation {
 
-    private static final String AUTHOR = "author    = {";
-    private static final String ISBN = "isbn      = {";
-    private static final String NUMBER = "number    = {";
-    private static final String PUBLISHER = "publisher = {";
-    private static final String SERIES = "series    = {";
-    private static final String TITLE = "title     = {";
-    private static final String URL = "url       = {";
-    private static final String YEAR = "year      = {";
+    /**
+     * Format for a line; the "9" is the length of the longest label,
+     * currently being {@link #PUBLISHER}.
+     */
+    private static final String NAME_VALUE = "  %1$-9s = {%2$s}";
 
-    /** concat 2 authors. */
+    private static final String AUTHOR = "author";
+    private static final String ISBN = "isbn";
+    private static final String NUMBER = "number";
+    private static final String PUBLISHER = "publisher";
+    private static final String SERIES = "series";
+    private static final String TITLE = "title";
+    private static final String URL = "url";
+    private static final String YEAR = "year";
+
+    /** concat 2 authors; the BibTeX standard requires English 'and'. */
     private static final String AND = " and ";
 
     @NonNull
     private final Style style;
 
-    BibTexCitation(@NonNull final Style style) {
+    BibTeXCitation(@NonNull final Style style) {
         this.style = style;
     }
 
@@ -88,23 +96,22 @@ class BibTexCitation
     public String cite(@NonNull final Context context,
                        @NonNull final Book book) {
 
-        final String appName = context.getString(R.string.app_name);
         final StringJoiner sj = new StringJoiner(",\n");
-        sj.add("@book{" + appName);
+        sj.add("@book{" + context.getString(R.string.app_name));
 
-        sj.add(TITLE + escape(book.getTitle()) + '}');
-        sj.add(AUTHOR + formatAuthors(book.getAuthors()) + '}');
+        sj.add(String.format(NAME_VALUE, TITLE, escape(book.getTitle())));
+        sj.add(String.format(NAME_VALUE, AUTHOR, formatAuthors(book.getAuthors())));
 
         final String isbn = book.getString(DBKey.ISBN);
         if (!isbn.isEmpty()) {
-            sj.add(ISBN + isbn + '}');
+            sj.add(String.format(NAME_VALUE, ISBN, escape(isbn)));
         }
 
         final List<Publisher> publishers = book.getPublishers();
         if (publishers.isEmpty()) {
-            sj.add(PUBLISHER + context.getString(R.string.unknown) + '}');
+            sj.add(String.format(NAME_VALUE, PUBLISHER, context.getString(R.string.unknown)));
         } else {
-            sj.add(PUBLISHER + formatPublishers(publishers) + '}');
+            sj.add(String.format(NAME_VALUE, PUBLISHER, formatPublishers(publishers)));
         }
 
         // need the year only
@@ -112,15 +119,15 @@ class BibTexCitation
                              .or(() -> book.getPublicationDate().getYear())
                              // mandatory field ...
                              .orElse(0);
-        sj.add(YEAR + year + '}');
+        sj.add(String.format(NAME_VALUE, YEAR, escape(String.valueOf(year))));
 
-        //TODO: check bibtex series format when multiple series
+        //TODO: check BibTeX series format when multiple series
         book.getPrimarySeries()
             .ifPresent(series -> {
-                sj.add(SERIES + escape(series.getTitle()) + '}');
+                sj.add(String.format(NAME_VALUE, SERIES, escape(series.getTitle())));
                 final String number = series.getNumber();
                 if (!number.isEmpty()) {
-                    sj.add(NUMBER + number + '}');
+                    sj.add(String.format(NAME_VALUE, NUMBER, escape(number)));
                 }
             });
 
@@ -129,12 +136,13 @@ class BibTexCitation
             identifierDao.findByKey(iv.getKey()).ifPresent(identifier -> {
                 final String bookUri = identifier.getBookUri(context);
                 if (bookUri != null) {
-                    sj.add(URL + String.format(bookUri, iv.getSid()) + '}');
+                    sj.add(String.format(NAME_VALUE, URL,
+                                         String.format(bookUri, iv.getSid())));
                 }
             });
         });
 
-        return sj.toString() + '\n' + '}';
+        return sj + "\n}\n";
     }
 
     /**

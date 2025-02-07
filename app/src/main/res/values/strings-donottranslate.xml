@@ -137,7 +137,7 @@
 
     <!-- region ========== Citation format. -->
     <string name="lbl_citation_type_bibtex"
-            translatable="false">BibTex</string>
+            translatable="false">BibTeX</string>
     <string name="lbl_citation_type_mla"
             translatable="false">MLA</string>
     <string name="lbl_citation_type_ris"

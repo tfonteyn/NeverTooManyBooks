@@ -40,8 +40,8 @@ public final class CitationFactory {
     public static Citation create(@NonNull final Style style) {
 
         switch (style.getCitationType()) {
-            case BibTex:
-                return new BibTexCitation(style);
+            case BibTeX:
+                return new BibTeXCitation(style);
             case MLA:
                 return new MLACitation();
             case RIS:

@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 public enum CitationType {
     Default(0),
-    BibTex(1),
+    BibTeX(1),
     MLA(2),
     RIS(3);
 

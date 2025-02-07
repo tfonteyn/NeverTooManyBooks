@@ -19,7 +19,7 @@ NEW:
 - We're now collecting many more website book-id's and making most available
   as book-links to the original site and allow them to be used as direct/unique searches.
 - "Share" has been extended to provide several "Citation" formats.
-  Configurable on a style: original ('I read...') / BibTex / MLA / RIS
+  Configurable on a style: original ('I read...') / BibTeX / MLA / RIS
 - Book list header now shows filter/search indicators even when the text is hidden
 - Enhanced parsing in series title/number to better detect titles with embedded digits
 - Parsing enhancement: IsfDb (Editor), KB.NL (Description, Pages, Translated titles)
