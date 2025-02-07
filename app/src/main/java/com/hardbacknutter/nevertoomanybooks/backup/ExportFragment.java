@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -323,7 +323,6 @@ public class ExportFragment
                 final int title = vm.isBackup() ? R.string.info_backup_successful
                                                 : R.string.info_export_successful;
 
-                //FIXME: the report can be large - i.e. the user will need to scroll
                 //noinspection DataFlowIssue
                 final MaterialAlertDialogBuilder dialogBuilder =
                         new MaterialAlertDialogBuilder(getContext())
