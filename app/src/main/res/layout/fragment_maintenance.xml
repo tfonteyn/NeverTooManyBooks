@@ -123,6 +123,13 @@
             app:layout_constraintTop_toBottomOf="@id/btn_rebuild_fts"
             />
 
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/btn_rebuild_index"
+            />
+
         <TextView
             android:id="@+id/btn_debug"
             style="@style/Text.Header.PreferenceCategory"
