@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
+import android.content.SharedPreferences;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.util.LruCache;
@@ -26,8 +27,11 @@ import android.util.LruCache;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.math.MathUtils;
 
 import java.util.function.Function;
+
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * TODO: https://developer.android.com/topic/libraries/architecture/paging.html
@@ -35,16 +39,23 @@ import java.util.function.Function;
 public class BooklistCursor
         extends AbstractCursor {
 
-    /** Number of rows to return in each cursor. No tuning has been done to pick this number. */
-    private static final int PAGE_SIZE = 32;
-    /** Size of {@link CursorCache}. No tuning has been done to pick this number. */
-    private static final int LRU_LIST_SIZE = 8;
+    public static final String PK_PAGE_SIZE = "booklist.cursor.page.size";
+    public static final String PK_LRU_LIST_SIZE = "booklist.cursor.lru.size";
+
+    /** Number of rows to return in each cursor. */
+    public static final int DEFAULT_PAGE_SIZE = 32;
+    public static final int MAX_PAGE_SIZE = 64;
+
+    /** Size of {@link CursorCache}. */
+    public static final int DEFAULT_LRU_LIST_SIZE = 8;
+    public static final int MAX_LRU_LIST_SIZE = 12;
 
     /** Back reference to the builder which produced this cursor. */
     @NonNull
     private final Booklist booklist;
     @NonNull
     private final CursorCache cursorCache;
+    private final int pageSize;
     /** The Currently active cursor. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
@@ -60,12 +71,23 @@ public class BooklistCursor
      */
     BooklistCursor(@NonNull final Booklist booklist) {
         this.booklist = booklist;
-        cursorCache = new CursorCache(LRU_LIST_SIZE, cursorId -> {
+
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
+        // Protect against silly values
+        pageSize = MathUtils.clamp(prefs.getInt(PK_PAGE_SIZE, DEFAULT_PAGE_SIZE),
+                                   DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
+
+        // Protect against silly values
+        final int lruSize = MathUtils.clamp(prefs.getInt(PK_LRU_LIST_SIZE, DEFAULT_LRU_LIST_SIZE),
+                                            DEFAULT_LRU_LIST_SIZE, MAX_LRU_LIST_SIZE);
+
+        cursorCache = new CursorCache(lruSize, cursorId -> {
             // Determine the actual start position offset.
-            final int offset = cursorId * PAGE_SIZE;
-            return this.booklist.getOffsetCursor(offset, PAGE_SIZE);
+            final int offset = cursorId * pageSize;
+            return this.booklist.getOffsetCursor(offset, pageSize);
         });
     }
+
 
     @Override
     public int getCount() {
@@ -121,7 +143,7 @@ public class BooklistCursor
     private Cursor getCurrentCursor() {
         synchronized (cursorCache) {
             if (currentCursor == null) {
-                currentCursor = cursorCache.get(getPosition() / PAGE_SIZE);
+                currentCursor = cursorCache.get(getPosition() / pageSize);
             }
         }
         return currentCursor;
@@ -141,8 +163,8 @@ public class BooklistCursor
     public boolean onMove(final int oldPosition,
                           final int newPosition) {
         synchronized (cursorCache) {
-            currentCursor = cursorCache.get(newPosition / PAGE_SIZE);
-            return currentCursor.moveToPosition(newPosition % PAGE_SIZE);
+            currentCursor = cursorCache.get(newPosition / pageSize);
+            return currentCursor.moveToPosition(newPosition % pageSize);
         }
     }
 
@@ -159,6 +181,7 @@ public class BooklistCursor
         return "BooklistCursor{"
                + "booklist=" + booklist
                + ", pseudoCount=" + pseudoCount
+               + ", pageSize=" + pageSize
                + ", cursorCache=" + cursorCache
                + '}';
     }
