@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.UnderEachGroup;
+import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LinkedMap;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;

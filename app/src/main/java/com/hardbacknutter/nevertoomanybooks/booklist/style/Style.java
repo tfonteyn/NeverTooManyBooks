@@ -32,9 +32,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;

@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
@@ -40,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;

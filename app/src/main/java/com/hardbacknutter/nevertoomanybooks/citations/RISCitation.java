@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.bookdetails.share;
+package com.hardbacknutter.nevertoomanybooks.citations;
 
 import android.content.Context;
 

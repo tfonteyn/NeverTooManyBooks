@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
@@ -35,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
+import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;

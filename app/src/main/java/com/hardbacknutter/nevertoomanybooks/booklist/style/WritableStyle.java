@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,9 +27,9 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.bookdetails.share.CitationType;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
