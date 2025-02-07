@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -408,7 +408,7 @@ public class EditBookAuthorListDialogFragment
             ErrorDialog.show(getContext(), TAG, e);
         }
 
-        //FIXME: updated author(s): Book gets them, but TocEntries remain using old set
+        // Updated author(s): Book gets them, but TocEntries remain using old set
         //
         // A TocEntry is unique based on author and title_od.
         // Updating the in-memory TOC list and/or the TocEntries stored in the database
@@ -426,6 +426,10 @@ public class EditBookAuthorListDialogFragment
         // - just ASK the user with a "mod toc" or "no"
         // - don't bother, assume this won't be needed very often
         //   and let the user do it manually
+        //
+        // IMPLEMENTED:
+        // The Toc editor has a menu option to set the primary author on all toc entries.
+        // ... that will do methinks.
     }
 
     @Override
