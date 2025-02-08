@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+
+/**
+ * This handles the inline field {@code DBKey.LANGUAGE}
+ * in {@link DBDefinitions#TBL_BOOKS}.
+ */
 public interface LanguageDao
         extends InlineStringDao {
 
