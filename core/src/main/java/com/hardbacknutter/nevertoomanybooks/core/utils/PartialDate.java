@@ -61,7 +61,7 @@ public class PartialDate
     };
 
     /** An immutable 'empty' date. */
-    public static final PartialDate NOT_SET = new PartialDate(0, 0, 0);
+    public static final PartialDate NOT_SET = new PartialDate(null, null, null);
 
     /** NonNull - the partial date; using '1' for not-set day,month,year fields. */
     private LocalDate localDate;
@@ -84,23 +84,24 @@ public class PartialDate
     /**
      * Constructor.
      *
-     * @param year  1..999_999_999 based, or {@code 0} for none (dev: inlined from Year.MAX_VALUE)
-     * @param month 1..12 based, or {@code 0} for none
-     * @param day   1..31 based, or {@code 0} for none
+     * @param year  -9_999..9_999 based (i.e 4 digits), or {@code null} for none
+     * @param month 1..12 based, or {@code null} or {@code 0} for none
+     * @param day   1..31 based, or {@code null} or {@code 0} for none
      */
-    public PartialDate(@IntRange(from = 0, to = 999_999_999) final int year,
-                       @IntRange(from = 0, to = 12) final int month,
-                       @IntRange(from = 0, to = 31) final int day) {
-        if (year < 1) {
+    public PartialDate(@Nullable @IntRange(from = -9_999, to = 9_999) final Integer year,
+                       @Nullable @IntRange(from = 0, to = 12) final Integer month,
+                       @Nullable @IntRange(from = 0, to = 31) final Integer day) {
+
+        if (year == null) {
             unset();
         } else {
             try {
-                if (month < 1) {
+                if (month == null || month < 1) {
                     localDate = LocalDate.of(year, 1, 1);
                     yearSet = true;
                     monthSet = false;
                     daySet = false;
-                } else if (day < 1) {
+                } else if (day == null || day < 1) {
                     localDate = LocalDate.of(year, month, 1);
                     yearSet = true;
                     monthSet = true;
