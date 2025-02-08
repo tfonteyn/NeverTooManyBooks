@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -435,6 +435,12 @@ public class Languages {
             return;
         }
         final SharedPreferences.Editor ed = cacheFile.edit();
+        // We get many duplicates
+        // iso | name              | display-name
+        // eng : English (Jamaica) : english
+        // eng : English (Niue)    : english
+        // ... the put overwrites existing entries,
+        // so the duplicates are weeded out automatically
         for (final Locale loc : Locale.getAvailableLocales()) {
             ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale), getIsoCode(loc));
         }
