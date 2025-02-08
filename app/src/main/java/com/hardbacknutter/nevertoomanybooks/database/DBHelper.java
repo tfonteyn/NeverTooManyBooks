@@ -64,6 +64,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_LANG_MAPPINGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
@@ -91,10 +92,11 @@ public class DBHelper
      * v5.5.1: 33
      * v5.5.4: 34
      * v7.0.0: 35
+     * v7.1.0: 36
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 35;
+    public static final int DATABASE_VERSION = 36;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -529,6 +531,9 @@ public class DBHelper
             // and we're making a fresh start... drop and recreate the table.
             db.execSQL("DROP TABLE " + TBL_STRIPINFO_COLLECTION.getName());
             TBL_STRIPINFO_COLLECTION.create(db, true);
+        }
+        if (oldVersion < 36) {
+            TBL_LANG_MAPPINGS.create(db, true);
         }
 
         // We have to do this here due to some users skipping updates (see github #30)

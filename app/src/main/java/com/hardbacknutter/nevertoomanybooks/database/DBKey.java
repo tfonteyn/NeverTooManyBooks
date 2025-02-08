@@ -414,6 +414,12 @@ public final class DBKey {
         }
     }
 
+    public static final class LANG_MAPPING {
+        public static final String ISO3_USER = "iso3_user";
+        public static final String ISO3 = "iso3";
+        public static final String DISPLAY_NAME = "dname";
+    }
+
     public static final class FTS {
 
         /** FTS Primary key. */

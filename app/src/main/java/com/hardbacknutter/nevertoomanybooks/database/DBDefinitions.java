@@ -167,6 +167,8 @@ public final class DBDefinitions {
     /** Map site tags to local Tags. */
     public static final TableDefinition TBL_TAG_MAPPINGS;
 
+    public static final TableDefinition TBL_LANG_MAPPINGS;
+
     /** User defined styles. */
     public static final TableDefinition TBL_BOOKLIST_STYLES;
     /** Keeps track of nodes in the list across application restarts. */
@@ -244,6 +246,10 @@ public final class DBDefinitions {
     public static final Domain DOM_TAG;
     /** {@link #TBL_TAG_MAPPINGS}. */
     public static final Domain DOM_TAG_MAPPING;
+
+    public static final Domain DOM_LANG_USER_ISO3;
+    public static final Domain DOM_LANG_ISO3;
+    public static final Domain DOM_LANG_DISPLAY_NAME;
 
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_FAMILY_NAME;
@@ -569,6 +575,8 @@ public final class DBDefinitions {
         TBL_IDENTIFIERS = new TableDefinition("identifiers", "ids");
         TBL_TAGS = new TableDefinition("tags", "tags");
         TBL_TAG_MAPPINGS = new TableDefinition("tag_mappings", "tgmp");
+
+        TBL_LANG_MAPPINGS = new TableDefinition("lang_mappings", "lm");
 
         TBL_PSEUDONYM_AUTHOR = new TableDefinition("pseudonym_author", "ap");
 
@@ -1009,6 +1017,26 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.TAGS.TAG_MAPPING, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
+                        .localized()
+                        .build();
+
+        /* ======================================================================================
+         *  Language ISO3 lookup cache
+         * ====================================================================================== */
+
+        DOM_LANG_USER_ISO3 =
+                new Domain.Builder(DBKey.LANG_MAPPING.ISO3_USER, SqLiteDataType.Text)
+                        .notNull()
+                        .build();
+
+        DOM_LANG_ISO3 =
+                new Domain.Builder(DBKey.LANG_MAPPING.ISO3, SqLiteDataType.Text)
+                        .notNull()
+                        .build();
+
+        DOM_LANG_DISPLAY_NAME =
+                new Domain.Builder(DBKey.LANG_MAPPING.DISPLAY_NAME, SqLiteDataType.Text)
+                        .notNull()
                         .localized()
                         .build();
 
@@ -1464,6 +1492,16 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.TAGS.TAG, false, DOM_TAG);
         ALL_TABLES.put(TBL_TAG_MAPPINGS.getName(), TBL_TAG_MAPPINGS);
+
+        TBL_LANG_MAPPINGS
+                .addDomains(DOM_PK_ID,
+                            DOM_LANG_USER_ISO3,
+                            DOM_LANG_ISO3,
+                            DOM_LANG_DISPLAY_NAME)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex(DBKey.LANG_MAPPING.ISO3, false, DOM_LANG_ISO3)
+                .addIndex(DBKey.LANG_MAPPING.DISPLAY_NAME, false, DOM_LANG_DISPLAY_NAME);
+        ALL_TABLES.put(TBL_LANG_MAPPINGS.getName(), TBL_LANG_MAPPINGS);
 
         TBL_AUTHORS
                 .addDomains(DOM_PK_ID,

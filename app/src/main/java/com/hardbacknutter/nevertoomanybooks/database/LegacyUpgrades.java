@@ -707,6 +707,9 @@ public final class LegacyUpgrades {
               .remove("librarything.host.url")
 
               .apply();
+
+        // replaced by a database table in db36
+        context.deleteSharedPreferences("language2iso3");
     }
 
     static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,

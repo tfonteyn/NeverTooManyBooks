@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.util.logger.LoggerFactory;
 import com.hardbacknutter.util.logger.SystemOutLogger;
 
@@ -82,7 +81,6 @@ public class Base {
     @Mock
     protected Style style;
     protected Context context;
-    protected ServiceLocatorMock serviceLocatorMock;
 
     @Mock
     private CoverStorage coverStorage;
@@ -94,7 +92,7 @@ public class Base {
     private Locale jdkLocale;
 
     @NonNull
-    protected static File getTmpDir() {
+    static File getTmpDir() {
         //noinspection DataFlowIssue
         return new File(System.getProperty("java.io.tmpdir"));
     }
@@ -104,7 +102,7 @@ public class Base {
      *                JDK
      *                context.getResources().getConfiguration().getLocales()
      */
-    public void setLocale(@NonNull final Locale... locales) {
+    protected void setLocale(@NonNull final Locale... locales) {
         this.locales.clear();
         this.locales.addAll(Arrays.asList(locales));
         Locale.setDefault(this.locales.get(0));
@@ -135,9 +133,6 @@ public class Base {
         setupSearchEnginePreferences();
         when(context.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
                 .thenReturn(sharedPreferences);
-        final SharedPreferences languageMap = createLanguageMap();
-        when(context.getSharedPreferences(eq(Languages.LANGUAGE_MAP), anyInt()))
-                .thenReturn(languageMap);
 
         // String resource
         setupStringResources(resources);
@@ -166,46 +161,14 @@ public class Base {
         doAnswer(invocation -> invocation.getArgument(1))
                 .when(coverStorage).persist(any(InputStream.class), any(File.class));
 
-        serviceLocatorMock = new ServiceLocatorMock(context,
-                                                    localeList,
-                                                    stylesHelper,
-                                                    coverStorage);
+        final ServiceLocatorMock serviceLocatorMock =
+                new ServiceLocatorMock(context, localeList, stylesHelper, coverStorage);
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;
 
         LoggerFactory.setLogger(new SystemOutLogger());
         ServiceLocator.create(serviceLocatorMock);
         SearchEngineConfig.createRegistry(context, serviceLocatorMock.getLanguages());
-    }
-
-    private SharedPreferences createLanguageMap() {
-        /*
-         * SharedPreferences for the language map.
-         */
-        final SharedPreferences languageMap = SharedPreferencesMock.create();
-        languageMap.edit()
-                   .putString("english", "eng")
-                   .putString("engels", "eng")
-                   .putString("anglais", "eng")
-                   .putString("englisch", "eng")
-
-                   .putString("french", "fra")
-                   .putString("français", "fra")
-                   .putString("französisch", "fra")
-                   .putString("frans", "fra")
-
-                   .putString("german", "ger")
-                   .putString("allemand", "ger")
-                   .putString("deutsch", "ger")
-                   .putString("duits", "ger")
-
-                   .putString("dutch", "nld")
-                   .putString("néerlandais", "nld")
-                   .putString("niederländisch", "nld")
-                   .putString("nederlands", "nld")
-
-                   .apply();
-        return languageMap;
     }
 
     private void setupSearchEnginePreferences() {

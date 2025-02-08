@@ -25,7 +25,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,8 +39,11 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IsoLanguageDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Languages.
@@ -55,32 +58,27 @@ import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 @SuppressWarnings("WeakerAccess")
 public class Languages {
 
-    /**
-     * The SharedPreferences name where we'll maintain our language to ISO mappings.
-     * <br>
-     * Key: the {@link Locale#getDisplayLanguage()} in all lowercase
-     * (i.e. WITHOUT country/script)
-     * <br>
-     * Value: {@link #getIsoCode(Locale)}
-     */
-    @VisibleForTesting
-    public static final String LANGUAGE_MAP = "language2iso3";
+    private static final String TAG = "Languages";
     /** Prefix added to the iso code for the 'done' flag in the language cache. */
-    private static final String LANG_CREATED_PREFIX = "___";
+    private static final String PK_LANG_CREATED_PREFIX = "language.mapping.cached.";
 
     @NonNull
     private final Map<String, String> lang3ToLang2Map;
     @NonNull
     private final Supplier<AppLocale> appLocaleSupplier;
-
+    @NonNull
+    private final Supplier<IsoLanguageDao> isoLanguageDao;
 
     /**
      * Constructor.
      *
      * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
+     * @param isoLanguageDao    deferred supplier for the {@link IsoLanguageDao}.
      */
-    public Languages(@NonNull final Supplier<AppLocale> appLocaleSupplier) {
+    public Languages(@NonNull final Supplier<AppLocale> appLocaleSupplier,
+                     @NonNull final Supplier<IsoLanguageDao> isoLanguageDao) {
         this.appLocaleSupplier = appLocaleSupplier;
+        this.isoLanguageDao = isoLanguageDao;
 
         final String[] languages = Locale.getISOLanguages();
         lang3ToLang2Map = new HashMap<>(languages.length);
@@ -151,7 +149,7 @@ public class Languages {
         // create the mappings for the given locale if they don't exist yet
         createLanguageMappingCache(context, locale);
 
-        return getCacheFile(context).getString(source, source);
+        return isoLanguageDao.get().findByDisplayName(source);
     }
 
     /**
@@ -181,6 +179,7 @@ public class Languages {
      * <pre>
      * Rant:
      * Java 8 as bundled with Android Studio 3.5 on Windows:
+     * + OpenJDK Java 17 on Windows:
      * new Locale("fr") ==> valid French Locale
      * new Locale("fre") ==> valid French Locale
      * new Locale("fra") ==> INVALID French Locale
@@ -426,27 +425,26 @@ public class Languages {
      */
     private void createLanguageMappingCache(@NonNull final Context context,
                                             @NonNull final Locale locale) {
-        final SharedPreferences cacheFile = getCacheFile(context);
+        final SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(context);
 
         final String isoCode = getIsoCode(locale);
 
         // just return if already done for this Locale.
-        if (cacheFile.getBoolean(LANG_CREATED_PREFIX + isoCode, false)) {
+        if (preferences.getBoolean(PK_LANG_CREATED_PREFIX + isoCode, false)) {
             return;
         }
-        final SharedPreferences.Editor ed = cacheFile.edit();
-        // We get many duplicates
-        // iso | name              | display-name
-        // eng : English (Jamaica) : english
-        // eng : English (Niue)    : english
-        // ... the put overwrites existing entries,
-        // so the duplicates are weeded out automatically
-        for (final Locale loc : Locale.getAvailableLocales()) {
-            ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale), getIsoCode(loc));
+
+        try {
+            isoLanguageDao.get().add(locale);
+        } catch (@NonNull final DaoInsertException e) {
+            LoggerFactory.getLogger().e(TAG, e);
         }
-        // signal this Locale was done
-        ed.putBoolean(LANG_CREATED_PREFIX + isoCode, true);
-        ed.apply();
+
+        // remember this Locale was done
+        preferences.edit()
+                   .putBoolean(PK_LANG_CREATED_PREFIX + isoCode, true)
+                   .apply();
     }
 
     /**
@@ -471,18 +469,6 @@ public class Languages {
             isoCode = locale.getLanguage();
         }
         return isoCode;
-    }
-
-    /**
-     * Convenience method to get the language SharedPreferences file.
-     *
-     * @param context Current context
-     *
-     * @return the SharedPreferences representing the language mapper
-     */
-    @NonNull
-    private SharedPreferences getCacheFile(@NonNull final Context context) {
-        return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
     /**
