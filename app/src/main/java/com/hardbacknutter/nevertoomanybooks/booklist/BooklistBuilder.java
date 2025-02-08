@@ -378,16 +378,17 @@ class BooklistBuilder {
         // It is needed for reordering titles in BooklistGroup rows.
         addDomainExpression(DBExpr.LANGUAGE);
 
-        // Always get the Author ID (the need for the name will depend on the style).
+        // Always get the Author ID.
         // We need the Author id to show the "Search on" menu allowing
         // to search for "other books by the same author"
         // This DOES force a mandatory join with the authors even if
         // we're not grouping by them (or not displaying them on the book-level)
         // Note: we COULD do the same for series, but we don't:
-        // Joining with authors ok... all books have authors,
+        // Joining with authors sure... all books have authors,
         // but books with series... don't know how common, but a lot less.
-        // Hence: performance wins here over the ability to search for
-        // "other books in the same series"
+        // If a user in interested in searching for "other books in the same series"
+        // then surely they will either group by them, or display them
+        // at the book level
         addDomainExpression(DBExpr.AUTHOR_ID);
 
         // The domains for the book level, visibility and ordering according to style.
@@ -525,7 +526,8 @@ class BooklistBuilder {
         // All structures are in place now
         // Construct the INSERT INTO ... SELECT
         // to populate the list-table
-        final String sqlForInitialInsert = createSqlForInitialInsert(collationCaseSensitive);
+        final String sqlForInitialInsert = createSqlForInitialInsert(context,
+                                                                     collationCaseSensitive);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger()
@@ -594,7 +596,8 @@ class BooklistBuilder {
     }
 
     @NonNull
-    private String createSqlForInitialInsert(final boolean collationCaseSensitive) {
+    private String createSqlForInitialInsert(@NonNull final Context context,
+                                             final boolean collationCaseSensitive) {
         // List of column names for the INSERT INTO... clause
         final StringJoiner destColumns = new StringJoiner(",");
         // List of expressions for the SELECT... clause.
@@ -626,7 +629,7 @@ class BooklistBuilder {
         }
 
         return INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
-               + SELECT_ + sourceColumns + _FROM_ + buildFrom() + buildWhere()
+               + SELECT_ + sourceColumns + _FROM_ + buildFrom(context) + buildWhere()
                + _ORDER_BY_ + buildOrderBy(collationCaseSensitive);
     }
 
@@ -668,7 +671,7 @@ class BooklistBuilder {
      * @return FROM clause
      */
     @NonNull
-    private String buildFrom() {
+    private String buildFrom(@NonNull final Context context) {
         final StringBuilder sb = new StringBuilder();
 
         // If there is a bookshelf specified (either as group or as a filter),
@@ -682,7 +685,7 @@ class BooklistBuilder {
         }
 
         // We always want the primary author id in the cursor.
-        // We add that id in {@link BoBTask} see comments there
+        // We add that id in {@link #addBookLevelDomains} see comments there
         joinWithAuthors(sb);
 
         if (style.hasGroup(BooklistGroup.SERIES)
@@ -695,25 +698,23 @@ class BooklistBuilder {
             joinWithPublishers(sb);
         }
 
+        if (style.hasGroup(BooklistGroup.LANGUAGE)
+            || style.isShowField(FieldVisibility.Screen.List, DBKey.LANGUAGE)) {
+            joinWithLanguageMappings(context, sb);
+        }
+
         if (style.hasGroup(BooklistGroup.TAGS_GENRE)) {
-            // ONLY join if we are grouping by them.
-            // Do NOT join with
-            //    || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)
-            // as each book would be shown "#tags"-amount of times
-            // due to there not being a "primary tag" concept.
-            // This DOES mean that we cannot show tags on the book-level !
-            // ... a compromise which is fine
-            // TODO: tags on book-level: another argument for live-joins
-            //  between a reduced list-table column usage and the actual tables.
-            //  But that's another performance question to-be-measured/solved
-            //  for later...
+            // book-level not supported
+            // || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)
             joinWithTags(sb);
         }
 
         if (style.hasGroup(BooklistGroup.IDENTIFIER)) {
-            // same remarks as for tags above
+            // book-level not supported
+            // || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_IDENTIFIER)
             joinWithIdentifiers(sb);
         }
+
         // Add LEFT OUTER JOIN tables as needed
         leftOuterJoins.forEach(table -> sb.append(DBDefinitions.TBL_BOOKS.leftOuterJoin(table)));
 
@@ -786,6 +787,21 @@ class BooklistBuilder {
         }
         // Join with Publishers to make the names available
         sb.append(DBDefinitions.TBL_BOOK_PUBLISHER.leftOuterJoin(DBDefinitions.TBL_PUBLISHERS));
+    }
+
+    private void joinWithLanguageMappings(@NonNull final Context context,
+                                          @NonNull final StringBuilder sb) {
+        final String userIso3 = context.getResources().getConfiguration().getLocales().get(0)
+                                       .getISO3Language();
+
+        // This is using a non-enforced reference, build the JOIN manually
+        final String join = " LEFT OUTER JOIN " + DBDefinitions.TBL_LANG_MAPPINGS.ref()
+                            + " ON " + DBDefinitions.TBL_BOOKS.dot(DBKey.LANGUAGE)
+                            + '=' + DBDefinitions.TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3)
+                            + _AND_
+                            + DBDefinitions.TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3_USER)
+                            + "='" + userIso3 + '\'';
+        sb.append(join);
     }
 
     private void joinWithTags(@NonNull final StringBuilder sb) {

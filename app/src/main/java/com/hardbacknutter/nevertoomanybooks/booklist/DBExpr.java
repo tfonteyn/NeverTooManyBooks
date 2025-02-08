@@ -128,6 +128,8 @@ public final class DBExpr {
      * @param style to use; only used by some expressions
      *
      * @return list
+     *
+     * @throws IllegalArgumentException (debug) if we're missing a key
      */
     @NonNull
     public static List<DomainExpression> forBookLevelField(@NonNull final String dbKey,
@@ -205,13 +207,10 @@ public final class DBExpr {
                     return List.of(BOOKSHELVES_CSV);
                 }
                 case DBKey.FK_PUBLISHER: {
+                    // TODO: perhaps get a csv list of publisher names instead?
+                    //   return List.of(PUBLISHER_NAMES_CSV);
                     return List.of(
                             // primary publisher only
-                            // TODO: perhaps get a csv list of publisher names?
-                            //   new DomainExpression(
-                            //           DBDefinitions.DOM_PUBLISHER_NAMES_AS_CSV,
-                            //           DBDefinitions.EXP_PUBLISHER_NAME_CSV,
-                            //           Sort.Unsorted)
                             new DomainExpression(
                                     DBDefinitions.DOM_PUBLISHER_NAME,
                                     DBDefinitions.TBL_PUBLISHERS,
@@ -243,7 +242,11 @@ public final class DBExpr {
                     return List.of(ISBN);
                 }
                 case DBKey.LANGUAGE: {
-                    return List.of(LANGUAGE);
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_LANG_DISPLAY_NAME,
+                                    DBDefinitions.TBL_LANG_MAPPINGS,
+                                    sort));
                 }
                 case DBKey.LOANEE_NAME: {
                     return List.of(
