@@ -1455,7 +1455,7 @@ public class BooksOnBookshelfViewModel
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         bookshelfDao.refresh(context, bookshelf, locale);
 
-        boBTask.build(bookshelf, rebuildMode, searchCriteria, selectedBookId);
+        boBTask.start(bookshelf, rebuildMode, searchCriteria, selectedBookId);
     }
 
     boolean isBuilding() {

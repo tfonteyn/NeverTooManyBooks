@@ -339,12 +339,12 @@ public class BoBTask
      * @param desiredCentralBookId the book id we want the new list to display
      *                             more-or-less in the center of the screen
      */
-    public void build(@NonNull final Bookshelf bookshelf,
+    public void start(@NonNull final Bookshelf bookshelf,
                       @NonNull final RebuildBooklist mode,
                       @NonNull final SearchCriteria searchCriteria,
                       final long desiredCentralBookId) {
         this.bookshelf = bookshelf;
-        rebuildMode = mode;
+        this.rebuildMode = mode;
         this.searchCriteria = searchCriteria;
         this.desiredCentralBookId = desiredCentralBookId;
 
