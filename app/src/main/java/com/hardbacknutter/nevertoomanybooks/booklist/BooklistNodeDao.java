@@ -69,14 +69,15 @@ public class BooklistNodeDao {
     @NonNull
     private final SynchronizedDb db;
 
-    /** The current shelf. */
-    private final long bookshelfId;
-    /** The current style. */
-    @NonNull
-    private final Style style;
     /** The current list table. */
     @NonNull
     private final TableDefinition listTable;
+
+    /** The current shelf. */
+    private final long bookshelfId;
+    /** The current style. */
+    private final long styleId;
+    private final int groupCount;
 
     /**
      * Constructor.
@@ -94,7 +95,8 @@ public class BooklistNodeDao {
         this.db = db;
         this.listTable = listTable;
         bookshelfId = bookshelf.getId();
-        this.style = style;
+        styleId = style.getId();
+        groupCount = style.getGroupCount();
     }
 
     /**
@@ -166,6 +168,9 @@ public class BooklistNodeDao {
      * @param nodeLevel    the level
      * @param expand       state to set
      * @param visible      visibility to set
+     *
+     * @throws TransactionException     (debug)
+     * @throws IllegalArgumentException (debug)
      */
     private void updateAllNodesForLevel(@NonNull final CharSequence levelOperand,
                                         @IntRange(from = 1) final int nodeLevel,
@@ -184,8 +189,7 @@ public class BooklistNodeDao {
         // levelOperand is concatenated!!!
         final String sql =
                 Sql.UPDATE_ + listTable.getName()
-                + Sql._SET_ + DBKey.BL_NODE.EXPANDED + "=?," + DBKey.BL_NODE.VISIBLE
-                + "=?"
+                + Sql._SET_ + DBKey.BL_NODE.EXPANDED + "=?," + DBKey.BL_NODE.VISIBLE + "=?"
                 + Sql._WHERE_ + DBKey.BL_NODE.LEVEL + levelOperand + "?";
 
         final int rowsUpdated;
@@ -210,6 +214,8 @@ public class BooklistNodeDao {
      * We only store visible nodes and their expansion state.
      * <p>
      * <strong>Note:</strong> always use the current bookshelf/style
+     *
+     * @throws IllegalStateException (debug)
      */
     private void saveAllNodes() {
         Synchronizer.SyncLock txLock = null;
@@ -223,7 +229,7 @@ public class BooklistNodeDao {
             try (SynchronizedStatement stmt = db.compileStatement(
                     Sql.DELETE_ALL_FOR_CURRENT_SHELF)) {
                 stmt.bindLong(1, bookshelfId);
-                stmt.bindLong(2, style.getId());
+                stmt.bindLong(2, styleId);
                 rowsUpdated = stmt.executeUpdateDelete();
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
@@ -235,7 +241,7 @@ public class BooklistNodeDao {
             try (SynchronizedStatement stmt = db.compileStatement(
                     String.format(Sql.SAVE_ALL_NODES, listTable.getName()))) {
                 stmt.bindLong(1, bookshelfId);
-                stmt.bindLong(2, style.getId());
+                stmt.bindLong(2, styleId);
                 rowsUpdated = stmt.executeUpdateDelete();
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
@@ -274,13 +280,13 @@ public class BooklistNodeDao {
      * @param nodeLevel          the level of the node
      * @param expandNode         the state to set for this node
      * @param relativeChildLevel up to and including this (relative to nodeLevel!) child level.
+     *
+     * @throws IllegalArgumentException (debug)
      */
     void setNode(final long nodeRowId,
                  @IntRange(from = 1) final int nodeLevel,
                  final boolean expandNode,
                  @IntRange(from = 0) final int relativeChildLevel) {
-
-        final int groupCount = style.getGroupCount();
 
         if (relativeChildLevel > groupCount) {
             throw new IllegalArgumentException("groupCount=" + groupCount
@@ -330,6 +336,8 @@ public class BooklistNodeDao {
      *
      * @param rowId  the row/node to update
      * @param expand state to set
+     *
+     * @throws TransactionException (debug)
      */
     private void updateNode(final long rowId,
                             final boolean expand) {
@@ -363,6 +371,8 @@ public class BooklistNodeDao {
      * @param nodeLevel level to look for
      *
      * @return row id
+     *
+     * @throws TransactionException (debug)
      */
     private long findNextNode(final long rowId,
                               @IntRange(from = 1) final int nodeLevel) {
@@ -397,6 +407,8 @@ public class BooklistNodeDao {
      * @param endRowExcl         and this row
      * @param nodeLevel          the level which was clicked
      * @param relativeChildLevel up to and including this (relative to nodeLevel!) child level.
+     *
+     * @throws TransactionException (debug)
      */
     private void showAndExpandNodesBetween(final long startRowExcl,
                                            final long endRowExcl,
@@ -408,7 +420,7 @@ public class BooklistNodeDao {
             }
         }
 
-        final int level = Math.min(nodeLevel + relativeChildLevel, style.getGroupCount() + 1);
+        final int level = Math.min(nodeLevel + relativeChildLevel, groupCount + 1);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             LoggerFactory.getLogger().d(TAG, "showAndExpandNodesBetween",
@@ -458,6 +470,8 @@ public class BooklistNodeDao {
      *
      * @param startRowExcl between this row
      * @param endRowExcl   and this row
+     *
+     * @throws TransactionException (debug)
      */
     private void collapseAndHideNodesBetween(final long startRowExcl,
                                              final long endRowExcl) {
@@ -492,6 +506,8 @@ public class BooklistNodeDao {
      * @param startRowIncl between this row (inclusive)
      * @param endRowExcl   and this row (exclusive)
      * @param nodeLevel    from this level onwards
+     *
+     * @throws TransactionException (debug)
      */
     private void saveNodesBetween(final long startRowIncl,
                                   final long endRowExcl,
@@ -519,7 +535,7 @@ public class BooklistNodeDao {
         try (SynchronizedStatement stmt = db.compileStatement(
                 String.format(Sql.DELETE_NODES_BETWEEN, listTable.getName()))) {
             stmt.bindLong(1, bookshelfId);
-            stmt.bindLong(2, style.getId());
+            stmt.bindLong(2, styleId);
 
             stmt.bindLong(3, nodeLevel);
 
@@ -540,7 +556,7 @@ public class BooklistNodeDao {
         try (SynchronizedStatement stmt = db.compileStatement(
                 String.format(Sql.SAVE_NODES_BETWEEN, listTable.getName()))) {
             stmt.bindLong(1, bookshelfId);
-            stmt.bindLong(2, style.getId());
+            stmt.bindLong(2, styleId);
 
             stmt.bindLong(3, startRowIncl);
             stmt.bindLong(4, endRowExcl);
@@ -562,6 +578,8 @@ public class BooklistNodeDao {
      * set to "0/0". It will update ONLY rows from storage that have "-/1" and/or "1/-"
      * <p>
      * <strong>Transaction:</strong> required
+     *
+     * @throws TransactionException (debug)
      */
     void restoreSavedState() {
         if (BuildConfig.DEBUG /* always */) {
@@ -600,6 +618,8 @@ public class BooklistNodeDao {
 
     /**
      * {@link #restoreSavedState()} 1. Update visibility/expanded flag (single column at a time)
+     *
+     * @throws TransactionException (debug)
      */
     private void restoreSavedState(@NonNull final String sqlTemplate,
                                    @NonNull final String columnName) {
@@ -614,14 +634,14 @@ public class BooklistNodeDao {
         final int rowsUpdated;
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindLong(1, bookshelfId);
-            stmt.bindLong(2, style.getId());
+            stmt.bindLong(2, styleId);
             rowsUpdated = stmt.executeUpdateDelete();
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             LoggerFactory.getLogger().d(TAG, "restoreSavedState",
                                         "bookshelfId=" + bookshelfId,
-                                        "style.getId()=" + style.getId(),
+                                        "styleId=" + styleId,
                                         "columnName=" + columnName,
                                         "rowsUpdated=" + rowsUpdated,
                                         "sql=" + sql);
@@ -630,6 +650,8 @@ public class BooklistNodeDao {
 
     /**
      * {@link #restoreSavedState()} 2. Update branches which were not in the saved data.
+     *
+     * @throws TransactionException (debug)
      */
     private void adjustVisibility() {
         if (BuildConfig.DEBUG /* always */) {
@@ -644,7 +666,7 @@ public class BooklistNodeDao {
         // Find all branches (groups on level 2+) with visible nodes
         try (Cursor cursor = db.rawQuery(
                 String.format(Sql.ADJUST_VISIBILITY_1, listTable.getName()),
-                new String[]{String.valueOf(style.getGroupCount())})) {
+                new String[]{String.valueOf(groupCount)})) {
 
             while (cursor.moveToNext()) {
                 final String key = cursor.getString(0);

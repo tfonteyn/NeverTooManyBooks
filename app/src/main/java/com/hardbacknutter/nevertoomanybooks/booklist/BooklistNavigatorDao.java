@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
- * Provide a simple interface to move around from book to book in the {@link Booklist} table
+ * Provide a simple API to move around from book to book in the {@link Booklist} table
  * using the navigation peer-table.
  * Keeps track of current position and bookId.
  */
@@ -92,7 +92,7 @@ public final class BooklistNavigatorDao {
         // This method is only called once to get the initial row number
         try (SynchronizedStatement stmt = db.compileStatement(
                 SELECT_ + DBKey.PK_ID + _FROM_ + listTableName
-                + _WHERE_ + BooklistBuilder.FK_BL_ROW_ID + "=?")) {
+                + _WHERE_ + BooklistBuilder.FK_ROW_ID + "=?")) {
             stmt.bindLong(1, listTableRowId);
             return (int) stmt.simpleQueryForLongOrZero();
         }

@@ -438,7 +438,7 @@ public class Booklist
      *
      * @param node we want to become visible
      *
-     * @see BooklistBuilder.TableBuilder#createTriggers(SynchronizedDb)
+     * @see BooklistBuilder#createTriggers(SynchronizedDb)
      */
     @SuppressWarnings("JavadocReference")
     private void ensureNodeIsVisible(@NonNull final BooklistNode node) {
@@ -632,7 +632,7 @@ public class Booklist
      *
      * @return list of book ID's
      *
-     * @see BooklistBuilder.TableBuilder#createTriggers(SynchronizedDb)
+     * @see BooklistBuilder#createTriggers(SynchronizedDb)
      */
     @SuppressWarnings("JavadocReference")
     @NonNull

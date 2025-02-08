@@ -59,7 +59,7 @@ public class BoBTaskTest
 
         final long expressionCount = keys
                 .stream()
-                .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted, s1))
+                .map(key -> DBExpr.forBookLevelField(key, Sort.Unsorted, s1))
                 .filter(list -> !list.isEmpty())
                 .count();
 
@@ -81,7 +81,7 @@ public class BoBTaskTest
 
         final long expressionCount = keys
                 .stream()
-                .map(key -> BoBTask.createDomainExpressions(key, Sort.Unsorted, s1))
+                .map(key -> DBExpr.forBookLevelField(key, Sort.Unsorted, s1))
                 .filter(list -> !list.isEmpty())
                 .count();
 
