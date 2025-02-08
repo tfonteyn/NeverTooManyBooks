@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@ class ISODateParserTest {
 
     private static final Locale LOCALE = Locale.US;
 
-    /** "yyyy" */
+    /** "yyyy" and "-yyyy" */
     @Test
     void isoYear() {
         final DateParser parser = new ISODateParser(LOCALE);
@@ -40,9 +40,12 @@ class ISODateParserTest {
         assertEquals(Optional.of(LocalDateTime.of(1987, 1, 1,
                                                   0, 0, 0)),
                      parser.parse("1987"));
+        assertEquals(Optional.of(LocalDateTime.of(-1987, 1, 1,
+                                                  0, 0, 0)),
+                     parser.parse("-1987"));
     }
 
-    /** "yyyy-MM" */
+    /** "yyyy-MM" and "-yyyy-MM" */
     @Test
     void isoYearMonth() {
         final DateParser parser = new ISODateParser(LOCALE);
@@ -50,13 +53,19 @@ class ISODateParserTest {
         assertEquals(Optional.of(LocalDateTime.of(1987, 6, 1,
                                                   0, 0, 0)),
                      parser.parse("1987-06"));
+        assertEquals(Optional.of(LocalDateTime.of(-1987, 6, 1,
+                                                  0, 0, 0)),
+                     parser.parse("-1987-06"));
 
         assertEquals(Optional.of(LocalDateTime.of(1987, 11, 1,
                                                   0, 0, 0)),
                      parser.parse("1987-11"));
+        assertEquals(Optional.of(LocalDateTime.of(-1987, 11, 1,
+                                                  0, 0, 0)),
+                     parser.parse("-1987-11"));
     }
 
-    /** "yyyy-MM-dd" */
+    /** "yyyy-MM-dd" and "-yyyy-MM-dd" */
     @Test
     void isoYearMonthDay() {
         final DateParser parser = new ISODateParser(LOCALE);
@@ -64,10 +73,16 @@ class ISODateParserTest {
         assertEquals(Optional.of(LocalDateTime.of(1987, 6, 10,
                                                   0, 0, 0)),
                      parser.parse("1987-06-10"));
+        assertEquals(Optional.of(LocalDateTime.of(-1987, 6, 10,
+                                                  0, 0, 0)),
+                     parser.parse("-1987-06-10"));
 
         assertEquals(Optional.of(LocalDateTime.of(1987, 11, 10,
                                                   0, 0, 0)),
                      parser.parse("1987-11-10"));
+        assertEquals(Optional.of(LocalDateTime.of(-1987, 11, 10,
+                                                  0, 0, 0)),
+                     parser.parse("-1987-11-10"));
     }
 
     /**
@@ -81,22 +96,41 @@ class ISODateParserTest {
         assertEquals(Optional.of(LocalDateTime.of(2020, 9, 1,
                                                   14, 20, 21, 542_000_000)),
                      parser.parse("2020-09-01 14:20:21.542000+00:00"));
+        assertEquals(Optional.of(LocalDateTime.of(-2020, 9, 1,
+                                                  14, 20, 21, 542_000_000)),
+                     parser.parse("-2020-09-01 14:20:21.542000+00:00"));
 
         assertEquals(Optional.of(LocalDateTime.of(1987, 6, 25, 11, 57, 41)),
                      parser.parse("1987-06-25 11:57:41"));
+        assertEquals(Optional.of(LocalDateTime.of(-1987, 6, 25, 11, 57, 41)),
+                     parser.parse("-1987-06-25 11:57:41"));
 
         assertEquals(Optional.of(LocalDateTime.of(1987, 6, 25, 11, 57)),
                      parser.parse("1987-06-25 11:57"));
+        assertEquals(Optional.of(LocalDateTime.of(-1987, 6, 25, 11, 57)),
+                     parser.parse("-1987-06-25 11:57"));
 
         assertEquals(Optional.of(LocalDateTime.of(1987, 11, 25, 11, 57, 41)),
                      parser.parse("1987-11-25 11:57:41"));
+        assertEquals(Optional.of(LocalDateTime.of(-1987, 11, 25, 11, 57, 41)),
+                     parser.parse("-1987-11-25 11:57:41"));
 
         assertEquals(Optional.of(LocalDateTime.of(1987, 11, 25, 11, 57)),
                      parser.parse("1987-11-25 11:57"));
+        assertEquals(Optional.of(LocalDateTime.of(-1987, 11, 25, 11, 57)),
+                     parser.parse("-1987-11-25 11:57"));
 
+        // invalid dd-mm
         assertTrue(parser.parse("1987-25-11 11:57:41").isEmpty());
+        assertTrue(parser.parse("-1987-25-11 11:57:41").isEmpty());
+
+        // invalid missing leading 0
         assertTrue(parser.parse("1987-11-11 4:57:41").isEmpty());
+        assertTrue(parser.parse("-1987-11-11 4:57:41").isEmpty());
+
+        // invalid day value
         assertTrue(parser.parse("1987-11-32 04:57:41").isEmpty());
+        assertTrue(parser.parse("-1987-11-32 04:57:41").isEmpty());
     }
 
     /** JDK 'T' variations */
@@ -107,14 +141,22 @@ class ISODateParserTest {
         assertEquals(Optional.of(LocalDateTime.of(2020, 8, 12,
                                                   14, 29, 9, 414_000_000)),
                      parser.parse("2020-08-12T14:29:09.414"));
+        assertEquals(Optional.of(LocalDateTime.of(-2020, 8, 12,
+                                                  14, 29, 9, 414_000_000)),
+                     parser.parse("-2020-08-12T14:29:09.414"));
 
         assertEquals(Optional.of(LocalDateTime.of(2020, 8, 12,
                                                   14, 29, 9)),
                      parser.parse("2020-08-12T14:29:09"));
+        assertEquals(Optional.of(LocalDateTime.of(-2020, 8, 12,
+                                                  14, 29, 9)),
+                     parser.parse("-2020-08-12T14:29:09"));
 
         assertEquals(Optional.of(LocalDateTime.of(2020, 8, 12,
                                                   14, 29)),
                      parser.parse("2020-08-12T14:29"));
-
+        assertEquals(Optional.of(LocalDateTime.of(-2020, 8, 12,
+                                                  14, 29)),
+                     parser.parse("-2020-08-12T14:29"));
     }
 }

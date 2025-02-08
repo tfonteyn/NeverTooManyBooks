@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,25 +76,46 @@ public class ISODateParser
 
         final int len = dateStr.length();
         // invalid lengths
-        if (len < 4 || len == 5 || len == 6 || len == 8 || len == 9) {
+        if (len < 4 || len == 6 || len == 9) {
             return Optional.empty();
         }
 
         // Check the partial patterns first.
         try {
             switch (len) {
-                case 4:
+                case 4: {
                     // yyyy
                     return Optional.of(Year.parse(dateStr).atDay(1).atStartOfDay());
-
-                case 7:
+                }
+                case 5: {
+                    // -yyyy
+                    if (dateStr.charAt(0) != '-') {
+                        return Optional.empty();
+                    }
+                    return Optional.of(Year.parse(dateStr).atDay(1).atStartOfDay());
+                }
+                case 7: {
                     // yyyy-MM
                     return Optional.of(YearMonth.parse(dateStr).atDay(1).atStartOfDay());
-
-                case 10:
+                }
+                case 8: {
+                    // -yyyy-MM
+                    if (dateStr.charAt(0) != '-') {
+                        return Optional.empty();
+                    }
+                    return Optional.of(YearMonth.parse(dateStr).atDay(1).atStartOfDay());
+                }
+                case 10: {
                     // yyyy-MM-dd
                     return Optional.of(LocalDate.parse(dateStr).atStartOfDay());
-
+                }
+                case 11: {
+                    // -yyyy-MM-dd
+                    if (dateStr.charAt(0) != '-') {
+                        return Optional.empty();
+                    }
+                    return Optional.of(LocalDate.parse(dateStr).atStartOfDay());
+                }
                 default:
                     break;
             }
