@@ -207,7 +207,7 @@ public class PartialDate
      */
     @NonNull
     public String getIsoString() {
-        return getDelimString("-");
+        return getIsoStringWithDelim("-");
     }
 
     /**
@@ -221,7 +221,7 @@ public class PartialDate
      */
     @SuppressLint("DefaultLocale")
     @NonNull
-    public String getDelimString(@NonNull final String delimiter) {
+    public String getIsoStringWithDelim(@NonNull final String delimiter) {
         final StringJoiner sj = new StringJoiner(delimiter);
         if (yearSet) {
             sj.add(formatYear(localDate.getYear()));
@@ -237,6 +237,11 @@ public class PartialDate
 
     /**
      * Pretty format the date.
+     * <ul>
+     *     <li>Full date as per OS/User settings</li>
+     *     <li>MMM yyyy / MMM -yyyy</li>
+     *     <li>yyyy / -yyyy</li>
+     * </ul>
      *
      * @param locale   to use
      * @param defValue default string to return if the date is not-set.
@@ -272,6 +277,24 @@ public class PartialDate
     public Optional<Integer> getYear() {
         if (yearSet) {
             return Optional.of(localDate.getYear());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @NonNull
+    public Optional<Integer> getMonth() {
+        if (monthSet) {
+            return Optional.of(localDate.getMonthValue());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @NonNull
+    public Optional<Integer> getDay() {
+        if (daySet) {
+            return Optional.of(localDate.getDayOfMonth());
         } else {
             return Optional.empty();
         }
