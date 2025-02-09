@@ -66,6 +66,31 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_GROUP;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_LANG_MAPPINGS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
+
 /**
  * Build and populate temporary tables with details of "flattened" books.
  * The generated list is used to display books in a list control and perform operation like
@@ -108,9 +133,9 @@ class BooklistBuilder {
     private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
 
     private static final String LOAN_FILTER =
-            "EXISTS(SELECT NULL FROM " + DBDefinitions.TBL_BOOK_LOANEE.ref()
-            + _WHERE_ + DBDefinitions.TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + "='%1$s'"
-            + _AND_ + DBDefinitions.TBL_BOOK_LOANEE.fkMatch(DBDefinitions.TBL_BOOKS) + ')';
+            "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
+            + _WHERE_ + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + "='%1$s'"
+            + _AND_ + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')';
 
     /**
      * Foreign key between the {@link Booklist} list table
@@ -217,13 +242,12 @@ class BooklistBuilder {
          * Other domains will be added as needed.
          */
         listTable = new TableDefinition("tmp_book_list_" + instanceId, "bl")
-                .addDomains(DBDefinitions.DOM_PK_ID)
-                .setPrimaryKey(DBDefinitions.DOM_PK_ID);
+                .addDomains(DOM_PK_ID)
+                .setPrimaryKey(DOM_PK_ID);
 
         navTable = new TableDefinition("tmp_book_nav_" + instanceId, "nav")
-                .addDomains(DBDefinitions.DOM_PK_ID, DBDefinitions.DOM_FK_BOOK,
-                            DOM_FK_BL_ROW_ID)
-                .setPrimaryKey(DBDefinitions.DOM_PK_ID);
+                .addDomains(DOM_PK_ID, DOM_FK_BOOK, DOM_FK_BL_ROW_ID)
+                .setPrimaryKey(DOM_PK_ID);
 
         // Allow debug mode to use a standard table so we can export and inspect the content.
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLE) {
@@ -340,26 +364,24 @@ class BooklistBuilder {
     private void setupNodeDomains() {
         // {@link BooklistGroup#GroupKey}.
         // The actual value is set on a by-group/book basis.
-        listTable.addDomains(DBDefinitions.DOM_BL_NODE_KEY)
-                 .addIndex(DBKey.BL_NODE.KEY, false, DBDefinitions.DOM_BL_NODE_KEY);
+        listTable.addDomains(DOM_BL_NODE_KEY)
+                 .addIndex(DBKey.BL_NODE.KEY, false, DOM_BL_NODE_KEY);
 
         // flags used by {@link BooklistNodeDao}.
-        listTable.addDomains(DBDefinitions.DOM_BL_NODE_EXPANDED)
-                 .addIndex(DBKey.BL_NODE.EXPANDED, false,
-                           DBDefinitions.DOM_BL_NODE_EXPANDED)
-                 .addDomains(DBDefinitions.DOM_BL_NODE_VISIBLE)
-                 .addIndex(DBKey.BL_NODE.VISIBLE, false,
-                           DBDefinitions.DOM_BL_NODE_VISIBLE);
+        listTable.addDomains(DOM_BL_NODE_EXPANDED)
+                 .addIndex(DBKey.BL_NODE.EXPANDED, false, DOM_BL_NODE_EXPANDED)
+                 .addDomains(DOM_BL_NODE_VISIBLE)
+                 .addIndex(DBKey.BL_NODE.VISIBLE, false, DOM_BL_NODE_VISIBLE);
 
         // Always SORT by level first; for a book this is always 1 below the #groups obviously
-        addDomainExpression(new DomainExpression(DBDefinitions.DOM_BL_NODE_LEVEL,
+        addDomainExpression(new DomainExpression(DOM_BL_NODE_LEVEL,
                                                  String.valueOf(style.getGroupCount() + 1),
                                                  Sort.Asc));
 
         // The BooklistGroup for a book is always {@link BooklistGroup#BOOK} (duh)
         // The group levels will have {@code null} in this column.
         addDomainExpression(DBExpr.BOOK_NODE_GROUP);
-        listTable.addIndex(DBKey.BL_NODE.GROUP, false, DBDefinitions.DOM_BL_NODE_GROUP);
+        listTable.addIndex(DBKey.BL_NODE.GROUP, false, DOM_BL_NODE_GROUP);
     }
 
     /** build. */
@@ -404,7 +426,7 @@ class BooklistBuilder {
         // If we're showing {@link DBKey#LOANEE_NAME} on the book level, we require
         // a {@code LEFT JOIN} {@link DBDefinitions#TBL_BOOK_LOANEE}.
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
-            leftOuterJoins.add(DBDefinitions.TBL_BOOK_LOANEE);
+            leftOuterJoins.add(TBL_BOOK_LOANEE);
         }
     }
 
@@ -432,11 +454,11 @@ class BooklistBuilder {
             final String loanee = searchCriteria.getLoanee();
             if (loanee != null && !loanee.isBlank()) {
                 filters.add(() -> String.format(LOAN_FILTER, SqlEncode.singleQuotes(loanee)));
-                leftOuterJoins.add(DBDefinitions.TBL_BOOK_LOANEE);
+                leftOuterJoins.add(TBL_BOOK_LOANEE);
             }
         } else {
             // Add a where clause for: "AND books._id IN (list)".
-            filters.add(new NumberListFilter<>(DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_PK_ID,
+            filters.add(new NumberListFilter<>(TBL_BOOKS, DOM_PK_ID,
                                                searchCriteria.getBookIdList()));
         }
     }
@@ -468,8 +490,7 @@ class BooklistBuilder {
 
                 } else {
                     // Filter on the current one only
-                    this.filters.add(new NumberListFilter<>(DBDefinitions.TBL_BOOKSHELF,
-                                                            DBDefinitions.DOM_PK_ID,
+                    this.filters.add(new NumberListFilter<>(TBL_BOOKSHELF, DOM_PK_ID,
                                                             bookshelf.getId()));
                 }
             }
@@ -478,7 +499,7 @@ class BooklistBuilder {
         bookshelfFilters.stream()
                         .filter(pFilter -> DBKey.LOANEE_NAME.equals(pFilter.getDBKey()))
                         .findAny()
-                        .ifPresent(pFilter -> leftOuterJoins.add(DBDefinitions.TBL_BOOK_LOANEE));
+                        .ifPresent(pFilter -> leftOuterJoins.add(TBL_BOOK_LOANEE));
 
         // ... and add them
         this.filters.addAll(bookshelfFilters);
@@ -511,7 +532,7 @@ class BooklistBuilder {
         addBookLevelDomains();
 
         if (CalibreHandler.isSyncEnabled(context)) {
-            leftOuterJoins.add(DBDefinitions.TBL_CALIBRE_BOOKS);
+            leftOuterJoins.add(TBL_CALIBRE_BOOKS);
             DBExpr.CALIBRE.forEach(this::addDomainExpression);
         }
 
@@ -611,21 +632,21 @@ class BooklistBuilder {
         });
 
         // Add the node key column
-        destColumns.add(DBDefinitions.DOM_BL_NODE_KEY.getName());
-        sourceColumns.add(buildNodeKey() + _AS_ + DBDefinitions.DOM_BL_NODE_KEY.getName());
+        destColumns.add(DOM_BL_NODE_KEY.getName());
+        sourceColumns.add(buildNodeKey() + _AS_ + DOM_BL_NODE_KEY.getName());
 
         // Add the node state columns
-        destColumns.add(DBDefinitions.DOM_BL_NODE_EXPANDED.getName());
-        destColumns.add(DBDefinitions.DOM_BL_NODE_VISIBLE.getName());
+        destColumns.add(DOM_BL_NODE_EXPANDED.getName());
+        destColumns.add(DOM_BL_NODE_VISIBLE.getName());
         if (rebuildMode == RebuildBooklist.Expanded) {
             // Expanded nodes must explicitly be set to 1/1
-            sourceColumns.add("1" + _AS_ + DBDefinitions.DOM_BL_NODE_EXPANDED.getName())
-                         .add("1" + _AS_ + DBDefinitions.DOM_BL_NODE_VISIBLE.getName());
+            sourceColumns.add("1" + _AS_ + DOM_BL_NODE_EXPANDED.getName())
+                         .add("1" + _AS_ + DOM_BL_NODE_VISIBLE.getName());
 
         } else {
             // All others must be set to 0/0. The actual state will be set afterwards.
-            sourceColumns.add("0" + _AS_ + DBDefinitions.DOM_BL_NODE_EXPANDED.getName())
-                         .add("0" + _AS_ + DBDefinitions.DOM_BL_NODE_VISIBLE.getName());
+            sourceColumns.add("0" + _AS_ + DOM_BL_NODE_EXPANDED.getName())
+                         .add("0" + _AS_ + DOM_BL_NODE_VISIBLE.getName());
         }
 
         return INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
@@ -677,11 +698,10 @@ class BooklistBuilder {
         // If there is a bookshelf specified (either as group or as a filter),
         // we start the join there.
         if (style.hasGroup(BooklistGroup.BOOKSHELF) || filteredOnBookshelf) {
-            sb.append(DBDefinitions.TBL_BOOKSHELF.startJoin(DBDefinitions.TBL_BOOK_BOOKSHELF,
-                                                            DBDefinitions.TBL_BOOKS));
+            sb.append(TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF, TBL_BOOKS));
         } else {
             // Otherwise, we start with the BOOKS table.
-            sb.append(DBDefinitions.TBL_BOOKS.ref());
+            sb.append(TBL_BOOKS.ref());
         }
 
         // We always want the primary author id in the cursor.
@@ -716,14 +736,14 @@ class BooklistBuilder {
         }
 
         // Add LEFT OUTER JOIN tables as needed
-        leftOuterJoins.forEach(table -> sb.append(DBDefinitions.TBL_BOOKS.leftOuterJoin(table)));
+        leftOuterJoins.forEach(table -> sb.append(TBL_BOOKS.leftOuterJoin(table)));
 
         return sb.toString();
     }
 
     private void joinWithAuthors(@NonNull final StringBuilder sb) {
         // Join with the link table between Book and Author.
-        sb.append(DBDefinitions.TBL_BOOKS.join(DBDefinitions.TBL_BOOK_AUTHOR));
+        sb.append(TBL_BOOKS.join(TBL_BOOK_AUTHOR));
         // If the user wants the book to show ONLY under its primary Author...
         if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Author.getGroupId())) {
             // then extend the join filtering on the primary Author
@@ -733,8 +753,7 @@ class BooklistBuilder {
             final int primaryAuthorType = style.getPrimaryAuthorType();
             if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                 // The user has no specific type set, so just grab the first one (i.e. pos==1)
-                sb.append(DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION))
-                  .append("=1");
+                sb.append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1");
             } else {
                 // grab the desired type, or if no such type, grab the first one anyway
                 //   (
@@ -744,49 +763,48 @@ class BooklistBuilder {
                 //   )
                 sb.append("(((")
                   // the type is an exact match
-                  .append(DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_TYPE))
+                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_TYPE))
                   .append(" & ").append(primaryAuthorType).append(")<>0)")
                   .append(" OR (((")
                   // grab the first one
-                  .append(DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_TYPE))
+                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_TYPE))
                   .append(" &~ ").append(primaryAuthorType).append(")=0)")
                   .append(_AND_)
-                  .append(DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION))
-                  .append("=1))");
+                  .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1))");
             }
         }
         // Join with Authors to make the names available
-        sb.append(DBDefinitions.TBL_BOOK_AUTHOR.join(DBDefinitions.TBL_AUTHORS));
+        sb.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
         // and potential 'real' names if this one is a pseudonym
-        sb.append(DBDefinitions.TBL_AUTHORS.leftOuterJoin(DBDefinitions.TBL_PSEUDONYM_AUTHOR));
+        sb.append(TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR));
     }
 
     private void joinWithSeries(@NonNull final StringBuilder sb) {
         // Join with the link table between Book and Series.
-        sb.append(DBDefinitions.TBL_BOOKS.leftOuterJoin(DBDefinitions.TBL_BOOK_SERIES));
+        sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
         // Extend the join filtering on the primary Series unless
         // the user wants the book to show under all its Series
         if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Series.getGroupId())) {
             sb.append(_AND_)
-              .append(DBDefinitions.TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_POSITION))
+              .append(TBL_BOOK_SERIES.dot(DBKey.SERIES.BOOK_SERIES_POSITION))
               .append("=1");
         }
         // Join with Series to make the titles available
-        sb.append(DBDefinitions.TBL_BOOK_SERIES.leftOuterJoin(DBDefinitions.TBL_SERIES));
+        sb.append(TBL_BOOK_SERIES.leftOuterJoin(TBL_SERIES));
     }
 
     private void joinWithPublishers(@NonNull final StringBuilder sb) {
         // Join with the link table between Book and Publishers.
-        sb.append(DBDefinitions.TBL_BOOKS.leftOuterJoin(DBDefinitions.TBL_BOOK_PUBLISHER));
+        sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
         // Extend the join filtering on the primary Publisher unless
         // the user wants the book to show under all its Publishers
         if (!style.isShowBooksUnderEachGroup(Style.UnderEach.Publisher.getGroupId())) {
             sb.append(_AND_)
-              .append(DBDefinitions.TBL_BOOK_PUBLISHER.dot(DBKey.PUBLISHER.BOOK_PUBLISHER_POSITION))
+              .append(TBL_BOOK_PUBLISHER.dot(DBKey.PUBLISHER.BOOK_PUBLISHER_POSITION))
               .append("=1");
         }
         // Join with Publishers to make the names available
-        sb.append(DBDefinitions.TBL_BOOK_PUBLISHER.leftOuterJoin(DBDefinitions.TBL_PUBLISHERS));
+        sb.append(TBL_BOOK_PUBLISHER.leftOuterJoin(TBL_PUBLISHERS));
     }
 
     private void joinWithLanguageMappings(@NonNull final Context context,
@@ -795,33 +813,34 @@ class BooklistBuilder {
                                        .getISO3Language();
 
         // This is using a non-enforced reference, build the JOIN manually
-        final String join = " LEFT OUTER JOIN " + DBDefinitions.TBL_LANG_MAPPINGS.ref()
-                            + " ON " + DBDefinitions.TBL_BOOKS.dot(DBKey.LANGUAGE)
-                            + '=' + DBDefinitions.TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3)
-                            + _AND_
-                            + DBDefinitions.TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3_USER)
-                            + "='" + userIso3 + '\'';
+        final String join =
+                " LEFT OUTER JOIN " + TBL_LANG_MAPPINGS.ref()
+                + " ON " + TBL_BOOKS.dot(DBKey.LANGUAGE)
+                + '=' + TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3)
+                + _AND_
+                + TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3_USER)
+                + "='" + userIso3 + '\'';
         sb.append(join);
     }
 
     private void joinWithTags(@NonNull final StringBuilder sb) {
         // Join with the link table between Book and Tags.
-        sb.append(DBDefinitions.TBL_BOOKS.leftOuterJoin(DBDefinitions.TBL_BOOK_TAG));
+        sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_TAG));
         // Note we're ALWAYS showing books under all it's tags because:
         // 1) that's IMHO always desired
         // 2) there is no 'primary tag' concept
         // Join with Tags to make the names available
-        sb.append(DBDefinitions.TBL_BOOK_TAG.leftOuterJoin(DBDefinitions.TBL_TAGS));
+        sb.append(TBL_BOOK_TAG.leftOuterJoin(TBL_TAGS));
     }
 
     private void joinWithIdentifiers(@NonNull final StringBuilder sb) {
         // Join with the link table between Book and Identifiers.
-        sb.append(DBDefinitions.TBL_BOOKS.leftOuterJoin(DBDefinitions.TBL_BOOK_IDENTIFIER));
+        sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_IDENTIFIER));
         // Note we're ALWAYS showing books under all it's identifier because:
         // 1) that's IMHO always desired
         // 2) there is no 'primary identifier' concept
         // Join with Identifiers to make the names available
-        sb.append(DBDefinitions.TBL_BOOK_IDENTIFIER.leftOuterJoin(DBDefinitions.TBL_IDENTIFIERS));
+        sb.append(TBL_BOOK_IDENTIFIER.leftOuterJoin(TBL_IDENTIFIERS));
     }
 
     /**
