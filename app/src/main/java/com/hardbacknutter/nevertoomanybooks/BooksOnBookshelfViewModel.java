@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -1484,19 +1483,6 @@ public class BooksOnBookshelfViewModel
 
         // preserve the new state by default
         rebuildMode = RebuildBooklist.FromSaved;
-    }
-
-    void recoverAfterFailedBuild(@NonNull final Context context) {
-        // Something is REALLY BAD
-        // This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
-        // with the Styles. i.e. the style used to build is very likely corrupt.
-        // Another reason can be during development when the database structure
-        // was changed...
-        final Style style = getStyle();
-        // so we reset the style to recover.. and restarting the app will work.
-        onStyleChanged(context, BuiltinStyle.HARD_DEFAULT_UUID);
-        // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
-        throw new IllegalStateException("Style=" + style);
     }
 
     @NonNull

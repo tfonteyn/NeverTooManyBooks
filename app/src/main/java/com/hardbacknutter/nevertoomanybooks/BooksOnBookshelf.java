@@ -91,6 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.PositioningHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -513,20 +514,24 @@ public class BooksOnBookshelf
             vb.progressCircle.hide();
             message.process(ignored -> {
                 if (vm.isListLoaded()) {
+                    // we can auto-recover.
                     displayList(null);
                 } else {
-                    vm.recoverAfterFailedBuild(this);
+                    // report in more detail
+                    recoverAfterFailedBuild(null);
                 }
             });
         });
         vm.onFailure().observe(this, message -> {
             vb.progressCircle.hide();
             message.process(e -> {
-                LoggerFactory.getLogger().e(TAG, e);
                 if (vm.isListLoaded()) {
+                    // we can auto-recover, log it and redisplay
+                    LoggerFactory.getLogger().e(TAG, e);
                     displayList(null);
                 } else {
-                    vm.recoverAfterFailedBuild(this);
+                    // report in more detail
+                    recoverAfterFailedBuild(e);
                 }
             });
         });
@@ -558,6 +563,33 @@ public class BooksOnBookshelf
                         buildBookList();
                     }
                 }));
+    }
+
+    /**
+     * Something is REALLY BAD.
+     * This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
+     * with the Styles. i.e. the style used to build is very likely corrupt.
+     * Another reason can be during development when the database structure
+     * was changed...
+     * We have seen this ONCE with a real user on 2025-02-09.
+     *
+     * @param e exception
+     */
+    private void recoverAfterFailedBuild(@Nullable final Throwable e) {
+        final Throwable report =
+                e != null ? e : new IllegalStateException("recoverAfterFailedBuild");
+
+        // dump the Style as in development this is almost certainly the cause
+        LoggerFactory.getLogger().e(TAG, report, "Style=" + vm.getStyle());
+        // and reset the style to hopefully recover.. restarting the app should work now.
+        vm.onStyleChanged(this, BuiltinStyle.HARD_DEFAULT_UUID);
+
+        // URGENT: CatastropheDialog needs more work
+        //        CatastropheDialog.show(this, report,
+        //                               null,
+        //                               null);
+        // Leave it to ACRA for now
+        throw new RuntimeException(report);
     }
 
     /**
