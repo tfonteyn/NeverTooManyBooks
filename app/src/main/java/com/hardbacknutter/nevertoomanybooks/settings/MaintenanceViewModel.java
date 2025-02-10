@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 @SuppressWarnings("WeakerAccess")
 public class MaintenanceViewModel
@@ -76,14 +77,12 @@ public class MaintenanceViewModel
     private Collection<Integer> bugReportOptions = BUG_REPORT_OPTIONS_DEFAULT;
 
     private int debugClicks;
-
-    @Nullable
-    private Boolean catastrophe;
+    @NonNull
+    private Catastrophe catastrophe = Catastrophe.None;
 
     void init(@Nullable final Bundle args) {
-
         // If we're not (yet) in catastrophe mode, but we have been asked to do so...
-        if (catastrophe == null
+        if (catastrophe == Catastrophe.None
             && args != null && args.containsKey(BKEY_CREATE_REPORT)) {
             // prep the requested options
             final Collection<Integer> options = args.getIntegerArrayList(
@@ -97,11 +96,11 @@ public class MaintenanceViewModel
                 bugReportOptions = MaintenanceViewModel.BUG_REPORT_OPTIONS_ALL;
             }
             // and enter catastrophe mode
-            catastrophe = true;
+            setCatastrophe(Catastrophe.Entered);
         }
 
         // If we're currently in catastrophe mode
-        if (catastrophe != null && catastrophe) {
+        if (catastrophe != Catastrophe.None) {
             // Prevent the user removing any files we might need.
             // We cannot prevent the user doing this when they get in this fragment a second
             // time, but heck...
@@ -114,18 +113,20 @@ public class MaintenanceViewModel
         return allowPurgeFiles;
     }
 
-    public boolean isCatastrophe() {
-        if (catastrophe == null) {
-            return false;
+    @NonNull
+    Catastrophe isCatastrophe() {
+        return catastrophe;
+    }
+
+    void setCatastrophe(@NonNull final Catastrophe catastrophe) {
+        this.catastrophe = catastrophe;
+        if (catastrophe.isOver()) {
+            LoggerFactory.getLogger().w(TAG, "Catastrophe was: " + catastrophe);
         }
-        // return true, but switch to false for subsequent calls
-        final boolean tmp = catastrophe;
-        catastrophe = false;
-        return tmp;
     }
 
     @NonNull
-    public Collection<Integer> getBugReportOptions() {
+    Collection<Integer> getBugReportOptions() {
         return bugReportOptions;
     }
 
@@ -166,5 +167,22 @@ public class MaintenanceViewModel
             builder.addPreferences();
         }
         builder.sendToFile(uri);
+    }
+
+    enum Catastrophe {
+        /** Initial/None. */
+        None,
+        /** We read the arguments and there is a catastrophe to report. */
+        Entered,
+        /** We're telling the user. */
+        Dialog,
+        /** The user has created a bugreport. */
+        Finished,
+        /** The user cancelled the bugreport. */
+        Ignored;
+
+        boolean isOver() {
+            return this == Finished || this == Ignored;
+        }
     }
 }

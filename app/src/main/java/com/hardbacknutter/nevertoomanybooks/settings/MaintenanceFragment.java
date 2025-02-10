@@ -171,7 +171,8 @@ public class MaintenanceFragment
         super.onResume();
 
         // Listen very carefully, I shall say this only once ...
-        if (vm.isCatastrophe()) {
+        if (vm.isCatastrophe() == MaintenanceViewModel.Catastrophe.Entered) {
+            vm.setCatastrophe(MaintenanceViewModel.Catastrophe.Dialog);
             onCreateBugReport();
         }
     }
@@ -365,6 +366,7 @@ public class MaintenanceFragment
                     createDocumentLauncher.launch(new GetContentUriForWritingContract
                             .Input(mimeType, fileName));
                 })
+                .setOnDismiss(() -> vm.setCatastrophe(MaintenanceViewModel.Catastrophe.Ignored))
                 .build()
                 .show();
     }
@@ -375,6 +377,9 @@ public class MaintenanceFragment
             //noinspection DataFlowIssue
             vm.sendDebug(getContext(), uri);
 
+            if (vm.isCatastrophe() == MaintenanceViewModel.Catastrophe.Dialog) {
+                vm.setCatastrophe(MaintenanceViewModel.Catastrophe.Finished);
+            }
         } catch (@NonNull final RuntimeException | IOException e) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_export_failed,

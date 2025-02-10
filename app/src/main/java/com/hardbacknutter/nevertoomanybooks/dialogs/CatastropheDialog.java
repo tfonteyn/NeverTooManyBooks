@@ -25,6 +25,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -42,8 +43,8 @@ public final class CatastropheDialog {
 
     public static void show(@NonNull final Context context,
                             @NonNull final Throwable e,
-                            @NonNull final Runnable onConfirm,
-                            @NonNull final Runnable onDismiss) {
+                            @Nullable final Runnable onConfirm,
+                            @Nullable final Runnable onDismiss) {
         String msg = ExMsg
                 .map(context, e)
                 .orElseGet(() -> ExMsg.getUnexpectedErrorMessage(context));
@@ -62,14 +63,24 @@ public final class CatastropheDialog {
                 .setTitle(R.string.app_name)
                 .setMessage(msg)
                 .setCancelable(false)
-                .setNegativeButton(R.string.cancel, (d, w) -> onDismiss.run())
-                .setOnDismissListener(d -> onDismiss.run())
+                .setNegativeButton(R.string.cancel, (d, w) -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
+                .setOnDismissListener(d -> {
+                    if (onDismiss != null) {
+                        onDismiss.run();
+                    }
+                })
                 .setPositiveButton(R.string.option_bug_report, (d, w) -> {
                     d.dismiss();
                     // We'll TRY to start the maintenance fragment
                     // and take the user directly to the debug report
                     context.startActivity(MaintenanceFragment.createDebugReportIntent(context));
-                    onConfirm.run();
+                    if (onConfirm != null) {
+                        onConfirm.run();
+                    }
                 })
                 .create()
                 .show();
