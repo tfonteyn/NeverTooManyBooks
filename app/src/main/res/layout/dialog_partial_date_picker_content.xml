@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -49,116 +49,97 @@
         app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
         tools:text="@tools:sample/lorem"
         />
-    <!--
-    Keep this as a LinearLayout!
-    The order of the 3 columns will be changed dynamically depending on the Locale.
-    Note the viewBindingIgnore="true" as the adding/removing views will not play
-    nice with view binding.
-     -->
+
     <LinearLayout
-        android:id="@+id/date_selector"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/year_selector_frame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_outline_sharp"
+        android:backgroundTint="?attr/colorSurfaceVariant"
+        android:elevation="4dp"
+        android:padding="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_year"
+        tools:visibility="visible"
+        >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/year_selector"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:scrollbars="none"
+            app:spanCount="@integer/partialdate_picker_year_span"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:listitem="@layout/partialdate_year"
+            />
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_year"
+        style="@style/TIL.ListPicker"
+        android:layout_width="@dimen/til_fixed_width_year"
+        android:hint="@string/lbl_year"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/message"
-        tools:viewBindingIgnore="true"
         >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/year_selector"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/year"
+            style="@style/TIE.ReadOnly"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/lbl_year"
-                style="@style/Label"
-                android:text="@string/lbl_year"
-                app:layout_constraintStart_toStartOf="@id/year"
-                app:layout_constraintTop_toTopOf="parent"
-                />
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow_months"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:constraint_referenced_ids=""
+        app:flow_horizontalAlign="start"
+        app:flow_horizontalBias="0.5"
+        app:flow_horizontalGap="@dimen/partialdate_padding"
+        app:flow_horizontalStyle="packed"
+        app:flow_maxElementsWrap="4"
+        app:flow_verticalBias="0"
+        app:flow_verticalGap="@dimen/partialdate_padding"
+        app:flow_verticalStyle="packed"
+        app:flow_wrapMode="aligned"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_year" />
 
-            <NumberPicker
-                android:id="@+id/year"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_year"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/month_selector"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
-
-            <TextView
-                android:id="@+id/lbl_month"
-                style="@style/Label"
-                android:text="@string/lbl_month"
-                app:layout_constraintStart_toStartOf="@id/month"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <NumberPicker
-                android:id="@+id/month"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_month"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/day_selector"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
-
-            <TextView
-                android:id="@+id/lbl_day"
-                style="@style/Label"
-                android:text="@string/lbl_day"
-                app:layout_constraintStart_toStartOf="@id/day"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <NumberPicker
-                android:id="@+id/day"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_day"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow_days"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:constraint_referenced_ids=""
+        app:flow_horizontalAlign="start"
+        app:flow_horizontalBias="0.5"
+        app:flow_horizontalGap="@dimen/partialdate_padding"
+        app:flow_horizontalStyle="packed"
+        app:flow_maxElementsWrap="7"
+        app:flow_verticalBias="0"
+        app:flow_verticalGap="@dimen/field_margin_top"
+        app:flow_verticalStyle="packed"
+        app:flow_wrapMode="aligned"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/flow_months" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_panel_layout"
         style="@style/ButtonPanel.Container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/date_selector">
-
-        <!--        <Button-->
-        <!--            android:id="@+id/btn_neutral"-->
-        <!--            style="?attr/buttonBarNeutralButtonStyle"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:visibility="gone"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            tools:text="x"-->
-        <!--            tools:visibility="visible"-->
-        <!--            />-->
+        app:layout_constraintTop_toBottomOf="@id/flow_days">
 
         <Button
             android:id="@+id/btn_negative"

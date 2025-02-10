@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+    <style name="Base.Button.PartialDatePicker"
+           parent="Widget.Material3.Button.TextButton">
+        <item name="android:checkable">true</item>
+
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+
+        <!-- "Widget.MaterialComponents.MaterialCalendar.Day" -->
+        <item name="android:textColor">@color/partialdate_picker_item_text_color</item>
+        <item name="android:width">@dimen/partialdate_picker_day_width</item>
+        <item name="android:height">@dimen/partialdate_picker_day_height</item>
+        <item name="android:insetTop">@dimen/partialdate_picker_day_vertical_padding</item>
+        <item name="android:insetBottom">@dimen/partialdate_picker_day_vertical_padding</item>
+        <item name="android:insetLeft">@dimen/partialdate_picker_day_horizontal_padding</item>
+        <item name="android:insetRight">@dimen/partialdate_picker_day_horizontal_padding</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <item name="android:gravity">center</item>
+        <item name="backgroundTint">@color/partialdate_picker_item_fill_color</item>
+        <item name="cornerSize">@dimen/partialdate_picker_day_corner</item>
+        <item name="itemStrokeColor">@color/partialdate_picker_item_stroke_color</item>
+        <item name="itemShapeAppearance">?attr/shapeAppearanceSmallComponent</item>
+        <!-- "Widget.MaterialComponents.MaterialCalendar.Day"
+              also set "itemStrokeWidth" but we can't use a selector for that
+              and the way the material library does this is huge overkill.
+        selected: <item name="itemStrokeWidth">0dp</item>
+        unselected: <item name="itemStrokeWidth">1dp</item>
+        -->
+    </style>
+
+    <style name="PartialDatePicker.Day"
+           parent="Base.Button.PartialDatePicker">
+        <item name="android:layout_width">@dimen/partialdate_picker_day_width</item>
+        <item name="android:layout_height">@dimen/partialdate_picker_day_height</item>
+    </style>
+
+    <style name="PartialDatePicker.Month"
+           parent="Base.Button.PartialDatePicker">
+        <item name="android:layout_width">64dp</item>
+        <item name="android:layout_height">@dimen/partialdate_picker_day_height</item>
+    </style>
+
+    <style name="PartialDatePicker.Year"
+           parent="Base.Button.PartialDatePicker">
+        <item name="android:layout_width">@dimen/partialdate_picker_year_width</item>
+        <item name="android:layout_height">@dimen/partialdate_picker_year_height</item>
+        <item name="android:gravity">center_horizontal|center_vertical</item>
+    </style>
+
+
+</resources>
