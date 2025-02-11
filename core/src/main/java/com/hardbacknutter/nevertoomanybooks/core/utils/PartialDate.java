@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.format.TextStyle;
@@ -63,6 +64,9 @@ public class PartialDate
     /** An immutable 'empty' date. */
     public static final PartialDate NOT_SET = new PartialDate(null, null, null);
 
+    static final int YEAR_MAX = 9_999;
+    static final int YEAR_MIN = -YEAR_MAX;
+
     /** NonNull - the partial date; using '1' for not-set day,month,year fields. */
     private LocalDate localDate;
     private boolean yearSet;
@@ -88,7 +92,7 @@ public class PartialDate
      * @param month 1..12 based, or {@code null} or {@code 0} for none
      * @param day   1..31 based, or {@code null} or {@code 0} for none
      */
-    public PartialDate(@Nullable @IntRange(from = -9_999, to = 9_999) final Integer year,
+    public PartialDate(@Nullable @IntRange(from = YEAR_MIN, to = YEAR_MAX) final Integer year,
                        @Nullable @IntRange(from = 0, to = 12) final Integer month,
                        @Nullable @IntRange(from = 0, to = 31) final Integer day) {
 
@@ -270,6 +274,8 @@ public class PartialDate
 
     /**
      * Get the year field.
+     * <p>
+     * The year returned by this method is proleptic.
      *
      * @return year value
      */
@@ -282,8 +288,13 @@ public class PartialDate
         }
     }
 
+    /**
+     * Gets the month-of-year field from 1 to 12.
+     *
+     * @return the month-of-year, from 1 to 12
+     */
     @NonNull
-    public Optional<Integer> getMonth() {
+    public Optional<Integer> getMonthValue() {
         if (monthSet) {
             return Optional.of(localDate.getMonthValue());
         } else {
@@ -291,8 +302,27 @@ public class PartialDate
         }
     }
 
+    /**
+     * Gets the month-of-year field using the {@code Month} enum.
+     *
+     * @return the month-of-year
+     */
     @NonNull
-    public Optional<Integer> getDay() {
+    public Optional<Month> getMonth() {
+        if (monthSet) {
+            return Optional.of(localDate.getMonth());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Gets the day-of-month field.
+     *
+     * @return the day-of-month, from 1 to 31
+     */
+    @NonNull
+    public Optional<Integer> getDayOfMonth() {
         if (daySet) {
             return Optional.of(localDate.getDayOfMonth());
         } else {

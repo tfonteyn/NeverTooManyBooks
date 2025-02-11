@@ -23,5 +23,11 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate;
 enum YMD {
     Year,
     Month,
-    Day()
+    Day();
+
+    static final int MAX_MONTHS = 12;
+    static final int MAX_DAYS = 31;
+    static final int MIN_DAYS = 28;
+
+    static final int FEBRUARY = 2;
 }

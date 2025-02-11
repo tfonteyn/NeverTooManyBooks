@@ -2025,4 +2025,6 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="option_tuning"
             translatable="false">Tuning</string>
+
+    <string name="info_partial_date_picker">Tap a previously selected month or day to unselect it.</string>
 </resources>

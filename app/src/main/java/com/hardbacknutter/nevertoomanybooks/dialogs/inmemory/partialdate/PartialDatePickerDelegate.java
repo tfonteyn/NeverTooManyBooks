@@ -34,12 +34,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
@@ -48,10 +46,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogPartialDatePickerContentBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
@@ -60,8 +58,20 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 /**
  * DialogFragment class to allow for selection of partial dates.
  * <p>
+ * <strong>WARNING</strong>: when the screen height is {@link ScreenSize.Value#Compact}
+ * (i.e. "Small Phone" landscape) we're showing the dialog message as the toolbar subtitle.
+ * This limits the message length but allows full use without scrolling on a "Small Phone".
+ * The 4WVGA model is however hopeless... we're not even bothering.
+ *
+ * <p>
  * Seems reasonable to disable relevant day/month pickers if one is invalid, but it's actually
  * not very friendly when entering data for new books so we don't.
+ * <p>
+ * All values for day/month start at {@code 1}.
+ * A {@code value < 1} or {@code null} is seen as "not set".
+ * <p>
+ * Access to the {@link #months} and {@link #days}
+ * is {@code .get(month -1)} and {@code .get(day -1)}
  */
 class PartialDatePickerDelegate
         implements FlexDialogDelegate {
@@ -82,14 +92,6 @@ class PartialDatePickerDelegate
      */
     private static final int FUTURE = 10;
 
-    /**
-     * Maximum number of months in a year. Kept as a constant as I'm reasonably
-     * sure this will not change in the foreseeable future. (⌐⊙_⊙)
-     */
-    private static final int MAX_MONTHS = 12;
-    /** Maximum number of days in a month. */
-    private static final int MAX_DAYS = 31;
-    private static final int MIN_DAYS = 28;
     private final List<MaterialButton> months = new ArrayList<>();
     private final List<MaterialButton> days = new ArrayList<>();
 
@@ -101,21 +103,25 @@ class PartialDatePickerDelegate
     private final String dialogTitle;
     @Nullable
     private final String dialogMessage;
-
     private final PartialDatePickerViewModel vm;
     private DialogPartialDatePickerContentBinding vb;
-
     @Nullable
     private Toolbar toolbar;
+    private final boolean limitedHeight;
 
     PartialDatePickerDelegate(@NonNull final DialogFragment owner,
                               @NonNull final Bundle args) {
         this.owner = owner;
+        //noinspection DataFlowIssue
+        limitedHeight = isVeryLimitedHeight(owner.getActivity());
+
         requestKey = Objects.requireNonNull(args.getString(DialogLauncher.BKEY_REQUEST_KEY),
                                             DialogLauncher.BKEY_REQUEST_KEY);
         dialogTitle = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_TITLE,
                                      owner.getString(R.string.action_edit));
-        dialogMessage = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_MESSAGE, null);
+        dialogMessage = args.getString(PartialDatePickerLauncher.BKEY_DIALOG_MESSAGE,
+                                       // show the default help text
+                                       owner.getString(R.string.info_partial_date_picker));
 
         vm = new ViewModelProvider(owner).get(PartialDatePickerViewModel.class);
         vm.init(args);
@@ -128,6 +134,11 @@ class PartialDatePickerDelegate
         final View view = inflater.inflate(R.layout.dialog_partial_date_picker_content,
                                            container, false);
         vb = DialogPartialDatePickerContentBinding.bind(view);
+
+        if (limitedHeight) {
+            letToolbarOverlapDragHandle(vb.dialogContent, vb.dialogToolbar);
+        }
+
         createCalenderButtons();
         return vb.getRoot();
     }
@@ -154,15 +165,21 @@ class PartialDatePickerDelegate
 
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
+
+        final boolean hasMessage = dialogMessage != null && !dialogMessage.isEmpty();
+
         if (toolbar != null) {
             if (dialogType == DialogType.BottomSheet) {
                 toolbar.inflateMenu(R.menu.toolbar_action_save);
             }
             initToolbar(owner, dialogType, toolbar);
             toolbar.setTitle(dialogTitle);
+            if (limitedHeight && hasMessage) {
+                toolbar.setSubtitle(dialogMessage);
+            }
         }
 
-        if (dialogMessage != null && !dialogMessage.isEmpty()) {
+        if (!limitedHeight && hasMessage) {
             vb.message.setText(dialogMessage);
             vb.message.setVisibility(View.VISIBLE);
         } else {
@@ -184,8 +201,8 @@ class PartialDatePickerDelegate
         vb.year.setText(String.valueOf(year));
         vb.year.setOnClickListener(v -> showYearPicker());
 
-        vm.getMonth().ifPresent(m -> months.get(m - 1).setChecked(true));
-        vm.getDay().ifPresent(d -> days.get(d - 1).setChecked(true));
+        vm.getMonthValue().ifPresent(month -> months.get(month - 1).setChecked(true));
+        vm.getDayOfMonth().ifPresent(day -> days.get(day - 1).setChecked(true));
     }
 
     private void showYearPicker() {
@@ -193,22 +210,22 @@ class PartialDatePickerDelegate
 
         final Optional<Integer> oYear = vm.getYear();
         final int year = oYear.orElse(now);
-        final boolean yearIsNow = year == now;
 
         final Context context = owner.getContext();
 
         //noinspection DataFlowIssue
         final YearGridAdapter adapter =
                 new YearGridAdapter(context, year, START_YEAR, now + FUTURE, pick -> {
-                    vb.yearSelectorFrame.setVisibility(View.GONE);
+                    hideYearPicker();
                     updateYear(pick);
                 });
 
         vb.yearSelector.setAdapter(adapter);
 
-        // Scroll the current/selected year into view and show the frame
+        // Scroll the current/selected year into view
         final int initialPos = adapter.positionForYear(year);
         vb.yearSelector.scrollToPosition(initialPos);
+        // and show the frame
         vb.yearSelectorFrame.setVisibility(View.VISIBLE);
 
         vb.yearSelector.post(() -> {
@@ -216,9 +233,11 @@ class PartialDatePickerDelegate
             // Check if the item is already in view and calculate its height
             //noinspection DataFlowIssue
             final View view = lm.findViewByPosition(initialPos);
+            // it should already be visible due to the original scroll, but take no risks.
             final int itemHeight = view != null ? view.getHeight() : 0;
+            // calculate the offset, to make sure that view will be visible
             final int offset = vb.yearSelector.getHeight() - itemHeight;
-            if (yearIsNow) {
+            if (year == now) {
                 // make 'now' the last position
                 lm.scrollToPositionWithOffset(initialPos, offset);
             } else {
@@ -227,14 +246,16 @@ class PartialDatePickerDelegate
             }
         });
 
+        // tap on the sides of the year input field
         vb.getRoot().setOnClickListener(v -> hideYearPicker());
+        // or on the input field itself to dismiss without picking a year
         vb.year.setOnClickListener(v -> hideYearPicker());
     }
 
     private void hideYearPicker() {
         vb.yearSelectorFrame.setVisibility(View.GONE);
         // restore the original
-        vb.year.setOnClickListener(v1 -> showYearPicker());
+        vb.year.setOnClickListener(v -> showYearPicker());
         vb.getRoot().setOnClickListener(null);
     }
 
@@ -260,12 +281,12 @@ class PartialDatePickerDelegate
     private boolean saveChanges() {
         // the model is already updated by the valueChangeListener.
 
-        if (vm.getDay().isPresent() && vm.getMonth().isEmpty()) {
+        if (vm.getDayOfMonth().isPresent() && vm.getMonthValue().isEmpty()) {
             Snackbar.make(vb.getRoot(), R.string.warning_if_day_set_month_and_year_must_be,
                           Snackbar.LENGTH_LONG).show();
             return false;
 
-        } else if (vm.getMonth().isPresent() && vm.getYear().isEmpty()) {
+        } else if (vm.getMonthValue().isPresent() && vm.getYear().isEmpty()) {
             Snackbar.make(vb.getRoot(), R.string.warning_if_month_set_year_must_be,
                           Snackbar.LENGTH_LONG).show();
             return false;
@@ -290,18 +311,19 @@ class PartialDatePickerDelegate
     private void createCalenderButtons() {
         final LayoutInflater inflater = LayoutInflater.from(owner.getContext());
 
-        for (int day = 0; day < MAX_DAYS; day++) {
-            days.add(addButton(inflater, R.layout.partialdate_day,
-                               YMD.Day, String.valueOf(day + 1), day));
+        for (int day = 1; day <= YMD.MAX_DAYS; day++) {
+            days.add(addButton(inflater, R.layout.partial_date_picker_day,
+                               YMD.Day, String.valueOf(day),
+                               day));
         }
         vb.flowDays.setReferencedIds(days.stream().mapToInt(View::getId).toArray());
 
         final Locale locale = vb.getRoot().getResources().getConfiguration().getLocales().get(0);
-        for (int month = 0; month < MAX_MONTHS; month++) {
-            final String monthAbbr = Month.of(month + 1)
-                                          .getDisplayName(TextStyle.SHORT, locale);
-            months.add(addButton(inflater, R.layout.partialdate_month,
-                                 YMD.Month, monthAbbr, month));
+        for (final Month month : Month.values()) {
+            months.add(addButton(inflater, R.layout.partial_date_picker_month,
+                                 YMD.Month,
+                                 month.getDisplayName(TextStyle.SHORT, locale),
+                                 month.getValue()));
         }
         vb.flowMonths.setReferencedIds(months.stream().mapToInt(View::getId).toArray());
     }
@@ -311,13 +333,12 @@ class PartialDatePickerDelegate
                                      @LayoutRes final int layoutResId,
                                      @NonNull final YMD ymd,
                                      @NonNull final CharSequence text,
-                                     @IntRange(from = 0, to = 30) final int index) {
+                                     @IntRange(from = 1, to = YMD.MAX_DAYS) final int monthOrDay) {
         final MaterialButton btn = (MaterialButton)
                 inflater.inflate(layoutResId, vb.getRoot(), false);
-        final int id = View.generateViewId();
-        btn.setId(id);
+        btn.setId(View.generateViewId());
         btn.setText(text);
-        btn.setOnClickListener(v -> update(ymd, index));
+        btn.setOnClickListener(v -> updateMonthOrDay(ymd, monthOrDay));
         vb.dialogContent.addView(btn);
         return btn;
     }
@@ -326,46 +347,41 @@ class PartialDatePickerDelegate
         vb.year.setText(year != null ? String.valueOf(year) : null);
         vm.setYMD(YMD.Year, year);
 
-        vm.getMonth().ifPresent(m -> {
-            if (m == 2) {
-                updateDaysInMonth();
-            }
-        });
+        vm.getMonthValue().filter(m -> m == YMD.FEBRUARY).ifPresent(m -> updateDaysInMonth());
     }
 
     /**
      * Set the {@code checked} status and store the value.
      *
-     * @param md    month / day
-     * @param index of the button to update
+     * @param md         month / day
+     * @param monthOrDay the number of the day or month
      */
-    private void update(@NonNull final YMD md,
-                        @IntRange(from = 0, to = 30) final int index) {
+    private void updateMonthOrDay(@NonNull final YMD md,
+                                  @IntRange(from = 1, to = YMD.MAX_DAYS) final int monthOrDay) {
 
         final List<MaterialButton> buttons = md == YMD.Month ? months : days;
 
         final Optional<Integer> oPrevious = vm.getYMD(md);
         if (oPrevious.isPresent()) {
-            @IntRange(from = 1)
+            @IntRange(from = 1, to = YMD.MAX_DAYS)
             final int previous = oPrevious.get();
             // always deselect the previous button
-
             buttons.get(previous - 1).setChecked(false);
 
             // did the user tap the selected button?
-            // i.e. they DEselected the button?
-            if (previous - 1 == index) {
+            // i.e. they DE-selected the button?
+            if (previous == monthOrDay) {
                 // we have a "not set" state
                 vm.setYMD(md, null);
             } else {
                 // new selection
-                buttons.get(index).setChecked(true);
-                vm.setYMD(md, index + 1);
+                buttons.get(monthOrDay - 1).setChecked(true);
+                vm.setYMD(md, monthOrDay);
             }
         } else {
             // new selection
-            buttons.get(index).setChecked(true);
-            vm.setYMD(md, index + 1);
+            buttons.get(monthOrDay - 1).setChecked(true);
+            vm.setYMD(md, monthOrDay);
         }
 
         if (md == YMD.Month) {
@@ -377,102 +393,22 @@ class PartialDatePickerDelegate
      * Depending on year/month selected, set the correct number of days.
      */
     private void updateDaysInMonth() {
-        // Determine the total days if we have a valid month/year
-        int totalDays;
-        if (vm.getYear().isPresent() && vm.getMonth().isPresent()) {
-            try {
-                // Should never throw here, but paranoia...
-                final int year = vm.getYear().get();
-                final int month = vm.getMonth().get();
-                totalDays = LocalDate.of(year, month, 1).lengthOfMonth();
-            } catch (@NonNull final DateTimeException e) {
-                totalDays = MAX_DAYS;
-            }
-        } else {
-            // allow the user to start inputting with day first.
-            totalDays = MAX_DAYS;
-        }
-
-        // ok, this is Android being annoying again...
-        // It's not possible to change the {@code checked} state of the buttons
-        // if they are disabled.
-
+        @IntRange(from = YMD.MIN_DAYS, to = YMD.MAX_DAYS)
+        final int daysInMonth = vm.getDaysInMonth();
 
         // Ensure selected day is valid
-        final Optional<Integer> oDay = vm.getDay();
+        final Optional<Integer> oDay = vm.getDayOfMonth();
         if (oDay.isPresent()) {
-            if (oDay.get() > totalDays) {
-                for (int i = MIN_DAYS; i <= totalDays; i++) {
-                    days.get(i - 1).setEnabled(true);
+            if (oDay.get() > daysInMonth) {
+                for (int day = YMD.MIN_DAYS; day <= daysInMonth; day++) {
+                    days.get(day - 1).setEnabled(true);
                 }
-                update(YMD.Day, totalDays - 1);
+                updateMonthOrDay(YMD.Day, daysInMonth);
             }
         }
 
-        for (int i = MIN_DAYS; i <= MAX_DAYS; i++) {
-            days.get(i - 1).setEnabled(i <= totalDays);
-        }
-    }
-
-
-    private static class YearGridAdapter
-            extends RecyclerView.Adapter<YearGridAdapter.Holder> {
-
-        private final int initYear;
-        private final int startYear;
-        private final int endYear;
-        @NonNull
-        private final Consumer<Integer> yearListener;
-        private final LayoutInflater inflater;
-
-        YearGridAdapter(@NonNull final Context context,
-                        final int initYear,
-                        final int startYear,
-                        final int endYear,
-                        @NonNull final Consumer<Integer> yearListener) {
-            inflater = LayoutInflater.from(context);
-            this.initYear = initYear;
-            this.startYear = startYear;
-            this.endYear = endYear;
-            this.yearListener = yearListener;
-        }
-
-        @NonNull
-        @Override
-        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                         final int viewType) {
-            final MaterialButton view = (MaterialButton) inflater
-                    .inflate(R.layout.partialdate_year, parent, false);
-            return new Holder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-            final int year = startYear + position;
-            holder.yearView.setText(String.format(Locale.getDefault(), "%d", year));
-            holder.yearView.setOnClickListener(v -> yearListener.accept(year));
-            holder.yearView.setChecked(year == initYear);
-        }
-
-        @Override
-        public int getItemCount() {
-            return endYear - startYear;
-        }
-
-        int positionForYear(final int year) {
-            return year - startYear;
-        }
-
-        public static class Holder
-                extends RecyclerView.ViewHolder {
-
-            final MaterialButton yearView;
-
-            Holder(@NonNull final MaterialButton itemView) {
-                super(itemView);
-                this.yearView = itemView;
-            }
+        for (int day = YMD.MIN_DAYS; day <= YMD.MAX_DAYS; day++) {
+            days.get(day - 1).setEnabled(day <= daysInMonth);
         }
     }
 }

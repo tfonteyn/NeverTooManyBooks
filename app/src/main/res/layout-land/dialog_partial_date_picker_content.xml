@@ -60,9 +60,9 @@
         android:padding="@dimen/partial_date_picker_content_padding"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/lbl_year"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_year"
+        app:layout_constraintTop_toBottomOf="@id/dialog_toolbar"
         tools:visibility="visible"
         >
 
@@ -82,11 +82,12 @@
         android:id="@+id/lbl_year"
         style="@style/TIL.ListPicker"
         android:layout_width="@dimen/til_fixed_width_year"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="@dimen/field_margin_inline"
         android:hint="@string/lbl_year"
+        app:layout_constraintBottom_toBottomOf="@id/flow_months"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/message"
+        app:layout_constraintStart_toEndOf="@id/flow_months"
+        app:layout_constraintTop_toTopOf="@id/flow_months"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -99,7 +100,7 @@
         android:id="@+id/flow_months"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/section_margin_top"
+        android:layout_marginTop="@dimen/partial_date_picker_months_margin_top"
         android:orientation="horizontal"
         app:constraint_referenced_ids=""
         app:flow_horizontalAlign="start"
@@ -111,16 +112,16 @@
         app:flow_verticalGap="@dimen/partial_date_picker_month_vertical_padding"
         app:flow_verticalStyle="packed"
         app:flow_wrapMode="aligned"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/lbl_year"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_year" />
+        app:layout_constraintTop_toBottomOf="@id/message" />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/flow_days"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/section_margin_top"
+        android:layout_marginTop="@dimen/partial_date_picker_days_margin_top"
         android:orientation="horizontal"
         app:constraint_referenced_ids=""
         app:flow_horizontalAlign="start"

@@ -31,19 +31,23 @@
         <item name="android:paddingBottom">0dp</item>
 
         <!-- "Widget.MaterialComponents.MaterialCalendar.Day" -->
-        <item name="android:textColor">@color/partialdate_picker_item_text_color</item>
-        <item name="android:width">@dimen/partialdate_picker_day_width</item>
-        <item name="android:height">@dimen/partialdate_picker_day_height</item>
-        <item name="android:insetTop">@dimen/partialdate_picker_day_vertical_padding</item>
-        <item name="android:insetBottom">@dimen/partialdate_picker_day_vertical_padding</item>
-        <item name="android:insetLeft">@dimen/partialdate_picker_day_horizontal_padding</item>
-        <item name="android:insetRight">@dimen/partialdate_picker_day_horizontal_padding</item>
-        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <item name="android:gravity">center</item>
-        <item name="backgroundTint">@color/partialdate_picker_item_fill_color</item>
-        <item name="cornerSize">@dimen/partialdate_picker_day_corner</item>
-        <item name="itemStrokeColor">@color/partialdate_picker_item_stroke_color</item>
+        <item name="android:textColor">@color/partial_date_picker_item_text_color</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+
+        <item name="android:width">@dimen/partial_date_picker_day_width</item>
+        <item name="android:height">@dimen/partial_date_picker_day_height</item>
+
+        <item name="android:insetTop">@dimen/partial_date_picker_day_vertical_padding</item>
+        <item name="android:insetBottom">@dimen/partial_date_picker_day_vertical_padding</item>
+        <item name="android:insetLeft">@dimen/partial_date_picker_day_horizontal_padding</item>
+        <item name="android:insetRight">@dimen/partial_date_picker_day_horizontal_padding</item>
+
+        <item name="cornerSize">@dimen/partial_date_picker_day_corner</item>
+        <item name="itemStrokeColor">@color/partial_date_picker_item_stroke_color</item>
         <item name="itemShapeAppearance">?attr/shapeAppearanceSmallComponent</item>
+        <item name="backgroundTint">@color/partial_date_picker_item_fill_color</item>
+
         <!-- "Widget.MaterialComponents.MaterialCalendar.Day"
               also set "itemStrokeWidth" but we can't use a selector for that
               and the way the material library does this is huge overkill.
@@ -54,20 +58,20 @@
 
     <style name="PartialDatePicker.Day"
            parent="Base.Button.PartialDatePicker">
-        <item name="android:layout_width">@dimen/partialdate_picker_day_width</item>
-        <item name="android:layout_height">@dimen/partialdate_picker_day_height</item>
+        <item name="android:layout_width">@dimen/partial_date_picker_day_width</item>
+        <item name="android:layout_height">@dimen/partial_date_picker_day_height</item>
     </style>
 
     <style name="PartialDatePicker.Month"
            parent="Base.Button.PartialDatePicker">
         <item name="android:layout_width">64dp</item>
-        <item name="android:layout_height">@dimen/partialdate_picker_day_height</item>
+        <item name="android:layout_height">@dimen/partial_date_picker_day_height</item>
     </style>
 
     <style name="PartialDatePicker.Year"
            parent="Base.Button.PartialDatePicker">
-        <item name="android:layout_width">@dimen/partialdate_picker_year_width</item>
-        <item name="android:layout_height">@dimen/partialdate_picker_year_height</item>
+        <item name="android:layout_width">@dimen/partial_date_picker_year_width</item>
+        <item name="android:layout_height">@dimen/partial_date_picker_year_height</item>
         <item name="android:gravity">center_horizontal|center_vertical</item>
     </style>
 

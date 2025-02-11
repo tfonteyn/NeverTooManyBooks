@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,9 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +31,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.window.layout.WindowMetrics;
+import androidx.window.layout.WindowMetricsCalculator;
+
+import com.google.android.material.appbar.MaterialToolbar;
 
 import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
 
@@ -78,6 +86,34 @@ public interface FlexDialogDelegate
     @NonNull
     View onCreateFullscreen(@NonNull LayoutInflater inflater,
                             @Nullable ViewGroup container);
+
+    /**
+     * HACK.... a "Small Phone" with 360dp (720px) is smaller
+     * than a larger phone with 360dp (1080px).
+     * For bottomsheets it can be REALLY difficult...
+     *
+     * @return flag
+     */
+    default boolean isVeryLimitedHeight(@NonNull final Activity activity) {
+        final WindowMetrics metrics = WindowMetricsCalculator
+                .getOrCreate().computeCurrentWindowMetrics(activity);
+        final Rect bounds = metrics.getBounds();
+        // not enough samples... we just have to guess for now; 720 < x < 1080
+        return bounds.height() < 800;
+    }
+
+    default void letToolbarOverlapDragHandle(@NonNull final ConstraintLayout dialogContent,
+                                             @NonNull final MaterialToolbar dialogToolbar) {
+        final ConstraintSet set = new ConstraintSet();
+        set.clone(dialogContent);
+        // remove layout_constraintTop_toBottomOf "@id/drag_handle"
+        set.clear(dialogToolbar.getId(), ConstraintSet.TOP);
+        // set layout_constraintTop_toTopOf to "parent"
+        set.connect(dialogToolbar.getId(), ConstraintSet.TOP,
+                    dialogContent.getId(), ConstraintSet.TOP);
+
+        set.applyTo(dialogContent);
+    }
 
     /**
      * Get the previously set toolbar.

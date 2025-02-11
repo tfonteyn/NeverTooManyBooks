@@ -22,10 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate;
 
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -36,21 +38,24 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
  * We're handling the current value as separate year/month/day components instead
  * of the {@link PartialDate} they represent.
  * The latter is immutable; we don't want to keep recreating a new object all the time.
+ * TODO: we don't want to keep recreating a new object all the time. Maybe we should...
+ * <p>
+ * All values for day/month start at {@code 1}.
+ * A {@code value < 1} or {@code null} is seen as "not set".
  */
 @SuppressWarnings("WeakerAccess")
 public class PartialDatePickerViewModel
         extends ViewModel {
 
-    /** Currently displayed. */
+    /** Currently selected. */
     @Nullable
     private Integer year;
-    /**
-     * Currently displayed.
-     * <strong>IMPORTANT:</strong> 1..12 based. (the jdk internals expect 0..11).
-     */
+    /** Currently selected. */
+    @IntRange(from = 1, to = YMD.MAX_MONTHS)
     @Nullable
     private Integer month;
-    /** Currently displayed. */
+    /** Currently selected. */
+    @IntRange(from = 1, to = YMD.MAX_DAYS)
     @Nullable
     private Integer day;
 
@@ -72,8 +77,8 @@ public class PartialDatePickerViewModel
             previousSelection = partialDateParser.parse(dateString).orElse(PartialDate.NOT_SET);
 
             year = previousSelection.getYear().orElse(LocalDate.now().getYear());
-            month = previousSelection.getMonth().orElse(null);
-            day = previousSelection.getDay().orElse(null);
+            month = previousSelection.getMonthValue().orElse(null);
+            day = previousSelection.getDayOfMonth().orElse(null);
 
             extras = args.getBundle(PartialDatePickerLauncher.BKEY_EXTRAS);
         }
@@ -88,21 +93,23 @@ public class PartialDatePickerViewModel
         this.year = year;
     }
 
+    @IntRange(from = 1, to = YMD.MAX_MONTHS)
     @NonNull
-    Optional<Integer> getMonth() {
+    Optional<Integer> getMonthValue() {
         return month != null ? Optional.of(month) : Optional.empty();
     }
 
-    void setMonth(@Nullable final Integer month) {
+    void setMonthValue(@IntRange(from = 1, to = YMD.MAX_MONTHS) @Nullable final Integer month) {
         this.month = month;
     }
 
+    @IntRange(from = 1, to = YMD.MAX_DAYS)
     @NonNull
-    Optional<Integer> getDay() {
+    Optional<Integer> getDayOfMonth() {
         return day != null ? Optional.of(day) : Optional.empty();
     }
 
-    void setDay(@Nullable final Integer day) {
+    void setDayOfMonth(@IntRange(from = 1, to = YMD.MAX_DAYS) @Nullable final Integer day) {
         this.day = day;
     }
 
@@ -112,9 +119,9 @@ public class PartialDatePickerViewModel
             case Year:
                 return getYear();
             case Month:
-                return getMonth();
+                return getMonthValue();
             case Day:
-                return getDay();
+                return getDayOfMonth();
         }
         throw new IllegalArgumentException(ymd.toString());
     }
@@ -132,6 +139,30 @@ public class PartialDatePickerViewModel
                 day = value;
                 break;
         }
+    }
+
+    /**
+     * Determine the total days if we have a valid month/year,
+     * or {@link YMD#MAX_DAYS}.
+     *
+     * @return number of days
+     */
+    @IntRange(from = YMD.MIN_DAYS, to = YMD.MAX_DAYS)
+    int getDaysInMonth() {
+        int totalDays;
+        if (getYear().isPresent() && getMonthValue().isPresent()) {
+            try {
+                // Should never throw here, but paranoia...
+                totalDays = LocalDate.of(getYear().get(), getMonthValue().get(), 1)
+                                     .lengthOfMonth();
+            } catch (@NonNull final DateTimeException e) {
+                totalDays = YMD.MAX_DAYS;
+            }
+        } else {
+            // allow the user to start inputting with day first.
+            totalDays = YMD.MAX_DAYS;
+        }
+        return totalDays;
     }
 
     @NonNull

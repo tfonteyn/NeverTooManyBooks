@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <!-- year_selector, number of years horizontally -->
+    <integer name="partial_date_picker_years_span">4</integer>
+    <integer name="partial_date_picker_month_span">4</integer>
+    <integer name="partial_date_picker_days_span">7</integer>
+
+    <dimen name="partial_date_picker_months_margin_top">@dimen/section_margin_top</dimen>
+    <dimen name="partial_date_picker_days_margin_top">@dimen/section_margin_top</dimen>
+
+    <!-- mtrl_calendar_bottom_padding  etc...-->
+    <dimen name="partial_date_picker_bottom_padding">0dp</dimen>
+    <dimen name="partial_date_picker_content_padding">12dp</dimen>
+
+    <dimen name="partial_date_picker_day_corner">15dp</dimen>
+    <dimen name="partial_date_picker_day_height">32dp</dimen>
+    <dimen name="partial_date_picker_day_horizontal_padding">3dp</dimen>
+    <dimen name="partial_date_picker_day_vertical_padding">1dp</dimen>
+    <dimen name="partial_date_picker_day_width">36dp</dimen>
+
+    <dimen name="partial_date_picker_days_of_week_height">24dp</dimen>
+
+    <dimen name="partial_date_picker_month_horizontal_padding">2dp</dimen>
+    <dimen name="partial_date_picker_month_vertical_padding">0dp</dimen>
+
+    <dimen name="partial_date_picker_year_corner">18dp</dimen>
+    <dimen name="partial_date_picker_year_height">52dp</dimen>
+    <dimen name="partial_date_picker_year_horizontal_padding">8dp</dimen>
+    <dimen name="partial_date_picker_year_vertical_padding">8dp</dimen>
+    <dimen name="partial_date_picker_year_width">88dp</dimen>
+
+    <!-- material_emphasis_disabled etc...  -->
+    <item format="float"
+          name="alpha_emphasis_disabled"
+          type="dimen">0.38
+    </item>
+    <item format="float"
+          name="alpha_emphasis_disabled_background"
+          type="dimen">0.12
+    </item>
+    <item format="float"
+          name="alpha_emphasis_high_type"
+          type="dimen">0.87
+    </item>
+    <item format="float"
+          name="alpha_emphasis_medium"
+          type="dimen">0.6
+    </item>
+
+</resources>

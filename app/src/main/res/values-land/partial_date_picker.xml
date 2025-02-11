@@ -20,13 +20,11 @@
   -->
 
 <resources>
-    <dimen name="partialdate_picker_bottom_padding">0dp</dimen>
-    <dimen name="partialdate_picker_day_corner">22dp</dimen>
-    <dimen name="partialdate_picker_day_height">48dp</dimen>
-    <dimen name="partialdate_picker_day_horizontal_padding">2dp</dimen>
-    <dimen name="partialdate_picker_day_vertical_padding">2dp</dimen>
-    <dimen name="partialdate_picker_day_width">48dp</dimen>
-    <dimen name="partialdate_picker_days_of_week_height">20dp</dimen>
-    <dimen name="partialdate_picker_landscape_header_width">168dp</dimen>
-    <dimen name="partialdate_picker_month_horizontal_padding">0dp</dimen>
+    <integer name="partial_date_picker_years_span">7</integer>
+    <integer name="partial_date_picker_month_span">6</integer>
+    <integer name="partial_date_picker_days_span">14</integer>
+
+    <dimen name="partial_date_picker_months_margin_top">0dp</dimen>
+    <dimen name="partial_date_picker_days_margin_top">0dp</dimen>
+
 </resources>
