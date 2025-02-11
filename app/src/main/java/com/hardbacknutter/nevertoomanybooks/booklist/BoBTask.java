@@ -519,11 +519,6 @@ public class BoBTask
             }
         }
 
-        filters.stream()
-               .filter(pFilter -> DBKey.LOANEE_NAME.equals(pFilter.getDBKey()))
-               .findAny()
-               .ifPresent(pFilter -> builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE));
-
         // ... and add them
         builder.addFilter(filters);
     }

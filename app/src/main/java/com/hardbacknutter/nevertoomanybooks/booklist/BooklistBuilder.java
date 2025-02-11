@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -63,6 +64,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
@@ -498,7 +500,7 @@ class BooklistBuilder {
             final String sqlForInitialInsert =
                     INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
                     + SELECT_ + sourceColumns
-                    + _FROM_ + buildFrom(leftOuterJoins) + buildWhere(context, filters)
+                    + _FROM_ + buildFrom(leftOuterJoins, filters) + buildWhere(context, filters)
                     + _ORDER_BY_ + buildOrderBy(db.isCollationCaseSensitive());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -935,7 +937,24 @@ class BooklistBuilder {
          * @return FROM clause
          */
         @NonNull
-        private String buildFrom(@NonNull final Collection<TableDefinition> leftOuterJoins) {
+        private String buildFrom(@NonNull final Collection<TableDefinition> leftOuterJoins,
+                                 @NonNull final Collection<Filter> filters) {
+
+            // collect any joins we need for the filters
+            final List<String> pFilterKeys = filters
+                    .stream()
+                    .filter(filter -> filter instanceof PFilter)
+                    .map(filter -> ((PFilter<?>) filter).getDBKey())
+                    .collect(Collectors.toList());
+
+            if (pFilterKeys.contains(DBKey.LOANEE_NAME)) {
+                leftOuterJoins.add(TBL_BOOK_LOANEE);
+            }
+
+            if (pFilterKeys.contains(DBKey.FK_TAG)) {
+                leftOuterJoins.add(TBL_BOOK_TAG);
+            }
+
             final StringBuilder sb = new StringBuilder();
 
             // If there is a bookshelf specified (either as group or as a filter),
@@ -960,6 +979,9 @@ class BooklistBuilder {
             }
 
             if (style.hasGroup(BooklistGroup.TAGS_GENRE)) {
+                // remove if present
+                leftOuterJoins.remove(TBL_BOOK_TAG);
+
                 // ONLY join with the tags if we actually are grouping by them.
                 // Do NOT join with
                 //    || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)
