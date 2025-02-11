@@ -312,25 +312,28 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<SearchCriteria> ftsSearchLauncher =
             registerForActivityResult(new SearchFtsContract(), o -> o.ifPresent(
                     criteria -> vm.onFtsSearchFinished(criteria)));
-
+    private final OnBackPressedCallback backClearsSearchCriteria =
+            new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {
+                    vm.clearSearchCriteria();
+                    setNavIcon();
+                    buildBookList();
+                }
+            };
     private EditLenderLauncher editLenderLauncher;
-
     /** Row menu launcher displaying the menu as a BottomSheet. */
     private ExtMenuLauncher menuLauncher;
-
     private StylePickerLauncher stylePickerLauncher;
     private BookshelfFiltersLauncher bookshelfFiltersLauncher;
-
     /** Row menu launcher to add/move a set of Books to the selected Bookshelves. */
     private MultiChoiceLauncher<Bookshelf> bulkSetBookshelvesLauncher;
     /** Row menu launcher to set the location of a set of Books. */
     private AutoCompletePickerLauncher bulkSetLocationLauncher;
-
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
     /** Encapsulate all row menus for {@link BooklistGroup}s. */
     private RowGroupMenuHelper rowGroupMenuHelper;
-
     /**
      * The adapter used to fill the Bookshelf selector.
      */
@@ -339,9 +342,7 @@ public class BooksOnBookshelf
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener bookshelfSpinnerListener =
             new SpinnerInteractionListener(this::onBookshelfSelected);
-
     private NavDrawer navDrawer;
-
     private final OnBackPressedCallback backClosesNavDrawer =
             new OnBackPressedCallback(false) {
                 @Override
@@ -349,24 +350,6 @@ public class BooksOnBookshelf
                     // Paranoia... the drawer listener should/will disable us.
                     backClosesNavDrawer.setEnabled(false);
                     navDrawer.close();
-                }
-            };
-    private final OnBackPressedCallback backClosesFabMenu =
-            new OnBackPressedCallback(false) {
-                @Override
-                public void handleOnBackPressed() {
-                    // Paranoia... the FaMenu onOpenListener should/will disable us
-                    backClosesFabMenu.setEnabled(false);
-                    fabMenu.hideMenu();
-                }
-            };
-    private final OnBackPressedCallback backClearsSearchCriteria =
-            new OnBackPressedCallback(false) {
-                @Override
-                public void handleOnBackPressed() {
-                    vm.clearSearchCriteria();
-                    setNavIcon();
-                    buildBookList();
                 }
             };
 
@@ -445,6 +428,16 @@ public class BooksOnBookshelf
             });
         }
     }
+
+    private final OnBackPressedCallback backClosesFabMenu =
+            new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {
+                    // Paranoia... the FaMenu onOpenListener should/will disable us
+                    backClosesFabMenu.setEnabled(false);
+                    fabMenu.hideMenu();
+                }
+            };
 
     /**
      * Create the OnBackPressedDispatcher.
@@ -579,9 +572,12 @@ public class BooksOnBookshelf
         final Throwable report =
                 e != null ? e : new IllegalStateException("recoverAfterFailedBuild");
 
-        // dump the Style as in development this is almost certainly the cause
-        LoggerFactory.getLogger().e(TAG, report, "Style=" + vm.getStyle());
-        // and reset the style to hopefully recover.. restarting the app should work now.
+        LoggerFactory.getLogger().e(TAG, report,
+                                    "Bookshelf=" + vm.getBookshelf(),
+                                    "Style=" + vm.getStyle(),
+                                    "Filters=" + vm.getBookshelf().getFilters());
+
+        // Reset the style to hopefully recover.. restarting the app should work now.
         vm.onStyleChanged(this, BuiltinStyle.HARD_DEFAULT_UUID);
 
         // URGENT: CatastropheDialog needs more work
@@ -2654,4 +2650,6 @@ public class BooksOnBookshelf
             }
         }
     }
+
+
 }
