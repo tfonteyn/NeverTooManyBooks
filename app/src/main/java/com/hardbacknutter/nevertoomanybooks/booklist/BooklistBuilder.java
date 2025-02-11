@@ -496,11 +496,6 @@ class BooklistBuilder {
             }
         }
 
-        bookshelfFilters.stream()
-                        .filter(pFilter -> DBKey.LOANEE_NAME.equals(pFilter.getDBKey()))
-                        .findAny()
-                        .ifPresent(pFilter -> leftOuterJoins.add(TBL_BOOK_LOANEE));
-
         // ... and add them
         this.filters.addAll(bookshelfFilters);
     }
@@ -689,10 +684,28 @@ class BooklistBuilder {
      *      <li>{@link DBDefinitions#TBL_BOOK_IDENTIFIER} + {@link DBDefinitions#TBL_IDENTIFIERS}</li>
      * </ul>
      *
+     * @param context Current context
+     *
      * @return FROM clause
      */
     @NonNull
     private String buildFrom(@NonNull final Context context) {
+
+        // collect any joins we need for the filters
+        final List<String> pFilterKeys = filters
+                .stream()
+                .filter(filter -> filter instanceof PFilter)
+                .map(filter -> ((PFilter<?>) filter).getDBKey())
+                .collect(Collectors.toList());
+
+        if (pFilterKeys.contains(DBKey.LOANEE_NAME)) {
+            leftOuterJoins.add(TBL_BOOK_LOANEE);
+        }
+
+        if (pFilterKeys.contains(DBKey.FK_TAG)) {
+            leftOuterJoins.add(TBL_BOOK_TAG);
+        }
+
         final StringBuilder sb = new StringBuilder();
 
         // If there is a bookshelf specified (either as group or as a filter),
@@ -724,6 +737,9 @@ class BooklistBuilder {
         }
 
         if (style.hasGroup(BooklistGroup.TAGS_GENRE)) {
+            // remove if present
+            leftOuterJoins.remove(TBL_BOOK_TAG);
+
             // book-level not supported
             // || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)
             joinWithTags(sb);
