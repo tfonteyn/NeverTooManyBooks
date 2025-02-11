@@ -24,12 +24,12 @@ Repo: https://github.com/tfonteyn/NeverTooManyBooks.git
 Binaries: https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v%v/NeverTooManyBooks-v%v.apk
 
 Builds:
-  - versionName: '7.0.2'
-    versionCode: 93
-    commit: v7.0.2
+  - versionName: '7.0.3'
+    versionCode: 94
+    commit: v7.0.3
     subdir: app
     gradle: [ 'release' ]
-    output: NeverTooManyBooks-release-v7.0.2.apk
+    output: NeverTooManyBooks-release-v7.0.3.apk
 
 
 # MaintainerNotes: |-
@@ -41,5 +41,5 @@ Builds:
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 AllowedAPKSigningKeys: df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
-CurrentVersion: '7.0.2'
-CurrentVersionCode: 93
+CurrentVersion: '7.0.3'
+CurrentVersionCode: 94

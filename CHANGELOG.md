@@ -1,3 +1,13 @@
+### 7.0.3
+
+FIXES
+
+- github #106: DNB Identifier is text (not a number)
+- github #108: Settings/dentifiers was crashing
+- github #110: crash after upgrade when there was an active filter on genre
+
+---
+
 ### 7.0.2
 
 FIXES
