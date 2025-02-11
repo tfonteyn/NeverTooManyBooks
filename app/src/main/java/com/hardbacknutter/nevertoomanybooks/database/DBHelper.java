@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -92,11 +93,12 @@ public class DBHelper
      * v5.5.1: 33
      * v5.5.4: 34
      * v7.0.0: 35
-     * v7.1.0: 36
+     * v7.0.3: 36
+     * v7.1.0: 37
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 36;
+    public static final int DATABASE_VERSION = 37;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -533,6 +535,11 @@ public class DBHelper
             TBL_STRIPINFO_COLLECTION.create(db, true);
         }
         if (oldVersion < 36) {
+            db.execSQL("UPDATE " + TBL_IDENTIFIERS
+                       + " SET " + DBKey.IDENTIFIERS.TYPE + "='" + Identifier.TYPE_STRING + '\''
+                       + " WHERE " + DBKey.IDENTIFIERS.KEY + "='" + Identifier.SID_DNB + '\'');
+        }
+        if (oldVersion < 37) {
             TBL_LANG_MAPPINGS.create(db, true);
         }
 
