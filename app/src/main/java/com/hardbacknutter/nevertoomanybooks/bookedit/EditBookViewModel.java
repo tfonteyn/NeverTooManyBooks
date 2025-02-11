@@ -1263,8 +1263,7 @@ public class EditBookViewModel
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new IdentifierField<>(fragmentId, R.id.site_dnb,
-                                       Identifier.SID_DNB,
-                                       sidLongFormatter, true)
+                                         Identifier.SID_DNB)
                            .setTextInputLayoutId(R.id.lbl_site_dnb_de)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
