@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Debug;
 import android.os.StrictMode;
@@ -41,6 +42,7 @@ import com.hardbacknutter.util.logger.FileLogger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.acra.ACRA;
+import org.acra.ErrorReporter;
 import org.acra.ReportField;
 import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.DialogConfigurationBuilder;
@@ -167,27 +169,31 @@ public class App
                 // regex's
                 .withExcludeMatchingSharedPreferencesKeys(".*password.*", ".*host\\.user.*")
                 .withReportContent(
-                        // Device
-                        ReportField.PHONE_MODEL,
-                        ReportField.BRAND,
+                        // Device display,
+                        // while not essential for crashes, we still like to get
+                        // this as different resolutions use different Views,
+                        // and sometimes different code-path.
+                        // Example: typical phone versus a 7/10" tablet.
                         ReportField.DISPLAY,
+                        // Device Android version, just a plain "15",...
                         ReportField.ANDROID_VERSION,
-                        ReportField.BUILD,
-                        ReportField.ENVIRONMENT,
+
                         ReportField.TOTAL_MEM_SIZE,
                         ReportField.AVAILABLE_MEM_SIZE,
 
+                        // the reason we got these was to get the locale
+                        // We're now storing that in the CUSTOM_DATA
+                        // ReportField.INITIAL_CONFIGURATION,
+                        // ReportField.CRASH_CONFIGURATION,
+
+                        // a uuid for the report, not related to the device
                         ReportField.REPORT_ID,
 
-                        // Application
+                        // All of the below is Application, and NOT device.
                         ReportField.APP_VERSION_CODE,
-                        ReportField.BUILD_CONFIG,
-                        ReportField.FILE_PATH,
 
                         ReportField.APPLICATION_LOG,
                         ReportField.SHARED_PREFERENCES,
-                        ReportField.INITIAL_CONFIGURATION,
-                        ReportField.CRASH_CONFIGURATION,
                         ReportField.STACK_TRACE,
                         ReportField.STACK_TRACE_HASH,
                         ReportField.THREAD_DETAILS,
@@ -207,10 +213,21 @@ public class App
                 )
         );
 
-        ACRA.getErrorReporter().putCustomData("Signed-By", PackageInfoWrapper
+        final ErrorReporter errorReporter = ACRA.getErrorReporter();
+
+        // Signed by "me".
+        // When build by others, the sig will be absent or different, which is fine.
+        // But this is an easy indication to tell the origin.
+        errorReporter.putCustomData("Signed-By", PackageInfoWrapper
                 .createWithSignatures(this)
                 .getSignedBy()
                 .orElse("Not signed"));
+
+        // This can be very useful when the user sets another language.
+        // We have some code which needs to / is  aware of multi-locales.
+        errorReporter.putCustomData("device_locale",
+                                    Resources.getSystem().getConfiguration()
+                                             .getLocales().get(0).toString());
 
         Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
             if (throwable instanceof OutOfMemoryError) {
