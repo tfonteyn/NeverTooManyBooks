@@ -19,11 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
-    port: w320dp h509dp
-    land: w533dp h296dp
--->
 <resources>
 
     <!-- This base value will never get used as the dialogs will be fullscreen

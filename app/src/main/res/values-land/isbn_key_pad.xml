@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,11 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    4WVGA 4.0" (480 x 800) - 240dpi - sw320dp
-    port: w320dp h509dp
-    land: w533dp h296dp
--->
 <resources>
     <dimen name="isbn_keypad_key_height">48dp</dimen>
     <dimen name="isbn_keypad_key_width">72dp</dimen>

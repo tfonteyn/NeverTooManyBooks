@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,15 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    Pixel2 - 5.0" (1080 x 1920) - 420dpi - sw411dp
-    port: w411dp h659dp
-    land: w683dp h387dp
-
-    Samsung A5-2017 - 5.2" (1080 x 1920) - 480dpi - sw360dp
-    port:  w360dp h616dp
-    land:  w640dp h336dp
--->
 <resources>
     <dimen name="cover_list_padding">2dp</dimen>
     <dimen name="cover_details_0_padding">10dp</dimen>

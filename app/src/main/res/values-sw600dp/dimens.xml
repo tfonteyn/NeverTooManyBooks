@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,13 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    Screens 'just' larger than the Pixel2.
-
-    Pixel2 - 5.0" (1080 x 1920) - 420dpi - sw411dp
-    port: w411dp h659dp
-    land: w683dp h387dp
--->
 <resources>
     <dimen name="app_icon_size">120dp</dimen>
 

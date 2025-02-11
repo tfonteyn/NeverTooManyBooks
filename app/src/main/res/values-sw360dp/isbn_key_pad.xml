@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,11 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    Samsung A5-2017 - 5.2" (1080 x 1920) - 480dpi - sw360dp
-    port:  w360dp h616dp
-    land:  w640dp h336dp
--->
 <resources>
     <dimen name="isbn_keypad_key_height">72dp</dimen>
     <dimen name="isbn_keypad_key_width">108dp</dimen>
