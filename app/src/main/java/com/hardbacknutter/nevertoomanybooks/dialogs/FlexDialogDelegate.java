@@ -74,9 +74,9 @@ public interface FlexDialogDelegate
      * <p>
      * Called from {@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * <p>
-     * FIXME: (on small-screen devices) we do not apply insets. This is on purpose
-     *  as the screen is already small.... but while the toolbar is fully functional
-     *  admittedly it does not look good
+     * URGENT: we try to apply Window insets on the toolbar
+     *  in {@link FlexToolbar#initToolbar} but they have effect?
+     *  The toolbar is fully functional but overlaps the systembar.
      *
      * @param inflater  LayoutInflater
      * @param container parent view
