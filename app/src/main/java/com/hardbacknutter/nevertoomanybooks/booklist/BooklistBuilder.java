@@ -448,7 +448,7 @@ class BooklistBuilder {
      */
     private void addCriteria(@NonNull final SearchCriteria searchCriteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            LoggerFactory.getLogger().d(TAG, "addCriteria", "searchCriteria="
+            LoggerFactory.getLogger().d(TAG, "build|addCriteria", "searchCriteria="
                                                             + searchCriteria);
         }
 
@@ -682,21 +682,11 @@ class BooklistBuilder {
     }
 
     /**
-     * Create the FROM clause based on the {@link BooklistGroup}s and extra criteria.
-     * <p>
-     * Always joined are:
-     * <ul>
-     *      <li>{@link DBDefinitions#TBL_BOOK_AUTHOR} + {@link DBDefinitions#TBL_AUTHORS}</li>
-     *      <li>{@link #leftOuterJoins}</li>
-     * </ul>
-     * Optionally joined with:
-     * <ul>
-     *      <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF} + {@link DBDefinitions#TBL_BOOKSHELF}</li>
-     *      <li>{@link DBDefinitions#TBL_BOOK_PUBLISHER} + {@link DBDefinitions#TBL_PUBLISHERS}</li>
-     *      <li>{@link DBDefinitions#TBL_BOOK_SERIES} + {@link DBDefinitions#TBL_SERIES}</li>
-     *      <li>{@link DBDefinitions#TBL_BOOK_TAG} + {@link DBDefinitions#TBL_TAGS}</li>
-     *      <li>{@link DBDefinitions#TBL_BOOK_IDENTIFIER} + {@link DBDefinitions#TBL_IDENTIFIERS}</li>
-     * </ul>
+     * Create the FROM clause based on the
+     * {@link BooklistGroup}s,
+     * {@link Filter}s
+     * and any pre-defined leftOuterJoin's added by {@link SearchCriteria}
+     * and {@link Style#getBookLevelFieldsOrderBy()} fields.
      *
      * @param context Current context
      *
@@ -705,19 +695,22 @@ class BooklistBuilder {
     @NonNull
     private String buildFrom(@NonNull final Context context) {
 
-        // collect any joins we need for the filters
-        final List<String> pFilterKeys = filters
-                .stream()
-                .filter(filter -> filter instanceof PFilter)
-                .map(filter -> ((PFilter<?>) filter).getDBKey())
-                .collect(Collectors.toList());
-
-        if (pFilterKeys.contains(DBKey.LOANEE_NAME)) {
-            leftOuterJoins.add(TBL_BOOK_LOANEE);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger().d(TAG, "build|leftOuterJoins=" + leftOuterJoins);
+            LoggerFactory.getLogger().d(TAG, "build|filters=" + filters);
         }
 
-        if (pFilterKeys.contains(DBKey.FK_TAG)) {
-            leftOuterJoins.add(TBL_BOOK_TAG);
+        // Add any LEFT OUTER JOINS the filters ask for, but leave the books out.
+        // Others will removed if/when we're already using them for grouping
+        // see below
+        filters.stream()
+               .map(Filter::getLeftOuterJoinTable)
+               .flatMap(Optional::stream)
+               .filter(tableDefinition -> !TBL_BOOKS.equals(tableDefinition))
+               .forEach(leftOuterJoins::add);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger().d(TAG, "build|leftOuterJoins+filters=" + leftOuterJoins);
         }
 
         final StringBuilder sb = new StringBuilder();
@@ -726,6 +719,7 @@ class BooklistBuilder {
         // we start the join there.
         if (style.hasGroup(BooklistGroup.BOOKSHELF) || filteredOnBookshelf) {
             sb.append(TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF, TBL_BOOKS));
+            leftOuterJoins.remove(TBL_BOOK_BOOKSHELF);
         } else {
             // Otherwise, we start with the BOOKS table.
             sb.append(TBL_BOOKS.ref());
@@ -734,15 +728,18 @@ class BooklistBuilder {
         // We always want the primary author id in the cursor.
         // We add that id in {@link #addBookLevelDomains} see comments there
         joinWithAuthors(sb);
+        leftOuterJoins.remove(TBL_BOOK_AUTHOR);
 
         if (style.hasGroup(BooklistGroup.SERIES)
             || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_SERIES)) {
             joinWithSeries(sb);
+            leftOuterJoins.remove(TBL_BOOK_SERIES);
         }
 
         if (style.hasGroup(BooklistGroup.PUBLISHER)
             || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_PUBLISHER)) {
             joinWithPublishers(sb);
+            leftOuterJoins.remove(TBL_BOOK_PUBLISHER);
         }
 
         if (style.hasGroup(BooklistGroup.LANGUAGE)
@@ -751,20 +748,22 @@ class BooklistBuilder {
         }
 
         if (style.hasGroup(BooklistGroup.TAGS_GENRE)) {
-            // remove if present
-            leftOuterJoins.remove(TBL_BOOK_TAG);
-
             // book-level not supported
             // || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)
             joinWithTags(sb);
+            leftOuterJoins.remove(TBL_BOOK_TAG);
         }
 
         if (style.hasGroup(BooklistGroup.IDENTIFIER)) {
             // book-level not supported
             // || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_IDENTIFIER)
             joinWithIdentifiers(sb);
+            leftOuterJoins.remove(TBL_BOOK_IDENTIFIER);
         }
 
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger().d(TAG, "build|leftOuterJoins final=" + leftOuterJoins);
+        }
         // Add LEFT OUTER JOIN tables as needed
         leftOuterJoins.forEach(table -> sb.append(TBL_BOOKS.leftOuterJoin(table)));
 

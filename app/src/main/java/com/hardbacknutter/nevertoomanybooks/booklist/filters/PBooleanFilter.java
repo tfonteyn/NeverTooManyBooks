@@ -28,6 +28,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -93,6 +95,12 @@ public class PBooleanFilter
     public String getExpression() {
         //noinspection DataFlowIssue
         return table.dot(domain) + '=' + (value ? 1 : 0);
+    }
+
+    @NonNull
+    @Override
+    public Optional<TableDefinition> getLeftOuterJoinTable() {
+        return Optional.of(table);
     }
 
     @Override

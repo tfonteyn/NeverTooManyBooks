@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -102,6 +103,12 @@ public class PStringEqualityFilter
         // but we do need to handle single quotes as we are concatenating.
         //noinspection DataFlowIssue
         return table.dot(domain) + "='" + SqlEncode.singleQuotes(value) + '\'';
+    }
+
+    @NonNull
+    @Override
+    public Optional<TableDefinition> getLeftOuterJoinTable() {
+        return Optional.of(table);
     }
 
     @Override

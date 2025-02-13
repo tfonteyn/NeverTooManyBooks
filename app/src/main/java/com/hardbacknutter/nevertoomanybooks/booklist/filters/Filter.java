@@ -20,7 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Optional;
+
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
 /**
  * A generic SQL expression filter for use in {@code WHERE} clauses.
@@ -35,6 +40,19 @@ public interface Filter {
      */
     @Nullable
     String getExpression();
+
+    /**
+     * If the expression requires a LEFT OUTER JOIN, this method should provide
+     * the table to join with.
+     * <p>
+     * TODO: left outer for now until we need something better...
+     *
+     * @return table
+     */
+    @NonNull
+    default Optional<TableDefinition> getLeftOuterJoinTable() {
+        return Optional.empty();
+    }
 
     /**
      * Check if a filter is active / should be applied.

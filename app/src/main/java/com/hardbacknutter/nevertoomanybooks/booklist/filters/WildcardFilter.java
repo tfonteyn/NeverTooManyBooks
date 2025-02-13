@@ -21,6 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import androidx.annotation.NonNull;
 
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -66,6 +68,12 @@ public class WildcardFilter
         return '(' + table.dot(domain)
                + " LIKE '%" + SqlEncode.singleQuotes(criteria) + "%'"
                + ')';
+    }
+
+    @NonNull
+    @Override
+    public Optional<TableDefinition> getLeftOuterJoinTable() {
+        return Optional.of(table);
     }
 
     @Override
