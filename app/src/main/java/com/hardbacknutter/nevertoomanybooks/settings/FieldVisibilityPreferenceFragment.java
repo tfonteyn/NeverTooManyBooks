@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,8 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 public class FieldVisibilityPreferenceFragment
         extends BasePreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-    public static final String PK_FIELD_VISIBILITY = "fields.visibility";
 
     @NonNull
     private final SwitchPreference[] pCovers = new SwitchPreference[2];
@@ -131,13 +129,11 @@ public class FieldVisibilityPreferenceFragment
         }
 
         void load(@NonNull final SharedPreferences prefs) {
-            fieldVisibility.setBitValue(prefs.getLong(PK_FIELD_VISIBILITY, Long.MAX_VALUE));
+            fieldVisibility.load(prefs);
         }
 
         void save(@NonNull final SharedPreferences prefs) {
-            prefs.edit()
-                 .putLong(PK_FIELD_VISIBILITY, fieldVisibility.getBitValue())
-                 .apply();
+            fieldVisibility.save(prefs);
         }
     }
 }

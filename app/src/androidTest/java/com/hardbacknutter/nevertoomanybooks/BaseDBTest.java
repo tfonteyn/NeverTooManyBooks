@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
@@ -47,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
-import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.org.json.JSONObject;
@@ -107,7 +107,7 @@ public abstract class BaseDBTest {
                          .putBoolean("tips.tip.view_only_help", false)
                          .putInt(ExportHelper.PK_BACKUP_COUNTDOWN, 5)
                          // Bit pattern with all valid field bits turned on
-                         .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
+                         .putLong(FieldVisibility.PK_FIELD_VISIBILITY,
                                   9223372036854775807L)
                          .putString(Prefs.PK_BOOKLIST_CONTEXT_MENU, "0")
                          .putString(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY, "3")

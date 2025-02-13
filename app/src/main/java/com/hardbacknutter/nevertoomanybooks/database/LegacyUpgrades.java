@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -476,10 +475,7 @@ public final class LegacyUpgrades {
                 fieldVisibility.setVisible(dbKey, value);
             });
 
-            prefs.edit()
-                 .putLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
-                          fieldVisibility.getBitValue())
-                 .apply();
+            fieldVisibility.save(prefs);
         }
     }
 
@@ -583,7 +579,7 @@ public final class LegacyUpgrades {
                 // just convert; NO mapping during this upgrade.
                 // Use a Set to eliminate duplicates
                 final Set<String> tagNames = Arrays.stream(GENRE_SPLITTER_PATTERN.split(genre))
-                                                    .map(String::strip)
+                                                   .map(String::strip)
                                                    .collect(Collectors.toSet());
 
                 for (final String tagName : tagNames) {

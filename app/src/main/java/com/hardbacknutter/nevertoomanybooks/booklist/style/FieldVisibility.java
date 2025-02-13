@@ -19,8 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +61,16 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * <br/>Used as the defaults at <strong>creation time</strong> for the {@link UserStyle}s.
  */
 public class FieldVisibility {
+
+    /**
+     * Preference key for the bit-value.
+     */
+    @VisibleForTesting
+    public static final String PK_FIELD_VISIBILITY = "fields.visibility";
+    /**
+     * Legacy flag controlled from the global settings.
+     */
+    public static final String PK_LOANS = PK_FIELD_VISIBILITY + '.' + DBKey.LOANEE_NAME;
 
     /**
      * <strong>ALL</strong> keys which support visibility configuration.
@@ -197,6 +210,24 @@ public class FieldVisibility {
                        }
                    })
                    .reduce(0, (a, b) -> a | b);
+    }
+
+    /**
+     * Load preferences stored values into this instance.
+     *
+     * @param prefs to load from
+     */
+    public void load(@NonNull final SharedPreferences prefs) {
+        setBitValue(prefs.getLong(PK_FIELD_VISIBILITY, Long.MAX_VALUE));
+    }
+
+    /**
+     * Save the values from this instance to preferences.
+     *
+     * @param prefs to save to
+     */
+    public void save(@NonNull final SharedPreferences prefs) {
+        prefs.edit().putLong(PK_FIELD_VISIBILITY, getBitValue()).apply();
     }
 
     /**

@@ -94,7 +94,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -379,12 +378,8 @@ public class ServiceLocator {
         synchronized (this) {
             if (fieldVisibility == null) {
                 fieldVisibility = new FieldVisibility();
-                final long current = PreferenceManager
-                        .getDefaultSharedPreferences(getAppContext())
-                        .getLong(FieldVisibilityPreferenceFragment.PK_FIELD_VISIBILITY,
-                                 Long.MAX_VALUE);
-
-                fieldVisibility.setBitValue(current);
+                fieldVisibility.load(PreferenceManager
+                                             .getDefaultSharedPreferences(getAppContext()));
             }
         }
         return fieldVisibility;
