@@ -491,7 +491,7 @@ class BooklistBuilder {
                 } else {
                     // Filter on the current one only
                     this.filters.add(new NumberListFilter<>(TBL_BOOKSHELF, DOM_PK_ID,
-                                                            bookshelf.getId()));
+                                                            List.of(bookshelf.getId())));
                 }
             }
         }
