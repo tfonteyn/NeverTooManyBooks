@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.LoaneeFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
@@ -53,12 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -131,11 +130,6 @@ class BooklistBuilder {
     private static final String _BEGIN_ = " BEGIN ";
     private static final String END = "END";
     private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
-
-    private static final String LOAN_FILTER =
-            "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-            + _WHERE_ + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + "='%1$s'"
-            + _AND_ + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')';
 
     /**
      * Foreign key between the {@link Booklist} list table
@@ -464,12 +458,9 @@ class BooklistBuilder {
                         .ifPresent(filters::add);
 
             // Add a filter to retrieve only books lend to the given person (exact name).
-            // We want to use the exact string, so do not normalize the value,
-            // but we do need to handle single quotes as we are concatenating.
             final String loanee = searchCriteria.getLoanee();
             if (loanee != null && !loanee.isBlank()) {
-                filters.add(() -> String.format(LOAN_FILTER, SqlEncode.singleQuotes(loanee)));
-                leftOuterJoins.add(TBL_BOOK_LOANEE);
+                filters.add(new LoaneeFilter(loanee));
             }
         } else {
             // Add a where clause for: "AND books._id IN (list)".
