@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 public class PStringEqualityFilter
         implements PFilter<String> {
 
+    @SuppressWarnings("FieldNotUsedInToString")
     @StringRes
     private final int labelResId;
     @NonNull
@@ -59,11 +60,21 @@ public class PStringEqualityFilter
     private String value;
 
     /** The formatter to apply on each line item. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private Function<Context, FieldFormatter<String>> formatterSupplier;
+    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private FieldFormatter<String> formatter;
 
+    /**
+     * Constructor.
+     *
+     * @param dbKey      the field we're filtering on
+     * @param labelResId label string resource id for the name of the filter as shown to the user
+     * @param table      the table with the field
+     * @param domain     the domain representing the field
+     */
     PStringEqualityFilter(@NonNull final String dbKey,
                           @StringRes final int labelResId,
                           @NonNull final TableDefinition table,
@@ -201,5 +212,16 @@ public class PStringEqualityFilter
     @Override
     public int getPrefLayoutId() {
         return R.layout.row_edit_bookshelf_filter_string_equality;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PStringEqualityFilter{"
+               + "dbKey=" + dbKey
+               + ", table=" + table.getName()
+               + ", domain=" + domain.getName()
+               + ", value='" + value + '\''
+               + '}';
     }
 }

@@ -38,31 +38,25 @@ public class NumberListFilter<T extends Number>
         implements Filter {
 
     @NonNull
-    private final Domain domain;
-    @NonNull
     private final TableDefinition table;
+    @NonNull
+    private final Domain domain;
 
     @NonNull
     private final List<T> list;
 
-    public NumberListFilter(@NonNull final TableDefinition table,
-                            @NonNull final Domain domain,
-                            @NonNull final T id) {
-        this.domain = domain;
-        this.table = table;
-        this.list = List.of(id);
-    }
-
     /**
      * Constructor.
      *
-     * @param list of values
+     * @param table  the table with the field
+     * @param domain the domain representing the field
+     * @param list   the ids to filter on
      */
     public NumberListFilter(@NonNull final TableDefinition table,
                             @NonNull final Domain domain,
                             @NonNull final List<T> list) {
-        this.domain = domain;
         this.table = table;
+        this.domain = domain;
         this.list = list;
     }
 
@@ -83,5 +77,15 @@ public class NumberListFilter<T extends Number>
     @Override
     public boolean isActive() {
         return !list.isEmpty();
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "NumberListFilter{"
+               + "table=" + table.getName()
+               + ", domain=" + domain.getName()
+               + ", list=" + list
+               + '}';
     }
 }

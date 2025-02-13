@@ -42,6 +42,11 @@ public final class FilterFactory {
     /**
      * Used to build the GUI list of user options to create filters.
      * <p>
+     * It's these keys which get stored in
+     * {@link DBDefinitions#TBL_BOOKSHELF_FILTERS} as the filter name.
+     * So if we ever fix the misnamed keys, we MUST
+     * update any existing filters during the update.
+     * <p>
      * Dev. note: Not always the same mapping as {@link MapDBKey}
      */
     @SuppressWarnings({"PublicStaticCollectionField",
@@ -63,7 +68,10 @@ public final class FilterFactory {
             Map.entry(DBKey.FORMAT, R.string.lbl_format),
             Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
             Map.entry(DBKey.LOCATION, R.string.lbl_location),
-            // Different from MapDBKey. Here it MUST be "lbl_lend_out"
+            // FIXME: The key name is another mistake... this is not
+            //  filtering on the name but on the availability (or not)
+            //  of the book.
+            // The label is "lbl_lend_out", not as in MapDBKey.
             Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lend_out),
 
             Map.entry(DBKey.READ__BOOL, R.string.lbl_read),

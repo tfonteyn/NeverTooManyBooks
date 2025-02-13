@@ -59,20 +59,31 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 public class PBitmaskFilter
         implements PFilter<Set<Integer>> {
 
+    @SuppressWarnings("FieldNotUsedInToString")
     @StringRes
     private final int labelResId;
     @NonNull
     private final String dbKey;
     @NonNull
-    private final Domain domain;
-    @NonNull
     private final TableDefinition table;
+    @NonNull
+    private final Domain domain;
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Supplier<Map<Integer, Integer>> mapSupplier;
 
     @Nullable
     private Set<Integer> value;
 
+    /**
+     * Constructor.
+     *
+     * @param dbKey       the field we're filtering on
+     * @param labelResId  label string resource id for the name of the filter as shown to the user
+     * @param table       the table with the field
+     * @param domain      the domain representing the field
+     * @param mapSupplier bit/label-res-id
+     */
     PBitmaskFilter(@NonNull final String dbKey,
                    @StringRes final int labelResId,
                    @NonNull final TableDefinition table,
@@ -80,8 +91,8 @@ public class PBitmaskFilter
                    @NonNull final Supplier<Map<Integer, Integer>> mapSupplier) {
         this.dbKey = dbKey;
         this.labelResId = labelResId;
-        this.domain = domain;
         this.table = table;
+        this.domain = domain;
         this.mapSupplier = mapSupplier;
     }
 
@@ -198,5 +209,16 @@ public class PBitmaskFilter
     @Override
     public int getPrefLayoutId() {
         return R.layout.row_edit_bookshelf_filter_bitmask;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PBitmaskFilter{"
+               + ", dbKey=" + dbKey
+               + ", table=" + table.getName()
+               + ", domain=" + domain.getName()
+               + ", value=" + value
+               + '}';
     }
 }

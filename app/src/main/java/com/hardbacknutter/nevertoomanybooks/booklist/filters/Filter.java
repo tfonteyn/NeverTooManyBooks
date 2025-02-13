@@ -31,7 +31,7 @@ public interface Filter {
     /**
      * A Filter must implement this method and return a valid WHERE clause expression.
      *
-     * @return filter SQL expression, or undefined if not active.
+     * @return filter SQL expression, or undefined if {@link #isActive()} returns {@code false}.
      */
     @Nullable
     String getExpression();

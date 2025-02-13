@@ -37,6 +37,15 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 public class PHasValueFilter
         extends PBooleanFilter {
 
+    /**
+     * Constructor.
+     *
+     * @param dbKey      the field we're filtering on
+     * @param labelResId label string resource id for the name of the filter as shown to the user
+     * @param acEntries  resource id for the labels array
+     * @param table      the table with the field
+     * @param domain     the domain representing the field
+     */
     PHasValueFilter(@NonNull final String dbKey,
                     @StringRes final int labelResId,
                     @ArrayRes final int acEntries,

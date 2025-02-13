@@ -57,4 +57,12 @@ public class FtsMatchFilter
     public boolean isActive() {
         return !matchClause.isEmpty();
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "FtsMatchFilter{"
+               + "matchClause=`" + matchClause + '`'
+               + '}';
+    }
 }

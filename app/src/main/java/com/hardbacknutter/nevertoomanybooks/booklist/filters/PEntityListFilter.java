@@ -63,14 +63,16 @@ public class PEntityListFilter<T extends Entity>
         implements PFilter<Set<Long>> {
 
     protected final Set<Long> value = new HashSet<>();
+    @SuppressWarnings("FieldNotUsedInToString")
     @StringRes
     private final int labelResId;
     @NonNull
     private final String dbKey;
     @NonNull
-    private final Domain domain;
-    @NonNull
     private final TableDefinition table;
+    @NonNull
+    private final Domain domain;
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Supplier<List<T>> listSupplier;
     @Nullable
@@ -211,5 +213,17 @@ public class PEntityListFilter<T extends Entity>
     @Override
     public int getPrefLayoutId() {
         return R.layout.row_edit_bookshelf_filter_entity_list;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PEntityListFilter{"
+               + "dbKey=" + dbKey
+               + ", table=" + table.getName()
+               + ", domain=" + domain.getName()
+               + ", value=" + value
+               + ", entityMap=" + entityMap
+               + '}';
     }
 }

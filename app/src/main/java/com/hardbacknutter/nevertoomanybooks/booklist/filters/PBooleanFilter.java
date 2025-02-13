@@ -44,9 +44,10 @@ public class PBooleanFilter
         implements PFilter<Boolean> {
 
     @NonNull
-    protected final Domain domain;
-    @NonNull
     protected final TableDefinition table;
+    @NonNull
+    protected final Domain domain;
+    @SuppressWarnings("FieldNotUsedInToString")
     @StringRes
     private final int labelResId;
     @ArrayRes
@@ -56,6 +57,15 @@ public class PBooleanFilter
     @Nullable
     protected Boolean value;
 
+    /**
+     * Constructor.
+     *
+     * @param dbKey      the field we're filtering on
+     * @param labelResId label string resource id for the name of the filter as shown to the user
+     * @param acEntries  resource id for the labels array
+     * @param table      the table with the field
+     * @param domain     the domain representing the field
+     */
     PBooleanFilter(@NonNull final String dbKey,
                    @StringRes final int labelResId,
                    @ArrayRes final int acEntries,
@@ -99,7 +109,7 @@ public class PBooleanFilter
 
     @Override
     public void setPersistedValue(@Nullable final String value) {
-        this.value = value == null ? null : "1" .equals(value);
+        this.value = value == null ? null : "1".equals(value);
     }
 
     @SuppressLint("UseValueOf")
@@ -143,5 +153,17 @@ public class PBooleanFilter
     @Override
     public int getPrefLayoutId() {
         return R.layout.row_edit_bookshelf_filter_boolean;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PBooleanFilter{"
+               + "dbKey=" + dbKey
+               + ", table=" + table.getName()
+               + ", domain=" + domain.getName()
+               + ", acEntries=" + acEntries
+               + ", value=" + value
+               + '}';
     }
 }

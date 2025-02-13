@@ -36,9 +36,9 @@ public class WildcardFilter
         implements Filter {
 
     @NonNull
-    private final Domain domain;
-    @NonNull
     private final TableDefinition table;
+    @NonNull
+    private final Domain domain;
 
     @NonNull
     private final String criteria;
@@ -46,6 +46,8 @@ public class WildcardFilter
     /**
      * Constructor.
      *
+     * @param table    the table with the field
+     * @param domain   the domain representing the field
      * @param criteria to use by the expression
      */
     public WildcardFilter(@NonNull final TableDefinition table,
@@ -69,5 +71,15 @@ public class WildcardFilter
     @Override
     public boolean isActive() {
         return true;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "WildcardFilter{"
+               + "table=" + table.getName()
+               + ", domain=" + domain.getName()
+               + ", criteria='" + criteria + '\''
+               + '}';
     }
 }
