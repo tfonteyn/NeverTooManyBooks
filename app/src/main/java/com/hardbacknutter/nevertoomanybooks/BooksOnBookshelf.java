@@ -646,9 +646,6 @@ public class BooksOnBookshelf
                 // Note this is only effective for the actual sync switches.
                 // The launchers MUST have been created at Activity startup,
                 // due to how "registerForActivityResult" works.
-                //
-                // TODO: enabling the Calibre server in preferences will not trigger
-                //  the sync menu to be shown. The app MUST be restarted for that.
                 final boolean enable =
                         SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null
                         ||
