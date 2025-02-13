@@ -62,6 +62,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
@@ -540,6 +541,24 @@ public class DBHelper
                        + " WHERE " + DBKey.IDENTIFIERS.KEY + "='" + Identifier.SID_DNB + '\'');
         }
         if (oldVersion < 37) {
+            // THIS WILL COMMIT ALL PREVIOUS UPDATES
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            // This method must not be called while a transaction is in progress.
+            db.setForeignKeyConstraintsEnabled(false);
+            db.beginTransaction();
+
+            TBL_BOOKS.recreate(db);
+            TBL_DELETED_BOOKS.recreate(db);
+            TBL_STRIPINFO_COLLECTION.recreate(db);
+            TBL_CALIBRE_LIBRARIES.recreate(db);
+
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            // This method must not be called while a transaction is in progress.
+            db.setForeignKeyConstraintsEnabled(true);
+            db.beginTransaction();
+
             TBL_LANG_MAPPINGS.create(db, true);
         }
 

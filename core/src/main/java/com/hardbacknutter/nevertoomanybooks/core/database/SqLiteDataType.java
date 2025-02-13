@@ -53,16 +53,14 @@ public enum SqLiteDataType
     Blob("blob", Cursor.FIELD_TYPE_BLOB),
 
     /**
-     * Date and datetime are kept for clarity. We always use them as {@code String}.
+     * Date and datetime are stored as {@code SQL-ISO "text}.
      * <p>
      * <a href="https://sqlite.org/datatype3.html#date_and_time_datatype">date_and_time</a>
-     *
-     * URGENT: "date"/"datetime" NEED TO CHANGE TO "text" github #109
      */
-    Date("date", Cursor.FIELD_TYPE_STRING),
+    Date("text", Cursor.FIELD_TYPE_STRING),
 
-    /** Stored as UTC, in SQL-ISO format. */
-    DateTime("datetime", Cursor.FIELD_TYPE_STRING);
+    /** Stored as UTC, {@code SQL-ISO "text"}. */
+    DateTime("text", Cursor.FIELD_TYPE_STRING);
 
     /** {@link Parcelable}. */
     public static final Creator<SqLiteDataType> CREATOR = new Creator<>() {
@@ -78,6 +76,11 @@ public enum SqLiteDataType
         }
     };
 
+    /**
+     * Maps the datatype which sqlite REPORTS to our enum.
+     * <p>
+     * DO NOT USE FOR REVERSE LOOKUP.
+     */
     private static final Map<String, SqLiteDataType> MAP = Map.ofEntries(
             Map.entry("integer", Integer),
             Map.entry("int", Integer),

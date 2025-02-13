@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,6 +63,15 @@ public class CacheDbHelper
     public static final TableDefinition TBL_BDT_AUTHORS;
     /** DB name. */
     private static final String DATABASE_NAME = "cache.db";
+    /**
+     * Previous versions.
+     * <p>
+     * v1.0.0: 1
+     * v5.3.0: 2
+     * v7.1.0: 3  DOM_IMAGE_LAST_UPDATED__UTC -> "text"
+     * <p>
+     * Current version.
+     */
     private static final int DATABASE_VERSION = 2;
     private static final Domain DOM_PK_ID;
     /** {@link #TBL_IMAGE}. */
