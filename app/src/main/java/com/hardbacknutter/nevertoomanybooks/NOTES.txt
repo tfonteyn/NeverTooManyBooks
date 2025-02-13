@@ -1,10 +1,14 @@
 Draft notes for next version:
 
-### 7.0.1
+### 7.1.0
 
 NEW:
+- Date (first) published: the date-picker has been redesigned, and is much easier to use.
+- sorting by language now uses the full localized language name
+- added filter for identifiers
 
 FIXES:
+- Citations have been tweaked to better conform to the standards
 
 REMOVED:
 
@@ -17,15 +21,15 @@ https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwi
 
 https://apilevels.com/
 
-2024-10-05:
-14.0     33.67
-13.0     53.54
-12.0     67.81
-11.0     80.52
-10.0     87.44
-9.0      91.69
-8.1      92.94
-8.0      95.60
+2025-01-31:
+14.0     37.09
+13.0     57.66
+12.0     70.73
+11.0     82.35
+10.0     88.56
+9.0      92.15
+8.1      93.23
+8.0      95.24
 ====================================================================================================
 Android 15 insets / EdgeToEdge
 
@@ -46,13 +50,6 @@ Tried it out for the ViewPager2 usage:
 BottomSheets:
   I don't see the need... BottomSheet is the "focus". If the user decides they
   want to go 'back' while a BottomSheet is displayed, they should close the BottomSheet first.
-
-
-====================================================================================================
-Amazon... or "why are these sites not supported?"
- * Goodreads is owned by Amazon and has shut their API down.
- * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is shut down.
- * Amazon and the above are now using Captcha to blocks app access.
 
 ====================================================================================================
 
