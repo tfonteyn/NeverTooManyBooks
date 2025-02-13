@@ -484,22 +484,22 @@ public class DBHelper
             db.beginTransaction();
 
             // DBDefinitions.DOM_STYLE_NAME
-            TBL_BOOKLIST_STYLES.recreate(db);
+            TBL_BOOKLIST_STYLES.recreateV34(db);
 
             // DBDefinitions.DOM_BOOKSHELF_NAME
-            TBL_BOOKSHELF.recreate(db);
+            TBL_BOOKSHELF.recreateV34(db);
 
             // DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB, DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB
-            TBL_AUTHORS.recreate(db);
+            TBL_AUTHORS.recreateV34(db);
 
             // DBDefinitions.DOM_SERIES_TITLE_OB
-            TBL_SERIES.recreate(db);
+            TBL_SERIES.recreateV34(db);
 
             // DBDefinitions.DOM_PUBLISHER_NAME_OB
-            TBL_PUBLISHERS.recreate(db);
+            TBL_PUBLISHERS.recreateV34(db);
 
             // DBDefinitions.DOM_TITLE_OB
-            TBL_BOOKS.recreate(db);
+            TBL_BOOKS.recreateV34(db);
 
             db.setTransactionSuccessful();
             db.endTransaction();
