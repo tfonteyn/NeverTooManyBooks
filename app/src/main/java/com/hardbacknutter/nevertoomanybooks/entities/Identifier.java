@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
@@ -58,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
  * and an unknown identifier is always assumed to be a {@code TYPE_STRING}.
  */
 public class Identifier
-        implements Parcelable {
+        implements Parcelable, Entity {
 
     public static final String SID_ASIN = "asin";
     public static final String SID_AUDIBLE = "audible-asin";
@@ -94,6 +95,8 @@ public class Identifier
     public static final char TYPE_LONG = 'L';
     public static final char TYPE_STRING = 'S';
 
+    public static final int MAX_KEY_LEN = 15;
+
     /** {@link Parcelable}. */
     public static final Creator<Identifier> CREATOR = new Creator<>() {
         @Override
@@ -109,7 +112,6 @@ public class Identifier
         }
     };
 
-    public static final int MAX_KEY_LEN = 15;
     @NonNull
     private final String key;
     @NonNull
@@ -418,6 +420,14 @@ public class Identifier
      */
     @NonNull
     public String getName() {
+        return name;
+    }
+
+    @NonNull
+    @Override
+    public String getLabel(@NonNull final Context context,
+                           @NonNull final Details details,
+                           @NonNull final Style style) {
         return name;
     }
 

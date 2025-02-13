@@ -756,7 +756,8 @@ class BooklistBuilder {
             LoggerFactory.getLogger().d(TAG, "build|leftOuterJoins final=" + leftOuterJoins);
         }
         // Add LEFT OUTER JOIN tables as needed
-        leftOuterJoins.forEach(table -> sb.append(TBL_BOOKS.leftOuterJoin(table)));
+        // (it's a Set, no duplicates to check)
+        leftOuterJoins.stream().forEach(table -> sb.append(TBL_BOOKS.leftOuterJoin(table)));
 
         return sb.toString();
     }

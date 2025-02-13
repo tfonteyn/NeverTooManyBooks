@@ -56,21 +56,21 @@ public final class FilterFactory {
             Map.entry(DBKey.EDITION, R.string.lbl_edition),
             Map.entry(DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf),
             Map.entry(DBKey.FK_TAG, R.string.lbl_tag),
+            Map.entry(DBKey.FK_IDENTIFIER, R.string.lbl_identifier),
 
-            //FIXME: the key name is a mistake but makes no difference
-            // in functionality.
-            // It should have been BOOK_CONTENT_TYPE
-            // fix this during an upgrade where we can update
-            // the TBL_BOOKSHELF_FILTERS#filter_name column.
+            // FIXME: the key name is a mistake,
+            //  but makes no difference in functionality.
+            //  It should have been BOOK_CONTENT_TYPE
             Map.entry(DBKey.FK_TOC_ENTRY, R.string.lbl_book_type),
 
             Map.entry(DBKey.COLOR, R.string.lbl_color),
             Map.entry(DBKey.FORMAT, R.string.lbl_format),
             Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
             Map.entry(DBKey.LOCATION, R.string.lbl_location),
-            // FIXME: The key name is another mistake... this is not
-            //  filtering on the name but on the availability (or not)
-            //  of the book.
+            // FIXME: The key name is a mistake,
+            //  but makes no difference in functionality.
+            //  This is not filtering on the name but on the availability
+            //  (or not) of the book.
             // The label is "lbl_lend_out", not as in MapDBKey.
             Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lend_out),
 
@@ -155,15 +155,19 @@ public final class FilterFactory {
                         DBDefinitions.TBL_BOOK_BOOKSHELF, DBDefinitions.DOM_FK_BOOKSHELF,
                         () -> ServiceLocator.getInstance().getBookshelfDao().getAll());
             }
+            case DBKey.FK_IDENTIFIER: {
+                return new PEntityListFilter<>(
+                        dbKey, R.string.lbl_identifiers,
+                        DBDefinitions.TBL_BOOK_IDENTIFIER, DBDefinitions.DOM_FK_IDENTIFIER,
+                        () -> ServiceLocator.getInstance().getIdentifierDao().getAll());
+            }
             case DBKey.FK_TAG: {
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_tags,
                         DBDefinitions.TBL_BOOK_TAG, DBDefinitions.DOM_FK_TAG,
                         () -> ServiceLocator.getInstance().getTagDao().getAll());
             }
-
             case DBKey.FK_TOC_ENTRY: {
-                // TODO: see note with SUPPORTED above
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_book_type,
                         DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_CONTENT_TYPE,
