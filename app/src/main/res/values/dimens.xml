@@ -50,14 +50,6 @@
         port:  w360dp h616dp (presumed)
         land:  w640dp h336dp (presumed)
 
-    OBSOLETE, replaced by above "Small Phone"
-    Samsung A5-2017 (5.2") - sw360dp
-        Density: 480dpi
-        Resolution (px): 1080 x 1920
-        Resolution (dp): 360 x 640 == Compact/Medium
-        port:  w360dp h616dp
-        land:  w640dp h336dp
-
     2025-02-11: increasingly difficult to support due to Material styling/sizes.
     Some screens already look pretty bad.
     4WVGA (4.0") - sw320dp
