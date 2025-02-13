@@ -360,7 +360,9 @@ class BooklistBuilder {
         group.setAccumulatedDomains(new ArrayList<>(accumulatedDomains));
     }
 
-    /** build. */
+    /**
+     * build.
+     */
     private void setupNodeDomains() {
         // {@link BooklistGroup#GroupKey}.
         // The actual value is set on a by-group/book basis.
@@ -384,8 +386,12 @@ class BooklistBuilder {
         listTable.addIndex(DBKey.BL_NODE.GROUP, false, DOM_BL_NODE_GROUP);
     }
 
-    /** build. */
-    private void addBookLevelDomains() {
+    /**
+     * build.
+     *
+     * @param context Current context
+     */
+    private void addBookLevelDomains(@NonNull final Context context) {
         // Always get the book id
         addDomainExpression(DBExpr.BOOK_ID);
         // Always get the UUID.
@@ -428,9 +434,18 @@ class BooklistBuilder {
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
             leftOuterJoins.add(TBL_BOOK_LOANEE);
         }
+
+        if (CalibreHandler.isSyncEnabled(context)) {
+            DBExpr.CALIBRE.forEach(this::addDomainExpression);
+            leftOuterJoins.add(TBL_CALIBRE_BOOKS);
+        }
     }
 
-    /** build. */
+    /**
+     * build.
+     *
+     * @param searchCriteria to add
+     */
     private void addCriteria(@NonNull final SearchCriteria searchCriteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger().d(TAG, "addCriteria", "searchCriteria="
@@ -463,7 +478,11 @@ class BooklistBuilder {
         }
     }
 
-    /** build. */
+    /**
+     * build.
+     *
+     * @param context Current context
+     */
     private void addFilters(@NonNull final Context context) {
         // Prepare the Bookshelf filters; paranoia: make sure we only get the active ones
         final List<PFilter<?>> bookshelfFilters = bookshelf.pruneFilters();
@@ -506,7 +525,7 @@ class BooklistBuilder {
      *
      * @param context        Current context
      * @param db             Underlying database
-     * @param searchCriteria
+     * @param searchCriteria to add
      *
      * @return a Pair with the fully populated list-table and the navigation-table
      *
@@ -524,12 +543,7 @@ class BooklistBuilder {
 
         style.getGroupList().forEach(this::addGroup);
 
-        addBookLevelDomains();
-
-        if (CalibreHandler.isSyncEnabled(context)) {
-            leftOuterJoins.add(TBL_CALIBRE_BOOKS);
-            DBExpr.CALIBRE.forEach(this::addDomainExpression);
-        }
+        addBookLevelDomains(context);
 
         if (!searchCriteria.isEmpty()) {
             addCriteria(searchCriteria);
