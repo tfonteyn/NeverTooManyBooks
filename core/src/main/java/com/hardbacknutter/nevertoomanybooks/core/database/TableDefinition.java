@@ -563,10 +563,10 @@ public class TableDefinition {
      *
      * @param db Database Access
      *
-     * @see #recreate(SQLiteDatabase, Map, Collection)
+     * @see #recreate(SQLiteDatabase, Map)
      */
     public void recreate(@NonNull final SQLiteDatabase db) {
-        recreate(db, null, null);
+        recreate(db, new HashMap<>());
     }
 
     /**
@@ -578,14 +578,14 @@ public class TableDefinition {
      * <strong>DOES NOT CREATE INDEXES - those MUST be recreated afterwards by the caller</strong>
      * <p>
      * <a href="https://www.sqlite.org/releaselog/3_35_0.html">
-     *     SQLite 3.35 ALTER TABLE DROP COLUMN</a>
+     * SQLite 3.35 ALTER TABLE DROP COLUMN</a>
      * <p>
      * <a href="https://www.sqlite.org/releaselog/3_25_0.html">
-     *     SQLite 3.25 ALTER TABLE RENAME COLUMN</a>
+     * SQLite 3.25 ALTER TABLE RENAME COLUMN</a>
      * <p>
      * but...
      * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
-     *     Android 8.0 == API 26 == SqLite 3.18</a>
+     * Android 8.0 == API 26 == SqLite 3.18</a>
      * <p>
      * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
      * SQLite - making_other_kinds_of_table_schema_changes</a>
@@ -605,76 +605,51 @@ public class TableDefinition {
      *
      * @param db       Database Access
      * @param toRename (optional) Map of fields to be renamed
-     * @param toRemove (optional) List of fields to be removed
      */
     public void recreate(@NonNull final SQLiteDatabase db,
-                         @Nullable final Map<String, String> toRename,
-                         @Nullable final Collection<String> toRemove) {
+                         @NonNull final Map<String, String> toRename) {
 
+        // create the new table
         final String dstTableName = "copyOf" + name;
         // With constraints... sqlite does not allow to add constraints later.
         // Without indexes.
         db.execSQL(getCreateStatement(dstTableName, true));
 
-        // This handles re-ordered fields etc.
-        copyTableSafely(db, dstTableName, toRename, toRemove);
+        // Collect the source columns from the LIVE table,
+        // and NOT from the DBDefinition as the latter IS ALREADY CHANGED AT THIS POINT
+        final List<String> liveColumns = getTableInfo(db)
+                .getColumns()
+                .stream()
+                .map(ColumnInfo::getName)
+                .collect(Collectors.toList());
+
+        // The column list from the current DBDefinition
+        final List<String> definedColumns = domains.stream().map(Domain::getName)
+                                                   .collect(Collectors.toList());
+
+        // Build the SOURCE columns, by dropping columns which no longer exist.
+        final List<String> srcColumns = liveColumns
+                .stream()
+                .filter(definedColumns::contains)
+                .collect(Collectors.toList());
+
+        // Build the DESTINATION column list, by taking the potentially reduced source columns
+        // and renaming columns as needed.
+        final List<String> dstColumns = srcColumns
+                .stream()
+                .map(column -> toRename.getOrDefault(column, column))
+                .collect(Collectors.toList());
+
+        final String sql = "INSERT INTO " + dstTableName
+                           + " (" + String.join(",", dstColumns) + ")"
+                           + " SELECT " + String.join(",", srcColumns)
+                           + " FROM " + name;
+        db.execSQL(sql);
 
         db.execSQL("DROP TABLE " + name);
         db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + name);
     }
 
-    /**
-     * Provide a safe table copy method that is insulated from risks associated with
-     * column order. This method will copy all columns from the source (this table)
-     * to the destination table as given.
-     * <p>
-     * If columns do not exist in the destination, an error will occur. Columns in the
-     * destination that are not in the source will be defaulted or set to {@code null}
-     * if no default is defined.
-     *
-     * <ul>
-     *     <li>toRemove: columns already gone are ignored</li>
-     *     <li>toRename: columns already renamed are ignored</li>
-     * </ul>
-     *  @param db          Database Access
-     *
-     * @param destination to table
-     * @param toRename    (optional) Map of fields to be renamed
-     * @param toRemove    (optional) List of fields to be removed
-     */
-    private void copyTableSafely(@NonNull final SQLiteDatabase db,
-                                 @NonNull final String destination,
-                                 @Nullable final Map<String, String> toRename,
-                                 @Nullable final Collection<String> toRemove) {
-        final Collection<String> removals = toRemove != null ? toRemove : new ArrayList<>();
-        final Map<String, String> renames = toRename != null ? toRename : new HashMap<>();
-
-        // Note: do NOT use the 'domains' to check for columns no longer there,
-        // we'd be removing columns that need to be renamed as well.
-        //
-        // Build the source column list, removing columns we no longer want.
-        //
-        // We build this from the CURRENT/LIVE table, and NOT from the DBDefinition
-        // as the latter IS ALREADY CHANGED AT THIS POINT
-        final TableInfo sourceTable = getTableInfo(db);
-        final List<String> srcColumns = sourceTable
-                .getColumns()
-                .stream()
-                .map(ColumnInfo::getName)
-                .filter(s -> !removals.contains(s))
-                .collect(Collectors.toList());
-
-        // Build the destination column list, renaming columns as needed
-        final List<String> dstColumns = srcColumns
-                .stream()
-                .map(column -> renames.getOrDefault(column, column))
-                .collect(Collectors.toList());
-
-        final String sql =
-                "INSERT INTO " + destination + " (" + String.join(",", dstColumns) + ")"
-                + " SELECT " + String.join(",", srcColumns) + " FROM " + name;
-        db.execSQL(sql);
-    }
 
     /**
      * Return the SQL that can be used to define this table.
