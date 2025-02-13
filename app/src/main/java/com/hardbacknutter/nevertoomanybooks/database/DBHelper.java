@@ -73,6 +73,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAG_MAPPINGS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
  * {@link SQLiteOpenHelper} for the main database.
@@ -541,6 +542,8 @@ public class DBHelper
                        + " WHERE " + DBKey.IDENTIFIERS.KEY + "='" + Identifier.SID_DNB + '\'');
         }
         if (oldVersion < 37) {
+            // recreate tabled with date/datetime fields migrated to "text"
+
             // THIS WILL COMMIT ALL PREVIOUS UPDATES
             db.setTransactionSuccessful();
             db.endTransaction();
@@ -549,6 +552,7 @@ public class DBHelper
             db.beginTransaction();
 
             TBL_BOOKS.recreate(db);
+            TBL_TOC_ENTRIES.recreate(db);
             TBL_DELETED_BOOKS.recreate(db);
             TBL_STRIPINFO_COLLECTION.recreate(db);
             TBL_CALIBRE_LIBRARIES.recreate(db);
