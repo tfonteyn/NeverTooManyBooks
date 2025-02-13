@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,6 +56,8 @@ public enum SqLiteDataType
      * Date and datetime are kept for clarity. We always use them as {@code String}.
      * <p>
      * <a href="https://sqlite.org/datatype3.html#date_and_time_datatype">date_and_time</a>
+     *
+     * URGENT: "date"/"datetime" NEED TO CHANGE TO "text" github #109
      */
     Date("date", Cursor.FIELD_TYPE_STRING),
 
