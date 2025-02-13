@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -703,6 +704,13 @@ public final class LegacyUpgrades {
               .remove("librarything.host.url")
 
               .apply();
+
+        // Copy the legacy key to the bit-value
+        final boolean lending = prefs.getBoolean(FieldVisibility.PK_LOANS, false);
+        final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
+                                                              .getGlobalFieldVisibility();
+        fieldVisibility.setVisible(DBKey.LOANEE_NAME, lending);
+        fieldVisibility.save(prefs);
 
         // replaced by a database table in db36
         context.deleteSharedPreferences("language2iso3");

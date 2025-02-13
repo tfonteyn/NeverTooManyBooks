@@ -55,10 +55,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
@@ -254,6 +256,16 @@ public class SettingsFragment
         if (ReorderHelper.PK_SORT_TITLE_REORDERED.equals(key)) {
             // Set the activity result so our caller will recreate itself
             vm.setOnBackRequiresActivityRecreation();
+
+        } else if (FieldVisibility.PK_LOANS.equals(key)) {
+            // Copy the legacy format to the bitfield.
+            // We're leaving the legacy flag so the fragment will update the UI
+            // automatically.
+            final boolean lending = prefs.getBoolean(key, false);
+            final FieldVisibility fieldVisibility =
+                    ServiceLocator.getInstance().getGlobalFieldVisibility();
+            fieldVisibility.setVisible(DBKey.LOANEE_NAME, lending);
+            fieldVisibility.save(prefs);
         }
     }
 
