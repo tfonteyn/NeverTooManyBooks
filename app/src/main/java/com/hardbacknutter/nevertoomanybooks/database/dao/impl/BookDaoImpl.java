@@ -1158,7 +1158,10 @@ public class BookDaoImpl
         static final String SELECT_BOOK =
                 SELECT_ + TBL_BOOKS.dotAs(
                         DBKey.PK_ID, DBKey.BOOK_UUID,
-                        DBKey.TITLE, DBKey.TITLE_ORIGINAL_LANG,
+                        DBKey.TITLE,
+                        DBKey.TRANSLATION_ORIGINAL_TITLE,
+                        DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
+
                         DBKey.ISBN, DBKey.CONTENT_TYPE,
                         DBKey.PUBLICATION_DATE, DBKey.PRINT_RUN,
                         DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY,

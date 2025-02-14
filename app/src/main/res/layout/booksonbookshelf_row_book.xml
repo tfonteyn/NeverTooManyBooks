@@ -84,7 +84,7 @@
                 app:layout_constraintStart_toEndOf="@id/col1"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="SelectableText"
-                tools:text="series_num_long"
+                tools:text="@sample/data.json/series/title_nr"
                 tools:visibility="visible"
                 />
 
@@ -121,12 +121,23 @@
                 />
 
             <TextView
+                android:id="@+id/original_language"
+                style="@style/BoB.Group.Book.OriginalTitle"
+                android:layout_width="wrap_content"
+                android:textSize="11sp"
+                app:layout_constraintStart_toStartOf="@id/original_title"
+                app:layout_constraintTop_toBottomOf="@id/original_title"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/language/name"
+                />
+
+            <TextView
                 android:id="@+id/series_title"
                 style="@style/BoB.Group.Book.SeriesTitle"
                 android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
                 app:layout_constraintStart_toEndOf="@id/col1"
-                app:layout_constraintTop_toBottomOf="@id/original_title"
+                app:layout_constraintTop_toBottomOf="@id/original_language"
                 app:layout_constraintVertical_bias="0"
                 app:layout_constraintVertical_chainStyle="packed"
                 tools:ignore="SelectableText"

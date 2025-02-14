@@ -297,7 +297,6 @@ public class AmazonSearchEngine
                               @NonNull final String url,
                               @NonNull final Document document)
             throws SearchException {
-        // FIXME: Amazon captcha
         final Element block = document.selectFirst("form[action='/errors/validateCaptcha']");
         if (block != null) {
             if (BuildConfig.DEBUG /* always */) {

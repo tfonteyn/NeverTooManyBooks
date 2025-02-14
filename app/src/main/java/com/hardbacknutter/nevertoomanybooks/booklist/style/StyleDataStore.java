@@ -149,7 +149,10 @@ public class StyleDataStore
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "publisher", DBKey.FK_PUBLISHER);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "bookshelves", DBKey.FK_BOOKSHELF);
 
-        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "original.title", DBKey.TITLE_ORIGINAL_LANG);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "original.title",
+                                         DBKey.TRANSLATION_ORIGINAL_TITLE);
+        PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "original.language",
+                                         DBKey.TRANSLATION_ORIGINAL_LANGUAGE);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "condition", DBKey.CONDITION_BOOK);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "isbn", DBKey.ISBN);
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "publication.date",

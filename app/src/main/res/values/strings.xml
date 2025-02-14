@@ -401,6 +401,10 @@
     <string name="cd_btn_drag_handle">Drag to reorder this list</string>
     <!-- [VERIFIED] ContentDescription text for the delete (cross) icon at the end of an input box. -->
     <string name="cd_clear_text_end_icon">Clear text</string>
+    <!-- Displayed on a date-picker where the usr can pick a YYYY, or YYYY-MM, or YYYY-MM-DD
+         for fields like the publication date of a book.
+    -->
+    <string name="info_partial_date_picker">Tap a previously selected month or day to unselect it.</string>
     <!-- ISFDB specific
      Some functionality is limited to the ISFDB web site only.
      This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
@@ -1160,6 +1164,9 @@
     <string name="lbl_original_title">Original title</string>
     <!-- Field label: the original title of a translated book; Long version of the label "lbl_original_title_long".-->
     <string name="lbl_original_title_long">Original title if this book is a translation</string>
+    <!-- Field label: the original language of a translated book. -->
+    <string name="lbl_original_language">Original language</string>
+
     <string name="lbl_barcode">Barcode</string>
     <!-- [VERIFIED] Label for the description which the app fetches from internet sites -->
     <string name="lbl_description">Description</string>
@@ -2026,5 +2033,4 @@
     <string name="option_tuning"
             translatable="false">Tuning</string>
 
-    <string name="info_partial_date_picker">Tap a previously selected month or day to unselect it.</string>
 </resources>

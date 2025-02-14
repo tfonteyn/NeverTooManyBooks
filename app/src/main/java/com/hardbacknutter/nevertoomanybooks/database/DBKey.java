@@ -80,8 +80,10 @@ public final class DBKey {
      * This will either be a translated title or the original title.
      */
     public static final String TITLE = "title";
-    /** The original-language title of a translated book. */
-    public static final String TITLE_ORIGINAL_LANG = "title_original_lang";
+    /** The original title of a translated book. */
+    public static final String TRANSLATION_ORIGINAL_TITLE = "title_original_lang";
+    /** The original language of a translated book. */
+    public static final String TRANSLATION_ORIGINAL_LANGUAGE = "translation_orig_lang";
 
     public static final String COLOR = "color";
     /**

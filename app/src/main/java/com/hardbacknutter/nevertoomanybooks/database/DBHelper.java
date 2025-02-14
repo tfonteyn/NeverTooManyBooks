@@ -441,7 +441,7 @@ public class DBHelper
             TBL_BOOKS.alterTableAddColumns(db, LegacyUpgrades.DOM_ESID_BEDETHEQUE);
         }
         if (oldVersion < 24) {
-            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TITLE_ORIGINAL_LANG);
+            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TRANSLATION_ORIGINAL_TITLE);
         }
         if (oldVersion < 25) {
             TBL_DELETED_BOOKS.create(db, true);
@@ -542,7 +542,8 @@ public class DBHelper
                        + " WHERE " + DBKey.IDENTIFIERS.KEY + "='" + Identifier.SID_DNB + '\'');
         }
         if (oldVersion < 37) {
-            // recreate tabled with date/datetime fields migrated to "text"
+            // Recreate tabled with date/datetime fields migrated to "text"
+            // Also takes care of adding DOM_TRANSLATION_ORIGINAL_LANGUAGE
 
             // THIS WILL COMMIT ALL PREVIOUS UPDATES
             db.setTransactionSuccessful();

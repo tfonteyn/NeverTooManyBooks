@@ -430,6 +430,17 @@ public class Languages {
 
         final String isoCode = getIsoCode(locale);
 
+        // Paranoia... this SHOULD only ever happen in the developer environment
+        if (isoLanguageDao.get().count() == 0) {
+            final SharedPreferences.Editor editor = preferences.edit();
+            preferences.getAll()
+                       .keySet()
+                       .stream()
+                       .filter(key -> key.startsWith(PK_LANG_CREATED_PREFIX))
+                       .forEach(editor::remove);
+            editor.apply();
+        }
+
         // just return if already done for this Locale.
         if (preferences.getBoolean(PK_LANG_CREATED_PREFIX + isoCode, false)) {
             return;

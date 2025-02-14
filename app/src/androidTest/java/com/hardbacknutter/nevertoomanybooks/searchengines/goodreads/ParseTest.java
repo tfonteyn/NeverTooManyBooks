@@ -91,7 +91,7 @@ public class ParseTest
         assertEquals("Paperback", book.getString(DBKey.FORMAT));
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("L'Agent 212, Tome 01 : 24 heures sur 24",
-                     book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("2007-12-01", book.getString(DBKey.PUBLICATION_DATE));
         assertEquals(new PartialDate(1981, 1, 1), book.getFirstPublicationDate());
         assertEquals(4
@@ -167,7 +167,7 @@ public class ParseTest
         assertEquals("Dutch", book.getString(DBKey.LANGUAGE));
         assertEquals("Kindle Edition", book.getString(DBKey.FORMAT));
         assertNull(book.getString(DBKey.PAGES, null));
-        assertNull(book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertNull(book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("2024-10-21", book.getString(DBKey.PUBLICATION_DATE));
         assertEquals(new PartialDate(2022, 10, 28), book.getFirstPublicationDate());
         assertEquals(3, book.getFloat(DBKey.RATING, realNumberParser), 0);
@@ -323,7 +323,7 @@ public class ParseTest
         assertFalse(book.isEmpty());
 
         assertEquals("Foundation and Empire", book.getTitle());
-        assertNull(book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertNull(book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("9780553803723", book.getIsbn());
         assertEquals("English", book.getString(DBKey.LANGUAGE));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT));
@@ -411,7 +411,7 @@ public class ParseTest
         assertFalse(book.isEmpty());
 
         assertEquals("The Aenied", book.getTitle());
-        assertEquals("Aeneis", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertEquals("Aeneis", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertNull(book.getString(DBKey.ISBN, null));
         assertNull(book.getString(DBKey.LANGUAGE, null));
         assertNull(book.getString(DBKey.FORMAT, null));

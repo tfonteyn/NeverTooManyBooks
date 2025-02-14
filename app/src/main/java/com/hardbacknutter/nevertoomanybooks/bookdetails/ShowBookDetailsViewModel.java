@@ -66,6 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * Shared data between details and Read fragments.
+ *
+ * FIXME: cleanup unneeded addRelatedViews for labels
  */
 public class ShowBookDetailsViewModel
         extends ViewModel
@@ -276,7 +278,10 @@ public class ShowBookDetailsViewModel
         // book fields
         fields.add(new TextViewField<>(FragmentId.Main, R.id.title, DBKey.TITLE));
         fields.add(new TextViewField<>(FragmentId.Main, R.id.original_title,
-                                       DBKey.TITLE_ORIGINAL_LANG));
+                                       DBKey.TRANSLATION_ORIGINAL_TITLE));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.original_language,
+                                       DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
+                                       languageFormatter));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,

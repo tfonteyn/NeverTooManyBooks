@@ -327,10 +327,18 @@ public final class DBExpr {
                                     sort)
                     );
                 }
-                case DBKey.TITLE_ORIGINAL_LANG: {
+                case DBKey.TRANSLATION_ORIGINAL_TITLE: {
                     return List.of(
                             new DomainExpression(
-                                    DBDefinitions.DOM_TITLE_ORIGINAL_LANG,
+                                    DBDefinitions.DOM_TRANSLATION_ORIGINAL_TITLE,
+                                    DBDefinitions.TBL_BOOKS,
+                                    sort)
+                    );
+                }
+                case DBKey.TRANSLATION_ORIGINAL_LANGUAGE: {
+                    return List.of(
+                            new DomainExpression(
+                                    DBDefinitions.DOM_TRANSLATION_ORIGINAL_LANGUAGE,
                                     DBDefinitions.TBL_BOOKS,
                                     sort)
                     );

@@ -77,7 +77,8 @@ public abstract class BaseStyle
 
         // The field order here is assuming the user will need to sort more likely
         // on the fields listed at the top.
-        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TITLE_ORIGINAL_LANG, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TRANSLATION_ORIGINAL_TITLE, Sort.Unsorted);
+        BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, Sort.Unsorted);
 
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_AUTHOR, Sort.Unsorted);
         BOOK_LEVEL_FIELDS_DEFAULTS.put(DBKey.FK_SERIES, Sort.Unsorted);

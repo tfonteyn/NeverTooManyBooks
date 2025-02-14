@@ -250,5 +250,11 @@
             android:key="date_acquired"
             android:title="@string/lbl_date_acquired" />
 
+        <!-- bit: 37 -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="translation_orig_lang"
+            android:title="@string/lbl_original_language" />
+
     </com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory>
 </PreferenceScreen>

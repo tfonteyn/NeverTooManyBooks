@@ -322,10 +322,15 @@ public final class DBDefinitions {
     public static final Domain DOM_TITLE_OB;
 
     /**
+     * {@link #TBL_BOOKS}.
      * For translated books, the title in the original language.
-     * ENHANCE: Currently there is no extra field to indicate the original language.
      */
-    public static final Domain DOM_TITLE_ORIGINAL_LANG;
+    public static final Domain DOM_TRANSLATION_ORIGINAL_TITLE;
+    /**
+     * {@link #TBL_BOOKS}.
+     * For translated books, the language of the original.
+     */
+    public static final Domain DOM_TRANSLATION_ORIGINAL_LANGUAGE;
 
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
     public static final Domain DOM_DATE_FIRST_PUBLICATION;
@@ -831,8 +836,15 @@ public final class DBDefinitions {
                         .withDefaultEmptyString()
                         .build();
 
-        DOM_TITLE_ORIGINAL_LANG =
-                new Domain.Builder(DBKey.TITLE_ORIGINAL_LANG, SqLiteDataType.Text)
+        DOM_TRANSLATION_ORIGINAL_TITLE =
+                new Domain.Builder(DBKey.TRANSLATION_ORIGINAL_TITLE, SqLiteDataType.Text)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
+
+        DOM_TRANSLATION_ORIGINAL_LANGUAGE =
+                new Domain.Builder(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
@@ -1543,7 +1555,8 @@ public final class DBDefinitions {
                             // book data
                             DOM_TITLE,
                             DOM_TITLE_OB,
-                            DOM_TITLE_ORIGINAL_LANG,
+                            DOM_TRANSLATION_ORIGINAL_TITLE,
+                            DOM_TRANSLATION_ORIGINAL_LANGUAGE,
                             DOM_BOOK_ISBN,
                             DOM_BOOK_DATE_PUBLISHED,
                             DOM_DATE_FIRST_PUBLICATION,

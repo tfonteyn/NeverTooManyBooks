@@ -493,7 +493,7 @@ public class DoubanSearchEngine
                     // Original title
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        book.putString(DBKey.TITLE_ORIGINAL_LANG, n.toString().strip());
+                        book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, n.toString().strip());
                     }
                     break;
                 }

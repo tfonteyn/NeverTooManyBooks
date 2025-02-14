@@ -510,7 +510,7 @@ public class GoodreadsSearchEngine
             if (originalTitle != null && !originalTitle.isEmpty()
                 // sometimes it's just a copy... ignore those
                 && !originalTitle.equals(book.getTitle())) {
-                book.putString(DBKey.TITLE_ORIGINAL_LANG, originalTitle);
+                book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, originalTitle);
             }
         }
 

@@ -259,8 +259,9 @@ public class BookHolder
             showOrHidePublisher(rowData, usePub, usePubDate);
         }
         if (use.contains(DBKey.FIRST_PUBLICATION_DATE)) {
-            showOrHide(vb.dateFirstPublication, rowData, DBKey.FIRST_PUBLICATION_DATE,
-                       R.string.lbl_date_first_publication_as_single_char);
+            showOrHideDate(vb.dateFirstPublication,
+                           rowData.getString(DBKey.FIRST_PUBLICATION_DATE, null),
+                           R.string.lbl_date_first_publication_as_single_char);
         }
 
         final boolean useDateAdded = use.contains(DBKey.DATE_ADDED__UTC);
@@ -270,16 +271,21 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.DATE_ACQUIRED)) {
-            showOrHide(vb.dateAcquired, rowData, DBKey.DATE_ACQUIRED,
-                       R.string.lbl_date_acquired_as_single_char);
+            showOrHideDate(vb.dateAcquired, rowData.getString(DBKey.DATE_ACQUIRED, null),
+                           R.string.lbl_date_acquired_as_single_char);
         }
 
         if (use.contains(DBKey.FK_BOOKSHELF)) {
             showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF.BOOK_BOOKSHELF_NAMES_AS_CSV));
         }
 
-        if (use.contains(DBKey.TITLE_ORIGINAL_LANG)) {
-            showOrHide(vb.originalTitle, rowData.getString(DBKey.TITLE_ORIGINAL_LANG));
+        if (use.contains(DBKey.TRANSLATION_ORIGINAL_TITLE)) {
+            showOrHide(vb.originalTitle, rowData.getString(DBKey.TRANSLATION_ORIGINAL_TITLE));
+        }
+
+        if (use.contains(DBKey.TRANSLATION_ORIGINAL_LANGUAGE)) {
+            showOrHideLanguage(vb.originalLanguage,
+                               rowData.getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE));
         }
 
         if (use.contains(DBKey.CONDITION_BOOK)) {
@@ -301,11 +307,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.LANGUAGE)) {
-            // We could use the LanguageFormatter but there is really no point here
-            final String language = ServiceLocator
-                    .getInstance().getLanguages().getDisplayLanguageFromISO3(
-                            itemView.getContext(), rowData.getString(DBKey.LANGUAGE));
-            showOrHide(vb.language, language);
+            showOrHideLanguage(vb.language, rowData.getString(DBKey.LANGUAGE));
         }
 
         if (use.contains(DBKey.LOCATION)) {
@@ -351,27 +353,6 @@ public class BookHolder
     }
 
     /**
-     * Conditionally display the text.
-     *
-     * @param view    to populate
-     * @param rowData to read from
-     * @param dbKey   to read
-     * @param symbol  to combine/display
-     */
-    private void showOrHide(@NonNull final TextView view,
-                            @NonNull final DataHolder rowData,
-                            @NonNull final String dbKey,
-                            @StringRes final int symbol) {
-        final String text = rowData.getString(dbKey, null);
-        if (text != null && !text.isEmpty()) {
-            view.setText(formatDate(view.getContext(), symbol, text));
-            view.setVisibility(View.VISIBLE);
-        } else {
-            view.setVisibility(View.GONE);
-        }
-    }
-
-    /**
      * Conditionally display 'text'.
      *
      * @param view to populate
@@ -399,24 +380,62 @@ public class BookHolder
     }
 
     /**
+     * Conditionally display a language.
+     *
+     * @param view to populate
+     * @param iso3 language code
+     */
+    private void showOrHideLanguage(@NonNull final TextView view,
+                                    @Nullable final String iso3) {
+        // We could use the LanguageFormatter but there is really no point here
+        if (iso3 != null && !iso3.isEmpty()) {
+            final String language = ServiceLocator
+                    .getInstance().getLanguages()
+                    .getDisplayLanguageFromISO3(view.getContext(), iso3);
+            view.setText(language);
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Conditionally display a date.
+     *
+     * @param view   to populate
+     * @param text   to set
+     * @param symbol to combine/display
+     */
+    private void showOrHideDate(@NonNull final TextView view,
+                                @Nullable final String text,
+                                @StringRes final int symbol) {
+        if (text != null && !text.isEmpty()) {
+            view.setText(formatDate(view.getContext(), symbol, text));
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
+    }
+
+    /**
      * Conditionally show the detailed reading-progress information.
      *
      * @param rowData with the data
      */
     private void showOrHideReadingProgress(@NonNull final DataHolder rowData) {
-        String txt = rowData.getString(DBKey.READ_PROGRESS);
-        if (txt.isEmpty()) {
+        final String text = rowData.getString(DBKey.READ_PROGRESS);
+        if (text.isEmpty()) {
             // no details available
             vb.readProgress.setVisibility(View.GONE);
         } else {
-            final ReadingProgress readingProgress = ReadingProgress.fromJson(txt);
+            final ReadingProgress readingProgress = ReadingProgress.fromJson(text);
             final int percentage = readingProgress.getPercentage();
             if (percentage == 0 || percentage == 100) {
                 // The Read/Unread status is already indicated by vb.iconRead
                 vb.readProgress.setVisibility(View.GONE);
             } else {
-                txt = readingProgress.format(itemView.getContext());
-                showOrHide(vb.readProgress, txt);
+                vb.readProgress.setText(readingProgress.format(itemView.getContext()));
+                vb.readProgress.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -519,12 +538,12 @@ public class BookHolder
     }
 
     private void showOrHideDateAddedAndLastUpdated(@NonNull final DataHolder rowData,
-                                                   final boolean useDateAdded,
-                                                   final boolean useDateLastUpdated) {
+                                                   final boolean showDateAdded,
+                                                   final boolean showDateLastUpdated) {
         final Context context = vb.dateAddedAndLastUpdated.getContext();
 
         String dateAdded = null;
-        if (useDateAdded) {
+        if (showDateAdded) {
             dateAdded = rowData.getString(DBKey.DATE_ADDED__UTC, null);
             if (dateAdded != null) {
                 dateAdded = formatDate(context,
@@ -534,7 +553,7 @@ public class BookHolder
         }
 
         String dateLastUpdated = null;
-        if (useDateLastUpdated) {
+        if (showDateLastUpdated) {
             dateLastUpdated = rowData.getString(DBKey.DATE_LAST_UPDATED__UTC, null);
             if (dateLastUpdated != null) {
                 dateLastUpdated = formatDate(context,

@@ -60,6 +60,13 @@ public class IsoLanguageDaoImpl
     }
 
     @Override
+    public int count() {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
+            return (int) stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    @Override
     public void add(@NonNull final Locale userLocale)
             throws DaoInsertException {
 
@@ -130,6 +137,9 @@ public class IsoLanguageDaoImpl
     }
 
     private static final class Sql {
+        static final String COUNT_ALL =
+                SELECT_COUNT_FROM_ + DBDefinitions.TBL_LANG_MAPPINGS;
+
         static final String FIND_BY_DNAME =
                 SELECT_ + DBKey.LANG_MAPPING.ISO3
                 + _FROM_ + DBDefinitions.TBL_LANG_MAPPINGS

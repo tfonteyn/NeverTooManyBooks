@@ -345,7 +345,7 @@ public class DnbSearchEngine
                             case "Werk":
                             case "Work": {
                                 // This looks like it's the original title for a translated book
-                                book.putString(DBKey.TITLE_ORIGINAL_LANG, td.text());
+                                book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, td.text());
                                 break;
                             }
                             case "Teil von":

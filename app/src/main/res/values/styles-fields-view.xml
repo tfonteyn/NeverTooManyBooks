@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -52,12 +52,16 @@
 
     <style name="Field.BookTitle.Large">
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <!-- large is 16sp, we want extra large here -->
         <item name="android:textSize">22sp</item>
     </style>
 
+    <style name="Field.BookTitle.Medium">
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+    </style>
+
     <style name="Field.BookTitle.Small">
-        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
     <style name="Field.Isbn"

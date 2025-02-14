@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -129,6 +129,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_language"
             style="@style/TIL.Language"
+            android:hint="@string/lbl_language"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_title"
             app:layout_constraintEnd_toEndOf="parent"
             >
@@ -162,6 +163,25 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_original_language"
+            style="@style/TIL.Language"
+            android:hint="@string/lbl_original_language"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_original_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/original_language"
+                style="@style/TIA.InlineStringField"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                tools:text="@sample/data.json/language/name"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier_covers_bottom"

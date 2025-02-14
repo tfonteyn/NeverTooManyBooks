@@ -408,7 +408,6 @@ public class Book
         // //NEWTHINGS: new fields
 
         duplicate.putString(DBKey.TITLE, getTitle());
-        duplicate.putString(DBKey.TITLE_ORIGINAL_LANG, getString(DBKey.TITLE_ORIGINAL_LANG));
         duplicate.putString(DBKey.ISBN, getString(DBKey.ISBN));
 
         if (duplicate.contains(BKEY_BOOKSHELF_LIST)) {
@@ -429,6 +428,11 @@ public class Book
         if (duplicate.contains(BKEY_TAG_LIST)) {
             duplicate.setTags(getTags());
         }
+
+        duplicate.putString(DBKey.TRANSLATION_ORIGINAL_TITLE,
+                            getString(DBKey.TRANSLATION_ORIGINAL_TITLE));
+        duplicate.putString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
+                            getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE));
 
         // publication data
         duplicate.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));

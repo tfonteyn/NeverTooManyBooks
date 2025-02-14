@@ -91,7 +91,8 @@ public final class MapDBKey {
             Map.entry(DBKey.TAGS.TAG, R.string.lbl_tags),
             Map.entry(DBKey.SIGNED__BOOL, R.string.lbl_signed),
             Map.entry(DBKey.TITLE, R.string.lbl_title),
-            Map.entry(DBKey.TITLE_ORIGINAL_LANG, R.string.lbl_original_title),
+            Map.entry(DBKey.TRANSLATION_ORIGINAL_TITLE, R.string.lbl_original_title),
+            Map.entry(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, R.string.lbl_original_language),
 
             // The BooklistGroup specific domains for sorting
             // NEWTHINGS: BooklistGroup add BlgDBKey.SORT_ as needed

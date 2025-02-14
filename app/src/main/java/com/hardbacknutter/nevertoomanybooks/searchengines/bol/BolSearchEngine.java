@@ -448,7 +448,7 @@ public class BolSearchEngine
                     }
                     case "Originele titel":
                     case "Titre original": {
-                        processText(value, DBKey.TITLE_ORIGINAL_LANG, book);
+                        processText(value, DBKey.TRANSLATION_ORIGINAL_TITLE, book);
                         break;
                     }
                     case "Serie": {

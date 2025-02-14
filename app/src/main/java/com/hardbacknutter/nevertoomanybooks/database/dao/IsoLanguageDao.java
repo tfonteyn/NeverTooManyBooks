@@ -32,6 +32,13 @@ public interface IsoLanguageDao {
     String findByDisplayName(@NonNull String dname);
 
     /**
+     * Count all entries. This is a check on the table being empty.
+     *
+     * @return number of mappings
+     */
+    int count();
+
+    /**
      * Create entries for the given locale.
      *
      * @param userLocale to create a cached list for.

@@ -326,7 +326,8 @@ public class ParseTest
         //Log.d(TAG, book.toString());
 
         assertEquals("第七重解答", book.getString(DBKey.TITLE, null));
-        assertEquals("La Septième Hypothèse", book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+        assertEquals("La Septième Hypothèse",
+                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("9787549641864", book.getString(DBKey.ISBN, null));
         assertEquals("36665775", book.requireIdentifierValue(Identifier.SID_DOUBAN));
 
@@ -510,7 +511,7 @@ public class ParseTest
 
         assertEquals("伽利略的错误", book.getString(DBKey.TITLE, null));
         assertEquals("Galileo's Error: Foundations for a New Science of Consciousness",
-                     book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("9787532190294", book.getString(DBKey.ISBN, null));
         assertEquals("36897178", book.requireIdentifierValue(Identifier.SID_DOUBAN));
 

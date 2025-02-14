@@ -77,8 +77,6 @@ public class FieldVisibility {
      * The position in the list represents their bit-number in the {@link #bits} value.
      * <p>
      * <strong>NEVER CHANGE THE ORDER. NEW ENTRIES MUST BE ADDED AT THE END.</strong>
-     * <p>
-     * NEWTHINGS: BookLevelField: add new field
      */
     private static final List<String> DB_KEYS = List.of(
             // bit 0..3
@@ -133,7 +131,7 @@ public class FieldVisibility {
             DBKey.DATE_LAST_UPDATED__UTC,
 
             // bit 32..35
-            DBKey.TITLE_ORIGINAL_LANG,
+            DBKey.TRANSLATION_ORIGINAL_TITLE,
             // represents "show the real author if 'this' is a pen-name"
             DBKey.FK_AUTHOR_REAL_AUTHOR,
             // This is the detailed progress only.
@@ -142,7 +140,12 @@ public class FieldVisibility {
             DBKey.PRINT_RUN,
 
             // bit 36..39
-            DBKey.DATE_ACQUIRED
+            DBKey.DATE_ACQUIRED,
+            DBKey.TRANSLATION_ORIGINAL_LANGUAGE
+
+            // NEWTHINGS: BookLevelField: add new field above
+            //  and also to:
+            //  res/xml/preferences_field_visibility.xml
 
             // FIXME: DBKey.BOOK_CONTENT_TYPE: has the same DBKey column name as DBKey.FK_TOC_ENTRY
             //  book-edit: toc/content_type are shown/hidden in a single fragment

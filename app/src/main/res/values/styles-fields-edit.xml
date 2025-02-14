@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -169,7 +169,6 @@
 
     <style name="TIL.Language"
            parent="TIL.AutoCompleteTextView">
-        <item name="android:hint">@string/lbl_language</item>
         <item name="android:layout_width">@dimen/til_fixed_width_language</item>
     </style>
 

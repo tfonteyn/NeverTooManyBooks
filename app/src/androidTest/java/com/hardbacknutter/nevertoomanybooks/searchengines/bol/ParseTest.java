@@ -141,7 +141,7 @@ public class ParseTest
 
         assertEquals("Foundation", book.getString(DBKey.TITLE, null));
         assertEquals("Foundation / Foundation And Empire / Second Foundation",
-                     book.getString(DBKey.TITLE_ORIGINAL_LANG, null));
+                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("9780008117498", book.getString(DBKey.ISBN, null));
 
         assertEquals("2016-09-22", book.getString(DBKey.PUBLICATION_DATE, null));

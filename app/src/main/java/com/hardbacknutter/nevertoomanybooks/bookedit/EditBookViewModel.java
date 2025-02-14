@@ -1008,10 +1008,17 @@ public class EditBookViewModel
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
-        fields.add(new EditTextField<>(fragmentId, R.id.original_title, DBKey.TITLE_ORIGINAL_LANG)
+        fields.add(new EditTextField<>(fragmentId, R.id.original_title,
+                                       DBKey.TRANSLATION_ORIGINAL_TITLE)
                            .setTextInputLayoutId(R.id.lbl_original_title)
                            .setCapitalization(EditTextField.Capitalization.Title)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+
+        fields.add(new AutoCompleteTextField(fragmentId, R.id.original_language,
+                                             DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
+                                             languageFormatter, true,
+                                             () -> getAllLanguagesCodes(context))
+                           .setTextInputLayoutId(R.id.lbl_original_language));
 
         fields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.DESCRIPTION)
                            .setTextInputLayoutId(R.id.lbl_description)

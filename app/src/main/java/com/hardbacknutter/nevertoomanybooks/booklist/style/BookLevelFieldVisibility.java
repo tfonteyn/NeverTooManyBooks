@@ -59,7 +59,8 @@ public class BookLevelFieldVisibility
             DBKey.PAGES,
             DBKey.RATING,
             DBKey.SIGNED__BOOL,
-            DBKey.TITLE_ORIGINAL_LANG,
+            DBKey.TRANSLATION_ORIGINAL_TITLE,
+            DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
             DBKey.READ_PROGRESS,
 
             DBKey.DATE_ADDED__UTC,

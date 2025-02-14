@@ -299,7 +299,7 @@ class KbNlBookHandler
         if (matcher.find()) {
             final String origTitle = matcher.group(1);
             if (origTitle != null && !origTitle.isEmpty()) {
-                book.putString(DBKey.TITLE_ORIGINAL_LANG, origTitle);
+                book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, origTitle);
             }
         }
     }
