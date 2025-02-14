@@ -511,6 +511,11 @@ public class GoodreadsSearchEngine
                 // sometimes it's just a copy... ignore those
                 && !originalTitle.equals(book.getTitle())) {
                 book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, originalTitle);
+                // another wild attempt...
+                final String lc = originalTitle.toLowerCase(Locale.ENGLISH);
+                if (lc.startsWith("the ") || lc.contains(" the ")) {
+                    book.putString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, "eng");
+                }
             }
         }
 
