@@ -730,6 +730,7 @@
     <string name="info_cleanup_files">Ficheiros que possam ser eliminados usam actualmente %1$s do cartão SD. Ficheiros de registo e outros dados são guardados no cartão SD a cada atualização, quando faz cópias de segurança da base de dados ou quando a aplicação falha. Prima o botão abaixo para limpar esses ficheiros do seu cartão SD. Se estiverem a ocorrer falhas ou outros erros, considere usar o botão “%2$s” primeiro.</string>
     <string name="tip_booklist_style_defaults">Utilize este ecrã para definir as características predefinidas de todos os estilos. Estas são utilizadas por todos os estilos incorporados e como ponto de partida para qualquer estilo definido pelo utilizador.</string>
     <string name="lbl_genre">Género</string>
+    <string name="lbl_original_language">Língua original</string>
     <string name="lbl_barcode">Código de barras</string>
     <string name="lbl_edition">Edição</string>
     <string name="pt_sort_title_reordered">Ordenar títulos por</string>

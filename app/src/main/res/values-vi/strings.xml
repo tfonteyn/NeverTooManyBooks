@@ -306,6 +306,7 @@
     <string name="lbl_authors">Tác giả</string>
     <string name="lbl_available">Có sẵn</string>
     <string name="lbl_backup">Sao lưu</string>
+    <string name="lbl_original_language">Ngôn ngữ gốc</string>
     <string name="lbl_barcode">Mã vạch</string>
     <string name="lbl_book">Sách</string>
     <string name="lbl_book_type">Loại sách</string>

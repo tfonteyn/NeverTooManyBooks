@@ -295,6 +295,7 @@
     <string name="option_auto_updates">Zezwalaj na automatyczne aktualizacje z Internetu.</string>
     <string name="lbl_available">Dostępne</string>
     <string name="lbl_backup">Kopia zapasowa</string>
+    <string name="lbl_original_language">Język oryginału</string>
     <string name="lbl_barcode">kod kreskowy</string>
     <string name="lbl_book">Książka</string>
     <string name="pc_bob_list">Lista</string>

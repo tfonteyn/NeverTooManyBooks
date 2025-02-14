@@ -279,6 +279,7 @@
     <string name="option_auto_updates">İnternetten otomatik güncellemelere izin ver.</string>
     <string name="lbl_available">Kullanılabilir</string>
     <string name="lbl_backup">Yedek kopya</string>
+    <string name="lbl_original_language">Orijinal dil</string>
     <string name="lbl_barcode">Barkod</string>
     <string name="lbl_book">Kitap</string>
     <string name="pc_bob_list">Liste</string>

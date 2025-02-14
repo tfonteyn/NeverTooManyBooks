@@ -250,4 +250,5 @@
     <string name="lbl_tag_mapper_apply_merge_case_result">Combinação de letras maiúsculas e minúsculas</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Excluir tags não utilizadas</string>
     <string name="info_partial_date_picker">Toque em um mês ou dia selecionado anteriormente para desmarcá-lo.</string>
+    <string name="lbl_original_language">Idioma original</string>
 </resources>

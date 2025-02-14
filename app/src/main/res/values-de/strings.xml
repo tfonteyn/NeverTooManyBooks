@@ -273,6 +273,7 @@
     <string name="option_auto_updates">Automatische Updates aus dem Internet zulassen.</string>
     <string name="lbl_available">Verfügbar</string>
     <string name="lbl_backup">Sicherungskopie</string>
+    <string name="lbl_original_language">Ursprüngliche Sprache</string>
     <string name="lbl_barcode">Strichcode</string>
     <string name="lbl_book">Buch</string>
     <string name="pc_bob_list">Liste</string>
@@ -743,8 +744,8 @@
     <string name="pt_search_show_menu_options">Suchmenüs anzeigen</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Titel</string>
-    <string name="lbl_original_title">Originaltitel</string>
-    <string name="lbl_original_title_long">Originaltitel, wenn dieses Buch eine Übersetzung ist</string>
+    <string name="lbl_original_title">Ursprünglicher Titel</string>
+    <string name="lbl_original_title_long">Ursprünglicher Titel, wenn dieses Buch eine Übersetzung ist</string>
     <string name="error_site_access_blocked">Der Zugang wurde von der Website blockiert.</string>
     <string name="pt_scan_mode">Modus des Scannens</string>
     <string name="option_sync_deleted_book_records">Gelöschte Bücher synchronisieren</string>

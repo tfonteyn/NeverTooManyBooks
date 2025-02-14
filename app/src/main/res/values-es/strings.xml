@@ -277,6 +277,7 @@
     <string name="option_auto_updates">Permitir actualizaciones automáticas desde Internet.</string>
     <string name="lbl_available">Disponible</string>
     <string name="lbl_backup">Copia de seguridad</string>
+    <string name="lbl_original_language">Idioma original</string>
     <string name="lbl_barcode">Código de barras</string>
     <string name="lbl_book">Libro</string>
     <string name="pc_bob_list">Lista</string>

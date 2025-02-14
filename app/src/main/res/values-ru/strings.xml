@@ -291,6 +291,7 @@
     <string name="option_auto_updates">Разрешить автоматические обновления из Интернета.</string>
     <string name="lbl_available">Доступен</string>
     <string name="lbl_backup">Резервная копия</string>
+    <string name="lbl_original_language">Язык оригинала</string>
     <string name="lbl_barcode">Штрих-код</string>
     <string name="lbl_book">Книга</string>
     <string name="pc_bob_list">Список</string>

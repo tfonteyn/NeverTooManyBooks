@@ -523,6 +523,7 @@
     <string name="lbl_titles">தலைப்புகள்</string>
     <string name="lbl_original_title">அசல் தலைப்பு</string>
     <string name="lbl_original_title_long">இந்த நூல் மொழிபெயர்ப்பாக இருந்தால் அசல் தலைப்பு</string>
+    <string name="lbl_original_language">மூல மொழி</string>
     <string name="lbl_barcode">பார்கோடு</string>
     <string name="lbl_description">விவரம்</string>
     <string name="lbl_personal_notes">தனிப்பட்ட குறிப்புகள்</string>

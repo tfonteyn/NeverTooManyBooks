@@ -290,6 +290,7 @@
     <string name="option_auto_updates">Povolit automatické aktualizace z internetu.</string>
     <string name="lbl_available">Dostupná</string>
     <string name="lbl_backup">Záloha</string>
+    <string name="lbl_original_language">Původní jazyk</string>
     <string name="lbl_barcode">čárový kód</string>
     <string name="lbl_book">Kniha</string>
     <string name="pc_bob_list">Seznam</string>
@@ -755,7 +756,7 @@
     <string name="pt_search_show_menu_options">Zobrazit nabídky pro vyhledávání</string>
     <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
     <string name="lbl_titles">Tituly</string>
-    <string name="lbl_original_title">Originální název</string>
+    <string name="lbl_original_title">Původní název</string>
     <string name="lbl_original_title_long">Původní název, pokud je tato kniha překladem</string>
     <string name="error_site_access_blocked">Přístup byl zablokován na webových stránkách.</string>
     <string name="pt_scan_mode">Režim skenování</string>
