@@ -837,4 +837,5 @@
     <string name="lbl_identifiers">Mã định danh</string>
     <string name="lbl_tag_mapper_apply_merge_case">Hợp nhất các thẻ chỉ khác nhau ở chữ hoa và chữ thường</string>
     <string name="lbl_default_x">Mặc định: %1$s</string>
+    <string name="info_partial_date_picker">Nhấn vào tháng hoặc ngày đã chọn trước đó để bỏ chọn.</string>
 </resources>

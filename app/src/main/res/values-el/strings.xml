@@ -841,4 +841,5 @@
     <string name="confirm_apply_substitutions">Εφαρμόζετε τους κανόνες υποκατάστασης; Όλα τα ισχύοντα βιβλία θα ενημερωθούν.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Συγχώνευση ετικετών που διαφέρουν μόνο σε κεφαλαία και πεζά γράμματα</string>
     <string name="lbl_default_x">Προεπιλογή: %1$s</string>
+    <string name="info_partial_date_picker">Tippen Sie auf einen zuvor ausgewählten Monat oder Tag, um ihn abzuwählen.</string>
 </resources>

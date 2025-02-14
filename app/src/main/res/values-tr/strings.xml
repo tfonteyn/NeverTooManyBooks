@@ -851,4 +851,5 @@
     <string name="confirm_apply_substitutions">İkame kurallarını uyguluyor musunuz? Geçerli tüm kitaplar güncellenecektir.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Sadece büyük ve küçük harf farkı olan etiketleri birleştirme</string>
     <string name="lbl_default_x">Varsayılan: %1$s</string>
+    <string name="info_partial_date_picker">Seçimi kaldırmak için önceden seçilmiş bir ay veya güne dokunun.</string>
 </resources>

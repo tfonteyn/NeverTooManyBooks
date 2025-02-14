@@ -841,5 +841,6 @@
     <string name="lbl_tag_mapper_apply_merge_case_result">பெரிய/சிறிய எழுத்து இணைப்பு</string>
     <string name="lbl_tag_mapper_apply_purge_unused">பயன்படுத்தப்படாத குறிச்சொற்களை நீக்கு</string>
     <string name="lbl_default_x">இயல்பு: %1$s</string>
+    <string name="info_partial_date_picker">முன்னர் தேர்ந்தெடுக்கப்பட்ட மாதம் அல்லது நாளைத் தேர்ந்தெடுத்ததை நீக்க அதைத் தட்டவும்.</string>
 
 </resources>

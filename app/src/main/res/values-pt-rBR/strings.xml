@@ -249,4 +249,5 @@
     <string name="lbl_tag_mapper_apply_merge_case">Mesclar tags que diferem apenas em letras maiúsculas e minúsculas</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Combinação de letras maiúsculas e minúsculas</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Excluir tags não utilizadas</string>
+    <string name="info_partial_date_picker">Toque em um mês ou dia selecionado anteriormente para desmarcá-lo.</string>
 </resources>

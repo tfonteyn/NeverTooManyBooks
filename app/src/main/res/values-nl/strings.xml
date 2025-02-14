@@ -840,4 +840,5 @@
     <string name="confirm_apply_substitutions">De substitutieregels toepassen? Alle toepasselijke boeken worden bijgewerkt.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Tags samenvoegen die alleen verschillen in hoofdletters en kleine letters</string>
     <string name="lbl_default_x">Standaard: %1$s</string>
+    <string name="info_partial_date_picker">Tik op een eerder geselecteerde maand of dag om de selectie ongedaan te maken.</string>
 </resources>

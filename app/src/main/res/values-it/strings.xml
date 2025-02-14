@@ -845,4 +845,5 @@
     <string name="confirm_apply_substitutions">Applicare le regole di sostituzione? Tutti i libri applicabili saranno aggiornati.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Unire tag che differiscono solo per le maiuscole e le minuscole</string>
     <string name="lbl_default_x">Predefinito: %1$s</string>
+    <string name="info_partial_date_picker">Toccare un mese o un giorno precedentemente selezionato per deselezionarlo.</string>
 </resources>

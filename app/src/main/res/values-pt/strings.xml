@@ -871,4 +871,5 @@
     <string name="confirm_apply_substitutions">Aplicar as regras de substituição? Todos os livros aplicáveis serão actualizados.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Fundir etiquetas que apenas diferem em maiúsculas e minúsculas</string>
     <string name="lbl_default_x">Padrão: %1$s</string>
+    <string name="info_partial_date_picker">Toque num mês ou dia previamente selecionado para o anular.</string>
 </resources>

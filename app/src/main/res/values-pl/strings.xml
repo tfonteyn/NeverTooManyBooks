@@ -866,4 +866,5 @@
     <string name="confirm_apply_substitutions">Stosować zasady zastępowania? Wszystkie odpowiednie książki zostaną zaktualizowane.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Scalanie tagów różniących się tylko wielkimi i małymi literami</string>
     <string name="lbl_default_x">Domyślna: %1$s</string>
+    <string name="info_partial_date_picker">Stuknij wcześniej wybrany miesiąc lub dzień, aby go odznaczyć.</string>
 </resources>
