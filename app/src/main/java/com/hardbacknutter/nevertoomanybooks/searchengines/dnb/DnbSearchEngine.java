@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCrite
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
 
 import org.jsoup.nodes.Document;
@@ -268,6 +269,7 @@ public class DnbSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final Locale locale = getLocale(context);
+        final Languages languages = ServiceLocator.getInstance().getLanguages();
 
         final Element titleElement = document
                 .selectFirst("h3.c-catalog-result__ueberschrift > span");
@@ -317,8 +319,7 @@ public class DnbSearchEngine
                             }
                             case "Sprache":
                             case "Language": {
-                                final String lang = ServiceLocator
-                                        .getInstance().getLanguages()
+                                final String lang = languages
                                         .getISO3FromDisplayLanguage(context, locale, td.text());
                                 book.putString(DBKey.LANGUAGE, lang);
                                 break;
@@ -364,7 +365,12 @@ public class DnbSearchEngine
                                 break;
                             }
                             case "Originalsprache":
-                            case "Original language":
+                            case "Original language": {
+                                final String lang = languages
+                                        .getISO3FromDisplayLanguage(context, locale, td.text());
+                                book.putString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, lang);
+                                break;
+                            }
                             case "Land":
                             case "Country":
                                 // ignored for now as we don't have a field for it.

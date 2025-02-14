@@ -195,6 +195,7 @@ public class ParseTest
         assertEquals("2023", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("747", book.getString(DBKey.PAGES, null));
         assertEquals("Lesser evil", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+        assertEquals("eng", book.getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(2, bookTags.size());
@@ -263,6 +264,7 @@ public class ParseTest
 
         // We parsed correctly, "Werk: NN", presumably bad-data on the site?
         assertEquals("NN", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+        assertEquals("eng", book.getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(1, bookTags.size());
