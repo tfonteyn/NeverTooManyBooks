@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,9 +38,6 @@ import java.util.Optional;
  * Parser for dates comes from the internet and/or the user (either as direct input, or by import).
  * <p>
  * This object is thread-safe, but user locale specific at creation time.
- * <p>
- * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
- * seems to be fixed, but the bug was never closed?
  * <p>
  * TODO: performance: create all parsers, then parse (and reuse the parsers)...
  * or create the parsers each time, but stop at first result.

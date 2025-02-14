@@ -37,9 +37,6 @@ import java.util.Optional;
 /**
  * Parser for dates coming from the database or other sources
  * where we are certain of the format is ISO.
- * <p>
- * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
- * seems to be fixed, but the bug was never closed?
  */
 public class ISODateParser
         implements DateParser {
