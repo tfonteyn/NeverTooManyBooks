@@ -38,9 +38,12 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
@@ -62,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -122,6 +126,7 @@ public class BolSearchEngine
     /** Front-covers can be given using either of these keys. We must try both. */
     private static final List<String> FRONT_COVER_KEYS = List.of("coverImageUrl", "imageUrl");
 
+    private static final Pattern WELL_KNOWN = Pattern.compile("t=([^&#]*)");
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
@@ -182,12 +187,79 @@ public class BolSearchEngine
         final String url = getHostUrl(context) + String.format(BY_ISBN, getCountry(context),
                                                                validIsbn);
         final Document document = loadDocument(context, url, null);
+        checkBlocker(context, document, url);
+
         final Book book = new Book();
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, book);
         }
         return book;
+    }
+
+    /**
+     * 2025-02-14.
+     *
+     * <pre>
+     *     {@code
+     *     <html>
+     *  <head></head>
+     *  <body>
+     *   <script src="/.well-known/sbsd/0ca215?v=8fe826c2-2dcb-9f21-2c22-992dccb50217&amp;t=493259010"></script>
+     *   <script>
+     *             (function() {
+     *                 var chlgeId = '';
+     *                 var scripts = document.getElementsByTagName('script');
+     *                 for (var i = 0; i < scripts.length; i++) {
+     *                     if (scripts[i].src && scripts[i].src.match(/t=([^&#]*)/)) {
+     *                         chlgeId = scripts[i].src.match(/t=([^&#]*)/)[1];
+     *                     }
+     *                 }
+     *                 var proxied = window.XMLHttpRequest.prototype.send;
+     *                 window.XMLHttpRequest.prototype.send = function() {
+     *                     var pointer = this
+     *                     var intervalId = window.setInterval(function() {
+     *                         if (pointer.readyState === 4 && pointer.responseURL && pointer.responseURL.indexOf('t=' + chlgeId) > -1) {
+     *                             location.reload(true);
+     *                             clearInterval(intervalId);
+     *                         }
+     *                     }, 1);
+     *                     return proxied.apply(this, [].slice.call(arguments));
+     *                 };
+     *             })();
+     *         </script>
+     *  </body>
+     * </html>
+     *     }
+     * </pre>
+     *
+     * @param context
+     * @param document
+     * @param url
+     *
+     * @throws SearchException
+     */
+    private void checkBlocker(@NonNull final Context context,
+                              @NonNull final Document document,
+                              @NonNull final String url)
+            throws SearchException {
+        final Element firstScript = document.selectFirst("script");
+        if (firstScript != null) {
+            final String src = firstScript.attr("src");
+            if (src.startsWith("/.well-known/")) {
+                final Matcher matcher = WELL_KNOWN.matcher(src);
+                String t = "";
+                if (matcher.find()) {
+                    t = matcher.group(1);
+                }
+                if (BuildConfig.DEBUG /* always */) {
+                    LoggerFactory.getLogger().d(TAG, "searchByIsbn", "Mr. Bol...t=" + t);
+                }
+                Site.Type.Data.getSite(getEngineId()).setActive(false);
+                throw new SearchException(getEngineId(), "blocked url=" + url,
+                                          context.getString(R.string.error_site_access_blocked));
+            }
+        }
     }
 
     /**

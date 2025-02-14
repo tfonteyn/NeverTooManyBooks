@@ -435,4 +435,77 @@ public class ParseTest
         assertNotNull(backCovers);
         assertEquals(0, backCovers.size());
     }
+
+    @Test
+    public void parse05()
+            throws SearchException, IOException, CredentialsException, StorageException {
+
+        final String locationHeader =
+                "https://www.bol.com/be/nl/p/er-stromen-rivieren-in-de-lucht/9300000174936851/?bltgh=mY-mZ8dieLK1LnLXkKxH5g.hNfQd-6cIGnpHMA9c25Jow_0_24.29.ProductTitle";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bol_9789046832073;
+
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        Log.d(TAG, book.toString());
+
+
+        assertEquals("Er stromen rivieren in de lucht", book.getString(DBKey.TITLE, null));
+        assertEquals("9789046832073", book.getString(DBKey.ISBN, null));
+
+        assertEquals("2024-07-23", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("480", book.getString(DBKey.PAGES, null));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
+        assertEquals("nl", book.getString(DBKey.LANGUAGE, null));
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(new Money(BigDecimal.valueOf(24.99d), Money.EURO),
+                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
+
+        assertEquals(
+                "'Wederom een rijke, roerende en actuele roman. [...] Een ingenieuze roman, waarmee Shafak niet alleen haar meesterschap onderstreept, maar vooral ook de grote kracht en waarde van literatuur in volle glorie toont.' het Parool ‘Haar nieuwe en wellicht ook meest ambitieuze roman tot nu toe’ De Morgen ‘Maak ruimte voor Shafak in je boekenkast. Maak ook ruimte voor haar in je hart. Je zult er geen spijt van krijgen.’ Arundhati Roy Londen, 1840. Arthur raakt gefascineerd door het oude Mesopotamië en in het bijzonder door het epische Gilgamesj-epos, over een hooghartige held die pas tot inkeer komt wanneer hij alles kwijt is. Turkije, 2014. De 10-jarige Narin moet vluchten voor isis, samen met haar oma, die uit een lange lijn van vrouwelijke zieners komt. Londen, 2018. Zaleekhah vindt troost in haar onderzoek naar rivieren, en komt via een vriendin in aanraking met een bijzondere oude taal. Wat de drie buitenstaanders door de eeuwen heen met elkaar verbindt, is het water, want: ‘Water bewaart alle herinneringen. Het zijn de mensen die vergeten.’ ‘Een van de belangrijkste schrijvers van dit moment.’ Independent ‘Iedereen zou Shafak moeten lezen.’ The Guardian ‘Een buitengewone roman, fris en zuiverend als de regen die op het metalen dak van ons leven slaat.’ Column McCann ‘Een meesterwerk.’ Ruth Ozeki ‘Shafaks verbeeldingskracht is een wonder: gedurfd, weergaloos en wijs.’ Katie Kitamura ‘Een moderne klassieker. Shafak is een van de grote schrijvers van onze tijd. Deze roman is verbazingwekkend, ingenieus en prachtig.’ Peter Frankopan",
+                book.getString(DBKey.DESCRIPTION, null));
+
+        final List<Tag> bookTags = book.getTags();
+        Assert.assertEquals(2, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Literatuur & Romans"));
+        assertTrue(tags.contains("Historische romans"));
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Wereldbibliotheek", allPublishers.get(0).getName());
+
+        Author author;
+        author = authors.get(0);
+        assertEquals("Shafak", author.getFamilyName());
+        assertEquals("Elif", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        author = authors.get(1);
+        assertEquals("Smits", author.getFamilyName());
+        assertEquals("Manon", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
+                                          + "_9789046832073_0_.jpg"));
+
+        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(backCovers);
+        assertEquals(1, backCovers.size());
+        assertTrue(backCovers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
+                                              + "_9789046832073_1_.jpg"));
+
+
+    }
 }
