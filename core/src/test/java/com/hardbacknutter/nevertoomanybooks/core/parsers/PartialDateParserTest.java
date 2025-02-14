@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
+import java.time.Month;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -109,5 +110,53 @@ class PartialDateParserTest {
         od = parser.parse("juin 2020", Locale.FRENCH);
         assertTrue(od.isPresent());
         assertEquals("2020-06", od.get().getIsoString());
+    }
+
+    @Test
+    void parseBC01() {
+        Optional<PartialDate> od;
+        PartialDate partialDate;
+
+        od = parser.parse("-0019-08-13", Locale.UK);
+        assertTrue(od.isPresent());
+        partialDate = od.get();
+
+        final Optional<Integer> oYear = partialDate.getYear();
+        assertTrue(oYear.isPresent());
+        assertEquals(-19, oYear.get());
+
+        final Optional<Month> oMonth = partialDate.getMonth();
+        assertTrue(oMonth.isPresent());
+        assertEquals(Month.AUGUST, oMonth.get());
+
+        final Optional<Integer> oDayOfMonth = partialDate.getDayOfMonth();
+        assertTrue(oDayOfMonth.isPresent());
+        assertEquals(13, oDayOfMonth.get());
+
+        assertEquals("-0019-08-13", partialDate.getIsoString());
+    }
+
+    @Test
+    void parseBC02() {
+        Optional<PartialDate> od;
+        PartialDate partialDate;
+
+        od = parser.parse("-19-08-13", Locale.UK);
+        assertTrue(od.isPresent());
+        partialDate = od.get();
+
+        final Optional<Integer> oYear = partialDate.getYear();
+        assertTrue(oYear.isPresent());
+        assertEquals(-19, oYear.get());
+
+        final Optional<Month> oMonth = partialDate.getMonth();
+        assertTrue(oMonth.isPresent());
+        assertEquals(Month.AUGUST, oMonth.get());
+
+        final Optional<Integer> oDayOfMonth = partialDate.getDayOfMonth();
+        assertTrue(oDayOfMonth.isPresent());
+        assertEquals(13, oDayOfMonth.get());
+
+        assertEquals("-0019-08-13", partialDate.getIsoString());
     }
 }

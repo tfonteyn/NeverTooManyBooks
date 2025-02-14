@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,21 +45,28 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * TODO: implement/change the DateParser interface to allow generic return types.
  * <p>
  * TODO: fold all manual parsers into one or more DateTimeFormatter pattern
+ * <p>
+ * we are making an assumption that we'll primarily see ISO formatted
+ * dates with 4 digit years (negative sign and leading zero's accepted).
+ * The ISO patterns also accept lesser digits as long as the order is compliant.
+ * <p>
+ * In addition, we also accept MM_YYYY, MMM_YYYY but only with positive 4 digit years
  */
 public class PartialDateParser {
 
     private static final String TAG = "PartialDateParser";
 
     private static final Pattern PATTERN_YYYY =
-            Pattern.compile("^(\\d\\d\\d\\d)$");
+            Pattern.compile("^(-?\\d{1,4})$");
     private static final Pattern PATTERN_YYYY_MM =
-            Pattern.compile("^(\\d\\d\\d\\d)[\\s/-](\\d{1,2})$");
+            Pattern.compile("^(-?\\d{1,4})[\\s/-](\\d{1,2})$");
     private static final Pattern PATTERN_YYYY_MM_DD_TIMESTAMP =
-            Pattern.compile("^(\\d\\d\\d\\d)[\\s/-](\\d{1,2})[/-](\\d{1,2}).*");
+            Pattern.compile("^(-?\\d{1,4})[\\s/-](\\d{1,2})[/-](\\d{1,2}).*");
 
+    /** The year MUST be positive, 4-digits. */
     private static final Pattern PATTERN_MM_YYYY =
             Pattern.compile("^(\\d{1,2})[\\s/-](\\d\\d\\d\\d)$");
-
+    /** The year MUST be positive, 4-digits. */
     private static final Pattern PATTERN_MMM_YYYY =
             Pattern.compile("^(.*)[\\s/-](\\d\\d\\d\\d)$");
 
@@ -80,12 +87,8 @@ public class PartialDateParser {
     /**
      * Attempt to parse a date string.
      * <p>
-     * Parsing is restricted to these formats:
+     * See the Pattern definitions in the class for supported formats.
      * <ul>
-     *     <li>yyyy-MM-dd[...]</li>
-     *     <li>yyyy-MM with MM being 1 or 2 digit </li>
-     *     <li>yyyy</li>
-     *     <li>Month-yyyy</li>
      *     <li>digit dividers can be {@code space}, {@code -} or {@code /}</li>
      *     <li>Month {@code MM} can be one or two digits; 01..12  or 1..9</li>
      *     <li>Day {@code dd} can be one or two digits; 01..31  or 1..9</li>
