@@ -181,7 +181,9 @@ public enum EngineId
         "https://www.bol.com",
         new Locale("nl", "NL"),
         BolSearchEngine.class,
-        // URGENT: 2025-02-15: bol.com is now disabled as they block all requests.
+        // FIXME: 2025-02-15: bol.com is now disabled as they block all requests.
+        // https://www.mobileread.com/forums/showthread.php?t=139472&page=35
+        // https://airvpn.org/routes/?q=https%3A%2F%2Fwww.bol.com%2F
         false),
 
     /**
