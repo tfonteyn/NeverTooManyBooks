@@ -78,12 +78,11 @@ class PartialDatePickerDelegate
 
     /**
      * The startYear is set for the really extravagant collectors. (⌐⊙_⊙)
-     * URGENT: set -3000 when negative years are tested
      *
      * @see <a href="https://en.wikipedia.org/wiki/List_of_languages_by_first_written_account">
      *         wikipedia</a>
      */
-    private static final int START_YEAR = 0;
+    private static final int START_YEAR = -3000;
 
     /**
      * How many years into the future we show the calender for.
