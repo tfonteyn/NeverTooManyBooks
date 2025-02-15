@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -110,7 +110,7 @@
                 style="@style/TIA.Currency"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
-                tools:text="USD"
+                tools:text="@sample/data.json/price/currency"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -128,7 +128,7 @@
                 style="@style/TIE.Price.Listed"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
-                tools:text="14.99"
+                tools:text="@sample/data.json/price/amount"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -180,7 +180,7 @@
                 style="@style/TIE.Generic"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
-                tools:text="999"
+                tools:text="@sample/data.json/pages/nr"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -198,7 +198,7 @@
                 style="@style/TIE.Notes"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
-                tools:text="limited to 150 copies"
+                tools:text="@sample/data.json/print_run/text"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

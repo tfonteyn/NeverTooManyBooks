@@ -96,7 +96,7 @@
                 app:layout_constraintEnd_toStartOf="@id/title"
                 app:layout_constraintStart_toEndOf="@id/col1"
                 tools:ignore="SelectableText"
-                tools:text="###"
+                tools:text="@sample/data.json/series/nr"
                 tools:visibility="visible"
                 />
 
@@ -141,7 +141,7 @@
                 app:layout_constraintVertical_bias="0"
                 app:layout_constraintVertical_chainStyle="packed"
                 tools:ignore="SelectableText"
-                tools:text="series_title"
+                tools:text="@sample/data.json/series/title"
                 tools:visibility="visible"
                 />
 
@@ -252,7 +252,7 @@
                 app:layout_constraintStart_toEndOf="@id/col1"
                 app:layout_constraintTop_toBottomOf="@id/format"
                 tools:ignore="SelectableText"
-                tools:text="1073 pages"
+                tools:text="@sample/data.json/pages/nr"
                 tools:visibility="visible"
                 />
 

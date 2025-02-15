@@ -17,8 +17,8 @@
     {"title": "Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The"}
   ],
   "series": [
-    {"title_nr": "Elric of Melniboné (3)"},
-    {"title_nr": "Foundation (2)"}
+    {"title_nr": "Elric of Melniboné (3)", "title": "Elric of Melniboné", "nr": "3"},
+    {"title_nr": "Foundation (2)", "title": "Foundation", "nr": "2"}
   ],
   "series_list": [
     {"title_nr": "• Foundation (2)\n• Empire (7)\n• Robot (3)"},
@@ -99,9 +99,9 @@
     {"d13": "9780063032491", "d10": "006303249X"}
   ],
   "date": [
-    {"long": "1 Apr 1969", "sql": "1969-04-01", "year": "1969"},
-    {"long": "10 Nov 2017", "sql": "2017-11-10", "year": "2017"},
-    {"long": "25 Nov 2018", "sql": "2018-11-25", "year": "2018"}
+    {"long": "1 Apr 1969", "sql": "1969-04-01", "year": "1969", "month": "Apr", "day": "1"},
+    {"long": "10 Nov 2017", "sql": "2017-11-10", "year": "2017", "month": "Nov", "day": "10"},
+    {"long": "25 Nov 2018", "sql": "2018-11-25", "year": "2018", "month": "Nov", "day": "25"}
   ],
   "styles": [
     {"name": "Acquired"},
@@ -149,5 +149,18 @@
   "reading_progress": [
     {"name": "Page: 3 of 46"},
     {"name": "67% read"}
+  ],
+  "pages": [
+    {"nr": "1073"},
+    {"nr": "xvii + 678"}
+  ],
+  "print_run": [
+    {"text": "limited to 150 copies"},
+    {"text": "1500 printed"}
+  ],
+  "price": [
+    {"amount": "12.99", "currency": "EUR", "combo": "€12,99"},
+    {"amount": "17.99", "currency": "GBP", "combo": "£17.99"},
+    {"amount": "22.99", "currency": "USD", "combo": "$22.99"}
   ]
 }

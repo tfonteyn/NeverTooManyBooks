@@ -25,5 +25,5 @@
 <com.google.android.material.button.MaterialButton
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/PartialDatePicker.Month"
-    tools:text="Aug"
+    tools:text="@sample/data.json/date/month"
     />

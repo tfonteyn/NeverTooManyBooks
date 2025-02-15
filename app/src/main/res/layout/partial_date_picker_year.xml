@@ -23,4 +23,4 @@
 <com.google.android.material.button.MaterialButton
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/PartialDatePicker.Year"
-    tools:text="1976" />
+    tools:text="@sample/data.json/date/year" />

@@ -25,5 +25,5 @@
 <com.google.android.material.button.MaterialButton
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/PartialDatePicker.Day"
-    tools:text="30"
+    tools:text="@sample/data.json/date/day"
     />

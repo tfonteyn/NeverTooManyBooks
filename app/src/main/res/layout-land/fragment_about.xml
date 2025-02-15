@@ -171,6 +171,6 @@
         style="@style/About.DebugVersion"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="a7 d13 b2020-11-01"
+        tools:text="a94 d37"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
