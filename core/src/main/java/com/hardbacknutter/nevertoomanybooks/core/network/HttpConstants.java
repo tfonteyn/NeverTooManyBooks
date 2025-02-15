@@ -27,13 +27,10 @@ import java.net.HttpURLConnection;
 public final class HttpConstants {
 
     /**
-     * RELEASE: BROWSER_USER_AGENT: Last updated: 2025-01-15.
-     * Now using most used mobile ua from
-     * <a href="https://www.useragents.me/">https://www.useragents.me/</a>
+     * RELEASE: BROWSER_USER_AGENT: Last updated: 2025-02-15: back to firefox...
      */
     public static final String BROWSER_USER_AGENT =
-            // "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0";
-            "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.3";
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0";
 
     /**
      * HTTP Request Header.
