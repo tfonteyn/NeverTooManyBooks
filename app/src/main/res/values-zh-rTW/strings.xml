@@ -409,7 +409,7 @@
     <string name="lbl_language">語言</string>
     <string name="lbl_lend_book_to_colon">將這本書借給：</string>
     <string name="lbl_lend_out">已借出</string>
-    <string name="lbl_lend_out_to_name">已借出給 %1$s</string>
+    <string name="lbl_lend_out_to_name">已借 %1$s</string>
     <string name="lbl_lending">租借</string>
     <string name="lbl_library">書架</string>
     <string name="lbl_local_search">本地搜尋</string>
@@ -840,4 +840,6 @@
     <string name="lbl_tag_mapper_apply_merge_case">合併只有字母大小寫不同的標籤</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">大/小寫合併</string>
     <string name="lbl_default_x">預設：%1$s</string>
+    <string name="info_partial_date_picker">輕按先前選取的月份或天來取消選取。</string>
+    <string name="lbl_original_language">原始語言</string>
 </resources>
