@@ -3,11 +3,13 @@ Draft notes for next version:
 ### 7.1.0
 
 NEW:
-- Date (first) published: the date-picker has been redesigned, and is much easier to use.
-- sorting by language now uses the full localized language name
+- #91 Date (first) published: the date-picker has been redesigned, and is much easier to use.
+- #93 sorting by language now uses the full localized language name
+- #96 language field added for translated book
 - added filter for identifiers
 
 FIXES:
+- #109 sorting by dates on the book level now supports mixing partial-dates
 - Citations have been tweaked to better conform to the standards
 
 REMOVED:
