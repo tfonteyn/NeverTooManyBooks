@@ -99,9 +99,6 @@ public class KbNlHtmlSearchEngine
     @Nullable
     private String tmpSeriesNr;
 
-    @Nullable
-    private FutureHttpHead<Boolean> futureHttpHead;
-
     @NonNull
     private String dbVersion = "2.37";
     @NonNull
@@ -117,16 +114,6 @@ public class KbNlHtmlSearchEngine
     public KbNlHtmlSearchEngine(@NonNull final Context appContext,
                                 @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-    }
-
-    @Override
-    public void cancel() {
-        synchronized (this) {
-            super.cancel();
-            if (futureHttpHead != null) {
-                futureHttpHead.cancel();
-            }
-        }
     }
 
     @NonNull
@@ -155,6 +142,23 @@ public class KbNlHtmlSearchEngine
         return document;
     }
 
+    /**
+     * Send a HEAD request to prepare a cookie for further calls.
+     *
+     * @param context Current context
+     *
+     * @throws SearchException on any error
+     */
+    private void ensureCookie(@NonNull final Context context)
+            throws SearchException {
+        final FutureHttpHead<Boolean> futureHttpHead = createFutureHeadRequest(context);
+        try {
+            futureHttpHead.send(getHostUrl(context) + "/cbs/", con -> true);
+        } catch (@NonNull final StorageException | IOException e) {
+            throw new SearchException(getEngineId(), e);
+        }
+    }
+
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
@@ -162,12 +166,7 @@ public class KbNlHtmlSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        futureHttpHead = createFutureHeadRequest(context);
-        try {
-            futureHttpHead.send(getHostUrl(context) + "/cbs/", con -> true);
-        } catch (@NonNull final IOException e) {
-            throw new SearchException(getEngineId(), e);
-        }
+        ensureCookie(context);
 
         final Book book = new Book();
 
