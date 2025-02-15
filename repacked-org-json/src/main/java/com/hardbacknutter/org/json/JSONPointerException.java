@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,8 +51,7 @@ public class JSONPointerException
      * @param message The detail message describing the reason for the exception.
      * @param cause   The cause of the exception.
      */
-    public JSONPointerException(String message,
-                                Throwable cause) {
+    public JSONPointerException(String message, Throwable cause) {
         super(message, cause);
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ Public Domain.
  * <code>toJSONString</code> method will be used instead of the default behavior
  * of using the Object's <code>toString()</code> method and quoting the result.
  */
-@SuppressWarnings("ALL")
 public interface JSONString {
     /**
      * The <code>toJSONString</code> method allows a class to produce its own JSON

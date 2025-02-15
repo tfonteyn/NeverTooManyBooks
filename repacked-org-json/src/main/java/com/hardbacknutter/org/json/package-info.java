@@ -18,32 +18,12 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
-/*
-Public Domain.
-*/
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 /**
- * Use this annotation on a getter method to override the Bean name
- * parser for Bean -&gt; JSONObject mapping. A value set to empty string <code>""</code>
- * will have the Bean parser fall back to the default field name processing.
+ * We are using an updated/repacked  version 20250107.
+ * <p>
+ * No modification, except nullable/nonnull annotations added in some places.
+ * Package name and imports adjusted to new structure.
+ *
+ * @see <a href="https://github.com/stleary/JSON-java">https://github.com/stleary/JSON-java</a>
  */
-@SuppressWarnings("ALL")
-@Documented
-@Retention(RUNTIME)
-@Target({METHOD})
-public @interface JSONPropertyName {
-    /**
-     * The value of the JSON property.
-     * @return The name of the property as to be used in the JSON Object.
-     */
-    String value();
-}
+package com.hardbacknutter.org.json;

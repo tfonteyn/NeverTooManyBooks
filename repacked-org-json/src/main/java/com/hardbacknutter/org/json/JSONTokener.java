@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,6 +61,8 @@ public class JSONTokener {
     /** the number of characters read in the previous line. */
     private long characterPreviousLine;
 
+    // access to this object is required for strict mode checking
+    private JSONParserConfiguration jsonParserConfiguration;
 
     /**
      * Construct a JSONTokener from a Reader. The caller must close the Reader.
@@ -99,6 +101,23 @@ public class JSONTokener {
         this(new StringReader(s));
     }
 
+    /**
+     * Getter
+     *
+     * @return jsonParserConfiguration
+     */
+    public JSONParserConfiguration getJsonParserConfiguration() {
+        return jsonParserConfiguration;
+    }
+
+    /**
+     * Setter
+     *
+     * @param jsonParserConfiguration new value for jsonParserConfiguration
+     */
+    public void setJsonParserConfiguration(JSONParserConfiguration jsonParserConfiguration) {
+        this.jsonParserConfiguration = jsonParserConfiguration;
+    }
 
     /**
      * Back up one character. This provides a sort of lookahead capability,
@@ -125,17 +144,15 @@ public class JSONTokener {
         if (this.previous == '\r' || this.previous == '\n') {
             this.line--;
             this.character = this.characterPreviousLine;
-        } else if (this.character > 0) {
+        } else if (this.character > 0){
             this.character--;
         }
     }
 
     /**
      * Get the hex value of a character (base16).
-     *
      * @param c A character between '0' and '9' or between 'A' and 'F' or
-     *          between 'a' and 'f'.
-     *
+     * between 'a' and 'f'.
      * @return An int between 0 and 15, or -1 if c was not a hex digit.
      */
     public static int dehexchar(char c) {
@@ -340,7 +357,8 @@ public class JSONTokener {
                 case 0:
                 case '\n':
                 case '\r':
-                    throw this.syntaxError("Unterminated string");
+                    throw this.syntaxError("Unterminated string. " +
+                                           "Character with int code " + (int) c + " is not allowed within a quoted string.");
                 case '\\':
                     c = this.next();
                     switch (c) {
@@ -360,10 +378,13 @@ public class JSONTokener {
                             sb.append('\r');
                             break;
                         case 'u':
+                            String next = this.next(4);
                             try {
-                                sb.append((char) Integer.parseInt(this.next(4), 16));
+                                sb.append((char) Integer.parseInt(next, 16));
                             } catch (NumberFormatException e) {
-                                throw this.syntaxError("Illegal escape.", e);
+                                throw this.syntaxError("Illegal escape. " +
+                                                       "\\u must be followed by a 4 digit hexadecimal number. \\" + next + " is not valid.",
+                                                       e);
                             }
                             break;
                         case '"':
@@ -373,7 +394,8 @@ public class JSONTokener {
                             sb.append(c);
                             break;
                         default:
-                            throw this.syntaxError("Illegal escape.");
+                            throw this.syntaxError(
+                                    "Illegal escape. Escape sequence  \\" + c + " is not valid.");
                     }
                     break;
                 default:
@@ -453,17 +475,17 @@ public class JSONTokener {
             case '{':
                 this.back();
                 try {
-                    return new JSONObject(this);
+                    return new JSONObject(this, jsonParserConfiguration);
                 } catch (StackOverflowError e) {
                     throw new JSONException("JSON Array or Object depth too large to process.", e);
                 }
             case '[':
                 this.back();
                 try {
-                    return new JSONArray(this);
+                    return new JSONArray(this, jsonParserConfiguration);
                 } catch (StackOverflowError e) {
                     throw new JSONException("JSON Array or Object depth too large to process.", e);
-                }
+            }
         }
         return nextSimpleValue(c);
     }
@@ -472,6 +494,12 @@ public class JSONTokener {
     Object nextSimpleValue(char c) {
         String string;
 
+        // Strict mode only allows strings with explicit double quotes
+        if (jsonParserConfiguration != null &&
+            jsonParserConfiguration.isStrictMode() &&
+            c == '\'') {
+            throw this.syntaxError("Strict mode error: Single quoted strings are not allowed");
+        }
         switch (c) {
             case '"':
             case '\'':
@@ -500,7 +528,16 @@ public class JSONTokener {
         if ("".equals(string)) {
             throw this.syntaxError("Missing value");
         }
-        return JSONObject.stringToValue(string);
+        Object obj = JSONObject.stringToValue(string);
+        // Strict mode only allows strings with explicit double quotes
+        if (jsonParserConfiguration != null &&
+            jsonParserConfiguration.isStrictMode() &&
+            obj instanceof String) {
+            throw this.syntaxError(
+                    String.format("Strict mode error: Value '%s' is not surrounded by quotes",
+                                  obj));
+        }
+        return obj;
     }
 
 
@@ -585,7 +622,7 @@ public class JSONTokener {
      */
     public void close()
             throws IOException {
-        if (reader != null) {
+        if (reader!=null){
             reader.close();
         }
     }

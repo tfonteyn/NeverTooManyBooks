@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,8 +22,6 @@ package com.hardbacknutter.org.json;
 /*
 Public Domain.
 */
-
-import androidx.annotation.NonNull;
 
 /**
  * Configuration object for the XML to JSONML parser. The configuration is immutable.
@@ -67,7 +65,6 @@ public class JSONMLParserConfiguration
      * Provides a new instance of the same configuration.
      */
     @Override
-    @NonNull
     protected JSONMLParserConfiguration clone() {
         // future modifications to this method should always ensure a "deep"
         // clone in the case of collections. i.e. if a Map is added as a configuration
@@ -82,14 +79,12 @@ public class JSONMLParserConfiguration
 
     @SuppressWarnings("unchecked")
     @Override
-    @NonNull
     public JSONMLParserConfiguration withKeepStrings(final boolean newVal) {
         return super.withKeepStrings(newVal);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    @NonNull
     public JSONMLParserConfiguration withMaxNestingDepth(int maxNestingDepth) {
         return super.withMaxNestingDepth(maxNestingDepth);
     }

@@ -238,8 +238,6 @@ dependencies {
     implementation project(path: ":fastscroller")
     implementation project(path: ":Insets")
     implementation project(path: ":Logger")
-    // We are using an updated/repacked org.json, version 20240303
-    // https://github.com/stleary/JSON-java
     implementation project(path: ":repacked-org-json")
 
     coreLibraryDesugaring(libs.google.desugar)

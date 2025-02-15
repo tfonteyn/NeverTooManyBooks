@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -78,7 +78,6 @@ public class JSONPointer {
         /**
          * Creates a {@code JSONPointer} instance using the tokens previously set using the
          * {@link #append(String)} method calls.
-         *
          * @return a JSONPointer object
          */
         public JSONPointer build() {
@@ -87,16 +86,14 @@ public class JSONPointer {
 
         /**
          * Adds an arbitrary token to the list of reference tokens. It can be any non-null value.
-         * <p>
+         * 
          * Unlike in the case of JSON string or URI fragment representation of JSON pointers, the
          * argument of this method MUST NOT be escaped. If you want to query the property called
          * {@code "a~b"} then you should simply pass the {@code "a~b"} string as-is, there is no
          * need to escape it as {@code "a~0b"}.
-         *
+         * 
          * @param token the new token to be appended to the list
-         *
          * @return {@code this}
-         *
          * @throws NullPointerException if {@code token} is null
          */
         public Builder append(String token) {
@@ -109,10 +106,9 @@ public class JSONPointer {
 
         /**
          * Adds an integer to the reference token list. Although not necessarily, mostly this token will
-         * denote an array index.
-         *
+         * denote an array index. 
+         * 
          * @param arrayIndex the array index to be added to the token list
-         *
          * @return {@code this}
          */
         public Builder append(int arrayIndex) {
@@ -123,7 +119,7 @@ public class JSONPointer {
 
     /**
      * Static factory method for {@link Builder}. Example usage:
-     *
+     * 
      * <pre><code>
      * JSONPointer pointer = JSONPointer.builder()
      *       .append("obj")
@@ -133,8 +129,8 @@ public class JSONPointer {
      *       .build();
      * </code></pre>
      *
-     * @return a builder instance which can be used to construct a {@code JSONPointer} instance by chained
-     *         {@link Builder#append(String)} calls.
+     *  @return a builder instance which can be used to construct a {@code JSONPointer} instance by chained
+     *  {@link Builder#append(String)} calls.
      */
     @NonNull
     public static Builder builder() {
@@ -249,12 +245,9 @@ public class JSONPointer {
 
     /**
      * Matches a JSONArray element by ordinal position
-     *
-     * @param current    the JSONArray to be evaluated
+     * @param current the JSONArray to be evaluated
      * @param indexToken the array index in string form
-     *
      * @return the matched object. If no matching item is found a
-     *
      * @throws JSONPointerException is thrown if the index is out of bounds
      */
     @NonNull
@@ -295,13 +288,11 @@ public class JSONPointer {
 
     /**
      * Escapes path segment values to an unambiguous form.
-     * The escape char to be inserted is '~'. The chars to be escaped
+     * The escape char to be inserted is '~'. The chars to be escaped 
      * are ~, which maps to ~0, and /, which maps to ~1.
-     *
      * @param token the JSONPointer segment value to be escaped
-     *
      * @return the escaped value for the token
-     *
+     * 
      * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
      */
     @NonNull

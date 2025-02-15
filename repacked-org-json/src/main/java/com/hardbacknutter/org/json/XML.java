@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -503,7 +503,7 @@ public class XML {
                 }
             } else if (s instanceof JSONArray) {
                 final JSONArray sArray = (JSONArray) s;
-                for (int k = sArray.length() - 1; k >= 0; k--) {
+                for (int k = sArray.length() - 1; k >= 0; k--){
                     final Object eachString = sArray.get(k);
                     if (eachString instanceof String) {
                         String s1 = (String) eachString;
@@ -520,7 +520,7 @@ public class XML {
     }
 
     private static boolean isStringAllWhiteSpace(final String s) {
-        for (int k = 0; k < s.length(); k++) {
+        for (int k = 0; k < s.length(); k++){
             final char eachChar = s.charAt(k);
             if (!Character.isWhitespace(eachChar)) {
                 return false;
@@ -604,10 +604,8 @@ public class XML {
 
     /**
      * This method tries to convert the given string value to the target object
-     *
-     * @param string        String to convert
+     * @param string String to convert
      * @param typeConverter value converter to convert string to integer, boolean e.t.c
-     *
      * @return JSON value of this string or the string
      */
     public static Object stringToValue(String string,
@@ -622,7 +620,6 @@ public class XML {
      * This method is the same as {@link JSONObject#stringToValue(String)}.
      *
      * @param string String to convert
-     *
      * @return JSON value of this string or the string
      */
     // To maintain compatibility with the Android API, this method is a direct copy of
@@ -751,7 +748,8 @@ public class XML {
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(Reader reader,
-                                          XMLParserConfiguration config) throws JSONException {
+                                          XMLParserConfiguration config)
+            throws JSONException {
         JSONObject jo = new JSONObject();
         XMLTokener x = new XMLTokener(reader, config);
         while (x.more()) {
@@ -786,7 +784,8 @@ public class XML {
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(String string,
-                                          boolean keepStrings) throws JSONException {
+                                          boolean keepStrings)
+            throws JSONException {
         return toJSONObject(new StringReader(string), keepStrings);
     }
 
@@ -812,7 +811,8 @@ public class XML {
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
     public static JSONObject toJSONObject(String string,
-                                          XMLParserConfiguration config) throws JSONException {
+                                          XMLParserConfiguration config)
+            throws JSONException {
         return toJSONObject(new StringReader(string), config);
     }
 
@@ -881,7 +881,8 @@ public class XML {
     private static String toString(final Object object,
                                    final String tagName,
                                    final XMLParserConfiguration config,
-                                   int indentFactor, int indent)
+                                   int indentFactor,
+                                   int indent)
             throws JSONException {
         StringBuilder sb = new StringBuilder();
         JSONArray ja;
@@ -951,7 +952,7 @@ public class XML {
                         }
                     }
                 } else if ("".equals(value)) {
-                    if (config.isCloseEmptyTag()) {
+                    if (config.isCloseEmptyTag()){
                         sb.append(indent(indent));
                         sb.append('<');
                         sb.append(key);
@@ -1014,9 +1015,9 @@ public class XML {
 
         string = (object == null) ? "null" : escape(object.toString());
         String indentationSuffix = (indentFactor > 0) ? "\n" : "";
-        if (tagName == null) {
+        if (tagName == null){
             return indent(indent) + "\"" + string + "\"" + indentationSuffix;
-        } else if (string.length() == 0) {
+        } else if (string.length() == 0){
             return indent(indent) + "<" + tagName + "/>" + indentationSuffix;
         } else {
             return indent(indent) + "<" + tagName
@@ -1051,7 +1052,8 @@ public class XML {
      * @throws JSONException Thrown if there is an error parsing the string
      */
     public static String toString(final Object object,
-                                  final String tagName, int indentFactor) {
+                                  final String tagName,
+                                  int indentFactor) {
         return toString(object, tagName, XMLParserConfiguration.ORIGINAL, indentFactor);
     }
 
@@ -1071,7 +1073,8 @@ public class XML {
      */
     public static String toString(final Object object,
                                   final String tagName,
-                                  final XMLParserConfiguration config, int indentFactor)
+                                  final XMLParserConfiguration config,
+                                  int indentFactor)
             throws JSONException {
         return toString(object, tagName, config, indentFactor, 0);
     }

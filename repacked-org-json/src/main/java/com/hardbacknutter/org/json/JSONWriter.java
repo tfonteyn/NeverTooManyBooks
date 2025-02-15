@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -333,14 +333,14 @@ public class JSONWriter {
      * <p>
      * Warning: This method assumes that the data structure is acyclical.
      *
-     * @param value The value to be serialized.
-     *
+     * @param value
+     *            The value to be serialized.
      * @return a printable, displayable, transmittable representation of the
      *         object, beginning with <code>{</code>&nbsp;<small>(left
      *         brace)</small> and ending with <code>}</code>&nbsp;<small>(right
      *         brace)</small>.
-     *
-     * @throws JSONException If the value is or contains an invalid number.
+     * @throws JSONException
+     *             If the value is or contains an invalid number.
      */
     @NonNull
     public static String valueToString(@Nullable Object value)
@@ -438,7 +438,7 @@ public class JSONWriter {
      * @throws JSONException If the value is out of sequence.
      */
     @NonNull
-    public JSONWriter value(@Nullable Object object)
+    public JSONWriter value(Object object)
             throws JSONException {
         return this.append(valueToString(object));
     }

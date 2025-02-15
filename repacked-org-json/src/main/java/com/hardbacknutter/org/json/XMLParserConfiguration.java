@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,8 +22,6 @@ package com.hardbacknutter.org.json;
 /*
 Public Domain.
 */
-
-import androidx.annotation.NonNull;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -206,7 +204,6 @@ public class XMLParserConfiguration
      * Provides a new instance of the same configuration.
      */
     @Override
-    @NonNull
     protected XMLParserConfiguration clone() {
         // future modifications to this method should always ensure a "deep"
         // clone in the case of collections. i.e. if a Map is added as a configuration
@@ -237,7 +234,6 @@ public class XMLParserConfiguration
      */
     @SuppressWarnings("unchecked")
     @Override
-    @NonNull
     public XMLParserConfiguration withKeepStrings(final boolean newVal) {
         return super.withKeepStrings(newVal);
     }
@@ -263,7 +259,6 @@ public class XMLParserConfiguration
      *
      * @return The existing configuration will not be modified. A new configuration is returned.
      */
-    @NonNull
     public XMLParserConfiguration withcDataTagName(final String newVal) {
         XMLParserConfiguration newConfig = this.clone();
         newConfig.cDataTagName = newVal;
@@ -291,7 +286,6 @@ public class XMLParserConfiguration
      *
      * @return The existing configuration will not be modified. A new configuration is returned.
      */
-    @NonNull
     public XMLParserConfiguration withConvertNilAttributeToNull(final boolean newVal) {
         XMLParserConfiguration newConfig = this.clone();
         newConfig.convertNilAttributeToNull = newVal;
@@ -318,7 +312,6 @@ public class XMLParserConfiguration
      *                   xsi:type="integer" as integer,  xsi:type="string" as string
      * @return The existing configuration will not be modified. A new configuration is returned.
      */
-    @NonNull
     public XMLParserConfiguration withXsiTypeMap(final Map<String, XMLXsiTypeConverter<?>> xsiTypeMap) {
         XMLParserConfiguration newConfig = this.clone();
         Map<String, XMLXsiTypeConverter<?>> cloneXsiTypeMap = new HashMap<String, XMLXsiTypeConverter<?>>(
@@ -342,7 +335,6 @@ public class XMLParserConfiguration
      * @param forceList  {@code new HashSet<String>()} to parse the provided tags' values as arrays
      * @return The existing configuration will not be modified. A new configuration is returned.
      */
-    @NonNull
     public XMLParserConfiguration withForceList(final Set<String> forceList) {
         XMLParserConfiguration newConfig = this.clone();
         Set<String> cloneForceList = new HashSet<String>(forceList);
@@ -361,19 +353,15 @@ public class XMLParserConfiguration
      */
     @SuppressWarnings("unchecked")
     @Override
-    @NonNull
     public XMLParserConfiguration withMaxNestingDepth(int maxNestingDepth) {
         return super.withMaxNestingDepth(maxNestingDepth);
     }
 
     /**
      * To enable explicit end tag with empty value.
-     *
      * @param closeEmptyTag new value for the closeEmptyTag property
-     *
      * @return same instance of configuration with empty tag config updated
      */
-    @NonNull
     public XMLParserConfiguration withCloseEmptyTag(boolean closeEmptyTag) {
         XMLParserConfiguration clonedConfiguration = this.clone();
         clonedConfiguration.closeEmptyTag = closeEmptyTag;
@@ -384,12 +372,9 @@ public class XMLParserConfiguration
      * Sets whether whitespace should be trimmed inside of tags. *NOTE* Do not use this if
      * you expect your XML tags to have names that are the same as cDataTagName as this is unsupported.
      * cDataTagName should be set to a distinct value in these cases.
-     *
      * @param shouldTrimWhiteSpace boolean to set trimming on or off. Off is default.
-     *
      * @return same instance of configuration with empty tag config updated
      */
-    @NonNull
     public XMLParserConfiguration withShouldTrimWhitespace(boolean shouldTrimWhiteSpace) {
         XMLParserConfiguration clonedConfiguration = this.clone();
         clonedConfiguration.shouldTrimWhiteSpace = shouldTrimWhiteSpace;

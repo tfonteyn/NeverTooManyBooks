@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ public class JSONML {
      *     if we are at the outermost level.
      * @param keepStrings    Don't type-convert text nodes and attribute values
      * @return A JSONArray if the value is the outermost tag, otherwise null.
-     * @throws JSONException if a parsing error occurs
+     * @throws .JSONException if a parsing error occurs
      */
     private static Object parse(
             XMLTokener x,

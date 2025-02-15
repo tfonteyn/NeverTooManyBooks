@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -176,12 +176,10 @@ public class XMLTokener
         String string = sb.toString();
         return unescapeEntity(string);
     }
-
+    
     /**
      * Unescape an XML entity encoding;
-     *
      * @param e entity (only the actual entity value, not the preceding & or ending ;
-     *
      * @return
      */
     static String unescapeEntity(String e) {
@@ -200,9 +198,9 @@ public class XMLTokener
                 cp = Integer.parseInt(e.substring(1));
             }
             return new String(new int[]{cp}, 0, 1);
-        }
+        } 
         Character knownEntity = entity.get(e);
-        if (knownEntity == null) {
+        if (knownEntity==null) {
             // we don't know the entity so keep it encoded
             return '&' + e + ';';
         }
