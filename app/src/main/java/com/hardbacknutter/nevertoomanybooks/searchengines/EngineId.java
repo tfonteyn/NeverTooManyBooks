@@ -181,7 +181,8 @@ public enum EngineId
         "https://www.bol.com",
         new Locale("nl", "NL"),
         BolSearchEngine.class,
-        true),
+        // URGENT: 2025-02-15: bol.com is now disabled as they block all requests.
+        false),
 
     /**
      * All genres. This is a portal site to other shopping sites.
