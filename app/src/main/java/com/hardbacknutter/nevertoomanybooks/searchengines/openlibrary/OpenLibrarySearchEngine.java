@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -645,11 +646,7 @@ public class OpenLibrarySearchEngine
 
         parseIsbn(document, book);
 
-        // "identifiers" contains foreign-site codes (e.g. amazon ASIN)
-        element = document.optJSONObject("identifiers");
-        if (element != null) {
-            parseIdentifiers(element, book);
-        }
+        parseIdentifiers(document, book);
 
         a = document.optJSONArray("series");
         if (a != null && !a.isEmpty()) {
@@ -935,6 +932,12 @@ public class OpenLibrarySearchEngine
     /**
      * <pre>
      *     {
+     *   "oclc_numbers": [
+     *     "297222669"
+     *   ],
+     *   "lccn": [
+     *     "2008054742"
+     *   ],
      *   "identifiers": {
      *     "goodreads": [
      *       "596906"
@@ -948,34 +951,46 @@ public class OpenLibrarySearchEngine
      *   }
      * </pre>
      *
-     * @param element to parse
+     * @param document to parse
      * @param book    to update
      */
-    private void parseIdentifiers(@NonNull final JSONObject element,
+    private void parseIdentifiers(@NonNull final JSONObject document,
                                   @NonNull final Book book) {
 
         // the SID_OPEN_LIBRARY should already be there, so get the current list!
         final List<Identifier.Value> ivs = book.getIdentifiers();
 
-        element.keySet().forEach(olKey -> {
-            final JSONArray data = element.optJSONArray(olKey);
-            if (data != null && !data.isEmpty()) {
-                // MUST be converted to lc before we try and map
-                final String olKeyLc = olKey.toLowerCase(Locale.ENGLISH);
-                // Map the olKeyLc to our key, or if not found, just use the olKeyLc itself
-                String key = IDENTIFIER_MAPPING.get(olKeyLc);
-                if (key == null) {
-                    key = olKeyLc;
-                }
-                // The site supports multiple identifier of the same type.
-                // We just grab the first entry in their array.
-                ivs.add(new Identifier.Value(key, data.getString(0)));
-            }
-        });
+        // "identifiers" contains foreign-site codes (e.g. amazon ASIN)
+        final JSONObject element = document.optJSONObject("identifiers");
+        if (element != null) {
+            element.keySet().stream()
+                   .map(olKey -> extracted(element, olKey))
+                   .flatMap(Optional::stream)
+                   .forEach(ivs::add);
+        }
+
+        // lccn and oclc can also be found at the top-level...
+        extracted(document, "lccn").ifPresent(ivs::add);
+        extracted(document, "oclc_numbers").ifPresent(ivs::add);
 
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
+    }
+
+    private Optional<Identifier.Value> extracted(@NonNull final JSONObject element,
+                                                 @NonNull final String olKey) {
+        final JSONArray data = element.optJSONArray(olKey);
+        if (data != null && !data.isEmpty()) {
+            // MUST be converted to lc before we try and map
+            final String olKeyLc = olKey.toLowerCase(Locale.ENGLISH);
+            // Map the olKeyLc to our key, or if not found, just use the olKeyLc itself
+            final String key = Objects.requireNonNullElse(IDENTIFIER_MAPPING.get(olKeyLc), olKeyLc);
+            // The site supports multiple identifier of the same type.
+            // We just grab the first entry in their array.
+            return Optional.of(new Identifier.Value(key, data.getString(0)));
+        }
+        return Optional.empty();
     }
 
     private void parseToc(@NonNull final Context context,
