@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,9 +50,10 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
  * package-summary</a>
  * <p>
- * API 28   3.22.0
- * API 27   3.19.4
- * API 26   3.18.2
+ * API 30    3.28     Android 11 is required for upsert support...
+ * API 28    3.22.0
+ * API 27    3.19.4
+ * API 26*   3.18.2
  * <p>
  * But some device manufacturers include different versions of SQLite on their devices.
  */

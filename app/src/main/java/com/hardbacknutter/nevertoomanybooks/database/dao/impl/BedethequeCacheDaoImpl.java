@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -87,11 +88,17 @@ public class BedethequeCacheDaoImpl
                        @NonNull final Supplier<BdtAuthor> recordSupplier)
             throws DaoInsertException, DaoUpdateException {
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            insertApiPre30(locale, recordSupplier);
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insertApi30(locale, recordSupplier);
+        } else {
+            insertApi26(locale, recordSupplier);
         }
+    }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    private void insertApi30(@NonNull final Locale locale,
+                             @NonNull final Supplier<BdtAuthor> recordSupplier)
+            throws DaoInsertException {
         BdtAuthor bdtAuthor;
 
         Synchronizer.SyncLock txLock = null;
@@ -125,8 +132,8 @@ public class BedethequeCacheDaoImpl
         }
     }
 
-    private void insertApiPre30(@NonNull final Locale locale,
-                                @NonNull final Supplier<BdtAuthor> recordSupplier)
+    private void insertApi26(@NonNull final Locale locale,
+                             @NonNull final Supplier<BdtAuthor> recordSupplier)
             throws DaoInsertException, DaoUpdateException {
 
         BdtAuthor bdtAuthor;
@@ -257,8 +264,9 @@ public class BedethequeCacheDaoImpl
         /**
          * "ON CONFLICT" requires Android 11.
          *
-         * @see #insertApiPre30(Locale, Supplier) for older versions.
+         * @see #insertApi26(Locale, Supplier) for older versions.
          */
+        @RequiresApi(Build.VERSION_CODES.R)
         static final String INSERT =
                 INSERT_INTO_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
                 + '(' + CacheDbHelper.BDT_AUTHOR_NAME
