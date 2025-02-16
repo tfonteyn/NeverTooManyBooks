@@ -329,6 +329,9 @@ public class DBHelper
         // Create all the app & user data tables in the correct dependency order
         TableDefinition.onCreate(db, getCollation(db), DBDefinitions.ALL_TABLES.values());
 
+
+        //URGENT: we should just use the ServiceLocator to get the dao's.
+
         StyleDaoImpl.onPostCreate(db);
         CalibreCustomFieldDaoImpl.onPostCreate(db);
 
