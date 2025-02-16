@@ -151,6 +151,7 @@
     <string name="confirm_delete_substitutions">De substituties voor “%1$s” verwijderen?</string>
     <string name="X_confirm_delete_tag">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit alle boeken waarop deze tag is gezet. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_tag_from_x_books">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd.</string>
+    <string name="confirm_delete_identifier_from_x_books">Verwijder de identificatiecode „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_style">De stijl „%1$s” verwijderen?</string>
     <string name="confirm_delete_toc_entry_from_x_books">De titel „%1$s” (door %2$s) echt verwijderen?\n\nHet wordt verwijderd uit %3$s. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
