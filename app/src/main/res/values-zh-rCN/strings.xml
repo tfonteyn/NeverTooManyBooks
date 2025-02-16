@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -157,11 +160,11 @@
     <string name="confirm_continue">你确定要继续吗？</string>
     <string name="confirm_create_real_author">“%1$s”尚不存在。要创建吗？</string>
     <string name="confirm_delete_book">这将完全删除作者 %2$s 名为“%1$s”的图书。\n\n您确定要继续吗？</string>
-    <string name="confirm_delete_bookshelf">删除书架“%1$s”吗？将不会删除图书本身。它们仍会位于其他书架，或是“%2$s”书架上。</string>
-    <string name="confirm_delete_publisher">删除出版商“%1$s”吗？\n\n将不会删除图书本身。\n\n若要保留此数据，请考虑编辑出版商，将其名称改为另一出版商的名称。</string>
-    <string name="confirm_delete_series">删除系列“%1$s”吗？\n\n将不会删除图书本身。\n\n若要保留此数据，请考虑编辑系列，将其名称改为另一系列的名称。</string>
+    <string name="confirm_delete_bookshelf_from_x_books">删除书架“%1$s”？\n\n它将从 %2$s 中移除。书籍本身不会被删除。它们仍将存在于任何其他书架上，或“%3$s”书架上。</string>
+    <string name="confirm_delete_publisher_from_x_books">删除出版商“%1$s”吗？\n\n它将从 %2$s 中删除。若要保留此数据，请考虑编辑出版商，将其名称改为另一出版商的名称。</string>
+    <string name="confirm_delete_series_from_x_books">删除系列“%1$s”吗？\n\n它将从 %2$s 中删除。若要保留此数据，请考虑编辑系列，将其名称改为另一系列的名称。</string>
     <string name="confirm_delete_style">删除样式“%1$s”吗？</string>
-    <string name="confirm_delete_toc_entry_everywhere">真的要删除 %2$s 的标题“%1$s”吗？它将会从将其列出的所有图书中被删除。将不会删除图书本身。</string>
+    <string name="confirm_delete_toc_entry_from_x_books">删除 %2$s 的“%1$s”？\n\n它将从 %3$s 中移除。书籍本身不会被删除。</string>
     <string name="confirm_duplicate_book_message">您要添加的图书已经存在于数据库中，您确定要再添加一本吗？</string>
     <string name="confirm_email_file">您希望将此文件作为电子邮件发送吗？</string>
     <string name="confirm_merge_authors">您要修改的作者已经存在。您想合并它们吗？</string>
@@ -824,7 +827,7 @@
     <string name="lbl_identifier">标识符</string>
     <string name="lbl_identifiers">标识符</string>
     <string name="info_tap_to_move_tag">轻按标签将其移动到书籍或从书籍移出。</string>
-    <string name="confirm_delete_tag">删除标签 “%1$s”？\n\n将从所有设置了该标签的书籍处移除它。不会删除书籍本身。</string>
+    <string name="X_confirm_delete_tag">删除标签 “%1$s”？\n\n将从所有设置了该标签的书籍处移除它。不会删除书籍本身。</string>
     <string name="confirm_merge_tags">你正修改的标签已存在。你要合并它们吗？</string>
     <string name="info_substitutions_one_per_line">每行添加一个替代</string>
     <string name="confirm_delete_tag_from_x_books">删除 “%1$s” 标签？\n\n将从设置了该标签的 %2$s 处删除它。书籍本身不会被删除。</string>

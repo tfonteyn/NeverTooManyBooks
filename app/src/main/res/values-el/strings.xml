@@ -23,7 +23,11 @@
 <!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
+<!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
+
+A question mark is written as the character semicolon: ';'
+--><!--suppress LongLine -->
+<resources>
     <plurals name="n_books">
         <item quantity="one">%1$d βιβλίο</item>
         <item quantity="other">%1$d βιβλία</item>
@@ -149,15 +153,15 @@
     <string name="cd_clear_text_end_icon">Διαγραφή κειμένου</string>
     <string name="lbl_certificate_issued_by">Εκδόθηκε από: %1$s</string>
     <string name="lbl_certificate_issued_to">Εκδόθηκε σε: %1$s</string>
-    <string name="confirm_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο «%1$s» από %2$s.\n\n Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
-    <string name="confirm_delete_bookshelf">Να διαγραφεί πραγματικά το ράφι βιβλίου «%1$s»; Τα ίδια τα βιβλία δεν θα διαγραφούν. Θα εξακολουθούν να είναι παρόντα σε άλλα ράφια ή στο ράφι «%2$s».</string>
-    <string name="confirm_delete_publisher">Να διαγραφεί πραγματικά ο εκδότης «%1$s»;\n\nΤα ίδια τα βιβλία δεν θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε τον εκδότη και να αλλάξετε το όνομα του εκδότη σε αυτό άλλου εκδότη για να διατηρήσετε αυτά τα δεδομένα.</string>
-    <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά «%1$s»;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
+    <string name="confirm_delete_book">Το βιβλίο με τίτλο «%1$s» έχει αφαιρεθεί πλήρως από το %2$s.\n\nΕίστε σίγουρος ότι θέλετε να συνεχίσετε;</string>
+    <string name="confirm_delete_bookshelf_from_x_books">Να διαγραφεί πραγματικά το ράφι βιβλίου «%1$s»;\n\nΘα διαγραφεί από το %2$s. Τα ίδια τα βιβλία δεν θα διαγραφούν. Θα εξακολουθούν να είναι παρόντα σε άλλα ράφια ή στο ράφι «%3$s».</string>
+    <string name="confirm_delete_publisher_from_x_books">Να διαγραφεί πραγματικά ο εκδότης «%1$s»;\n\nΘα διαγραφεί από το %2$s. Τα ίδια τα βιβλία δεν θα διαγραφούν. Σκεφτείτε να επεξεργαστείτε τον εκδότη και να αλλάξετε το όνομα του εκδότη σε αυτό άλλου εκδότη για να διατηρήσετε αυτά τα δεδομένα.</string>
+    <string name="confirm_delete_series_from_x_books">Θέλετε να διαγραφεί η σειρά «%1$s»;\n\nΘα διαγραφεί από το %2$s. Τα βιβλία της δε θα διαγραφούν. Σκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
     <string name="confirm_delete_style">Διαγραφή του στυλ «%1$s»;</string>
-    <string name="confirm_delete_substitutions">Διαγραφή των αντικαταστάσεων για το «%1$s»?</string>
-    <string name="confirm_delete_tag">Διαγραφή της ετικέτας «%1$s»;\n\nΘα διαγραφεί από όλα τα βιβλία στα οποία έχει οριστεί. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
-    <string name="confirm_delete_tag_from_x_books">Διαγραφή της ετικέτας «%1$s»;\n\nΘα διαγραφεί από το %2$s στο οποίο έχει οριστεί. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
-    <string name="confirm_delete_toc_entry_everywhere">Πραγματικά διαγράψτε τον τίτλο «%1$s» (από το %2$s); Θα διαγραφεί από όλα τα βιβλία στα οποία αναφέρεται. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
+    <string name="confirm_delete_substitutions">Διαγραφή των αντικαταστάσεων για το «%1$s»;</string>
+    <string name="X_confirm_delete_tag">Διαγραφή της ετικέτας «%1$s»;\n\nΘα διαγραφεί από όλα τα βιβλία στα οποία έχει οριστεί. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
+    <string name="confirm_delete_tag_from_x_books">Διαγραφή της ετικέτας «%1$s»;\n\nΘα διαγραφεί από το %2$s. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
+    <string name="confirm_delete_toc_entry_from_x_books">Πραγματικά διαγράψτε τον τίτλο «%1$s» (από το %2$s);\n\nΘα διαγραφεί από το %3$s. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
     <string name="confirm_merge_tags">Η ετικέτα που τροποποιείτε υπάρχει ήδη. Θα θέλατε να τις συγχωνεύσετε;</string>
     <string name="confirm_duplicate_book_message">Το βιβλίο που προσπαθείτε να προσθέσετε υπάρχει ήδη στη βάση δεδομένων, είστε σίγουροι ότι θέλετε να προσθέσετε και άλλο αντίγραφο;</string>
     <string name="confirm_email_file">Θα θέλατε να στείλετε αυτό το αρχείο μέσω ηλεκτρονικού ταχυδρομείου σε κάποιον;</string>
@@ -731,7 +735,7 @@
     <string name="confirm_create_real_author">Το «%1$s» δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
     <string name="pt_search_resolve_authors_bedetheque">Επιλύστε τα ψευδώνυμα των συγγραφέων χρησιμοποιώντας τον ιστότοπο Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική)</string>
-    <string name="confirm_toc_list_update_with_books_main_author">Αντικατάσταση του συγγραφέα σε όλες τις εγγραφές με τον κύριο συγγραφέα του βιβλίου «%1$s» ?</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Αντικατάσταση του συγγραφέα σε όλες τις εγγραφές με τον κύριο συγγραφέα του βιβλίου «%1$s»;</string>
     <string name="confirm_no_missing_covers_search_from_top">Όλα τα βιβλία κάτω από αυτή τη σειρά έχουν εξώφυλλα. Ψάξτε ξανά από την κορυφή;</string>
     <string name="info_all_books_have_covers">Όλα τα βιβλία σε αυτό το ράφι έχουν εξώφυλλα</string>
     <string name="book_format_hardcover_oblong">σκληρό βιβλίο - επίμηκες</string>

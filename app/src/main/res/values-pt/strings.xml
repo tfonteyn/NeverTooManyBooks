@@ -322,11 +322,11 @@
     <string name="option_enable_sync_options">Ativar opções de sincronização</string>
     <string name="option_download_set_folder">Definir a pasta de transferências</string>
     <string name="confirm_unsaved_edits">Tem alterações não guardadas, se sair agora estas serão perdidas.</string>
-    <string name="confirm_delete_bookshelf">Excluir a prateleira“%1$s”? Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%2$s”.</string>
+    <string name="confirm_delete_bookshelf_from_x_books">Excluir a prateleira“%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%3$s”.</string>
     <string name="confirm_delete_substitutions">Eliminar as substituições de “%1$s”?</string>
-    <string name="confirm_delete_tag">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de todos os livros em que estiver definida. Os livros em si não serão eliminados.</string>
-    <string name="confirm_delete_tag_from_x_books">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de %2$s em que estiver definida. Os livros em si não serão eliminados.</string>
-    <string name="confirm_delete_toc_entry_everywhere">Pretende realmente excluir o título “%1$s” por %2$s? Ele será excluído de todos os livros em que estiver listado. Os próprios livros não serão excluídos.</string>
+    <string name="X_confirm_delete_tag">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de todos os livros em que estiver definida. Os livros em si não serão eliminados.</string>
+    <string name="confirm_delete_tag_from_x_books">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão eliminados.</string>
+    <string name="confirm_delete_toc_entry_from_x_books">Pretende realmente excluir o título “%1$s” por %2$s?\n\nSerá eliminada de %3$s. Os próprios livros não serão excluídos.</string>
     <string name="warning_nothing_selected">Nada selecionado</string>
     <string name="info_isfdb_warning_limited_to">(suportado apenas pelo site do ISFDB)</string>
     <string name="tip_import_isbn_list">Importar um ficheiro de texto com números ISBN. O ficheiro deve ter um único ISBN por cada linha. Os resultados serão colocados na fila.</string>
@@ -379,16 +379,8 @@
     <string name="lbl_condition_dust_cover_none">Nenhum</string>
     <string name="option_storage_select">Usar “%1$s”</string>
     <string name="warning_import_csv">AVISO: A importação de dados pode atualizar os registos de livros existentes com novas informações se a coluna UUID não estiver presente e o ID no ficheiro de importação for o mesmo que um ID existente. Normalmente, isto não tem qualquer problema se tiver alterado um campo num ficheiro exportado. Se tiver criado um novo registo de livro ou estiver a importar os livros de outra pessoa, certifique-se de que o campo UUID está presente ou que o campo ID está em branco.</string>
-    <string name="confirm_delete_series">Excluir a série “%1$s”?
-\n
-\nOs livros em si não serão excluídos.
-\n
-\nConsidere editar a série e alterar o nome da série para o de outra série para preservar estes dados.</string>
-    <string name="confirm_delete_publisher">Excluir o editor “%1$s”?
-\n
-\nOs livros em si não serão excluídos.
-\n
-\nConsidere editar o editor e alterar o nome do editor para o de outro editor para preservar estes dados.</string>
+    <string name="confirm_delete_series_from_x_books">Excluir a série “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão excluídos. Considere editar a série e alterar o nome da série para o de outra série para preservar estes dados.</string>
+    <string name="confirm_delete_publisher_from_x_books">Excluir o editor “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão excluídos. Considere editar o editor e alterar o nome do editor para o de outro editor para preservar estes dados.</string>
     <string name="warning_image_copy_failed">A imagem não pôde ser copiada.</string>
     <string name="vldt_integer_expected_for_x">Esperado um valor inteiro para “%1$s”</string>
     <string name="vldt_real_expected_for_x">Espera-se um número real para “%1$s”</string>

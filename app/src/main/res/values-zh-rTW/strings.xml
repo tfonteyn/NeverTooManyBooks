@@ -161,12 +161,7 @@
     <string name="confirm_continue">你確定要繼續嗎？</string>
     <string name="confirm_create_real_author">「%1$s」尚不存在。要創建嗎？</string>
     <string name="confirm_delete_book">這將完全刪除作者 %2$s 名為「%1$s」的書籍。\n\n您確定要繼續嗎？</string>
-    <string name="confirm_delete_bookshelf">刪除書架「%1$s」嗎？將不會刪除圖書本身。它們仍會位於其他書架，或是「%2$s」書架上。</string>
-    <string name="confirm_delete_publisher">刪除出版商「%1$s」嗎？\n\n將不會刪除圖書本身。\n\n若要保留此數據，請考慮編輯出版商，將其名稱改為另一出版商的名稱。</string>
-    <string name="confirm_delete_series">刪除系列「%1$s」嗎？\n\n將不會刪除圖書本身。\n\n若要保留此數據，請考慮編輯系列，將其名稱改為另一系列的名稱。</string>
     <string name="confirm_delete_style">刪除樣式「%1$s」嗎？</string>
-    <string name="confirm_delete_tag_from_x_books">刪除「%1$s」標籤？\n\n將從設定了該標籤的「%2$s」處刪除它。書籍本身不會被刪除。</string>
-    <string name="confirm_delete_toc_entry_everywhere">真的要刪除 %2$s 的標題「%1$s」嗎？它將會從將其列出的所有圖書中被刪除。將不會刪除圖書本身。</string>
     <string name="confirm_merge_tags">你正修改的標籤已存在。你要合併它們嗎？</string>
     <string name="confirm_duplicate_book_message">您要新增的圖書已經存在於資料庫中，您確定要再增加一本嗎？</string>
     <string name="confirm_email_file">您希望將此文件作為電子郵件發送嗎？</string>
@@ -835,7 +830,7 @@
     <string name="lbl_identifier">識別碼</string>
     <string name="lbl_identifiers">識別碼</string>
     <string name="confirm_delete_substitutions">刪除「%1$s」的替代？</string>
-    <string name="confirm_delete_tag">刪除標籤「%1$s」？\n\n將從所有設定了該標籤的書籍處移除它。不會刪除書籍本身。</string>
+    <string name="X_confirm_delete_tag">刪除標籤「%1$s」？\n\n將從所有設定了該標籤的書籍處移除它。不會刪除書籍本身。</string>
     <string name="info_tap_to_move_tag">輕按標籤將其移動到書籍或從書籍移出。</string>
     <string name="lbl_tag_mapper_apply_merge_case">合併只有字母大小寫不同的標籤</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">大/小寫合併</string>

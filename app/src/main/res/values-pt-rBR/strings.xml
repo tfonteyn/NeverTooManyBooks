@@ -223,7 +223,7 @@
     <string name="pe_bob_cover_click_details">Abrirá a página de detalhes do livro.</string>
     <string name="pt_bob_show_details">Detalhes do livro mostrados na lista</string>
     <string name="lbl_genre">Gênero</string>
-    <string name="confirm_delete_bookshelf">Excluir a estante “%1$s”? Os livros em si não serão excluídos. Eles ainda estarão presentes em quaisquer outras estantes, ou na estante “%2$s”.</string>
+    <string name="confirm_delete_bookshelf_from_x_books">Excluir a estante “%1$s”?\n\nEla será excluída de %2$s. Os livros em si não serão excluídos. Eles ainda estarão presentes em quaisquer outras estantes, ou na estante “%3$s”.</string>
     <string name="confirm_merge_bookshelves">A estante que você está modificando já existe. Gostaria de mesclá-las?</string>
     <string name="info_bulk_set_bookshelves">Selecione as estantes que você deseja atribuir a todos os livros listados no nó selecionado.</string>
     <string name="lbl_condition_dust_cover_none">Nenhum</string>
@@ -240,8 +240,8 @@
     <string name="site_description_various_languages">Vários idiomas</string>
     <string name="confirm_merge_tags">A tag que você está modificando já existe. Você gostaria de mesclá-las?</string>
     <string name="confirm_delete_substitutions">Excluir as substituições para “%1$s”?</string>
-    <string name="confirm_delete_tag">Excluir a tag “%1$s”?\n\nEla será excluída de todos os livros nos quais estiver definida. Os livros em si não serão excluídos.</string>
-    <string name="confirm_delete_tag_from_x_books">Excluir a tag “%1$s”?\n\nEla será excluída de %2$s nos quais estiver definida. Os livros em si não serão excluídos.</string>
+    <string name="X_confirm_delete_tag">Excluir a tag “%1$s”?\n\nEla será excluída de todos os livros nos quais estiver definida. Os livros em si não serão excluídos.</string>
+    <string name="confirm_delete_tag_from_x_books">Excluir a tag “%1$s”?\n\nEla será excluída de %2$s. Os livros em si não serão excluídos.</string>
     <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tags</string>
     <string name="info_tap_to_move_tag">Toque em uma tag para movê-la de/para o livro.</string>

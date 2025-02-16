@@ -159,18 +159,14 @@
     <string name="lbl_certificate_issued_by">Wystawca: %1$s</string>
     <string name="lbl_certificate_issued_to">Wystawiony dla: %1$s</string>
     <string name="confirm_delete_book">Zamierzasz usunąć książkę o tytule „%1$s” autora %2$s.\n\n Czy chcesz kontynuować?</string>
-    <string name="confirm_delete_bookshelf">Naprawdę usunąć półkę „%1$s”? Same książki nie zostaną usunięte. Nadal będą obecne na innych półkach lub na półce „%2$s”.</string>
-    <string name="confirm_delete_publisher">Naprawdę usunąć wydawcę „%1$s”?\n\nSame książki nie zostaną usunięte.\n\nRozważ edycję wydawcy i zmianę nazwy wydawcy na nazwę innego wydawcy, aby zachować te dane.</string>
-    <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”?
-\n
-\nKsiążki nie będą usuwane.
-\n
-\nRozważ zmianę nazwy serii by zachować te dane.</string>
+    <string name="confirm_delete_bookshelf_from_x_books">Naprawdę usunąć półkę „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte. Nadal będą obecne na innych półkach lub na półce „%3$s”.</string>
+    <string name="confirm_delete_publisher_from_x_books">Naprawdę usunąć wydawcę „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte. Rozważ edycję wydawcy i zmianę nazwy wydawcy na nazwę innego wydawcy, aby zachować te dane.</string>
+    <string name="confirm_delete_series_from_x_books">Czy na pewno usunąć serię „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte. Rozważ zmianę nazwy serii by zachować te dane.</string>
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
     <string name="confirm_delete_substitutions">Usunąć podstawienia dla „%1$s”?</string>
-    <string name="confirm_delete_tag">Usunąć tag „%1$s”?\n\nZostanie on usunięty ze wszystkich książek, w których jest ustawiony. Same książki nie zostaną usunięte.</string>
-    <string name="confirm_delete_tag_from_x_books">Usunąć tag „%1$s”?\n\nZostanie on usunięty z %2$s, na którym jest ustawiony. Same książki nie zostaną usunięte.</string>
-    <string name="confirm_delete_toc_entry_everywhere">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
+    <string name="X_confirm_delete_tag">Usunąć tag „%1$s”?\n\nZostanie on usunięty ze wszystkich książek, w których jest ustawiony. Same książki nie zostaną usunięte.</string>
+    <string name="confirm_delete_tag_from_x_books">Usunąć tag „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte.</string>
+    <string name="confirm_delete_toc_entry_from_x_books">Naprawdę usuń wpis „%1$s” (przez %2$s)?\n\nZostanie on usunięty z %3$s. Same książki nie zostaną usunięte.</string>
     <string name="confirm_merge_tags">Modyfikowany tag już istnieje. Czy chcesz je scalić?</string>
     <string name="confirm_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
     <string name="confirm_email_file">Czy chcesz wysłać do kogoś ten plik e-mailem?</string>
@@ -178,22 +174,14 @@
     <string name="confirm_merge_bookshelves">Modyfikowana półka już istnieje. Czy chcesz je scalić?</string>
     <string name="confirm_merge_publishers">Wydawca, którego chcesz zmodyfikować, już istnieje. Czy chcesz je scalić?</string>
     <string name="confirm_merge_series">Seria, którą modyfikujesz, już istnieje. Czy chcesz je scalić?</string>
-    <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.
-\n
-\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu.</string>
+    <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.\n\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu.</string>
     <string name="confirm_rebuild_fts">Dane indeksu wyszukiwania zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
     <string name="confirm_rebuild_index">Indeksy zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
     <string name="confirm_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
     <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
     <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
     <string name="confirm_remove_toc_entry">Usunąć tytuł „%1$s” autorstwa %2$s z tej książki?</string>
-    <string name="confirm_scope_for_change">Zmieniłeś:
-\n „%1$s”
-\n na
-\n „%2$s”
-\n
-\nJak chcesz zastosować tę zmianę?
-\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast. Jeśli wybierzesz „%4$s”, zostanie utworzone nowe %5$s.</string>
+    <string name="confirm_scope_for_change">Zmieniłeś:\n „%1$s”\n na\n „%2$s”\n\nJak chcesz zastosować tę zmianę?\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast. Jeśli wybierzesz „%4$s”, zostanie utworzone nowe %5$s.</string>
     <string name="confirm_scope_for_delete">Usuń tytuł „%1$s” do %2$s.\n\nJak chcesz zastosować tę zmianę?\nOSTRZEŻENIE: wyboru „%3$s” nie można cofnąć!</string>
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
     <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
@@ -798,8 +786,7 @@
     <string name="pe_list">Lista</string>
     <string name="pe_grid">Siatka</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH. -->
-    <string name="ps_show_titles_reordered_on">Dotyczy tylko języków, w których używane są przedimki.
-\nPrzykład w języku angielskim: „Lord of The Rings, The”</string>
+    <string name="ps_show_titles_reordered_on">Dotyczy tylko języków, w których używane są przedimki.\nPrzykład w języku angielskim: „Lord of The Rings, The”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH. -->
     <string name="ps_show_titles_reordered_off">Dotyczy tylko języków, w których używane są przedimki.\nPrzykład w języku angielskim: „The Lord of The Rings”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN POLISH. MUST be set to a single vertical bar character. -->
