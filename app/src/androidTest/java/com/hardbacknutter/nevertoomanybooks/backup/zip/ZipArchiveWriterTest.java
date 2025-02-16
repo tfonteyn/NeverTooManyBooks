@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,7 +62,7 @@ public class ZipArchiveWriterTest
 
     private static final String TAG = "ZipArchiveWriterTest";
 
-    private long bookInDb;
+    private int bookInDb;
     private int nrOfStyles;
 
     private Locale systemLocale;
@@ -109,13 +109,13 @@ public class ZipArchiveWriterTest
         assertEquals(nrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
-        final long exportCount = exportResults.getBookCount();
+        final int exportCount = exportResults.getBookCount();
 
         read(uri, exportCount);
     }
 
     private void read(@NonNull final Uri uri,
-                      final long expectedNrOfBooks)
+                      final int expectedNrOfBooks)
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
 

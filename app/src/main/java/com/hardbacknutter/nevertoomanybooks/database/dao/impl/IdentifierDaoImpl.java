@@ -275,6 +275,14 @@ public class IdentifierDaoImpl
         return false;
     }
 
+    @Override
+    public int countBooks(@NonNull final Identifier identifier) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
+            stmt.bindLong(1, identifier.getId());
+            return (int) stmt.simpleQueryForLongOrZero();
+        }
+    }
+
     @NonNull
     @Override
     public List<Identifier.Value> getByBookId(@IntRange(from = 1) final long bookId) {
@@ -366,6 +374,10 @@ public class IdentifierDaoImpl
         static final String FIND_BY_KEY =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
+
+        static final String COUNT_BOOKS =
+                SELECT_COUNT_FROM_ + TBL_BOOK_IDENTIFIER.ref()
+                + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_IDENTIFIER) + "=?";
 
         static final String FIND_BOOK_ID_BY_IDENTIFIER_KEY_AND_SID =
                 SELECT_ + DBKey.FK_BOOK

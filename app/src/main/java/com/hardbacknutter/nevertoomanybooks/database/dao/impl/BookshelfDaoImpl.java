@@ -233,9 +233,17 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public long count() {
+    public int count() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    @Override
+    public int countBooks(@NonNull final Bookshelf bookshelf) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
+            stmt.bindLong(1, bookshelf.getId());
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -751,6 +759,10 @@ public class BookshelfDaoImpl
         /** Get a count of the {@link Bookshelf}s. */
         static final String COUNT_ALL =
                 SELECT_COUNT_FROM_ + TBL_BOOKSHELF.getName();
+
+        static final String COUNT_BOOKS =
+                SELECT_COUNT_FROM_ + TBL_BOOK_BOOKSHELF.ref()
+                + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
 
         /** A list of all {@link Bookshelf}s, unordered. Joined with the styles table. */
         static final String SELECT_ALL =

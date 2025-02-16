@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,7 +75,7 @@ public class DbPrep {
         return TestUtils.createFile(coverResId[cIdx], new File(tempDir, COVER[cIdx]));
     }
 
-    public long maybeInstallTestData(@NonNull final Context context)
+    public int maybeInstallTestData(@NonNull final Context context)
             throws StorageException, IOException, DataReaderException {
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 

@@ -147,17 +147,17 @@ public class PublisherDaoImpl
     }
 
     @Override
-    public long count() {
+    public int count() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 
     @Override
-    public long countBooks(@NonNull final Publisher publisher) {
+    public int countBooks(@NonNull final Publisher publisher) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
             stmt.bindLong(1, publisher.getId());
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -370,8 +370,8 @@ public class PublisherDaoImpl
 
     @Override
     public int moveBooks(@NonNull final Context context,
-                          @NonNull final Publisher source,
-                          @NonNull final Publisher target)
+                         @NonNull final Publisher source,
+                         @NonNull final Publisher target)
             throws DaoInsertException, DaoUpdateException {
 
         int booksMoved;
@@ -513,10 +513,8 @@ public class PublisherDaoImpl
 
         /** Count the number of {@link Book}'s by an {@link Publisher}. */
         static final String COUNT_BOOKS =
-                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ')'
-                + _FROM_ + TBL_BOOK_PUBLISHER.getName()
+                SELECT_COUNT_FROM_ + TBL_BOOK_PUBLISHER.getName()
                 + _WHERE_ + DBKey.FK_PUBLISHER + "=?";
-
 
         /** A list of all {@link Publisher}s, unordered. */
         static final String SELECT_ALL = "SELECT * FROM " + TBL_PUBLISHERS.getName();

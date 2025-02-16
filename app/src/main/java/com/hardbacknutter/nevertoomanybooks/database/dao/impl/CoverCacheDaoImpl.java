@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -262,6 +262,7 @@ public class CoverCacheDaoImpl
         static final String _FROM_ = " FROM ";
         static final String _WHERE_ = " WHERE ";
         static final String DELETE_FROM_ = "DELETE FROM ";
+        static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
 
         static final String INSERT =
                 "INSERT INTO " + CacheDbHelper.TBL_IMAGE.getName()
@@ -269,7 +270,7 @@ public class CoverCacheDaoImpl
                 + ',' + CacheDbHelper.IMAGE_BLOB
                 + ") VALUES (?,?)";
         static final String COUNT =
-                "SELECT COUNT(*) FROM " + CacheDbHelper.TBL_IMAGE.getName();
+                SELECT_COUNT_FROM_ + CacheDbHelper.TBL_IMAGE.getName();
 
         static final String FIND_BY_ID =
                 "SELECT " + CacheDbHelper.IMAGE_BLOB
@@ -279,8 +280,7 @@ public class CoverCacheDaoImpl
 
         /** Run a count for the desired file. 1 == exists, 0 == not there. */
         static final String COUNT_BY_IMAGE_ID =
-                "SELECT COUNT(" + CacheDbHelper.PK_ID + ")"
-                + _FROM_ + CacheDbHelper.TBL_IMAGE.getName()
+                SELECT_COUNT_FROM_ + CacheDbHelper.TBL_IMAGE.getName()
                 + _WHERE_ + CacheDbHelper.IMAGE_ID + "=?";
 
         static final String DELETE_BY_IMAGE_ID =

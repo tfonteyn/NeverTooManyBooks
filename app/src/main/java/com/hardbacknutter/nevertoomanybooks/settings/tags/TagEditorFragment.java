@@ -161,7 +161,7 @@ public class TagEditorFragment
         super.onResume();
         initFab();
         // the tag list could have been modified from a sibling
-        // fragment in out host fragment (ViewPager)
+        // fragment in our host fragment (ViewPager)
         if (vm.isModified()) {
             tags.clear();
             tags.addAll(ServiceLocator.getInstance().getTagDao().getAll());

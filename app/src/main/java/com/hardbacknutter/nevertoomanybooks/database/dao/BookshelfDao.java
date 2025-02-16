@@ -224,7 +224,16 @@ public interface BookshelfDao {
      *
      * @return count
      */
-    long count();
+    int count();
+
+    /**
+     * Count the books for the given {@link Bookshelf}.
+     *
+     * @param bookshelf to count the books of
+     *
+     * @return the number of books
+     */
+    int countBooks(@NonNull Bookshelf bookshelf);
 
     /**
      * Find a {@link Bookshelf} by using the <strong>name</strong> fields.

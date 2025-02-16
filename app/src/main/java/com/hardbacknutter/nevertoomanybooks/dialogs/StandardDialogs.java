@@ -164,7 +164,7 @@ public final class StandardDialogs {
     public static void deleteTag(@NonNull final Context context,
                                  @NonNull final Tag tag,
                                  @NonNull final Runnable onConfirm) {
-        final int books = ServiceLocator.getInstance().getTagDao().getBookIds(tag.getId()).size();
+        final int books = ServiceLocator.getInstance().getTagDao().countBooks(tag);
         final String nrOfBook = context.getResources().getQuantityString(R.plurals.n_books,
                                                                          books, books);
         final String msg = context.getString(R.string.confirm_delete_tag_from_x_books,

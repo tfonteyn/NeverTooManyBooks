@@ -310,17 +310,17 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public long count() {
+    public int count() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 
     @Override
-    public long countBooks(@NonNull final Author author) {
+    public int countBooks(@NonNull final Author author) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
             stmt.bindLong(1, author.getId());
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -848,14 +848,12 @@ public class AuthorDaoImpl
                 + _WHERE_ + DBKey.FK_AUTHOR_PSEUDONYM + "=?";
 
         /** Get a count of the {@link Author}s. */
-
         static final String COUNT_ALL =
                 SELECT_COUNT_FROM_ + TBL_AUTHORS.getName();
 
         /** Count the number of {@link Book}'s by an {@link Author}. */
         static final String COUNT_BOOKS =
-                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ")"
-                + _FROM_ + TBL_BOOK_AUTHOR.getName()
+                SELECT_COUNT_FROM_ + TBL_BOOK_AUTHOR.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?";
 
         /** A list of all {@link Author}s, unordered. */

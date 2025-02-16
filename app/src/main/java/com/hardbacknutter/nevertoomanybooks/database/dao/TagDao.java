@@ -69,6 +69,15 @@ public interface TagDao {
     List<Tag> getAll();
 
     /**
+     * Count the books for the given {@link Tag}.
+     *
+     * @param tag to count the books of
+     *
+     * @return the number of books
+     */
+    int countBooks(@NonNull Tag tag);
+
+    /**
      * Remove duplicates. We keep the first occurrence.
      *
      * @param context        Current context

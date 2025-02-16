@@ -130,7 +130,7 @@ public interface SeriesDao {
      *
      * @return the number of books
      */
-    long countBooks(@NonNull Series item);
+    int countBooks(@NonNull Series item);
 
     /**
      * Get a list of book ID's for the given {@link Series}.
@@ -225,7 +225,7 @@ public interface SeriesDao {
      *
      * @return count
      */
-    long count();
+    int count();
 
     /**
      * Find a {@link Series} by using the <strong>name</strong> fields.

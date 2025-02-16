@@ -97,7 +97,7 @@ public interface TocEntryDao {
      *
      * @return the number of {@link TocEntry} this {@link Author} has
      */
-    long count(@NonNull Author author);
+    int count(@NonNull Author author);
 
     /**
      * Saves a list of {@link TocEntry} items.
@@ -192,7 +192,16 @@ public interface TocEntryDao {
      *
      * @return count
      */
-    long count();
+    int count();
+
+    /**
+     * Count the books for the given {@link TocEntry}.
+     *
+     * @param tocEntry to count the books of
+     *
+     * @return the number of books
+     */
+    int countBooks(@NonNull TocEntry tocEntry);
 
     /**
      * Find a {@link TocEntry} by using the <strong>name</strong> fields.

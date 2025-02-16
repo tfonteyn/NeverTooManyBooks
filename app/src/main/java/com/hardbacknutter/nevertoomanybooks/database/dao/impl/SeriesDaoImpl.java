@@ -158,17 +158,17 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public long count() {
+    public int count() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 
     @Override
-    public long countBooks(@NonNull final Series series) {
+    public int countBooks(@NonNull final Series series) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
             stmt.bindLong(1, series.getId());
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -579,8 +579,7 @@ public class SeriesDaoImpl
 
         /** Count the number of {@link Book}'s in a {@link Series}. */
         static final String COUNT_BOOKS =
-                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ')'
-                + _FROM_ + TBL_BOOK_SERIES.getName()
+                SELECT_COUNT_FROM_ + TBL_BOOK_SERIES.getName()
                 + _WHERE_ + DBKey.FK_SERIES + "=?";
 
         /** A list of all {@link Series}s, unordered. */

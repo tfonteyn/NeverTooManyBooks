@@ -106,7 +106,7 @@ public interface PublisherDao {
      *
      * @return the number of books
      */
-    long countBooks(@NonNull Publisher item);
+    int countBooks(@NonNull Publisher item);
 
     /**
      * Get a list of book ID's for the given {@link Publisher}.
@@ -201,7 +201,7 @@ public interface PublisherDao {
      *
      * @return count
      */
-    long count();
+    int count();
 
     /**
      * Find a {@link Publisher} by using the <strong>name</strong> fields.

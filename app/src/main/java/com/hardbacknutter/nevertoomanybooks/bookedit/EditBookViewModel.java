@@ -705,9 +705,9 @@ public class EditBookViewModel
             }
         }
 
-        final long books = authorDao.countBooks(author);
+        final int books = authorDao.countBooks(author);
 
-        final long tocEntries = ServiceLocator.getInstance().getTocEntryDao().count(author);
+        final int tocEntries = ServiceLocator.getInstance().getTocEntryDao().count(author);
 
         // If the book is new, then there should be no other references.
         // If the book exists in the database, then obv. there should be 1 reference.
@@ -742,7 +742,7 @@ public class EditBookViewModel
             }
         }
 
-        final long nrOfReferences = seriesDao.countBooks(series);
+        final int nrOfReferences = seriesDao.countBooks(series);
         return nrOfReferences <= (book.isNew() ? 0 : 1);
     }
 
@@ -766,7 +766,7 @@ public class EditBookViewModel
             }
         }
 
-        final long nrOfReferences = publisherDao.countBooks(publisher);
+        final int nrOfReferences = publisherDao.countBooks(publisher);
         return nrOfReferences <= (book.isNew() ? 0 : 1);
     }
 

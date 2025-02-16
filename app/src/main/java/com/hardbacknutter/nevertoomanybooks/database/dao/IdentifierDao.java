@@ -148,6 +148,15 @@ public interface IdentifierDao {
     List<Identifier.Value> getByBookId(@IntRange(from = 1) long bookId);
 
     /**
+     * Count the books for the given {@link Identifier}.
+     *
+     * @param identifier to count the books of
+     *
+     * @return the number of books
+     */
+    int countBooks(@NonNull Identifier identifier);
+
+    /**
      * Get the SID value for the given {@link Identifier} of the given book id.
      *
      * @param key to get

@@ -132,7 +132,7 @@ public interface AuthorDao {
      *
      * @return the number of books
      */
-    long countBooks(@NonNull Author item);
+    int countBooks(@NonNull Author item);
 
     /**
      * Get a list of book ID's for the given {@link Author}.
@@ -227,7 +227,7 @@ public interface AuthorDao {
      *
      * @return count
      */
-    long count();
+    int count();
 
     /**
      * Find a {@link Author} by using the <strong>name</strong> fields.

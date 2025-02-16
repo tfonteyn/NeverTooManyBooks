@@ -156,6 +156,13 @@ public class TagDaoImpl
     }
 
     @Override
+    public int countBooks(@NonNull final Tag tag) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
+            stmt.bindLong(1, tag.getId());
+            return (int) stmt.simpleQueryForLongOrZero();
+        }
+    }
+    @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Tag> list,
                              @NonNull final Function<Tag, Locale> localeSupplier) {
@@ -599,6 +606,10 @@ public class TagDaoImpl
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_TAG
                 + ") VALUES(?,?)";
+
+        static final String COUNT_BOOKS =
+                SELECT_COUNT_FROM_ + TBL_BOOK_TAG.ref()
+                + _WHERE_ + TBL_BOOK_TAG.dot(DBKey.FK_TAG) + "=?";
 
         /** All {@link Book}s (id only!) for a given {@link Tag}. */
         static final String FIND_BOOK_IDS_BY_TAG_ID =

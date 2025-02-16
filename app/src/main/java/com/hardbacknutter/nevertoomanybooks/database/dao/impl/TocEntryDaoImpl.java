@@ -211,9 +211,17 @@ public class TocEntryDaoImpl
     }
 
     @Override
-    public long count() {
+    public int count() {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    @Override
+    public int countBooks(@NonNull final TocEntry tocEntry) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
+            stmt.bindLong(1, tocEntry.getId());
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -261,10 +269,10 @@ public class TocEntryDaoImpl
     }
 
     @Override
-    public long count(@NonNull final Author author) {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BY_AUTHOR)) {
+    public int count(@NonNull final Author author) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_FOR_AUTHOR)) {
             stmt.bindLong(1, author.getId());
-            return stmt.simpleQueryForLongOrZero();
+            return (int) stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -522,15 +530,17 @@ public class TocEntryDaoImpl
         static final String COUNT_ALL =
                 SELECT_COUNT_FROM_ + TBL_TOC_ENTRIES.getName();
 
+        static final String COUNT_BOOKS =
+                SELECT_COUNT_FROM_ + TBL_TOC_ENTRIES.ref()
+                + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?";
+
         /**
          * Count the number of {@link TocEntry}'s
          * <strong>for a specific {@link Author}</strong>.
          */
-        static final String COUNT_BY_AUTHOR =
-                SELECT_ + "COUNT(" + DBKey.PK_ID + ")"
-                + _FROM_ + TBL_TOC_ENTRIES.getName()
+        static final String COUNT_FOR_AUTHOR =
+                SELECT_COUNT_FROM_ + TBL_TOC_ENTRIES.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?";
-
 
         /**
          * The full set of columns needed to create a {@link TocEntry}.
