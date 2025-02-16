@@ -35,10 +35,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public final class StandardDialogs {
 
@@ -113,203 +115,6 @@ public final class StandardDialogs {
     }
 
     /**
-     * Ask the user to confirm a delete.
-     *
-     * @param context   Current context
-     * @param series    Series we're about to delete
-     * @param onConfirm Runnable to execute if the user clicks the confirm button.
-     */
-    public static void deleteSeries(@NonNull final Context context,
-                                    @NonNull final Series series,
-                                    @NonNull final Runnable onConfirm) {
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(context.getString(R.string.confirm_delete_series,
-                                              series.getLabel(context)))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
-                .create()
-                .show();
-    }
-
-    /**
-     * Ask the user to confirm a delete.
-     *
-     * @param context   Current context
-     * @param publisher Publisher we're about to delete
-     * @param onConfirm Runnable to execute if the user clicks the confirm button.
-     */
-    public static void deletePublisher(@NonNull final Context context,
-                                       @NonNull final Publisher publisher,
-                                       @NonNull final Runnable onConfirm) {
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(context.getString(R.string.confirm_delete_publisher,
-                                              publisher.getLabel(context)))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
-                .create()
-                .show();
-    }
-
-    /**
-     * Ask the user to confirm a delete.
-     *
-     * @param context   Current context
-     * @param tag       we're about to delete
-     * @param onConfirm Runnable to execute if the user clicks the confirm button.
-     */
-    public static void deleteTag(@NonNull final Context context,
-                                 @NonNull final Tag tag,
-                                 @NonNull final Runnable onConfirm) {
-        final int books = ServiceLocator.getInstance().getTagDao().countBooks(tag);
-        final String nrOfBook = context.getResources().getQuantityString(R.plurals.n_books,
-                                                                         books, books);
-        final String msg = context.getString(R.string.confirm_delete_tag_from_x_books,
-                                             tag.getName(),
-                                             nrOfBook);
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(msg)
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
-                .create()
-                .show();
-    }
-
-    /**
-     * Ask the user to confirm a delete.
-     *
-     * @param context   Current context
-     * @param bookshelf Bookshelf we're about to delete
-     * @param onConfirm Runnable to execute if the user clicks the confirm button.
-     */
-    public static void deleteBookshelf(@NonNull final Context context,
-                                       @NonNull final Bookshelf bookshelf,
-                                       @NonNull final Runnable onConfirm) {
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(context.getString(R.string.confirm_delete_bookshelf,
-                                              bookshelf.getLabel(context),
-                                              context.getString(R.string.bookshelf_all_books)))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
-                .create()
-                .show();
-    }
-
-    /**
-     * Ask the user to confirm a delete.
-     *
-     * @param context   Current context
-     * @param title     Title of the item we're about to delete
-     * @param author    of the item we're about to delete
-     * @param onConfirm Runnable to execute if the user clicks the confirm button.
-     */
-    public static void deleteTocEntry(@NonNull final Context context,
-                                      @NonNull final String title,
-                                      @NonNull final Author author,
-                                      @NonNull final Runnable onConfirm) {
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(context.getString(R.string.confirm_delete_toc_entry_everywhere,
-                                              title,
-                                              author.getLabel(context)))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
-                .create()
-                .show();
-    }
-
-    /**
-     * Ask the user to confirm a delete.
-     *
-     * @param context    Current context
-     * @param title      Title of book we're about to delete
-     * @param authorList Authors of book we're about to delete
-     * @param onConfirm  Runnable to execute if the user clicks the confirm button.
-     */
-    public static void deleteBook(@NonNull final Context context,
-                                  @NonNull final String title,
-                                  @NonNull final List<Author> authorList,
-                                  @NonNull final Runnable onConfirm) {
-
-        // Format the list of authors nicely
-        final StringBuilder authors = new StringBuilder();
-        if (authorList.isEmpty()) {
-            authors.append(context.getString(R.string.unknown_author));
-
-        } else {
-            // "a1, a2 and a3"
-            authors.append(authorList.get(0).getLabel(context));
-            for (int i = 1; i < authorList.size() - 1; i++) {
-                authors.append(", ").append(authorList.get(i).getLabel(context));
-            }
-
-            if (authorList.size() > 1) {
-                authors.append(' ').append(context.getString(R.string.list_and)).append(' ')
-                       .append(authorList.get(authorList.size() - 1).getLabel(context));
-            }
-        }
-
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(context.getString(R.string.confirm_delete_book, title, authors))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
-                .create()
-                .show();
-    }
-
-    /**
-     * Ask the user to confirm a delete.
-     *
-     * @param context   Current context
-     * @param style     Style we're about to delete
-     * @param onConfirm Runnable to execute if the user clicks the confirm button.
-     */
-    public static void deleteStyle(@NonNull final Context context,
-                                   @NonNull final Style style,
-                                   @NonNull final Runnable onConfirm) {
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(context.getString(R.string.confirm_delete_style,
-                                              style.getLabel(context)))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
-                .create()
-                .show();
-    }
-
-    /**
-     * Ask the user to confirm a delete.
-     *
-     * @param context    Current context
-     * @param tagMapping we're about to delete
-     * @param onConfirm  Runnable to execute if the user clicks the confirm button.
-     */
-    public static void deleteTagMapping(@NonNull final Context context,
-                                        @NonNull final TagMapping tagMapping,
-                                        final Runnable onConfirm) {
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.warning_24px)
-                .setTitle(R.string.action_delete)
-                .setMessage(context.getString(R.string.confirm_delete_substitutions,
-                                              tagMapping.getName()))
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
-                .create()
-                .show();
-    }
-
-    /**
      * Purge {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} for the given entity.
      *
      * @param context     Current context
@@ -348,5 +153,206 @@ public final class StandardDialogs {
                 .setPositiveButton(R.string.action_merge, (d, w) -> onMerge.run())
                 .create()
                 .show();
+    }
+
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param style     Style we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteStyle(@NonNull final Context context,
+                                   @NonNull final Style style,
+                                   @NonNull final Runnable onConfirm) {
+        final String msg = context.getString(R.string.confirm_delete_style,
+                                             style.getLabel(context));
+        delete(context, onConfirm, msg);
+    }
+
+    private static void delete(@NonNull final Context context,
+                               @NonNull final Runnable onConfirm,
+                               @NonNull final CharSequence msg) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.warning_24px)
+                .setTitle(R.string.action_delete)
+                .setMessage(msg)
+                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
+                .create()
+                .show();
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context    Current context
+     * @param tagMapping we're about to delete
+     * @param onConfirm  Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteTagMapping(@NonNull final Context context,
+                                        @NonNull final TagMapping tagMapping,
+                                        final Runnable onConfirm) {
+        final String msg = context.getString(R.string.confirm_delete_substitutions,
+                                             tagMapping.getName());
+        delete(context, onConfirm, msg);
+    }
+
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context    Current context
+     * @param title      Title of book we're about to delete
+     * @param authorList Authors of book we're about to delete
+     * @param onConfirm  Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteBook(@NonNull final Context context,
+                                  @NonNull final String title,
+                                  @NonNull final List<Author> authorList,
+                                  @NonNull final Runnable onConfirm) {
+
+        // Format the list of authors nicely
+        final StringBuilder authors = new StringBuilder();
+        if (authorList.isEmpty()) {
+            authors.append(context.getString(R.string.unknown_author));
+
+        } else {
+            // "a1, a2 and a3"
+            authors.append(authorList.get(0).getLabel(context));
+            for (int i = 1; i < authorList.size() - 1; i++) {
+                authors.append(", ").append(authorList.get(i).getLabel(context));
+            }
+
+            if (authorList.size() > 1) {
+                authors.append(' ').append(context.getString(R.string.list_and)).append(' ')
+                       .append(authorList.get(authorList.size() - 1).getLabel(context));
+            }
+        }
+
+        final String msg = context.getString(R.string.confirm_delete_book, title, authors);
+        delete(context, onConfirm, msg);
+    }
+
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param bookshelf Bookshelf we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteBookshelf(@NonNull final Context context,
+                                       @NonNull final Bookshelf bookshelf,
+                                       @NonNull final Runnable onConfirm) {
+        final int books = ServiceLocator.getInstance().getBookshelfDao().countBooks(bookshelf);
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+                                                                          books, books);
+
+        final String msg = context.getString(R.string.confirm_delete_bookshelf_from_x_books,
+                                             bookshelf.getLabel(context),
+                                             nrOfBooks,
+                                             context.getString(R.string.bookshelf_all_books));
+        delete(context, onConfirm, msg);
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param series    Series we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteSeries(@NonNull final Context context,
+                                    @NonNull final Series series,
+                                    @NonNull final Runnable onConfirm) {
+        final int books = ServiceLocator.getInstance().getSeriesDao().countBooks(series);
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+                                                                          books, books);
+
+        final String msg = context.getString(R.string.confirm_delete_series_from_x_books,
+                                             series.getLabel(context),
+                                             nrOfBooks);
+        delete(context, onConfirm, msg);
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param publisher Publisher we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deletePublisher(@NonNull final Context context,
+                                       @NonNull final Publisher publisher,
+                                       @NonNull final Runnable onConfirm) {
+        final int books = ServiceLocator.getInstance().getPublisherDao().countBooks(publisher);
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+                                                                          books, books);
+
+        final String msg = context.getString(R.string.confirm_delete_publisher_from_x_books,
+                                             publisher.getLabel(context),
+                                             nrOfBooks);
+        delete(context, onConfirm, msg);
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param tocEntry  TocEntry we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteTocEntry(@NonNull final Context context,
+                                      @NonNull final TocEntry tocEntry,
+                                      @NonNull final Runnable onConfirm) {
+        final int books = ServiceLocator.getInstance().getTocEntryDao().countBooks(tocEntry);
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+                                                                          books, books);
+
+        final String msg = context.getString(R.string.confirm_delete_toc_entry_from_x_books,
+                                             tocEntry.getTitle(),
+                                             tocEntry.getPrimaryAuthor().getLabel(context),
+                                             nrOfBooks);
+        delete(context, onConfirm, msg);
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param tag       we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteTag(@NonNull final Context context,
+                                 @NonNull final Tag tag,
+                                 @NonNull final Runnable onConfirm) {
+        final int books = ServiceLocator.getInstance().getTagDao().countBooks(tag);
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+                                                                          books, books);
+        final String msg = context.getString(R.string.confirm_delete_tag_from_x_books,
+                                             tag.getName(),
+                                             nrOfBooks);
+        delete(context, onConfirm, msg);
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context    Current context
+     * @param identifier we're about to delete
+     * @param onConfirm  Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteIdentifier(@NonNull final Context context,
+                                        @NonNull final Identifier identifier,
+                                        @NonNull final Runnable onConfirm) {
+        final int books = ServiceLocator.getInstance().getIdentifierDao().countBooks(identifier);
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+                                                                          books, books);
+        final String msg = context.getString(R.string.confirm_delete_identifier_from_x_books,
+                                             identifier.getName(),
+                                             nrOfBooks);
+        delete(context, onConfirm, msg);
     }
 }

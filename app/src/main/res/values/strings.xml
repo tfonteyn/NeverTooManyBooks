@@ -838,29 +838,7 @@
     <string name="confirm_continue">Are you sure you want to continue?</string>
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
 
-    <!-- Param 1: Series name -->
-    <string name="confirm_delete_series">Delete the series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
-    <!-- Param 1: Publisher name -->
-    <string name="confirm_delete_publisher">Delete the publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
-    <!-- Param 1: Bookshelf name
-         Param 2: the "All books" bookshelf name -->
-    <string name="confirm_delete_bookshelf">Delete the bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
 
-    <!-- context: substitution of one item to another item
-         Param 1: Tag name -->
-    <string name="confirm_delete_substitutions">Delete the substitutions for “%1$s”?</string>
-
-    <!-- Param 1: Tag name -->
-    <string name="confirm_delete_tag">Delete the tag “%1$s”?\n\nIt will be deleted from all books on which it is set. The books themselves will not be deleted.</string>
-    <!-- Param 1: Tag name
-         Param 2: content of plural "n_books",
-                  e.g.: "It will be deleted from 5 books on which it is set."
-    -->
-    <string name="confirm_delete_tag_from_x_books">Delete the tag “%1$s”?\n\nIt will be deleted from %2$s on which it is set. The books themselves will not be deleted.</string>
-
-    <!-- Param 1: TOC entry title
-         Param 2: author name -->
-    <string name="confirm_delete_toc_entry_everywhere">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
     <!-- Param 1: book title
          Param 2: author name -->
     <string name="confirm_remove_toc_entry">Remove the title “%1$s” by %2$s from this book?</string>
@@ -871,8 +849,46 @@
     <!-- Param 1: book title
          Param 2: author name -->
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
+
+    <!-- Param 1: TOC entry title
+         Param 2: author name
+         Param 3: content of plural "n_books", e.g.: "It will be removed from 5 books."
+    -->
+    <string name="confirm_delete_toc_entry_from_x_books">Delete “%1$s” by %2$s?\n\nIt will be removed from %3$s. The books themselves will not be deleted.</string>
+
+    <!-- Param 1: Bookshelf name
+         Param 2: content of plural "n_books", e.g.: "It will be removed from 5 books."
+         Param 3: the "All books" bookshelf name
+    -->
+    <string name="confirm_delete_bookshelf_from_x_books">Delete the bookshelf “%1$s”?\n\nIt will be removed from %2$s. The books themselves will not be deleted. They will still be present on any other shelves, or on the “%3$s” shelf.</string>
+
+    <!-- Param 1: Series name
+         Param 2: content of plural "n_books", e.g.: "It will be removed from 5 books."
+    -->
+    <string name="confirm_delete_series_from_x_books">Delete the series “%1$s”?\n\nIt will be removed from %2$s. The books themselves will not be deleted. Consider editing the series and changing the series name to that of another series to preserve this data.</string>
+    <!-- Param 1: Publisher name
+         Param 2: content of plural "n_books", e.g.: "It will be removed from 5 books."
+    -->
+    <string name="confirm_delete_publisher_from_x_books">Delete the publisher “%1$s”?\n\nIt will be removed from %2$s. The books themselves will not be deleted. Consider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
+
+    <!-- Param 1: Tag name -->
+    <string name="X_confirm_delete_tag">Delete the tag “%1$s”?\n\nIt will be removed from all books. The books themselves will not be deleted.</string>
+
+    <!-- Param 1: Tag name
+         Param 2: content of plural "n_books", e.g.: "It will be removed from 5 books."
+    -->
+    <string name="confirm_delete_tag_from_x_books">Delete the tag “%1$s”?\n\nIt will be removed from %2$s. The books themselves will not be deleted.</string>
+    <!-- Param 1: Identifier name
+         Param 2: content of plural "n_books", e.g.: "It will be removed from 5 books."
+    -->
+    <string name="confirm_delete_identifier_from_x_books">Delete the identifier “%1$s”?\n\nIt will be removed from %2$s. The books themselves will not be deleted.</string>
+
+    <!-- context: substitution of one item to another item
+         Param 1: Tag name -->
+    <string name="confirm_delete_substitutions">Delete the substitutions for “%1$s”?</string>
     <!-- Param 1: style name -->
     <string name="confirm_delete_style">Delete the style “%1$s”?</string>
+
     <!-- TODO: these 5 could do with a better/clearer message. We're proposing to move the books from nr 1 to nr 2 and delete nr 1. -->
     <string name="confirm_merge_bookshelves">The bookshelf you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>

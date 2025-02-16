@@ -228,8 +228,7 @@ public class AuthorWorksFragment
                 //noinspection DataFlowIssue
                 StandardDialogs.deleteTocEntry(
                         getContext(),
-                        work.getLabel(getContext(), Details.AutoSelect, vm.getStyle()),
-                        primaryAuthor, () -> {
+                        (TocEntry) work, () -> {
                             vm.delete(getContext(), work);
                             adapter.notifyItemRemoved(position);
                         });
@@ -251,7 +250,6 @@ public class AuthorWorksFragment
                 throw new IllegalArgumentException(String.valueOf(work));
         }
     }
-
 
 
     private final class ToolbarMenuProvider
