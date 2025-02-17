@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -483,7 +480,7 @@
     <string name="lbl_virtual_libraries">此图书馆中的虚拟书架</string>
     <string name="lbl_website_address">网站地址（URL）</string>
     <string name="lbl_websites">网站</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>标识符</small>]]></string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>识别符</small>]]></string>
     <string name="lbl_year">年</string>
     <string name="list_and">与</string>
     <string name="brackets">（%1$s）</string>
@@ -824,13 +821,13 @@
     <string name="whichViewApplication">打开方式</string>
     <string name="x_of_y">%1$d本 • 共%2$d本</string>
     <string name="yes">确定</string>
-    <string name="lbl_identifier">标识符</string>
-    <string name="lbl_identifiers">标识符</string>
+    <string name="lbl_identifier">识别符</string>
+    <string name="lbl_identifiers">识别符</string>
     <string name="info_tap_to_move_tag">轻按标签将其移动到书籍或从书籍移出。</string>
     <string name="X_confirm_delete_tag">删除标签 “%1$s”？\n\n将从所有设置了该标签的书籍处移除它。不会删除书籍本身。</string>
     <string name="confirm_merge_tags">你正修改的标签已存在。你要合并它们吗？</string>
     <string name="info_substitutions_one_per_line">每行添加一个替代</string>
-    <string name="confirm_delete_tag_from_x_books">删除 “%1$s” 标签？\n\n将从设置了该标签的 %2$s 处删除它。书籍本身不会被删除。</string>
+    <string name="confirm_delete_tag_from_x_books">删除 “%1$s” 标签？\n\n将从 %2$s 处删除它。书籍本身不会被删除。</string>
     <string name="confirm_delete_substitutions">删除 “%1$s” 的替代？</string>
     <string name="lbl_substitutions">替代</string>
     <string name="confirm_apply_substitutions">应用替换规则吗？所有适用规则的书籍都将被更新。</string>
@@ -841,4 +838,6 @@
     <string name="lbl_default_x">默认：%1$s</string>
     <string name="info_partial_date_picker">轻按之前选中的月份或天来取消选中。</string>
     <string name="lbl_original_language">原始语言</string>
+    <string name="confirm_delete_identifier_from_x_books">删除识别符 “%1$s”？\n\n将从 %2$s 处删除它。书籍本身不会被删除。</string>
+    <string name="action_restore_default_identifiers">恢复默认识别符</string>
 </resources>
