@@ -54,7 +54,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Why an action-view in the toolbar?
  * If we want an outline to be drawn AROUND the icon to make it better visible,
  * then we seem forced to use an "actionLayout" with an icon-Button using the outline style.
- * An alternative is to use an icon with outline builtin... but then the actual icon is too small.
+ * An alternative is to use an icon with outline built-in... but then the actual icon is too small.
  * <p>
  * Reminder: dialogs with a RecyclerView
  * <ol>

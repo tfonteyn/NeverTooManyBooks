@@ -118,8 +118,8 @@ public class StyleFragment
                         public void onChildViewAttachedToWindow(@NonNull final View view) {
                             if (view.getId() == R.id.STYLE_NAME_VIEW && !nameSet) {
                                 // We only do this once. It IS legal to use the same name.
-                                // Example: clone a builtin style using the same name,
-                                // and set the original builtin to 'not preferred'.
+                                // Example: clone a built-in style using the same name,
+                                // and set the original built-in to 'not preferred'.
                                 nameSet = true;
                                 view.performClick();
                             }

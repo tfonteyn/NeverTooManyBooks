@@ -52,7 +52,7 @@ public interface StyleDao {
     Map<String, Style> getUserStyles();
 
     /**
-     * Get the builtin Styles.
+     * Get the built-in Styles.
      *
      * @return an ordered Map of styles
      */

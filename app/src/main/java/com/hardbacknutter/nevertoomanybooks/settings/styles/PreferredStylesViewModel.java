@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -268,7 +268,7 @@ public class PreferredStylesViewModel
                 styleList.add(templateRow, style);
             }
         } else if (templateStyle.getType() == Style.Type.Builtin) {
-            // It's a clone of a builtin style
+            // It's a clone of a built-in style
             if (templateStyle.isPreferred()) {
                 // if the original style was a preferred style,
 

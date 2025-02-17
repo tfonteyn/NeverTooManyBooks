@@ -84,7 +84,7 @@ public class UserStyle
     /**
      * Constructor. Load the style data from the database.
      * <p>
-     * Dev. note: we just want to us the same semantics as BuiltinStyle needs
+     * Dev. note: we just want to us the same semantics as built-in Style needs
      *
      * @param rowData data
      *

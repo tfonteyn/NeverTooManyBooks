@@ -222,7 +222,7 @@ public class StyleCoder
             type = Style.Type.byId(data.getInt(DBKey.STYLE.TYPE));
         } else {
             // without a STYLE_TYPE, we're reading a version 5.0 or earlier
-            // Use the UUID to check if we're reading a builtin Style.
+            // Use the UUID to check if we're reading a built-in Style.
             if (BuiltinStyle.isBuiltin(uuid)) {
                 type = Style.Type.Builtin;
             } else {
@@ -242,8 +242,8 @@ public class StyleCoder
             }
             case Builtin: {
                 style = stylesHelper.getStyle(uuid).orElseGet(
-                        // It's a recognized Builtin Style, but it's deprecated.
-                        // We return the default builtin style instead.
+                        // It's a recognized built-in Style, but it's deprecated.
+                        // We return the default built-in Style instead.
                         () -> stylesHelper.getStyle(BuiltinStyle.HARD_DEFAULT_UUID).orElseThrow());
                 break;
             }

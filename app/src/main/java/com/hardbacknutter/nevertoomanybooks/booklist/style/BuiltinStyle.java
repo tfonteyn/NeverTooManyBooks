@@ -247,7 +247,7 @@ public final class BuiltinStyle
     }
 
     /**
-     * Get the number of builtin styles.
+     * Get the number of built-in styles.
      * <p>
      * Deprecated styles are NOT counted.
      *
@@ -258,7 +258,7 @@ public final class BuiltinStyle
     }
 
     /**
-     * Get all the builtin styles.
+     * Get all the built-in styles.
      * <p>
      * Deprecated styles are NOT included.
      *
@@ -270,7 +270,7 @@ public final class BuiltinStyle
     }
 
     /**
-     * Check if the given UUID is a builtin Style.
+     * Check if the given UUID is a built-in Style.
      * <p>
      * Deprecated styles ARE checked.
      *

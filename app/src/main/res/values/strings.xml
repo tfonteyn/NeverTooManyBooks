@@ -557,12 +557,12 @@
          e.g. black and white, but additional red for emphasis -->
     <string name="book_color_support_color">Bicolored</string>
     <!-- endregion -->
-    <!-- region ========== Names of builtin styles. -->
-    <!-- builtin style name -->
+    <!-- region ========== Names of built-in styles. -->
+    <!-- built-in style name -->
     <string name="style_builtin_author_series">Author, Series</string>
-    <!-- builtin style name -->
+    <!-- built-in style name -->
     <string name="style_builtin_author_year">Author, Year</string>
-    <!-- builtin style name -->
+    <!-- built-in style name -->
     <string name="style_builtin_bookshelf"
             translatable="false">@string/lbl_bookshelf</string>
     <string name="style_builtin_date_acquired"
@@ -2016,7 +2016,7 @@
     <string name="X_option_bob_filter_read_yes">Books Read</string>
     <string name="X_option_bob_filter_read_no">Books Unread</string>
 
-    <!-- The global default values used as defaults for the builtin styles. -->
+    <!-- The global default values used as defaults for the built-in styles. -->
     <string name="X_style_type_defaults">Styles default settings</string>
 
     <!-- A website did respond to a request, but the response was not valid.

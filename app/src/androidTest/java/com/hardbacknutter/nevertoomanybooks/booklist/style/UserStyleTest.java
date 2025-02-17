@@ -50,7 +50,7 @@ public class UserStyleTest
     public void clone01() {
         final Style s1 = getBuiltinStyle();
 
-        // clone a BuiltinStyle
+        // clone a built-in Style
         final WritableStyle s2 = s1.clone(context);
         compare(context, s1, s2);
         // clone a UserStyle

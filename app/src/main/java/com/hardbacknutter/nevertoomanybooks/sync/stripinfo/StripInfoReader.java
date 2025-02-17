@@ -135,7 +135,7 @@ public class StripInfoReader
         // create a new instance just for our own use
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
 
-        // Get either the custom passed-in, or the builtin default.
+        // Get either the custom passed-in, or the built-in default.
         this.syncProcessor = syncProcessor != null ? syncProcessor
                                                    : getDefaultSyncProcessor(context);
 

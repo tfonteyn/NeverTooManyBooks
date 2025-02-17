@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAd
 
 /**
  * This is a wrapper for a {@link MaterialAlertDialogBuilder}
- * with a suitable RecyclerView/Adapter and builtin listener.
+ * with a suitable RecyclerView/Adapter and built-in listener.
  * Items are handled as {@code List} and {@code Set}s of {@code T} values
  * (usually and id of some sort) and matching labels.
  * <p>

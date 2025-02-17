@@ -549,7 +549,7 @@ public final class CalibreContentServer
                                        HttpConstants.ACCEPT_ENCODING_GZIP);
         }
 
-        // TODO: check adding http headers with Calibre builtin-http-server
+        // TODO: check adding http headers with Calibre built-in-http-server
         //  versus Calibre hosted behind an Apache server
         // TEST adding connection-keep-alive
         // httpGet.setRequestProperty(HttpConstants.CONNECTION,
@@ -1344,7 +1344,7 @@ public final class CalibreContentServer
                 final FutureHttpGet<File> request = createFutureGetRequest(true);
                 request.setRequestProperty(HttpConstants.ACCEPT,
                                            HttpConstants.ACCEPT_IMAGE);
-                // TODO: check adding http headers with Calibre builtin-http-server
+                // TODO: check adding http headers with Calibre built-in-http-server
                 //  versus Calibre hosted behind an Apache server
                 // request.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
                 //                            HttpConstants.SEC_FETCH_DEST_IMAGE)

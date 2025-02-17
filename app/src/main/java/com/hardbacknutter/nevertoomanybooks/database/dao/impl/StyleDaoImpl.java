@@ -75,14 +75,14 @@ public class StyleDaoImpl
     }
 
     /**
-     * Run at <strong>installation</strong> time to add the builtin style ID's to the database.
+     * Run at <strong>installation</strong> time to add the built-in style ID's to the database.
      *
      * @param db Database Access
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         insertGlobalDefaults(db, GlobalStyle.createDefault());
 
-        // insert the builtin styles so foreign key rules are possible.
+        // insert the built-in styles so foreign key rules are possible.
         // Other than the id/uuid/type and the menu options, the settings are never
         // read/written from/to the database.
         try (SQLiteStatement stmt = db.compileStatement(Sql.INSERT_BUILTIN_STYLE)) {
@@ -334,7 +334,7 @@ public class StyleDaoImpl
                         throw new IllegalStateException("ERROR_MISSING_UUID");
                     }
                     // Reminder: do NOT require a positive value here!
-                    // It's perfectly fine to update builtin styles;
+                    // It's perfectly fine to update built-in styles;
                     // ONLY NEW styles must be rejected
                     if (style.getId() == 0) {
                         throw new IllegalStateException("A new Style cannot be updated");

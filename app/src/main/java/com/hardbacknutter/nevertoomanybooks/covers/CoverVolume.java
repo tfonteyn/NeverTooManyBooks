@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * might internally resolve several paths:
  * <ol>
  *     <li>the "external/shared"memory card,
- *         which is these days the builtin memory (a.k.a. emulated) </li>
+ *         which is these days the built-in memory (a.k.a. emulated) </li>
  *     <li>a removable sdcard, under a protective cover</li>
  *     <li>other?</li>
  * </ol>

@@ -750,7 +750,7 @@ public class BooksOnBookshelf
         // hide the view at creation time. onResume will provide the data and make it visible.
         vb.content.list.setVisibility(View.GONE);
 
-        // Custom fastscroller which actually works (as opposed to the builtin android one).
+        // Custom fastscroller which actually works (as opposed to the built-in android one).
         // Provides an optional overlay.
         if (vb.content.list.getLayoutManager() instanceof LinearLayoutManager) {
             final int overlayType = Prefs.getFastScrollerOverlayType(this);

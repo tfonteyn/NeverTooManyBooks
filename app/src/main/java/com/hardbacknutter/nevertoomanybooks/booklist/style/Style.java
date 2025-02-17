@@ -62,7 +62,7 @@ public interface Style {
      * Get the id.
      * <ul>
      *      <li>Positive ID's: user-defined styles</li>
-     *      <li>Negative ID's: builtin styles</li>
+     *      <li>Negative ID's: built-in styles</li>
      *      <li>0: a user-defined style which has not been saved yet</li>
      * </ul>
      *

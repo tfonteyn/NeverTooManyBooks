@@ -335,7 +335,7 @@ public final class DBKey {
          * The type of Style.
          * <p>
          * Note the actual name of the column is incorrect.
-         * This used to be a boolean (0=user, 1=builtin).
+         * This used to be a boolean (0=user, 1=built-in).
          *
          * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.Type
          */

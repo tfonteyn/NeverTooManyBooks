@@ -488,7 +488,7 @@ public final class LegacyUpgrades {
                 ? 1 : 0;
 
         // We apply the setting to ALL styles as it was the default for all.
-        // (including the builtin which is pointless but easier)
+        // (including the built-in which is pointless but easier)
         try (SQLiteStatement stmt = db.compileStatement(
                 "UPDATE " + TBL_BOOKLIST_STYLES.getName() + " SET "
                 + DBKey.STYLE.TITLE_SHOW_REORDERED + "=?")) {

@@ -427,7 +427,7 @@ public class DBHelper
             LegacyUpgrades.migrateV21SearchEnginePrefs(context);
         }
         if (oldVersion < 22) {
-            // remove builtin style ID_DEPRECATED_1
+            // remove built-in style ID_DEPRECATED_1
             db.execSQL("DELETE FROM " + TBL_BOOKLIST_STYLES.getName() + " WHERE _id=-2");
         }
         if (oldVersion < 23) {

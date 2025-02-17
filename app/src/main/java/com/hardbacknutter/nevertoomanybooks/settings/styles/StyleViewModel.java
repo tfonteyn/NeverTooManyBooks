@@ -140,7 +140,7 @@ public class StyleViewModel
 
                 if (action == EditStyleContract.ACTION_CLONE
                     || dbStyle.getType() == Style.Type.Builtin) {
-                    // We're cloning a style. If the style is Builtin, we force cloning.
+                    // We're cloning a style. If it's a built-in Style, we force cloning.
                     style = dbStyle.clone(context);
                 } else {
                     // just edit the style.

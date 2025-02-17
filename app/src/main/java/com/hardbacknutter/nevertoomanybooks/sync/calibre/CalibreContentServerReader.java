@@ -189,7 +189,7 @@ public class CalibreContentServerReader
         this.updateOption = updateOption;
         this.syncDate = syncDate;
 
-        // Get either the custom passed-in, or the builtin default.
+        // Get either the custom passed-in, or the built-in default.
         this.syncProcessor = syncProcessor != null ? syncProcessor
                                                    : getDefaultSyncProcessor(context);
 

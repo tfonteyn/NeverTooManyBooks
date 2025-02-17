@@ -474,7 +474,7 @@ public class IdentifierDaoImpl
                 DELETE_FROM_ + TBL_IDENTIFIERS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
         /**
-         * Insert the builtin identifiers at install/upgrade,
+         * Insert the built-in identifiers at install/upgrade,
          * or re-insert/update them at a later time.
          */
         @RequiresApi(Build.VERSION_CODES.R)

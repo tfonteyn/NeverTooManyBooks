@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -84,7 +84,7 @@ public class StylePickerViewModel
         styleList.addAll(stylesHelper.getStyles(showAllStyles));
         if (!showAllStyles && selectedStyle != null) {
             // Make sure the currently selected style is in the list
-            // This can be the case where for example the selected style is a builtin
+            // This can be the case where for example the selected style is a built-in
             // while the list is set to show only the preferred styles.
             if (styleList.stream().noneMatch(style -> selectedStyle.equals(style))) {
                 stylesHelper.getStyle(selectedStyle.getUuid()).ifPresent(styleList::add);

@@ -108,12 +108,11 @@ public class PreferredStylesViewModelTest
         // sanity check
         assertTrue(initialSize > 10);
 
-        // Find a random builtin style
+        // Find a random built-in Style
         Style initialStyle;
         int initialPosition = styleList.size() - 10;
         initialStyle = styleList.get(initialPosition);
         try {
-            // Skip all entries until we find a Builtin style.
             while (initialStyle.getType() != Style.Type.Builtin) {
                 initialStyle = styleList.get(++initialPosition);
             }

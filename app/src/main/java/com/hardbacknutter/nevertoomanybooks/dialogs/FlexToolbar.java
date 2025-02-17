@@ -70,7 +70,7 @@ public interface FlexToolbar {
      * <p>
      * Dev. Note: If we want an outline to be drawn AROUND the icon, then we seem
      * forced to use an "actionLayout" with an icon-Button using the outline style.
-     * Only alternative is to use an icon with outline builtin...
+     * Only alternative is to use an icon with outline built-in...
      * which makes the actual icon to small.
      *
      * @param owner      the hosting DialogFragment

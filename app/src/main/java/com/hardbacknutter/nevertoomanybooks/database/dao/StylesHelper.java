@@ -111,7 +111,7 @@ public class StylesHelper {
     }
 
     /**
-     * Get the user default style, or if none found, fallback to the Builtin hard-default.
+     * Get the user default style, or if none found, fallback to the hard-default.
      *
      * @return the style.
      */
@@ -124,7 +124,7 @@ public class StylesHelper {
                 .getDefaultSharedPreferences(appContextSupplier.get())
                 .getString(PK_DEFAULT_STYLE, BuiltinStyle.HARD_DEFAULT_UUID);
 
-        // Get the user or builtin or worst case the builtin default.
+        // Get the user or built-in or worst case the built-in default.
         final Style style = allStyles.get(uuid);
         //noinspection DataFlowIssue
         return style != null ? style : allStyles.get(BuiltinStyle.HARD_DEFAULT_UUID);
