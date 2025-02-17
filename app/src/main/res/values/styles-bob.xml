@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -109,8 +109,8 @@
     </style>
 
     <style name="BoB.Group.Book.OriginalTitle"
-           parent="BoB.Group.Book.Title">
-        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+           parent="Base.BoB.Group.Book">
+        <item name="android:textStyle">italic</item>
     </style>
 
     <style name="BoB.Group.Book.SeriesTitle"

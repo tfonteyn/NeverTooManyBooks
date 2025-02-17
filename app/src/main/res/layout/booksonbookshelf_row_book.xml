@@ -113,11 +113,14 @@
             <TextView
                 android:id="@+id/original_title"
                 style="@style/BoB.Group.Book.OriginalTitle"
+                android:layout_marginStart="@dimen/field_margin_start"
+                android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
                 app:layout_constraintStart_toStartOf="@id/title"
                 app:layout_constraintTop_toBottomOf="@id/title"
                 tools:ignore="SelectableText"
                 tools:text="@sample/data.json/book/title"
+                tools:visibility="visible"
                 />
 
             <TextView
@@ -125,10 +128,12 @@
                 style="@style/BoB.Group.Book.OriginalTitle"
                 android:layout_width="wrap_content"
                 android:textSize="11sp"
-                app:layout_constraintStart_toStartOf="@id/original_title"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/title"
                 app:layout_constraintTop_toBottomOf="@id/original_title"
                 tools:ignore="SelectableText"
                 tools:text="@sample/data.json/language/name"
+                tools:visibility="visible"
                 />
 
             <TextView
@@ -138,8 +143,6 @@
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
                 app:layout_constraintStart_toEndOf="@id/col1"
                 app:layout_constraintTop_toBottomOf="@id/original_language"
-                app:layout_constraintVertical_bias="0"
-                app:layout_constraintVertical_chainStyle="packed"
                 tools:ignore="SelectableText"
                 tools:text="@sample/data.json/series/title"
                 tools:visibility="visible"
