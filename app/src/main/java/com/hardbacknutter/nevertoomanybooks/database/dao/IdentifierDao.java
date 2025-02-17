@@ -76,7 +76,7 @@ public interface IdentifierDao {
     /**
      * Insert a new {@link Identifier}.
      *
-     * @param context Current context
+     * @param context    Current context
      * @param identifier to insert. Will be updated with the id
      *
      * @return the row id of the newly inserted item
@@ -91,7 +91,7 @@ public interface IdentifierDao {
     /**
      * Update the given {@link Identifier}.
      *
-     * @param context Current context
+     * @param context    Current context
      * @param identifier to update
      *
      * @throws DaoWriteException on failure
@@ -109,6 +109,13 @@ public interface IdentifierDao {
      */
     boolean delete(@NonNull Identifier identifier);
 
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     *
+     * @param list List to clean up
+     *
+     * @return {@code true} if the list was modified.
+     */
     boolean pruneList(@NonNull Collection<Identifier.Value> list);
 
     /**
@@ -159,8 +166,8 @@ public interface IdentifierDao {
     /**
      * Get the SID value for the given {@link Identifier} of the given book id.
      *
-     * @param key to get
-     * @param bookId         for this book id
+     * @param key    to get
+     * @param bookId for this book id
      *
      * @return sid value
      */
@@ -172,11 +179,29 @@ public interface IdentifierDao {
      * Find the book id for the given SID and name.
      *
      * @param key one of the {@link Identifier} SID constants
-     * @param sid            value
+     * @param sid value
      *
      * @return book id, or {@code 0} if none found
      */
     @IntRange(from = 0)
     long findBookId(@NonNull String key,
                     @NonNull String sid);
+
+    /**
+     * Re-insert, or update the Identifiers which were setup
+     * when the app was installed.
+     * <p>
+     * This is a repair/restore method for when users need to undo
+     * any modifications they did to the preinstalled list of Identifiers.
+     * <p>
+     * The {@code key} of the identifier must not have been changed
+     * for this to work successfully. The app's UI prevents key changes,
+     * but users can edit json imports... in which case ... "oops, to bad".
+     *
+     * @param context Current context
+     *
+     * @throws DaoWriteException on failure
+     */
+    void restore(@NonNull Context context)
+            throws DaoWriteException;
 }

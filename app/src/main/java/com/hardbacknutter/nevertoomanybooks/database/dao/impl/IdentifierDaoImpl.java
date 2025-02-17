@@ -24,9 +24,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.ExtSQLiteStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -72,33 +75,170 @@ public class IdentifierDaoImpl
 
     /**
      * Run at <strong>installation</strong> time to add the predefined ID's to the database.
+     * <p>
+     * KEEP IN SYNC WITH restore.
      *
      * @param context Current context
      * @param db      Database Access
+     *
+     * @throws SQLException on failure
+     * @see #restore(Context)
      */
     public static void onPostCreate(@NonNull final Context context,
                                     @NonNull final SQLiteDatabase db) {
         final List<Identifier> identifierList = Identifier.createInitialList(context);
+        // This method must run on API 26: Use simple INSERT, and not the UPSERT!
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Identifier identifier : identifierList) {
                 doInsert(context, identifier, stmt);
             }
         } catch (@NonNull final SQLException e) {
-            // log, but just rethrow insert errors... we're in a real mess now
+            // log... we're in a real mess now
             LoggerFactory.getLogger().e(TAG, e);
             throw e;
+        } catch (@NonNull final DaoInsertException e) {
+            // log, but just rethrow insert errors... we're in a real mess now
+            LoggerFactory.getLogger().e(TAG, e);
+            throw new SQLException("onPostCreate", e);
         }
     }
 
+    /**
+     * Insert a new {@link Identifier}.
+     *
+     * @param context    Current context
+     * @param identifier to insert. Will be updated with the id
+     * @param stmt       statement to run
+     *
+     * @return the row id of the newly inserted item
+     *
+     * @throws DaoInsertException on failure
+     */
     private static long doInsert(@NonNull final Context context,
                                  @NonNull final Identifier identifier,
-                                 @NonNull final ExtSQLiteStatement stmt) {
+                                 @NonNull final ExtSQLiteStatement stmt)
+            throws DaoInsertException {
         stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindString(2, String.valueOf(identifier.getType()));
         stmt.bindString(3, identifier.getName());
         stmt.bindString(4, identifier.getSiteUrl(context));
         stmt.bindString(5, identifier.getBookUri(context));
-        return stmt.executeInsert();
+        final long iId = stmt.executeInsert();
+
+        if (iId != -1) {
+            identifier.setId(iId);
+            return iId;
+        }
+
+        // The insert failed with -1
+        throw new DaoInsertException(ERROR_INSERT_FROM + identifier);
+    }
+
+    /**
+     * Update the given {@link Identifier}.
+     *
+     * @param context    Current context
+     * @param identifier to update
+     * @param stmt       statement to run
+     *
+     * @throws DaoUpdateException on failure
+     */
+    private static void doUpdate(@NonNull final Context context,
+                                 @NonNull final Identifier identifier,
+                                 @NonNull final SynchronizedStatement stmt)
+            throws DaoUpdateException {
+        stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
+        stmt.bindString(2, String.valueOf(identifier.getType()));
+        stmt.bindString(3, identifier.getName());
+        stmt.bindString(4, identifier.getSiteUrl(context));
+        stmt.bindString(5, identifier.getBookUri(context));
+
+        stmt.bindLong(6, identifier.getId());
+        final int rowsAffected = stmt.executeUpdateDelete();
+
+        if (rowsAffected > 0) {
+            return;
+        }
+
+        throw new DaoUpdateException(ERROR_UPDATE_FROM + identifier);
+    }
+
+    /**
+     * KEEP IN SYNC WITH onPostCreate.
+     *
+     * @see #onPostCreate(Context, SQLiteDatabase)
+     */
+    @Override
+    public void restore(@NonNull final Context context)
+            throws DaoUpdateException, DaoInsertException {
+        final List<Identifier> identifierList = Identifier.createInitialList(context);
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                restoreApi30(context, identifierList);
+            } else {
+                restoreApi26(context, identifierList);
+            }
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private void restoreApi30(@NonNull final Context context,
+                              @NonNull final List<Identifier> identifierList)
+            throws DaoInsertException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BUILTIN)) {
+            for (final Identifier identifier : identifierList) {
+                doInsert(context, identifier, stmt);
+            }
+        }
+    }
+
+    private void restoreApi26(@NonNull final Context context,
+                              @NonNull final List<Identifier> identifierList)
+            throws DaoUpdateException, DaoInsertException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+        long iId;
+        try (SynchronizedStatement stmtFindByKey = db.compileStatement(Sql.FIND_ID_BY_KEY);
+             SynchronizedStatement stmtInsert = db.compileStatement(Sql.INSERT);
+             SynchronizedStatement stmtUpdate = db.compileStatement(Sql.UPDATE)) {
+
+            for (final Identifier identifier : identifierList) {
+                // do we have this key?
+                stmtFindByKey.bindString(1, identifier.getKey());
+                iId = stmtFindByKey.simpleQueryForLongOrZero();
+                if (iId == 0) {
+                    // no, add it
+                    doInsert(context, identifier, stmtInsert);
+                } else {
+                    // key exists, update it
+                    identifier.setId(iId);
+                    doUpdate(context, identifier, stmtUpdate);
+                }
+            }
+        }
     }
 
     @NonNull
@@ -224,41 +364,19 @@ public class IdentifierDaoImpl
                        @NonNull final Identifier identifier)
             throws DaoInsertException {
 
-        final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            iId = doInsert(context, identifier, stmt);
+            return doInsert(context, identifier, stmt);
         }
-
-        if (iId != -1) {
-            identifier.setId(iId);
-            return iId;
-        }
-
-        // The insert failed with -1
-        throw new DaoInsertException(ERROR_INSERT_FROM + identifier);
     }
 
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Identifier identifier)
             throws DaoUpdateException {
-        final int rowsAffected;
+
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
-            stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
-            stmt.bindString(2, String.valueOf(identifier.getType()));
-            stmt.bindString(3, identifier.getName());
-            stmt.bindString(4, identifier.getSiteUrl(context));
-            stmt.bindString(5, identifier.getBookUri(context));
-
-            stmt.bindLong(6, identifier.getId());
-            rowsAffected = stmt.executeUpdateDelete();
+            doUpdate(context, identifier, stmt);
         }
-
-        if (rowsAffected > 0) {
-            return;
-        }
-
-        throw new DaoUpdateException(ERROR_UPDATE_FROM + identifier);
     }
 
     @Override
@@ -355,6 +473,19 @@ public class IdentifierDaoImpl
         static final String DELETE_BY_ID =
                 DELETE_FROM_ + TBL_IDENTIFIERS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
+        /**
+         * Insert the builtin identifiers at install/upgrade,
+         * or re-insert/update them at a later time.
+         */
+        @RequiresApi(Build.VERSION_CODES.R)
+        static final String INSERT_BUILTIN =
+                INSERT + "ON CONFLICT(" + DBKey.IDENTIFIERS.KEY + ") DO UPDATE SET "
+                + DBKey.IDENTIFIERS.KEY + "=excluded." + DBKey.IDENTIFIERS.KEY
+                + ',' + DBKey.IDENTIFIERS.TYPE + "=excluded." + DBKey.IDENTIFIERS.TYPE
+                + ',' + DBKey.IDENTIFIERS.NAME + "=excluded." + DBKey.IDENTIFIERS.NAME
+                + ',' + DBKey.IDENTIFIERS.SITE_URL + "=excluded." + DBKey.IDENTIFIERS.SITE_URL
+                + ',' + DBKey.IDENTIFIERS.BOOK_URI + "=excluded." + DBKey.IDENTIFIERS.BOOK_URI;
+
         static final String SELECT_ALL =
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID,
                                                 DBKey.IDENTIFIERS.KEY,
@@ -373,6 +504,11 @@ public class IdentifierDaoImpl
 
         static final String FIND_BY_KEY =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
+                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
+
+        static final String FIND_ID_BY_KEY =
+                SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID)
+                + _FROM_ + TBL_IDENTIFIERS.ref()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
 
         static final String COUNT_BOOKS =

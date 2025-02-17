@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -31,6 +32,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
@@ -39,7 +41,7 @@ public class IdentifiersEditorViewModel
         extends ViewModel {
 
     /** Flag set when anything is changed. */
-    private boolean dirty;
+    private boolean modified;
 
     private IdentifierDao identifierDao;
     private List<Identifier> identifiers;
@@ -61,21 +63,23 @@ public class IdentifiersEditorViewModel
      *
      * @return {@code true} if changes made
      */
-    boolean isDirty() {
-        return dirty;
+    boolean isModified() {
+        return modified;
     }
 
-    void setDirty(@SuppressWarnings("SameParameterValue") final boolean isDirty) {
-        dirty = isDirty;
-    }
-
-    void refreshStyleList() {
-        identifiers.clear();
-        identifiers.addAll(identifierDao.getAll());
+    void setModified() {
+        modified = true;
     }
 
     @NonNull
     List<Identifier> getIdentifiers() {
         return identifiers;
+    }
+
+    void restoreBuiltin(@NonNull final Context context)
+            throws DaoWriteException {
+        identifierDao.restore(context);
+        identifiers.clear();
+        identifiers.addAll(identifierDao.getAll());
     }
 }

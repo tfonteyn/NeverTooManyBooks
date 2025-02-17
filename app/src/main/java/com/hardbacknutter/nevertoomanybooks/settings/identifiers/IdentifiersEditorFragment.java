@@ -20,9 +20,13 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,6 +34,8 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,8 +45,10 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditIdentifiersBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditIdentifierBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
@@ -55,6 +63,7 @@ public class IdentifiersEditorFragment
     private IdentifiersEditorViewModel vm;
     /** View Binding. */
     private FragmentEditIdentifiersBinding vb;
+    private IdentifierAdapter adapter;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -83,6 +92,9 @@ public class IdentifiersEditorFragment
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_identifiers);
 
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
+                                Lifecycle.State.RESUMED);
+
         final Context context = getContext();
 
         //noinspection DataFlowIssue
@@ -90,7 +102,8 @@ public class IdentifiersEditorFragment
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         vb.list.setHasFixedSize(true);
 
-        final IdentifierAdapter adapter = new IdentifierAdapter(context, vm.getIdentifiers());
+        adapter = new IdentifierAdapter(context, vm.getIdentifiers());
+
         vb.list.setAdapter(adapter);
     }
 
@@ -158,6 +171,32 @@ public class IdentifiersEditorFragment
         @Override
         public int getItemCount() {
             return identifiers.size();
+        }
+    }
+
+    private final class ToolbarMenuProvider
+            implements MenuProvider {
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_restore_default_identifiers);
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_RESET) {
+                try {
+                    //noinspection DataFlowIssue
+                    vm.restoreBuiltin(getContext());
+                    adapter.notifyDataSetChanged();
+                } catch (@NonNull final DaoWriteException e) {
+                    ErrorDialog.show(getContext(), TAG, e);
+                }
+
+                return true;
+            }
+            return false;
         }
     }
 }

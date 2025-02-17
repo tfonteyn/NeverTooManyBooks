@@ -2049,4 +2049,6 @@
     <string name="option_tuning"
             translatable="false">Tuning</string>
 
+    <string name="action_restore_default_identifiers">Restore the default Identifiers</string>
+
 </resources>
