@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -399,6 +400,43 @@ public class IdentifierDaoImpl
             stmt.bindLong(1, identifier.getId());
             return (int) stmt.simpleQueryForLongOrZero();
         }
+    }
+
+    @Override
+    public int moveBooks(@NonNull final Context context,
+                         @NonNull final Identifier source,
+                         @NonNull final Identifier target)
+            throws DaoInsertException, DaoUpdateException {
+
+        int booksMoved;
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            // Relink books with the target.
+            // We don't hold 'position'... just do a mass update
+            final ContentValues cv = new ContentValues();
+            cv.put(DBKey.FK_IDENTIFIER, target.getId());
+            booksMoved = db.update(TBL_BOOK_IDENTIFIER.getName(), cv,
+                                   DBKey.FK_IDENTIFIER + "=?",
+                                   new String[]{String.valueOf(source.getId())});
+
+            // delete the obsolete source.
+            delete(source);
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
+
+        return booksMoved;
     }
 
     @NonNull
