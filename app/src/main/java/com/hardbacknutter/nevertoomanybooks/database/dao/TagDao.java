@@ -41,22 +41,78 @@ import com.hardbacknutter.nevertoomanybooks.settings.tags.TagMapperTask;
 
 public interface TagDao {
 
+    /**
+     * Find the {@link Tag} for the given id.
+     *
+     * @param id of the {@link Tag}
+     *
+     * @return {@link Tag}
+     */
     @NonNull
     Optional<Tag> findById(@IntRange(from = 1) long id);
 
+    /**
+     * Find a {@link Tag} by using the <strong>name</strong> fields of the given {@link Tag}.
+     * The given {@link Tag} is <strong>not</strong> modified.
+     *
+     * @param tag to find the id of
+     *
+     * @return the {@link Tag}
+     */
     @NonNull
     Optional<Tag> findByName(@NonNull Tag tag);
 
+    /**
+     * Find a {@link Tag} by using the <strong>name</strong> field.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     *
+     * @param tag to update
+     */
     void fixId(@NonNull Tag tag);
 
+    /**
+     * Refresh the passed {@link Tag} from the database, if present.
+     * Used to ensure that the current record matches the content of the database
+     * should some other task have changed the {@link Tag}.
+     * <p>
+     * Will <strong>NOT</strong> insert a new {@link Tag} if not found;
+     * instead the id of the item will be set to {@code 0}, i.e. 'new'.
+     *
+     * @param tag to refresh
+     */
     void refresh(@NonNull Tag tag);
+
+    /**
+     * Insert a new {@link Tag}.
+     *
+     * @param tag to insert. Will be updated with the id
+     *
+     * @return the row id of the newly inserted item
+     *
+     * @throws DaoWriteException on failure
+     */
 
     @IntRange(from = 1)
     long insert(@NonNull Tag tag)
             throws DaoWriteException;
 
+    /**
+     * Update the given {@link Tag}.
+     *
+     * @param tag to update
+     *
+     * @throws DaoWriteException on failure
+     */
     void update(@NonNull Tag tag)
             throws DaoWriteException;
+
+    /**
+     * Delete the given {@link Tag}.
+     *
+     * @param tag to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
 
     boolean delete(@NonNull Tag tag);
 
