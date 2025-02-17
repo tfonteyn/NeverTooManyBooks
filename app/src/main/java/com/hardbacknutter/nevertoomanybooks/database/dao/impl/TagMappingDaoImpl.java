@@ -96,6 +96,16 @@ public class TagMappingDaoImpl
         }
     }
 
+    /**
+     * Insert the mapping.
+     * <strong>Exception handling and {@code -1} returns MUST be done by the caller</strong>
+     *
+     * @param tag      to insert
+     * @param mappings to insert
+     * @param stmt     statement to run
+     *
+     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     */
     private static long doInsert(@NonNull final String tag,
                                  @NonNull final Set<String> mappings,
                                  @NonNull final ExtSQLiteStatement stmt) {
