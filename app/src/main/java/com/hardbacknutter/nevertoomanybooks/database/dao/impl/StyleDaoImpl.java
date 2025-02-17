@@ -137,7 +137,7 @@ public class StyleDaoImpl
 
     /**
      * Insert the style.
-     * <strong>Exception handling MUST be done by the caller</strong>
+     * <strong>Exception handling and {@code -1} returns MUST be done by the caller</strong>
      *
      * @param style     to insert
      * @param styleName the name
