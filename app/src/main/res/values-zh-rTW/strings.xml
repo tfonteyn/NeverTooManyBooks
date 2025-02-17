@@ -485,7 +485,7 @@
     <string name="lbl_virtual_libraries">此圖書館中的虛擬書架</string>
     <string name="lbl_website_address">網址（網址）</string>
     <string name="lbl_websites">網站</string>
-    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>識別碼</small>]]></string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>識別符</small>]]></string>
     <string name="lbl_year">年</string>
     <string name="list_and">與</string>
     <string name="brackets">（%1$s）</string>
@@ -827,8 +827,8 @@
     <string name="ps_show_author_name_given_first">優先顯示名字，\n如「Cixin Liu」</string>
     <string name="ps_sort_author_name_family_first">優先按姓氏排序，\n如「Liu，Cixin」</string>
     <string name="ps_sort_author_name_given_first">優先按名字排序，\n如「Cixin Liu」</string>
-    <string name="lbl_identifier">識別碼</string>
-    <string name="lbl_identifiers">識別碼</string>
+    <string name="lbl_identifier">識別符</string>
+    <string name="lbl_identifiers">識別符</string>
     <string name="confirm_delete_substitutions">刪除「%1$s」的替代？</string>
     <string name="X_confirm_delete_tag">刪除標籤「%1$s」？\n\n將從所有設定了該標籤的書籍處移除它。不會刪除書籍本身。</string>
     <string name="info_tap_to_move_tag">輕按標籤將其移動到書籍或從書籍移出。</string>
@@ -837,4 +837,12 @@
     <string name="lbl_default_x">預設：%1$s</string>
     <string name="info_partial_date_picker">輕按先前選取的月份或天來取消選取。</string>
     <string name="lbl_original_language">原始語言</string>
+    <string name="confirm_delete_bookshelf_from_x_books">刪除書架“%1$s”？\n\n它將從 %2$s 中移除。書籍本身不會被刪除。它們仍將存在於任何其他書架上，或「%3$s」書架上。</string>
+    <string name="confirm_delete_publisher_from_x_books">刪除出版商“%1$s”嗎？\n\n它將從 %2$s 中刪除。若要保留此數據，請考慮編輯出版商，將其名稱改為另一出版商的名稱。</string>
+    <string name="confirm_delete_series_from_x_books">刪除系列“%1$s”嗎？\n\n它將從 %2$s 中刪除。若要保留此數據，請考慮編輯系列，將其名稱改為另一系列的名稱。</string>
+    <string name="confirm_delete_toc_entry_from_x_books">刪除 %2$s 的“%1$s”？\n\n它將從 %3$s 中移除。書籍本身不會被刪除。</string>
+    <string name="confirm_delete_tag_from_x_books">刪除 “%1$s” 標籤？\n\n將從 %2$s 處刪除它。書籍本身不會被刪除。</string>
+    <string name="confirm_delete_identifier_from_x_books">刪除識別符 “%1$s”？\n\n將從 %2$s 處刪除它。書籍本身不會被刪除。</string>
+    <string name="action_restore_default_identifiers">恢復預設識別符</string>
+
 </resources>
