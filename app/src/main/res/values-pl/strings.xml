@@ -163,6 +163,7 @@
     <string name="confirm_delete_publisher_from_x_books">Naprawdę usunąć wydawcę „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte. Rozważ edycję wydawcy i zmianę nazwy wydawcy na nazwę innego wydawcy, aby zachować te dane.</string>
     <string name="confirm_delete_series_from_x_books">Czy na pewno usunąć serię „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte. Rozważ zmianę nazwy serii by zachować te dane.</string>
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
+    <string name="confirm_delete_identifier_from_x_books">Usunąć identyfikator „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte.</string>
     <string name="confirm_delete_substitutions">Usunąć podstawienia dla „%1$s”?</string>
     <string name="X_confirm_delete_tag">Usunąć tag „%1$s”?\n\nZostanie on usunięty ze wszystkich książek, w których jest ustawiony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_delete_tag_from_x_books">Usunąć tag „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte.</string>
@@ -855,4 +856,5 @@
     <string name="lbl_tag_mapper_apply_merge_case">Scalanie tagów różniących się tylko wielkimi i małymi literami</string>
     <string name="lbl_default_x">Domyślna: %1$s</string>
     <string name="info_partial_date_picker">Stuknij wcześniej wybrany miesiąc lub dzień, aby go odznaczyć.</string>
+    <string name="action_restore_default_identifiers">Przywróć domyślne identyfikatory</string>
 </resources>

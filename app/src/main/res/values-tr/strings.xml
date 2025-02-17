@@ -153,6 +153,7 @@
     <string name="confirm_delete_publisher_from_x_books">“%1$s” yayıncısını gerçekten silmek istiyor musunuz?\n\n%2$s silinecektir. Kitapların kendileri silinmeyecek. Bu verileri korumak için yayıncıyı düzenlemeyi ve yayıncı adını başka bir yayıncının adıyla değiştirmeyi düşünün.</string>
     <string name="confirm_delete_series_from_x_books">“%1$s” serisi gerçekten silinsin mi?\n\n%2$s silinecektir. Kitabın kendisi silinmeyecektir. Seriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="confirm_delete_style">“%1$s” stili silinsin mi?</string>
+    <string name="confirm_delete_identifier_from_x_books">“%1$s” tanımlayıcısını silelim mi?\n\n%2$s silinecektir. Kitapların kendileri silinmeyecektir.</string>
     <string name="confirm_delete_substitutions">“%1$s” için ikameleri silelim mi?</string>
     <string name="X_confirm_delete_tag">“%1$s” etiketini silin.\n\nEtiket, üzerinde bulunduğu tüm kitaplardan silinecektir. Kitapların kendileri silinmeyecektir.</string>
     <string name="confirm_delete_tag_from_x_books">“%1$s” etiketini silin.\n\n%2$s silinecektir. Kitapların kendileri silinmeyecektir.</string>
@@ -853,4 +854,5 @@
     <string name="lbl_tag_mapper_apply_merge_case">Sadece büyük ve küçük harf farkı olan etiketleri birleştirme</string>
     <string name="lbl_default_x">Varsayılan: %1$s</string>
     <string name="info_partial_date_picker">Seçimi kaldırmak için önceden seçilmiş bir ay veya güne dokunun.</string>
+    <string name="action_restore_default_identifiers">Varsayılan Tanımlayıcıları geri yükleme</string>
 </resources>

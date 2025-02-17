@@ -323,6 +323,7 @@
     <string name="option_download_set_folder">Definir a pasta de transferências</string>
     <string name="confirm_unsaved_edits">Tem alterações não guardadas, se sair agora estas serão perdidas.</string>
     <string name="confirm_delete_bookshelf_from_x_books">Excluir a prateleira“%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%3$s”.</string>
+    <string name="confirm_delete_identifier_from_x_books">Eliminar o identificador “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão eliminados.</string>
     <string name="confirm_delete_substitutions">Eliminar as substituições de “%1$s”?</string>
     <string name="X_confirm_delete_tag">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de todos os livros em que estiver definida. Os livros em si não serão eliminados.</string>
     <string name="confirm_delete_tag_from_x_books">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão eliminados.</string>
@@ -865,4 +866,5 @@
     <string name="lbl_tag_mapper_apply_merge_case">Fundir etiquetas que apenas diferem em maiúsculas e minúsculas</string>
     <string name="lbl_default_x">Padrão: %1$s</string>
     <string name="info_partial_date_picker">Toque num mês ou dia previamente selecionado para o anular.</string>
+    <string name="action_restore_default_identifiers">Repor os identificadores predefinidos</string>
 </resources>

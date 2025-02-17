@@ -162,6 +162,7 @@
     <string name="confirm_delete_publisher_from_x_books">Opravdu smazat vydavatele „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou. Všechny úpravy vydavatele a změna názvu vydavatele na jméno jiného vydavatele za účelem uchování těchto dat.</string>
     <string name="confirm_delete_series_from_x_books">Opravdu chcete smazat série „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou. Zvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
     <string name="confirm_delete_style">Smazat styl „%1$s“?</string>
+    <string name="confirm_delete_identifier_from_x_books">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_substitutions">Smazat náhrady za „%1$s“?</string>
     <string name="X_confirm_delete_tag">Smazat štítek „%1$s“?\n\nBude vymazán ze všech knih, na kterých je nastaven. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_tag_from_x_books">Smazat štítek „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
@@ -864,4 +865,5 @@
     <string name="lbl_tag_mapper_apply_merge_case">Sloučení štítků, které se liší pouze velkými a malými písmeny</string>
     <string name="lbl_default_x">Výchozí: %1$s</string>
     <string name="info_partial_date_picker">Klepnutím na dříve vybraný měsíc nebo den zrušíte jeho výběr.</string>
+    <string name="action_restore_default_identifiers">Obnovení výchozích identifikátorů</string>
 </resources>

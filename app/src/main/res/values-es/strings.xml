@@ -157,6 +157,7 @@
     <string name="confirm_delete_publisher_from_x_books">¿Eliminar realmente el editor «%1$s»?\n\nSe eliminará de %2$s. Los libros en sí no se eliminarán. Considere editar el editor y cambiar el nombre del editor por el de otro editor para conservar estos datos.</string>
     <string name="confirm_delete_series_from_x_books">¿Borrar la serie «%1$s»?\n\nSe eliminará de %2$s. Los libros en sí no se borrarán. Considere la posibilidad de editar la serie y cambiar el nombre de la serie por el de otra serie para conservar estos datos.</string>
     <string name="confirm_delete_style">¿Eliminar el estilo «%1$s»?</string>
+    <string name="confirm_delete_identifier_from_x_books">¿Borrar el identificador «%1$s»?\n\nSe eliminará de %2$s. Los libros en sí no se eliminarán.</string>
     <string name="confirm_delete_substitutions">¿Suprimir las sustituciones de «%1$s»?</string>
     <string name="X_confirm_delete_tag">¿Quieres eliminar la etiqueta «%1$s»?\n\nSe eliminará de todos los libros en los que esté configurada. Los libros en sí no se eliminarán.</string>
     <string name="confirm_delete_tag_from_x_books">¿Quieres eliminar la etiqueta «%1$s»?\n\nSe eliminará de %2$s. Los libros en sí no se eliminarán.</string>
@@ -846,4 +847,5 @@
     <string name="lbl_tag_mapper_apply_merge_case">Fusionar etiquetas que sólo difieren en mayúsculas y minúsculas</string>
     <string name="lbl_default_x">Predeterminado: %1$s</string>
     <string name="info_partial_date_picker">Pulse sobre un mes o día previamente seleccionado para deseleccionarlo.</string>
+    <string name="action_restore_default_identifiers">Restablecer los identificadores por defecto</string>
 </resources>

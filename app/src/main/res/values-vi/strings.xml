@@ -158,6 +158,7 @@
     <string name="confirm_delete_publisher_from_x_books">Xóa nhà xuất bản “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân sách sẽ không bị xóa. Hãy xem xét chỉnh sửa nhà xuất bản và đổi tên nhà xuất bản thành tên của nhà xuất bản khác để bảo toàn dữ liệu này.</string>
     <string name="confirm_delete_series_from_x_books">Xóa bộ “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các cuốn sách sẽ không bị xóa. Hãy cân nhắc chỉnh sửa bộ này và đổi tên bộ này thành tên của bộ khác để bảo toàn dữ liệu này.</string>
     <string name="confirm_delete_style">Xóa kiểu “%1$s”?</string>
+    <string name="confirm_delete_identifier_from_x_books">Xóa định danh “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các sách sẽ không bị xóa.</string>
     <string name="confirm_delete_substitutions">Xóa các thay thế cho “%1$s”?</string>
     <string name="X_confirm_delete_tag">Xóa thẻ “%1$s”?\n\nNó sẽ bị xóa khỏi tất cả các sách mà nó được đặt. Bản thân các sách sẽ không bị xóa.</string>
     <string name="confirm_delete_tag_from_x_books">Xóa thẻ “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các sách sẽ không bị xóa.</string>
@@ -839,4 +840,5 @@
     <string name="lbl_tag_mapper_apply_merge_case">Hợp nhất các thẻ chỉ khác nhau ở chữ hoa và chữ thường</string>
     <string name="lbl_default_x">Mặc định: %1$s</string>
     <string name="info_partial_date_picker">Nhấn vào tháng hoặc ngày đã chọn trước đó để bỏ chọn.</string>
+    <string name="action_restore_default_identifiers">Khôi phục lại Mã định danh mặc định</string>
 </resources>

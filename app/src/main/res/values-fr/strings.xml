@@ -159,7 +159,8 @@
     <string name="confirm_delete_publisher_from_x_books">Supprimer l’éditeur « %1$s » ?\n\nElle sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés. Envisagez de modifier l’éditeur et de remplacer le nom pour conserver ces données.</string>
     <string name="confirm_delete_series_from_x_books">Supprimer la série « %1$s » ?\n\nElle sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés. Envisagez de modifier la série et d’en changer le nom pour conserver ces données.</string>
     <string name="confirm_delete_style">Supprimer le style « %1$s » ?</string>
-    <string name="confirm_delete_substitutions">Supprimer les substitutions pour « %1$s » ?</string>
+    <string name="confirm_delete_identifier_from_x_books">Supprimer l’identifiant « %1$s » ?\n\nElle sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés.</string>
+    <string name="confirm_delete_substitutions">Supprimer les substitutions pour « %1$s » ?</string>
     <string name="X_confirm_delete_tag">Supprimer l’étiquette « %1$s » ?\n\nElle sera supprimée de tous les livres sur lesquels elle est définie. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_delete_tag_from_x_books">Supprimer l’étiquette « %1$s » ?\n\nElle sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Vraiment supprimer le titre « %1$s » (par %2$s) ?\n\nElle sera supprimée de %3$s. Les livres eux-mêmes ne seront pas supprimés.</string>
@@ -848,4 +849,5 @@
     <string name="lbl_tag_mapper_apply_merge_case">Fusionner les balises qui ne diffèrent que par les majuscules et les minuscules</string>
     <string name="lbl_default_x">Par défaut : %1$s</string>
     <string name="info_partial_date_picker">Touchez un mois ou un jour précédemment sélectionné pour le désélectionner.</string>
+    <string name="action_restore_default_identifiers">Rétablir les identifiants par défaut</string>
 </resources>

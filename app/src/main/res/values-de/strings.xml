@@ -154,6 +154,7 @@
     <string name="confirm_delete_publisher_from_x_books">Herausgeber „%1$s“ löschen?\n\nEs wird aus %2$s gelöscht. Die Bücher selbst werden nicht gelöscht. Betrachten Sie, den Herausgeber zu bearbeiten und den Herausgebernamen in den Namen eines anderen Herausgebers zu ändern, um diese Daten zu erhalten.</string>
     <string name="confirm_delete_series_from_x_books">Serie „%1$s“ löschen?\n\nEs wird aus %2$s gelöscht. Die Bücher werden nicht gelöscht. Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>
     <string name="confirm_delete_style">Den Stil „%1$s“ löschen?</string>
+    <string name="confirm_delete_identifier_from_x_books">Den Identifikator „%1$s“ löschen?\n\nEs wird aus %2$s gelöscht. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_delete_substitutions">Die Ersetzungen für „%1$s“ löschen?</string>
     <string name="X_confirm_delete_tag">Das Tag „%1$s“ löschen?\n\nEs wird aus allen Büchern gelöscht, in denen es gesetzt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_delete_tag_from_x_books">Das Tag „%1$s“ löschen?\n\nEs wird aus %2$s gelöscht. Die Bücher selbst werden nicht gelöscht.</string>
@@ -842,4 +843,5 @@
     <string name="lbl_tag_mapper_apply_merge_case">Zusammenführen von Tags, die sich nur in der Groß- und Kleinschreibung unterscheiden</string>
     <string name="lbl_default_x">Standard: %1$s</string>
     <string name="info_partial_date_picker">Tippen Sie auf einen zuvor ausgewählten Monat oder Tag, um ihn abzuwählen.</string>
+    <string name="action_restore_default_identifiers">Wiederherstellung der Standard-Identifikatoren</string>
 </resources>

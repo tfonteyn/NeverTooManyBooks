@@ -239,6 +239,7 @@
     <string name="lbl_citation_type">Formato de citação/compartilhamento</string>
     <string name="site_description_various_languages">Vários idiomas</string>
     <string name="confirm_merge_tags">A tag que você está modificando já existe. Você gostaria de mesclá-las?</string>
+    <string name="confirm_delete_identifier_from_x_books">Excluir o identificador “%1$s”?\n\nEla será excluída de %2$s. Os livros em si não serão excluídos.</string>
     <string name="confirm_delete_substitutions">Excluir as substituições para “%1$s”?</string>
     <string name="X_confirm_delete_tag">Excluir a tag “%1$s”?\n\nEla será excluída de todos os livros nos quais estiver definida. Os livros em si não serão excluídos.</string>
     <string name="confirm_delete_tag_from_x_books">Excluir a tag “%1$s”?\n\nEla será excluída de %2$s. Os livros em si não serão excluídos.</string>
@@ -251,4 +252,5 @@
     <string name="lbl_tag_mapper_apply_purge_unused">Excluir tags não utilizadas</string>
     <string name="info_partial_date_picker">Toque em um mês ou dia selecionado anteriormente para desmarcá-lo.</string>
     <string name="lbl_original_language">Idioma original</string>
+    <string name="action_restore_default_identifiers">Restaurar os identificadores padrão</string>
 </resources>
