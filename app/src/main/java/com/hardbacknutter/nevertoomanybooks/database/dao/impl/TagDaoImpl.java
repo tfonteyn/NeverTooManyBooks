@@ -363,8 +363,8 @@ public class TagDaoImpl
 
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
-                final Locale bookLocale = book.getLocaleOrUserLocale(context);
-                insertOrUpdate(context, bookId, destList, tag -> bookLocale);
+                insertOrUpdate(context, bookId, destList, tag ->
+                        book.getLocaleOrUserLocale(context));
             }
 
             // delete the obsolete source.

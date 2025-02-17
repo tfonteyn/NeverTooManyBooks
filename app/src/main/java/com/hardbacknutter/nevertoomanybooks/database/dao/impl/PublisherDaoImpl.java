@@ -406,8 +406,8 @@ public class PublisherDaoImpl
 
                 // delete old links and store all new links
                 // We KNOW there are no updates needed.
-                final Locale bookLocale = book.getLocaleOrUserLocale(context);
-                insertOrUpdate(context, bookId, false, destList, publisher -> bookLocale);
+                insertOrUpdate(context, bookId, false, destList, publisher ->
+                        book.getLocaleOrUserLocale(context));
             }
 
             // delete the obsolete source.
