@@ -74,6 +74,8 @@ public class SyncReaderProcessor {
 
     @NonNull
     private final Map<String, SyncField> fields;
+
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final RealNumberParser realNumberParser;
 

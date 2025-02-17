@@ -420,6 +420,9 @@ public final class DBKey {
         public static final String ISO3_USER = "iso3_user";
         public static final String ISO3 = "iso3";
         public static final String DISPLAY_NAME = "dname";
+
+        private LANG_MAPPING() {
+        }
     }
 
     public static final class FTS {

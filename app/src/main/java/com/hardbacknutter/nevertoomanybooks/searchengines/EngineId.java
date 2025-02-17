@@ -373,6 +373,7 @@ public enum EngineId
 
 
     /** {@link SearchEngine.CoverByEdition} only. */
+    @SuppressWarnings("FieldNotUsedInToString")
     private boolean supportsMultipleCoverSizes;
 
     @Nullable

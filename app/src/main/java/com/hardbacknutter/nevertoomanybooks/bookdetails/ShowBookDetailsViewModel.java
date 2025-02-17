@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * Shared data between details and Read fragments.
- *
+ * <p>
  * FIXME: cleanup unneeded addRelatedViews for labels
  */
 public class ShowBookDetailsViewModel

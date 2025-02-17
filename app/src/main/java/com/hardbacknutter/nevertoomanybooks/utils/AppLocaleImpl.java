@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,16 +99,6 @@ public final class AppLocaleImpl
     @Override
     @NonNull
     public Context apply(@NonNull final Context context) {
-//        final Logger logger = LoggerFactory.getLogger();
-//        logger.d(TAG + "|BEFORE", "Locale.getDefault()    : ",
-//                 String.valueOf(Locale.getDefault()));
-//        logger.d(TAG + "|BEFORE", "user getLocales()      : ",
-//                 String.valueOf(context.getResources().getConfiguration().getLocales()));
-//        logger.d(TAG + "|BEFORE", "system getLocales()    : ",
-//                 String.valueOf(Resources.getSystem().getConfiguration().getLocales()));
-//        logger.d(TAG + "|BEFORE", "LocaleList.getDefault(): ",
-//                 String.valueOf(LocaleList.getDefault()));
-
         // Create the Locale at first access, or if the persisted is different from the current.
         final String localeSpec = getPersistedLocaleSpec(context);
 
@@ -145,14 +135,6 @@ public final class AppLocaleImpl
             onLocaleChanged(localizedContext);
         }
 
-//        logger.d(TAG, "Locale.getDefault()    : ",
-//                 String.valueOf(Locale.getDefault()));
-//        logger.d(TAG, "localizedContext       : ",
-//                 String.valueOf(localizedContext.getResources().getConfiguration().getLocales()));
-//        logger.d(TAG, "system getLocales()    : ",
-//                 String.valueOf(Resources.getSystem().getConfiguration().getLocales()));
-//        logger.d(TAG, "LocaleList.getDefault(): ",
-//                 String.valueOf(LocaleList.getDefault()));
         return localizedContext;
     }
 

@@ -757,7 +757,7 @@ class BooklistBuilder {
         }
         // Add LEFT OUTER JOIN tables as needed
         // (it's a Set, no duplicates to check)
-        leftOuterJoins.stream().forEach(table -> sb.append(TBL_BOOKS.leftOuterJoin(table)));
+        leftOuterJoins.forEach(table -> sb.append(TBL_BOOKS.leftOuterJoin(table)));
 
         return sb.toString();
     }
