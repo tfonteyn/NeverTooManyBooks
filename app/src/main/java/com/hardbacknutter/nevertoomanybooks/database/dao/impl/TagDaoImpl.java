@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
@@ -339,33 +340,13 @@ public class TagDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            // Relink books with the target Tag,
-            // respecting the position of the Tag in the list for each book.
-            final List<Long> bookIds = getBookIds(source.getId());
-            booksMoved = bookIds.size();
-
-            for (final long bookId : bookIds) {
-                final Book book = Book.from(bookId);
-
-                final List<Tag> fromBook = book.getTags();
-                final List<Tag> destList = new ArrayList<>();
-
-                for (final Tag item : fromBook) {
-                    if (source.getId() == item.getId()) {
-                        destList.add(target);
-                        // We could 'break' here as there should be no duplicates,
-                        // but paranoia...
-                    } else {
-                        // just keep/copy
-                        destList.add(item);
-                    }
-                }
-
-                // delete old links and store all new links
-                // We KNOW there are no updates needed.
-                insertOrUpdate(context, bookId, destList, tag ->
-                        book.getLocaleOrUserLocale(context));
-            }
+            // Relink books with the target Tag.
+            // We don't hold 'position' for tags... just do a mass update
+            final ContentValues cv = new ContentValues();
+            cv.put(DBKey.FK_TAG, target.getId());
+            booksMoved = db.update(TBL_BOOK_TAG.getName(), cv,
+                                   DBKey.FK_TAG + "=?",
+                                   new String[]{String.valueOf(source.getId())});
 
             // delete the obsolete source.
             delete(source);
