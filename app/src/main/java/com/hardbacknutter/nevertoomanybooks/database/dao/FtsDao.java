@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,6 @@ public interface FtsDao {
      * @param seriesTitle   Series title related keywords to find
      * @param publisherName Publisher name related keywords to find
      * @param keywords      Keywords to find anywhere in book; this includes titles and authors
-     * @param limit         maximum number of rows to return
      *
      * @return a cursor, or {@code null} if all input was empty
      */
@@ -50,8 +49,7 @@ public interface FtsDao {
                       @Nullable String title,
                       @Nullable String seriesTitle,
                       @Nullable String publisherName,
-                      @Nullable String keywords,
-                      int limit);
+                      @Nullable String keywords);
 
     /**
      * Rebuild the entire FTS database.

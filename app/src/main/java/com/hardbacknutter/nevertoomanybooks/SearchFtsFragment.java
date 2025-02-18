@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,11 +74,11 @@ public class SearchFtsFragment
     /** Timer object for background idle searches. */
     @Nullable
     private Timer timer;
-    /** Detect text changes and call userIsActive(...). */
-    private final TextWatcher textWatcher = (ExtTextWatcher) editable -> {
-        // we're not changing the Editable, no need to toggle this listener
-        userIsActive(true);
-    };
+    /**
+     * Detect text changes and call userIsActive(...).
+     * We're not changing the Editable, no need to toggle this listener.
+     */
+    private final TextWatcher textWatcher = (ExtTextWatcher) editable -> userIsActive(true);
     private SearchFtsViewModel vm;
 
     /** View Binding. */

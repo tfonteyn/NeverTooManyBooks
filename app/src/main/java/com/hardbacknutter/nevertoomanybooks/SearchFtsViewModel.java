@@ -35,8 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 public class SearchFtsViewModel
         extends ViewModel {
 
-    /** The maximum number of suggestions we'll show during a live search. */
-    private static final int MAX_SUGGESTIONS = 20;
     private final MutableLiveData<SearchCriteria> onSearchCriteriaUpdate =
             new MutableLiveData<>();
     private final MutableLiveData<List<Long>> onBooklistUpdate = new MutableLiveData<>();
@@ -95,8 +93,7 @@ public class SearchFtsViewModel
                                            criteria.getFtsBookTitle(),
                                            criteria.getFtsSeriesTitle(),
                                            criteria.getFtsPublisher(),
-                                           criteria.getFtsKeywords(),
-                                           MAX_SUGGESTIONS);
+                                           criteria.getFtsKeywords());
         criteria.setBookIdList(list);
         onBooklistUpdate.postValue(criteria.getBookIdList());
     }

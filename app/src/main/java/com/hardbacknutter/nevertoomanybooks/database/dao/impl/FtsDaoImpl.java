@@ -126,15 +126,13 @@ public class FtsDaoImpl
                              @Nullable final String title,
                              @Nullable final String seriesTitle,
                              @Nullable final String publisherName,
-                             @Nullable final String keywords,
-                             final int limit) {
+                             @Nullable final String keywords) {
 
         final List<Long> result = new ArrayList<>();
 
         FtsDaoHelper.createMatchClause(title, seriesTitle, author, publisherName, keywords)
-                    .ifPresent(matchClause -> {
-                        try (Cursor cursor = db.rawQuery(Sql.SEARCH, new String[]
-                                {matchClause, String.valueOf(limit)})) {
+                    .ifPresent(match -> {
+                        try (Cursor cursor = db.rawQuery(Sql.SEARCH, new String[]{match})) {
                             while (cursor.moveToNext()) {
                                 result.add(cursor.getLong(0));
                             }
@@ -466,6 +464,6 @@ public class FtsDaoImpl
                 SELECT_ + DBKey.FTS.PK_BOOK_ID
                 + _FROM_ + TBL_FTS_BOOKS.getName()
                 + _WHERE_ + TBL_FTS_BOOKS.getName()
-                + " MATCH ? LIMIT ?";
+                + " MATCH ?";
     }
 }
