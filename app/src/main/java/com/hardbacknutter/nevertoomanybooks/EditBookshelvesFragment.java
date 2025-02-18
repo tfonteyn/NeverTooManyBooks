@@ -43,7 +43,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
@@ -260,22 +259,12 @@ public class EditBookshelvesFragment
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {
-            if (bookshelf.getId() > Bookshelf.HARD_DEFAULT) {
-                //noinspection DataFlowIssue
-                StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
-                    vm.deleteBookshelf(getContext(), bookshelf);
-                    // due to transposing row and columns, we MUST refresh the whole set.
-                    adapter.notifyDataSetChanged();
-                });
-            } else {
-                //noinspection DataFlowIssue
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.warning_24px)
-                        .setMessage(R.string.warning_cannot_delete_1st_bs)
-                        .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
-                        .create()
-                        .show();
-            }
+            //noinspection DataFlowIssue
+            StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
+                vm.deleteBookshelf(getContext(), bookshelf);
+                // due to transposing row and columns, we MUST refresh the whole set.
+                adapter.notifyDataSetChanged();
+            });
             return true;
 
         } else if (menuItemId == R.id.MENU_PURGE_BLNS) {

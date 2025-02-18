@@ -613,6 +613,11 @@ public class BookshelfDaoImpl
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Bookshelf bookshelf) {
+        // Sanity check
+        if (bookshelf.getId() <= Bookshelf.HARD_DEFAULT) {
+            return false;
+        }
+
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
@@ -666,7 +671,9 @@ public class BookshelfDaoImpl
                                    new String[]{String.valueOf(source.getId())});
 
             // delete the obsolete source.
-            delete(context, source);
+            if (source.getId() > Bookshelf.HARD_DEFAULT) {
+                delete(context, source);
+            }
 
             if (txLock != null) {
                 db.setTransactionSuccessful();

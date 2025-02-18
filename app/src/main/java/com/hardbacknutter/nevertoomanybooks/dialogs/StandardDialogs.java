@@ -246,15 +246,26 @@ public final class StandardDialogs {
     public static void deleteBookshelf(@NonNull final Context context,
                                        @NonNull final Bookshelf bookshelf,
                                        @NonNull final Runnable onConfirm) {
-        final int books = ServiceLocator.getInstance().getBookshelfDao().countBooks(bookshelf);
-        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
-                                                                          books, books);
+        if (bookshelf.getId() > Bookshelf.HARD_DEFAULT) {
+            final int books = ServiceLocator.getInstance().getBookshelfDao().countBooks(bookshelf);
+            final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+                                                                              books, books);
 
-        final String msg = context.getString(R.string.confirm_delete_bookshelf_from_x_books,
-                                             bookshelf.getLabel(context),
-                                             nrOfBooks,
-                                             context.getString(R.string.bookshelf_all_books));
-        delete(context, onConfirm, msg);
+            final String msg = context.getString(R.string.confirm_delete_bookshelf_from_x_books,
+                                                 bookshelf.getLabel(context),
+                                                 nrOfBooks,
+                                                 context.getString(R.string.bookshelf_all_books));
+            delete(context, onConfirm, msg);
+
+        } else {
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.warning_24px)
+                    .setMessage(R.string.warning_cannot_delete_1st_bs)
+                    .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
+
+        }
     }
 
     /**
