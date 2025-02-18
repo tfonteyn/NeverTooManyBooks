@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -72,6 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -430,6 +433,8 @@ public class BooksOnBookshelfViewModel
         return tmp;
     }
 
+    //TEST: do we need resetPreferredListRebuildMode?
+    // we don't always call it when the style changes
     void resetPreferredListRebuildMode(@NonNull final Context context) {
         rebuildMode = RebuildBooklist.getPreferredMode(context);
     }
@@ -1363,8 +1368,8 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * This method is called after the user used {@link EditPreferredStylesContract}
-     * to edit the list of styles.
+     * This method is called after the user edited the styles in
+     * the {@link EditPreferredStylesContract}.
      *
      * @param context Current context
      * @param data    returned from the view/edit contract
@@ -1374,14 +1379,14 @@ public class BooksOnBookshelfViewModel
         // we get the UUID for the selected style back.
         data.getUuid().ifPresent(uuid -> onStyleChanged(context, uuid));
 
-        // This is independent from the above style having been modified ot not.
+        // This is independent from the above style having been modified or not.
         if (data.isModified()) {
             forceRebuildInOnResume = true;
         }
     }
 
     /**
-     * This method is called after the user edited a style from
+     * This method is called after the user edited a style in
      * the {@link StylePickerDialogFragment}.
      *
      * @param context Current context
@@ -1395,9 +1400,8 @@ public class BooksOnBookshelfViewModel
             onStyleChanged(context, data.getUuid().get());
 
             // ALWAYS rebuild here, even when the style was not modified
-            // as we're handling this as a style-change
-            // (we could do checks... but it's not worth the effort.)
-            // i.e. same as in mOnStylePickerListener
+            // as we're handling this as a style-change.
+            // We could do checks... but it's not worth the effort.
             forceRebuildInOnResume = true;
         }
     }
@@ -1454,7 +1458,17 @@ public class BooksOnBookshelfViewModel
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         bookshelfDao.refresh(context, bookshelf, locale);
 
-        boBTask.start(bookshelf, rebuildMode, searchCriteria, selectedBookId);
+        // someday the searchCriteria will BE filters.. for now, convert them here.
+        final Collection<Filter> criteriaFilters;
+        if (searchCriteria.isEmpty()) {
+            criteriaFilters = List.of();
+        } else {
+            criteriaFilters = FtsDaoHelper.toFilters(searchCriteria);
+            // when criteria are used, the build should always expand the book list.
+            rebuildMode = RebuildBooklist.Expanded;
+        }
+
+        boBTask.start(bookshelf, rebuildMode, criteriaFilters, selectedBookId);
     }
 
     boolean isBuilding() {

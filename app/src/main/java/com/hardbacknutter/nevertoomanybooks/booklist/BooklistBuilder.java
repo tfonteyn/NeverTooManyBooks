@@ -40,10 +40,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.LoaneeFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
@@ -59,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
@@ -198,7 +194,7 @@ class BooklistBuilder {
     @NonNull
     private final Bookshelf bookshelf;
     @NonNull
-    private RebuildBooklist rebuildMode;
+    private RebuildBooklist rebuildMode = RebuildBooklist.FromSaved;
 
     /** Table used by the triggers to track the most recent/current row headings. */
     private TableDefinition triggerHelperTable;
@@ -210,22 +206,19 @@ class BooklistBuilder {
     /**
      * Constructor.
      *
-     * @param instanceId  to create a unique table name
-     * @param style       to apply to the list
-     * @param bookshelf   to display
-     * @param rebuildMode the mode to use for restoring the saved state.
+     * @param instanceId to create a unique table name
+     * @param style      to apply to the list
+     * @param bookshelf  to display
      */
     BooklistBuilder(final int instanceId,
                     @NonNull final Style style,
-                    @NonNull final Bookshelf bookshelf,
-                    @NonNull final RebuildBooklist rebuildMode) {
+                    @NonNull final Bookshelf bookshelf) {
 
         this.style = style;
         // whether we're filtering on a specific Bookshelf,
         // or if we're using the 'all books'
         this.filteredOnBookshelf = bookshelf.getId() != Bookshelf.ALL_BOOKS;
         this.bookshelf = bookshelf;
-        this.rebuildMode = rebuildMode;
 
         /*
          * Temporary table used to store a flattened booklist tree structure.
@@ -436,45 +429,14 @@ class BooklistBuilder {
     }
 
     /**
-     * build.
-     *
-     * @param searchCriteria to add
-     */
-    private void addCriteria(@NonNull final SearchCriteria searchCriteria) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            LoggerFactory.getLogger().d(TAG, "build|addCriteria", "searchCriteria="
-                                                            + searchCriteria);
-        }
-
-        // if we have a list of ID's, we'll ignore other criteria
-        if (searchCriteria.getBookIdList().isEmpty()) {
-            // Criteria supported by FTS
-            FtsDaoHelper.createMatchClause(searchCriteria.getFtsBookTitle(),
-                                           searchCriteria.getFtsSeriesTitle(),
-                                           searchCriteria.getFtsAuthor(),
-                                           searchCriteria.getFtsPublisher(),
-                                           searchCriteria.getFtsKeywords())
-                        .map(FtsMatchFilter::new)
-                        .ifPresent(filters::add);
-
-            // Add a filter to retrieve only books lend to the given person (exact name).
-            final String loanee = searchCriteria.getLoanee();
-            if (loanee != null && !loanee.isBlank()) {
-                filters.add(new LoaneeFilter(loanee));
-            }
-        } else {
-            // Add a where clause for: "AND books._id IN (list)".
-            filters.add(new NumberListFilter<>(TBL_BOOKS, DOM_PK_ID,
-                                               searchCriteria.getBookIdList()));
-        }
-    }
-
-    /**
-     * build.
+     * Combine filters from the bookshelf with Style grouping requirements.
      *
      * @param context Current context
+     *
+     * @return filters
      */
-    private void addFilters(@NonNull final Context context) {
+    @NonNull
+    private List<PFilter<?>> createBookshelfFilters(@NonNull final Context context) {
         // Prepare the Bookshelf filters; paranoia: make sure we only get the active ones
         final List<PFilter<?>> bookshelfFilters = bookshelf.pruneFilters();
 
@@ -506,8 +468,7 @@ class BooklistBuilder {
             }
         }
 
-        // ... and add them
-        this.filters.addAll(bookshelfFilters);
+        return bookshelfFilters;
     }
 
     /**
@@ -516,17 +477,21 @@ class BooklistBuilder {
      *
      * @param context        Current context
      * @param db             Underlying database
-     * @param searchCriteria to add
+     * @param rebuildMode    the mode to use for restoring the saved state.
+     * @param searchCriteria filters to add
      *
      * @return a Pair with the fully populated list-table and the navigation-table
      *
      * @throws TransactionException (debug)
      */
     @NonNull
-    Pair<TableDefinition, TableDefinition> build(
-            @NonNull final Context context,
-            @NonNull final SynchronizedDb db,
-            @NonNull final SearchCriteria searchCriteria) {
+    Pair<TableDefinition, TableDefinition> build(@NonNull final Context context,
+                                                 @NonNull final SynchronizedDb db,
+                                                 @NonNull final RebuildBooklist rebuildMode,
+                                                 @NonNull final Collection<Filter> searchCriteria) {
+
+        this.rebuildMode = rebuildMode;
+
         final boolean collationCaseSensitive = db.isCollationCaseSensitive();
 
         // first step!
@@ -536,13 +501,8 @@ class BooklistBuilder {
 
         addBookLevelDomains(context);
 
-        if (!searchCriteria.isEmpty()) {
-            addCriteria(searchCriteria);
-            // when criteria are used, the build should always expand the book list.
-            rebuildMode = RebuildBooklist.Expanded;
-        }
-
-        addFilters(context);
+        this.filters.addAll(searchCriteria);
+        this.filters.addAll(createBookshelfFilters(context));
 
         // All structures are in place now
         // Construct the INSERT INTO ... SELECT
@@ -676,7 +636,7 @@ class BooklistBuilder {
      * Create the FROM clause based on the
      * {@link BooklistGroup}s,
      * {@link Filter}s
-     * and any pre-defined leftOuterJoin's added by {@link SearchCriteria}
+     * and any pre-defined leftOuterJoin's
      * and {@link Style#getBookLevelFieldsOrderBy()} fields.
      *
      * @param context Current context

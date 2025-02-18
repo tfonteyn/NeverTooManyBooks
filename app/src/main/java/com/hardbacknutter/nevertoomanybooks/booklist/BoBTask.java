@@ -25,14 +25,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -59,8 +60,8 @@ public class BoBTask
     private Bookshelf bookshelf;
     /** Preferred booklist state in next rebuild. */
     private RebuildBooklist rebuildMode;
-    /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
-    private SearchCriteria searchCriteria;
+    /** Search Filters. */
+    private Collection<Filter> criteriaFilters;
     /** The row id we want the new list to display more-or-less in the center. */
     private long desiredCentralBookId;
 
@@ -79,17 +80,17 @@ public class BoBTask
      *
      * @param bookshelf            the shelf for which we're building the list
      * @param mode                 see {@link RebuildBooklist}
-     * @param searchCriteria       filters
+     * @param criteriaFilters      filters
      * @param desiredCentralBookId the book id we want the new list to display
      *                             more-or-less in the center of the screen
      */
     public void start(@NonNull final Bookshelf bookshelf,
                       @NonNull final RebuildBooklist mode,
-                      @NonNull final SearchCriteria searchCriteria,
+                      @NonNull final Collection<Filter> criteriaFilters,
                       final long desiredCentralBookId) {
         this.bookshelf = bookshelf;
         this.rebuildMode = mode;
-        this.searchCriteria = searchCriteria;
+        this.criteriaFilters = criteriaFilters;
         this.desiredCentralBookId = desiredCentralBookId;
 
         execute();
@@ -149,18 +150,17 @@ public class BoBTask
     @NonNull
     private Booklist buildBooklist(@NonNull final Context context,
                                    @NonNull final SynchronizedDb db,
-                                   final Style style) {
+                                   @NonNull final Style style) {
 
         final int instanceId = ID_COUNTER.incrementAndGet();
 
-        final BooklistBuilder booklistBuilder = new BooklistBuilder(
-                instanceId, style, bookshelf, rebuildMode);
+        final BooklistBuilder booklistBuilder = new BooklistBuilder(instanceId, style, bookshelf);
 
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
             // Construct the list table and all needed structures.
             final Pair<TableDefinition, TableDefinition> tables = booklistBuilder
-                    .build(context, db, searchCriteria);
+                    .build(context, db, rebuildMode, criteriaFilters);
 
             final TableDefinition listTable = tables.first;
             final TableDefinition navTable = tables.second;

@@ -24,18 +24,33 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.LoaneeFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.util.logger.LoggerFactory;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * Helper to normalize strings before inserting them into the FTS table,
  * and methods to prepare for a search.
  */
 public final class FtsDaoHelper {
+
+    private static final String TAG = "FtsDaoHelper";
 
     private static final String LIST_DELIMITER = "; ";
 
@@ -202,5 +217,45 @@ public final class FtsDaoHelper {
         return list.stream()
                    .map(FtsDaoHelper::normalize)
                    .collect(Collectors.joining(LIST_DELIMITER));
+    }
+
+
+    /**
+     * Convert the given criteria to a list of {@link Filter}s.
+     *
+     * @param searchCriteria to convert
+     *
+     * @return filters
+     */
+    @NonNull
+    public static Collection<Filter> toFilters(@NonNull final SearchCriteria searchCriteria) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger().d(TAG, "toFilters", searchCriteria);
+        }
+        final Collection<Filter> filters = new ArrayList<>();
+
+        // if we have a list of ID's, we'll ignore other criteria
+        if (searchCriteria.getBookIdList().isEmpty()) {
+            // Criteria supported by FTS
+            createMatchClause(searchCriteria.getFtsBookTitle(),
+                              searchCriteria.getFtsSeriesTitle(),
+                              searchCriteria.getFtsAuthor(),
+                              searchCriteria.getFtsPublisher(),
+                              searchCriteria.getFtsKeywords())
+                    .map(FtsMatchFilter::new)
+                    .ifPresent(filters::add);
+
+            // Add a filter to retrieve only books lend to the given person (exact name).
+            final String loanee = searchCriteria.getLoanee();
+            if (loanee != null && !loanee.isBlank()) {
+                filters.add(new LoaneeFilter(loanee));
+            }
+        } else {
+            // Add a where clause for: "AND books._id IN (list)".
+            filters.add(new NumberListFilter<>(TBL_BOOKS, DOM_PK_ID,
+                                               searchCriteria.getBookIdList()));
+        }
+
+        return filters;
     }
 }
