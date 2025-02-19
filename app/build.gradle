@@ -54,10 +54,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(props["sign.storeFile"])
-            storePassword props["sign.storePassword"]
-            keyAlias props["sign.keyAlias"]
-            keyPassword props["sign.keyPassword"]
+            storeFile = file(props["sign.storeFile"])
+            storePassword = props["sign.storePassword"]
+            keyAlias = props["sign.keyAlias"]
+            keyPassword = props["sign.keyPassword"]
         }
     }
 
@@ -69,7 +69,7 @@ android {
         minSdk = rootProject.ext.minSdkVersion
         targetSdk = rootProject.ext.targetSdkVersion
 
-        signingConfig(signingConfigs.release)
+        signingConfig = signingConfigs.release
 
         // NEWTHINGS: add app language: add the string res file. No other app changes needed.
         // Keep the two sub-lists in alphabetic order
@@ -156,7 +156,7 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
-        resValues true
+        resValues = true
     }
 
     // ENHANCE: https://developer.android.com/guide/topics/resources/app-languages#auto-localeconfig
