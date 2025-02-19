@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
@@ -87,7 +88,7 @@ public class CoverBrowserLauncher
      * @param isbn      ISBN of book
      * @param cIdx      0..n image index
      */
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @NonNull final String bookTitle,
                        @NonNull final String isbn,
                        @IntRange(from = 0, to = 1) final int cIdx) {

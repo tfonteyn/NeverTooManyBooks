@@ -24,6 +24,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -77,7 +78,7 @@ public class BookshelfFiltersLauncher
      *                         but another UI {@code Context} will also do.
      * @param bookshelf to edit
      */
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @NonNull final Bookshelf bookshelf) {
         final Bundle args = new Bundle(2);
         args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);

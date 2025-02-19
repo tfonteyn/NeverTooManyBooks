@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
@@ -102,7 +103,7 @@ public class EditTagMappingLauncher
      * @param extras  (optional) Bundle which will be passed back to the result-listener.
      */
     @SuppressWarnings("TypeMayBeWeakened")
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @NonNull final TagMapping edit,
                        @Nullable final Bundle extras) {
 

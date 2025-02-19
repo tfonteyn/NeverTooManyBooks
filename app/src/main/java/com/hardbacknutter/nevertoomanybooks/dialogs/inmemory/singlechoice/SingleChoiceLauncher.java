@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import java.util.List;
@@ -125,7 +126,7 @@ public class SingleChoiceLauncher<T extends Entity>
      * @param edit          (optional) the current selection
      * @param extras        (optional) Bundle which will be passed back to the result-listener.
      */
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        @NonNull final List<T> allItems,

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.UiContext;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
@@ -57,7 +58,7 @@ public enum DialogMode {
      * @return location: either {@link #Dialog} or {@link #BottomSheet}
      */
     @NonNull
-    public static DialogMode getMode(@NonNull final Context context) {
+    public static DialogMode getMode(@NonNull @UiContext final Context context) {
         final int mode = IntListPref.getInt(context, PK_UI_DIALOGS_MODE,
                                             UI_DIALOGS_MODE_BY_SCREEN_SIZE);
         switch (mode) {

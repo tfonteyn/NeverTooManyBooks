@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
@@ -98,7 +99,7 @@ class ReadingProgressLauncher
      *                        but another UI {@code Context} will also do.
      * @param readingProgress to edit
      */
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @NonNull final ReadingProgress readingProgress) {
         final Bundle args = new Bundle(2);
         args.putParcelable(DBKey.READ_PROGRESS, readingProgress);

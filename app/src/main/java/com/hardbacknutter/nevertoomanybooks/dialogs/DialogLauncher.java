@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -145,7 +146,7 @@ public abstract class DialogLauncher
      *
      * @throws IllegalArgumentException for unsupported {@link DialogMode}s.
      */
-    protected void showDialog(@NonNull final Context context,
+    protected void showDialog(@NonNull @UiContext final Context context,
                               @NonNull final Bundle args) {
         Objects.requireNonNull(fragmentManager, "fragmentManager");
 

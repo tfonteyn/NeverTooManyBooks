@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
@@ -87,7 +88,7 @@ public class EditTocEntryLauncher
      * @param tocEntry    to edit.
      * @param isAnthology Flag that will enable/disable the author edit field
      */
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @NonNull final Book book,
                        final int position,
                        @NonNull final TocEntry tocEntry,

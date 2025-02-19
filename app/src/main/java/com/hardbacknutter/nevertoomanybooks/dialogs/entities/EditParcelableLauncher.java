@@ -26,6 +26,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -156,7 +157,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
      *                but another UI {@code Context} will also do.
      * @param item    to edit
      */
-    public void add(@NonNull final Context context,
+    public void add(@NonNull @UiContext final Context context,
                     @NonNull final T item) {
         Objects.requireNonNull(onAddListener, ERROR_NULL_ON_ADD_LISTENER);
 
@@ -174,7 +175,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
      *                but another UI {@code Context} will also do.
      * @param item    to edit
      */
-    public void edit(@NonNull final Context context,
+    public void edit(@NonNull @UiContext final Context context,
                      @NonNull final T item) {
         Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
 
@@ -192,7 +193,7 @@ public final class EditParcelableLauncher<T extends Parcelable>
      *                but another UI {@code Context} will also do.
      * @param item    to edit
      */
-    public void editInPlace(@NonNull final Context context,
+    public void editInPlace(@NonNull @UiContext final Context context,
                             @NonNull final T item) {
         Objects.requireNonNull(onEditInPlaceListener, ERROR_NULL_ON_EDIT_IN_PLACE_LISTENER);
 

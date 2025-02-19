@@ -28,6 +28,7 @@ import android.graphics.Rect;
 import androidx.annotation.Discouraged;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 
@@ -81,7 +82,7 @@ public final class ScreenSize {
      */
     @Discouraged(message = "use compute(Activity) if possible")
     @NonNull
-    public static ScreenSize compute(@NonNull final Context context) {
+    public static ScreenSize compute(@NonNull @UiContext final Context context) {
         return compute(getActivity(context));
     }
 
@@ -134,7 +135,7 @@ public final class ScreenSize {
      * @throws IllegalArgumentException if the given Context is not a UiContext
      */
     @NonNull
-    private static Activity getActivity(@NonNull final Context context)
+    private static Activity getActivity(@NonNull @UiContext final Context context)
             throws IllegalArgumentException {
         Context iterator = context;
         while (iterator instanceof ContextWrapper) {

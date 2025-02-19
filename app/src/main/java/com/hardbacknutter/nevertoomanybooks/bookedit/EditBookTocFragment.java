@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
@@ -727,7 +728,7 @@ public class EditBookTocFragment
              * @param bookContentType  the type
              * @param hasOtherEditions flag
              */
-            public void launch(@NonNull final Context context,
+            public void launch(@NonNull @UiContext final Context context,
                                @NonNull final List<TocEntry> toc,
                                @NonNull final Book.ContentType bookContentType,
                                final boolean hasOtherEditions) {

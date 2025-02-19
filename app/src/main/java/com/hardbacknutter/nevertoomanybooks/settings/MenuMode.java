@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.view.Gravity;
 import android.view.Menu;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.UiContext;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
@@ -70,7 +71,7 @@ public enum MenuMode {
      * @return mode
      */
     @NonNull
-    public static MenuMode getMode(@NonNull final Context context,
+    public static MenuMode getMode(@NonNull @UiContext final Context context,
                                    @NonNull final Menu menu) {
         final int mode = IntListPref.getInt(context, PK_UI_CONTEXT_MENUS,
                                             UI_CONTEXT_MENUS_BY_MENU_SIZE);

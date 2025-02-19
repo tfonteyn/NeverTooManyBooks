@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -101,7 +102,7 @@ public class EditInLineStringLauncher
      *                but another UI {@code Context} will also do.
      * @param text    to edit.
      */
-    public void edit(@NonNull final Context context,
+    public void edit(@NonNull @UiContext final Context context,
                      @NonNull final String text) {
         Objects.requireNonNull(onEditListener, ERROR_NULL_ON_EDIT_LISTENER);
 

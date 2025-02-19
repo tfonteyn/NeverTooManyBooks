@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
@@ -91,7 +92,7 @@ public class EditLenderLauncher
      * @param bookId    to lend
      * @param bookTitle displayed for info only
      */
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @IntRange(from = 1) final long bookId,
                        @NonNull final String bookTitle) {
 

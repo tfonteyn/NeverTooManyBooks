@@ -26,6 +26,7 @@ import android.text.InputType;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
@@ -110,7 +111,7 @@ public class EditStringLauncher
      * @param edit          (optional) the value to edit
      * @param extras        (optional) Bundle which will be passed back to the result-listener.
      */
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @NonNull final String dialogTitle,
                        @Nullable final String dialogMessage,
                        final int inputType,

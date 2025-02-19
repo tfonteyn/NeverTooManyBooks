@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import android.view.Menu;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -100,7 +101,7 @@ public class ExtMenuLauncher
      * @param menu                to display
      * @param groupDividerEnabled flag
      */
-    public void launch(@NonNull final Context context,
+    public void launch(@NonNull @UiContext final Context context,
                        @Nullable final CharSequence menuTitle,
                        @Nullable final CharSequence message,
                        final int menuOwner,
