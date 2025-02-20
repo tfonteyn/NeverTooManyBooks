@@ -59,13 +59,9 @@
                 tools:src="@sample/covers"
                 />
 
-            <!-- Used instead of a barrier:
-                 - Allow adding the positioning debug View underneath the cover view
-                   even if the cover is hidden. Relies on id "col1" !
-                 - Also avoids adding margins to all fields.
-                   or to alternatively needed to manipulate padding on the cover view.
-                 - Allowed us to remove the old extra ConstraintLayout (2022-09-07)
-                -->
+            <!-- Used instead of a barrier: avoids adding margins to all fields.
+                 or to alternatively need to manipulate padding on the cover view.
+            -->
             <Space
                 android:id="@+id/col1"
                 android:layout_width="@dimen/field_margin_start"
@@ -147,6 +143,18 @@
                 tools:text="@sample/data.json/series/title"
                 tools:visibility="visible"
                 />
+
+            <!-- As a reminder: this would allow us to use all space below the image,
+                 but if original title/lang and series is not visible, we in effect
+                 loose the space next to the image. And deciding this dynamically would
+                 be a nightmare. -->
+            <!--            <androidx.constraintlayout.widget.Barrier-->
+            <!--                android:id="@+id/horizontal_divider"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                app:barrierDirection="bottom"-->
+            <!--                app:constraint_referenced_ids="cover_image_0,series_num_long,series_num,title,original_title,original_language,series_title"-->
+            <!--                />-->
 
             <RatingBar
                 android:id="@+id/rating"

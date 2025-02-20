@@ -258,6 +258,7 @@ public class BookHolder
         if (usePub || usePubDate) {
             showOrHidePublisher(rowData, usePub, usePubDate);
         }
+
         if (use.contains(DBKey.FIRST_PUBLICATION_DATE)) {
             showOrHideDate(vb.dateFirstPublication,
                            rowData.getString(DBKey.FIRST_PUBLICATION_DATE, null),
@@ -291,7 +292,8 @@ public class BookHolder
         if (use.contains(DBKey.CONDITION_BOOK)) {
             final int condition = rowData.getInt(DBKey.CONDITION_BOOK);
             if (condition > 0) {
-                showOrHide(vb.condition, conditionDescriptions[condition]);
+                vb.condition.setText(conditionDescriptions[condition]);
+                vb.condition.setVisibility(View.VISIBLE);
             } else {
                 // Hide "Unknown" condition
                 vb.condition.setVisibility(View.GONE);
@@ -311,6 +313,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.LOCATION)) {
+            // TODO: maybe add 📍 (U+1F4CD)
             showOrHide(vb.location, rowData.getString(DBKey.LOCATION));
         }
 
@@ -502,79 +505,95 @@ public class BookHolder
     /**
      * Show a suitable combination of the publisher name and book publication date.
      *
-     * @param rowData     with the data
-     * @param showPubName flag
-     * @param showPubDate flag
+     * @param rowData    with the data
+     * @param usePub     flag
+     * @param usePubDate flag
      */
     private void showOrHidePublisher(@NonNull final DataHolder rowData,
-                                     final boolean showPubName,
-                                     final boolean showPubDate) {
+                                     final boolean usePub,
+                                     final boolean usePubDate) {
 
         boolean showName = false;
         boolean showDate = false;
 
         String name = null;
-        if (showPubName) {
+        if (usePub) {
             name = rowData.getString(DBKey.PUBLISHER.NAME);
             showName = !name.isBlank();
         }
 
         String date = null;
-        if (showPubDate) {
-            final String dateStr = rowData.getString(DBKey.PUBLICATION_DATE);
-            date = formatDate(dateStr);
+        if (usePubDate) {
+            date = formatDate(rowData.getString(DBKey.PUBLICATION_DATE));
             showDate = !date.isBlank();
         }
 
         if (showName && showDate) {
-            showOrHide(vb.publisher, String.format(locale, a_bracket_b_bracket, name, date));
+            final String text = String.format(locale, a_bracket_b_bracket, name, date);
+            vb.publisher.setText(text);
+            vb.publisher.setVisibility(View.VISIBLE);
         } else if (showName) {
-            showOrHide(vb.publisher, name);
+            vb.publisher.setText(name);
+            vb.publisher.setVisibility(View.VISIBLE);
         } else if (showDate) {
-            showOrHide(vb.publisher, date);
+            vb.publisher.setText(date);
+            vb.publisher.setVisibility(View.VISIBLE);
         } else {
             vb.publisher.setVisibility(View.GONE);
         }
     }
 
+    /**
+     * Show a suitable combination of the date-added and date-updated.
+     *
+     * @param rowData        with the data
+     * @param useDateAdded   flag
+     * @param useDateUpdated flag
+     */
     private void showOrHideDateAddedAndLastUpdated(@NonNull final DataHolder rowData,
-                                                   final boolean showDateAdded,
-                                                   final boolean showDateLastUpdated) {
+                                                   final boolean useDateAdded,
+                                                   final boolean useDateUpdated) {
         final Context context = vb.dateAddedAndLastUpdated.getContext();
 
+        boolean showAdded = false;
+        boolean showUpdated = false;
+
         String dateAdded = null;
-        if (showDateAdded) {
+        if (useDateAdded) {
             dateAdded = rowData.getString(DBKey.DATE_ADDED__UTC, null);
             if (dateAdded != null) {
                 dateAdded = formatDate(context,
                                        R.string.lbl_date_added_as_single_char,
                                        dateAdded);
+                showAdded = true;
             }
         }
 
         String dateLastUpdated = null;
-        if (showDateLastUpdated) {
+        if (useDateUpdated) {
             dateLastUpdated = rowData.getString(DBKey.DATE_LAST_UPDATED__UTC, null);
             if (dateLastUpdated != null) {
                 dateLastUpdated = formatDate(context,
                                              R.string.lbl_date_last_updated_as_single_char,
                                              dateLastUpdated);
+                showUpdated = true;
             }
         }
 
-        final String text;
-        if (dateAdded != null && dateLastUpdated != null) {
-            text = context.getString(
-                    R.string.a_space_b, dateAdded, dateLastUpdated);
-        } else if (dateAdded != null) {
-            text = dateAdded;
+        if (showAdded && showUpdated) {
+            vb.dateAddedAndLastUpdated.setText(context.getString(
+                    R.string.a_space_b, dateAdded, dateLastUpdated));
+            vb.dateAddedAndLastUpdated.setVisibility(View.VISIBLE);
+        } else if (showAdded) {
+            vb.dateAddedAndLastUpdated.setText(dateAdded);
+            vb.dateAddedAndLastUpdated.setVisibility(View.VISIBLE);
+        } else if (showUpdated) {
+            vb.dateAddedAndLastUpdated.setText(dateLastUpdated);
+            vb.dateAddedAndLastUpdated.setVisibility(View.VISIBLE);
         } else {
-            text = dateLastUpdated;
+            vb.dateAddedAndLastUpdated.setVisibility(View.GONE);
         }
-
-        showOrHide(vb.dateAddedAndLastUpdated, text);
     }
-
 
     /**
      * Parse an ISO (partial) date and return a formatted version combined with the given symbol.
