@@ -469,7 +469,8 @@ public final class LegacyUpgrades {
                                                      PK_FIELDS_VISIBILITY_KEYS))
                                              .collect(Collectors.toList());
         if (!oldVisKeys.isEmpty()) {
-            final FieldVisibility fieldVisibility = new FieldVisibility();
+            final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
+                                                                  .getGlobalFieldVisibility();
             oldVisKeys.forEach(oldKey -> {
                 final boolean value = prefs.getBoolean(oldKey, false);
                 final String dbKey = dot.split(oldKey, 3)[2];
@@ -646,6 +647,8 @@ public final class LegacyUpgrades {
     public static void migratePreferenceKeys(@NonNull final Context context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
+        // This will take care of old keys in general, but will
+        // ALSO copy the FieldVisibility.PK_LOANS which is still in use.
         migrateV24GlobalFieldVisibility(prefs);
 
         // Now remove all obsolete keys.
@@ -704,13 +707,6 @@ public final class LegacyUpgrades {
               .remove("librarything.host.url")
 
               .apply();
-
-        // Copy the legacy key to the bit-value
-        final boolean lending = prefs.getBoolean(FieldVisibility.PK_LOANS, false);
-        final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
-                                                              .getGlobalFieldVisibility();
-        fieldVisibility.setVisible(DBKey.LOANEE_NAME, lending);
-        fieldVisibility.save(prefs);
 
         // replaced by a database table in db36
         context.deleteSharedPreferences("language2iso3");
