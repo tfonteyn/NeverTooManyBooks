@@ -62,8 +62,7 @@ public class BookGridHolder
     @NonNull
     private final CoverHelper coverHelper;
 
-    @Nullable
-    private Boolean useAuthor;
+    private final boolean useAuthor;
 
     /**
      * Constructor.
@@ -80,6 +79,7 @@ public class BookGridHolder
         vb = BooksonbookshelfGridBookBinding.bind(itemView);
 
         this.style = style;
+        useAuthor = style.isShowField(FieldVisibility.Screen.List, DBKey.FK_AUTHOR);
 
         final int maxWidth = coverScale.getMaxWidthInPixels(itemView.getContext(),
                                                             Style.Layout.Grid);
@@ -170,9 +170,6 @@ public class BookGridHolder
 
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
-        if (useAuthor == null) {
-            useAuthor = style.isShowField(FieldVisibility.Screen.List, DBKey.FK_AUTHOR);
-        }
 
         final boolean hasImage = coverHelper.setImageView(vb.coverImage0,
                                                           rowData.getString(DBKey.BOOK_UUID));
