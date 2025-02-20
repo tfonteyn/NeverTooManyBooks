@@ -476,11 +476,18 @@ public class ImportFragment
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ImportResults result) {
 
-        //noinspection DataFlowIssue
-        vm.postProcessStyles(getContext(), result);
+        final Context context = getContext();
+
         result.booksDeleted = vm.postProcessDeletedBooks();
 
-        new MaterialAlertDialogBuilder(getContext())
+        if (result.styles > 0) {
+            // Resort the styles menu as per their (new) order.
+            //noinspection DataFlowIssue
+            ServiceLocator.getInstance().getStyles().updateMenuOrder(context);
+        }
+
+        //noinspection DataFlowIssue
+        new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.info_24px)
                 .setTitle(titleId)
                 .setMessage(createReport(result))

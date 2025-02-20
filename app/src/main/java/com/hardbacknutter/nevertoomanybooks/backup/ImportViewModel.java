@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -134,14 +134,6 @@ public class ImportViewModel
             return ServiceLocator.getInstance().getDeletedBooksDao().sync();
         }
         return 0;
-    }
-
-    void postProcessStyles(@NonNull final Context context,
-                           @NonNull final ImportResults result) {
-        if (result.styles > 0) {
-            // Resort the styles menu as per their (new) order.
-            ServiceLocator.getInstance().getStyles().updateMenuOrder(context);
-        }
     }
 
     /**
