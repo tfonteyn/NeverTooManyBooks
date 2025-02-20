@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,6 +62,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  */
 public class DateReadHolder
         extends GenericStringHolder {
+
+    private final String unreadStr;
+    private final String a_space_b;
+
     /**
      * Constructor.
      *
@@ -77,6 +81,10 @@ public class DateReadHolder
                    @IntRange(from = 1) final int level,
                    @NonNull final FormatFunction formatter) {
         super(itemView, style, groupId, level, formatter);
+
+        final Context context = textView.getContext();
+        unreadStr = context.getString(R.string.lbl_unread);
+        a_space_b = context.getString(R.string.a_space_b);
     }
 
     @Override
@@ -84,12 +92,8 @@ public class DateReadHolder
         CharSequence text = formatter.format(groupId, rowData, key);
 
         // Check presence first, and only then test on 'false'
-        if (rowData.contains(DBKey.READ__BOOL)) {
-            if (!rowData.getBoolean(DBKey.READ__BOOL)) {
-                final Context context = textView.getContext();
-                text = context.getString(R.string.a_space_b, text,
-                                         context.getString(R.string.lbl_unread));
-            }
+        if (rowData.contains(DBKey.READ__BOOL) && !rowData.getBoolean(DBKey.READ__BOOL)) {
+            text = String.format(a_space_b, text, unreadStr);
         }
 
         textView.setText(text);
