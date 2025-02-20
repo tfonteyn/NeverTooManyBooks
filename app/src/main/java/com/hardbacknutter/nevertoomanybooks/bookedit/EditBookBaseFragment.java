@@ -103,6 +103,8 @@ public abstract class EditBookBaseFragment
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         //noinspection DataFlowIssue
         final List<Locale> locales = LocaleListUtils.asList(getContext());
+        // We need a FullDateParser to cope with international Locale formats
+        // as the fields will contain user-locale specific representations.
         dateParser = new FullDateParser(systemLocale, locales);
         realNumberParser = new RealNumberParser(locales);
 

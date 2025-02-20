@@ -615,15 +615,23 @@ public class BookCoder {
         }
     }
 
+    /**
+     * Verify the given date keys for containing valid dates.
+     *
+     * @param book        to verify
+     * @param keys        to verify
+     * @param shortenDate flag: {@code true} to cut dates down to partial dates.
+     *                    i.e. remove time and any tailing "-01".
+     */
     private void verifyDates(@NonNull final Book book,
                              @NonNull final Set<String> keys,
-                             final boolean shortDate) {
+                             final boolean shortenDate) {
         keys.stream().filter(book::contains).forEach(key -> {
             final String s = book.getString(key);
             final Optional<LocalDateTime> date = dateParser.parse(s);
             if (date.isPresent()) {
                 String iso = SqlEncode.dateTime(date.get());
-                if (shortDate) {
+                if (shortenDate) {
                     if (iso.length() > 10) {
                         // cut off the time
                         iso = iso.substring(0, 10);

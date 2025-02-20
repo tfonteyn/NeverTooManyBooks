@@ -527,6 +527,7 @@ public abstract class SearchEngineBase
             return;
         }
 
+        // This is a little silly micro-optimization which we can/should remove...
         if (dateStr.length() == 4) {
             // we have a 4-digit year, use the simplified notation.
             try {
