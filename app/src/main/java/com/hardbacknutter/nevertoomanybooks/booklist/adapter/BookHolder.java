@@ -48,8 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookBinding;
@@ -92,7 +94,7 @@ public class BookHolder
     @NonNull
     private final RealNumberParser realNumberParser;
     @NonNull
-    private final PartialDateParser partialDateParser;
+    private final DateParser<PartialDate> partialDateParser;
 
     @NonNull
     private final Style style;
