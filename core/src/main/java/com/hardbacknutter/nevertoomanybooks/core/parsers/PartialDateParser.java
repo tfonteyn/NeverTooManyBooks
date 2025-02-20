@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatterBuilder;
@@ -74,6 +75,71 @@ public class PartialDateParser {
     private static final Pattern SPACE = Pattern.compile(" ");
 
     @NonNull
+    private static Optional<PartialDate> parseLenBased(@NonNull final CharSequence dateStr) {
+
+        final int len = dateStr.length();
+        // invalid lengths
+        if (len < 4 || len == 6 || len == 9) {
+            return Optional.empty();
+        }
+
+        try {
+            switch (len) {
+                case 4: {
+                    // yyyy
+                    return Optional.of(new PartialDate(Year.parse(dateStr).getValue(), 0, 0));
+                }
+                case 5: {
+                    // -yyyy
+                    if (dateStr.charAt(0) != '-') {
+                        return Optional.empty();
+                    }
+                    return Optional.of(new PartialDate(Year.parse(dateStr).getValue(), 0, 0));
+                }
+                case 7: {
+                    // yyyy-MM
+                    final LocalDateTime dt = YearMonth.parse(dateStr).atDay(1).atStartOfDay();
+                    return Optional.of(new PartialDate(dt.getYear(),
+                                                       dt.getMonthValue(),
+                                                       0));
+                }
+                case 8: {
+                    // -yyyy-MM
+                    if (dateStr.charAt(0) != '-') {
+                        return Optional.empty();
+                    }
+                    final LocalDateTime dt = YearMonth.parse(dateStr).atDay(1).atStartOfDay();
+                    return Optional.of(new PartialDate(dt.getYear(),
+                                                       dt.getMonthValue(),
+                                                       0));
+                }
+                case 10: {
+                    // yyyy-MM-dd
+                    final LocalDateTime dt = LocalDate.parse(dateStr).atStartOfDay();
+                    return Optional.of(new PartialDate(dt.getYear(),
+                                                       dt.getMonthValue(),
+                                                       dt.getDayOfMonth()));
+                }
+                case 11: {
+                    // -yyyy-MM-dd
+                    if (dateStr.charAt(0) != '-') {
+                        return Optional.empty();
+                    }
+                    final LocalDateTime dt = LocalDate.parse(dateStr).atStartOfDay();
+                    return Optional.of(new PartialDate(dt.getYear(),
+                                                       dt.getMonthValue(),
+                                                       dt.getDayOfMonth()));
+                }
+                default:
+                    break;
+            }
+        } catch (@NonNull final DateTimeParseException ignore) {
+            // ignore
+        }
+        return Optional.empty();
+    }
+
+    @NonNull
     public Optional<PartialDate> parse(@Nullable final CharSequence dateStr) {
         return parse(dateStr, null, false);
     }
@@ -112,29 +178,18 @@ public class PartialDateParser {
             return Optional.empty();
         }
 
+        // Try a fast and dirty parse step based on the length of the string.
+        // This should handle all pure ISO formats (partial and full)
+        // containing Year/Month/Day fields only
+        final Optional<PartialDate> lenBasedResult = parseLenBased(dateStr);
+        if (lenBasedResult.isPresent()) {
+            return lenBasedResult;
+        }
+
+        // secondly, try full parsing.
         final LocalDate localDate;
         Matcher matcher;
         try {
-            matcher = PATTERN_YYYY.matcher(dateStr);
-            if (matcher.find()) {
-                localDate = Year.parse(matcher.group()).atDay(1);
-                return Optional.of(new PartialDate(localDate.getYear(), 0, 0));
-            }
-
-            matcher = PATTERN_YYYY_MM.matcher(dateStr);
-            if (matcher.find()) {
-                localDate = Year.parse(matcher.group(1)).atDay(1);
-                final int month = Integer.parseInt(matcher.group(2));
-                return Optional.of(new PartialDate(localDate.getYear(), month, 0));
-            }
-
-            matcher = PATTERN_MM_YYYY.matcher(dateStr);
-            if (matcher.find()) {
-                localDate = Year.parse(matcher.group(2)).atDay(1);
-                final int month = Integer.parseInt(matcher.group(1));
-                return Optional.of(new PartialDate(localDate.getYear(), month, 0));
-            }
-
             matcher = PATTERN_YYYY_MM_DD_TIMESTAMP.matcher(dateStr);
             if (matcher.find()) {
                 if (isUtc) {
@@ -151,6 +206,13 @@ public class PartialDateParser {
                                              Integer.parseInt(matcher.group(3)));
                 }
                 return Optional.of(new PartialDate(localDate));
+            }
+
+            matcher = PATTERN_MM_YYYY.matcher(dateStr);
+            if (matcher.find()) {
+                localDate = Year.parse(matcher.group(2)).atDay(1);
+                final int month = Integer.parseInt(matcher.group(1));
+                return Optional.of(new PartialDate(localDate.getYear(), month, 0));
             }
 
             matcher = PATTERN_MMM_YYYY.matcher(dateStr);
@@ -181,6 +243,21 @@ public class PartialDateParser {
                 }
 
                 return Optional.of(new PartialDate(localDate.getYear(), monthNumber, 0));
+            }
+
+            // Paranoia: already handled by #parseLenBased
+            matcher = PATTERN_YYYY.matcher(dateStr);
+            if (matcher.find()) {
+                localDate = Year.parse(matcher.group()).atDay(1);
+                return Optional.of(new PartialDate(localDate.getYear(), 0, 0));
+            }
+
+            // Paranoia: already handled by #parseLenBased
+            matcher = PATTERN_YYYY_MM.matcher(dateStr);
+            if (matcher.find()) {
+                localDate = Year.parse(matcher.group(1)).atDay(1);
+                final int month = Integer.parseInt(matcher.group(2));
+                return Optional.of(new PartialDate(localDate.getYear(), month, 0));
             }
 
         } catch (@NonNull final DateTimeParseException | NumberFormatException e) {

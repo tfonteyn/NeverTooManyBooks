@@ -55,21 +55,8 @@ public class ISODateParser
         this.locale = systemLocale;
     }
 
-    /**
-     * Attempt to parse a date string using ISO parsers.
-     * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
-     * If the year is missing, {@code null} is returned.
-     *
-     * @param dateStr String to parse
-     *
-     * @return Resulting date if parsed, otherwise {@code Optional.empty()}
-     */
     @NonNull
-    @Override
-    public Optional<LocalDateTime> parse(@Nullable final CharSequence dateStr) {
-        if (dateStr == null) {
-            return Optional.empty();
-        }
+    private static Optional<LocalDateTime> parseLenBased(@NonNull final CharSequence dateStr) {
 
         final int len = dateStr.length();
         // invalid lengths
@@ -77,7 +64,6 @@ public class ISODateParser
             return Optional.empty();
         }
 
-        // Check the partial patterns first.
         try {
             switch (len) {
                 case 4: {
@@ -119,7 +105,32 @@ public class ISODateParser
         } catch (@NonNull final DateTimeParseException ignore) {
             // ignore
         }
+        return Optional.empty();
+    }
 
+    /**
+     * Attempt to parse a date string using ISO parsers.
+     * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
+     * If the year is missing, {@code Optional.empty()} is returned.
+     *
+     * @param dateStr String to parse
+     *
+     * @return Resulting date if parsed, otherwise {@code Optional.empty()}
+     */
+    @NonNull
+    @Override
+    public Optional<LocalDateTime> parse(@Nullable final CharSequence dateStr) {
+        if (dateStr == null) {
+            return Optional.empty();
+        }
+
+        // try a fast and dirty parse step based on the length of the string
+        final Optional<LocalDateTime> lenBasedResult = parseLenBased(dateStr);
+        if (lenBasedResult.isPresent()) {
+            return lenBasedResult;
+        }
+
+        // secondly, try full parsing for more complicated patterns.
         if (parsers == null) {
             create();
         }
