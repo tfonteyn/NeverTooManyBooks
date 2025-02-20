@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -334,6 +335,18 @@ public class ServiceLocator {
     @NonNull
     public Context getLocalizedAppContext() {
         return getAppLocale().apply(sInstance.appContext);
+    }
+
+
+    /**
+     * A callback when the preferences have been changed.
+     */
+    public void onPreferencesUpdated() {
+        // destroy the cached copy
+        fieldVisibility = null;
+
+        // Migrate/remove any obsolete keys
+        LegacyUpgrades.migratePreferenceKeys(appContext);
     }
 
     /**

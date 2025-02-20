@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteExcep
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -367,8 +366,8 @@ public class JsonRecordReader
                                           PreferenceManager.getDefaultSharedPreferences(context),
                                           Prefs.EXCLUDE_WHEN_IMPORTING)
                                   .decode(jsonRoot);
-            // Migrate/remove any obsolete keys
-            LegacyUpgrades.migratePreferenceKeys(context);
+
+            ServiceLocator.getInstance().onPreferencesUpdated();
             results.preferences = 1;
         }
     }
