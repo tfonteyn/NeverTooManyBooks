@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -256,8 +257,6 @@ public class IsfdbSearchEngine
      *     39                  28  NLA                   National Library of Australia
      *     28                  34  COBISS.SR             Co-operative Online Bibliographic Systems and Services - Serbia
      * </pre>
-     *
-     *
      * The patterns can have TWO groups which will be concatenated.
      * Can be generalized when needed in {@link #parseSid(String)}.
      */
@@ -485,6 +484,8 @@ public class IsfdbSearchEngine
         // TYPE_MAP.put("non-fic", 0);
         // TYPE_MAP.put("NONFICTION", 0);
     }
+
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
     /** set during book load, used during content table load. */
     @Nullable
@@ -743,10 +744,9 @@ public class IsfdbSearchEngine
      * }
      * </pre>
      *
-     * @param context           Current context
-     * @param document          to parse
-     * @param book              Bundle to update
-     * @param partialDateParser we can use
+     * @param context  Current context
+     * @param document to parse
+     * @param book     Bundle to update
      *
      * @return the toc list
      */
@@ -754,8 +754,7 @@ public class IsfdbSearchEngine
     @NonNull
     private List<TocEntry> parseToc(@NonNull final Context context,
                                     @NonNull final Document document,
-                                    @NonNull final Book book,
-                                    @NonNull final PartialDateParser partialDateParser) {
+                                    @NonNull final Book book) {
 
         final boolean addSeriesFromToc = PreferenceManager.getDefaultSharedPreferences(context)
                                                           .getBoolean(PK_SERIES_FROM_TOC, false);
@@ -1109,7 +1108,6 @@ public class IsfdbSearchEngine
         }
 
         final Locale siteLocale = getLocale(context);
-        final PartialDateParser partialDateParser = new PartialDateParser();
 
         final Element contentBox = allContentBoxes.first();
         // sanity check
@@ -1334,7 +1332,7 @@ public class IsfdbSearchEngine
 
         // post-process all found data.
 
-        final List<TocEntry> toc = parseToc(context, document, book, partialDateParser);
+        final List<TocEntry> toc = parseToc(context, document, book);
         if (!toc.isEmpty()) {
             // We always store the toc even if there is only a single entry.
             // ISFDB provides the *original* publication year in the toc which we want to preserve.

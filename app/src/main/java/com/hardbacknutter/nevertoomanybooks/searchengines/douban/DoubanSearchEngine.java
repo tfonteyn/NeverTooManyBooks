@@ -39,10 +39,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -105,6 +107,7 @@ public class DoubanSearchEngine
     @NonNull
     private final RatingParser ratingParser;
 
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
@@ -514,8 +517,7 @@ public class DoubanSearchEngine
                         // Dates are listed as yyyy-MM;
                         // use a PartialDate parser ignoring the locale
                         final String dateStr = n.toString().strip();
-                        final PartialDateParser parser = new PartialDateParser();
-                        parser.parse(dateStr).ifPresent(book::setPublicationDate);
+                        partialDateParser.parse(dateStr).ifPresent(book::setPublicationDate);
                     }
                     break;
                 }

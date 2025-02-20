@@ -30,9 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -169,7 +171,7 @@ class IsfdbPublicationListHandler
     /** The resulting list of books collected by this class. */
     @NonNull
     private final List<Book> bookList = new ArrayList<>();
-    private final PartialDateParser partialDateParser = new PartialDateParser();
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
     private int maxRecords;
     private boolean inPublication;
     /** The current book we're parsing data for. Will be added to the {@link #bookList}. */
