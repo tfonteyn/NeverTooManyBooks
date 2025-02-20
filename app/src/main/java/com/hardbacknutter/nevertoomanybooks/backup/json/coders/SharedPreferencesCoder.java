@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,7 @@ public final class SharedPreferencesCoder
      * @return encoder
      */
     @NonNull
-    public static SharedPreferencesCoder createSharedEncoder(@NonNull final List<String> excludes) {
+    public static SharedPreferencesCoder createEncoder(@NonNull final List<String> excludes) {
         return new SharedPreferencesCoder(null, excludes);
     }
 

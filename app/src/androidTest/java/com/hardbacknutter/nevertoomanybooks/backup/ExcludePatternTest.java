@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@ public class ExcludePatternTest
 
     @Test
     public void encoding() {
-        final JsonCoder<SharedPreferences> encoder = SharedPreferencesCoder.createSharedEncoder(
+        final JsonCoder<SharedPreferences> encoder = SharedPreferencesCoder.createEncoder(
                 Prefs.EXCLUDE_WHEN_EXPORTING);
 
         final JSONObject jsonObject = encoder.encode(preferences);
