@@ -60,7 +60,7 @@ public class Languages {
 
     private static final String TAG = "Languages";
     /** Prefix added to the iso code for the 'done' flag in the language cache. */
-    private static final String PK_LANG_CREATED_PREFIX = "language.mapping.cached.";
+    public static final String PK_LANG_CREATED_PREFIX = "language.mapping.cached.";
 
     @NonNull
     private final Map<String, String> lang3ToLang2Map;
@@ -430,7 +430,9 @@ public class Languages {
 
         final String isoCode = getIsoCode(locale);
 
-        // Paranoia... this SHOULD only ever happen in the developer environment
+        // Paranoia...
+        // - when during an import the pref key would accidentally be included
+        // - in the developer environment, when databases are swapped in manually
         if (isoLanguageDao.get().count() == 0) {
             final SharedPreferences.Editor editor = preferences.edit();
             preferences.getAll()

@@ -30,6 +30,7 @@ import com.hardbacknutter.fastscroller.OverlayProviderFactory;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml".
@@ -101,17 +102,27 @@ public final class Prefs {
 
     /** The prefix of all "acra" settings which need to be excluded during import/export. */
     public static final String ACRA_EXCLUDE_PREFIX = "^acra\\..*";
-    /** The keys which will be excluded during an import of the preferences. */
+
+    /**
+     * Regular expressions for the keys which will be excluded
+     * during an import of the preferences.
+     */
     public static final List<String> EXCLUDE_WHEN_IMPORTING = List.of(
+            /* The prefix of all "acra" settings. */
             ACRA_EXCLUDE_PREFIX,
-            CoverVolume.PK_VOLUME_INDEX.replace(".", "\\.")
+            CoverVolume.PK_VOLUME_INDEX.replace(".", "\\."),
+            Languages.PK_LANG_CREATED_PREFIX.replace(".", "\\.") + ".*"
     );
 
-    /** The keys which will be excluded during export of the preferences. */
+    /**
+     * Regular expressions for the keys which will be excluded
+     * during an export of the preferences.
+     */
     public static final List<String> EXCLUDE_WHEN_EXPORTING = List.of(
-            /* The prefix of all "acra" settings. These are always ignored. */
+            /* The prefix of all "acra" settings. */
             ACRA_EXCLUDE_PREFIX,
-            CoverVolume.PK_VOLUME_INDEX.replace(".", "\\.")
+            CoverVolume.PK_VOLUME_INDEX.replace(".", "\\."),
+            Languages.PK_LANG_CREATED_PREFIX.replace(".", "\\.") + ".*"
     );
 
     private Prefs() {
