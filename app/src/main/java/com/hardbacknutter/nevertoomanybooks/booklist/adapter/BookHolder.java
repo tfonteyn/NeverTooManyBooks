@@ -330,9 +330,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.PAGES)) {
-            //noinspection DataFlowIssue
-            showOrHide(vb.pages, pagesFormatter.format(itemView.getContext(),
-                                                       rowData.getString(DBKey.PAGES)));
+            showOrHidePages(vb.pages, rowData.getString(DBKey.PAGES, null));
         }
 
         if (use.contains(DBKey.SIGNED__BOOL)) {
@@ -398,6 +396,23 @@ public class BookHolder
                     .getInstance().getLanguages()
                     .getDisplayLanguageFromISO3(view.getContext(), iso3);
             view.setText(language);
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Conditionally display the page count/description.
+     *
+     * @param view  to populate
+     * @param pages to display
+     */
+    private void showOrHidePages(@NonNull final TextView view,
+                                 @Nullable final String pages) {
+        if (pages != null && !pages.isBlank()) {
+            //noinspection DataFlowIssue
+            view.setText(pagesFormatter.format(itemView.getContext(), pages));
             view.setVisibility(View.VISIBLE);
         } else {
             view.setVisibility(View.GONE);
