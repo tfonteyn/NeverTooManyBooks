@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -33,7 +34,7 @@ public class TocEntryCoder
 
     private final AuthorCoder authorCoder = new AuthorCoder();
 
-    private final PartialDateParser partialDateParser = new PartialDateParser();
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
     TocEntryCoder() {
     }

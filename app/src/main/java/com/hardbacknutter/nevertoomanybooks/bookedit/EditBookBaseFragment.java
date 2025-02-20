@@ -39,6 +39,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -80,7 +81,7 @@ public abstract class EditBookBaseFragment
     /** Listener for all field changes. MUST keep strong reference. */
     private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
     private PartialDatePickerLauncher partialDatePickerLauncher;
-    private DateParser dateParser;
+    private DateParser<LocalDateTime> dateParser;
     private RealNumberParser realNumberParser;
 
     @Override

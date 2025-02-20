@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -45,7 +46,7 @@ public class EditTocEntryViewModel
     static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
     static final String BKEY_POSITION = TAG + ":pos";
 
-    private final PartialDateParser partialDateParser = new PartialDateParser();
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
     @Nullable
     private String bookTitle;
 

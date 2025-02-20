@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -61,7 +62,7 @@ public class TocEntryCoder
                             + "|[1|2]\\d\\d\\d-\\d\\d"
                             + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
                             + "\\)");
-    private final PartialDateParser partialDateParser = new PartialDateParser();
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
     TocEntryCoder() {
     }

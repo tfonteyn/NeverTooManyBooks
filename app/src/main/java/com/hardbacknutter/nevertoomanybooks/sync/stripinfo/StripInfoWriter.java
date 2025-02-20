@@ -66,7 +66,7 @@ public class StripInfoWriter
     @NonNull
     private final CollectionFormUploader collectionForm;
     @NonNull
-    private final DateParser dateParser;
+    private final DateParser<LocalDateTime> dateParser;
     @SuppressWarnings("FieldCanBeLocal")
     private SyncWriterResults results;
 

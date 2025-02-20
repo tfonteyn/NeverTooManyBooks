@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,7 +70,7 @@ public class ExportHelper
     private static final String TAG = "ExportHelper";
     private static final String ERROR_NO_URI = "uri";
     @NonNull
-    private final DateParser dateParser;
+    private final DateParser<LocalDateTime> dateParser;
     /** <strong>Where</strong> we write to. */
     @Nullable
     private Uri uri;

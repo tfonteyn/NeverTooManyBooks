@@ -112,7 +112,7 @@ public class BookDaoImpl
     private static final String ERROR_UUID = "Invalid UUID";
 
     @NonNull
-    private final DateParser dateParser;
+    private final DateParser<LocalDateTime> dateParser;
     @NonNull
     private final Supplier<AuthorDao> authorDaoSupplier;
     @NonNull

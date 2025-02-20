@@ -540,9 +540,10 @@ public class DataManager
      * @return value or {@code null} if parsing did not produce a {@link LocalDateTime} object
      */
     @NonNull
-    protected Optional<LocalDateTime> getLocalDateTime(@SuppressWarnings("SameParameterValue")
-                                                       @NonNull final String key,
-                                                       @NonNull final DateParser dateParser) {
+    protected Optional<LocalDateTime> getLocalDateTime(
+            @SuppressWarnings("SameParameterValue")
+            @NonNull final String key,
+            @NonNull final DateParser<LocalDateTime> dateParser) {
         if (rawData.containsKey(key)) {
             return dateParser.parse(rawData.getString(key));
         } else {

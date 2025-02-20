@@ -43,17 +43,17 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * TODO: implement/change the DateParser interface to allow generic return types.
+ * Parser for dates coming from the database or other sources
+ * where we are certain the format is ISO.
+ * Negative years are fully supported.
+ * In addition, this parser also accept MM_YYYY, MMM_YYYY but only with positive 4 digit years.
  * <p>
- * TODO: fold all manual parsers into one or more DateTimeFormatter pattern
+ * The result is always a {@link PartialDate}.
  * <p>
- * we are making an assumption that we'll primarily see ISO formatted
- * dates with 4 digit years (negative sign and leading zero's accepted).
- * The ISO patterns also accept lesser digits as long as the order is compliant.
- * <p>
- * In addition, we also accept MM_YYYY, MMM_YYYY but only with positive 4 digit years
+ * Typical use is for publication type dates.
  */
-public class PartialDateParser {
+public class PartialDateParser
+        implements DateParser<PartialDate> {
 
     private static final String TAG = "PartialDateParser";
 

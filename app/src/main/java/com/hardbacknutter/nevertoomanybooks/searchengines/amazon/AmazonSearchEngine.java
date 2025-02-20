@@ -32,6 +32,7 @@ import androidx.preference.PreferenceManager;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -607,8 +608,8 @@ public class AmazonSearchEngine
     }
 
     @NonNull
-    protected DateParser getDateParser(@NonNull final Context context,
-                                       @NonNull final Locale locale) {
+    protected DateParser<LocalDateTime> getDateParser(@NonNull final Context context,
+                                                      @NonNull final Locale locale) {
         final List<Locale> locales;
 
         // Hack to support the Portuguese site which does a redirect to the Spanish one

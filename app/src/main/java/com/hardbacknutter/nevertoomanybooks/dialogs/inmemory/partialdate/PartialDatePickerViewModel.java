@@ -31,6 +31,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 
@@ -73,7 +74,7 @@ public class PartialDatePickerViewModel
 
             final String dateString = args.getString(PartialDatePickerLauncher.BKEY_EDIT, null);
 
-            final PartialDateParser partialDateParser = new PartialDateParser();
+            final DateParser<PartialDate> partialDateParser = new PartialDateParser();
             previousSelection = partialDateParser.parse(dateString).orElse(PartialDate.NOT_SET);
 
             year = previousSelection.getYear().orElse(LocalDate.now().getYear());

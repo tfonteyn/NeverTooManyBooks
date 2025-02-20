@@ -157,7 +157,7 @@ public class CalibreContentServerReader
     private final SyncReaderProcessor syncProcessor;
 
     @NonNull
-    private final DateParser dateParser;
+    private final DateParser<LocalDateTime> dateParser;
 
     /** The physical library from which we'll be importing. */
     @Nullable

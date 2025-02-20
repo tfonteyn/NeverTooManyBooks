@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
@@ -188,8 +189,8 @@ public abstract class SearchEngineBase
      */
     @EmptySuper
     @NonNull
-    protected DateParser getDateParser(@NonNull final Context context,
-                                       @NonNull final Locale locale) {
+    protected DateParser<LocalDateTime> getDateParser(@NonNull final Context context,
+                                                      @NonNull final Locale locale) {
         final List<Locale> locales = LocaleListUtils.asList(context, locale);
         final Locale systemLocale = ServiceLocator
                 .getInstance().getSystemLocaleList().get(0);

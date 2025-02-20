@@ -229,7 +229,7 @@ public class Book
 
     /** the stage of the book entity. */
     private final EntityStage stage;
-    private final PartialDateParser partialDateParser = new PartialDateParser();
+    private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
     /**
      * Validator and validator results.
      * <p>
@@ -1718,7 +1718,8 @@ public class Book
      * @return the last date-time; or {@code Optional.empty()} if never saved.
      */
     @NonNull
-    public Optional<LocalDateTime> getLastModified(@NonNull final DateParser dateParser) {
+    public Optional<LocalDateTime> getLastModified(
+            @NonNull final DateParser<LocalDateTime> dateParser) {
         return getLocalDateTime(DBKey.DATE_LAST_UPDATED__UTC, dateParser);
     }
 

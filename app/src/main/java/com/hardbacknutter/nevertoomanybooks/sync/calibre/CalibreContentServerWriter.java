@@ -94,7 +94,7 @@ public class CalibreContentServerWriter
     private final boolean deleteLocalBook;
 
     @NonNull
-    private final DateParser dateParser;
+    private final DateParser<LocalDateTime> dateParser;
     private final RealNumberParser realNumberParser;
 
     private SyncWriterResults results;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@ abstract class DatePickerBase<S>
     @Nullable
     WeakReference<DatePickerListener> listener;
 
-    private DateParser dateParser;
+    private DateParser<LocalDateTime> dateParser;
 
     /**
      * Constructor.
@@ -80,7 +80,7 @@ abstract class DatePickerBase<S>
         fragmentTag = TAG + String.join("_", Arrays.toString(fieldIds));
     }
 
-    public void setDateParser(@NonNull final DateParser dateParser,
+    public void setDateParser(@NonNull final DateParser<LocalDateTime> dateParser,
                               final boolean todayIfNone) {
         this.dateParser = dateParser;
         this.todayIfNone = todayIfNone;

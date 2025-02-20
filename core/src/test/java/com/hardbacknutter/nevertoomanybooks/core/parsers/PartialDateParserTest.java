@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PartialDateParserTest {
 
-    private PartialDateParser parser;
+    private DateParser<PartialDate> parser;
 
     @BeforeEach
     void setup() {
@@ -114,8 +114,8 @@ class PartialDateParserTest {
 
     @Test
     void parseBC01() {
-        Optional<PartialDate> od;
-        PartialDate partialDate;
+        final Optional<PartialDate> od;
+        final PartialDate partialDate;
 
         od = parser.parse("-0019-08-13", Locale.UK);
         assertTrue(od.isPresent());
@@ -138,8 +138,8 @@ class PartialDateParserTest {
 
     @Test
     void parseBC02() {
-        Optional<PartialDate> od;
-        PartialDate partialDate;
+        final Optional<PartialDate> od;
+        final PartialDate partialDate;
 
         od = parser.parse("-19-08-13", Locale.UK);
         assertTrue(od.isPresent());

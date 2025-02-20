@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -125,7 +125,7 @@ public final class WrappedMaterialDatePicker<S>
         private final ResultListener resultListener;
         private FragmentManager fragmentManager;
 
-        private DateParser dateParser;
+        private DateParser<LocalDateTime> dateParser;
 
         public Launcher(@NonNull final String requestKey,
                         @NonNull final ResultListener resultListener) {
@@ -161,7 +161,7 @@ public final class WrappedMaterialDatePicker<S>
             this.fragmentManager.setFragmentResultListener(requestKey, lifecycleOwner, this);
         }
 
-        public void setDateParser(@NonNull final DateParser dateParser) {
+        public void setDateParser(@NonNull final DateParser<LocalDateTime> dateParser) {
             this.dateParser = dateParser;
         }
 

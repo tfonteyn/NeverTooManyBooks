@@ -39,11 +39,20 @@ import java.util.Optional;
  * <p>
  * This object is thread-safe, but user locale specific at creation time.
  * <p>
+ * The result is always a {@link LocalDateTime}.
+ * <p>
+ * Typical use is Date or DateTime timestamps with an unknown format.
+ * Parsing is done in 3 steps; first result is returned.
+ * <ol>
+ *     <li>{@link ISODateParser}</li>
+ *     <li>Numerical formats</li>
+ *     <li>Text formats</li>
+ * </ol>
  * TODO: performance: create all parsers, then parse (and reuse the parsers)...
- * or create the parsers each time, but stop at first result.
+ *  or create the parsers each time, but stop at first result.
  */
 public class FullDateParser
-        implements DateParser {
+        implements DateParser<LocalDateTime> {
 
     /** All numerical (i.e. Locale independent) patterns. */
     private static final String[] NUMERICAL_PATTERNS = {
@@ -96,7 +105,7 @@ public class FullDateParser
     @NonNull
     private final List<Locale> locales;
     @NonNull
-    private final DateParser isoDateParser;
+    private final DateParser<LocalDateTime> isoDateParser;
     /** List of patterns we'll use to parse dates. */
     @Nullable
     private Collection<DateTimeFormatter> textParsers;
@@ -173,6 +182,7 @@ public class FullDateParser
      * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
      * If the year is missing, {@code null} is returned.
      *
+     * @param parsers     to use
      * @param dateStr     String to parse
      * @param firstLocale (optional) Locale to apply/try before the default list.
      *

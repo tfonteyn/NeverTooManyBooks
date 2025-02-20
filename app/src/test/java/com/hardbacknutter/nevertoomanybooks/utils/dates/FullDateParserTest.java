@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ class FullDateParserTest
     @Test
     void numeric() {
         setLocale(Locale.ENGLISH);
-        final DateParser parser = new FullDateParser(locales.get(0), locales);
+        final DateParser<LocalDateTime> parser = new FullDateParser(locales.get(0), locales);
 
         // Matches due to MM-dd pattern being before dd-MM
         assertEquals(Optional.of(LocalDateTime.of(2017, 1, 12,
@@ -105,7 +105,7 @@ class FullDateParserTest
     @Test
     void goodreadsCsv() {
         setLocale(Locale.ENGLISH);
-        final DateParser parser = new FullDateParser(locales.get(0), locales);
+        final DateParser<LocalDateTime> parser = new FullDateParser(locales.get(0), locales);
         assertEquals(Optional.of(LocalDateTime.of(1987, 6, 25,
                                                   0, 0, 0)),
                      parser.parse("1987/06/25"));
@@ -114,7 +114,7 @@ class FullDateParserTest
     @Test
     void englishOnly() {
         setLocale(Locale.ENGLISH);
-        final DateParser parser = new FullDateParser(locales.get(0), locales);
+        final DateParser<LocalDateTime> parser = new FullDateParser(locales.get(0), locales);
 
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));
         assertEquals(s_1987_06_25, parser.parse("25 Jun 1987"));
@@ -132,7 +132,7 @@ class FullDateParserTest
     @Test
     void multiLocale() {
         setLocale(Locale.FRENCH, Locale.GERMAN);
-        final DateParser parser = new FullDateParser(locales.get(0), locales);
+        final DateParser<LocalDateTime> parser = new FullDateParser(locales.get(0), locales);
 
         // English is always added (at the end of the parser list)
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));

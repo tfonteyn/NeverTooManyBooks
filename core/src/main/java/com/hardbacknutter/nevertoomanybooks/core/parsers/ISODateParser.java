@@ -36,10 +36,18 @@ import java.util.Optional;
 
 /**
  * Parser for dates coming from the database or other sources
- * where we are certain of the format is ISO.
+ * where we are certain the format is ISO.
+ * Negative years are fully supported.
+ * <p>
+ * The result is always a {@link LocalDateTime}.
+ * <p>
+ * Typical use is Date or DateTime timestamps.
+ * Partial-date patters <strong>are accepted</strong>
+ * but will be completed with "01" for the missing parts.
+ * A missing time part is set to midnight, 00:00, at the start of this date.
  */
 public class ISODateParser
-        implements DateParser {
+        implements DateParser<LocalDateTime> {
 
     @NonNull
     private final Locale locale;

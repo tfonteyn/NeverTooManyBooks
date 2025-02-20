@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -137,7 +138,7 @@ class ResultsAccumulator {
             final Book result = localeBookPair.second;
             final List<Locale> locales = LocaleListUtils.asList(context, locale);
             final RealNumberParser realNumberParser = new RealNumberParser(locales);
-            final DateParser dateParser = new FullDateParser(systemLocale, locales);
+            final DateParser<LocalDateTime> dateParser = new FullDateParser(systemLocale, locales);
 
             result.keySet().forEach(key -> {
                 if (DBKey.DATE_KEYS.contains(key)) {
@@ -232,7 +233,7 @@ class ResultsAccumulator {
     private void processDate(@NonNull final String key,
                              @NonNull final Book srcBook,
                              @NonNull final Book dstBook,
-                             @NonNull final DateParser dateParser) {
+                             @NonNull final DateParser<LocalDateTime> dateParser) {
         // No new data ? we're done.
         final String dataToAdd = srcBook.getString(key, null);
         if (dataToAdd == null || dataToAdd.trim().isEmpty()) {
