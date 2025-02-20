@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
@@ -162,20 +163,13 @@ public class FieldVisibility {
      * Constructor.
      * <p>
      * Global visibility: use all fields which by default are all visible.
+     * <p>
+     * <strong>For exclusive use by
+     * {@link ServiceLocator#getGlobalFieldVisibility()}</strong>
      */
     public FieldVisibility() {
         dbKeys = Set.copyOf(DB_KEYS);
         bits = Long.MAX_VALUE;
-    }
-
-    /**
-     * Copy constructor.
-     *
-     * @param fieldVisibility object to copy
-     */
-    public FieldVisibility(@NonNull final FieldVisibility fieldVisibility) {
-        dbKeys = Set.copyOf(fieldVisibility.dbKeys);
-        bits = fieldVisibility.bits;
     }
 
     /**
@@ -238,7 +232,7 @@ public class FieldVisibility {
      *
      * @return bitmask
      */
-    public long getBitValue() {
+    long getBitValue() {
         return bits;
     }
 
@@ -247,7 +241,7 @@ public class FieldVisibility {
      *
      * @param value bitmask
      */
-    public void setBitValue(final long value) {
+    void setBitValue(final long value) {
         bits = value;
     }
 
