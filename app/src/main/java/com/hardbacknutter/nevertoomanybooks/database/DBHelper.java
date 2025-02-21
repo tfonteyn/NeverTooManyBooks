@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -527,9 +528,14 @@ public class DBHelper
             TBL_TAGS.create(db, true);
             TBL_BOOK_TAG.create(db, true);
             LegacyUpgrades.migrateV35Genre(db);
-            ServiceLocator.getInstance().getGlobalFieldVisibility()
-                          .setVisible(DBKey.FK_TAG, true);
 
+            // Override the user should they have hidden the 'genre' field
+            final FieldVisibility globalFieldVisibility = ServiceLocator
+                    .getInstance().getGlobalFieldVisibility();
+            globalFieldVisibility.setVisible(DBKey.FK_TAG, true);
+            globalFieldVisibility.save(PreferenceManager.getDefaultSharedPreferences(context));
+
+            // The format was changed
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
 
             // StripInfo collection support was never finished nor activated in a release build.
