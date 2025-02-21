@@ -224,7 +224,7 @@
     <string name="info_all_books_have_covers">Alle boeken op deze boekenplank hebben omslagen</string>
     <string name="info_authorized">Geautoriseerd</string>
     <string name="info_backup_successful">Back-up succesvol</string>
-    <string name="info_calibre_content_server_extension">Calibre content server-extensie is niet geïnstalleerd. Virtuele bibliotheken zijn niet beschikbaar.</string>
+    <string name="info_calibre_content_server_extension">Calibre inhoudsserver extensie is niet geïnstalleerd. Virtuele bibliotheken zijn niet beschikbaar.</string>
     <string name="info_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD-kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD-kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD-kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="info_tap_to_move_tag">Tik op een tag om deze te verplaatsen van/naar het boek.</string>

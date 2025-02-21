@@ -395,7 +395,9 @@
     <string name="info_substitutions_one_per_line">Add one substitution per line</string>
 
     <string name="info_download_successful">Download successful</string>
-    <!-- See GitHub docs... there is optional code to be added to Calibre. -->
+    <!-- See GitHub docs... there is optional code to be added to Calibre.
+         The product name IS translated. We follow the translation as used by the product itself.
+    -->
     <string name="info_calibre_content_server_extension">Calibre Content Server extension is not installed. Virtual libraries will not be available.</string>
     <!-- ContentDescription text for the drag handle button in re-order-able lists -->
     <string name="cd_btn_drag_handle">Drag to reorder this list</string>
@@ -1056,7 +1058,9 @@
     <string name="lbl_storage_settings">Storage</string>
     <!-- [VERIFIED] - Dialog title when moving data to external storage [CHAR LIMIT=32] -->
     <string name="lbl_moving_data">Moving data</string>
-    <!-- [VERIFIED] Dialog title - Calibre specific. https://manual.calibre-ebook.com/server.html-->
+    <!-- [VERIFIED] Dialog title - Calibre specific. https://manual.calibre-ebook.com/server.html
+         The product name IS translated. We follow the translation as used by the product itself.
+    -->
     <string name="lbl_calibre_content_server">Calibre Content Server</string>
     <!-- [VERIFIED] Title of intent resolver dialog when selecting a viewer application to run. -->
     <string name="whichViewApplication">Open with</string>
