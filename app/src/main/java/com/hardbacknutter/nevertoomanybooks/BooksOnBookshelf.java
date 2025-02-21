@@ -68,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySea
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GithubIntentFactory;
@@ -218,11 +217,6 @@ public class BooksOnBookshelf
      */
     private static final int SCROLL_POST_DELAY_MS = 200;
 
-    /** Make a backup. */
-    private final ActivityResultLauncher<Void> exportLauncher =
-            registerForActivityResult(new ExportContract(), success -> {
-                // Nothing to do
-            });
 
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
@@ -234,10 +228,22 @@ public class BooksOnBookshelf
     /** Delegate which will handle all positioning/scrolling. */
     private PositioningHelper positioningHelper;
 
+    /** Encapsulates the FAB button/menu. */
+    private FabMenu fabMenu;
+    /** Encapsulates the Navigation drawer/menu. */
+    private NavDrawer navDrawer;
+
+    /** Encapsulate all row menus for {@link BooklistGroup}s. */
+    private RowGroupMenuHelper rowGroupMenuHelper;
+
+    /** The adapter used to fill the Bookshelf selector. */
+    private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
+    private HeaderAdapter headerAdapter;
+
+
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> stripInfoSyncLauncher;
-
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> calibreSyncLauncher;
@@ -250,77 +256,32 @@ public class BooksOnBookshelf
     private BooksOnBookshelfViewModel vm;
 
     /** Edit the app settings. */
-    private final ActivityResultLauncher<String> editSettingsLauncher =
-            registerForActivityResult(new SettingsContract(), o -> o.ifPresent(
-                    this::onSettingsChanged));
-
+    private ActivityResultLauncher<String> editSettingsLauncher;
     /** Do an import. */
-    private final ActivityResultLauncher<Void> importLauncher =
-            registerForActivityResult(new ImportContract(), o -> o.ifPresent(
-                    this::onImportFinished));
-
+    private ActivityResultLauncher<Void> importLauncher;
+    /** Make a backup. */
+    private ActivityResultLauncher<Void> exportLauncher;
     /** Manage the list of (preferred) styles. */
-    private final ActivityResultLauncher<String> editStylesLauncher =
-            registerForActivityResult(new EditPreferredStylesContract(), o -> o.ifPresent(
-                    data -> vm.onEditStylesFinished(this, data)));
-
+    private ActivityResultLauncher<String> editStylesLauncher;
     /** Edit an individual style. */
-    private final ActivityResultLauncher<EditStyleContract.Input> editStyleLauncher =
-            registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(
-                    data -> vm.onEditStyleFinished(this, data)));
-
+    private ActivityResultLauncher<EditStyleContract.Input> editStyleLauncher;
     /** Manage the book shelves. */
-    private final ActivityResultLauncher<Long> manageBookshelvesLauncher =
-            registerForActivityResult(new EditBookshelvesContract(), o -> o.ifPresent(
-                    bookshelfId -> vm.onManageBookshelvesFinished(this, bookshelfId)));
-
-    /**
-     * Display a Book. We still call
-     * {@link BooksOnBookshelfViewModel#onBookEditFinished(EditBookOutput)}
-     * as the user might have done so from the displaying fragment.
-     */
-    private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
-            registerForActivityResult(new ShowBookPagerContract(), o -> o.ifPresent(
-                    data -> vm.onBookEditFinished(data)));
-
+    private ActivityResultLauncher<Long> manageBookshelvesLauncher;
+    /** Display a Book. */
+    private ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher;
     /** Add a Book by doing a search on the internet. */
-    private final ActivityResultLauncher<AddBookBySearchContract.Input> addBookBySearchLauncher =
-            registerForActivityResult(new AddBookBySearchContract(), o -> o.ifPresent(
-                    data -> vm.onBookEditFinished(data)));
-
+    private ActivityResultLauncher<AddBookBySearchContract.Input> addBookBySearchLauncher;
     /** Edit a Book. */
-    private final ActivityResultLauncher<EditBookContract.Input> editBookLauncher =
-            registerForActivityResult(new EditBookContract(), o -> o.ifPresent(
-                    data -> vm.onBookEditFinished(data)));
-
+    private ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
     /** Update an individual Book with information from the internet. */
-    private final ActivityResultLauncher<Book> updateBookLauncher =
-            registerForActivityResult(new UpdateSingleBookContract(), o -> o.ifPresent(
-                    data -> vm.onBookEditFinished(data)));
-
+    private ActivityResultLauncher<Book> updateBookLauncher;
     /** Update a list of Books with information from the internet. */
-    private final ActivityResultLauncher<UpdateBooklistContract.Input> updateBookListLauncher =
-            registerForActivityResult(new UpdateBooklistContract(), o -> o.ifPresent(
-                    data -> vm.onBookEditFinished(data)));
-
+    private ActivityResultLauncher<UpdateBooklistContract.Input> updateBookListLauncher;
     /** View all works of an Author. */
-    private final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher =
-            registerForActivityResult(new AuthorWorksContract(), o -> o.ifPresent(
-                    data -> vm.onBookEditFinished(data)));
-
+    private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
     /** The local FTS based search. */
-    private final ActivityResultLauncher<SearchCriteria> ftsSearchLauncher =
-            registerForActivityResult(new SearchFtsContract(), o -> o.ifPresent(
-                    criteria -> vm.onFtsSearchFinished(criteria)));
-    private final OnBackPressedCallback backClearsSearchCriteria =
-            new OnBackPressedCallback(false) {
-                @Override
-                public void handleOnBackPressed() {
-                    vm.clearSearchCriteria();
-                    setNavIcon();
-                    buildBookList();
-                }
-            };
+    private ActivityResultLauncher<SearchCriteria> ftsSearchLauncher;
+
     private EditLenderLauncher editLenderLauncher;
     /** Row menu launcher displaying the menu as a BottomSheet. */
     private ExtMenuLauncher menuLauncher;
@@ -330,28 +291,10 @@ public class BooksOnBookshelf
     private MultiChoiceLauncher<Bookshelf> bulkSetBookshelvesLauncher;
     /** Row menu launcher to set the location of a set of Books. */
     private AutoCompletePickerLauncher bulkSetLocationLauncher;
-    /** Encapsulates the FAB button/menu. */
-    private FabMenu fabMenu;
-    /** Encapsulate all row menus for {@link BooklistGroup}s. */
-    private RowGroupMenuHelper rowGroupMenuHelper;
-    /**
-     * The adapter used to fill the Bookshelf selector.
-     */
-    private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
-    private HeaderAdapter headerAdapter;
-    /** Listener for the Bookshelf Spinner. */
-    private final SpinnerInteractionListener bookshelfSpinnerListener =
-            new SpinnerInteractionListener(this::onBookshelfSelected);
-    private NavDrawer navDrawer;
-    private final OnBackPressedCallback backClosesNavDrawer =
-            new OnBackPressedCallback(false) {
-                @Override
-                public void handleOnBackPressed() {
-                    // Paranoia... the drawer listener should/will disable us.
-                    backClosesNavDrawer.setEnabled(false);
-                    navDrawer.close();
-                }
-            };
+
+    private OnBackPressedCallback backClearsSearchCriteria;
+    private OnBackPressedCallback backClosesNavDrawer;
+    private OnBackPressedCallback backClosesFabMenu;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -380,6 +323,7 @@ public class BooksOnBookshelf
         InsetsListenerBuilder.apply(vb.drawerLayout, vb.coordinatorContainer, vb.toolbar, vb.fab);
         InsetsListenerBuilder.apply(vb.content.list);
 
+        createActivityLaunchers();
         createFragmentLaunchers();
         createViewModel();
 
@@ -429,16 +373,6 @@ public class BooksOnBookshelf
         }
     }
 
-    private final OnBackPressedCallback backClosesFabMenu =
-            new OnBackPressedCallback(false) {
-                @Override
-                public void handleOnBackPressed() {
-                    // Paranoia... the FaMenu onOpenListener should/will disable us
-                    backClosesFabMenu.setEnabled(false);
-                    fabMenu.hideMenu();
-                }
-            };
-
     /**
      * Create the OnBackPressedDispatcher.
      *
@@ -448,6 +382,14 @@ public class BooksOnBookshelf
     private void createOnBackHandlers() {
         final OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
 
+        backClosesNavDrawer = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                // Paranoia... the drawer listener should/will disable us.
+                backClosesNavDrawer.setEnabled(false);
+                navDrawer.close();
+            }
+        };
         dispatcher.addCallback(this, backClosesNavDrawer);
         vb.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
@@ -461,11 +403,83 @@ public class BooksOnBookshelf
             }
         });
 
+        backClosesFabMenu = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                // Paranoia... the FaMenu onOpenListener should/will disable us
+                backClosesFabMenu.setEnabled(false);
+                fabMenu.hideMenu();
+            }
+        };
         dispatcher.addCallback(this, backClosesFabMenu);
         fabMenu.setOnOpenListener(backClosesFabMenu::setEnabled);
 
+        backClearsSearchCriteria = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                vm.clearSearchCriteria();
+                setNavIcon();
+                buildBookList();
+            }
+        };
         dispatcher.addCallback(this, backClearsSearchCriteria);
         vm.getSearchCriteriaAreActive().observe(this, backClearsSearchCriteria::setEnabled);
+    }
+
+    private void createActivityLaunchers() {
+        editSettingsLauncher = registerForActivityResult(
+                new SettingsContract(), o -> o.ifPresent(
+                        this::onSettingsChanged));
+
+        importLauncher = registerForActivityResult(
+                new ImportContract(), o -> o.ifPresent(
+                        this::onImportFinished));
+
+        exportLauncher = registerForActivityResult(
+                new ExportContract(), success -> { /* Nothing to do */ });
+
+        editStylesLauncher = registerForActivityResult(
+                new EditPreferredStylesContract(), o -> o.ifPresent(
+                        data -> vm.onEditStylesFinished(this, data)));
+
+        editStyleLauncher = registerForActivityResult(
+                new EditStyleContract(), o -> o.ifPresent(
+                        data -> vm.onEditStyleFinished(this, data)));
+
+        manageBookshelvesLauncher = registerForActivityResult(
+                new EditBookshelvesContract(), o -> o.ifPresent(
+                        id -> vm.onManageBookshelvesFinished(this, id)));
+
+        // We still call {@link BooksOnBookshelfViewModel#onBookEditFinished(EditBookOutput)}
+        // as the user might have done so from the displaying fragment.
+        displayBookLauncher = registerForActivityResult(
+                new ShowBookPagerContract(), o -> o.ifPresent(
+                        data -> vm.onBookEditFinished(data)));
+
+        addBookBySearchLauncher = registerForActivityResult(
+                new AddBookBySearchContract(), o -> o.ifPresent(
+                        data -> vm.onBookEditFinished(data)));
+
+        editBookLauncher = registerForActivityResult(
+                new EditBookContract(), o -> o.ifPresent(
+                        data -> vm.onBookEditFinished(data)));
+
+        updateBookLauncher = registerForActivityResult(
+                new UpdateSingleBookContract(), o -> o.ifPresent(
+                        data -> vm.onBookEditFinished(data)));
+
+        updateBookListLauncher = registerForActivityResult(
+                new UpdateBooklistContract(),
+                o -> o.ifPresent(
+                        data -> vm.onBookEditFinished(data)));
+
+        authorWorksLauncher = registerForActivityResult(
+                new AuthorWorksContract(), o -> o.ifPresent(
+                        data -> vm.onBookEditFinished(data)));
+
+        ftsSearchLauncher = registerForActivityResult(
+                new SearchFtsContract(), o -> o.ifPresent(
+                        criteria -> vm.onFtsSearchFinished(criteria)));
     }
 
     private void createFragmentLaunchers() {
@@ -669,7 +683,9 @@ public class BooksOnBookshelf
         bookshelfAdapter = new EntityArrayAdapter<>(this, vm.getBookshelfList());
 
         vb.bookshelfSpinner.setAdapter(bookshelfAdapter);
-        bookshelfSpinnerListener.attach(vb.bookshelfSpinner);
+
+        new SpinnerInteractionListener(this::onBookshelfSelected)
+                .attach(vb.bookshelfSpinner);
     }
 
     private void createFabMenu() {
