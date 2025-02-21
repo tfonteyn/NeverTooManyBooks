@@ -28,6 +28,12 @@
         >
 
         <SeekBarPreference
+            android:key="booklist.view.cache.size"
+            android:title="View cache size"
+            app:showSeekBarValue="true"
+            />
+
+        <SeekBarPreference
             android:key="booklist.cursor.page.size"
             android:title="Page size"
             app:showSeekBarValue="true"

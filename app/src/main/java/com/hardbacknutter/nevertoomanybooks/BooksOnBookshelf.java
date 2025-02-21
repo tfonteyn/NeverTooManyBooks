@@ -24,6 +24,8 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,6 +42,7 @@ import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.math.MathUtils;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -197,6 +200,11 @@ public class BooksOnBookshelf
         extends BaseActivity
         implements BookChangedListener {
 
+    public static final String PK_OFFSCREEN_CACHE_SIZE = "booklist.view.cache.size";
+    /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
+    public static final int DEFAULT_OFFSCREEN_CACHE_SIZE = 20;
+    public static final int MAX_OFFSCREEN_CACHE_SIZE = 50;
+
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
@@ -205,9 +213,6 @@ public class BooksOnBookshelf
 
     private static final String RK_SET_BOOKSHELVES = TAG + ":rk:setBookshelves";
     private static final String RK_SET_LOCATION = TAG + ":rk:setLocation";
-
-    /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
-    private static final int OFFSCREEN_CACHE_SIZE = 20;
     /**
      * The postDelay() in milliseconds. Used to more or less delay
      * scrolling in {@link #displayList(List)} until cover images are loaded.
@@ -775,9 +780,16 @@ public class BooksOnBookshelf
         // attach the FAB scroll-listener which will hide the FAB while scrolling
         fabMenu.attach(vb.content.list);
 
-        vb.content.list.setItemViewCacheSize(OFFSCREEN_CACHE_SIZE);
+        vb.content.list.setItemViewCacheSize(getOffscreenCacheSize());
         vb.content.list.setDrawingCacheEnabled(true);
         vb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+    }
+
+    private int getOffscreenCacheSize() {
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
+        // Protect against silly values
+        return MathUtils.clamp(prefs.getInt(PK_OFFSCREEN_CACHE_SIZE, DEFAULT_OFFSCREEN_CACHE_SIZE),
+                               DEFAULT_OFFSCREEN_CACHE_SIZE, MAX_OFFSCREEN_CACHE_SIZE);
     }
 
     private void setNavIcon() {
