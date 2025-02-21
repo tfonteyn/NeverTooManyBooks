@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.app.SearchManager;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -140,6 +141,17 @@ public class FtsDaoImpl
                     });
 
         return result;
+    }
+
+    @Nullable
+    @Override
+    public Cursor querySearchSuggestions(@NonNull final String searchText) {
+        final String query = FtsDaoHelper.prepareSearchText(searchText, null);
+        if (!query.isEmpty()) {
+            return db.rawQuery(Sql.SEARCH_SUGGESTIONS, new String[]{query});
+        }
+
+        return null;
     }
 
     @Override
@@ -465,5 +477,20 @@ public class FtsDaoImpl
                 + _FROM_ + TBL_FTS_BOOKS.getName()
                 + _WHERE_ + TBL_FTS_BOOKS.getName()
                 + " MATCH ?";
+
+        /** Standard Local-search. */
+        static final String SEARCH_SUGGESTIONS =
+                // FTS_BOOK_ID is the _id into the books table.
+                "SELECT " + DBKey.FTS.PK_BOOK_ID + _AS_ + DBKey.PK_ID
+
+                + ',' + (TBL_FTS_BOOKS.dot(DBKey.TITLE)
+                         + _AS_ + SearchManager.SUGGEST_COLUMN_TEXT_1)
+                + ',' + (TBL_FTS_BOOKS.dot(DBKey.FTS.AUTHOR_NAME)
+                         + _AS_ + SearchManager.SUGGEST_COLUMN_TEXT_2)
+
+                + ',' + (TBL_FTS_BOOKS.dot(DBKey.TITLE)
+                         + _AS_ + SearchManager.SUGGEST_COLUMN_INTENT_DATA)
+                + " FROM " + TBL_FTS_BOOKS.getName()
+                + " WHERE " + TBL_FTS_BOOKS.getName() + " MATCH ?";
     }
 }

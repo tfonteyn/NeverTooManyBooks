@@ -51,6 +51,9 @@ public interface FtsDao {
                       @Nullable String publisherName,
                       @Nullable String keywords);
 
+    @Nullable
+    Cursor querySearchSuggestions(@NonNull String searchText);
+
     /**
      * Rebuild the entire FTS database.
      */

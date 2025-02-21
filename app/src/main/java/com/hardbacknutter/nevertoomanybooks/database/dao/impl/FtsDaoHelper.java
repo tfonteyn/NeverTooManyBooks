@@ -89,8 +89,8 @@ public final class FtsDaoHelper {
      * @return Clean string
      */
     @NonNull
-    public static String prepareSearchText(@Nullable final String searchText,
-                                           @Nullable final String domain) {
+    static String prepareSearchText(@Nullable final String searchText,
+                                    @Nullable final String domain) {
 
         if (searchText == null || searchText.isEmpty()) {
             return "";

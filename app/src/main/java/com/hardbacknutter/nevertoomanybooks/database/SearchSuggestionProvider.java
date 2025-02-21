@@ -33,7 +33,6 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 
 /**
@@ -72,24 +71,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
  * @see <a href="https://developer.android.com/reference/android/content/ContentProvider.html">
  *         ContentProvider</a>
  * @see <a href=
- * "https://developer.android.com/guide/topics/providers/content-provider-creating#MIMETypes">
+ *         "https://developer.android.com/guide/topics/providers/content-provider-creating#MIMETypes">
  *         MIMETypes</a>
  */
 public class SearchSuggestionProvider
         extends ContentProvider {
-
-    /** Standard Local-search. */
-    private static final String SEARCH_SUGGESTIONS =
-            // FTS_BOOK_ID is the _id into the books table.
-            "SELECT " + DBKey.FTS.PK_BOOK_ID + " AS " + DBKey.PK_ID
-            + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.TITLE)
-                     + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1)
-            + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.FTS.AUTHOR_NAME)
-                     + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2)
-            + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.TITLE)
-                     + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-            + " FROM " + DBDefinitions.TBL_FTS_BOOKS.getName()
-            + " WHERE " + DBDefinitions.TBL_FTS_BOOKS.getName() + " MATCH ?";
 
     /** Uri and query support. Arbitrary code to indicate a match. */
     private static final int SUGGEST_URI_PATH_ID = 1;
@@ -116,19 +102,14 @@ public class SearchSuggestionProvider
                         @Nullable final String[] selectionArgs,
                         @Nullable final String sortOrder) {
 
-        if (uriMatcher.match(uri) == SUGGEST_URI_PATH_ID) {
-            if (selectionArgs == null || selectionArgs[0] == null || selectionArgs[0].isEmpty()) {
-                return null;
-            }
-
-            final String query = FtsDaoHelper.prepareSearchText(selectionArgs[0], null);
-            if (!query.isEmpty()) {
-                return ServiceLocator.getInstance().getDb()
-                                     .rawQuery(SEARCH_SUGGESTIONS, new String[]{query});
-            }
+        if (uriMatcher.match(uri) != SUGGEST_URI_PATH_ID) {
+            return null;
+        }
+        if (selectionArgs == null || selectionArgs[0] == null || selectionArgs[0].isEmpty()) {
+            return null;
         }
 
-        return null;
+        return ServiceLocator.getInstance().getFtsDao().querySearchSuggestions(selectionArgs[0]);
     }
 
     @Nullable
