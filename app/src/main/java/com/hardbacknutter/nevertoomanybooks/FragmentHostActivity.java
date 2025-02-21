@@ -74,15 +74,7 @@ public class FragmentHostActivity
     @Nullable
     private NavDrawer navDrawer;
 
-    private final OnBackPressedCallback backClosesNavDrawer =
-            new OnBackPressedCallback(false) {
-                @Override
-                public void handleOnBackPressed() {
-                    // Paranoia... the drawer listener should/will disable us.
-                    backClosesNavDrawer.setEnabled(false);
-                    navDrawer.close();
-                }
-            };
+    private OnBackPressedCallback backClosesNavDrawer;
 
     @NonNull
     public static Intent createIntent(@NonNull final Context context,
@@ -138,6 +130,14 @@ public class FragmentHostActivity
 
             final OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
 
+            backClosesNavDrawer = new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {
+                    // Paranoia... the drawer listener should/will disable us.
+                    backClosesNavDrawer.setEnabled(false);
+                    navDrawer.close();
+                }
+            };
             dispatcher.addCallback(this, backClosesNavDrawer);
             drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
                 @Override
