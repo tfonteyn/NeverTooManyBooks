@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -66,7 +65,7 @@ public final class InsetsListenerBuilder {
      */
     public static void apply(@Nullable final DrawerLayout drawerLayout,
                              @Nullable final CoordinatorLayout coordinatorLayout,
-                             @Nullable final MaterialToolbar toolbar,
+                             @Nullable final Toolbar toolbar,
                              @Nullable final FloatingActionButton fab) {
         if (drawerLayout != null) {
             apply(drawerLayout);
