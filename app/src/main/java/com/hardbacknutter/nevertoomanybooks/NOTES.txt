@@ -4,9 +4,10 @@ Draft notes for next version:
 
 NEW:
 - #91 Date (first) published: the date-picker has been redesigned, and is much easier to use.
-- #93 sorting by language now uses the full localized language name
+- #93 sorting by language now uses the fully localized language name
 - #96 language field added for translated book
 - added filter for identifiers
+- date parsers performance increased, which *might* show while scrolling the book list.
 
 FIXES:
 - #109 sorting by dates on the book level now supports mixing partial-dates
