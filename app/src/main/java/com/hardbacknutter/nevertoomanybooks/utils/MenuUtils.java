@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,6 +76,9 @@ public final class MenuUtils {
      *
      * @param activity from which we can get the search service
      * @param menu     which contains the {@code R.id.MENU_SEARCH} menu item
+     *
+     * @see <a href="https://developer.android.com/develop/ui/views/search/search-dialog#java">
+     *         search-dialog</a>
      */
     public static void setupSearchActionView(@NonNull final Activity activity,
                                              @NonNull final Menu menu) {
