@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public class ShowBookPagerContract
                                                 @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
@@ -85,6 +85,19 @@ public class ShowBookPagerContract
         final long listTableRowId;
 
         /**
+         * Constructor.
+         *
+         * @param bookId    the book id
+         * @param styleUuid to use
+         */
+        public Input(@IntRange(from = 1) final long bookId,
+                     @NonNull final String styleUuid) {
+            this(bookId, styleUuid, null, 0);
+        }
+
+        /**
+         * Constructor.
+         *
          * @param bookId         the book id
          * @param styleUuid      to use
          *                       Some style elements are applicable for the details screen

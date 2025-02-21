@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,12 +61,17 @@ public class DisplayBookLauncher {
                        final boolean allBookshelves) {
 
         switch (work.getWorkType()) {
+            case Book:
+            case BookLight: {
+                launcher.launch(new ShowBookPagerContract.Input(work.getId(), style.getUuid()));
+                break;
+            }
             case TocEntry: {
                 final List<Long> bookIdList = ServiceLocator
                         .getInstance().getTocEntryDao().getBookIds(work.getId());
                 if (bookIdList.size() == 1) {
                     launcher.launch(new ShowBookPagerContract.Input(
-                            bookIdList.get(0), style.getUuid(), null, 0));
+                            bookIdList.get(0), style.getUuid()));
 
                 } else {
                     // multiple books, open the list as a NEW ACTIVITY
@@ -83,13 +88,6 @@ public class DisplayBookLauncher {
                     }
                     fragment.startActivity(intent);
                 }
-                break;
-            }
-            case Book:
-            case BookLight: {
-                launcher.launch(new ShowBookPagerContract.Input(
-                        work.getId(), style.getUuid(), null, 0));
-
                 break;
             }
             default:
