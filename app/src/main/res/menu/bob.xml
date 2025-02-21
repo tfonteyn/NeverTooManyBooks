@@ -33,7 +33,7 @@
         android:orderInCategory="@integer/MENU_ORDER_SEARCH"
         android:title="@string/action_search"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@id/MENU_FILTERS"
