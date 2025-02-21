@@ -25,7 +25,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -138,6 +137,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
@@ -301,6 +301,8 @@ public class BooksOnBookshelf
     private OnBackPressedCallback backClosesNavDrawer;
     private OnBackPressedCallback backClosesFabMenu;
 
+    private SearchViewHelper searchViewHelper;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -354,6 +356,8 @@ public class BooksOnBookshelf
 
         // Create the various OnBackHandlers and setup their listener/observers
         createOnBackHandlers();
+
+        createSearchViewHelper();
 
         // Enable popup for the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -428,7 +432,7 @@ public class BooksOnBookshelf
             }
         };
         dispatcher.addCallback(this, backClearsSearchCriteria);
-        vm.getSearchCriteriaAreActive().observe(this, backClearsSearchCriteria::setEnabled);
+        vm.getSearchCriteriaAreActive().observe(this, this::updateBackActionForSearchCriteria);
     }
 
     private void createActivityLaunchers() {
@@ -484,7 +488,7 @@ public class BooksOnBookshelf
 
         ftsSearchLauncher = registerForActivityResult(
                 new SearchFtsContract(), o -> o.ifPresent(
-                        criteria -> vm.onFtsSearchFinished(criteria)));
+                        criteria -> vm.onFtsSearch(criteria)));
     }
 
     private void createFragmentLaunchers() {
@@ -785,6 +789,25 @@ public class BooksOnBookshelf
         vb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
     }
 
+    private void createSearchViewHelper() {
+        searchViewHelper = new SearchViewHelper(
+                vb.searchView, vb.searchResults,
+                id -> displayBookLauncher.launch(new ShowBookPagerContract.Input(
+                        id, vm.getStyle().getUuid())),
+                query -> {
+                    vm.onFtsSearch(query);
+                    buildBookList();
+                });
+    }
+
+    @Override
+    public void startSearch(@Nullable final String initialQuery,
+                            final boolean selectInitialQuery,
+                            @Nullable final Bundle appSearchData,
+                            final boolean globalSearch) {
+        searchViewHelper.show(initialQuery);
+    }
+
     private int getOffscreenCacheSize() {
         final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         // Protect against silly values
@@ -940,11 +963,7 @@ public class BooksOnBookshelf
             return;
         }
 
-        // Adjust the icon depending on whether we have search-criteria active or not.
-        setNavIcon();
-
-        // update the back-handler depending on the presence of search-criteria.
-        backClearsSearchCriteria.setEnabled(!vm.getSearchCriteria().isEmpty());
+        updateBackActionForSearchCriteria(!vm.getSearchCriteria().isEmpty());
 
         // update the fab menu visibility depending on current user settings
         fabMenu.getItem(vb.fab4SearchExternalId.getId())
@@ -968,6 +987,14 @@ public class BooksOnBookshelf
             // no rebuild needed/done, just let the system redisplay the list state
             displayList(vm.getTargetNodes());
         }
+    }
+
+    private void updateBackActionForSearchCriteria(final boolean enabled) {
+        // Adjust the icon depending on whether we have search-criteria active or not.
+        setNavIcon();
+
+        // update the back-handler depending on the presence of search-criteria.
+        backClearsSearchCriteria.setEnabled(enabled);
     }
 
     @Override
@@ -2581,7 +2608,6 @@ public class BooksOnBookshelf
             this.menu = menu;
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.bob, menu);
-            MenuUtils.setupSearchActionView(BooksOnBookshelf.this, menu);
 
             onPrepareMenu(menu);
         }
@@ -2607,7 +2633,11 @@ public class BooksOnBookshelf
 
             final int menuItemId = menuItem.getItemId();
 
-            if (menuItemId == R.id.MENU_FILTERS) {
+            if (menuItemId == R.id.MENU_SEARCH) {
+                searchViewHelper.show(null);
+                return true;
+
+            } else if (menuItemId == R.id.MENU_FILTERS) {
                 bookshelfFiltersLauncher.launch(BooksOnBookshelf.this, vm.getBookshelf());
                 return true;
 
@@ -2675,6 +2705,4 @@ public class BooksOnBookshelf
             }
         }
     }
-
-
 }

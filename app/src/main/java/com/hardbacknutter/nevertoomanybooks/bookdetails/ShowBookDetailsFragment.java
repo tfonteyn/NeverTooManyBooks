@@ -83,7 +83,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
@@ -251,10 +250,6 @@ public class ShowBookDetailsFragment
 
         // update all Fields with their current View instances
         vm.getFields().forEach(field -> field.setParentView(view));
-
-        // Popup the search widget when the user starts to type.
-        //noinspection DataFlowIssue
-        getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         createCoverDelegates();
 
@@ -634,10 +629,8 @@ public class ShowBookDetailsFragment
             menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(vm.isEmbedded());
 
             if (vm.isEmbedded()) {
+                // divide BoB and Book menus
                 MenuCompat.setGroupDividerEnabled(menu, true);
-            } else {
-                //noinspection DataFlowIssue
-                MenuUtils.setupSearchActionView(getActivity(), inflater, menu);
             }
 
             if (calibreHandler != null) {
@@ -648,8 +641,7 @@ public class ShowBookDetailsFragment
             final Book book = vm.getBook();
 
             //noinspection DataFlowIssue
-            vm.getMenuHandlers().forEach(
-                    h -> h.onCreateMenu(context, menu, inflater, book));
+            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, book));
         }
 
         @Override

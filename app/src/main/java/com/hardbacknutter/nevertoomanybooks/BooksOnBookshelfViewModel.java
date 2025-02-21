@@ -1416,10 +1416,17 @@ public class BooksOnBookshelfViewModel
 
     // ENHANCE: fts searches are always across all bookshelves,
     //  It might be better to switch to the "All Books" bookshelf.
-    void onFtsSearchFinished(@NonNull final SearchCriteria criteria) {
+    void onFtsSearch(@NonNull final SearchCriteria criteria) {
         searchCriteria = criteria;
         searchCriteriaAreActive.setValue(!searchCriteria.isEmpty());
         forceRebuildInOnResume = true;
+    }
+
+    void onFtsSearch(@Nullable final String query) {
+        Objects.requireNonNull(searchCriteria);
+
+        searchCriteria.setFtsKeywords(query);
+        searchCriteriaAreActive.setValue(!searchCriteria.isEmpty());
     }
 
     /**

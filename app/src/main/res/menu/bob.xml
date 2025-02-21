@@ -22,17 +22,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Reminder: we let the SearchView handle it's own icons.
-         The hint text is defined in xml/searchable.xml
-
-        github #107 => https://issuetracker.google.com/issues/135594222
-    -->
     <item
         android:id="@id/MENU_SEARCH"
         android:icon="@drawable/search_24px"
         android:orderInCategory="@integer/MENU_ORDER_SEARCH"
         android:title="@string/action_search"
-        app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom" />
 
     <item

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,7 +21,10 @@
 
 <!--
      All menu items related to a book.
-     Used for the options and context menus.
+     Used for the {@link ShowBookDetailsFragment} options menu
+     and the BoB {@link RowGroupMenuHelper} context menus.
+
+     Note the search menu item is NOT included here.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">

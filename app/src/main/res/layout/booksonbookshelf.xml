@@ -56,6 +56,24 @@
             </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
+        <!-- elevation must be higher than the FAB which is 6dp -->
+        <com.google.android.material.search.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="20dp"
+            app:useDrawerArrowDrawable="true"
+            android:hint="@string/lbl_search_for_books">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_results"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                />
+        </com.google.android.material.search.SearchView>
+
         <FrameLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
