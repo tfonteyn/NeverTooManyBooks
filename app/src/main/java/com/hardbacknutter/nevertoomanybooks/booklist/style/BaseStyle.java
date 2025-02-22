@@ -190,7 +190,7 @@ public abstract class BaseStyle
      * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} {@code false},
      * or as system "?attr/listPreferredItemHeightSmall" {@code true}.
      */
-    private boolean groupRowUsesPreferredHeight;
+    private boolean groupRowUsesPreferredHeight = true;
 
     /**
      * Constructor.
