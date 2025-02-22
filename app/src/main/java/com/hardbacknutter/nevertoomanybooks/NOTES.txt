@@ -6,6 +6,8 @@ NEW:
 - #91 Date (first) published: the date-picker has been redesigned, and is much easier to use.
 - #93 sorting by language now uses the fully localized language name
 - #96 language field added for translated book
+- #113 add a group-level summation of the books in that group.
+- local search has been redesigned, making the UI cleaner
 - added filter for identifiers
 - date parsers performance increased, which *might* show while scrolling the book list.
 
@@ -14,6 +16,7 @@ FIXES:
 - Citations have been tweaked to better conform to the standards
 
 REMOVED:
+- local search from the book-details screen.
 
 ====================================================================================================
 Supported Android versions:
