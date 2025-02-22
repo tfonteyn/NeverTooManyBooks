@@ -568,6 +568,7 @@
     <string name="pt_allow_editing_external_id">Consenti la modifica dell’ID libro del sito Web nativo</string>
     <string name="lbl_capitalize_full">Tutto in maiuscolo</string>
     <string name="pt_allow_metered_network_data">Consenti l’utilizzo dei dati mobili</string>
+    <string name="pt_bob_show_group_book_count">Mostrate il numero di libri di ciascun gruppo.</string>
     <string name="pt_bob_books_under_multiple_authors">Libri con autori multipli</string>
     <string name="pt_bob_books_under_multiple_publishers">Mostra libri con più editori</string>
     <string name="pt_bob_books_under_multiple_series">Libri in serie multiple</string>

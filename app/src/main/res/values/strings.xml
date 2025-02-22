@@ -1748,16 +1748,18 @@
          Translator: use your favourite Author in your country. -->
     <string name="ps_show_author_name_family_first">Display with the family name first,\n.e.g. “Willis, Connie”</string>
 
+    <!--Style option: on the book-list: should the number of books be displayed on grouping level (or not). -->
+    <string name="pt_bob_show_group_book_count">Show the number of books in each group.</string>
 
-    <!-- SwitchPreference - option title -->
+    <!-- Style option -->
     <string name="pt_bob_books_under_multiple_authors">Show books with multiple authors</string>
     <string name="ps_bob_books_under_multiple_authors_main_only">under their primary author only</string>
     <string name="ps_bob_books_under_multiple_authors_each">under each author</string>
-    <!-- SwitchPreference - option title  -->
+    <!-- Style option  -->
     <string name="pt_bob_books_under_multiple_series">Show books in multiple series</string>
     <string name="ps_bob_books_under_multiple_series_main_only">under their primary series only</string>
     <string name="ps_bob_books_under_multiple_series_each">under each series</string>
-    <!-- SwitchPreference - option title  -->
+    <!-- Style option  -->
     <string name="pt_bob_books_under_multiple_publishers">Show books with multiple publishers</string>
     <string name="ps_bob_books_under_multiple_publishers_main_only">under their primary publisher only</string>
     <string name="ps_bob_books_under_multiple_publishers_each">under each publisher</string>
@@ -2054,6 +2056,5 @@
             translatable="false">Tuning</string>
 
     <string name="action_restore_default_identifiers">Restore the default Identifiers</string>
-    <string name="pt_bob_show_group_book_count">Show the book count on each group</string>
 
 </resources>

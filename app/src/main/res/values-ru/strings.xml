@@ -578,6 +578,7 @@
     <string name="pt_allow_editing_external_id">Разрешить редактировать родной идентификатор книги сайта</string>
     <string name="lbl_capitalize_full">Все в верхнем регистре</string>
     <string name="pt_allow_metered_network_data">Разрешить использование мобильных данных</string>
+    <string name="pt_bob_show_group_book_count">Покажите количество книг в каждой группе.</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_publishers">Показать книги с несколькими издателями</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>

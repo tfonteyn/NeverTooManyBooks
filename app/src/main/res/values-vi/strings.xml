@@ -683,6 +683,7 @@
     <string name="pt_allow_metered_network_data">Cho phép sử dụng dữ liệu di động</string>
     <string name="pt_barcode_scanner">Máy quét mã vạch</string>
     <string name="pt_bedetheque_search_resolve_formats">Giữ nguyên cách đặt tên theo định dạng Bedetheque (tiếng Pháp)</string>
+    <string name="pt_bob_show_group_book_count">Hiển thị số sách trong mỗi nhóm.</string>
     <string name="pt_bob_books_under_multiple_authors">Hiển thị sách có nhiều tác giả</string>
     <string name="pt_bob_books_under_multiple_publishers">Hiển thị sách có nhiều nhà xuất bản</string>
     <string name="pt_bob_books_under_multiple_series">Hiển thị sách theo nhiều bộ</string>

@@ -723,6 +723,7 @@
     <string name="ps_sort_author_name_family_first">குடும்பப் பெயரை முதலில் வரிசைப்படுத்தவும்,\n .e.g. “வில்லிச், கோனி”</string>
     <string name="ps_show_author_name_given_first">முதலில் கொடுக்கப்பட்ட பெயர்களுடன் காண்பி,\n எ.கா. “கோனி வில்லிச்”</string>
     <string name="ps_show_author_name_family_first">முதலில் குடும்பப் பெயருடன் காண்பி,\n .e.g. “வில்லிச், கோனி”</string>
+    <string name="pt_bob_show_group_book_count">ஒவ்வொரு குழுவிலும் உள்ள புத்தகங்களின் எண்ணிக்கையைக் காட்டு.</string>
     <string name="pt_bob_books_under_multiple_authors">பல ஆசிரியர்களுடன் புத்தகங்களைக் காட்டு</string>
     <string name="ps_bob_books_under_multiple_authors_main_only">அவர்களின் முதன்மை எழுத்தாளரின் கீழ் மட்டுமே</string>
     <string name="ps_bob_books_under_multiple_authors_each">ஒவ்வொரு எழுத்தாளரின் கீழும்</string>

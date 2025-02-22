@@ -574,6 +574,7 @@
     <string name="pt_allow_editing_external_id">Zezwalaj na edycję natywnego identyfikatora książki w witrynie</string>
     <string name="lbl_capitalize_full">Wszystko wielkimi literami</string>
     <string name="pt_allow_metered_network_data">Włącz mobilne korzystanie z danych</string>
+    <string name="pt_bob_show_group_book_count">Pokaż liczbę książek w każdej grupie.</string>
     <string name="pt_bob_books_under_multiple_authors">Książki z wieloma autorami</string>
     <string name="pt_bob_books_under_multiple_publishers">Pokaż książki wielu wydawcom</string>
     <string name="pt_bob_books_under_multiple_series">Książki w wielu seriach</string>

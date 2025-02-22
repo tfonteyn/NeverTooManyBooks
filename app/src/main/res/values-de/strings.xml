@@ -564,6 +564,7 @@
     <string name="pt_allow_editing_external_id">Bearbeitung der Website-Buch-ID zulassen</string>
     <string name="lbl_capitalize_full">Alles in Großbuchstaben</string>
     <string name="pt_allow_metered_network_data">Mobile Datennutzung zulassen</string>
+    <string name="pt_bob_show_group_book_count">Zeige die Anzahl der Bücher in jeder Gruppe.</string>
     <string name="pt_bob_books_under_multiple_authors">Bücher mit mehreren Autoren</string>
     <string name="pt_bob_books_under_multiple_publishers">Bücher mit mehreren Verlagen anzeigen</string>
     <string name="pt_bob_books_under_multiple_series">Bücher in mehreren Serien</string>
