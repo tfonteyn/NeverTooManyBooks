@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
@@ -82,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;

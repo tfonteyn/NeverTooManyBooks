@@ -137,6 +137,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;

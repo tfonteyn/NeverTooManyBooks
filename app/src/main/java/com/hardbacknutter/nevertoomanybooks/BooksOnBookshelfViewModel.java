@@ -83,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;

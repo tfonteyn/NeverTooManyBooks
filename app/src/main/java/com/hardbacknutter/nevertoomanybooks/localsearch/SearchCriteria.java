@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.localsearch;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -118,7 +118,7 @@ public class SearchCriteria
     @Nullable
     private String loanee;
 
-    SearchCriteria() {
+    public SearchCriteria() {
     }
 
     /**
@@ -172,7 +172,7 @@ public class SearchCriteria
         return bookIdList;
     }
 
-    void setBookIdList(@Nullable final List<Long> bookIdList) {
+    public void setBookIdList(@Nullable final List<Long> bookIdList) {
         this.bookIdList.clear();
         if (bookIdList != null) {
             this.bookIdList.addAll(bookIdList);
@@ -220,7 +220,7 @@ public class SearchCriteria
         return ftsKeywords;
     }
 
-    void setFtsKeywords(@Nullable final String keywords) {
+    public void setFtsKeywords(@Nullable final String keywords) {
         if (keywords == null || keywords.isEmpty() || ".".equals(keywords)) {
             ftsKeywords = null;
         } else {

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.localsearch;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -38,6 +38,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;

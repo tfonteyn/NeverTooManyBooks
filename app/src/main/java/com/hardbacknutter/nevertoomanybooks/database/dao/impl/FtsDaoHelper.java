@@ -33,12 +33,12 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.LoaneeFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;

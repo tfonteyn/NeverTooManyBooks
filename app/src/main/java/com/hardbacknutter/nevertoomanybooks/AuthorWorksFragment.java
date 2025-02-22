@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
