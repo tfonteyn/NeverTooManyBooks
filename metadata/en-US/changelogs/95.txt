@@ -1,0 +1,3 @@
+FIXES
+
+- github #115: when filtering on bookshelves and **not** grouping by them, a crash occurred.

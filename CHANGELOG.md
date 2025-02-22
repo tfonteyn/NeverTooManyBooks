@@ -1,3 +1,9 @@
+### 7.0.4
+
+FIXES
+
+- github #115: when filtering on bookshelves and **not** grouping by them, a crash occurred.
+
 ### 7.0.3
 
 FIXES
