@@ -64,6 +64,10 @@ class Formatter
     /** caching the book condition strings. */
     @NonNull
     private final String[] conditionDescriptions;
+    private final String unreadStr;
+    private final String a_space_b;
+    private final String a_bracket_b_bracket;
+
     @NonNull
     private final List<Locale> locales;
 
@@ -73,6 +77,10 @@ class Formatter
         this.context = context;
         this.style = style;
         this.locales = locales;
+
+        a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
+        unreadStr = context.getString(R.string.lbl_unread);
+        a_space_b = context.getString(R.string.a_space_b);
 
         conditionDescriptions = context.getResources().getStringArray(R.array.lbl_book_condition);
     }
@@ -87,140 +95,60 @@ class Formatter
         // NEWTHINGS: BooklistGroup
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
-                final String text = rowData.getString(key);
-                if (text.isEmpty()) {
-                    return context.getString(R.string.bob_empty_author);
-
-                } else if (serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
-                           && rowData.contains(DBKey.FK_AUTHOR_REAL_AUTHOR)) {
-                    // Specifically check for AUTHOR_REAL_AUTHOR as it will usually be 0
-                    // and no lookup will be needed.
-                    final long realAuthorId = rowData.getLong(DBKey.FK_AUTHOR_REAL_AUTHOR);
-                    if (realAuthorId != 0) {
-                        final Optional<Author> realAuthor = serviceLocator.getAuthorDao()
-                                                                          .findById(realAuthorId);
-                        if (realAuthor.isPresent()) {
-                            return realAuthor.get().getStyledName(context, style, text);
-                        }
-                    }
-                }
-                // already formatted by the SQL query
-                return text;
+                return formatAuthor(rowData, key);
             }
             case BooklistGroup.SERIES: {
-                final String text = rowData.getString(key);
-                if (text.isEmpty()) {
-                    return context.getString(R.string.bob_empty_series);
-
-                } else if (style.isShowReorderedTitle()) {
-                    // We don't have full Objects here for Series/Publisher so we can't use
-                    // their methods for auto-reordering.
-                    //
-                    // FIXME: translated series are reordered in the book's language
-                    // It should be done using the Series language
-                    // but as long as we don't store the Series language there is no point
-                    final String lang = rowData.getString(DBKey.LANGUAGE);
-                    return serviceLocator.getReorderHelper().reorder(context, text, lang, locales);
-                } else {
-                    return text;
-                }
+                return formatSeries(rowData, key);
             }
             case BooklistGroup.PUBLISHER: {
-                final String text = rowData.getString(key);
-                if (text.isEmpty()) {
-                    return context.getString(R.string.bob_empty_publisher);
-
-                    // yes, we're using the 'title'. Adding specific publisher logic was
-                    // to much overhead for a presumably little used feature
-                } else if (style.isShowReorderedTitle()) {
-                    // We don't have full Objects here for Series/Publisher so we can't use
-                    // their methods for auto-reordering.
-                    return serviceLocator.getReorderHelper()
-                                         .reorder(context, text, (Locale) null, locales);
-                } else {
-                    return text;
-                }
+                return formatPublisher(rowData, key);
             }
             case BooklistGroup.READ_STATUS: {
-                return ReadStatus.byId(rowData.getInt(key)).getLabel(context,
-                                                                     Details.AutoSelect,
-                                                                     style);
+                return ReadStatus.byId(rowData.getInt(key))
+                                 .getLabel(context, Details.AutoSelect, style);
             }
             case BooklistGroup.LANGUAGE: {
-                final String text = rowData.getString(key);
-                if (text.isEmpty()) {
-                    return context.getString(R.string.bob_empty_language);
-                } else {
-                    return serviceLocator.getLanguages().getDisplayLanguageFromISO3(context, text);
-                }
+                return formatLanguage(rowData, key, serviceLocator);
             }
             case BooklistGroup.CONDITION: {
-                final int condition = rowData.getInt(key);
-                if (condition < conditionDescriptions.length) {
-                    return conditionDescriptions[condition];
-                }
-                // We should never get here... flw
-                return conditionDescriptions[0];
+                return formatCondition(rowData, key);
             }
             case BooklistGroup.RATING: {
-                // DOM_BOOK_RATING is a 'real' but the GroupKey will cast it to an integer.
-                final int rating = rowData.getInt(key);
-                // This is the text based formatting, as used by the level/scroller text.
-                if (rating > 0 && rating <= Book.RATING_STARS) {
-                    return context.getResources()
-                                  .getQuantityString(R.plurals.n_stars, rating, rating);
-                }
-                return context.getString(R.string.bob_empty_rating);
+                return formatRating(rowData, key);
             }
             case BooklistGroup.LENDING: {
-                final String text = rowData.getString(key);
-                if (text.isEmpty()) {
-                    return context.getString(R.string.lbl_available);
-                } else {
-                    return text;
-                }
+                return formatLending(rowData, key);
             }
 
             case BooklistGroup.DATE_ACQUIRED_YEAR:
             case BooklistGroup.DATE_ADDED_YEAR:
             case BooklistGroup.DATE_LAST_UPDATE_YEAR:
             case BooklistGroup.DATE_PUBLISHED_YEAR:
-            case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
+            case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR: {
+                return formatYear(rowData, key);
+            }
             case BooklistGroup.DATE_READ_YEAR: {
-                // It's an int, but we just display it or not, so use String
-                final String text = rowData.getString(key);
-                if (text.isEmpty()) {
-                    return context.getString(R.string.bob_empty_year);
-                } else {
-                    return text;
-                }
+                return formatDateRead(rowData, formatYear(rowData, key));
             }
 
             case BooklistGroup.DATE_ACQUIRED_MONTH:
             case BooklistGroup.DATE_ADDED_MONTH:
             case BooklistGroup.DATE_LAST_UPDATE_MONTH:
             case BooklistGroup.DATE_PUBLISHED_MONTH:
-            case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH:
+            case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
+                return formatMonth(rowData, key);
+            }
             case BooklistGroup.DATE_READ_MONTH: {
-                final int month = rowData.getInt(key);
-                if (month > 0 && month <= 12) {
-                    return Month.of(month).getDisplayName(TextStyle.FULL_STANDALONE,
-                                                          locales.get(0));
-                }
-                return context.getString(R.string.bob_empty_month);
+                return formatDateRead(rowData, formatMonth(rowData, key));
             }
 
             case BooklistGroup.DATE_ACQUIRED_DAY:
             case BooklistGroup.DATE_ADDED_DAY:
-            case BooklistGroup.DATE_LAST_UPDATE_DAY:
+            case BooklistGroup.DATE_LAST_UPDATE_DAY: {
+                return formatDay(rowData, key);
+            }
             case BooklistGroup.DATE_READ_DAY: {
-                // It's an int, but we just display it or not, so use String
-                final String text = rowData.getString(key);
-                if (text.isEmpty()) {
-                    return context.getString(R.string.bob_empty_day);
-                } else {
-                    return text;
-                }
+                return formatDateRead(rowData, formatDay(rowData, key));
             }
 
             case BooklistGroup.AUTHOR_FAMILY_NAME_1ST_CHAR:
@@ -244,5 +172,198 @@ class Formatter
                 }
             }
         }
+    }
+
+    @NonNull
+    private CharSequence formatAuthor(@NonNull final DataHolder rowData,
+                                      @NonNull final String key) {
+
+        final String text = rowData.getString(key);
+        if (text.isEmpty()) {
+            return context.getString(R.string.bob_empty_author);
+        }
+
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        if (serviceLocator.isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
+            && rowData.contains(DBKey.FK_AUTHOR_REAL_AUTHOR)) {
+            // Specifically check for AUTHOR_REAL_AUTHOR as it will usually be 0
+            // and no lookup will be needed.
+            final long realAuthorId = rowData.getLong(DBKey.FK_AUTHOR_REAL_AUTHOR);
+            if (realAuthorId != 0) {
+                final Optional<Author> realAuthor = serviceLocator.getAuthorDao()
+                                                                  .findById(realAuthorId);
+                if (realAuthor.isPresent()) {
+                    return realAuthor.get().getStyledName(context, style, text);
+                }
+            }
+        }
+        // already formatted by the SQL query
+        return text;
+    }
+
+    @NonNull
+    private String formatSeries(@NonNull final DataHolder rowData,
+                                @NonNull final String key) {
+
+        final String text = rowData.getString(key);
+        if (text.isEmpty()) {
+            return context.getString(R.string.bob_empty_series);
+
+        }
+
+        if (style.isShowReorderedTitle()) {
+            // We don't have full Objects here for Series/Publisher so we can't use
+            // their methods for auto-reordering.
+            //
+            // FIXME: translated series are reordered in the book's language
+            // It should be done using the Series language
+            // but as long as we don't store the Series language there is no point
+            final String lang = rowData.getString(DBKey.LANGUAGE);
+            return ServiceLocator.getInstance().getReorderHelper()
+                                 .reorder(context, text, lang, locales);
+        } else {
+            return text;
+        }
+    }
+
+    @NonNull
+    private String formatPublisher(@NonNull final DataHolder rowData,
+                                   @NonNull final String key) {
+
+        final String text = rowData.getString(key);
+        if (text.isEmpty()) {
+            return context.getString(R.string.bob_empty_publisher);
+        }
+
+        // yes, we're using the 'title'. Adding specific publisher logic was
+        // to much overhead for a presumably little used feature
+        if (style.isShowReorderedTitle()) {
+            // We don't have full Objects here for Series/Publisher so we can't use
+            // their methods for auto-reordering.
+            return ServiceLocator.getInstance().getReorderHelper()
+                                 .reorder(context, text, (Locale) null, locales);
+        } else {
+            return text;
+        }
+    }
+
+    @NonNull
+    private String formatLanguage(@NonNull final DataHolder rowData,
+                                  @NonNull final String key,
+                                  final ServiceLocator serviceLocator) {
+        final String text = rowData.getString(key);
+        if (text.isEmpty()) {
+            return context.getString(R.string.bob_empty_language);
+        } else {
+            return serviceLocator.getLanguages().getDisplayLanguageFromISO3(context, text);
+        }
+    }
+
+    @NonNull
+    private String formatCondition(@NonNull final DataHolder rowData,
+                                   @NonNull final String key) {
+        final int condition = rowData.getInt(key);
+        if (condition < conditionDescriptions.length) {
+            return conditionDescriptions[condition];
+        }
+        // We should never get here... flw
+        return conditionDescriptions[0];
+    }
+
+    @NonNull
+    private String formatRating(@NonNull final DataHolder rowData,
+                                @NonNull final String key) {
+        // DOM_BOOK_RATING is a 'real' but the GroupKey will cast it to an integer.
+        final int rating = rowData.getInt(key);
+        // This is the text based formatting, as used by the level/scroller text.
+        if (rating > 0 && rating <= Book.RATING_STARS) {
+            return context.getResources()
+                          .getQuantityString(R.plurals.n_stars, rating, rating);
+        }
+        return context.getString(R.string.bob_empty_rating);
+    }
+
+    @NonNull
+    private String formatLending(@NonNull final DataHolder rowData,
+                                 @NonNull final String key) {
+        final String text = rowData.getString(key);
+        if (text.isEmpty()) {
+            return context.getString(R.string.lbl_available);
+        } else {
+            return text;
+        }
+    }
+
+    @NonNull
+    private String formatYear(@NonNull final DataHolder rowData,
+                              @NonNull final String key) {
+        // It's an int, but we just display it or not, so use String
+        final String text = rowData.getString(key);
+        if (text.isEmpty()) {
+            return context.getString(R.string.bob_empty_year);
+        } else {
+            return text;
+        }
+    }
+
+    private String formatMonth(@NonNull final DataHolder rowData,
+                               @NonNull final String key) {
+        final int month = rowData.getInt(key);
+        if (month > 0 && month <= 12) {
+            return Month.of(month).getDisplayName(TextStyle.FULL_STANDALONE,
+                                                  locales.get(0));
+        }
+        return context.getString(R.string.bob_empty_month);
+    }
+
+    @NonNull
+    private String formatDay(@NonNull final DataHolder rowData,
+                             @NonNull final String key) {
+        // It's an int, but we just display it or not, so use String
+        final String text = rowData.getString(key);
+        if (text.isEmpty()) {
+            return context.getString(R.string.bob_empty_day);
+        } else {
+            return text;
+        }
+    }
+
+    /**
+     * This formatter fixes an issue that when we have one ore more of the groups
+     * DATE_READ_YEAR/DATE_READ_MONTH/DATE_READ_DAY
+     * there will be a duplicate "(Year not set)" (and similar for the others).
+     * Reproduce this by creating a style with DATE_READ_YEAR, DATE_READ_MONTH, AUTHOR
+     * <p>
+     * This is caused by those domains have .addGroupDomain(BD_BOOK_IS_READ);
+     * In theory this is CORRECT !
+     * <p>
+     * The first "(Year not set)" contains books which have been 'read'
+     * but for which the date-read is NOT set.
+     * The second "(Year not set)" contains books which have NOT been 'read'
+     * But this is confusing to the user (and myself...)
+     * <p>
+     * Solution 1: remove the BD_BOOK_IS_READ from those 3 group definitions now we
+     * have a single "(Year not set)"
+     * Problem: that group now has both read/not-read books intermixed.
+     * <p>
+     * Solution 2: keep those BD_BOOK_IS_READ in the group definition,
+     * but explicitly prevent BD_BOOK_IS_READ from being added to the whereClause
+     * ... NOT a solution: this will remove the "(Year not set)" and "(Month not set)"
+     * ... but the Author heading will now be duplicated.
+     * This is worse than solution 1
+     * <p>
+     * Solution 3: don't change anything, but create a RowViewHolder for
+     * those groups and change the label to include the 'Unread' status
+     */
+    @NonNull
+    private String formatDateRead(@NonNull final DataHolder rowData,
+                                  @NonNull final String text) {
+
+        // Check presence first, and only then test on 'false'
+        if (rowData.contains(DBKey.READ__BOOL) && !rowData.getBoolean(DBKey.READ__BOOL)) {
+            return String.format(a_space_b, text, unreadStr);
+        }
+
+        return text;
     }
 }
