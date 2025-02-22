@@ -2160,7 +2160,7 @@ public class BooksOnBookshelf
                                @NonNull final DataHolder rowData,
                                @NonNull final Menu menu) {
             final MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.author, menu);
+            inflater.inflate(R.menu.bl_group_author, menu);
             vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
 
             final boolean complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
@@ -2221,7 +2221,7 @@ public class BooksOnBookshelf
                                @NonNull final Menu menu) {
             if (rowData.getLong(DBKey.FK_SERIES) != 0) {
                 final MenuInflater inflater = getMenuInflater();
-                inflater.inflate(R.menu.series, menu);
+                inflater.inflate(R.menu.bl_group_series, menu);
                 vm.getMenuHandlers().forEach(h -> h.onCreateMenu(context, menu, inflater, rowData));
 
                 final boolean complete = rowData.getBoolean(DBKey.SERIES.COMPLETE);
@@ -2294,7 +2294,7 @@ public class BooksOnBookshelf
         private void forPublisher(@NonNull final DataHolder rowData,
                                   @NonNull final Menu menu) {
             if (rowData.getLong(DBKey.FK_PUBLISHER) != 0) {
-                getMenuInflater().inflate(R.menu.publisher, menu);
+                getMenuInflater().inflate(R.menu.bl_group_publisher, menu);
             } else {
                 // It's a "(No Publisher)" node
                 menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
@@ -2352,9 +2352,9 @@ public class BooksOnBookshelf
         private void forTag(@NonNull final DataHolder rowData,
                             @NonNull final Menu menu) {
             if (rowData.getLong(DBKey.FK_TAG) != 0) {
-                getMenuInflater().inflate(R.menu.tag, menu);
+                getMenuInflater().inflate(R.menu.bl_group_tag, menu);
             } else {
-                // It's a "(Not set)" mode
+                // It's a "(Not set)" node
                 menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
                          getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
                          R.string.lbl_assign_bookshelves)
@@ -2410,7 +2410,7 @@ public class BooksOnBookshelf
         private void forBookshelf(@NonNull final DataHolder rowData,
                                   @NonNull final Menu menu) {
             if (!rowData.getString(DBKey.FK_BOOKSHELF).isEmpty()) {
-                getMenuInflater().inflate(R.menu.bookshelf, menu);
+                getMenuInflater().inflate(R.menu.bl_group_bookshelf, menu);
             }
             // Note that a "(No Bookshelf)" does NOT exist.
             // Books are always on a shelf.
