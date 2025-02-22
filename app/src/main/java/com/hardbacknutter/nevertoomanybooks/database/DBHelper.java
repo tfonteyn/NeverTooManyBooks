@@ -87,9 +87,7 @@ public class DBHelper
      * Previous versions.
      * v5.0.0: 26
      * v5.1.0: 27
-     * v5.1.1: 27
      * v5.2.0: 29
-     * v5.2.1: 29
      * v5.2.2: 30
      * v5.3.0: 31
      * v5.5.0: 32
@@ -97,11 +95,11 @@ public class DBHelper
      * v5.5.4: 34
      * v7.0.0: 35
      * v7.0.3: 36
-     * v7.1.0: 37
+     * v7.1.0: 38
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 37;
+    public static final int DATABASE_VERSION = 38;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -574,6 +572,12 @@ public class DBHelper
             db.beginTransaction();
 
             TBL_LANG_MAPPINGS.create(db, true);
+        }
+        if (oldVersion < 38) {
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                    db,
+                    DBDefinitions.DOM_STYLE_SHOW_GROUP_BOOK_COUNT);
+
         }
 
         // We have to do this here due to some users skipping updates (see github #30)

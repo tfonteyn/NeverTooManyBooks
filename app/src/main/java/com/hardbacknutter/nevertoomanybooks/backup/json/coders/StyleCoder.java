@@ -145,6 +145,9 @@ public class StyleCoder
         settings.put(StyleDataStore.PK_GROUP_ROW_HEIGHT,
                      style.isGroupRowUsesPreferredHeight());
 
+        settings.put(StyleDataStore.PK_SHOW_GROUP_BOOK_COUNT,
+                     style.isShowGroupBookCount());
+
         settings.put(StyleDataStore.PK_LIST_HEADER,
                      style.getHeaderFieldVisibilityValue());
         settings.put(PK_LIST_FIELD_ORDER_BY,
@@ -296,7 +299,10 @@ public class StyleCoder
             style.setGroupRowUsesPreferredHeight(
                     source.getBoolean(StyleDataStore.PK_GROUP_ROW_HEIGHT));
         }
-
+        if (source.has(StyleDataStore.PK_SHOW_GROUP_BOOK_COUNT)) {
+            style.setShowGroupBookCount(
+                    source.getBoolean(StyleDataStore.PK_SHOW_GROUP_BOOK_COUNT));
+        }
         if (source.has(StyleDataStore.PK_LIST_HEADER)) {
             style.setHeaderFieldVisibility(source.getInt(StyleDataStore.PK_LIST_HEADER));
         }

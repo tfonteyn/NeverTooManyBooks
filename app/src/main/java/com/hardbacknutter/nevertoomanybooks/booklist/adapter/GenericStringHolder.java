@@ -59,6 +59,27 @@ public class GenericStringHolder
         implements BindableViewHolder<DataHolder> {
 
     /**
+     * The group this holder represents.
+     * It's ok to store this as it's intrinsically linked with the ViewType.
+     */
+    @BooklistGroup.Id
+    private final int groupId;
+    /*** View to populate. */
+    @NonNull
+    private final TextView textView;
+    @NonNull
+    private final TextView bookCountView;
+    private final boolean showGroupBookCount;
+
+    @NonNull
+    private final FormatFunction formatter;
+    /**
+     * Key of the related data column.
+     * It's ok to store this as it's intrinsically linked with the BooklistGroup.
+     */
+    @NonNull
+    private final String key;
+    /**
      * Dev note: not static, as the R values are not static themselves.
      */
     @SuppressWarnings("FieldCanBeLocal")
@@ -66,23 +87,6 @@ public class GenericStringHolder
             com.google.android.material.R.attr.textAppearanceTitleLarge,
             com.google.android.material.R.attr.textAppearanceTitleMedium,
             com.google.android.material.R.attr.textAppearanceTitleSmall};
-    /**
-     * The group this holder represents.
-     * It's ok to store this as it's intrinsically linked with the ViewType.
-     */
-    @BooklistGroup.Id
-    protected final int groupId;
-    /*** View to populate. */
-    @NonNull
-    protected final TextView textView;
-    @NonNull
-    protected final FormatFunction formatter;
-    /**
-     * Key of the related data column.
-     * It's ok to store this as it's intrinsically linked with the BooklistGroup.
-     */
-    @NonNull
-    protected final String key;
 
     /** Only set/used when running in BuildConfig.DEBUG. */
     @Nullable
@@ -110,8 +114,12 @@ public class GenericStringHolder
                    .getDisplayDomainExpression()
                    .getDomain()
                    .getName();
+        showGroupBookCount = style.isShowGroupBookCount();
 
         final Context context = itemView.getContext();
+
+        bookCountView = itemView.findViewById(R.id.level_book_count);
+        bookCountView.setVisibility(showGroupBookCount ? View.VISIBLE : View.GONE);
 
         textView = itemView.findViewById(R.id.level_text);
         textView.setTextAppearance(AttrUtils.getResId(
@@ -160,7 +168,11 @@ public class GenericStringHolder
 
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
+
         textView.setText(formatter.format(groupId, rowData, key));
+        if (showGroupBookCount) {
+            bookCountView.setText(String.valueOf(rowData.getLong(DBKey.FK_BOOK)));
+        }
 
         if (BuildConfig.DEBUG) {
             dbgPosition(rowData);

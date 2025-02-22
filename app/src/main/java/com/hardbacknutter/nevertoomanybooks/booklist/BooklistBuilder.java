@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
@@ -113,6 +114,7 @@ class BooklistBuilder {
     private static final int NANO_TO_MILLIS = 1_000_000;
 
     private static final String SELECT_ = "SELECT ";
+    private static final String SELECT_COUNT_ = "SELECT COUNT(*) ";
     private static final String _FROM_ = " FROM ";
     private static final String INSERT_INTO_ = "INSERT INTO ";
     private static final String DELETE_FROM_ = "DELETE FROM ";
@@ -121,6 +123,9 @@ class BooklistBuilder {
     private static final String _WHERE_ = " WHERE ";
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String _VALUES_ = " VALUES ";
+    private static final String _LIKE_X = " LIKE ?";
+    private static final String UPDATE_ = "UPDATE ";
+    private static final String _SET_ = " SET ";
 
     private static final String CREATE_TEMPORARY_TRIGGER_ = "CREATE TEMPORARY TRIGGER ";
     private static final String _BEGIN_ = " BEGIN ";
@@ -560,6 +565,10 @@ class BooklistBuilder {
 
         // remove the no longer needed triggers
         cleanupTriggers(db);
+
+        if (style.isShowGroupBookCount()) {
+            createLevelSums(db);
+        }
 
         // Create the navigation table.
         // This is a mapping table between row-id + book-id and a plain sequential id.
@@ -1086,6 +1095,76 @@ class BooklistBuilder {
         }
         if (triggerHelperTable != null) {
             db.drop(triggerHelperTable.getName());
+        }
+    }
+
+    private void createLevelSums(@NonNull final SynchronizedDb db) {
+        final int groupCount = style.getGroupCount();
+
+        // collect all the book node keys
+        List<String> nodeKeys = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(
+                SELECT_ + "DISTINCT " + DBKey.BL_NODE.KEY + _FROM_ + listTable
+                + _WHERE_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK
+                , null)) {
+            while (cursor.moveToNext()) {
+                nodeKeys.add(cursor.getString(0));
+            }
+        }
+
+        // count the books and store the result on the first level above the books,
+        // i.e. on the lowest group, the highest level-group.
+        try (SynchronizedStatement stmt = db.compileStatement(
+                SELECT_COUNT_ + _FROM_ + listTable
+                + _WHERE_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK
+                + _AND_ + DBKey.BL_NODE.KEY + "=?");
+             SynchronizedStatement putCount = db.compileStatement(
+                     UPDATE_ + listTable + _SET_ + DBKey.FK_BOOK + "=?"
+                     + _WHERE_ + DBKey.BL_NODE.KEY + "=?"
+                     + _AND_ + DBKey.BL_NODE.LEVEL + "=?")) {
+            for (final String nodeKey : nodeKeys) {
+                stmt.bindString(1, nodeKey);
+                final long count = stmt.simpleQueryForLongOrZero();
+
+                putCount.bindLong(1, count);
+                putCount.bindString(2, nodeKey);
+                // the level above the books, which IS the group count
+                putCount.bindLong(3, groupCount);
+                putCount.executeUpdateDelete();
+            }
+        }
+
+        if (groupCount > 1) {
+            // accumulate the sums for each group level, and store them on a higher level.
+            try (SynchronizedStatement stmt = db.compileStatement(
+                    SELECT_ + "SUM(" + DBKey.FK_BOOK + ") " + _FROM_ + listTable
+                    + _WHERE_ + DBKey.BL_NODE.KEY + _LIKE_X
+                    + _AND_ + DBKey.BL_NODE.LEVEL + "=?");
+                 SynchronizedStatement putCount = db.compileStatement(
+                         UPDATE_ + listTable + _SET_ + DBKey.FK_BOOK + "=?"
+                         + _WHERE_ + DBKey.BL_NODE.KEY + _LIKE_X
+                         + _AND_ + DBKey.BL_NODE.LEVEL + "=?")) {
+
+                for (int level = groupCount; level > 1; level--) {
+                    // cut the node key down to the level above
+                    // Make sure to remove the '='.
+                    nodeKeys = nodeKeys.stream()
+                                       .map(k -> k.substring(0, k.lastIndexOf("=")) + '%')
+                                       .distinct()
+                                       .collect(Collectors.toList());
+
+                    for (final String nodeKey : nodeKeys) {
+                        stmt.bindString(1, nodeKey);
+                        stmt.bindLong(2, level);
+                        final long count = stmt.simpleQueryForLongOrZero();
+
+                        putCount.bindLong(1, count);
+                        putCount.bindString(2, nodeKey);
+                        putCount.bindLong(3, level - 1);
+                        putCount.executeUpdateDelete();
+                    }
+                }
+            }
         }
     }
 }

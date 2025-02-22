@@ -62,6 +62,6 @@ public class AuthorHolder
         super.onBind(rowData);
 
         completeView.setVisibility(rowData.getBoolean(DBKey.AUTHOR.COMPLETE)
-                                   ? View.VISIBLE : View.GONE);
+                                   ? View.VISIBLE : View.INVISIBLE);
     }
 }

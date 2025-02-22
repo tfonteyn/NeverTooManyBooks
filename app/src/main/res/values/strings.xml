@@ -2054,5 +2054,6 @@
             translatable="false">Tuning</string>
 
     <string name="action_restore_default_identifiers">Restore the default Identifiers</string>
+    <string name="pt_bob_show_group_book_count">Show the book count on each group</string>
 
 </resources>

@@ -169,6 +169,7 @@ public class StyleDaoImpl
 
         stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
         stmt.bindBoolean(++c, style.isShowReorderedTitle());
+        stmt.bindBoolean(++c, style.isShowGroupBookCount());
 
         stmt.bindBoolean(++c, style.useReadProgress());
         stmt.bindLong(++c, style.getCitationType().getId());
@@ -298,6 +299,7 @@ public class StyleDaoImpl
 
             cv.put(DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME, style.isShowAuthorByGivenName());
             cv.put(DBKey.STYLE.TITLE_SHOW_REORDERED, style.isShowReorderedTitle());
+            cv.put(DBKey.STYLE.SHOW_GROUP_BOOK_COUNT, style.isShowGroupBookCount());
 
             cv.put(DBKey.STYLE.READ_STATUS_WITH_PROGRESS, style.useReadProgress());
 
@@ -459,6 +461,7 @@ public class StyleDaoImpl
 
                     + ',' + DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME
                     + ',' + DBKey.STYLE.TITLE_SHOW_REORDERED
+                    + ',' + DBKey.STYLE.SHOW_GROUP_BOOK_COUNT
 
                     + ',' + DBKey.STYLE.READ_STATUS_WITH_PROGRESS
                     + ',' + DBKey.STYLE.CITATION_TYPE

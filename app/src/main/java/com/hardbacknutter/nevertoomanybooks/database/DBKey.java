@@ -359,6 +359,7 @@ public final class DBKey {
         public static final String AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";
         public static final String AUTHOR_SHOW_BY_GIVEN_NAME = "author_show_gn";
         public static final String TITLE_SHOW_REORDERED = "show_reorder_title";
+        public static final String SHOW_GROUP_BOOK_COUNT = "show_group_book_count";
         public static final String READ_STATUS_WITH_PROGRESS = "read_status_with_progress";
         public static final String CITATION_TYPE = "citation_style";
         /**

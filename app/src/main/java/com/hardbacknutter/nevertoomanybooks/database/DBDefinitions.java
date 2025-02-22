@@ -482,6 +482,7 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME;
     public static final Domain DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME;
     public static final Domain DOM_STYLE_TITLE_SHOW_REORDERED;
+    public static final Domain DOM_STYLE_SHOW_GROUP_BOOK_COUNT;
     public static final Domain DOM_STYLE_READ_STATUS_WITH_PROGRESS;
     public static final Domain DOM_STYLE_TEXT_SCALE;
     public static final Domain DOM_STYLE_COVER_SCALE;
@@ -1366,6 +1367,13 @@ public final class DBDefinitions {
                         .withDefault(false)
                         .build();
 
+        DOM_STYLE_SHOW_GROUP_BOOK_COUNT =
+                new Domain.Builder(DBKey.STYLE.SHOW_GROUP_BOOK_COUNT,
+                                   SqLiteDataType.Boolean)
+                        .notNull()
+                        .withDefault(true)
+                        .build();
+
         DOM_STYLE_READ_STATUS_WITH_PROGRESS =
                 new Domain.Builder(DBKey.STYLE.READ_STATUS_WITH_PROGRESS,
                                    SqLiteDataType.Boolean)
@@ -1442,6 +1450,7 @@ public final class DBDefinitions {
                             DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
                             DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
                             DOM_STYLE_TITLE_SHOW_REORDERED,
+                            DOM_STYLE_SHOW_GROUP_BOOK_COUNT,
                             DOM_STYLE_READ_STATUS_WITH_PROGRESS,
                             DOM_STYLE_CITATION_TYPE,
                             DOM_STYLE_TEXT_SCALE,

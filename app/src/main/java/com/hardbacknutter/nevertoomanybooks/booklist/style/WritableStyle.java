@@ -135,6 +135,8 @@ public interface WritableStyle
      */
     void setGroupRowUsesPreferredHeight(boolean value);
 
+    void setShowGroupBookCount(boolean value);
+
     /**
      * Set the list of groups.
      *

@@ -413,6 +413,13 @@ public interface Style {
     @NonNull
     String getGroupsSummaryText(@NonNull Context context);
 
+    /**
+     * Should a summation of the number of books on each level be done/shown.
+     *
+     * @return flag
+     */
+    boolean isShowGroupBookCount();
+
     enum Type {
         /**
          * User defined.

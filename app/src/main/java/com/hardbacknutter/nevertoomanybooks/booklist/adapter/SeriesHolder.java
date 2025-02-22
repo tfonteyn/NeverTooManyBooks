@@ -62,6 +62,6 @@ public class SeriesHolder
         super.onBind(rowData);
 
         completeView.setVisibility(rowData.getBoolean(DBKey.SERIES.COMPLETE)
-                                   ? View.VISIBLE : View.GONE);
+                                   ? View.VISIBLE : View.INVISIBLE);
     }
 }

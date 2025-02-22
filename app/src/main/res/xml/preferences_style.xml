@@ -95,6 +95,15 @@
             android:title="@string/pt_bob_show_details"
             />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/functions_24px"
+            android:key="style.booklist.show.group.book.count"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_bob_show_group_book_count"
+            />
+
         <!-- Showing thumbnails fall under 'Extra Book Details', but this is more user-friendly. -->
         <SwitchPreference
             android:defaultValue="true"

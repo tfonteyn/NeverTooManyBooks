@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -35,6 +35,30 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/level_book_count"
+        style="@style/BoB.Group.Label"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:layout_marginEnd="@dimen/field_margin_start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cbx_is_complete"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SelectableText"
+        tools:text="#34"
+        />
+
+    <!-- Not used, but needed as a space holder to preserve the look of the list. -->
+    <ImageView
+        android:id="@+id/cbx_is_complete"
+        style="@style/Flag.Complete"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/rating"
+        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
+        tools:ignore="ContentDescription"
+        tools:visibility="visible"
         />
 
     <com.google.android.material.button.MaterialButton

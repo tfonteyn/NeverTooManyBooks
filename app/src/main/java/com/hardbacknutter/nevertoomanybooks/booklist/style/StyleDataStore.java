@@ -86,6 +86,8 @@ public class StyleDataStore
     /** Fat-finger adjustment. */
     public static final String PK_GROUP_ROW_HEIGHT = "style.booklist.group.height";
 
+    /** Group level summation of the number of books. */
+    public static final String PK_SHOW_GROUP_BOOK_COUNT = "style.booklist.show.group.book.count";
 
     /**
      * How to show Author names.
@@ -318,6 +320,11 @@ public class StyleDataStore
                 setModified();
                 return;
 
+            case PK_SHOW_GROUP_BOOK_COUNT:
+                style.setShowGroupBookCount(value);
+                setModified();
+                return;
+
             case PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
                 style.setShowAuthorByGivenName(value);
                 setModified();
@@ -371,6 +378,9 @@ public class StyleDataStore
         switch (key) {
             case PK_GROUP_ROW_HEIGHT:
                 return style.isGroupRowUsesPreferredHeight();
+
+            case PK_SHOW_GROUP_BOOK_COUNT:
+                return style.isShowGroupBookCount();
 
             case PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
                 return style.isShowAuthorByGivenName();

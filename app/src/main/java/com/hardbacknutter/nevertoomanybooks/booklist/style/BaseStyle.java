@@ -172,6 +172,7 @@ public abstract class BaseStyle
     /** Local override. */
     private boolean showAuthorByGivenName;
     private boolean showReorderedTitle;
+    private boolean showGroupBookCount = true;
 
     private boolean useReadProgress;
 
@@ -258,6 +259,8 @@ public abstract class BaseStyle
 
         showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME);
         showReorderedTitle = rowData.getBoolean(DBKey.STYLE.TITLE_SHOW_REORDERED);
+
+        showGroupBookCount = rowData.getBoolean(DBKey.STYLE.SHOW_GROUP_BOOK_COUNT);
 
         useReadProgress = rowData.getBoolean(DBKey.STYLE.READ_STATUS_WITH_PROGRESS);
 
@@ -431,7 +434,6 @@ public abstract class BaseStyle
         return coverLongClickAction;
     }
 
-
     public void setCoverLongClickAction(@NonNull final CoverLongClickAction coverLongClickAction) {
         this.coverLongClickAction = coverLongClickAction;
     }
@@ -576,6 +578,10 @@ public abstract class BaseStyle
         groupRowUsesPreferredHeight = value;
     }
 
+    public void setShowGroupBookCount(final boolean value) {
+        showGroupBookCount = value;
+    }
+
     @Override
     public int getGroupCount() {
         return groups.size();
@@ -689,6 +695,11 @@ public abstract class BaseStyle
     }
 
     @Override
+    public boolean isShowGroupBookCount() {
+        return showGroupBookCount;
+    }
+
+    @Override
     public boolean equals(@Nullable final Object o) {
         if (this == o) {
             return true;
@@ -777,6 +788,7 @@ public abstract class BaseStyle
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
                + ", showAuthorByGivenName=" + showAuthorByGivenName
                + ", showReorderedTitle=" + showReorderedTitle
+               + ", showGroupBookCount=" + showGroupBookCount
 
                + ", useReadProgress=" + useReadProgress
 

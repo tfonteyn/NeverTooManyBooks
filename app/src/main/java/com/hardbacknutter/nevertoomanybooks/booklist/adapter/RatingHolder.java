@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,12 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.view.View;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -39,11 +41,16 @@ public class RatingHolder
     /**
      * Key of the related data column.
      * It's ok to store this as it's intrinsically linked with the ViewType.
+     * And yes, we could just hardcode it in this class, but it's
+     * easier this way to protect ourselves against changes.
      */
     @NonNull
     private final String key;
     @NonNull
     private final RatingBar ratingBar;
+    @NonNull
+    private final TextView bookCountView;
+    private final boolean showGroupBookCount;
 
     /**
      * Constructor.
@@ -58,11 +65,18 @@ public class RatingHolder
                    .getDisplayDomainExpression()
                    .getDomain()
                    .getName();
+        showGroupBookCount = style.isShowGroupBookCount();
+
         ratingBar = itemView.findViewById(R.id.rating);
+        bookCountView = itemView.findViewById(R.id.level_book_count);
+        bookCountView.setVisibility(showGroupBookCount ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
         ratingBar.setRating(rowData.getInt(key));
+        if (showGroupBookCount) {
+            bookCountView.setText(String.valueOf(rowData.getLong(DBKey.FK_BOOK)));
+        }
     }
 }
