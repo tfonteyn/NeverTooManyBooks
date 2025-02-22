@@ -54,7 +54,7 @@ acra = '5.12.0'
 mockito = "5.15.2"
 
 # https://junit.org/junit5/docs/current/user-guide/#overview
-jupiter = "5.11.4"
+jupiter = "5.12.0"
 
 # https://developer.android.com/jetpack/androidx/releases/test
 androidxTestCore = '1.6.1'
