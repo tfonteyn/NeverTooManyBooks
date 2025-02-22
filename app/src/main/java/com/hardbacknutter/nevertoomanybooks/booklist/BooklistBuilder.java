@@ -951,6 +951,10 @@ class BooklistBuilder {
                 leftOuterJoins.add(TBL_BOOK_LOANEE);
             }
 
+            if (pFilterKeys.contains(DBKey.FK_BOOKSHELF)) {
+                leftOuterJoins.add(TBL_BOOK_BOOKSHELF);
+            }
+
             if (pFilterKeys.contains(DBKey.FK_TAG)) {
                 leftOuterJoins.add(TBL_BOOK_TAG);
             }
@@ -961,6 +965,7 @@ class BooklistBuilder {
             // we start the join there.
             if (style.hasGroup(BooklistGroup.BOOKSHELF) || filteredOnBookshelf) {
                 sb.append(TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF, TBL_BOOKS));
+                leftOuterJoins.remove(TBL_BOOK_BOOKSHELF);
             } else {
                 // Otherwise, we start with the BOOKS table.
                 sb.append(TBL_BOOKS.ref());
