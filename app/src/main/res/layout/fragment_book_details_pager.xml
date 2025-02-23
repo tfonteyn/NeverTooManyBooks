@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,22 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-FIXME: 2024-01-21: bug in android framework causing a TransactionTooLargeException
-
-      Reproducing is very difficult... it involves
-      - open a book detail
-      - update fields
-      - swipe to next book
-      - update fields
-      - repeat for 10..20 books
-      - but it will still depend on the amount of data downloaded.
-
-       https://stackoverflow.com/questions/11451393/what-to-do-on-transactiontoolargeexception
-
-       The solution they claim is to add
-          android:saveEnabled="false"
-      -->
 <androidx.viewpager2.widget.ViewPager2
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
