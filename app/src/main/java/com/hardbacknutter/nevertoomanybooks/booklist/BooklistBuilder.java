@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -113,19 +114,20 @@ class BooklistBuilder {
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
 
+    private static final String DELETE_FROM_ = "DELETE FROM ";
+    private static final String INSERT_INTO_ = "INSERT INTO ";
     private static final String SELECT_ = "SELECT ";
     private static final String SELECT_COUNT_ = "SELECT COUNT(*) ";
-    private static final String _FROM_ = " FROM ";
-    private static final String INSERT_INTO_ = "INSERT INTO ";
-    private static final String DELETE_FROM_ = "DELETE FROM ";
-    private static final String _AS_ = " AS ";
-    private static final String _AND_ = " AND ";
-    private static final String _WHERE_ = " WHERE ";
-    private static final String _ORDER_BY_ = " ORDER BY ";
-    private static final String _VALUES_ = " VALUES ";
-    private static final String _LIKE_X = " LIKE ?";
+    private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
     private static final String UPDATE_ = "UPDATE ";
+    private static final String _AND_ = " AND ";
+    private static final String _AS_ = " AS ";
+    private static final String _FROM_ = " FROM ";
+    private static final String _LIKE_X = " LIKE ?";
+    private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String _SET_ = " SET ";
+    private static final String _VALUES_ = " VALUES ";
+    private static final String _WHERE_ = " WHERE ";
 
     private static final String CREATE_TEMPORARY_TRIGGER_ = "CREATE TEMPORARY TRIGGER ";
     private static final String _BEGIN_ = " BEGIN ";
@@ -180,21 +182,24 @@ class BooklistBuilder {
     /** the list of Filters. */
     private final Collection<Filter> filters = new ArrayList<>();
 
-    /** Domains belonging the current group including its outer groups. */
-    private final List<Domain> accumulatedDomains = new ArrayList<>();
+    /**
+     * Domains belonging the current group including its outer groups.
+     * <p>
+     * LinkedHashSet: to eliminate duplicates, but keep the insertion order.
+     */
+    private final Set<Domain> accumulatedDomains = new LinkedHashSet<>();
 
     /**
      * Domains that form part of the sort key.
      * These are typically a reduced set of the group domains since the group domains
      * may contain more than just the key
+     * <p>
+     * LinkedHashSet: to eliminate duplicates, but keep the insertion order.
      */
-    private final List<DomainExpression> orderByDomainExpressions = new ArrayList<>();
+    private final Set<DomainExpression> orderByDomainExpressions = new LinkedHashSet<>();
 
     /** Guards from adding duplicates. */
     private final Map<Domain, String> expressionsDupCheck = new HashMap<>();
-
-    /** Guards from adding duplicates. */
-    private final Collection<String> orderByDupCheck = new HashSet<>();
 
     @NonNull
     private final Bookshelf bookshelf;
@@ -283,12 +288,9 @@ class BooklistBuilder {
             domainExpressions.add(domainExpression);
         }
 
-        // If required, add the domainExpression to the order-by domains, if not already there
-        if (domainExpression.getSort() != Sort.Unsorted
-            && !orderByDupCheck.contains(domain.getName())) {
-
+        // If required, add the domainExpression to the order-by domains
+        if (domainExpression.getSort() != Sort.Unsorted) {
             orderByDomainExpressions.add(domainExpression);
-            orderByDupCheck.add(domain.getName());
         }
     }
 
@@ -1091,9 +1093,9 @@ class BooklistBuilder {
         // collect all the book node keys
         List<String> nodeKeys = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
-                SELECT_ + "DISTINCT " + DBKey.BL_NODE.KEY + _FROM_ + listTable
-                + _WHERE_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK
-                , null)) {
+                SELECT_DISTINCT_ + DBKey.BL_NODE.KEY + _FROM_ + listTable
+                + _WHERE_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK,
+                null)) {
             while (cursor.moveToNext()) {
                 nodeKeys.add(cursor.getString(0));
             }
