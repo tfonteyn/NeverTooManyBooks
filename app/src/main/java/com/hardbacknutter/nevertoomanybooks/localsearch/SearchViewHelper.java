@@ -38,7 +38,6 @@ import java.util.function.Consumer;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
-import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * github #107 => https://issuetracker.google.com/issues/135594222
@@ -75,7 +74,8 @@ public class SearchViewHelper {
         this.searchView = searchView;
         this.displayBook = displayBook;
         this.displayQuery = displayQuery;
-        InsetsListenerBuilder.apply(resultsView);
+        // reminder: do not apply insets to the resultsView.
+        // The SearchView takes care of them already.
 
         searchView.inflateMenu(R.menu.search_view);
         searchView.setOnMenuItemClickListener(this::onMenuItemClick);
