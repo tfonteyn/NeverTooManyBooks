@@ -141,6 +141,11 @@ public class TagAdminFragment
                         .editOrCreateMapping(tagName));
     }
 
+    /**
+     * All the tabs that will be shown.
+     * <p>
+     * Limited amount of Fragments, no need/desire to use ExtFragmentStateAdapter.F
+     */
     private static class TabAdapter
             extends FragmentStateAdapter {
 

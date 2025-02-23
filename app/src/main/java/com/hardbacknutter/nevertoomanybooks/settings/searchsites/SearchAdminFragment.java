@@ -175,7 +175,9 @@ public class SearchAdminFragment
     }
 
     /**
-     * Encapsulate all the tabs that will be shown.
+     * All the tabs that will be shown.
+     * <p>
+     * Limited amount of Fragments, no need/desire to use ExtFragmentStateAdapter.F
      */
     private static class TabAdapter
             extends FragmentStateAdapter {

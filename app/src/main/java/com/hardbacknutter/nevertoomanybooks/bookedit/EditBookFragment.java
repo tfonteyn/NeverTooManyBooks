@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -157,8 +157,7 @@ public class EditBookFragment
         }
         vb.pager.setCurrentItem(currentTab);
 
-        //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
-        // and its re-use strategy.
+        // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
         vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
     }
 
@@ -295,6 +294,11 @@ public class EditBookFragment
         getActivity().finish();
     }
 
+    /**
+     * All the tabs that will be shown.
+     * <p>
+     * Limited amount of Fragments, no need/desire to use ExtFragmentStateAdapter.F
+     */
     private static class TabAdapter
             extends FragmentStateAdapter {
 
