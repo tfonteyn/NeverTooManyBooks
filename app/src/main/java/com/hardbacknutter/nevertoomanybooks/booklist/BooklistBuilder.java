@@ -579,6 +579,8 @@ class BooklistBuilder {
                    + " (" + DBKey.FK_BOOK + ',' + FK_ROW_ID + ") "
                    + SELECT_ + DBKey.FK_BOOK + ',' + DBKey.PK_ID
                    + _FROM_ + listTable.getName()
+                   // MUST be limited to BooklistGroup.BOOK;
+                   // the FK_BOOK fields on other groups represents the book-count for that group
                    + _WHERE_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK
                    + _ORDER_BY_ + DBKey.PK_ID);
 
