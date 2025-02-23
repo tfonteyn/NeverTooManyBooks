@@ -12,6 +12,11 @@ NEW:
 - date parsers performance increased, which *might* show while scrolling the book list.
 
 FIXES:
+
+- #114 aka https://issuetracker.google.com/issues/309593253
+  Swipe left trough book-details screens for long enough (40..50 times or more)
+  and the app would crash due to the above google caching issue.
+  Fixed by forking/fixing the google component.
 - #109 sorting by dates on the book level now supports mixing partial-dates
 - Citations have been tweaked to better conform to the standards
 
@@ -100,80 +105,7 @@ ENHANCE Pseudonyms on ISFDB:
 <hr style="border:1px solid red;">
 Known issues:
 
-
-FIXME: bug in android framework causing a TransactionTooLargeException
-
-      Reproducing:
-      - open a book detail
-      - swipe to next book
-      - repeat for 20..40 books
-      - edit book
-      - crash
-
-https://stackoverflow.com/questions/11451393/what-to-do-on-transactiontoolargeexception
-==> viewpager1
-https://medium.com/shopback-tech-blog/handle-transactiontoolargeexception-237961bd5ef8
-==> it's not us
-https://medium.com/inloopx/adventures-with-fragmentstatepageradapter-4f56a643f8e0
-==> viewpager1
-
-BUT... androidx.viewpager2.adapter is the root problem.
-https://issuetracker.google.com/issues?q=componentid:561920%20status:open
-It saves the state for each fragment it has displayed,
-so swipe enough... and crash.
-
-    java.lang.RuntimeException: android.os.TransactionTooLargeException: data parcel size 543240 bytes
-      Bundle stats:
-        android:viewHierarchyState [size=2928]
-          android:views [size=2880]
-        androidx.lifecycle.BundlableSavedStateRegistry.key [size=539584]
-          android:support:activity-result [size=10616]
-            KEY_COMPONENT_ACTIVITY_REGISTERED_KEYS [size=9548]
-          android:support:fragments [size=528592]
-            fragment_0ad96e00-3f7c-4a23-b5a5-095f25e35c8f [size=528208]
-              viewState [size=467820]
-                0x7f090317 [size=467652]
-              childFragmentManager [size=59276]
-                fragment_b78f1ec9-6877-4c19-9947-21f2f1af61c0 [size=11592]
-                  viewState [size=9228]
-                  childFragmentManager [size=1484]
-                    fragment_ac6548fc-392b-4ef3-ac8b-16700c25de71 [size=1100]
-                fragment_8282bf04-d139-45db-b6b3-1fc796fe754a [size=11500]
-                  viewState [size=9136]
-                  childFragmentManager [size=1484]
-                    fragment_af705a3f-55a4-4d83-bd09-ea2ea1f120a9 [size=1100]
-                fragment_1bdd665e-3ded-4c87-813b-2d5a77a286d8 [size=11592]
-                  viewState [size=9228]
-                  childFragmentManager [size=1484]
-                    fragment_a71abbc4-27b9-42d0-b388-5b4802aab467 [size=1100]
-                fragment_63a14570-794e-4c92-875e-809a84cb2157 [size=11592]
-                  viewState [size=9228]
-                  childFragmentManager [size=1484]
-                    fragment_6e786c56-c8e6-4b4d-9e9d-9282c364d42d [size=1100]
-                fragment_15e15901-37a1-439b-a628-cf68d13f8989 [size=11592]
-                  viewState [size=9228]
-                  childFragmentManager [size=1484]
-                    fragment_450f681d-0d4d-45fa-a642-6f5ce11504cb [size=1100]
-      PersistableBundle stats:
-        [null]
-        at android.app.servertransaction.PendingTransactionActions$StopInfo.run(PendingTransactionActions.java:146)
-        at android.os.Handler.handleCallback(Handler.java:991)
-        at android.os.Handler.dispatchMessage(Handler.java:102)
-        at android.os.Looper.loopOnce(Looper.java:232)
-        at android.os.Looper.loop(Looper.java:317)
-        at android.app.ActivityThread.main(ActivityThread.java:8787)
-        at java.lang.reflect.Method.invoke(Native Method)
-        at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:591)
-        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:871)
-      Caused by: android.os.TransactionTooLargeException: data parcel size 543240 bytes
-        at android.os.BinderProxy.transactNative(Native Method)
-        at android.os.BinderProxy.transact(BinderProxy.java:586)
-        at android.app.IActivityClientController$Stub$Proxy.activityStopped(IActivityClientController.java:1498)
-        at android.app.ActivityClient.activityStopped(ActivityClient.java:100)
-        at android.app.servertransaction.PendingTransactionActions$StopInfo.run(PendingTransactionActions.java:135)
-        ... 8 more
-
-<hr style="border:1px solid red;">
+---
 
 Window insets:
 https://issuetracker.google.com/issues/388867281
