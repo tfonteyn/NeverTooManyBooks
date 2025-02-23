@@ -1077,7 +1077,7 @@ class BooklistBuilder {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger()
-                         .d(TAG, "build", "currentValueTgSql=" + currentValueTgSql);
+                         .d(TAG, "build", "currentValue|TgSql=" + currentValueTgSql);
         }
     }
 
