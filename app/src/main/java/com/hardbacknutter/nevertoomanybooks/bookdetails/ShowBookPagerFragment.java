@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -39,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.vp2.ExtFragmentStateAdapter;
 
 public class ShowBookPagerFragment
         extends BaseFragment {
@@ -113,7 +113,7 @@ public class ShowBookPagerFragment
     }
 
     private class ShowBookPagerAdapter
-            extends FragmentStateAdapter {
+            extends ExtFragmentStateAdapter {
 
         ShowBookPagerAdapter(@NonNull final Fragment fragment) {
             super(fragment);
