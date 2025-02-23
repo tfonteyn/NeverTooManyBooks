@@ -754,6 +754,7 @@ public class Booklist
             listCursor.close();
         }
         db.drop(listTable.getName());
+        db.drop(navTable.getName());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger().d(TAG, "close",
