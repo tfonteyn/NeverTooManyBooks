@@ -840,4 +840,5 @@
     <string name="lbl_original_language">原始语言</string>
     <string name="confirm_delete_identifier_from_x_books">删除识别符 “%1$s”？\n\n将从 %2$s 处删除它。书籍本身不会被删除。</string>
     <string name="action_restore_default_identifiers">恢复默认识别符</string>
+    <string name="pt_bob_show_group_book_count">显示每组中的书籍数。</string>
 </resources>
