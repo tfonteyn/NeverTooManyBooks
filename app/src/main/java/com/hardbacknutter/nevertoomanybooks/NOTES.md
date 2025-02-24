@@ -34,14 +34,17 @@ https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwi
 https://apilevels.com/
 
 2025-01-31:
-14.0     37.09
-13.0     57.66
-12.0     70.73
-11.0     82.35
-10.0     88.56
-9.0      92.15
-8.1      93.23
-8.0      95.24
+
+| version | %     |     
+|---------|-------|
+| 14.0    | 37.09 |
+| 13.0    | 57.66 |
+| 12.0    | 70.73 |
+| 11.0    | 82.35 |
+| 10.0    | 88.56 |
+| 9.0     | 92.15 |
+| 8.1     | 93.23 |
+| 8.0     | 95.24 |
 
 <hr style="border:1px solid blue;">
 
