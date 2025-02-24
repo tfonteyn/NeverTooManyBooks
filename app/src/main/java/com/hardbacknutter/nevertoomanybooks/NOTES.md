@@ -109,6 +109,9 @@ Known issues:
 
 Window insets:
 https://issuetracker.google.com/issues/388867281
+
+2025-02-19: allegedly fixed in aug-2024, but not available in any image for the emulator...
+
  On Android 15 (emulator standard image + ext-14 image), when the user changes the Theme Colors,
  ... THE ACTIVITY WILL RESTART as is normal...
  the toolbar is automatically changed, but the background of the status bar
@@ -120,6 +123,46 @@ https://issuetracker.google.com/issues/388867281
 
  Emulator set to use "no cutout" or a "double cutout"
  Android 14, 13 and 12 work FINE.
+
+<hr style="border:1px solid red;">
+
+Grouping on dates, e.g. on "Year-Read, Month-Read, Author".
+
+If you read 3 books that month, first one by Author A, then one by Author B,
+then another by Author A, they will show up as:
+
+- year
+    - month
+        - A 2
+            - title 3
+        - B 1
+            - title 2
+        - A 2
+            - title 1
+
+So you get duplicate Author entries each showing the total (2) of books you
+read that month of that Author.
+This is due to the sorting on the date-read which **includes** the day.
+If you added "Day-Read" to the grouping you would get:
+
+- year
+    - month
+        - day 3
+            - A 1
+                - title 3
+        - day 2
+            - B 1
+                - title 2
+        - day 1
+            - A 1
+                - title 1
+
+So the first list **is** correct if somewhat confusing.
+You can either:
+
+- include the Day group
+- don't read two books by the same Author in the same month (and book(s) from other Authors in
+  between)
 
 <hr style="border:1px solid red;">
 
