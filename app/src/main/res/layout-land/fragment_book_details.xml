@@ -121,9 +121,17 @@
             style="@style/Field.BookTitle.Small"
             android:layout_width="wrap_content"
             app:layout_constraintStart_toEndOf="@id/original_title"
-            app:layout_constraintBaseline_toBaselineOf="@id/original_title"
+            app:layout_constraintTop_toBottomOf="@id/title"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/language/name"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_titles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="title,original_title,original_language"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -139,7 +147,7 @@
             style="@style/Field.RatingBar.Indicator"
             android:layout_marginStart="@dimen/field_margin_inline"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/original_title"
+            app:layout_constraintTop_toBottomOf="@id/barrier_titles"
             app:layout_constraintBottom_toTopOf="@id/author"
             />
 
@@ -150,7 +158,7 @@
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintEnd_toStartOf="@+id/barrier_rating_toc"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/original_title"
+            app:layout_constraintTop_toBottomOf="@id/barrier_titles"
             tools:layout="@layout/fragment_read_progress"
             />
 

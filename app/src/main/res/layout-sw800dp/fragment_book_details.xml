@@ -122,9 +122,17 @@
             style="@style/Field.BookTitle.Small"
             android:layout_width="wrap_content"
             app:layout_constraintStart_toEndOf="@id/original_title"
-            app:layout_constraintBaseline_toBaselineOf="@id/original_title"
+            app:layout_constraintTop_toBottomOf="@id/title"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/language/name"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_titles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="title,original_title,original_language"
             />
 
         <androidx.fragment.app.FragmentContainerView
@@ -133,7 +141,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/original_title"
+            app:layout_constraintTop_toBottomOf="@id/barrier_titles"
             tools:layout="@layout/fragment_read_progress"
             />
 
@@ -141,7 +149,7 @@
             android:id="@+id/rating"
             style="@style/Field.RatingBar.Indicator.Medium"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/original_title"
+            app:layout_constraintTop_toBottomOf="@id/barrier_titles"
             />
 
         <TextView
