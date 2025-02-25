@@ -205,6 +205,7 @@ public class CoverBrowserViewModel
      *
      * @param taskId to remove
      */
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void removeTask(final int taskId) {
         synchronized (galleryTasks) {
 

@@ -268,6 +268,7 @@ public class SearchCoordinator
         }
     }
 
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private synchronized void onSearchTaskFailed(final int taskId,
                                                  @Nullable final Throwable e) {
         synchronized (errorsByEngineId) {
@@ -283,6 +284,7 @@ public class SearchCoordinator
         onSearchTaskFinished(taskId, null);
     }
 
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private synchronized void onSearchProgress(@NonNull final TaskProgress message) {
         synchronized (progressByEngineId) {
             final EngineId engineId;

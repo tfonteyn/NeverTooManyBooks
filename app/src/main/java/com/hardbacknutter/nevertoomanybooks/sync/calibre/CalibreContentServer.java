@@ -507,6 +507,7 @@ public final class CalibreContentServer
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     @Nullable
     private static SSLContext getSslContext(@NonNull final Context context)
             throws CertificateException {

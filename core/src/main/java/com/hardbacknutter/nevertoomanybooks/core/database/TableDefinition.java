@@ -270,6 +270,7 @@ public class TableDefinition {
      *
      * @return Domain List
      */
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     @NonNull
     private List<Domain> getPrimaryKey() {
         return primaryKey;
@@ -297,6 +298,8 @@ public class TableDefinition {
      *                          the PK in the primaryKeyTable
      *
      * @return {@code this} (for chaining)
+     *
+     * @throws IllegalStateException if a foreign key does not reference this table
      */
     @NonNull
     public TableDefinition addReference(@NonNull final TableDefinition primaryKeyTable,

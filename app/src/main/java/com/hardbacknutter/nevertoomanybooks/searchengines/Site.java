@@ -158,10 +158,12 @@ public final class Site
         return PREF_PREFIX + engineId.getPreferenceKey() + '.' + type.key + '.';
     }
 
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
         active = prefs.getBoolean(getPrefPrefix() + PREF_SUFFIX_ACTIVE, active);
     }
 
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
         editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ACTIVE, active);
     }

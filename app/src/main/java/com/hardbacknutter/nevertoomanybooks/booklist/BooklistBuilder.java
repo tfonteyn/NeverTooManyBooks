@@ -1138,7 +1138,7 @@ class BooklistBuilder {
                     // cut the node key down to the level above
                     // Make sure to remove the '='.
                     nodeKeys = nodeKeys.stream()
-                                       .map(k -> k.substring(0, k.lastIndexOf("=")) + '%')
+                                       .map(k -> k.substring(0, k.lastIndexOf('=')) + '%')
                                        .distinct()
                                        .collect(Collectors.toList());
 

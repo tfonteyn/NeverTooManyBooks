@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -187,6 +187,7 @@ public class Synchronizer {
      *
      * @throws LockException on any failure
      */
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void releaseExclusiveLock() {
         if (!mainLock.isHeldByCurrentThread()) {
             throw new LockException("Exclusive Lock is not held by this thread");

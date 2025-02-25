@@ -432,7 +432,8 @@ public class EditBookTocFragment
                                     tocEntry, vm.isAnthology());
     }
 
-    @SuppressLint({"NotifyDataSetChanged", "MethodOnlyUsedFromInnerClass"})
+    @SuppressLint("NotifyDataSetChanged")
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void updateWithPrimaryBookAuthor() {
         final Author tocAuthor = vm.getBook().getPrimaryAuthor();
         // Sanity/paranoia check, this should never be the case

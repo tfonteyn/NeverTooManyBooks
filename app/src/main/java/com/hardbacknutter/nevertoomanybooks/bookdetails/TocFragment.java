@@ -156,7 +156,7 @@ public class TocFragment
     }
 
     @CallSuper
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint({"ClickableViewAccessibility", "NotifyDataSetChanged"})
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -184,7 +184,6 @@ public class TocFragment
         vb.toc.setAdapter(adapter);
         vb.toc.setHasFixedSize(true);
 
-        //noinspection NotifyDataSetChanged
         vm.onReloadBook().observe(getViewLifecycleOwner(), bookId -> {
             adapter.notifyDataSetChanged();
             updateToolbar();
