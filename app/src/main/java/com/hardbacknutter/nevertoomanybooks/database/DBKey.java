@@ -323,6 +323,7 @@ public final class DBKey {
      */
     @SuppressWarnings("CheckStyle")
     public static final class STYLE {
+        //NEWTHINGS: style option: add dbkey
 
         public static final String UUID = "uuid";
         /**

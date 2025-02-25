@@ -42,6 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  *  {@link StyleDataStore} preference keys
  *  com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle BOOK_LEVEL_FIELDS_DEFAULTS
  *  "res/xml/preferences_style_book_details.xml"
+ * <p>
+ * NEWTHINGS: style option: add a PK, add it to the get/set, keep in sync with
+ *  "res/xml/preferences_style.xml"
 
  * @see BookLevelFieldVisibility
  * @see BookDetailsFieldVisibility
@@ -142,6 +145,7 @@ public class StyleDataStore
 
     /*
      * NEWTHINGS: BookLevelField: add mapping
+     * NEWTHINGS: style option: add mapping
      */
     static {
         PK_LIST_SHOW_FIELD_TO_DB_KEY.put(VIS_PREFIX + "thumbnails", DBKey.COVER[0]);

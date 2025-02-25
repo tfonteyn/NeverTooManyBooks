@@ -234,6 +234,8 @@ public abstract class BaseStyle
         preferred = rowData.getBoolean(DBKey.STYLE.IS_PREFERRED);
         menuPosition = rowData.getInt(DBKey.STYLE.MENU_POSITION);
 
+        //NEWTHINGS: style option: read from rowData
+
         // 'simple' options
         setLayout(Style.Layout.byId(rowData.getInt(DBKey.STYLE.LAYOUT)));
         setCoverClickAction(Style.CoverClickAction.byId(

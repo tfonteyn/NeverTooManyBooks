@@ -183,6 +183,8 @@ public class StyleDaoImpl
             stmt.bindBoolean(++c, style.isShowBooksUnderEachGroup(item.getGroupId()));
         }
 
+        //NEWTHINGS: style option: add to the inserted values
+
         return stmt.executeInsert();
     }
 
@@ -307,6 +309,8 @@ public class StyleDaoImpl
 
             cv.put(DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY,
                    style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
+
+            //NEWTHINGS: style option: add to the UPDATE
         }
 
         final int rowsAffected = db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
@@ -471,6 +475,8 @@ public class StyleDaoImpl
                     + ',' + DBKey.STYLE.EXP_LEVEL
                     + ',' + DBKey.STYLE.GROUPS
                     + ',' + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE);
+
+            //NEWTHINGS: style option: add to the INSERT
 
             for (final Style.UnderEach item : Style.UnderEach.values()) {
                 tmp.append(',').append(item.getDbKey());

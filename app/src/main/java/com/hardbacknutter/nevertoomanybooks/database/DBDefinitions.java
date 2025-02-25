@@ -476,7 +476,7 @@ public final class DBDefinitions {
     public static final Domain DOM_STYLE_LAYOUT;
     public static final Domain DOM_STYLE_COVER_CLICK_ACTION;
     public static final Domain DOM_STYLE_COVER_LONG_CLICK_ACTION;
-
+    //NEWTHINGS: style option: add a DOM
     public static final Domain DOM_STYLE_EXP_LEVEL;
     public static final Domain DOM_STYLE_ROW_USES_PREF_HEIGHT;
     public static final Domain DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME;
