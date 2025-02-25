@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
  * {@link ViewHolder} implementation for handling {@link Fragment}s. Used in
  * {@link ExtFragmentStateAdapter}.
  */
+@SuppressWarnings("ALL")
 public final class FragmentViewHolder
         extends ViewHolder {
     private FragmentViewHolder(@NonNull FrameLayout container) {

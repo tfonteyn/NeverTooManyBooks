@@ -77,25 +77,6 @@ import static androidx.lifecycle.Lifecycle.State.STARTED;
 import static androidx.recyclerview.widget.RecyclerView.NO_ID;
 
 /**
- * This class was copied from androidx.viewpager2; version 1.1.0
- * <a href="https://developer.android.com/jetpack/androidx/releases/viewpager2">
- * viewpager2</a>
- * <p>
- * androidx.viewpager2.adapter.FragmentStateAdapter
- * <p>
- * This fixes <a href="https://issuetracker.google.com/issues/309593253">
- * google bug 309593253</a>
- * All modifications annotated with HARDBACKNUTTER.
- * <p>
- * We no longer keep state for all fragments created during the lifetime
- * of this class. Instead we <strong>only</strong> keep state
- * for the current set of live Fragment objects.
- * <p>
- * This means... swipe left, 1x more than the view window, the first fragment AND
- * state is destroyed. Swipe back until that particular fragment becomes
- * the visible fragment and <strong>YOU, THE DEVELOPER</strong> must
- * restore/load/set any state needed.
- * <p>
  * Similar in behavior to {@link androidx.fragment.app.FragmentStatePagerAdapter
  * FragmentStatePagerAdapter}
  * <p>
@@ -111,6 +92,7 @@ import static androidx.recyclerview.widget.RecyclerView.NO_ID;
  * {@link Fragment}.
  * </ul>
  */
+@SuppressWarnings("ALL")
 public abstract class ExtFragmentStateAdapter
         extends
         RecyclerView.Adapter<FragmentViewHolder>
