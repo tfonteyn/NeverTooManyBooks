@@ -92,6 +92,9 @@ public final class ScreenSize {
      * @param activity to use
      *
      * @return window size definition
+     *
+     * @see <a href="https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-main/window/window-core/src/commonMain/kotlin/androidx/window/core/layout/WindowSizeClass.kt#144">
+     *     WindowSizeClass.kt#144</a>
      */
     @NonNull
     public static ScreenSize compute(@NonNull final Activity activity) {
