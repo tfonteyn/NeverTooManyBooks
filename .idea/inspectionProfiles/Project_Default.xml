@@ -251,6 +251,7 @@
           <option value="StaticVariableMayNotBeInitialized" />
           <option value="SlowListContainsAll" />
           <option value="FieldNotUsedInToString" />
+          <option value="InnerClassFieldHidesOuterClassField" />
         </list>
       </option>
     </inspection_tool>
