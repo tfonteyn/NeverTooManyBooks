@@ -24,6 +24,9 @@ Add books by scanning their barcode, ISBN, or generic text searches.
 
 Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki)
 
+If you're migrating from the app "Book Catalogue", please
+see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
+
 ### Download the latest release: 7.0.4
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.0.4/NeverTooManyBooks-7.0.4.apk">
