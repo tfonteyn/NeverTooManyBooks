@@ -33,15 +33,16 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeA
 
 /**
  * ENHANCE the use of AuthorResolver to let them access the website Author API/page
- *  (providing they have this) anf fetch extra information about the author
+ *  (providing they have this) and fetch extra information about the author
  *  (born/died, language, country... i.e. not limited to the pen-name)
  */
 public final class AuthorResolverFactory {
 
     /**
+     * Pref key.
      * "[engine].resolve.authors.[resolver]"
      */
-    private static final String RESOLVE_AUTHORS = ".resolve.authors.";
+    private static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
 
     private AuthorResolverFactory() {
     }
@@ -60,7 +61,7 @@ public final class AuthorResolverFactory {
 
         // For now, we only support a single resolver, so the last part is hardcoded
         final String key = searchEngine.getEngineId().getPreferenceKey()
-                           + RESOLVE_AUTHORS
+                           + PK_RESOLVE_AUTHORS
                            + EngineId.Bedetheque.getPreferenceKey();
 
         if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
