@@ -33,7 +33,7 @@ androidxViewpager2 = '1.1.0'
 androidxWindow = '1.3.0'
 
 # https://github.com/google/desugar_jdk_libs/blob/master/CHANGELOG.md
-desugar = "2.1.4"
+desugar = "2.1.5"
 
 # https://github.com/material-components/material-components-android/releases
 material = '1.12.0'
