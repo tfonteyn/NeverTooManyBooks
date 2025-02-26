@@ -32,23 +32,25 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class SearchFtsContract
-        extends ActivityResultContract<SearchCriteria, Optional<SearchCriteria>> {
+        extends ActivityResultContract<SearchFtsContract.Input, Optional<SearchCriteria>> {
 
     private static final String TAG = "SearchFtsContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @Nullable final SearchCriteria criteria) {
+                               @NonNull final SearchFtsContract.Input input) {
         final Intent intent = FragmentHostActivity
-                .createIntent(context, SearchFtsFragment.class);
-        if (criteria != null && !criteria.isEmpty()) {
-            intent.putExtra(SearchCriteria.BKEY, criteria);
+                .createIntent(context, SearchFtsFragment.class)
+                .putExtra(Style.BKEY_UUID, input.styleUuid);
+        if (input.criteria != null && !input.criteria.isEmpty()) {
+            intent.putExtra(SearchCriteria.BKEY, input.criteria);
         }
         return intent;
     }
@@ -73,5 +75,19 @@ public class SearchFtsContract
             // Paranoia, we should never get here.
             return Optional.empty();
         }
+    }
+
+    public static final class Input {
+        @Nullable
+        final SearchCriteria criteria;
+        @NonNull
+        final String styleUuid;
+
+        public Input(@Nullable final SearchCriteria criteria,
+                     @NonNull final Style style) {
+            this.criteria = criteria;
+            this.styleUuid = style.getUuid();
+        }
+
     }
 }

@@ -137,7 +137,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
-import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
@@ -287,7 +286,7 @@ public class BooksOnBookshelf
     /** View all works of an Author. */
     private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
     /** The local FTS based search. */
-    private ActivityResultLauncher<SearchCriteria> ftsSearchLauncher;
+    private ActivityResultLauncher<SearchFtsContract.Input> ftsSearchLauncher;
 
     private EditLenderLauncher editLenderLauncher;
     /** Row menu launcher displaying the menu as a BottomSheet. */
@@ -894,7 +893,8 @@ public class BooksOnBookshelf
         navDrawer.close();
 
         if (menuItemId == R.id.MENU_ADVANCED_SEARCH) {
-            ftsSearchLauncher.launch(vm.getSearchCriteria());
+            ftsSearchLauncher.launch(new SearchFtsContract.Input(vm.getSearchCriteria(),
+                                                                 vm.getStyle()));
             return true;
 
         } else if (menuItemId == R.id.MENU_MANAGE_LIST_STYLES) {
