@@ -102,6 +102,11 @@
         <item name="endIconDrawable">@drawable/barcode_24px</item>
     </style>
 
+    <style name="TIL.Text.FtsInput">
+        <item name="android:layout_width">@dimen/til_fixed_width_fts_input</item>
+        <item name="endIconMode">clear_text</item>
+    </style>
+
     <!-- Brings up a dialog/screen to let the user pick item(s) from a list -->
     <style name="TIL.ListPicker"
            parent="Base.TIL">

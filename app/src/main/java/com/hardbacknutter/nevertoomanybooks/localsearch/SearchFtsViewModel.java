@@ -26,51 +26,62 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsSearchResult;
 
 @SuppressWarnings("WeakerAccess")
 public class SearchFtsViewModel
         extends ViewModel {
 
-    private final MutableLiveData<SearchCriteria> onSearchCriteriaUpdate =
+    private final MutableLiveData<SearchCriteria> onInitSearchCriteria =
             new MutableLiveData<>();
-    private final MutableLiveData<List<Long>> onBooklistUpdate = new MutableLiveData<>();
+    private final MutableLiveData<Void> onSearchFinished
+            = new MutableLiveData<>();
+    private final List<FtsSearchResult> searchResults = new ArrayList<>();
+
     /** Database Access. */
     private FtsDao dao;
     @Nullable
     private SearchCriteria criteria;
+    private String styleUuid;
 
     /**
      * Pseudo constructor.
      *
      * @param args Bundle with arguments
      */
-    public void init(@Nullable final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getFtsDao();
-
-            if (args != null) {
-                criteria = args.getParcelable(SearchCriteria.BKEY);
-            }
+            styleUuid = Objects.requireNonNull(args.getString(Style.BKEY_UUID));
+            criteria = args.getParcelable(SearchCriteria.BKEY);
             if (criteria == null) {
                 criteria = new SearchCriteria();
             }
         }
-        onSearchCriteriaUpdate.setValue(criteria);
+        onInitSearchCriteria.setValue(criteria);
     }
 
     @NonNull
-    MutableLiveData<List<Long>> onBooklistUpdate() {
-        return onBooklistUpdate;
+    MutableLiveData<SearchCriteria> onInitSearchCriteria() {
+        return onInitSearchCriteria;
     }
 
     @NonNull
-    MutableLiveData<SearchCriteria> onSearchCriteriaUpdate() {
-        return onSearchCriteriaUpdate;
+    MutableLiveData<Void> onSearchFinished() {
+        return onSearchFinished;
+    }
+
+    @NonNull
+    String getStyleUuid() {
+        return styleUuid;
     }
 
     /**
@@ -79,23 +90,34 @@ public class SearchFtsViewModel
      * @return criteria, can be empty, but never {@code null}
      */
     @NonNull
-    public SearchCriteria getCriteria() {
-        return Objects.requireNonNull(criteria);
+    SearchCriteria getCriteria() {
+        Objects.requireNonNull(criteria);
+
+        final List<Long> ids = searchResults.stream().map(result -> result.id)
+                                            .collect(Collectors.toList());
+        criteria.setBookIdList(ids);
+        return criteria;
+    }
+
+    @NonNull
+    List<FtsSearchResult> getSearchResults() {
+        return searchResults;
     }
 
     /**
      * Execute the search using the current criteria.
      * <p>
-     * Results will come back using {@link #onBooklistUpdate()}.
+     * Results will come back using {@link #onSearchFinished()}.
      */
-    public void search() {
+    void search() {
         Objects.requireNonNull(criteria);
-        final List<Long> list = dao.search(criteria.getFtsAuthor(),
-                                           criteria.getFtsBookTitle(),
-                                           criteria.getFtsSeriesTitle(),
-                                           criteria.getFtsPublisher(),
-                                           criteria.getFtsKeywords());
-        criteria.setBookIdList(list);
-        onBooklistUpdate.postValue(criteria.getBookIdList());
+        searchResults.clear();
+        searchResults.addAll(dao.search(criteria.getFtsAuthor(),
+                                        criteria.getFtsBookTitle(),
+                                        criteria.getFtsSeriesTitle(),
+                                        criteria.getFtsPublisher(),
+                                        criteria.getFtsKeywords()));
+
+        onSearchFinished.postValue(null);
     }
 }

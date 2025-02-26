@@ -278,6 +278,13 @@
         <item name="android:layout_width">160dp</item>
     </style>
 
+    <style name="Button.Fts.More"
+           parent="Widget.Material3.Button.IconButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="contentDescription">@string/action_more_ellipsis</item>
+        <item name="icon">@drawable/keyboard_double_arrow_down_24px</item>
+    </style>
     <!-- *************************************************************************************** -->
 
     <style name="Base.AppIcon"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -29,17 +29,31 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_body"
-        style="@style/FragmentRoot.ConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/container_margin"
         >
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/inputs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="lbl_author,lbl_title,lbl_series,lbl_publisher,lbl_keywords"
+            app:flow_horizontalAlign="start"
+            app:flow_horizontalGap="@dimen/field_margin_inline"
+            app:flow_horizontalStyle="spread"
+            app:flow_verticalBias="0"
+            app:flow_verticalGap="@dimen/field_margin_top"
+            app:flow_verticalStyle="packed"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
-            style="@style/TIL.Text"
-            app:endIconMode="clear_text"
+            style="@style/TIL.Text.FtsInput"
             android:hint="@string/lbl_author"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -54,11 +68,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
-            style="@style/TIL.Text.Title"
-            app:endIconMode="clear_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            style="@style/TIL.Text.FtsInput"
+            android:hint="@string/lbl_title"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -73,12 +84,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series"
-            style="@style/TIL.Text"
-            app:endIconMode="clear_text"
+            style="@style/TIL.Text.FtsInput"
             android:hint="@string/lbl_series"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -93,12 +100,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
-            style="@style/TIL.Text"
-            app:endIconMode="clear_text"
+            style="@style/TIL.Text.FtsInput"
             android:hint="@string/lbl_publisher"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_series"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -111,34 +114,33 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!--    <com.google.android.material.textfield.TextInputLayout-->
-        <!--        android:id="@+id/lbl_lend_out_to"-->
-        <!--        style="@style/TIL.Text"-->
-        <!--        app:endIconMode="clear_text"-->
-        <!--        android:hint="@string/lbl_lend_out"-->
-        <!--        app:layout_constraintEnd_toEndOf="parent"-->
-        <!--        app:layout_constraintStart_toStartOf="parent"-->
-        <!--        app:layout_constraintTop_toBottomOf="@id/lbl_publisher"-->
-        <!--        >-->
+        <!--        <com.google.android.material.textfield.TextInputLayout-->
+        <!--            android:id="@+id/lbl_loanee"-->
+        <!--            style="@style/TIL.Text.FtsInput"-->
+        <!--            android:hint="@string/lbl_lend_out"-->
+        <!--            >-->
 
-        <!--        <com.google.android.material.textfield.TextInputEditText-->
-        <!--            android:id="@+id/loanee"-->
-        <!--            style="@style/TIE.Generic"-->
-        <!--            android:imeOptions="actionDone"-->
-        <!--            android:inputType="textMultiLine"-->
-        <!--            tools:ignore="Autofill"-->
+        <!--            <com.google.android.material.textfield.TextInputEditText-->
+        <!--                android:id="@+id/loanee"-->
+        <!--                style="@style/TIE.Generic"-->
+        <!--                android:imeOptions="actionDone"-->
+        <!--                android:inputType="textMultiLine"-->
+        <!--                tools:ignore="Autofill"-->
+        <!--                />-->
+
+        <!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+        <!--        <com.google.android.material.button.MaterialButton-->
+        <!--            android:id="@+id/btn_more_loanee"-->
+        <!--            style="@style/Button.Fts.More"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/lbl_loanee"-->
+        <!--            app:layout_constraintStart_toEndOf="@id/lbl_loanee"-->
         <!--            />-->
-
-        <!--    </com.google.android.material.textfield.TextInputLayout>-->
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_keywords"
-            style="@style/TIL.Text"
-            app:endIconMode="clear_text"
+            style="@style/TIL.Text.FtsInput"
             android:hint="@string/lbl_keywords"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -151,25 +153,19 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/books_found"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textIsSelectable="true"
-            app:layout_constraintBaseline_toBaselineOf="@id/btn_search"
-            app:layout_constraintEnd_toStartOf="@id/btn_search"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_results"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginEnd="@dimen/field_margin_end"
+            android:clipToPadding="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="TouchTargetSizeCheck"
-            tools:text="# books found"
-            />
-
-        <Button
-            android:id="@+id/btn_search"
-            style="@style/Button.Action.Submit"
-            android:text="@string/btn_show_list"
-            app:layout_constraintEnd_toEndOf="@id/lbl_keywords"
-            app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
+            app:layout_constraintTop_toBottomOf="@id/inputs"
+            app:layout_constraintWidth_max="@dimen/centered_max_width"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

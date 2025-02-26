@@ -25,40 +25,37 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
- * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
- * number of hits more or less in real time. The user can choose to see a full list at any time.
- * ENHANCE: SHOW the list, just like the system search does?
+ * Search using the SQLite FTS engine with separate text for the author, title, series,...
  * <p>
- * The form allows entering free text, author, title, series,...
+ * A real-time search results with title/author is shown on-screen.
  * <p>
- * The search gets the ID's of matching books, and returns this list when the 'show' button
- * is tapped. <strong>Only this list is returned</strong>; the original fields are not.
- * <p>
- * <strong>Note:</strong> when the fab is clicked, we <strong>RETURN</strong>
- * to the {@link BooksOnBookshelf} Activity.
- * This is intentionally different from the behaviour of {@link AuthorWorksFragment}.
+ * Either use "select all" menu item to create a book-list containing all the results,
+ * or tap individual results to see the book.
  */
 public class SearchFtsFragment
         extends BaseFragment {
@@ -68,9 +65,8 @@ public class SearchFtsFragment
 
     /** create timer to tick every 250ms. */
     private static final int TIMER_TICK_MS = 250;
-    /** 1 second idle trigger. */
-    private static final int NANO_TO_SECONDS = 1_000_000_000;
-
+    /** 0.5 second idle trigger. */
+    private static final int NANO_TO_SECONDS = 500_000_000;
     /** Indicates user has changed something since the last search. */
     private boolean searchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
@@ -84,16 +80,22 @@ public class SearchFtsFragment
      */
     private final TextWatcher textWatcher = (ExtTextWatcher) editable -> userIsActive(true);
     private SearchFtsViewModel vm;
-
+    private SearchAdapter searchAdapter;
+    private ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher;
     /** View Binding. */
     private FragmentAdvancedSearchBinding vb;
+    private MenuItem menuBtnApply;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchFtsViewModel.class);
-        vm.init(getArguments());
+        vm.init(requireArguments());
+
+        displayBookLauncher = registerForActivityResult(
+                new ShowBookPagerContract(), o -> {
+                });
     }
 
     @Nullable
@@ -114,11 +116,13 @@ public class SearchFtsFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_local_search);
+        toolbar.addMenuProvider(new ToolbarMenuProvider());
+        menuBtnApply = toolbar.getMenu().findItem(R.id.MENU_APPLY);
 
-        vm.onSearchCriteriaUpdate().observe(getViewLifecycleOwner(), this::onSearchCriteriaUpdate);
-        vm.onBooklistUpdate().observe(getViewLifecycleOwner(), this::onBooklistUpdate);
-
-        vb.btnSearch.setOnClickListener(v -> showFullResults());
+        // callback for the initial load from the viewmodel
+        vm.onInitSearchCriteria().observe(getViewLifecycleOwner(), this::onSearchCriteriaUpdate);
+        // callback when a search was completed
+        vm.onSearchFinished().observe(getViewLifecycleOwner(), aVoid -> onSearchFinished());
 
         // Detect when user touches something.
         vb.contentBody.setOnTouchListener((v, event) -> {
@@ -133,6 +137,10 @@ public class SearchFtsFragment
         vb.publisher.addTextChangedListener(textWatcher);
         vb.keywords.addTextChangedListener(textWatcher);
 
+        //noinspection DataFlowIssue
+        searchAdapter = new SearchAdapter(getContext(), vm.getSearchResults(), id ->
+                displayBookLauncher.launch(new ShowBookPagerContract.Input(id, vm.getStyleUuid())));
+        vb.searchResults.setAdapter(searchAdapter);
         // Timer will be started in OnResume().
     }
 
@@ -142,19 +150,24 @@ public class SearchFtsFragment
         vb.author.setText(criteria.getFtsAuthor());
         vb.publisher.setText(criteria.getFtsPublisher());
         vb.keywords.setText(criteria.getFtsKeywords());
-        onBooklistUpdate(criteria.getBookIdList());
+        // trigger a search as-if the user typed the above
+        userIsActive(true);
     }
 
-    private void onBooklistUpdate(@NonNull final List<Long> idList) {
-        final int count = idList.size();
+    @SuppressLint("NotifyDataSetChanged")
+    private void onSearchFinished() {
+        final int count = vm.getSearchResults().size();
         final String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
-        vb.booksFound.setText(s);
-        vb.btnSearch.setEnabled(count > 0);
+        getToolbar().setSubtitle(s);
+        menuBtnApply.setEnabled(count > 0);
+
+        searchAdapter.notifyDataSetChanged();
     }
 
     /**
      * When the show results buttons is tapped, return and show the resulting booklist.
      */
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void showFullResults() {
         final Intent resultIntent = new Intent().putExtra(SearchCriteria.BKEY, vm.getCriteria());
         //noinspection DataFlowIssue
@@ -283,6 +296,26 @@ public class SearchFtsFragment
                 viewToModel();
                 vm.search();
             }
+        }
+    }
+
+    private final class ToolbarMenuProvider
+            implements MenuProvider {
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menu.add(Menu.NONE, R.id.MENU_APPLY, 0, R.string.btn_show_list)
+                .setIcon(R.drawable.select_all_24px)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_APPLY) {
+                showFullResults();
+                return true;
+            }
+            return false;
         }
     }
 }
