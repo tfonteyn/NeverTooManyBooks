@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.localsearch;
 
 import android.annotation.SuppressLint;
-import android.database.Cursor;
 import android.text.Editable;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -38,16 +37,17 @@ import java.util.function.Consumer;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsSearchResult;
 
 /**
  * github #107 => https://issuetracker.google.com/issues/135594222
- *
+ * <p>
  * 2025-02-22 Reminder: the old provider-based search is still active,
  * but no longer hooked up to the menus. It could all be deleted but it's
  * kept for now as there might be an alternative use for it.
  */
 public class SearchViewHelper {
-    private final ArrayList<SearchAdapter.SearchResult> searchResults = new ArrayList<>();
+    private final ArrayList<FtsSearchResult> searchResults = new ArrayList<>();
     @NonNull
     private final SearchView searchView;
     @NonNull
@@ -139,17 +139,7 @@ public class SearchViewHelper {
         searchResults.clear();
         final String query = s.toString();
         if (!query.isEmpty()) {
-            try (Cursor cursor = ServiceLocator.getInstance().getFtsDao()
-                                               .querySearchSuggestions(query)) {
-                if (cursor != null) {
-                    while (cursor.moveToNext()) {
-                        searchResults.add(new SearchAdapter.SearchResult(
-                                cursor.getLong(0),
-                                cursor.getString(1),
-                                cursor.getString(2)));
-                    }
-                }
-            }
+            searchResults.addAll(ServiceLocator.getInstance().getFtsDao().search(query));
         }
         searchAdapter.notifyDataSetChanged();
     }

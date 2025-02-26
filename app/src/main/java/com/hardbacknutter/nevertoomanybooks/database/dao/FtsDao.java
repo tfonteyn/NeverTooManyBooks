@@ -33,23 +33,25 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public interface FtsDao {
 
     /**
-     * Return a {@link Cursor}, suited for a local-search.
-     * This is used by the advanced search activity.
+     * Do a local-search. At least one of the arguments must be non-blank.
      *
      * @param author        Author related keywords to find
      * @param title         Title related keywords to find
      * @param seriesTitle   Series title related keywords to find
      * @param publisherName Publisher name related keywords to find
-     * @param keywords      Keywords to find anywhere in book; this includes titles and authors
+     * @param keywords      Keywords to find anywhere in book; this includes all of the above
      *
-     * @return a cursor, or {@code null} if all input was empty
+     * @return a list with {@link FtsSearchResult}s
      */
     @NonNull
-    List<Long> search(@Nullable String author,
-                      @Nullable String title,
-                      @Nullable String seriesTitle,
-                      @Nullable String publisherName,
-                      @Nullable String keywords);
+    List<FtsSearchResult> search(@Nullable String author,
+                                 @Nullable String title,
+                                 @Nullable String seriesTitle,
+                                 @Nullable String publisherName,
+                                 @Nullable String keywords);
+
+    @NonNull
+    List<FtsSearchResult> search(@NonNull String keywords);
 
     @Nullable
     Cursor querySearchSuggestions(@NonNull String searchText);

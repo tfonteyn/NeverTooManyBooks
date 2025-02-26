@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsSearchResult;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -123,24 +124,36 @@ public class FtsDaoImpl
 
     @Override
     @NonNull
-    public List<Long> search(@Nullable final String author,
-                             @Nullable final String title,
-                             @Nullable final String seriesTitle,
-                             @Nullable final String publisherName,
-                             @Nullable final String keywords) {
+    public List<FtsSearchResult> search(@Nullable final String author,
+                                        @Nullable final String title,
+                                        @Nullable final String seriesTitle,
+                                        @Nullable final String publisherName,
+                                        @Nullable final String keywords) {
 
-        final List<Long> result = new ArrayList<>();
+        final List<FtsSearchResult> result = new ArrayList<>();
 
         FtsDaoHelper.createMatchClause(title, seriesTitle, author, publisherName, keywords)
                     .ifPresent(match -> {
-                        try (Cursor cursor = db.rawQuery(Sql.SEARCH, new String[]{match})) {
+                        try (Cursor cursor = db.rawQuery(Sql.SEARCH_SUGGESTIONS,
+                                                         new String[]{match})) {
                             while (cursor.moveToNext()) {
-                                result.add(cursor.getLong(0));
+                                while (cursor.moveToNext()) {
+                                    result.add(new FtsSearchResult(
+                                            cursor.getLong(0),
+                                            cursor.getString(1),
+                                            cursor.getString(2)));
+                                }
                             }
                         }
                     });
 
         return result;
+    }
+
+    @Override
+    @NonNull
+    public List<FtsSearchResult> search(@NonNull final String keywords) {
+        return search(null, null, null, null, keywords);
     }
 
     @Nullable

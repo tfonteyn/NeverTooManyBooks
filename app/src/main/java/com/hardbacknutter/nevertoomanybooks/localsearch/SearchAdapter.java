@@ -25,12 +25,12 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsSearchResult;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowSearchResultBinding;
 
 public class SearchAdapter
@@ -38,12 +38,12 @@ public class SearchAdapter
 
     private final LayoutInflater inflater;
     @NonNull
-    private final ArrayList<SearchResult> list;
+    private final List<FtsSearchResult> list;
     @NonNull
     private final Consumer<Long> displayBook;
 
     public SearchAdapter(@NonNull final Context context,
-                         @NonNull final ArrayList<SearchResult> list,
+                         @NonNull final List<FtsSearchResult> list,
                          @NonNull final Consumer<Long> displayBook) {
         inflater = LayoutInflater.from(context);
         this.list = list;
@@ -84,26 +84,10 @@ public class SearchAdapter
             this.vb.getRoot().setOnClickListener(v -> displayBook.accept(id));
         }
 
-        void onBind(@NonNull final SearchResult result) {
+        void onBind(@NonNull final FtsSearchResult result) {
             id = result.id;
             vb.line1.setText(result.line1);
             vb.line2.setText(result.line2);
-        }
-    }
-
-    public static class SearchResult {
-        final long id;
-        @NonNull
-        final String line1;
-        @Nullable
-        final String line2;
-
-        SearchResult(final long id,
-                     @NonNull final String line1,
-                     @Nullable final String line2) {
-            this.id = id;
-            this.line1 = line1;
-            this.line2 = line2;
         }
     }
 }
