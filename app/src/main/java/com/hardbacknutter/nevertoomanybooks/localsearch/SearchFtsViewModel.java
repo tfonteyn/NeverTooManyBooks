@@ -42,9 +42,13 @@ public class SearchFtsViewModel
 
     private final MutableLiveData<SearchCriteria> onInitSearchCriteria =
             new MutableLiveData<>();
+    private final MutableLiveData<Void> onSearchStart
+            = new MutableLiveData<>();
     private final MutableLiveData<Void> onSearchFinished
             = new MutableLiveData<>();
     private final List<FtsSearchResult> searchResults = new ArrayList<>();
+
+    private TimerDelegate timerDelegate;
 
     /** Database Access. */
     private FtsDao dao;
@@ -65,6 +69,8 @@ public class SearchFtsViewModel
             if (criteria == null) {
                 criteria = new SearchCriteria();
             }
+
+            timerDelegate = new TimerDelegate(() -> onSearchStart.postValue(null));
         }
         onInitSearchCriteria.setValue(criteria);
     }
@@ -72,6 +78,11 @@ public class SearchFtsViewModel
     @NonNull
     MutableLiveData<SearchCriteria> onInitSearchCriteria() {
         return onInitSearchCriteria;
+    }
+
+    @NonNull
+    MutableLiveData<Void> onSearchStart() {
+        return onSearchStart;
     }
 
     @NonNull
@@ -102,6 +113,14 @@ public class SearchFtsViewModel
     @NonNull
     List<FtsSearchResult> getSearchResults() {
         return searchResults;
+    }
+
+    void userIsActive(final boolean dirty) {
+        timerDelegate.userIsActive(dirty);
+    }
+
+    void abortTimer() {
+        timerDelegate.stopIdleTimer();
     }
 
     /**

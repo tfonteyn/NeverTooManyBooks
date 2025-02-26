@@ -39,9 +39,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
@@ -63,23 +60,13 @@ public class SearchFtsFragment
     /** Log tag. */
     public static final String TAG = "SearchFtsFragment";
 
-    /** create timer to tick every 250ms. */
-    private static final int TIMER_TICK_MS = 250;
-    /** 0.5 second idle trigger. */
-    private static final int NANO_TO_SECONDS = 500_000_000;
-    /** Indicates user has changed something since the last search. */
-    private boolean searchIsDirty;
-    /** Timer reset each time the user clicks, in order to detect an idle time. */
-    private long idleStart;
-    /** Timer object for background idle searches. */
-    @Nullable
-    private Timer timer;
+    private SearchFtsViewModel vm;
+
     /**
      * Detect text changes and call userIsActive(...).
      * We're not changing the Editable, no need to toggle this listener.
      */
-    private final TextWatcher textWatcher = (ExtTextWatcher) editable -> userIsActive(true);
-    private SearchFtsViewModel vm;
+    private final TextWatcher textWatcher = (ExtTextWatcher) editable -> vm.userIsActive(true);
     private SearchAdapter searchAdapter;
     private ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher;
     /** View Binding. */
@@ -121,12 +108,16 @@ public class SearchFtsFragment
 
         // callback for the initial load from the viewmodel
         vm.onInitSearchCriteria().observe(getViewLifecycleOwner(), this::onSearchCriteriaUpdate);
-        // callback when a search was completed
+
+        vm.onSearchStart().observe(getViewLifecycleOwner(), aVoid -> {
+            viewToModel();
+            vm.search();
+        });
         vm.onSearchFinished().observe(getViewLifecycleOwner(), aVoid -> onSearchFinished());
 
         // Detect when user touches something.
         vb.contentBody.setOnTouchListener((v, event) -> {
-            userIsActive(false);
+            vm.userIsActive(false);
             return false;
         });
 
@@ -151,7 +142,7 @@ public class SearchFtsFragment
         vb.publisher.setText(criteria.getFtsPublisher());
         vb.keywords.setText(criteria.getFtsKeywords());
         // trigger a search as-if the user typed the above
-        userIsActive(true);
+        vm.userIsActive(true);
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -182,16 +173,16 @@ public class SearchFtsFragment
     @CallSuper
     public void onResume() {
         super.onResume();
-        userIsActive(true);
+        vm.userIsActive(true);
     }
 
     /**
-     * When activity pauses, stop timer and get the search fields.
+     * When activity pauses, stop timer and store the search fields content.
      */
     @Override
     @CallSuper
     public void onPause() {
-        stopIdleTimer();
+        vm.abortTimer();
         viewToModel();
 
         super.onPause();
@@ -211,92 +202,11 @@ public class SearchFtsFragment
         criteria.setFtsKeywords(vb.keywords.getText().toString().trim());
     }
 
-    /**
-     * Called when a UI element detects the user doing something.
-     *
-     * @param dirty Indicates the user action made the last search invalid
-     */
-    private void userIsActive(final boolean dirty) {
-        synchronized (this) {
-            // Mark search dirty if necessary
-            searchIsDirty = searchIsDirty || dirty;
-            // Reset the idle timer since the user did something
-            idleStart = System.nanoTime();
-            // If the search is dirty, make sure idle timer is running and update UI
-            if (searchIsDirty) {
-                startIdleTimer();
-            }
-        }
-    }
-
     @Override
     @CallSuper
     public void onDestroy() {
-        stopIdleTimer();
+        vm.abortTimer();
         super.onDestroy();
-    }
-
-    /**
-     * start the idle timer.
-     */
-    private void startIdleTimer() {
-        // Synchronize since this is relevant to more than 1 thread.
-        synchronized (this) {
-            if (timer != null) {
-                return;
-            }
-            timer = new Timer();
-            idleStart = System.nanoTime();
-        }
-
-        timer.schedule(new SearchUpdateTimer(), 0, TIMER_TICK_MS);
-    }
-
-    /**
-     * Stop the timer.
-     */
-    private void stopIdleTimer() {
-        final Timer tmpTimer;
-        // Synchronize since this is relevant to more than 1 thread.
-        synchronized (this) {
-            tmpTimer = this.timer;
-            this.timer = null;
-        }
-        if (tmpTimer != null) {
-            tmpTimer.cancel();
-        }
-    }
-
-    /**
-     * Implements a timer task (Runnable) and does a search when the user is idle.
-     * <p>
-     * If a search happens, we stop the idle timer.
-     */
-    class SearchUpdateTimer
-            extends TimerTask {
-
-        @Override
-        public void run() {
-            boolean doSearch = false;
-            // Synchronize as we might have more than one timer running (but shouldn't)
-            synchronized (this) {
-                final boolean idle = (System.nanoTime() - idleStart) > NANO_TO_SECONDS;
-                if (idle) {
-                    // Stop the timer, it will be restarted when the user changes something
-                    stopIdleTimer();
-                    if (searchIsDirty) {
-                        doSearch = true;
-                        searchIsDirty = false;
-                    }
-                }
-            }
-
-            if (doSearch) {
-                // we CAN actually read the Views here ?!
-                viewToModel();
-                vm.search();
-            }
-        }
     }
 
     private final class ToolbarMenuProvider
