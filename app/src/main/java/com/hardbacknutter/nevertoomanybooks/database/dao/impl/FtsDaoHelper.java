@@ -172,11 +172,11 @@ public final class FtsDaoHelper {
      * @return an Optional with query string suited to search FTS for the specified parameters.
      */
     @NonNull
-    public static Optional<String> createMatchClause(@Nullable final String bookTitle,
-                                                     @Nullable final String seriesTitle,
-                                                     @Nullable final String author,
-                                                     @Nullable final String publisherName,
-                                                     @Nullable final String keywords) {
+    static Optional<String> createMatchClause(@Nullable final String bookTitle,
+                                              @Nullable final String seriesTitle,
+                                              @Nullable final String author,
+                                              @Nullable final String publisherName,
+                                              @Nullable final String keywords) {
 
         final String query = (prepareSearchText(keywords, null)
                               + prepareSearchText(author, DBKey.FTS.AUTHOR_NAME)
