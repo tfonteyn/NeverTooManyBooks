@@ -8,6 +8,7 @@ NEW:
 - #96 language field added for translated book
 - #113 add a group-level summation of the books in that group.
 - local search has been redesigned, making the UI cleaner
+- local advanced search had a redesign, now showing the results during searches
 - added filter for identifiers
 - date parsers performance increased, which *might* show while scrolling the book list.
 
