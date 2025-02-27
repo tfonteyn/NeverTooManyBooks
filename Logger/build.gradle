@@ -23,6 +23,12 @@ plugins {
     alias libs.plugins.android.library
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(rootProject.ext.toolChain)
+    }
+}
+
 android {
     namespace = 'com.hardbacknutter.util.logger'
     compileSdk = rootProject.ext.compileSdkVersion

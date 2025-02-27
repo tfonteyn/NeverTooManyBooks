@@ -44,6 +44,12 @@ if (project.hasProperty("NeverTooManyBooks.properties")) {
     }
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(rootProject.ext.toolChain)
+    }
+}
+
 kotlin {
     jvmToolchain rootProject.ext.toolChain
 }
