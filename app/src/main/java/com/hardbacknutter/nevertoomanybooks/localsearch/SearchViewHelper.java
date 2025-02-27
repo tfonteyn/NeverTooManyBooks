@@ -21,8 +21,8 @@
 package com.hardbacknutter.nevertoomanybooks.localsearch;
 
 import android.annotation.SuppressLint;
-import android.text.Editable;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -57,6 +57,10 @@ public class SearchViewHelper {
 
     private final SearchAdapter searchAdapter;
 
+    private final TimerDelegate timerDelegate;
+    private final ExtTextWatcher textWatcher;
+    private final View.OnTouchListener touchListener;
+
     /**
      * Constructor.
      *
@@ -67,6 +71,7 @@ public class SearchViewHelper {
      * @param displayQuery listener which will receive the text query
      *                     when the user submits it
      */
+    @SuppressLint("ClickableViewAccessibility")
     public SearchViewHelper(@NonNull final SearchView searchView,
                             @NonNull final RecyclerView resultsView,
                             @NonNull final Consumer<Long> displayBook,
@@ -74,19 +79,25 @@ public class SearchViewHelper {
         this.searchView = searchView;
         this.displayBook = displayBook;
         this.displayQuery = displayQuery;
-        // reminder: do not apply insets to the resultsView.
-        // The SearchView takes care of them already.
 
-        searchView.inflateMenu(R.menu.search_view);
-        searchView.setOnMenuItemClickListener(this::onMenuItemClick);
+        // The callback comes from the timer thread, hence use "post"
+        timerDelegate = new TimerDelegate(() -> this.searchView.post(this::fetchResults));
+
+        // Detect when user touches something outside of the EditText
+        touchListener = (v, event) -> {
+            timerDelegate.userIsActive(false);
+            return false;
+        };
+
+        textWatcher = s -> timerDelegate.userIsActive(true);
 
         searchAdapter = new SearchAdapter(this.searchView.getContext(), searchResults,
                                           this::onResultSelected);
         resultsView.setAdapter(searchAdapter);
 
+        this.searchView.inflateMenu(R.menu.search_view);
+        this.searchView.setOnMenuItemClickListener(this::onMenuItemClick);
         this.searchView.addTransitionListener(this::onStateChanged);
-        this.searchView.getEditText().addTextChangedListener(
-                (ExtTextWatcher) this::fetchResults);
     }
 
     /**
@@ -103,19 +114,6 @@ public class SearchViewHelper {
         searchView.show();
     }
 
-    /**
-     * Reset/clear the internal state when the view is hidden.
-     */
-    @SuppressWarnings("CheckStyle")
-    private void onStateChanged(@NonNull final SearchView sv,
-                                @NonNull final SearchView.TransitionState previousState,
-                                @NonNull final SearchView.TransitionState newState) {
-        if (newState == SearchView.TransitionState.HIDDEN) {
-            this.searchView.getEditText().setText(null);
-            searchResults.clear();
-        }
-    }
-
     private boolean onMenuItemClick(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_SELECT) {
             this.searchView.hide();
@@ -129,15 +127,46 @@ public class SearchViewHelper {
         return false;
     }
 
+    /**
+     * Reset/clear the internal state when the view is hidden.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    @SuppressWarnings("CheckStyle")
+    private void onStateChanged(@NonNull final SearchView sv,
+                                @NonNull final SearchView.TransitionState previousState,
+                                @NonNull final SearchView.TransitionState newState) {
+        switch (newState) {
+            case SHOWN: {
+                this.searchView.getEditText().addTextChangedListener(textWatcher);
+                this.searchView.setOnTouchListener(touchListener);
+                break;
+            }
+            case HIDDEN: {
+                timerDelegate.stopIdleTimer();
+                final EditText editText = this.searchView.getEditText();
+                editText.removeTextChangedListener(textWatcher);
+                editText.setText(null);
+                this.searchView.setOnTouchListener(null);
+                searchResults.clear();
+                break;
+            }
+        }
+    }
+
+    /**
+     * The user tapped a single book result.
+     *
+     * @param id of the book
+     */
     private void onResultSelected(final long id) {
         this.searchView.hide();
         displayBook.accept(id);
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void fetchResults(@NonNull final Editable s) {
+    private void fetchResults() {
         searchResults.clear();
-        final String query = s.toString();
+        final String query = this.searchView.getEditText().getText().toString();
         if (!query.isEmpty()) {
             searchResults.addAll(ServiceLocator.getInstance().getFtsDao().search(query));
         }
