@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,10 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 /**
  * Dialog for the user to update their progress.
  * Supports percentage and "page x of y".
- * <p>
- * 2024-08-02: Android Studio is completely [censored]ing up the code formatting in this class!
- * Each time we format the code, methods and variables jump around.
- * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
  */
 class ReadingProgressDelegate
         implements FlexDialogDelegate {
@@ -65,13 +61,12 @@ class ReadingProgressDelegate
     private final String requestKey;
     @NonNull
     private final ReadingProgressViewModel vm;
+    private final ExtTextWatcher percentageTextWatcher;
+    private final ExtTextWatcher currentPageTextWatcher;
+    private final ExtTextWatcher totalPagesTextWatcher;
     private DialogBookReadProgressContentBinding vb;
     @Nullable
     private Toolbar toolbar;
-
-    private final ExtTextWatcher percentageTextWatcher = this::percentageTextToSlider;
-    private final ExtTextWatcher currentPageTextWatcher = this::currentPageTextToSlider;
-    private final ExtTextWatcher totalPagesTextWatcher = this::totalPagesTextToSlider;
 
     ReadingProgressDelegate(@NonNull final DialogFragment owner,
                             @NonNull final Bundle args) {
@@ -80,6 +75,10 @@ class ReadingProgressDelegate
                                             DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(ReadingProgressViewModel.class);
         vm.init(args);
+
+        percentageTextWatcher = this::percentageTextToSlider;
+        currentPageTextWatcher = this::currentPageTextToSlider;
+        totalPagesTextWatcher = this::totalPagesTextToSlider;
     }
 
     /**
@@ -122,14 +121,14 @@ class ReadingProgressDelegate
         return view;
     }
 
-    @Override
-    public void setToolbar(@Nullable final Toolbar toolbar) {
-        this.toolbar = toolbar;
-    }
-
     @NonNull
     public Toolbar getToolbar() {
         return Objects.requireNonNull(toolbar, "No toolbar set");
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
     }
 
     @Override
