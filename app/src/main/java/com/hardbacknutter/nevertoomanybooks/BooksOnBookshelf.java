@@ -791,6 +791,8 @@ public class BooksOnBookshelf
     }
 
     private void createSearchViewHelper() {
+        // Reminder: do not apply insets to the searchView/resultsView.
+        // The SearchView takes care of them already.
         searchViewHelper = new SearchViewHelper(
                 vb.searchView, vb.searchResults,
                 id -> displayBookLauncher.launch(new ShowBookPagerContract.Input(
