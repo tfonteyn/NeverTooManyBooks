@@ -137,12 +137,10 @@ public class FtsDaoImpl
                         try (Cursor cursor = db.rawQuery(Sql.SEARCH_SUGGESTIONS,
                                                          new String[]{match})) {
                             while (cursor.moveToNext()) {
-                                while (cursor.moveToNext()) {
-                                    result.add(new FtsSearchResult(
-                                            cursor.getLong(0),
-                                            cursor.getString(1),
-                                            cursor.getString(2)));
-                                }
+                                result.add(new FtsSearchResult(
+                                        cursor.getLong(0),
+                                        cursor.getString(1),
+                                        cursor.getString(2)));
                             }
                         }
                     });
