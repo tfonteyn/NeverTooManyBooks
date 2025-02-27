@@ -181,10 +181,11 @@ public enum EngineId
         "https://www.bol.com",
         new Locale("nl", "NL"),
         BolSearchEngine.class,
-        // FIXME: 2025-02-15: bol.com is now disabled as they block all requests.
+        // 2025-02-15: bol.com block all requests coming from outside the country (EU?)
+        // and from vpn's.
         // https://www.mobileread.com/forums/showthread.php?t=139472&page=35
         // https://airvpn.org/routes/?q=https%3A%2F%2Fwww.bol.com%2F
-        false),
+        true),
 
     /**
      * All genres. This is a portal site to other shopping sites.
