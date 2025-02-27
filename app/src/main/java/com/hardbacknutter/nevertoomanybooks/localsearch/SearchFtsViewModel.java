@@ -42,10 +42,9 @@ public class SearchFtsViewModel
 
     private final MutableLiveData<SearchCriteria> onInitSearchCriteria =
             new MutableLiveData<>();
-    private final MutableLiveData<Void> onSearchStart
-            = new MutableLiveData<>();
-    private final MutableLiveData<Void> onSearchFinished
-            = new MutableLiveData<>();
+    private final MutableLiveData<Void> onSearchStart = new MutableLiveData<>();
+    private final MutableLiveData<Void> onSearchFinished = new MutableLiveData<>();
+
     private final List<FtsSearchResult> searchResults = new ArrayList<>();
 
     private TimerDelegate timerDelegate;
@@ -55,6 +54,12 @@ public class SearchFtsViewModel
     @Nullable
     private SearchCriteria criteria;
     private String styleUuid;
+
+    @Override
+    protected void onCleared() {
+        // overkill, paranoia ... the fragment.onDestroy should already have done the shutdown
+        shutdownTimer();
+    }
 
     /**
      * Pseudo constructor.
@@ -70,6 +75,7 @@ public class SearchFtsViewModel
                 criteria = new SearchCriteria();
             }
 
+            // The callback comes from the timer thread, hence use "post"
             timerDelegate = new TimerDelegate(() -> onSearchStart.postValue(null));
         }
         onInitSearchCriteria.setValue(criteria);
@@ -119,8 +125,8 @@ public class SearchFtsViewModel
         timerDelegate.userIsActive(dirty);
     }
 
-    void abortTimer() {
-        timerDelegate.stopIdleTimer();
+    void shutdownTimer() {
+        timerDelegate.shutdown();
     }
 
     /**
@@ -131,12 +137,13 @@ public class SearchFtsViewModel
     void search() {
         Objects.requireNonNull(criteria);
         searchResults.clear();
-        searchResults.addAll(dao.search(criteria.getFtsAuthor(),
-                                        criteria.getFtsBookTitle(),
-                                        criteria.getFtsSeriesTitle(),
-                                        criteria.getFtsPublisher(),
-                                        criteria.getFtsKeywords()));
-
-        onSearchFinished.postValue(null);
+        if (!criteria.isEmpty()) {
+            searchResults.addAll(dao.search(criteria.getFtsAuthor(),
+                                            criteria.getFtsBookTitle(),
+                                            criteria.getFtsSeriesTitle(),
+                                            criteria.getFtsPublisher(),
+                                            criteria.getFtsKeywords()));
+        }
+        onSearchFinished.setValue(null);
     }
 }

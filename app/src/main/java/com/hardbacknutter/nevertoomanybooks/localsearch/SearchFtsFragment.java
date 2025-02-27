@@ -62,16 +62,13 @@ public class SearchFtsFragment
 
     private SearchFtsViewModel vm;
 
-    /**
-     * Detect text changes and call userIsActive(...).
-     * We're not changing the Editable, no need to toggle this listener.
-     */
-    private final TextWatcher textWatcher = (ExtTextWatcher) editable -> vm.userIsActive(true);
+    private TextWatcher textWatcher;
     private SearchAdapter searchAdapter;
     private ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher;
     /** View Binding. */
     private FragmentAdvancedSearchBinding vb;
     private MenuItem menuBtnApply;
+    private View.OnTouchListener touchListener;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -115,18 +112,13 @@ public class SearchFtsFragment
         });
         vm.onSearchFinished().observe(getViewLifecycleOwner(), aVoid -> onSearchFinished());
 
-        // Detect when user touches something.
-        vb.contentBody.setOnTouchListener((v, event) -> {
+        // Detect when user touches something outside of the EditText
+        touchListener = (v, event) -> {
             vm.userIsActive(false);
             return false;
-        });
+        };
 
-        // Detect when user types something.
-        vb.title.addTextChangedListener(textWatcher);
-        vb.seriesTitle.addTextChangedListener(textWatcher);
-        vb.author.addTextChangedListener(textWatcher);
-        vb.publisher.addTextChangedListener(textWatcher);
-        vb.keywords.addTextChangedListener(textWatcher);
+        textWatcher = (ExtTextWatcher) s -> vm.userIsActive(true);
 
         //noinspection DataFlowIssue
         searchAdapter = new SearchAdapter(getContext(), vm.getSearchResults(), id ->
@@ -135,14 +127,27 @@ public class SearchFtsFragment
         // Timer will be started in OnResume().
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void onSearchCriteriaUpdate(@NonNull final SearchCriteria criteria) {
         vb.title.setText(criteria.getFtsBookTitle());
         vb.seriesTitle.setText(criteria.getFtsSeriesTitle());
         vb.author.setText(criteria.getFtsAuthor());
         vb.publisher.setText(criteria.getFtsPublisher());
         vb.keywords.setText(criteria.getFtsKeywords());
-        // trigger a search as-if the user typed the above
-        vm.userIsActive(true);
+
+        // Detect when user types something.
+        vb.title.addTextChangedListener(textWatcher);
+        vb.seriesTitle.addTextChangedListener(textWatcher);
+        vb.author.addTextChangedListener(textWatcher);
+        vb.publisher.addTextChangedListener(textWatcher);
+        vb.keywords.addTextChangedListener(textWatcher);
+        // Detect when user touches something outside of the EditText
+        vb.contentBody.setOnTouchListener(touchListener);
+
+        // trigger a search if needed
+        if (!criteria.isEmpty()) {
+            vm.userIsActive(true);
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -182,7 +187,7 @@ public class SearchFtsFragment
     @Override
     @CallSuper
     public void onPause() {
-        vm.abortTimer();
+        vm.shutdownTimer();
         viewToModel();
 
         super.onPause();
@@ -205,7 +210,8 @@ public class SearchFtsFragment
     @Override
     @CallSuper
     public void onDestroy() {
-        vm.abortTimer();
+        // onPause is not always called! Hence making absolutely sure to shutdown the timer.
+        vm.shutdownTimer();
         super.onDestroy();
     }
 

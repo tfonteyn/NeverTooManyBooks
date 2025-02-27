@@ -23,27 +23,37 @@ package com.hardbacknutter.nevertoomanybooks.localsearch;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 class TimerDelegate {
 
-    /** create timer to tick every 250ms. */
-    private static final int TIMER_TICK_MS = 250;
-    /** 0.5 second idle trigger. */
-    private static final int NANO_TO_SECONDS = 500_000_000;
+    /** create timer to tick every 1/4 of a second. */
+    private static final int TIMER_TICK_NS = 250_000_000;
+    /** 1 second idle trigger. */
+    private static final int TRIGGER_IN_NS = 1_000_000_000;
     @NonNull
     private final Runnable search;
-    /** Indicates user has changed something since the last search. */
+    private final ScheduledExecutorService executor;
+    /** Indicates user has typed something since the last search. */
     private boolean searchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
-    private long idleStart;
+    private long idleStartInNs;
     /** Timer object for background idle searches. */
     @Nullable
-    private Timer timer;
+    private ScheduledFuture<?> timer;
 
     TimerDelegate(@NonNull final Runnable search) {
         this.search = search;
+
+        executor = Executors.newSingleThreadScheduledExecutor();
+    }
+
+    void shutdown() {
+        executor.shutdownNow();
     }
 
     /**
@@ -56,59 +66,45 @@ class TimerDelegate {
             // Mark search dirty if necessary
             searchIsDirty = searchIsDirty || dirty;
             // Reset the idle timer since the user did something
-            idleStart = System.nanoTime();
-            // If the search is dirty, start the idle timer
-            if (searchIsDirty) {
-                startIdleTimer();
+            idleStartInNs = System.nanoTime();
+            // If the search is dirty, start the idle timer if we haven't done so yet
+            if (searchIsDirty && timer == null) {
+                try {
+                    timer = executor.scheduleWithFixedDelay(new SearchUpdateTimer(),
+                                                            0, TIMER_TICK_NS,
+                                                            TimeUnit.NANOSECONDS);
+                } catch (@NonNull final RejectedExecutionException ignore) {
+                    // ignore, we're likely shutting down
+                }
             }
         }
     }
 
-    /**
-     * start the idle timer.
-     */
-    private void startIdleTimer() {
-        // Synchronize since this is relevant to more than 1 thread.
+    void stopIdleTimer() {
         synchronized (this) {
             if (timer != null) {
-                return;
+                // Stop this scheduled task (but don't interrupt!),
+                // it will be rescheduled when the user types something
+                timer.cancel(false);
+                timer = null;
             }
-            timer = new Timer();
-            idleStart = System.nanoTime();
-        }
-
-        timer.schedule(new SearchUpdateTimer(), 0, TIMER_TICK_MS);
-    }
-
-    /**
-     * Stop the timer.
-     */
-    void stopIdleTimer() {
-        final Timer tmpTimer;
-        // Synchronize since this is relevant to more than 1 thread.
-        synchronized (this) {
-            tmpTimer = this.timer;
-            this.timer = null;
-        }
-        if (tmpTimer != null) {
-            tmpTimer.cancel();
         }
     }
 
     /**
-     * Implements a timer task (Runnable) and start a search when the user is idle.
+     * Start a search when the user is idle.
      */
     private final class SearchUpdateTimer
-            extends TimerTask {
+            implements Runnable {
 
         @Override
         public void run() {
             boolean doSearch = false;
-            // Synchronize as we might have more than one timer running (but shouldn't)
-            synchronized (this) {
-                final boolean idle = (System.nanoTime() - idleStart) > NANO_TO_SECONDS;
+            // Synchronize to access the delegate member variables,
+            // as we might have more than one timer running
+            synchronized (TimerDelegate.this) {
+                final boolean idle = (System.nanoTime() - idleStartInNs) > TRIGGER_IN_NS;
                 if (idle) {
-                    // Stop the timer, it will be restarted when the user changes something
                     stopIdleTimer();
                     if (searchIsDirty) {
                         doSearch = true;
