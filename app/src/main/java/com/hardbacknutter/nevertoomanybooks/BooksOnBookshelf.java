@@ -722,10 +722,7 @@ public class BooksOnBookshelf
     private void createLayoutManager() {
         //TODO: show a 'tip' when running in grid-mode + embedded-frame
         // and explain that embedded mode forces list-mode
-        final Style.Layout layout = vm.getStyle().getLayout(hasEmbeddedDetailsFrame());
-        // and remember it. See #onResume where we need to check/compare it again
-        vm.setCurrentLayout(layout);
-
+        final Style.Layout layout = vm.getNewLayout(hasEmbeddedDetailsFrame());
         final RecyclerView.LayoutManager layoutManager;
         switch (layout) {
             case List: {
@@ -988,7 +985,7 @@ public class BooksOnBookshelf
         if (vm.isForceRebuildInOnResume() || !vm.isListLoaded()) {
             // This is only needed if the style was changed to use a different Layout.
             // We must NOT recreate it here otherwise.
-            if (vm.getStyle().getLayout(hasEmbeddedDetailsFrame()) != vm.getCurrentLayout()) {
+            if (vm.hasLayoutChanged(hasEmbeddedDetailsFrame())) {
                 createLayoutManager();
             }
             buildBookList();

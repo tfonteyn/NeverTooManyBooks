@@ -586,18 +586,35 @@ public class BooksOnBookshelfViewModel
         currentLayout = null;
     }
 
-    @Nullable
-    Style.Layout getCurrentLayout() {
+    /**
+     * Get the layout we need to use.
+     *
+     * @param hasEmbeddedDetailsFrame whether the display Activity is showing
+     *                                the embedded details-frame.
+     *
+     * @return layout to use
+     *
+     * @see #hasLayoutChanged(boolean)
+     */
+    @NonNull
+    Style.Layout getNewLayout(final boolean hasEmbeddedDetailsFrame) {
+        // remember it for use from #onResume where we need to check/compare it again
+        currentLayout = getStyle().getLayout(hasEmbeddedDetailsFrame);
         return currentLayout;
     }
 
     /**
-     * Set/remember the layout we're using.
+     * Check if the layout has changed since we created it.
      *
-     * @param currentLayout to set
+     * @param hasEmbeddedDetailsFrame whether the display Activity is showing
+     *                                the embedded details-frame.
+     *
+     * @return flag
+     *
+     * @see #getNewLayout(boolean)
      */
-    void setCurrentLayout(@NonNull final Style.Layout currentLayout) {
-        this.currentLayout = currentLayout;
+    boolean hasLayoutChanged(final boolean hasEmbeddedDetailsFrame) {
+        return getStyle().getLayout(hasEmbeddedDetailsFrame) != currentLayout;
     }
 
     /**
