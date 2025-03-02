@@ -418,6 +418,7 @@ public final class DBKey {
         }
     }
 
+    @SuppressWarnings("CheckStyle")
     public static final class LANG_MAPPING {
         public static final String ISO3_USER = "iso3_user";
         public static final String ISO3 = "iso3";
