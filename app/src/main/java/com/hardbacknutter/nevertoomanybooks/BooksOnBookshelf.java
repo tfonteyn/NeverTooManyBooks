@@ -303,6 +303,7 @@ public class BooksOnBookshelf
     private OnBackPressedCallback backClosesFabMenu;
 
     private SearchViewHelper searchViewHelper;
+    private ToolbarMenuProvider toolbarMenuProvider;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -684,7 +685,8 @@ public class BooksOnBookshelf
             }
         });
 
-        vb.toolbar.addMenuProvider(new ToolbarMenuProvider(), this);
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        vb.toolbar.addMenuProvider(toolbarMenuProvider, this);
     }
 
     private void createBookshelfSpinner() {
@@ -738,6 +740,10 @@ public class BooksOnBookshelf
                 throw new IllegalArgumentException(String.valueOf(layout));
         }
         vb.content.list.setLayoutManager(layoutManager);
+        // make sure the menu matches (the button is "ifRoom"); null check for paranoia
+        if (toolbarMenuProvider != null) {
+            toolbarMenuProvider.onPrepareMenu(vb.toolbar.getMenu());
+        }
     }
 
     @NonNull
