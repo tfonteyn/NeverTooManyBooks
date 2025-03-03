@@ -240,7 +240,7 @@
 
     <style name="Button.Grid.Details"
            parent="Base.Button.Grid">
-        <item name="icon">@drawable/open_in_full_24px</item>
+        <item name="icon">@drawable/fullscreen_24px</item>
         <item name="android:contentDescription">@string/pe_bob_cover_click_details</item>
     </style>
 
