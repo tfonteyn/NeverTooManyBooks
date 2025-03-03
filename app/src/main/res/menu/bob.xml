@@ -53,9 +53,17 @@
         />
 
     <item
+        android:id="@id/MENU_STYLE_EDIT"
+        android:icon="@drawable/style_edit_24px"
+        android:orderInCategory="@integer/MENU_ORDER_STYLE_EDIT"
+        android:title="@string/lbl_edit_style"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
         android:id="@id/MENU_STYLE_PICKER"
         android:icon="@drawable/style_24px"
-        android:orderInCategory="@integer/MENU_ORDER_SORT"
+        android:orderInCategory="@integer/MENU_ORDER_STYLE_PICKER"
         android:title="@string/option_sort_and_style_ellipsis"
         app:showAsAction="ifRoom" />
 

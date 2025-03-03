@@ -2658,6 +2658,10 @@ public class BooksOnBookshelf
                 onPrepareMenu(menu);
                 return true;
 
+            } else if (menuItemId == R.id.MENU_STYLE_EDIT) {
+                editStyle(vm.getStyle());
+                return true;
+
             } else if (menuItemId == R.id.MENU_STYLE_PICKER) {
                 stylePickerLauncher.launch(BooksOnBookshelf.this, vm.getStyle(), false);
                 return true;
