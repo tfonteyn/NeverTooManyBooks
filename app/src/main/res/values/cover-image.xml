@@ -97,15 +97,18 @@
         <item>72dp</item>
         <!-- large: 4 * 24dp -->
         <item>96dp</item>
-        <!-- X-large: 5 * 24dp
-          List Mode:
+        <!--
+          List Mode: X-large: 5 * 24dp
             4" device: this is 50% of the device width in Portrait.
                The text aside the image will be cramped but mostly readable providing
                not too many extra fields are displayed.
                For Landscape all is ok.
           Grid Mode:
-            This value is ignored, as Grid always uses 1 (Portrait) or 2 (Landscape) covers
-             for the entire width of the display.
+            This value is ignored, and we fill the entire width of the display
+            with a fixed amount of covers:
+             - Portrait : 1
+             - Landscape + ScreenSize.Value.Medium:   2
+                         + ScreenSize.Value.Expanded: 3
         -->
         <item>120dp</item>
     </array>

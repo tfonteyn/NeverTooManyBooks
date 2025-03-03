@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.util.TypedValue;
 
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
@@ -35,6 +34,7 @@ import androidx.window.layout.WindowMetricsCalculator;
 import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 
 /**
  * Cover Scaling.
@@ -156,8 +156,19 @@ public enum CoverScale {
         return values()[next];
     }
 
+    // Use an indexed lookup to fixed values depending on "sw" device width.
+    private int lookup(@NonNull final Context context) {
+        final TypedArray coverSizes = context
+                .getResources().obtainTypedArray(R.array.cover_max_width);
+        try {
+            return coverSizes.getDimensionPixelSize(id, 0);
+        } finally {
+            coverSizes.recycle();
+        }
+    }
+
     /**
-     * Calculate the maximum width in pixels.
+     * Calculate the maximum width in pixels, depending on the available screen width.
      *
      * @param context Current context
      * @param layout  mode for which to lookup the width
@@ -184,14 +195,7 @@ public enum CoverScale {
             }
         }
 
-        // Use an indexed lookup to fixed values depending on "sw" device width.
-        final TypedArray coverSizes = context
-                .getResources().obtainTypedArray(R.array.cover_max_width);
-        try {
-            return coverSizes.getDimensionPixelSize(id, 0);
-        } finally {
-            coverSizes.recycle();
-        }
+        return lookup(context);
     }
 
     /**
@@ -206,35 +210,82 @@ public enum CoverScale {
     public int getGridSpanCount(@NonNull final Context context) {
         final Resources res = context.getResources();
 
+        if (this == Hidden) {
+            // we should never get here / return 0... flw
+            return 1;
+        }
+
         if (this == Maximum) {
             if (res.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                final ScreenSize screenSize = ScreenSize.compute(context);
+                if (screenSize.getWidth() == ScreenSize.Value.Expanded) {
+                    return 3;
+                }
                 return 2;
             } else {
                 // Configuration.ORIENTATION_PORTRAIT
                 return 1;
             }
-        } else if (this != Hidden) {
-            // Calculate depending on the available screen width.
-            final TypedArray coverSizes = res.obtainTypedArray(R.array.cover_max_width);
-            try {
-                // Multiply the cover-width by 0.6 as the values in the resource are
-                // optimized for list-mode where we aim to fill up 1/3 of the width
-                // with the image, and 2/3 with text.
-                // The 0.6 could likely be tuned on a screen size basis... but the differences
-                // will be minimal hence not bothering for now.
-                final float coverWidthPx = 0.6f * TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        // The value in dp
-                        coverSizes.getDimension(id, 1),
-                        res.getDisplayMetrics());
-
-                return (int) Math.floor(getWindowWidthInPx(context) / coverWidthPx);
-
-            } finally {
-                coverSizes.recycle();
-            }
         }
-        // Hidden.... we should never get here... flw
-        return 1;
+
+        final int coverWidthPx = lookup(context);
+
+        // Multiply the cover-width by 0.6 as the values in the resource are
+        // optimized for list-mode where we aim to fill up 1/3 of the width
+        // with the image, and 2/3 with text.
+        // The 0.6 could likely be tuned on a screen size basis... but the differences
+        // will be minimal hence not bothering for now.
+        // This is NOT related to HW_RATIO!
+
+        return (int) Math.floor(0.6 * getWindowWidthInPx(context) / coverWidthPx);
     }
+
+    /*  Multiplication of 0.6
+
+    Pixel 8 Pro
+
+    Portrait:
+    - Small:  5
+    - Medium: 3
+    - Large : 2
+    - Max     1
+
+    Landscape
+    - Small: 12
+    - Medium: 8
+    - Large:  6
+    - Max     3
+
+    ===========================================
+    Pixel 2
+
+    Portrait:
+    - Small:  5
+    - Medium: 3
+    - Large : 2
+    - Max     1
+
+    Landscape
+    - Small:  9
+    - Medium: 6
+    - Large:  4
+    - Max     2
+
+    ===========================================
+    Small Phone
+
+    Portrait:
+    - Small:  4
+    - Medium: 3
+    - Large : 2
+    - Max     1
+
+    Landscape
+    - Small:  8
+    - Medium: 5
+    - Large:  4
+    - Max     2
+    ===========================================
+
+     */
 }
