@@ -237,7 +237,7 @@
     <string name="info_authorized">已授权</string>
     <string name="info_backup_successful">备份成功</string>
     <string name="info_books_deleted">删除的图书：%1$d</string>
-    <string name="info_builtin_style_asterix">（默认样式）</string>
+    <string name="info_builtin_style_asterix">（* 默认样式）</string>
     <string name="info_bulk_set_bookshelves">选择要分配给所选节点下列出的所有图书的书架。</string>
     <string name="info_bulk_set_location">选择你要把所选节点下列举的所有书籍分配到的位置。</string>
     <string name="info_calibre_content_server_extension">没有安装Calibre内容服务器扩展。不提供虚拟图书馆。</string>
