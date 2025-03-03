@@ -858,4 +858,5 @@
     <string name="lbl_default_x">Domyślna: %1$s</string>
     <string name="info_partial_date_picker">Stuknij wcześniej wybrany miesiąc lub dzień, aby go odznaczyć.</string>
     <string name="action_restore_default_identifiers">Przywróć domyślne identyfikatory</string>
+    <string name="lbl_select_style">Wybierz styl</string>
 </resources>

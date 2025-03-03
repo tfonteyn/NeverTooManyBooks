@@ -331,6 +331,7 @@
     <string name="option_storage_edit_settings">அமைப்புகளைத் திருத்தவும்</string>
     <string name="option_storage_quit_and_reinsert_sdcard">சரியான எச்டி கார்டை விட்டுவிட்டு மீண்டும் சேர்க்கவும்</string>
     <string name="option_sort_and_style_ellipsis">வரிசையாக்கம் &amp; பாணிகள்…</string>
+    <string name="lbl_select_style">ஸ்டைலைத் தேர்ந்தெடுக்கவும்</string>
     <string name="option_level_reset">விருப்பமான நிலை விரிவாக்கம்</string>
     <string name="option_level_expand">அனைத்தையும் விரிவாக்குங்கள்</string>
     <string name="option_level_collapse">அனைத்தையும் சரக்கு</string>

@@ -845,4 +845,5 @@
     <string name="lbl_default_x">Standard: %1$s</string>
     <string name="info_partial_date_picker">Tippen Sie auf einen zuvor ausgewählten Monat oder Tag, um ihn abzuwählen.</string>
     <string name="action_restore_default_identifiers">Wiederherstellung der Standard-Identifikatoren</string>
+    <string name="lbl_select_style">Stil wählen</string>
 </resources>

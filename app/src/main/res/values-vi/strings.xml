@@ -574,6 +574,7 @@
     <string name="option_lend_return_book">Sách cho mượn đã được trả lại</string>
     <string name="option_level_collapse">Thu gọn tất cả</string>
     <string name="option_level_expand">Mở rộng tất cả</string>
+    <string name="lbl_select_style">Chọn Kiểu</string>
     <string name="option_level_reset">Mở rộng cấp độ ưa thích</string>
     <string name="option_moving_covers_from_x_to_y">Di chuyển tất cả bìa từ “%1$s” sang “%2$s”</string>
     <string name="option_purge_bedetheque_authors_cache">Xóa bộ nhớ đệm của tác giả Bedetheque</string>

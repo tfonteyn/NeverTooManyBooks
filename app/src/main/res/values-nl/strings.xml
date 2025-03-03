@@ -845,4 +845,5 @@
     <string name="lbl_default_x">Standaard: %1$s</string>
     <string name="info_partial_date_picker">Tik op een eerder geselecteerde maand of dag om de selectie ongedaan te maken.</string>
     <string name="action_restore_default_identifiers">De standaard Identifiers herstellen</string>
+    <string name="lbl_select_style">Selecteer een stijl</string>
 </resources>

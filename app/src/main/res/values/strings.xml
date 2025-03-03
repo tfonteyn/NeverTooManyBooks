@@ -710,6 +710,7 @@
     <string name="option_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD card</string>
     <!-- Booklist menu option -->
     <string name="option_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
+    <string name="lbl_select_style">Select Style</string>
     <!-- Booklist menu option -->
     <string name="option_level_reset">Preferred level expansion</string>
     <!-- Booklist menu option -->

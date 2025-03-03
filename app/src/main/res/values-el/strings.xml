@@ -850,4 +850,5 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_default_x">Προεπιλογή: %1$s</string>
     <string name="info_partial_date_picker">Πατήστε σε έναν προηγουμένως επιλεγμένο μήνα ή ημέρα για να καταργήσετε την επιλογή του.</string>
     <string name="action_restore_default_identifiers">Επαναφορά των προεπιλεγμένων αναγνωριστικών</string>
+    <string name="lbl_select_style">Επιλογή Στυλ</string>
 </resources>

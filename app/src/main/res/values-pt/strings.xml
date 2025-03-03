@@ -868,4 +868,5 @@
     <string name="lbl_default_x">Padrão: %1$s</string>
     <string name="info_partial_date_picker">Toque num mês ou dia previamente selecionado para o anular.</string>
     <string name="action_restore_default_identifiers">Repor os identificadores predefinidos</string>
+    <string name="lbl_select_style">Selecione Estilo</string>
 </resources>
