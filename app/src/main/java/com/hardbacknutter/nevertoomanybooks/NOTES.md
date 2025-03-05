@@ -1,28 +1,12 @@
 Draft notes for next version:
 
-### 7.1.0
+### 7.1.1
 
 NEW:
-- #91 Date (first) published: the date-picker has been redesigned, and is much easier to use.
-- #93 sorting by language now uses the fully localized language name
-- #96 language field added for translated book
-- #113 add a group-level summation of the books in that group.
-- local search has been redesigned, making the UI cleaner
-- local advanced search had a redesign, now showing the results during searches
-- added filter for identifiers
-- date parsers performance increased, which *might* show while scrolling the book list.
 
 FIXES:
 
-- #114 aka https://issuetracker.google.com/issues/309593253
-  Swipe left trough book-details screens for long enough (40..50 times or more)
-  and the app would crash due to the above google caching issue.
-  Fixed by forking/fixing the google component.
-- #109 sorting by dates on the book level now supports mixing partial-dates
-- Citations have been tweaked to better conform to the standards
-
 REMOVED:
-- local search from the book-details screen.
 
 <hr style="border:1px solid blue;">
 
