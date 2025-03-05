@@ -27,9 +27,9 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 If you're migrating from the app "Book Catalogue", please
 see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
 
-### Download the latest release: 7.1.0
+### Download the latest release: 7.1.1
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.1.0/NeverTooManyBooks-7.1.0.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.1.1/NeverTooManyBooks-7.1.1.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
