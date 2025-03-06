@@ -92,12 +92,13 @@ public interface BooklistGroup {
     int AUTHOR_FAMILY_NAME_1ST_CHAR = 32;
     int PUBLISHER_NAME_1ST_CHAR = 33;
     int IDENTIFIER = 34;
+    int ORIGINAL_LANGUAGE = 35;
     /**
      * NEWTHINGS: BooklistGroup
      * The highest valid index of id - ALWAYS to be updated after adding a group.
      */
     @VisibleForTesting
-    int GROUP_KEY_MAX = 34;
+    int GROUP_KEY_MAX = 35;
 
     /**
      * Factory constructor.
@@ -268,6 +269,7 @@ public interface BooklistGroup {
             LANGUAGE,
             LENDING,
             LOCATION,
+            ORIGINAL_LANGUAGE,
             PUBLISHER,
             PUBLISHER_NAME_1ST_CHAR,
             RATING,

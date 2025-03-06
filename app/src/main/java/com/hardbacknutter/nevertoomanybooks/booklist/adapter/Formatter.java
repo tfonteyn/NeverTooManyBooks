@@ -107,7 +107,8 @@ class Formatter
                 return ReadStatus.byId(rowData.getInt(key))
                                  .getLabel(context, Details.AutoSelect, style);
             }
-            case BooklistGroup.LANGUAGE: {
+            case BooklistGroup.LANGUAGE:
+            case BooklistGroup.ORIGINAL_LANGUAGE: {
                 return formatLanguage(rowData, key, serviceLocator);
             }
             case BooklistGroup.CONDITION: {

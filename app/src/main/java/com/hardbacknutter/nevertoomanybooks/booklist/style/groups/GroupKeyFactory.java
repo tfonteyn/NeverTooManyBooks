@@ -58,6 +58,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TRANSLATION_ORIGINAL_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -379,6 +380,33 @@ public final class GroupKeyFactory {
                                                 DBKey.LANG_MAPPING.DISPLAY_NAME)
                                         + ","
                                         + TBL_BOOKS.dot(DOM_BOOK_LANGUAGE) + ")",
+                                        Sort.Asc));
+            }
+            case BooklistGroup.ORIGINAL_LANGUAGE: {
+                // Formatting is done after fetching.
+                return new GroupKey(id, R.string.lbl_original_language, "lngor",
+                                    new DomainExpression(
+                                            DOM_TRANSLATION_ORIGINAL_LANGUAGE,
+                                            TBL_BOOKS,
+                                            Sort.Unsorted))
+                        .addGroupDomain(
+                                // link with the languages to get the full
+                                // name to sort on.
+                                // If no mapping is found, coalesce to use
+                                // the original book language field.
+                                // This will happen when the book language
+                                // is not a "real" language.,
+                                // but sorting will work regardless.
+                                new DomainExpression(
+                                        // The display-name is the sort-key here
+                                        // we don't need an additional
+                                        // BooklistGroup.BlgDBKey.SORT_
+                                        DBDefinitions.DOM_LANG_DISPLAY_NAME,
+                                        "COALESCE("
+                                        + DBDefinitions.TBL_LANG_MAPPINGS.dot(
+                                                DBKey.LANG_MAPPING.DISPLAY_NAME)
+                                        + ","
+                                        + TBL_BOOKS.dot(DOM_TRANSLATION_ORIGINAL_LANGUAGE) + ")",
                                         Sort.Asc));
             }
             case BooklistGroup.LOCATION: {
