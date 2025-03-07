@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Coordinate between the UI and the {@link ExportHelper}.
@@ -43,6 +44,11 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
  */
 public class ExportViewModel
         extends DataWriterViewModel<ExportResults> {
+
+    private static final String TAG = "ExportViewModel";
+    private static final String ERROR_GITHUB_128 = "github #128";
+    private static final String ERROR_DUP_TASK =
+            "github #128: preventing starting a backup task twice";
 
     /**
      * The encodings we currently (fully or limited) support writing.
@@ -106,15 +112,6 @@ public class ExportViewModel
     }
 
     /**
-     * Set the type of archive (file) to write to.
-     *
-     * @param encoding to use
-     */
-    public void setEncoding(@NonNull final ArchiveEncoding encoding) {
-        getDataWriterHelper().setEncoding(encoding);
-    }
-
-    /**
      * Get the type of archive (file) to write to.
      *
      * @return encoding
@@ -122,6 +119,15 @@ public class ExportViewModel
     @NonNull
     public ArchiveEncoding getEncoding() {
         return getDataWriterHelper().getEncoding();
+    }
+
+    /**
+     * Set the type of archive (file) to write to.
+     *
+     * @param encoding to use
+     */
+    public void setEncoding(@NonNull final ArchiveEncoding encoding) {
+        getDataWriterHelper().setEncoding(encoding);
     }
 
     /**
@@ -164,6 +170,12 @@ public class ExportViewModel
 
     @Override
     public boolean isReadyToGo() {
+        // github #128; see also startExport
+        if (isRunning()) {
+            LoggerFactory.getLogger().e(TAG, new Throwable(ERROR_GITHUB_128), ERROR_DUP_TASK);
+            return false;
+        }
+
         Objects.requireNonNull(exportHelper);
 
         // Prefs/Styles are always included, so we need to specifically check for books/covers
@@ -172,6 +184,16 @@ public class ExportViewModel
     }
 
     void startExport(@NonNull final Uri uri) {
+        // github #128
+        if (isRunning()) {
+            // this is not a "solution" but we can only get here
+            // from registerForActivityResult(new GetContentUriForWritingContract(),...
+            // which makes no sense. There is not enough info to make
+            // a real conclusion; this way we at least prevent a crash.
+            LoggerFactory.getLogger().e(TAG, new Throwable(ERROR_GITHUB_128), ERROR_DUP_TASK);
+            return;
+        }
+
         Objects.requireNonNull(exportHelper);
 
         exportHelper.setUri(uri);
