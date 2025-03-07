@@ -956,8 +956,14 @@ public class BooksOnBookshelf
     private void onImportFinished(@NonNull final ImportResults result) {
         vm.onImportFinished(this, result);
 
+        // URGENT: calling recreate() causes a crash if the current style is different enough.
+        // The problem is that the recreate happens before the rebuild is fully done,
+        // which means the recreate picks up the PREVIOUS booklist table,
+        // but the CURRENT style. Needs further investigation.
+        // Not recreating here is no big-deal as this is really only to apply
+        // any UI setting changes coming from the imported preferences.
         if (result.preferences > 0) {
-            ActivityRestarter.recreate();
+            //ActivityRestarter.recreate();
         }
     }
 
