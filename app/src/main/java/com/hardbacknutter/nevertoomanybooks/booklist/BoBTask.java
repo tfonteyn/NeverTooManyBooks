@@ -243,5 +243,14 @@ public class BoBTask
         public List<BooklistNode> getTargetNodes() {
             return targetNodes;
         }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Outcome{"
+                   + "booklist=" + booklist
+                   + ", targetNodes=" + targetNodes
+                   + '}';
+        }
     }
 }

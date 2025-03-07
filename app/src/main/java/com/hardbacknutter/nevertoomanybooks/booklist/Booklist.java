@@ -813,6 +813,8 @@ public class Booklist
                + "instanceId=" + instanceId
                + ", totalBooks=" + totalBooks
                + ", distinctBooks=" + distinctBooks
+               + ", listTable=" + listTable.getName()
+               + ", navTable=" + navTable.getName()
                + '}';
     }
 

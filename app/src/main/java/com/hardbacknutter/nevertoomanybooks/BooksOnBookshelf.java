@@ -152,6 +152,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.NavDrawer;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -1616,10 +1617,11 @@ public class BooksOnBookshelf
      */
     private void displayList(@Nullable final List<BooklistNode> targetNodes) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            LoggerFactory.getLogger().d(TAG, "displayList",
-                                        System.nanoTime(),
-                                        targetNodes != null ? targetNodes.toString() : "null",
-                                        new Throwable());
+            final Logger logger = LoggerFactory.getLogger();
+            logger.d(TAG, "displayList", System.nanoTime(),
+                     targetNodes != null ? targetNodes.toString() : "null",
+                     new Throwable());
+            logger.d(TAG, vm.getBooklist().toString());
         }
 
         adapter = vm.createBooklistAdapter(this, hasEmbeddedDetailsFrame());

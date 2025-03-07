@@ -89,6 +89,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesC
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.util.logger.Logger;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class BooksOnBookshelfViewModel
         extends ViewModel {
@@ -846,6 +848,16 @@ public class BooksOnBookshelfViewModel
         return booklist.getNavigationTableName();
     }
 
+    /**
+     * DEBUG/LOG USE ONLY.
+     *
+     * @return the list
+     */
+    @Nullable
+    public Booklist getBooklist() {
+        return booklist;
+    }
+
     @NonNull
     List<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
         return ServiceLocator.getInstance().getAuthorDao().getByBookId(bookId);
@@ -1515,6 +1527,11 @@ public class BooksOnBookshelfViewModel
         // the new build is completely done. We can safely discard the previous one.
         if (booklist != null) {
             booklist.close();
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            final Logger logger = LoggerFactory.getLogger();
+            logger.d(TAG, outcome);
         }
 
         booklist = outcome.getList();
