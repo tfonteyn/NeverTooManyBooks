@@ -140,9 +140,6 @@ public final class DBKey {
     public static final String AUTO_UPDATE = "auto_update";
 
 
-    /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
-    public static final String BOOK_IDENTIFIER_SID = "sid";
-
     /** {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}. */
     public static final String BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
 
@@ -467,6 +464,8 @@ public final class DBKey {
          * Typically a url, but we allow/use all uri style values.
          */
         public static final String BOOK_URI = "book_uri";
+        /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
+        public static final String IDENTIFIER_SID = "sid";
 
         private IDENTIFIERS() {
         }

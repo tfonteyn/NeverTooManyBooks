@@ -524,7 +524,7 @@ public final class LegacyUpgrades {
         final String sqlInsert = "INSERT INTO " + DBDefinitions.TBL_BOOK_IDENTIFIER.getName()
                                  + '(' + DBKey.FK_BOOK
                                  + ',' + DBKey.FK_IDENTIFIER
-                                 + ',' + DBKey.BOOK_IDENTIFIER_SID
+                                 + ',' + DBKey.IDENTIFIERS.IDENTIFIER_SID
                                  + ") VALUES(?,?,?)";
 
         try (Cursor cursor = db.rawQuery(sqlSelect, null);
