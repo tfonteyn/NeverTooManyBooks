@@ -663,7 +663,7 @@ public class TableDefinition {
      * @return SQL to create table
      */
     @NonNull
-    private String getCreateStatement(@NonNull final String tableName,
+    public String getCreateStatement(@NonNull final String tableName,
                                       final boolean withDomainConstraints) {
 
         final StringBuilder sql;

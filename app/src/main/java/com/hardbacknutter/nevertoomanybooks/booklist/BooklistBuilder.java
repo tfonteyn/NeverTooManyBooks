@@ -895,6 +895,50 @@ class BooklistBuilder {
      * In other words, books should have their own key=value pair added when building
      * the table content and the trigger for each level-up should cut off
      * the last key=value pair.
+     * <p>
+     * For references, the triggers/helper example with "Author/Series/Book" grouping.
+     * <pre>
+     *    CREATE TEMPORARY TABLE tmp_book_list_1_th
+     *          (node_level integer NOT NULL,blg_sort_aut text,blg_sort_ser text,
+     *           blg_sort_ser_num_f real,
+     *           series_num text COLLATE LOCALIZED,
+     *           title_ob text NOT NULL DEFAULT '' COLLATE LOCALIZED)
+     *
+     *    -- before inserting a book...
+     *    CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_LEVEL_2 BEFORE INSERT ON tmp_book_list_1
+     *    FOR EACH ROW WHEN NEW.node_level=3 AND
+     *       -- is the current author+series different from the one inserted previously?
+     *       NOT EXISTS(SELECT 1 FROM tmp_book_list_1_th AS tht WHERE COALESCE(tht.blg_sort_aut,'')=COALESCE(NEW.blg_sort_aut,'') AND COALESCE(tht.blg_sort_ser,'')=COALESCE(NEW.blg_sort_ser,''))
+     *         BEGIN
+     *         -- insert the series
+     *            INSERT INTO tmp_book_list_1 (node_level,node_group,node_key,node_expanded,node_visible,
+     *                        author_formatted,blg_sort_aut,author,author_complete,real_author,
+     *                        series_name,blg_sort_ser,series_id,series_complete)
+     *                   VALUES (2,2,NEW.node_key,0,0,
+     *                       NEW.author_formatted,NEW.blg_sort_aut,NEW.author,NEW.author_complete,NEW.real_author,
+     *                       NEW.series_name,NEW.blg_sort_ser,NEW.series_id,NEW.series_complete);
+     *         END
+     *
+     *    -- before inserting a series
+     *    CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_LEVEL_1 BEFORE INSERT ON tmp_book_list_1
+     *    FOR EACH ROW WHEN NEW.node_level=2 AND
+     *        -- is the current author different from the one inserted previously?
+     *        NOT EXISTS(SELECT 1 FROM tmp_book_list_1_th AS tht WHERE COALESCE(tht.blg_sort_aut,'')=COALESCE(NEW.blg_sort_aut,''))
+     *          BEGIN
+     *          -- insert an author
+     *             INSERT INTO tmp_book_list_1 (node_level,node_group,node_key,node_expanded,node_visible,
+     *                         author_formatted,blg_sort_aut,author,author_complete,real_author)
+     *                    VALUES (1,1,NEW.node_key,0,1,
+     *                         NEW.author_formatted,NEW.blg_sort_aut,NEW.author,NEW.author_complete,NEW.real_author);
+     *         END
+     *
+     *    -- track the last inserted full group-hierarchy used
+     *    CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_CURRENT AFTER INSERT ON tmp_book_list_1
+     *    FOR EACH ROW WHEN NEW.node_level=2 BEGIN
+     *        DELETE FROM tmp_book_list_1_th;
+     *        INSERT INTO tmp_book_list_1_th VALUES (NEW.node_level,NEW.blg_sort_aut,NEW.blg_sort_ser,NEW.blg_sort_ser_num_f,NEW.series_num,NEW.title_ob);
+     *    END
+     * </pre>
      *
      * @param db Database Access
      *
@@ -933,6 +977,14 @@ class BooklistBuilder {
          */
         //IMPORTANT: withDomainConstraints MUST BE false
         db.recreate(triggerHelperTable, false);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "build", "triggerHelperTable="
+                                          + triggerHelperTable.getCreateStatement(
+                                 triggerHelperTable.getName(), true)
+                         );
+        }
 
         final int groupCount = style.getGroupCount();
 
@@ -1010,42 +1062,6 @@ class BooklistBuilder {
                              .d(TAG, "build", "level=" + level
                                               + "|TgSql=" + levelTgSql);
             }
-            // for references, these look somewhat like this:
-            // Level 2 is a "Series", level 1 uses "Title 1st letter"
-            //
-            // CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_LEVEL_2
-            //          BEFORE INSERT ON tmp_book_list_1 FOR EACH ROW
-            //     WHEN NEW.node_level=3 AND NOT EXISTS(
-            //          SELECT 1 FROM tmp_book_list_1_th AS tht
-            //          WHERE COALESCE(tht.blg_tit_let,'')=COALESCE(NEW.blg_tit_let,'')
-            //              COLLATE LOCALIZED
-            //          AND COALESCE(tht.bl_ser_sort,'')=COALESCE(NEW.bl_ser_sort,'')
-            //              COLLATE LOCALIZED
-            //          )
-            //     BEGIN
-            //      INSERT INTO tmp_book_list_1
-            //          (node_level,node_group,node_key,node_expanded,node_visible,
-            //              blg_tit_let,
-            //              series_name,bl_ser_sort,series_id,series_complete)
-            //          VALUES(2,2,NEW.node_key,0,0,
-            //              NEW.blg_tit_let,
-            //              NEW.series_name,NEW.bl_ser_sort,NEW.series_id,NEW.series_complete);
-            //     END
-            //
-            // CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_LEVEL_1
-            //          BEFORE INSERT ON tmp_book_list_1 FOR EACH ROW
-            //     WHEN NEW.node_level=2 AND NOT EXISTS(
-            //          SELECT 1 FROM tmp_book_list_1_th AS tht
-            //          WHERE COALESCE(tht.blg_tit_let,'')=COALESCE(NEW.blg_tit_let,'')
-            //              COLLATE LOCALIZED
-            //          )
-            //     BEGIN
-            //      INSERT INTO tmp_book_list_1
-            //          (node_level,node_group,node_key,node_expanded,node_visible,
-            //              blg_tit_let)
-            //          VALUES(1,9,NEW.node_key,0,1,
-            //              NEW.blg_tit_let);
-            //     END
         }
 
         // Create a trigger to maintain the 'current' value
