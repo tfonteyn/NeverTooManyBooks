@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
@@ -49,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.GroupKey;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -120,14 +120,17 @@ class BooklistBuilder {
     private static final String SELECT_COUNT_ = "SELECT COUNT(*) ";
     private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
     private static final String UPDATE_ = "UPDATE ";
+    private static final String WITH_ = "WITH ";
     private static final String _AND_ = " AND ";
     private static final String _AS_ = " AS ";
     private static final String _FROM_ = " FROM ";
-    private static final String _LIKE_X = " LIKE ?";
+    private static final String _GROUP_BY_ = " GROUP BY ";
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String _SET_ = " SET ";
     private static final String _VALUES_ = " VALUES ";
     private static final String _WHERE_ = " WHERE ";
+    private static final String _JOIN_ = " JOIN ";
+    private static final String _ON_ = " ON ";
 
     private static final String CREATE_TEMPORARY_TRIGGER_ = "CREATE TEMPORARY TRIGGER ";
     private static final String _BEGIN_ = " BEGIN ";
@@ -140,6 +143,11 @@ class BooklistBuilder {
      * as used in the ViewPager displaying individual books.
      */
     private static final Domain DOM_FK_BL_ROW_ID;
+
+    /** Table alias. */
+    private static final String TA_WITH = "ws";
+    /** Column alias. */
+    private static final String CA_SUM = "cnt";
 
     static {
         DOM_FK_BL_ROW_ID =
@@ -481,6 +489,11 @@ class BooklistBuilder {
                                                  @NonNull final SynchronizedDb db,
                                                  @NonNull final RebuildBooklist rebuildMode,
                                                  @NonNull final Collection<Filter> searchCriteria) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
 
         this.rebuildMode = rebuildMode;
 
@@ -499,40 +512,39 @@ class BooklistBuilder {
         // All structures are in place now
         // Construct the INSERT INTO ... SELECT
         // to populate the list-table
-        final String sqlForInitialInsert = createSqlForInitialInsert(context,
-                                                                     collationCaseSensitive);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "build", "sqlForInitialInsert=" + sqlForInitialInsert);
-
-            if (!db.inTransaction()) {
-                throw new TransactionException(TransactionException.REQUIRED);
-            }
-        }
+        final String sqlBulkInsert = createSqlBulkInsert(context, collationCaseSensitive);
 
         // Create the list table and populate it.
         //IMPORTANT: withDomainConstraints MUST BE false
         db.recreate(listTable, false);
 
+        // 2025-03-11: adding indexes on the group-keys
+        // for use the the "sums" sql.
+        // Not entirely sure how much impact, or lack-of, this has.
+        style.getGroupList().stream()
+             .map(BooklistGroup::getGroupKey)
+             .map(GroupKey::getKeyDomainExpression)
+             .map(DomainExpression::getDomain)
+             .forEach(domain -> listTable.addIndex(domain.getName(), false, domain));
+
         // get the triggers in place, ready to act on our upcoming initial insert.
         createTriggers(db);
+
+        final long t0 = System.nanoTime();
 
         // Build the lowest level (i.e. books) using our initial insert statement
         // The triggers will do the grouping levels.
         final int initialInsertCount;
-
-        final long t0 = System.nanoTime();
-
-        try (SynchronizedStatement stmt = db.compileStatement(sqlForInitialInsert)) {
+        try (SynchronizedStatement stmt = db.compileStatement(sqlBulkInsert)) {
             initialInsertCount = stmt.executeUpdateDelete();
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
-            // only measure the insert... all other operations are very fast compared to it
-            LoggerFactory.getLogger().d(TAG, "build",
-                                        "insert(" + initialInsertCount + "): "
-                                        + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "build",
+                            "insert(" + initialInsertCount + ")"
+                            + "|" + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms"
+                            + "|" + sqlBulkInsert);
         }
 
         if (!collationCaseSensitive) {
@@ -575,8 +587,8 @@ class BooklistBuilder {
     }
 
     @NonNull
-    private String createSqlForInitialInsert(@NonNull final Context context,
-                                             final boolean collationCaseSensitive) {
+    private String createSqlBulkInsert(@NonNull final Context context,
+                                       final boolean collationCaseSensitive) {
         // List of column names for the INSERT INTO... clause
         final StringJoiner destColumns = new StringJoiner(",");
         // List of expressions for the SELECT... clause.
@@ -794,7 +806,7 @@ class BooklistBuilder {
         // This is using a non-enforced reference, build the JOIN manually
         final String join =
                 " LEFT OUTER JOIN " + TBL_LANG_MAPPINGS.ref()
-                + " ON " + TBL_BOOKS.dot(DBKey.LANGUAGE)
+                + _ON_ + TBL_BOOKS.dot(DBKey.LANGUAGE)
                 + '=' + TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3)
                 + _AND_
                 + TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3_USER)
@@ -1104,72 +1116,125 @@ class BooklistBuilder {
     }
 
     private void createLevelSums(@NonNull final SynchronizedDb db) {
+
+        // the first level above the books == number of groups
         final int groupCount = style.getGroupCount();
 
-        // collect all the book node keys
-        List<String> nodeKeys = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(
-                SELECT_DISTINCT_ + DBKey.BL_NODE.KEY + _FROM_ + listTable
-                + _WHERE_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK,
-                null)) {
-            while (cursor.moveToNext()) {
-                nodeKeys.add(cursor.getString(0));
-            }
+        final int bookLevel = groupCount + 1;
+
+        final String sqlBookCount = createLevelSumsBooks(bookLevel);
+
+        final long t0 = System.nanoTime();
+        // count the number of books for each lowest-level group
+        // and store the result on that group
+        db.execSQL(sqlBookCount);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "build",
+                            "level=" + bookLevel
+                            + "|" + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms"
+                            + "|" + sqlBookCount);
         }
 
-        // count the books and store the result on the first level above the books,
-        // i.e. on the lowest group, the highest level-group.
-        try (SynchronizedStatement stmt = db.compileStatement(
-                SELECT_COUNT_ + _FROM_ + listTable
-                + _WHERE_ + DBKey.BL_NODE.GROUP + "=" + BooklistGroup.BOOK
-                + _AND_ + DBKey.BL_NODE.KEY + "=?");
-             SynchronizedStatement putCount = db.compileStatement(
-                     UPDATE_ + listTable + _SET_ + DBKey.FK_BOOK + "=?"
-                     + _WHERE_ + DBKey.BL_NODE.KEY + "=?"
-                     + _AND_ + DBKey.BL_NODE.LEVEL + "=?")) {
-            for (final String nodeKey : nodeKeys) {
-                stmt.bindString(1, nodeKey);
-                final long count = stmt.simpleQueryForLongOrZero();
+        final List<String> keyColumns = style
+                .getGroupList().stream()
+                .map(BooklistGroup::getGroupKey)
+                .map(GroupKey::getKeyDomainExpression)
+                .map(DomainExpression::getDomain)
+                .map(Domain::getName)
+                .collect(Collectors.toList());
 
-                putCount.bindLong(1, count);
-                putCount.bindString(2, nodeKey);
-                // the level above the books, which IS the group count
-                putCount.bindLong(3, groupCount);
-                putCount.executeUpdateDelete();
+        for (int level = groupCount; level > 1; level--) {
+            final String sqlGroupSum =
+                    createLevelSumsGroups(keyColumns.subList(0, level - 1), level);
+
+            final long t1 = System.nanoTime();
+            // for each group, sum the book-counts, and store them in the next group up.
+            db.execSQL(sqlGroupSum);
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "build",
+                                "level=" + level
+                                + "|" + ((System.nanoTime() - t1) / NANO_TO_MILLIS) + " ms"
+                                + "|" + sqlGroupSum);
             }
         }
+    }
 
-        if (groupCount > 1) {
-            // accumulate the sums for each group level, and store them on a higher level.
-            try (SynchronizedStatement stmt = db.compileStatement(
-                    SELECT_ + "SUM(" + DBKey.FK_BOOK + ") " + _FROM_ + listTable
-                    + _WHERE_ + DBKey.BL_NODE.KEY + _LIKE_X
-                    + _AND_ + DBKey.BL_NODE.LEVEL + "=?");
-                 SynchronizedStatement putCount = db.compileStatement(
-                         UPDATE_ + listTable + _SET_ + DBKey.FK_BOOK + "=?"
-                         + _WHERE_ + DBKey.BL_NODE.KEY + _LIKE_X
-                         + _AND_ + DBKey.BL_NODE.LEVEL + "=?")) {
+    @NonNull
+    private String createLevelSumsBooks(final int level) {
 
-                for (int level = groupCount; level > 1; level--) {
-                    // cut the node key down to the level above
-                    // Make sure to remove the '='.
-                    nodeKeys = nodeKeys.stream()
-                                       .map(k -> k.substring(0, k.lastIndexOf('=')) + '%')
-                                       .distinct()
-                                       .collect(Collectors.toList());
+        final String nodeLevel = listTable.getName() + "." + DBKey.BL_NODE.LEVEL;
+        // Note we use the single concatenated/string key column.
+        final String keys = listTable.getName() + "." + DBKey.BL_NODE.KEY;
 
-                    for (final String nodeKey : nodeKeys) {
-                        stmt.bindString(1, nodeKey);
-                        stmt.bindLong(2, level);
-                        final long count = stmt.simpleQueryForLongOrZero();
+        // Create a temp view for use with a WITH-clause
+        // collecting the [node-key, count] pairs for the books.
+        // This count will be stored on the level just above the books.
+        final String withSelectClause =
+                "("
+                + SELECT_ + keys + ", COUNT(*)" + _AS_ + CA_SUM
+                + _FROM_ + listTable.getName()
+                + _WHERE_ + nodeLevel + "=" + level
+                + _GROUP_BY_ + keys
+                + ")";
 
-                        putCount.bindLong(1, count);
-                        putCount.bindString(2, nodeKey);
-                        putCount.bindLong(3, level - 1);
-                        putCount.executeUpdateDelete();
-                    }
-                }
-            }
-        }
+        final String bookSetter =
+                "("
+                + SELECT_ + TA_WITH + "." + CA_SUM
+                + _FROM_ + TA_WITH
+                + _WHERE_ + TA_WITH + "." + DBKey.BL_NODE.KEY + "=" + keys
+                + ")";
+
+        return WITH_ + TA_WITH + _AS_ + withSelectClause
+               + UPDATE_ + listTable.getName()
+               + _SET_ + DBKey.FK_BOOK + "=" + bookSetter
+               + _WHERE_ + nodeLevel + "=" + (level - 1)
+               + _AND_ + keys + " IN (SELECT " + DBKey.BL_NODE.KEY + _FROM_ + TA_WITH + ")";
+    }
+
+    @NonNull
+    private String createLevelSumsGroups(@NonNull final List<String> keyColumns,
+                                         final int level) {
+
+        final String nodeLevel = listTable.getName() + "." + DBKey.BL_NODE.LEVEL;
+        // Note we use the list of individual key (id) columns
+        final String keys = keyColumns.stream()
+                                      .map(key -> listTable.getName() + "." + key)
+                                      .collect(Collectors.joining(","));
+
+        final String withSelectClause =
+                "("
+                + SELECT_ + keys + ", SUM(" + DBKey.FK_BOOK + ")" + _AS_ + CA_SUM
+                + _FROM_ + listTable.getName()
+                + _WHERE_ + nodeLevel + "=" + level
+                + _GROUP_BY_ + keys
+                + ")";
+
+        final String bookSetter =
+                "("
+                + SELECT_ + TA_WITH + "." + CA_SUM
+                + _FROM_ + TA_WITH
+                + _WHERE_ + createKeyEquality(keyColumns, TA_WITH)
+                + ")";
+
+        return WITH_ + TA_WITH + _AS_ + withSelectClause
+               + UPDATE_ + listTable.getName()
+               + _SET_ + DBKey.FK_BOOK + "=" + bookSetter
+               + _WHERE_ + nodeLevel + "=" + (level - 1)
+               + _AND_ + "EXISTS "
+               + "(SELECT 1 FROM " + TA_WITH + _WHERE_ + createKeyEquality(keyColumns,
+                                                                           TA_WITH) + ")";
+    }
+
+    @NonNull
+    private String createKeyEquality(@NonNull final List<String> keyColumns,
+                                     @SuppressWarnings("SameParameterValue")
+                                     @NonNull final String table) {
+        return keyColumns.stream()
+                         .map(k -> listTable.getName() + "." + k + "=" + table + "." + k)
+                         .collect(Collectors.joining(_AND_));
     }
 }
