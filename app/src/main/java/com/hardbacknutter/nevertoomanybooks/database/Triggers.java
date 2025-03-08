@@ -96,13 +96,13 @@ final class Triggers {
          *
          * Update the books last-update-date.
          */
-        afterDeleteOn(db, TBL_BOOK_BOOKSHELF);
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_BOOKSHELF);
         // It's currently not possible to delete an Author directly.
         //  createTriggerAfterDeleteOn(db, TBL_BOOK_AUTHOR);
-        afterDeleteOn(db, TBL_BOOK_SERIES);
-        afterDeleteOn(db, TBL_BOOK_PUBLISHER);
-        afterDeleteOn(db, TBL_BOOK_IDENTIFIER);
-        afterDeleteOn(db, TBL_BOOK_LOANEE);
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_SERIES);
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_PUBLISHER);
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_IDENTIFIER);
+        afterDeleteOnUpdateBookLastUpdated(db, TBL_BOOK_LOANEE);
 
         /*
          * Updating an {@link Author}.
@@ -290,8 +290,9 @@ final class Triggers {
      * @param db        Underlying database
      * @param linkTable the TBL_BOOK_* link table on which to set the trigger
      */
-    private static void afterDeleteOn(@NonNull final SQLiteDatabase db,
-                                      @NonNull final TableDefinition linkTable) {
+    private static void afterDeleteOnUpdateBookLastUpdated(
+            @NonNull final SQLiteDatabase db,
+            @NonNull final TableDefinition linkTable) {
 
         final String name = "after_delete_on_" + linkTable.getName();
         final String body = AFTER_DELETE_ON_ + linkTable.getName()
