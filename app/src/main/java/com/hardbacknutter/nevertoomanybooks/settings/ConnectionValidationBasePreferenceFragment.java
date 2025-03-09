@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (shouldProposeValidation()) {
+                    if (vm.isEnabled() && shouldProposeValidation()) {
                         proposeValidation();
                     } else {
                         popBackStackOrFinish();
@@ -128,10 +128,12 @@ public abstract class ConnectionValidationBasePreferenceFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        vm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
-        vm.onConnectionCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
-        vm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
-        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        if (vm.isEnabled()) {
+            vm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
+            vm.onConnectionCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+            vm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
+            vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        }
     }
 
     protected abstract boolean shouldProposeValidation();

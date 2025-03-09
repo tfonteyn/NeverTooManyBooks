@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.network;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -31,11 +32,15 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 public class ConnectionValidatorViewModel
         extends ViewModel {
 
+    @Nullable
     private ConnectionValidatorTask validatorTask;
 
     @Override
     protected void onCleared() {
-        validatorTask.cancel();
+        // sanity/paranoia check
+        if (validatorTask != null) {
+            validatorTask.cancel();
+        }
         super.onCleared();
     }
 
@@ -46,6 +51,10 @@ public class ConnectionValidatorViewModel
      */
     public void init(@StringRes final int siteResId) {
         validatorTask = new ConnectionValidatorTask(siteResId);
+    }
+
+    public boolean isEnabled() {
+        return validatorTask != null;
     }
 
     @NonNull
@@ -79,10 +88,13 @@ public class ConnectionValidatorViewModel
     }
 
     public void cancelTask(@IdRes final int taskId) {
-        if (taskId == validatorTask.getTaskId()) {
-            validatorTask.cancel();
-        } else {
-            throw new IllegalArgumentException("taskId=" + taskId);
+        // sanity/paranoia check
+        if (validatorTask != null) {
+            if (taskId == validatorTask.getTaskId()) {
+                validatorTask.cancel();
+            } else {
+                throw new IllegalArgumentException("taskId=" + taskId);
+            }
         }
     }
 
@@ -90,6 +102,9 @@ public class ConnectionValidatorViewModel
      * Run the validation connection.
      */
     public void validateConnection() {
-        validatorTask.connect();
+        // sanity/paranoia check
+        if (validatorTask != null) {
+            validatorTask.connect();
+        }
     }
 }
