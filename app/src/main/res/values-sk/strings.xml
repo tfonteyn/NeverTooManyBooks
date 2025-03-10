@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <plurals name="n_books">
+        <item quantity="one">%1$d kniha</item>
+        <item quantity="few">%1$d knihy</item>
+        <item quantity="other">%1$d kníh</item>
+    </plurals>
+    <plurals name="n_books_found">
+        <item quantity="one">Nájdená %1$d kniha</item>
+        <item quantity="few">Nájdené %1$d knihy</item>
+        <item quantity="other">Nájdených %1$d kníh</item>
+    </plurals>
+</resources>
