@@ -23,7 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 import java.util.Objects;
@@ -88,9 +87,9 @@ class BooklistGroupImpl
         return groupKey.getId();
     }
 
-    @VisibleForTesting
     @NonNull
-    GroupKey getGroupKey() {
+    @Override
+    public GroupKey getGroupKey() {
         return groupKey;
     }
 

@@ -33,7 +33,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 
-final class GroupKey {
+public final class GroupKey {
 
     @BooklistGroup.Id
     private final int id;
@@ -136,7 +136,7 @@ final class GroupKey {
      * @return domain to display
      */
     @NonNull
-    DomainExpression getKeyDomainExpression() {
+    public DomainExpression getKeyDomainExpression() {
         return keyDomainExpression;
     }
 

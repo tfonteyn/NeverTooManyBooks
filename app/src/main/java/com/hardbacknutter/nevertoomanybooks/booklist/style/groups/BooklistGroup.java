@@ -169,6 +169,17 @@ public interface BooklistGroup {
     int getId();
 
     /**
+     * Get low-level access to the {@link GroupKey}.
+     * <p>
+     * <strong>Caution:</strong> use the (potentially overridden) wrapper methods in
+     * this interface unless you need access to the supers in the {@link GroupKey}.
+     *
+     * @return key
+     */
+    @NonNull
+    GroupKey getGroupKey();
+
+    /**
      * Get the displayable name.
      *
      * @param context Current context
