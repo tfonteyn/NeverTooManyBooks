@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -97,7 +94,7 @@
     <string name="action_merge">Spojit</string>
     <string name="action_not_now">Teď ne</string>
     <string name="action_reset_to_default">Obnovit výchozí</string>
-    <string name="action_retry">Zkusit znovu</string>
+    <string name="action_retry">Opakovat</string>
     <string name="action_save">Uložit</string>
     <string name="action_search">Hledat</string>
     <string name="action_select">Vybrat</string>
@@ -275,7 +272,7 @@
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Typ autora</string>
     <string name="lbl_author_type_artist">Ilustrace</string>
-    <string name="lbl_author_type_colorist">Barvivo</string>
+    <string name="lbl_author_type_colorist">Kolorista</string>
     <string name="lbl_author_type_contributor">Spolupracovník</string>
     <string name="lbl_author_type_cover_artist">Ilustrace knihy</string>
     <string name="lbl_author_type_cover_colorist">barva obálky knihy</string>
@@ -315,8 +312,8 @@
     <string name="lbl_condition_fair">Přijatelný</string>
     <string name="lbl_condition_fine">Jako nový</string>
     <string name="lbl_condition_good">Dobrý</string>
-    <string name="lbl_condition_reading_copy">Čtení kopie</string>
-    <string name="lbl_condition_very_good">Velmi dobře</string>
+    <string name="lbl_condition_reading_copy">Čtená kopie</string>
+    <string name="lbl_condition_very_good">Velmi dobrý</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Slučování velkých a malých písmen</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Odstranění nepoužívaných štítků</string>
     <string name="lbl_connection_timeout">Časový limit připojení (sekundy)</string>
@@ -344,11 +341,11 @@
     <string name="option_storage_edit_settings">Upravit nastavení</string>
     <string name="lbl_edit_style">Upravit styl</string>
     <string name="lbl_edition">Edice</string>
-    <string name="lbl_edition_book_club">Kniha Club vydání</string>
+    <string name="lbl_edition_book_club">Vydání knižního klubu</string>
     <string name="lbl_edition_first_edition">První vydání</string>
     <string name="lbl_edition_first_impression">První tisk</string>
     <string name="lbl_edition_limited">Limitovaná edice</string>
-    <string name="lbl_edition_slipcase">Rukáv</string>
+    <string name="lbl_edition_slipcase">Pouzdro</string>
     <string name="lbl_export_books_option_all">Všechny knihy</string>
     <string name="lbl_export_books_option_since_last_full_backup">Nové a aktualizované knihy</string>
     <string name="lbl_export_options">Vyberte, co bude exportováno.</string>
@@ -435,7 +432,7 @@
     <string name="lbl_substitutions">Náhrady</string>
     <string name="lbl_signed">Podepsaný</string>
     <string name="lbl_site_book_id">ID webové stránky</string>
-    <string name="option_sort_and_style_ellipsis">Seřadit &amp; Styl…</string>
+    <string name="option_sort_and_style_ellipsis">Třídění &amp; Styly…</string>
     <string name="lbl_sorting">Třídění</string>
     <string name="lbl_sql_query">SQL dotaz</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Zavřete aplikaci a vložte správnou SD kartu</string>
@@ -448,7 +445,7 @@
     <string name="lbl_styles">Styly</string>
     <string name="lbl_styles_long">Stylování knihovny</string>
     <string name="lbl_sync_date">Od té doby</string>
-    <string name="lbl_tab_alternative_editions">Alt. vy.</string>
+    <string name="lbl_tab_alternative_editions">Alt. vyd.</string>
     <string name="lbl_tab_details">Podrobnosti</string>
     <string name="lbl_tab_lbl_ext_id">Externí ID</string>
     <string name="lbl_tab_notes">Poznámky</string>
@@ -495,7 +492,7 @@
     <string name="option_cover_replace_from_camera">Z fotoaparátu…</string>
     <string name="option_cover_replace_from_gallery">Z galerie…</string>
     <string name="option_cover_rotate">Otočit…</string>
-    <string name="option_cover_rotate_automatic">Automatický</string>
+    <string name="option_cover_rotate_automatic">Automaticky</string>
     <string name="option_cover_rotate_ccw">Proti směru hodinových ručiček</string>
     <string name="option_cover_rotate_cw">Po směru hodinových ručiček</string>
     <string name="option_download_ebook_format">Stáhnout eBook (%1$s)</string>
@@ -624,10 +621,10 @@
     <string name="pt_website_search_order_and_enable">Priorita, povolení a zakázání</string>
     <string name="ps_show_author_name_family_first">Zobrazte nejprve příjmení,\ntj. „Čapek, Karel“</string>
     <string name="ps_show_author_name_given_first">Zobrazení s křestními jmény na prvním místě,\ntj. „Karel Čapek“</string>
-    <string name="ps_bob_books_under_multiple_authors_each">Pod každým autor</string>
+    <string name="ps_bob_books_under_multiple_authors_each">Pod každým autorem</string>
     <string name="ps_bob_books_under_multiple_publishers_each">pod každým vydavatelem</string>
     <string name="ps_bob_books_under_multiple_series_each">Pod každým série</string>
-    <string name="ps_bob_books_under_multiple_authors_main_only">Pouze pod primárním autor</string>
+    <string name="ps_bob_books_under_multiple_authors_main_only">Pouze pod primárním autorem</string>
     <string name="ps_bob_books_under_multiple_publishers_main_only">pouze pod jejich primárním vydavatelem</string>
     <string name="ps_bob_books_under_multiple_series_main_only">Pouze pod primárním série</string>
     <string name="pv_bob_header_filters">Filtry</string>
@@ -702,7 +699,7 @@
     <string name="warning_book_not_found">Nepodařilo se nalézt zadanou knihu.</string>
     <string name="warning_cannot_delete_1st_bs">První knihovnu nelze odstranit.</string>
     <string name="warning_enable_at_least_1_website">Pro každou kategorii povolte alespoň jeden web.</string>
-    <string name="warning_export_contains_no_data">Nebylo co vyvážet.</string>
+    <string name="warning_export_contains_no_data">Nebylo co exportovat.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Je-li zadán den, musí být také uveden měsíc i rok.</string>
     <string name="warning_if_month_set_year_must_be">Pokud je zadán měsíc, musí být také uveden rok.</string>
     <string name="warning_image_copy_failed">Obrázek nelze zkopírovat.</string>
@@ -816,7 +813,7 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Přiřazení polic na knihy</string>
     <string name="site_description_comics">Komiks</string>
-    <string name="lbl_author_type_storyboard">Scénáře</string>
+    <string name="lbl_author_type_storyboard">Návrhář scén</string>
     <string name="lbl_author_type_lettering">Písmo</string>
     <string name="lbl_percentage">Procento</string>
     <string name="lbl_percentage_read">% přečteno</string>
