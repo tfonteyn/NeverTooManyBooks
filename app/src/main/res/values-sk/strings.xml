@@ -140,8 +140,8 @@
     <string name="progress_msg_searching_site">Vyhľadáva sa %1$s</string>
     <string name="progress_msg_searching_editions">Vyhľadávajú sa ďalšie vydania…</string>
     <string name="progress_msg_downloading">Sťahuje sa…</string>
-    <string name="progress_msg_skip_s">Preskakuje sa „%1$s“</string>
-    <string name="progress_msg_x_skipped">%1$d preskočených</string>
+    <string name="progress_msg_skip_s">Vynecháva sa „%1$s“</string>
+    <string name="progress_msg_x_skipped">%1$d vynechaných</string>
     <string name="progress_msg_x_deleted">%1$d odstránených</string>
     <string name="progress_msg_cleaning_up">Čistí sa…</string>
     <string name="info_authorized">Autorizované</string>
@@ -613,7 +613,7 @@
     <string name="error_certificate_invalid">Certifikát je neplatný alebo nedostupný.</string>
     <string name="error_import_archive_invalid">Archívny súbor je poškodený alebo inak neplatný.</string>
     <string name="warning_no_site_supports_this_method">UPOZORNENIE: žiadna z aktuálne vybratých stránok nepodporuje vyhľadávanie podľa %1$s. Použite ponuku stránok na povolenie alternatívnych stránok alebo použite iný spôsob vyhľadávania.</string>
-    <string name="error_updates_aborted">Aktualizácie boli zrušené</string>
+    <string name="error_updates_aborted">Aktualizácie boli prerušené</string>
     <string name="error_network_site_access_failed">Vyskytol sa problém so sieťou pri prístupe k %1$s. Skontrolujte, či je webová stránka funkčná, a ak problém pretrváva, kontaktujte podporu.</string>
     <string name="error_site_access_blocked">Prístup bol zablokovaný webovou stránkou.</string>
     <string name="error_http_403_site_forbidden">%1$s zablokoval prístup.</string>
@@ -631,7 +631,7 @@
     <string name="vldt_non_blank_required_for_x">Vyžaduje sa neprázdna hodnota pre „%1$s“</string>
     <string name="vldt_blank_required_for_x">Vyžaduje sa prázdna hodnota pre „%1$s“</string>
     <string name="site_description_german">Nemčina</string>
-    <string name="info_all_books_have_covers">Všetky knihy na tejto polici majú obaly</string>
+    <string name="info_all_books_have_covers">Všetky knihy na tejto polici majú obálky</string>
     <string name="info_calibre_content_server_extension">Rozšírenie Calibre Content Server nie je nainštalované. Virtuálne knižnice nebudú dostupné.</string>
     <string name="site_description_catalog">Katalóg</string>
     <string name="site_description_comics">Komiksy</string>
