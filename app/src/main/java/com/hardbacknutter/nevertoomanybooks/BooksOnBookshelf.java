@@ -1661,49 +1661,70 @@ public class BooksOnBookshelf
     }
 
     private void scrollToTarget(@Nullable final List<BooklistNode> targetNodes) {
+        // FIXME: scrolling not always correct
+        // no "targetNodes":
+        // we'll scroll to the correct position BEFORE the covers have been loaded.
+        // Subsequent loading of the covers will push the rows down, and the row
+        // we originally scrolled to will now be out of view, "below" the screen.
+        //
+        //"targetNodes" present:
+        // 1. Best node is already visible => no scrolling will be done.
+        // 2. Best node is "before-the-first" => scrolling always correct.
+        // 3. Best node is "after-the last" and NO COVERS are shown
+        //    =>  scrolling always correct.
+        // 4. Best node is "after-the last" and COVERS ARE shown
+        //   => due to the covers being loaded asynchronously,
+        //      the amount of visible rows will be higher than expected.
+        //      The result being that the scroll amount will be LESS than needed,
+        //      and the desired node will STILL be "below" the screen.
+
+        final boolean covers = vm.getStyle().isShowField(FieldVisibility.Screen.List,
+                                                         DBKey.COVER[0]);
+        // Assume that cached covers will appear faster than File based covers.
+        final boolean imageCachingEnabled = ServiceLocator.getInstance()
+                                                          .getCoverStorage()
+                                                          .isImageCachingEnabled();
+
+        final long delay = covers && !imageCachingEnabled ? SCROLL_POST_DELAY_MS : 0;
+
         final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
-        //noinspection DataFlowIssue
-        positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
-                                   topRowPos.getViewOffset(),
-                                   adapter.getItemCount());
-
-        // wait for layout cycle after the above scroll action
-        vb.content.list.post(() -> {
-            if (targetNodes == null || targetNodes.isEmpty()) {
-                // There are no target nodes, display the embedded book details if applicable
-                showBookDetailsAfterScrolling(vm.getSelectedBookId(),
-                                              topRowPos.getAdapterPosition());
-            } else {
-                // Use the target nodes to find the "best" node and scroll it into view.
-                // FIXME: scrolling to the best node not always correct
-                // 1. Best node is already visible => no scrolling will be done.
-                // 2. Best node is "before-the-first" => scrolling always correct.
-                // 3. Best node is "after-the last" and NO COVERS are shown
-                //    =>  scrolling always correct.
-                // 4. Best node is "after-the last" and COVERS ARE shown
-                //   => due to the covers being loaded asynchronously,
-                //      the amount of visible rows will be higher than expected.
-                //      The result being that the scroll amount will be LESS than needed,
-                //      and the desired node will STILL be "below" the screen.
-                final boolean covers = vm.getStyle().isShowField(FieldVisibility.Screen.List,
-                                                                 DBKey.COVER[0]);
-                // Assume that cached covers will appear faster than File based covers.
-                final boolean imageCachingEnabled = ServiceLocator.getInstance().getCoverStorage()
-                                                                  .isImageCachingEnabled();
-
-                final long delay = covers && !imageCachingEnabled ? SCROLL_POST_DELAY_MS : 0;
-
+        // 2025-03-12: the newest approach...  scroll TWICE to the same position.
+        // ... at least in the emulator this produces somewhat better results.
+        // TEST/URGENT: add a temp scroll-listener in which we check if we reached
+        //  the desired position, if not, scroll again, repeat till ok,
+        //  then remove scroll-listener?
+        //  (madness...)
+        vb.content.list.postDelayed(() -> {
+            //noinspection DataFlowIssue
+            positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
+                                       topRowPos.getViewOffset(),
+                                       adapter.getItemCount());
+            vb.content.list.postDelayed(() -> {
+                //noinspection DataFlowIssue
+                positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
+                                           topRowPos.getViewOffset(),
+                                           adapter.getItemCount());
+                // wait for layout cycle after the above scroll action
                 vb.content.list.postDelayed(() -> {
-                    final BooklistNode node = positioningHelper.scrollTo(targetNodes);
+                    if (targetNodes == null || targetNodes.isEmpty()) {
+                        // There are no target nodes, display the embedded book details if applicable
+                        showBookDetailsAfterScrolling(vm.getSelectedBookId(),
+                                                      topRowPos.getAdapterPosition());
+                    } else {
+                        // Use the target nodes to find the "best" node and scroll it into view.
+                        vb.content.list.postDelayed(() -> {
+                            final BooklistNode node = positioningHelper.scrollTo(targetNodes);
 
-                    // We don't need to wait for the next layout cycle,
-                    // as the node will not change even if further scrolling is done
-                    // Display the embedded book details if applicable
-                    showBookDetailsAfterScrolling(node.getBookId(),
-                                                  node.getAdapterPosition());
+                            // We don't need to wait for the next layout cycle,
+                            // as the node will not change even if further scrolling is done
+                            // Display the embedded book details if applicable
+                            showBookDetailsAfterScrolling(node.getBookId(),
+                                                          node.getAdapterPosition());
+                        }, delay);
+                    }
                 }, delay);
-            }
-        });
+            }, delay);
+        }, delay);
     }
 
     /**
