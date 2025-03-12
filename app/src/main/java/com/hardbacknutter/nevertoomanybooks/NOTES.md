@@ -1,8 +1,12 @@
 Draft notes for next version:
 
-### 7.1.1
+### 7.2.0
 
 NEW:
+
+- rewrite of #113/#129 group-level summation of the books in that group
+  making it several orders of magnitude faster.
+- #125 allow grouping by "original language"
 
 FIXES:
 
