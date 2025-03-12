@@ -1546,6 +1546,10 @@ public class BooksOnBookshelf
      * @param uuid of the style to apply
      */
     private void onStyleSelected(@NonNull final String uuid) {
+        // TEST 2025-03-12: we're now calling saveListPosition from the
+        // ToolbarMenuProvider#onMenuItemSelected
+        // so this one here can likely be removed
+        // This **MAY** provide better accuracy when switching style...
         saveListPosition();
 
         vm.resetPreferredListRebuildMode(this);
@@ -2645,6 +2649,7 @@ public class BooksOnBookshelf
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             fabMenu.hideMenu();
+            saveListPosition();
 
             final int menuItemId = menuItem.getItemId();
 
