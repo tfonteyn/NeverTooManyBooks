@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -61,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.settings.tags.TagMapperTask;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
@@ -450,7 +450,8 @@ public class TagDaoImpl
                     || !before.containsAll(after) || !after.containsAll(before)) {
 
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "ApplyMappings: " + before + " -> " + after);
+                        LoggerFactory.getLogger()
+                                     .d(TAG, "ApplyMappings: " + before + " -> " + after);
                     }
                     insertOrUpdate(context, bookId, after, tag -> locale);
                     bookDao.touch(bookId);
@@ -490,7 +491,8 @@ public class TagDaoImpl
                 // try merging t2 into t1
                 if (t1.getName().equalsIgnoreCase(t2.getName())) {
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "mergeCaseDifferences: " + t2 + " -> " + t1);
+                        LoggerFactory.getLogger()
+                                     .d(TAG, "mergeCaseDifferences: " + t2 + " -> " + t1);
                     }
                     bookCount = moveBooks(context, t2, t1);
                     // t2 was discarded, move on and compare t1 with t3
