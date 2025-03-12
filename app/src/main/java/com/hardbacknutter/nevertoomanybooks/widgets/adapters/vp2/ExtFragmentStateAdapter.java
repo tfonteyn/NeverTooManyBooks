@@ -40,7 +40,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -69,8 +68,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
 import static androidx.lifecycle.Lifecycle.State.RESUMED;
 import static androidx.lifecycle.Lifecycle.State.STARTED;
@@ -497,9 +494,6 @@ public abstract class ExtFragmentStateAdapter
             // HARDBACKNUTTER: also remove state
             mSavedStates.remove(itemId);
             mFragments.remove(itemId);
-            if (BuildConfig.DEBUG) {
-                Log.d("ExtFragmentStateAdapter", "removeFragment: " + itemId);
-            }
             return;
         }
 
@@ -524,9 +518,6 @@ public abstract class ExtFragmentStateAdapter
             // HARDBACKNUTTER: also remove state
             mSavedStates.remove(itemId);
             mFragments.remove(itemId);
-            if (BuildConfig.DEBUG) {
-                Log.d("ExtFragmentStateAdapter", "removeFragment: " + itemId);
-            }
         } finally {
             mFragmentEventDispatcher.dispatchPostEvents(onPost);
         }
