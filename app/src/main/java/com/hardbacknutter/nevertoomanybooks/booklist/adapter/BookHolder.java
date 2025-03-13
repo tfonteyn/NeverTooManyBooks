@@ -269,7 +269,7 @@ public class BookHolder
 
         final boolean useDateAdded = use.contains(DBKey.DATE_ADDED__UTC);
         final boolean useDateUpdated = use.contains(DBKey.DATE_LAST_UPDATED__UTC);
-        if (useDateAdded | useDateUpdated) {
+        if (useDateAdded || useDateUpdated) {
             showOrHideDateAddedAndLastUpdated(rowData, useDateAdded, useDateUpdated);
         }
 
