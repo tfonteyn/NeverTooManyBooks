@@ -1700,7 +1700,6 @@ public class BooksOnBookshelf
                                        topRowPos.getViewOffset(),
                                        adapter.getItemCount());
             vb.content.list.postDelayed(() -> {
-                //noinspection DataFlowIssue
                 positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
                                            topRowPos.getViewOffset(),
                                            adapter.getItemCount());
