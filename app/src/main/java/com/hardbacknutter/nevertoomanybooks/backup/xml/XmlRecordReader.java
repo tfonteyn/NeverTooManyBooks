@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -426,7 +426,7 @@ public class XmlRecordReader
 
                       } catch (@NonNull final NumberFormatException e) {
                           throw new RuntimeException(
-                                  "ERROR_UNABLE_TO_PROCESS_XML_ENTITY" + currentTag, e);
+                                  "ERROR_UNABLE_TO_PROCESS_XML_ENTITY|" + currentTag, e);
                       }
                   });
     }
