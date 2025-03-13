@@ -75,8 +75,6 @@ android {
         minSdk = rootProject.ext.minSdkVersion
         targetSdk = rootProject.ext.targetSdkVersion
 
-        signingConfig = signingConfigs.release
-
         // NEWTHINGS: add app language: add the string res file. No other app changes needed.
         // Keep the two sub-lists in alphabetic order
         def supportedLocales = [
@@ -108,6 +106,8 @@ android {
         release {
             minifyEnabled = true
             shrinkResources = true
+
+            signingConfig = signingConfigs.release
 
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro")
