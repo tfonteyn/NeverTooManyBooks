@@ -167,7 +167,7 @@
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
     <string name="confirm_email_file">Chcete tento soubor někomu poslat e-mailem?</string>
     <string name="confirm_merge_authors">Autor, kterého upravujete, již existuje. Chcete je sloučit?</string>
-    <string name="confirm_merge_bookshelves">Regál, který upravujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_bookshelves">Polička s knihami, kterou upravujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_publishers">Vydavatel, kterého upravujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_series">Série, kterou upravujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_tags">Upravovaný štítek již existuje. Chcete je sloučit?</string>
@@ -243,7 +243,7 @@
     <string name="httpErrorFileNotFound">Požadovaný soubor nelze najít.</string>
     <string name="httpErrorTimeout">Časový limit připojení k serveru vypršel.</string>
     <string name="info_authorized">Autorizováno</string>
-    <string name="option_moving_covers_from_x_to_y">Přesuňte všechny kryty z „%1$s“ do „%2$s“</string>
+    <string name="option_moving_covers_from_x_to_y">Přesuout všechny obálky z „%1$s“ do „%2$s“</string>
     <string name="option_isfdb_menu_populate_toc">Automaticky naplnit tituly (ISFDB)</string>
     <string name="info_isfdb_warning_limited_to">(podporuje pouze webová stránka ISFDB)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
@@ -275,8 +275,8 @@
     <string name="lbl_author_type_colorist">Kolorista</string>
     <string name="lbl_author_type_contributor">Spolupracovník</string>
     <string name="lbl_author_type_cover_artist">Ilustrace knihy</string>
-    <string name="lbl_author_type_cover_colorist">Ilustrátor obálky knihy</string>
-    <string name="lbl_author_type_cover_inking">Obal na inkoustové knihy</string>
+    <string name="lbl_author_type_cover_colorist">Kolorista obálky</string>
+    <string name="lbl_author_type_cover_inking">Kresba tuší na obalu</string>
     <string name="lbl_author_type_editor">Editor</string>
     <string name="lbl_author_type_inking">Inkoust</string>
     <string name="lbl_author_type_intro">Úvod atd.</string>
@@ -317,10 +317,10 @@
     <string name="lbl_tag_mapper_apply_merge_case_result">Slučování velkých a malých písmen</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Odstranění nepoužívaných štítků</string>
     <string name="lbl_connection_timeout">Časový limit připojení (sekundy)</string>
-    <string name="lbl_cover_back">Zadní obálka knihy</string>
-    <string name="lbl_cover_front">Obal knihy</string>
-    <string name="lbl_covers">Obálky na knihy</string>
-    <string name="lbl_covers_long">Obálky na knihy</string>
+    <string name="lbl_cover_back">Zadní obálka</string>
+    <string name="lbl_cover_front">Obálka</string>
+    <string name="lbl_covers">Obálky</string>
+    <string name="lbl_covers_long">Obrázky obálek</string>
     <string name="lbl_credentials">Identifikační údaje uživatele</string>
     <string name="lbl_currency">Měna</string>
     <string name="lbl_database">Databáze</string>
@@ -366,7 +366,7 @@
     <string name="lbl_import_books">Importovat knihy</string>
     <string name="option_import_books_option_all">Všechny knihy</string>
     <string name="option_import_books_option_new_and_updated">Nové a aktualizované knihy</string>
-    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importujte pouze knihy, které \n byly od tohoto data změněny</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importovat pouze knihy, které \nbyly od tohoto data změněny</string>
     <string name="option_import_books_option_new_only">Pouze nové knihy</string>
     <string name="lbl_import_options">Vyberte, co bude importováno.</string>
     <string name="lbl_importing">Probíhá import…</string>
@@ -390,7 +390,7 @@
     <string name="lbl_month">Měsíc</string>
     <string name="lbl_moving_data">Probíhá přesun dat</string>
     <string name="lbl_name">Jméno</string>
-    <string name="option_goto_next_book_without_cover">Přeskočí na další knihu bez obálky</string>
+    <string name="option_goto_next_book_without_cover">Přeskočit na další knihu bez obálky</string>
     <string name="lbl_number">Číslo</string>
     <string name="lbl_owned">Vlastněno</string>
     <string name="lbl_pages">Počet stran</string>
@@ -408,7 +408,7 @@
     <string name="option_purge_image_cache">Vymazat mezipaměť obrázků</string>
     <string name="lbl_rating">Hodnocení</string>
     <string name="lbl_read">Přečteno</string>
-    <string name="lbl_group_read_and_unread">Přečteno amp; Nepřečteno</string>
+    <string name="lbl_group_read_and_unread">Přečteno &amp; Nepřečteno</string>
     <string name="lbl_date_read_day">Den přečtení</string>
     <string name="lbl_read_end">Datum ukončení čtení</string>
     <string name="lbl_date_read_month">Měsíc přečtení</string>
@@ -436,7 +436,7 @@
     <string name="lbl_sorting">Třídění</string>
     <string name="lbl_sql_query">SQL dotaz</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Zavřete aplikaci a vložte správnou SD kartu</string>
-    <string name="option_storage_select">Použijte „%1$s“</string>
+    <string name="option_storage_select">Použít „%1$s“</string>
     <string name="lbl_storage_settings">Úložiště</string>
     <string name="pt_storage_volume">Objem úložiště</string>
     <string name="info_story_in_multiple_books">„%1$s“ je přítomen ve více knihách:\n\n%2$s</string>
@@ -525,8 +525,8 @@
     <string name="option_bob_filter_isbn_yes">S ISBN</string>
     <string name="option_bob_filter_lend_out_no">Dostupné knihy</string>
     <string name="option_bob_filter_lend_out_yes">Půjčené knihy</string>
-    <string name="X_option_bob_filter_read_no">Knihy nepřečtené</string>
-    <string name="X_option_bob_filter_read_yes">Knihy číst</string>
+    <string name="X_option_bob_filter_read_no">Nepřečtené knihy</string>
+    <string name="X_option_bob_filter_read_yes">Přečtené knihy</string>
     <string name="option_bob_filter_signed_no">Nepodepsané knihy</string>
     <string name="option_bob_filter_signed_yes">Podepsané knihy</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Složte vše</string>
@@ -534,8 +534,8 @@
     <string name="pe_bob_list_rebuild_state_preferred">Použijte upřednostňovaný stav</string>
     <string name="pe_bob_list_rebuild_state_preserve">Zachovat aktuální stav</string>
     <string name="loose">Uvolněné</string>
-    <string name="pe_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
-    <string name="pe_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
+    <string name="pe_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně úložného prostoru, rolování bude pomalejší)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více úložného prostoru)</string>
     <string name="pe_ui_theme_dark">Tmavé</string>
     <string name="pe_ui_theme_from_device">Téma zařízení</string>
     <string name="pe_ui_theme_light">Světlé</string>
@@ -576,7 +576,7 @@
     <string name="progress_msg_x_updated">%1$d aktualizováno</string>
     <string name="progress_msg_x_skipped">%1$d vynecháno</string>
     <string name="pt_allow_editing_external_id">Povolit úpravy ID nativní webové knihy</string>
-    <string name="lbl_capitalize_full">Všechna velká písmena</string>
+    <string name="lbl_capitalize_full">Všechna písmena velká</string>
     <string name="pt_allow_metered_network_data">Povolit používání mobilních dat</string>
     <string name="pt_bob_show_group_book_count">Ukázat počet knih v každé skupině.</string>
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
@@ -586,12 +586,12 @@
     <string name="pe_bob_cover_long_click_ignore">Pomocí tlačítka.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Dlouhým kliknutím na obrázek obálky.</string>
     <string name="pt_bob_cover_scale">Zobrazení obálky</string>
-    <string name="pt_bob_cover_show">Zobrazit náhledy</string>
+    <string name="pt_bob_cover_show">Zobrazit obálky</string>
     <string name="pt_bob_font_size">Velikost písma</string>
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
     <string name="pt_bob_list_state_expansion_level">Výchozí rozšíření seznamu knih</string>
-    <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
+    <string name="pt_collect_series_info_from_toc">Sbírat informace o sériích z obsahu</string>
     <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>
     <string name="pt_bob_row_menu">Kontextová nabídka řádku</string>
     <string name="pe_bob_row_menu_button">Vždy ukázat tlačítko.</string>
@@ -601,9 +601,9 @@
     <string name="pt_line_spacing">Řádkování</string>
     <string name="pt_maintenance">Údržba</string>
     <string name="pt_main_author_type">Typ primárního autora</string>
-    <string name="pt_scanning_beep_on_barcode_found">Při nalezení čárového kódu pípne</string>
-    <string name="pt_scanning_beep_on_invalid">Je-li naskenované číslo ISBN neplatné, pípněte</string>
-    <string name="pt_scanning_beep_on_valid">Je-li naskenované číslo ISBN platné, pípněte</string>
+    <string name="pt_scanning_beep_on_barcode_found">Při nalezení čárového kódu pípnout</string>
+    <string name="pt_scanning_beep_on_invalid">Je-li naskenované číslo ISBN neplatné, pípnout</string>
+    <string name="pt_scanning_beep_on_valid">Je-li naskenované číslo ISBN platné, pípnout</string>
     <string name="pt_search_prefer_isbn10">Pokud je to možné, použijte ISBN-10</string>
     <string name="pt_search_reformat_color">Standardizovat názvy barev knih</string>
     <string name="pt_search_reformat_format">Standardizovat názvy formátu knihy</string>
@@ -612,7 +612,7 @@
     <string name="pt_sort_title_reordered">Seřadit tituly podle</string>
     <string name="pt_cover_undo_enabled">Zrušení operací na obálkách knih</string>
     <string name="ps_cover_undo_disabled">Úpravu/záměnu obálky nelze vrátit zpět (využívá méně úložného prostoru)</string>
-    <string name="ps_cover_undo_enabled">Úpravu/záměnu obálky lze vrátit zpět (využívá více paměti)</string>
+    <string name="ps_cover_undo_enabled">Úpravu/záměnu obálky lze vrátit zpět (využívá více úložného prostoru)</string>
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
     <string name="pt_thumbnails_rotate_auto">Otočit obrázky</string>
     <string name="pt_ui_language">Jazyk</string>
@@ -675,7 +675,7 @@
     <string name="info_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
     <string name="lbl_citation_type">Formát citace/sdílení</string>
     <string name="lbl_citation_type_default">Čtu…</string>
-    <string name="citation_share_book_im_reading">Čtu „%1$s“ %2$s o %3$s %4$s</string>
+    <string name="citation_share_book_im_reading">Čtu „%1$s“ %2$s od %3$s %4$s</string>
     <string name="X_info_tap_on_image_to_select">Klepnutím na větší obrázek jej vyberte.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Pro zobrazení většího obrázku klepněte na náhled.</string>
     <string name="info_x_pages">%1$d stran</string>
@@ -804,7 +804,7 @@
     <string name="action_report">Hlášení</string>
     <string name="error_invalid_url">Neplatná adresa (URL)</string>
     <string name="lbl_certificate_validity_period">Platnost: %1$s - %2$s</string>
-    <string name="lbl_reading">Čtení</string>
+    <string name="lbl_reading">Čtu</string>
     <string name="action_edit_defaults">Úprava výchozího nastavení</string>
     <string name="ps_sort_author_name_given_first">Řazení podle prvních křestních jmen,\ntj. „Karel Čapek“</string>
     <string name="ps_sort_author_name_family_first">Řazení podle příjmení na prvním místě,\ntj. „Čapek, Karel“</string>
