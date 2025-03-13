@@ -846,7 +846,7 @@
     <string name="lbl_system_default">(Predvolené nastavenie systému)</string>
     <string name="lbl_sort_unsorted">Netriedené</string>
     <string name="X_lbl_anthologies">Antológie</string>
-    <string name="X_tip_update_fields_from_internet">Odkazy na externé stránky sa spracujú, iba ak sa so stránkou skutočne nadviaže kontakt. V dôsledku toho ponuka „Zobraziť na...“ zobrazí iba to, čo je k dispozícii.</string>
+    <string name="X_tip_update_fields_from_internet">Odkazy na externé stránky sa spracujú, iba ak sa so stránkou skutočne nadviaže kontakt. V dôsledku toho ponuka „Zobraziť na…“ zobrazí iba to, čo je k dispozícii.</string>
     <string name="X_lbl_thumbnails">Miniatúry</string>
     <string name="lbl_current_page">Aktuálna strana</string>
     <string name="lbl_tab_publication">Publikácia</string>
