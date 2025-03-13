@@ -9,6 +9,7 @@ NEW:
 - rewrite of #113/#129 group-level summation of the books in that group
   making it several orders of magnitude faster.
 - #125 allow grouping by "original language"
+- #120 improvements to scrolling to the correct book
 
 FIXES:
 
