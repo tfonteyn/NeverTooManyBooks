@@ -66,7 +66,6 @@ class Formatter
     private final String[] conditionDescriptions;
     private final String unreadStr;
     private final String a_space_b;
-    private final String a_bracket_b_bracket;
 
     @NonNull
     private final List<Locale> locales;
@@ -78,7 +77,6 @@ class Formatter
         this.style = style;
         this.locales = locales;
 
-        a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
         unreadStr = context.getString(R.string.lbl_unread);
         a_space_b = context.getString(R.string.a_space_b);
 
