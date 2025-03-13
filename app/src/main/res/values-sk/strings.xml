@@ -185,10 +185,10 @@
     <string name="book_format_paperback">Brožovaná väzba</string>
     <string name="book_format_paperback_large">Väčšia brožovaná väzba</string>
     <string name="book_format_softcover">Mäkká väzba</string>
-    <string name="size_x_small">X-Malá</string>
-    <string name="size_small">Malá</string>
-    <string name="size_medium">Stredná</string>
-    <string name="size_large">Veľká</string>
+    <string name="size_x_small">X-Malé</string>
+    <string name="size_small">Malé</string>
+    <string name="size_medium">Stredné</string>
+    <string name="size_large">Velké</string>
     <string name="book_format_comic">Komiks</string>
     <string name="book_format_other">Iné</string>
     <string name="book_format_ebook">eKniha</string>
@@ -203,7 +203,7 @@
     <string name="lbl_condition_very_good">Veľmi dobrý</string>
     <string name="lbl_condition_good">Dobrý</string>
     <string name="lbl_condition_reading_copy">Čítaná kópia</string>
-    <string name="lbl_condition_dust_cover_missing_or_bad">Chýbajúci/Solídny</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Chýbajúca/zlý</string>
     <string name="lbl_condition_dust_cover_none">Žiadny</string>
     <string name="lbl_author_type_writer">Spisovateľ</string>
     <string name="lbl_author_type_editor">Editor</string>
@@ -217,7 +217,7 @@
     <string name="lbl_author_type_lettering">Písmo</string>
     <string name="lbl_author_type_cover_artist">Obal</string>
     <string name="lbl_author_type_cover_inking">Kresba tušom obalu</string>
-    <string name="lbl_author_type_cover_colorist">Kolorista obalu</string>
+    <string name="lbl_author_type_cover_colorist">Ilustrátor obálky</string>
     <string name="option_storage_select">Použiť „%1$s“</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Ukončiť a znova vložiť správnu kartu SD</string>
     <string name="lbl_select_style">Vybrať štýl</string>
@@ -368,7 +368,7 @@
     <string name="lbl_edition">Vydanie</string>
     <string name="lbl_condition">Stav</string>
     <string name="lbl_dust_cover">Prebal</string>
-    <string name="lbl_lend_out_to_name">Požičať %1$s</string>
+    <string name="lbl_lend_out_to_name">Požičaná komu %1$s</string>
     <string name="lbl_identifier">Identifikátor</string>
     <string name="lbl_identifiers">Identifikátory</string>
     <string name="lbl_year">Rok</string>
@@ -439,8 +439,8 @@
     <string name="pt_scanning_beep_on_invalid">Pípnuť, ak je naskenované ISBN neplatné</string>
     <string name="pt_cover_undo_enabled">Vrátenie operácií na obálkach kníh</string>
     <string name="ps_cover_undo_disabled">Úpravu/výmenu obálky nie je možné vrátiť (používa menej úložiska)</string>
-    <string name="pt_search_reformat_format">Štandardizovať názvy „formátu knihy“</string>
-    <string name="pt_search_reformat_color">Štandardizovať názvy „farby knihy“</string>
+    <string name="pt_search_reformat_format">Štandardizovať názvy formátu knihy</string>
+    <string name="pt_search_reformat_color">Štandardizovať názvy farieb knihy</string>
     <string name="pt_search_prefer_isbn10">Ak je to možné, použiť ISBN-10</string>
     <string name="pt_collect_series_info_from_toc">Zbierajte informácie o sérii z tabuľky obsahu</string>
     <string name="pt_search_resolve_authors_bedetheque">Rozlíšiť pseudonymy autora pomocou webovej stránky Bedetheque</string>
@@ -451,7 +451,7 @@
     <string name="pe_bob_list_rebuild_state_expanded">Vždy spustiť rozbalené</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Vždy spustiť zbalené</string>
     <string name="pe_bob_row_menu_button">Vždy zobraziť tlačidlo.</string>
-    <string name="pe_bob_row_menu_button_when_space">Zobraziť tlačidlo, ak je miesto, inak použiť dlhé kliknutie.</string>
+    <string name="pe_bob_row_menu_button_when_space">Zobrazí tlačidlo, ak je miesto, inak použite dlhé kliknutie.</string>
     <string name="pe_bob_row_menu_long_click">Vždy používať dlhé kliknutie.</string>
     <string name="pe_fast_scroller_overlay_static">Statické</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamické</string>
@@ -512,7 +512,7 @@
     <string name="citation_share_book_im_reading">Čítam „%1$s“ %2$s od %3$s %4$s</string>
     <string name="pe_bob_cover_long_click_ignore">Klepnutím na tlačidlo.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Dlhým kliknutím na obrázok obálky.</string>
-    <string name="pt_bob_cover_scale">Veľkosť obálky</string>
+    <string name="pt_bob_cover_scale">Zobrazenie obálky</string>
     <string name="ps_sort_author_name_given_first">Zoradiť najprv podľa krstných mien,\nnapr. \"Dominik Tatarka\"</string>
     <string name="ps_sort_author_name_family_first">Zoradiť najprv podľa priezviska,\nnapr. \"Tatarka, Dominik\"</string>
     <string name="ps_show_author_name_given_first">Zobraziť najprv krstné mená,\nnapr. \"Dominik Tatarka\"</string>
@@ -536,16 +536,16 @@
     <string name="option_field_usage_copy_if_blank">Kopírovať, ak je prázdne</string>
     <string name="option_field_usage_overwrite">Prepíše existujúce dáta</string>
     <string name="lbl_lend_book_to_colon">Požičať túto knihu komu:</string>
-    <string name="lbl_lend_out">Požičané</string>
+    <string name="lbl_lend_out">Požičaná</string>
     <string name="lbl_lending">Požičanie</string>
     <string name="ps_use_read_progress_off">Použiť jednoduchý stav Prečítané/Neprečítané.</string>
-    <string name="lbl_track_progress_long">Sledovať váš pokrok</string>
+    <string name="lbl_track_progress_long">Sledovať svoj pokrok</string>
     <string name="lbl_percentage">Percento</string>
     <string name="lbl_percentage_read">% prečítaných</string>
     <string name="lbl_total_pages">Celkový počet strán</string>
     <string name="cancel">Zrušiť</string>
     <string name="no">Nie</string>
-    <string name="unknown">Neznáme</string>
+    <string name="unknown">Neznámy</string>
     <string name="cancelled">Zrušené</string>
     <string name="username">Používateľské meno</string>
     <string name="password">Heslo</string>
@@ -655,7 +655,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Ak sú knihy zobrazené vo všetkých sériách, do ktorých kniha patrí, môžu sa v zozname zobraziť viackrát. Odstránením jednej z týchto kníh sa odstránia všetky kópie zo zoznamu.</string>
     <string name="bookshelf_my_wishlist">Zoznam želaní</string>
     <string name="tip_view_only_help">Potiahnutím prstom doľava alebo doprava sa môžete presúvať medzi knihami.</string>
-    <string name="book_color_full_color">Farebné</string>
+    <string name="book_color_full_color">Farebná</string>
     <string name="option_set_complete">Nastaviť ako „dokončené“</string>
     <string name="option_fab_add_book_by_internet_search">Hľadať podľa názvu</string>
     <string name="tip_book_list">Klepnutím na knihu sa zobrazia podrobnosti o knihe. Dlhým stlačením položky v zozname získate ďalšie možnosti.</string>
@@ -667,7 +667,7 @@
     <string name="lbl_condition_fair">Prijateľný</string>
     <string name="size_megabytes">%1$.2fMB</string>
     <string name="size_bytes">%1$.0fB</string>
-    <string name="book_color_black_and_white">Čiernobiele</string>
+    <string name="book_color_black_and_white">Čiernobiela</string>
     <string name="style_builtin_author_series">Autor, Séria</string>
     <string name="lbl_author_type_translator">Prekladateľ</string>
     <string name="book_format_hardcover_oblong">Pevná väzba - Obdĺžniková</string>
@@ -675,7 +675,7 @@
     <string name="lbl_group_read_and_unread">Prečítané a Neprečítané</string>
     <string name="lbl_styles_long">Úprava police s knihami</string>
     <string name="book_format_audiobook">AudioKniha</string>
-    <string name="book_color_support_color">Dvojfarebné</string>
+    <string name="book_color_support_color">Dvojfarebná</string>
     <string name="bookshelf_my_books">Moje knihy</string>
     <string name="style_builtin_author_year">Autor, Rok</string>
     <string name="lbl_style">Štýl</string>
@@ -710,7 +710,7 @@
     <string name="confirm_delete_style">Odstrániť štýl „%1$s“?</string>
     <string name="option_storage_edit_settings">Upraviť nastavenia</string>
     <string name="option_cover_replace_from_camera">Z fotoaparátu…</string>
-    <string name="confirm_no_missing_covers_search_from_top">Všetky knihy pod týmto riadkom majú obaly. Hľadať znova od začiatku?</string>
+    <string name="confirm_no_missing_covers_search_from_top">Všetky knihy pod týmto riadkom majú obálky. Hľadať znova od začiatku?</string>
     <string name="option_sort_and_style_ellipsis">Triedenie a štýly…</string>
     <string name="option_lend_out_book">Požičať…</string>
     <string name="option_goto_next_book_without_cover">Preskočiť na nasledujúcu knihu bez obalu</string>
@@ -730,8 +730,8 @@
     <string name="confirm_rebuild_orderby_columns">Týmto sa prebudujú údaje na zoradenie pri reštarte aplikácie. Ste si istý, že chcete pokračovať?</string>
     <string name="action_add">Pridať</string>
     <string name="lbl_family_name">Priezvisko</string>
-    <string name="confirm_registration_required">Táto funkcia vyžaduje registráciu na %1$s. Chcete zobraziť viac informácií?</string>
-    <string name="confirm_registration_benefits">Táto funkcia profituje z registrácie na %1$s. Chcete zobraziť viac informácií alebo túto správu vypnúť?\n Tieto informácie nájdete neskôr v sekcii „%2$s“ v nastaveniach.</string>
+    <string name="confirm_registration_required">Táto funkcia vyžaduje registráciu na %1$s. Chcete vidieť viac informácií?</string>
+    <string name="confirm_registration_benefits">Táto funkcia profituje z registrácie na %1$s. Chcete vidieť viac informácií alebo túto správu vypnúť?\n Tieto informácie nájdete neskôr v sekcii „%2$s“ v nastaveniach.</string>
     <string name="lbl_author_is_a_pen_name_of">Toto je pseudonym pre:</string>
     <string name="lbl_title">Názov</string>
     <string name="X_action_reset">Resetovať</string>
@@ -760,7 +760,7 @@
     <string name="option_bug_report_logfiles">Súbory denníka</string>
     <string name="option_bob_filter_isbn_yes">S ISBN</string>
     <string name="lbl_troubleshooting">Riešenie problémov</string>
-    <string name="ps_show_titles_reordered_off">Zobraziť ako zadané,\nnapr. “The Lord of The Rings”</string>
+    <string name="ps_show_titles_reordered_off">Platí len pre jazyky, ktoré používajú členy.\nNapríklad v angličtine:“The Lord of The Rings”</string>
     <string name="option_import_books_option_new_and_updated">Nové a aktualizované knihy</string>
     <string name="lbl_certificate_ca">Certifikát CA</string>
     <string name="option_info_import_books_option_new_and_updated">Importovať nové knihy a synchronizovať existujúce knihy na základe dátumu ich poslednej úpravy.</string>
@@ -770,7 +770,7 @@
     <string name="pt_show_title_reordered">Zobraziť názvy ako…</string>
     <string name="lbl_capitalize_full">Všetko veľkými písmenami</string>
     <string name="pt_thumbnails_cache_resized">Zmenšené obrázky sú uložené vo vyrovnávacej pamäti</string>
-    <string name="ps_show_titles_reordered_on">Presunúť člen na začiatku názvu na koniec,\nnapr. “Lord of The Rings, The”</string>
+    <string name="ps_show_titles_reordered_on">Platí len pre jazyky, ktoré používajú členy. Presunúť člen na začiatku názvu na koniec.\nNapríklad v angličtine:“Lord of The Rings, The”</string>
     <string name="pc_context_menus">Kontextové ponuky a ponuky riadkov</string>
     <string name="ps_cover_undo_enabled">Úpravu/výmenu obálky je možné vrátiť (používa viac úložiska)</string>
     <string name="pt_allow_metered_network_data">Povoliť používanie mobilných dát</string>
@@ -839,7 +839,7 @@
     <string name="X_lbl_general">Všeobecné</string>
     <string name="X_lbl_system">(Systém)</string>
     <string name="lbl_calibre_content_server">Server s obsahom Calibre</string>
-    <string name="size_x_large">X-Veľká</string>
+    <string name="size_x_large">X-Velké</string>
     <string name="pt_allow_editing_external_id">Povoliť úpravu ID knihy na webovej stránke</string>
     <string name="lbl_unread">Neprečítané</string>
     <string name="option_delete_removed_books">Odstrániť lokálne knihy, ktoré sa už nenachádzajú na serveri</string>
@@ -852,7 +852,7 @@
     <string name="lbl_tab_publication">Publikácia</string>
     <string name="X_info_not_authorized">Neautorizované</string>
     <string name="info_progress_x_percent">%1$d%% prečítaných</string>
-    <string name="lbl_available">Dostupné</string>
+    <string name="lbl_available">Dostupná</string>
     <string name="anonymous_author">[Anonym]</string>
     <string name="btn_completed">Dokončené</string>
     <string name="ps_use_read_progress_on">Sledovať pokrok v percentách alebo počte strán.</string>
