@@ -71,7 +71,7 @@ public class TableDefinition {
     private final String name;
     @NonNull
     private final String alias;
-    /** Always initialised in DEBUG; alwas {@code null} otherwise. */
+    /** Always initialised in DEBUG; always {@code null} otherwise. */
     @Nullable
     private final DebugHelper debugHelper;
     @NonNull
