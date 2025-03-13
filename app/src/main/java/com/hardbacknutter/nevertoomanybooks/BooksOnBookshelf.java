@@ -93,7 +93,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.PositioningHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
@@ -215,15 +214,6 @@ public class BooksOnBookshelf
 
     private static final String RK_SET_BOOKSHELVES = TAG + ":rk:setBookshelves";
     private static final String RK_SET_LOCATION = TAG + ":rk:setLocation";
-    /**
-     * The postDelay() in milliseconds. Used to more or less delay
-     * scrolling in {@link #displayList(List)} until cover images are loaded.
-     * The value is based on tests in the emulator. It's likely
-     * too large for modern devices but might be too small for older ones.
-     * FIXME: find a better solution for SCROLL_POST_DELAY_MS
-     */
-    private static final int SCROLL_POST_DELAY_MS = 200;
-
 
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
@@ -1667,7 +1657,7 @@ public class BooksOnBookshelf
         // Subsequent loading of the covers will push the rows down, and the row
         // we originally scrolled to will now be out of view, "below" the screen.
         //
-        //"targetNodes" present:
+        // "targetNodes" present:
         // 1. Best node is already visible => no scrolling will be done.
         // 2. Best node is "before-the-first" => scrolling always correct.
         // 3. Best node is "after-the last" and NO COVERS are shown
@@ -1678,52 +1668,52 @@ public class BooksOnBookshelf
         //      The result being that the scroll amount will be LESS than needed,
         //      and the desired node will STILL be "below" the screen.
 
-        final boolean covers = vm.getStyle().isShowField(FieldVisibility.Screen.List,
-                                                         DBKey.COVER[0]);
-        // Assume that cached covers will appear faster than File based covers.
-        final boolean imageCachingEnabled = ServiceLocator.getInstance()
-                                                          .getCoverStorage()
-                                                          .isImageCachingEnabled();
-
-        final long delay = covers && !imageCachingEnabled ? SCROLL_POST_DELAY_MS : 0;
+        final long delay = vm.calculateScrollDelay();
 
         final TopRowListPosition topRowPos = vm.getBookshelfTopRowPosition();
         // 2025-03-12: the newest approach...  scroll TWICE to the same position.
         // ... at least in the emulator this produces somewhat better results.
         // TEST/URGENT: add a temp scroll-listener in which we check if we reached
         //  the desired position, if not, scroll again, repeat till ok,
-        //  then remove scroll-listener?
-        //  (madness...)
-        vb.content.list.postDelayed(() -> {
+        //  then remove scroll-listener? (madness...)
+        vb.content.list.post(() -> {
+            // 1st scroll to previously stored position
             //noinspection DataFlowIssue
             positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
                                        topRowPos.getViewOffset(),
                                        adapter.getItemCount());
             vb.content.list.postDelayed(() -> {
+                // 2nd scroll to previously stored position
                 positioningHelper.scrollTo(topRowPos.getAdapterPosition(),
                                            topRowPos.getViewOffset(),
                                            adapter.getItemCount());
                 // wait for layout cycle after the above scroll action
-                vb.content.list.postDelayed(() -> {
+                vb.content.list.post(() -> {
                     if (targetNodes == null || targetNodes.isEmpty()) {
-                        // There are no target nodes, display the embedded book details if applicable
+                        // There are no target nodes,
+                        // display the embedded book details if applicable
                         showBookDetailsAfterScrolling(vm.getSelectedBookId(),
                                                       topRowPos.getAdapterPosition());
                     } else {
                         // Use the target nodes to find the "best" node and scroll it into view.
-                        vb.content.list.postDelayed(() -> {
+                        vb.content.list.post(() -> {
+                            // 1st scroll to the 'best' position
                             final BooklistNode node = positioningHelper.scrollTo(targetNodes);
+                            vb.content.list.postDelayed(() -> {
+                                // 2nd scroll to the 'best' position
+                                positioningHelper.scrollTo(List.of(node));
 
-                            // We don't need to wait for the next layout cycle,
-                            // as the node will not change even if further scrolling is done
-                            // Display the embedded book details if applicable
-                            showBookDetailsAfterScrolling(node.getBookId(),
-                                                          node.getAdapterPosition());
-                        }, delay);
+                                // We don't need to wait for the next layout cycle,
+                                // as the node will not change even if further scrolling is done
+                                // Display the embedded book details if applicable
+                                showBookDetailsAfterScrolling(node.getBookId(),
+                                                              node.getAdapterPosition());
+                            }, delay);
+                        });
                     }
-                }, delay);
+                });
             }, delay);
-        }, delay);
+        });
     }
 
     /**

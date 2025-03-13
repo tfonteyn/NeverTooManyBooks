@@ -180,23 +180,25 @@ public class BooksOnBookshelfViewModel
                                         BooklistGroup.BlgDBKey.FIRST_PUB_YEAR,
                                         BooklistGroup.BlgDBKey.FIRST_PUB_MONTH))
     );
+    /**
+     * The postDelay() in milliseconds. Used to more or less delay
+     * scrolling until cover images are loaded.
+     * The value is based on tests in the emulator. It's likely
+     * too large for modern devices but might be too small for older ones.
+     * FIXME: find a better solution for SCROLL_POST_DELAY_MS
+     */
+    private static final int SCROLL_POST_DELAY_MS = 200;
 
     /** Cache for all bookshelves. */
     private final List<Bookshelf> bookshelfList = new ArrayList<>();
-
     private final BoBTask boBTask = new BoBTask();
-
     private final MutableLiveData<int[]> positionsUpdated = new MutableLiveData<>();
-
     private final MutableLiveData<Pair<Integer, Integer>> highlightSelection =
             new MutableLiveData<>();
-
     private final MutableLiveData<LiveDataEvent<Boolean>> triggerRebuildList =
             new MutableLiveData<>();
-
     private final MutableLiveData<Boolean> searchCriteriaAreActive =
             new MutableLiveData<>();
-
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     @Nullable
     private SearchCriteria searchCriteria;
@@ -204,30 +206,23 @@ public class BooksOnBookshelfViewModel
     private BookDao bookDao;
     private BookshelfDao bookshelfDao;
     private TagDao tagDao;
-
     /** Preferred booklist state in next rebuild. */
     private RebuildBooklist rebuildMode;
-
     /** Current displayed list. */
     @Nullable
     private Booklist booklist;
-
     /**
      * Flag (potentially) set when coming back from another Activity.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
      */
     private boolean forceRebuildInOnResume;
-
     /** Flag to indicate that a list has been successfully loaded. */
     private boolean listLoaded;
-
     /** Flag to prompt the user to make a backup after startup. */
     private boolean proposeBackup;
-
     /** Currently selected {@link Bookshelf}. */
     @Nullable
     private Bookshelf bookshelf;
-
     /**
      * Set when the LayoutManager is created.
      * <p>
@@ -237,18 +232,14 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     private Style.Layout currentLayout;
-
-
     /**
      * The book id we want the new list to display more-or-less in the center.
      */
     private long selectedBookId;
-
     /**
      * The currently selected (highlighted) adapter position.
      */
     private int selectedAdapterPosition = RecyclerView.NO_POSITION;
-
     private List<MenuHandler> menuHandlers;
 
     /**
@@ -801,6 +792,18 @@ public class BooksOnBookshelfViewModel
 
         return new ArrayList<>();
     }
+
+    long calculateScrollDelay() {
+        final boolean covers = getStyle().isShowField(FieldVisibility.Screen.List,
+                                                      DBKey.COVER[0]);
+        // Assume that cached covers will appear faster than File based covers.
+        final boolean imageCachingEnabled = ServiceLocator.getInstance()
+                                                          .getCoverStorage()
+                                                          .isImageCachingEnabled();
+
+        return covers && !imageCachingEnabled ? SCROLL_POST_DELAY_MS : 0;
+    }
+
 
     /**
      * Set the desired state on the given node.
