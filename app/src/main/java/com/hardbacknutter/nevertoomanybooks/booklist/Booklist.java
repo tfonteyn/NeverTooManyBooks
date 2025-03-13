@@ -95,7 +95,6 @@ public class Booklist
      * <p>
      * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
      */
-    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final TableDefinition listTable;
 
@@ -104,7 +103,6 @@ public class Booklist
      * <p>
      * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
      */
-    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final TableDefinition navTable;
 
