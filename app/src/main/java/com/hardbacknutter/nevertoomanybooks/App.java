@@ -159,6 +159,7 @@ public class App
     /**
      * Initialize ACRA reporting.
      */
+    @SuppressWarnings("StringConcatenationMissingWhitespace")
     private void initAcra() {
         ACRA.init(this, new CoreConfigurationBuilder()
                 .withBuildConfigClass(BuildConfig.class)
