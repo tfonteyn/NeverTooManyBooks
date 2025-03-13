@@ -75,11 +75,11 @@ public class Ext2MultiSelectListPreferenceViewModel
     }
 
     void add(@NonNull final CharSequence value) {
-        this.preferenceChanged |= newValues.add(value.toString());
+        this.preferenceChanged = this.preferenceChanged || newValues.add(value.toString());
     }
 
     void remove(@NonNull final CharSequence value) {
-        this.preferenceChanged |= newValues.remove(value.toString());
+        this.preferenceChanged = this.preferenceChanged || newValues.remove(value.toString());
     }
 
     @NonNull

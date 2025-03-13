@@ -277,12 +277,7 @@ public class BookshelfDaoImpl
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         for (final Bookshelf bookshelf : getAll()) {
-            boolean doUpdate = false;
-
-            doUpdate |= validateFilters(context, bookshelf);
-            doUpdate |= validateStyle(bookshelf);
-
-            if (doUpdate) {
+            if (validateFilters(context, bookshelf) || validateStyle(bookshelf)) {
                 update(context, bookshelf, locale);
             }
         }
