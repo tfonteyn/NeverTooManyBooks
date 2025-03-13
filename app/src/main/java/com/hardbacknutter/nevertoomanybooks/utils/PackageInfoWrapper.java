@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -84,7 +84,12 @@ public final class PackageInfoWrapper {
     public static PackageInfoWrapper createWithSignatures(@NonNull final Context context) {
         final PackageInfoWrapper info;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            info = new PackageInfoWrapper(context, PackageManager.GET_SIGNING_CERTIFICATES);
+            // https://issuetracker.google.com/issues/159537841
+            // https://issuetracker.google.com/issues/243324820
+            // we need to pass BOTH the old and new flag....
+            // [bleep] google... how many times...
+            info = new PackageInfoWrapper(context, PackageManager.GET_SIGNING_CERTIFICATES
+                                                   | PackageManager.GET_SIGNATURES);
         } else {
             info = new PackageInfoWrapper(context, PackageManager.GET_SIGNATURES);
         }
