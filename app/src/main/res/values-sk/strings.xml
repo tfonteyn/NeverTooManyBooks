@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="n_books">
         <item quantity="one">%1$d kniha</item>
         <item quantity="few">%1$d knihy</item>
@@ -198,8 +194,8 @@
     <string name="lbl_author_type_storyboard">Návrhár scén</string>
     <string name="lbl_author_type_lettering">Písmo</string>
     <string name="lbl_author_type_cover_artist">Obal</string>
-    <string name="lbl_author_type_cover_inking">Kresba tušom obalu</string>
-    <string name="lbl_author_type_cover_colorist">Ilustrátor obálky</string>
+    <string name="lbl_author_type_cover_inking">Kresba tušom na obale</string>
+    <string name="lbl_author_type_cover_colorist">Kolorista obálky</string>
     <string name="option_storage_select">Použiť „%1$s“</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Ukončiť a znova vložiť správnu kartu SD</string>
     <string name="lbl_select_style">Vybrať štýl</string>
@@ -395,7 +391,7 @@
     <string name="info_export_successful">Export úspešný</string>
     <string name="info_export_report">Bol vytvorený súbor %1$s s názvom „%2$s“ vo vybranom priečinku a mali by ste ho manuálne skopírovať inde, aby ste ochránili dáta v prípade poškodenia, straty alebo krádeže vášho zariadenia.</string>
     <string name="lbl_import_options">Vyberte, čo sa má importovať.</string>
-    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importovať iba knihy upravené od</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importovať iba knihy upravené po</string>
     <string name="lbl_sync_date">Od</string>
     <string name="option_import_books_option_all">Všetky knihy</string>
     <string name="option_info_delete_removed_books">Knihy odstránené na inom zariadení budú odstránené aj na tomto zariadení.</string>
@@ -424,7 +420,7 @@
     <string name="pt_search_reformat_format">Štandardizovať názvy formátu knihy</string>
     <string name="pt_search_reformat_color">Štandardizovať názvy farieb knihy</string>
     <string name="pt_search_prefer_isbn10">Ak je to možné, použiť ISBN-10</string>
-    <string name="pt_collect_series_info_from_toc">Zbierajte informácie o sérii z tabuľky obsahu</string>
+    <string name="pt_collect_series_info_from_toc">Zhromažďovať informácie o sérii z prehľadu obsahu</string>
     <string name="pt_search_resolve_authors_bedetheque">Rozlíšiť pseudonymy autora pomocou webovej stránky Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovať názvoslovie (francúzskeho) formátu Bedetheque</string>
     <string name="pt_main_author_type">Primárny typ autora</string>
@@ -654,7 +650,7 @@
     <string name="lbl_author_type_translator">Prekladateľ</string>
     <string name="book_format_hardcover_oblong">Pevná väzba - Obdĺžniková</string>
     <string name="book_format_softcover_oblong">Mäkká väzba - Obdĺžniková</string>
-    <string name="lbl_group_read_and_unread">Prečítané a Neprečítané</string>
+    <string name="lbl_group_read_and_unread">Prečítané &amp; Neprečítané</string>
     <string name="lbl_styles_long">Úprava police s knihami</string>
     <string name="book_format_audiobook">AudioKniha</string>
     <string name="book_color_support_color">Dvojfarebná</string>
@@ -665,7 +661,7 @@
     <string name="style_type_user_defined">Používateľom definovaný</string>
     <string name="info_builtin_style_asterix">(* predvolené štýly)</string>
     <string name="lbl_group_1st_char_publisher_name">Prvé písmeno názvu vydavateľa</string>
-    <string name="option_moving_covers_from_x_to_y">Presunúť všetky obaly z „%1$s“ do „%2$s“</string>
+    <string name="option_moving_covers_from_x_to_y">Presunúť všetky obálky z „%1$s“ do „%2$s“</string>
     <string name="bookshelf_all_books">Všetky knihy</string>
     <string name="lbl_assign_bookshelves">Priradiť police s knihami</string>
     <string name="option_view_book_at">Zobraziť na…</string>
@@ -695,7 +691,7 @@
     <string name="confirm_no_missing_covers_search_from_top">Všetky knihy pod týmto riadkom majú obálky. Hľadať znova od začiatku?</string>
     <string name="option_sort_and_style_ellipsis">Triedenie a štýly…</string>
     <string name="option_lend_out_book">Požičať…</string>
-    <string name="option_goto_next_book_without_cover">Preskočiť na nasledujúcu knihu bez obalu</string>
+    <string name="option_goto_next_book_without_cover">Preskočiť na nasledujúcu knihu bez obálky</string>
     <string name="option_search_books_in_series">Knihy v tejto sérii</string>
     <string name="confirm_remove_toc_entry">Odstrániť názov „%1$s“ od %2$s z tejto knihy?</string>
     <string name="btn_show_list">Zobraziť zoznam</string>
@@ -704,7 +700,7 @@
     <string name="lbl_original_title">Pôvodný názov</string>
     <string name="option_enable_sync_options">Povoliť možnosti synchronizácie</string>
     <string name="confirm_email_file">Chcete poslať tento súbor e-mailom?</string>
-    <string name="confirm_merge_bookshelves">Knižnica, ktorú upravujete, už existuje. Chcete ich zlúčiť?</string>
+    <string name="confirm_merge_bookshelves">Polica s knihami, ktorú upravujete, už existuje. Chcete ich zlúčiť?</string>
     <string name="lbl_edit_style">Upraviť štýl</string>
     <string name="confirm_overwrite_cover">Týmto sa aktualizujú vybraté polia, ako je znázornené, ale obrázky sa môžu voliteľne stiahnuť pre VŠETKY knihy.\n\nChcete prepísať všetky existujúce obrázky? Upozornenie, môže to trvať dlho.</string>
     <string name="confirm_toc_list_update_with_books_main_author">Nahradiť autora na všetkých záznamoch hlavným autorom knihy „%1$s“?</string>
