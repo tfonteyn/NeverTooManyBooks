@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,6 +71,7 @@ public class AboutFragment
         // show the version in the header
         vb.version.setText(packageInfoWrapper.getVersionName());
         // show the full version in the bottom corner
+        //noinspection StringConcatenationMissingWhitespace
         final String code = "a" + packageInfoWrapper.getVersionCode()
                             + " d" + DBHelper.DATABASE_VERSION
                             + (packageInfoWrapper.getSignedBy().isPresent() ? " s" : "");
