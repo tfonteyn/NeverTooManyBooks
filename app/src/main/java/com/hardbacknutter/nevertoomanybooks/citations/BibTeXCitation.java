@@ -132,15 +132,11 @@ class BibTeXCitation
             });
 
         final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
-        book.getIdentifiers().forEach(iv -> {
-            identifierDao.findByKey(iv.getKey()).ifPresent(identifier -> {
-                final String bookUri = identifier.getBookUri(context);
-                if (bookUri != null) {
-                    sj.add(String.format(NAME_VALUE, URL,
-                                         String.format(bookUri, iv.getSid())));
-                }
-            });
-        });
+        book.getIdentifiers().forEach(iv -> identifierDao
+                .findByKey(iv.getKey())
+                .flatMap(identifier -> identifier.getBookUri(context))
+                .ifPresent(bookUri -> sj.add(
+                        String.format(NAME_VALUE, URL, String.format(bookUri, iv.getSid())))));
 
         return sj + "\n}\n";
     }

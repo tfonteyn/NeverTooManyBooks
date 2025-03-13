@@ -143,20 +143,21 @@ class ViewBookOnSiteMenuHandler
                 .getInstance()
                 .getIdentifierDao()
                 .findByKey(key)
-                .map(identifier -> identifier.getBookUri(context));
+                .flatMap(identifier -> identifier.getBookUri(context));
+
         // Sanity check, it should be there!
-        if (oBookUri.isEmpty()) {
+        if (oBookUri.isPresent()) {
+            final Optional<String> oSid = DataHolderUtils.getExternalId(rowData, key);
+            // Sanity check, it should be there!
+            if (oSid.isEmpty()) {
+                return false;
+            }
+
+            final Uri uri = Uri.parse(String.format(oBookUri.get(), oSid.get()));
+            context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            return true;
+        } else {
             return false;
         }
-
-        final Optional<String> oSid = DataHolderUtils.getExternalId(rowData, key);
-        // Sanity check, it should be there!
-        if (oSid.isEmpty()) {
-            return false;
-        }
-
-        final Uri uri = Uri.parse(String.format(oBookUri.get(), oSid.get()));
-        context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
-        return true;
     }
 }

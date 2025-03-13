@@ -30,6 +30,7 @@ import androidx.annotation.Size;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -458,15 +459,15 @@ public class Identifier
      *
      * @return uri
      */
-    @Nullable
-    public String getBookUri(@NonNull final Context context) {
+    @NonNull
+    public Optional<String> getBookUri(@NonNull final Context context) {
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
             //noinspection DataFlowIssue
-            return EngineId.Amazon.getConfig().getHostUrl(context) + "/dp/%s";
+            return Optional.of(EngineId.Amazon.getConfig().getHostUrl(context) + "/dp/%s");
         }
 
-        return bookUri;
+        return bookUri != null ? Optional.of(bookUri) : Optional.empty();
     }
 
     @Override
