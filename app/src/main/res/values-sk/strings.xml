@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,31 +18,12 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!--
-    Reference sites:
-    https://www.abbreviations.com/
+  -->
 
-     Some linguists, especially in British English, believe that "loan" should only
-     be used as a noun, while the correct verb is only "lend."
-
-
-    ENTITY:
-    Define entities that can be used inside of other string (not possible with standard Android
-    resources e.g. the entities file define APP_NAME; use it in another string with: &APP_NAME;
-    cannot put these into an external file: https://issuetracker.google.com/issues/68434088
-
-    Each language string.xml file uses localized quotes as per
-    https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
-    See top of each language resource file for the "quotes" comment.
-
-    Plurals:
-    http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
-        cardinal
-
-    https://www.omniglot.com/language/numerals.htm
---><!DOCTYPE resources [
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
+<!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="n_books">
         <item quantity="one">%1$d kniha</item>
@@ -760,7 +742,7 @@
     <string name="option_bug_report_logfiles">Súbory denníka</string>
     <string name="option_bob_filter_isbn_yes">S ISBN</string>
     <string name="lbl_troubleshooting">Riešenie problémov</string>
-    <string name="ps_show_titles_reordered_off">Platí len pre jazyky, ktoré používajú členy.\nNapríklad v angličtine:“The Lord of The Rings”</string>
+    <string name="ps_show_titles_reordered_off">Platí len pre jazyky, ktoré používajú členy.\nNapríklad v angličtine:„The Lord of The Rings“</string>
     <string name="option_import_books_option_new_and_updated">Nové a aktualizované knihy</string>
     <string name="lbl_certificate_ca">Certifikát CA</string>
     <string name="option_info_import_books_option_new_and_updated">Importovať nové knihy a synchronizovať existujúce knihy na základe dátumu ich poslednej úpravy.</string>
@@ -770,7 +752,7 @@
     <string name="pt_show_title_reordered">Zobraziť názvy ako…</string>
     <string name="lbl_capitalize_full">Všetko veľkými písmenami</string>
     <string name="pt_thumbnails_cache_resized">Zmenšené obrázky sú uložené vo vyrovnávacej pamäti</string>
-    <string name="ps_show_titles_reordered_on">Platí len pre jazyky, ktoré používajú členy. Presunúť člen na začiatku názvu na koniec.\nNapríklad v angličtine:“Lord of The Rings, The”</string>
+    <string name="ps_show_titles_reordered_on">Platí len pre jazyky, ktoré používajú členy. Presunúť člen na začiatku názvu na koniec.\nNapríklad v angličtine:„Lord of The Rings, The“</string>
     <string name="pc_context_menus">Kontextové ponuky a ponuky riadkov</string>
     <string name="ps_cover_undo_enabled">Úpravu/výmenu obálky je možné vrátiť (používa viac úložiska)</string>
     <string name="pt_allow_metered_network_data">Povoliť používanie mobilných dát</string>
