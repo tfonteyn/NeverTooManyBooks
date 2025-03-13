@@ -157,6 +157,7 @@ public final class CoverHandler {
 
         final FragmentManager fm = fragment.getChildFragmentManager();
         // concat the RK with the cIdx as we have more than CoverHandler
+        //noinspection StringConcatenationMissingWhitespace
         menuLauncher = new ExtMenuLauncher(RK_MENU + this.cIdx, this::onMenuItemSelected);
         menuLauncher.registerForFragmentResult(fm, fragment);
     }
