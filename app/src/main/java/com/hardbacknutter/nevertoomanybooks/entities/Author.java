@@ -35,6 +35,7 @@ import androidx.core.content.res.ResourcesCompat;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -660,6 +661,12 @@ public class Author
     @NonNull
     public List<Identifier.Value> getIdentifiers() {
         return identifiers;
+    }
+
+    @Override
+    public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
+        identifiers.clear();
+        identifiers.addAll(ivs);
     }
 
     @Type

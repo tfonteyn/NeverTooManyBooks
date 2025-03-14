@@ -45,9 +45,7 @@ public interface IdentifierOwner {
      *
      * @param ivs list
      */
-    default void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
-        getIdentifiers().addAll(ivs);
-    }
+    void setIdentifiers(@NonNull Collection<Identifier.Value> ivs);
 
     /**
      * Set the value for the given {@link Identifier}.
