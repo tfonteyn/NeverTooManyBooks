@@ -78,22 +78,15 @@ abstract class ViewOnSiteMenuHandler
                              @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater,
                              @NonNull final DataHolder rowData) {
-        // Android.... [bleep]... the lack of ANY logic in their api's... sigh.
-        // sub-menu's were clearly an afterthought in the original Android design (wot design?)
         final MenuItem item = menu.findItem(subMenuResId);
-        final SubMenu subMenu;
         if (item == null) {
-            subMenu = menu.addSubMenu(menuGroupResId, subMenuResId,
-                                      context.getResources()
-                                             .getInteger(R.integer.MENU_ORDER_VIEW_ON_SITE),
-                                      R.string.option_view_book_at)
-                          .setIcon(R.drawable.link_24px);
-        } else {
-            subMenu = item.getSubMenu();
-        }
+            final SubMenu parent = menu
+                    .addSubMenu(menuGroupResId, subMenuResId,
+                                context.getResources()
+                                       .getInteger(R.integer.MENU_ORDER_VIEW_ON_SITE),
+                                R.string.option_view_book_at)
+                    .setIcon(R.drawable.link_24px);
 
-        // Sanity check
-        if (subMenu != null) {
             menuIds.clear();
 
             // add to the menu if the Identifier has a valid url
@@ -109,7 +102,7 @@ abstract class ViewOnSiteMenuHandler
                                  final int menuItemId = View.generateViewId();
                                  menuIds.put(menuItemId, identifier.getKey());
 
-                                 subMenu.add(menuGroupResId, menuItemId, 0,
+                        parent.add(menuGroupResId, menuItemId, 0,
                                              identifier.getName())
                                         .setIcon(R.drawable.link_24px);
                              }
@@ -123,8 +116,8 @@ abstract class ViewOnSiteMenuHandler
                               @NonNull final DataHolder rowData) {
 
         final MenuItem subMenuItem = menu.findItem(subMenuResId);
+        // Sanity check
         if (subMenuItem == null) {
-            // Not ours to handle
             return;
         }
 
