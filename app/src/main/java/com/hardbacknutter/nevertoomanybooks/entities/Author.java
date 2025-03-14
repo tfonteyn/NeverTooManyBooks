@@ -1093,6 +1093,7 @@ public class Author
                + ", givenNames=`" + givenNames + '`'
                + ", complete=" + complete
                + ", type=0b" + Integer.toBinaryString(type) + ": " + sj
+               + ", identifiers=" + identifiers
                + ", realAuthor=" + realAuthor
                + '}';
     }
