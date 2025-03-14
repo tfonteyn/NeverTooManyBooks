@@ -404,7 +404,7 @@
     <string name="pc_camera">Fotoaparát</string>
     <string name="pt_website_search_order_and_enable">Priorita, povoliť a zakázať</string>
     <string name="pt_barcode_scanner">Čítačka čiarových kódov</string>
-    <string name="pt_storage_volume">Zväzok úložiska</string>
+    <string name="pt_storage_volume">Úložný priestor</string>
     <string name="pt_maintenance">Údržba</string>
     <string name="pt_field_visibility">Viditeľnosť polí</string>
     <string name="pt_sort_title_reordered">Zoradiť názvy podľa</string>
@@ -429,10 +429,10 @@
     <string name="pe_bob_list_rebuild_state_expanded">Vždy spustiť rozbalené</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Vždy spustiť zbalené</string>
     <string name="pe_bob_row_menu_button">Vždy zobraziť tlačidlo.</string>
-    <string name="pe_bob_row_menu_button_when_space">Zobrazí tlačidlo, ak je miesto, inak použite dlhé kliknutie.</string>
-    <string name="pe_bob_row_menu_long_click">Vždy používať dlhé kliknutie.</string>
-    <string name="pe_fast_scroller_overlay_static">Statické</string>
-    <string name="pe_fast_scroller_overlay_dynamic">Dynamické</string>
+    <string name="pe_bob_row_menu_button_when_space">Zobraziť tlačidlo, ak je miesto, inak použiť dlhé kliknutie.</string>
+    <string name="pe_bob_row_menu_long_click">Vždy použiť dlhé kliknutie.</string>
+    <string name="pe_fast_scroller_overlay_static">Statická</string>
+    <string name="pe_fast_scroller_overlay_dynamic">Dynamická</string>
     <string name="pt_thumbnails_rotate_auto">Otočiť obrázky</string>
     <string name="pe_camera_front">Predný fotoaparát</string>
     <string name="pe_camera_back">Zadný fotoaparát</string>
