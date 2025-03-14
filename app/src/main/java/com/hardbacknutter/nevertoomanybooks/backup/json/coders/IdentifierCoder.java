@@ -50,8 +50,8 @@ public class IdentifierCoder
         out.put(DBKey.IDENTIFIERS.NAME, identifier.getName());
         // null urls will be discarded
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl(context));
-        out.put(DBKey.IDENTIFIERS.BOOK_URI, identifier.getBookUri(context));
-        out.put(DBKey.IDENTIFIERS.AUTHOR_URI, identifier.getAuthorUri(context));
+        out.put(DBKey.IDENTIFIERS.BOOK_URI, identifier.getBookUri(context).orElse(null));
+        out.put(DBKey.IDENTIFIERS.AUTHOR_URI, identifier.getAuthorUri(context).orElse(null));
         return out;
     }
 

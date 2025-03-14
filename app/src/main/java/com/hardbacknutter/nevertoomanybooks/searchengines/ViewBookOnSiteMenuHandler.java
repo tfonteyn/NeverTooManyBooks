@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
@@ -91,23 +92,22 @@ class ViewBookOnSiteMenuHandler
             final SubMenu subMenu = menuItem.getSubMenu();
 
             // add to the menu if the Identifier has a valid bookUrl
+            final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
             getExternalIds(rowData)
                     .stream()
                     .map(Identifier.Value::getKey)
-                    .map(key -> ServiceLocator
-                            .getInstance().getIdentifierDao().findByKey(key))
+                    .map(dao::findByKey)
                     .flatMap(Optional::stream)
+                    .filter(identifier -> identifier.getBookUri(context).isPresent())
                     .forEach(identifier -> {
-                        if (identifier.getBookUri(context) != null) {
-                                     // generate a random id, and map it to the key
-                                     final int menuItemId = View.generateViewId();
-                                     menuIds.put(menuItemId, identifier.getKey());
+                        // generate a random id, and map it to the key
+                        final int menuItemId = View.generateViewId();
+                        menuIds.put(menuItemId, identifier.getKey());
 
-                                     //noinspection DataFlowIssue
-                                     subMenu.add(R.id.MENU_GROUP_BOOK, menuItemId, 0,
-                                                 identifier.getName())
-                                            .setIcon(R.drawable.link_24px);
-                                 }
+                        //noinspection DataFlowIssue
+                        subMenu.add(R.id.MENU_GROUP_BOOK, menuItemId, 0,
+                                    identifier.getName())
+                               .setIcon(R.drawable.link_24px);
                              }
                     );
         }
