@@ -115,8 +115,11 @@ public class DnbSearchEngine
     private static final Pattern PATTERN_PAGE_NUMBER = Pattern.compile("\\d+");
     private static final Pattern PATTERN_BR = Pattern.compile("<br>");
 
-    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
+    /** Example: {@code DE/resource.html?id=118646109&pr=0&sortA=bez&sortD=-dat&v=plist}. */
+    private static final Pattern AUTHOR_ID = Pattern.compile(
+            "DE/resource\\.html\\?id=(\\d+)&.*");
 
+    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
     /**
@@ -456,6 +459,17 @@ public class DnbSearchEngine
 
             while (e != null && e.nameIs("a")) {
                 final String name = e.text();
+                final Author author = Author.from(name);
+                final String url = e.attr("href");
+                final Matcher matcher = AUTHOR_ID.matcher(url);
+                if (matcher.find()) {
+                    final String aId = matcher.group(1);
+                    if (aId != null) {
+                        author.setIdentifierValue(Identifier.SID_DNB, aId);
+                    }
+                }
+
+                // the type of Author MAY be listed in the next tag
                 if (it.hasNext()) {
                     // The tag AFTER the "a" can be a "<small>" or a "<br>"
                     e = it.next();
@@ -470,7 +484,8 @@ public class DnbSearchEngine
                         @Author.Type
                         final int authorType = authorTypeMapper
                                 .map(getLocale(context), authorTypeText);
-                        addAuthor(Author.from(name), authorType, book);
+
+                        addAuthor(author, authorType, book);
                         if (it.hasNext()) {
                             // The tag AFTER the "small" can be a "br" or an "a"
                             e = it.next();
@@ -478,7 +493,7 @@ public class DnbSearchEngine
                         }
                     }
                     if (e.nameIs("br")) {
-                        addAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
+                        addAuthor(author, Author.TYPE_UNKNOWN, book);
                         if (it.hasNext()) {
                             e = it.next();
                             continue;

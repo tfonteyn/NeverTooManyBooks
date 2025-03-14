@@ -20,8 +20,11 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -77,7 +80,7 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        //Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
         assertEquals("Nemesis", book.getString(DBKey.TITLE, null));
         assertEquals("9783453321892", book.getString(DBKey.ISBN, null));
@@ -101,13 +104,25 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
-        assertEquals("Asimov", authors.get(0).getFamilyName());
-        assertEquals("Isaac", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
 
-        assertEquals("Holicki", authors.get(1).getFamilyName());
-        assertEquals("Irene", authors.get(1).getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, authors.get(1).getType());
+        Author author;
+        Optional<String> oIv;
+
+        author = authors.get(0);
+        assertEquals("Asimov", author.getFamilyName());
+        assertEquals("Isaac", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_DNB);
+        assertTrue(oIv.isPresent());
+        assertEquals("118646109", oIv.get());
+
+        author = authors.get(1);
+        assertEquals("Holicki", author.getFamilyName());
+        assertEquals("Irene", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_DNB);
+        assertTrue(oIv.isPresent());
+        assertEquals("133558215", oIv.get());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
