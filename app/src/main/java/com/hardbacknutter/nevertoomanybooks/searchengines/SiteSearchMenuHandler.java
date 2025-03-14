@@ -65,16 +65,18 @@ public class SiteSearchMenuHandler
                              @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater,
                              @NonNull final DataHolder rowData) {
-        // Sanity check
-        MenuItem menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
+        final MenuItem menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
         if (menuItem == null) {
-            inflater.inflate(R.menu.sm_search_books_on_site, menu);
-            menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
+            final SubMenu parent = menu
+                    .addSubMenu(R.id.MENU_GROUP_BOOK, R.id.SUBMENU_SEARCH_BOOKS_ON_SITE,
+                                context.getResources()
+                                       .getInteger(R.integer.MENU_ORDER_SEARCH_BOOKS_ON_SITE),
+                                R.string.option_search_books_on)
+                    .setIcon(R.drawable.link_24px);
+
             menuIdsByAuthor.clear();
             menuIdsByAuthorAndSeries.clear();
             menuIdsBySeries.clear();
-
-            final SubMenu parent = menuItem.getSubMenu();
 
             EngineId.getSearchOnSite().forEach(engineId -> {
                 final String menuTitle = context.getString(
@@ -82,7 +84,6 @@ public class SiteSearchMenuHandler
                 @IdRes
                 final int engineMenuId = View.generateViewId();
                 submenuIds.put(engineId, engineMenuId);
-                //noinspection DataFlowIssue
                 final SubMenu engineMenu = parent.addSubMenu(0, engineMenuId, 0, menuTitle)
                                                  .setIcon(R.drawable.search_24px);
 
