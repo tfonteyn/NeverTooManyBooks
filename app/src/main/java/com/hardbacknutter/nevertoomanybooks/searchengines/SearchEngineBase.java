@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -472,6 +473,11 @@ public abstract class SearchEngineBase
             if (author.equals(currentAuthor)) {
                 // merge types.
                 author.addType(currentAuthorType);
+                // merge identifiers
+                final List<Identifier.Value> identifiers = author.getIdentifiers();
+                identifiers.addAll(currentAuthor.getIdentifiers());
+                author.setIdentifiers(identifiers);
+
                 add = false;
                 // keep looping
             }
