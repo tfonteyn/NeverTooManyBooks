@@ -191,7 +191,7 @@
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
     <string name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
     <string name="disabled">Vypnuto</string>
-    <string name="pe_fast_scroller_overlay_dynamic">Dynamický</string>
+    <string name="pe_fast_scroller_overlay_dynamic">Dynamická</string>
     <string name="enabled">Zapnuto</string>
     <string name="error_http_401_authorization_failed">Autorizace se nezdařila</string>
     <string name="error_auto_toc_population_failed">Automatické naplnění titulů selhalo.</string>
@@ -438,7 +438,7 @@
     <string name="option_storage_quit_and_reinsert_sdcard">Zavřete aplikaci a vložte správnou SD kartu</string>
     <string name="option_storage_select">Použít „%1$s“</string>
     <string name="lbl_storage_settings">Úložiště</string>
-    <string name="pt_storage_volume">Objem úložiště</string>
+    <string name="pt_storage_volume">Úložný prostor</string>
     <string name="info_story_in_multiple_books">„%1$s“ je přítomen ve více knihách:\n\n%2$s</string>
     <string name="option_isbn_strict">Přísné ISBN</string>
     <string name="lbl_style">Styl</string>
@@ -501,7 +501,7 @@
     <string name="option_import">Importovat</string>
     <string name="option_lend_out_book">Půjčit knihu…</string>
     <string name="option_lend_return_book">Vypůjčená kniha je zpět</string>
-    <string name="option_purge_bedetheque_authors_cache">Vymažte mezipaměť autorů Bedetheque</string>
+    <string name="option_purge_bedetheque_authors_cache">Vymazat mezipaměť autorů Bedetheque</string>
     <string name="option_rebuild_fts">Obnovení dat fulltextového vyhledávání</string>
     <string name="option_rebuild_index">Obnovení indexů</string>
     <string name="option_set_complete">Nastavit na „kompletní“</string>
@@ -595,8 +595,8 @@
     <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>
     <string name="pt_bob_row_menu">Kontextová nabídka řádku</string>
     <string name="pe_bob_row_menu_button">Vždy ukázat tlačítko.</string>
-    <string name="pe_bob_row_menu_button_when_space">Zobrazí tlačítko, pokud je místo, jinak použijte dlouhé kliknutí.</string>
-    <string name="pe_bob_row_menu_long_click">Vždy používejte dlouhé kliknutí.</string>
+    <string name="pe_bob_row_menu_button_when_space">Zobrazit tlačítko, pokud je místo, jinak použít dlouhé kliknutí.</string>
+    <string name="pe_bob_row_menu_long_click">Vždy použít dlouhé kliknutí.</string>
     <string name="pt_fast_scroller_overlay">Textová bublina při posouvání.</string>
     <string name="pt_line_spacing">Řádkování</string>
     <string name="pt_maintenance">Údržba</string>
@@ -636,7 +636,7 @@
     <string name="size_small">Malé</string>
     <string name="size_x_large">X-Velké</string>
     <string name="size_x_small">X-Malé</string>
-    <string name="pe_fast_scroller_overlay_static">Statický</string>
+    <string name="pe_fast_scroller_overlay_static">Statická</string>
     <string name="strict">Přísné</string>
     <string name="style_builtin_author_series">Autor, série</string>
     <string name="style_builtin_author_year">Autor, rok</string>
@@ -747,8 +747,8 @@
     <string name="info_all_books_have_covers">Všechny knihy na této poličce mají obálky</string>
     <string name="book_format_hardcover_oblong">Pevná vazba - podlouhlá</string>
     <string name="book_format_softcover_oblong">Měkká vazba - podlouhlá</string>
-    <string name="lbl_purge_blns">Vymažte stav uzlu</string>
-    <string name="info_purge_blns_all">Vymažte stav uzlu ze všech seznamů</string>
+    <string name="lbl_purge_blns">Vymazat stav uzlu</string>
+    <string name="info_purge_blns_all">Vymazat stav uzlu ze všech seznamů</string>
     <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“\?</string>
     <string name="error_updates_aborted">Aktualizace přerušeny</string>
     <string name="lbl_country">Země</string>
