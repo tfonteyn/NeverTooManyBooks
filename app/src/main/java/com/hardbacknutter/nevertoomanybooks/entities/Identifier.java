@@ -519,15 +519,16 @@ public class Identifier
      *
      * @return uri
      */
-    @Nullable
-    public String getAuthorUri(@NonNull final Context context) {
+    @NonNull
+    public Optional<String> getAuthorUri(@NonNull final Context context) {
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
             //noinspection DataFlowIssue
-            return EngineId.Amazon.getConfig().getHostUrl(context) + "/stores/author/%s";
+            return Optional.of(EngineId.Amazon.getConfig().getHostUrl(context)
+                               + "/stores/author/%s");
         }
 
-        return authorUri;
+        return authorUri != null ? Optional.of(authorUri) : Optional.empty();
     }
 
     @Override
