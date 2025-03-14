@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@ public interface AuthorResolver {
 
     /**
      * Update the given {@link Author} with any missing diacritics and resolve pen-names.
+     * Adds {@code Identifier}s if possible.
      *
      * @param author to lookup
      *
