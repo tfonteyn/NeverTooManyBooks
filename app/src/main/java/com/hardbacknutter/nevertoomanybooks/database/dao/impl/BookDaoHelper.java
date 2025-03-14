@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
@@ -83,8 +84,6 @@ public class BookDaoHelper {
     private static final Pattern T = Pattern.compile("T");
 
     @NonNull
-    private final Supplier<IdentifierDao> identifierDaoSupplier;
-    @NonNull
     private final Supplier<CoverStorage> coverStorageSupplier;
     @NonNull
     private final Supplier<ReorderHelper> reorderHelperSupplier;
@@ -103,19 +102,16 @@ public class BookDaoHelper {
      * Constructor.
      *
      * @param context               Current context
-     * @param identifierDaoSupplier deferred supplier for the {@link IdentifierDao}
      * @param coverStorageSupplier  deferred supplier for the {@link CoverStorage}
      * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      * @param book                  to process
      * @param isNew                 flag; whether the book is entirely 'new' or it's an update
      */
     public BookDaoHelper(@NonNull final Context context,
-                         @NonNull final Supplier<IdentifierDao> identifierDaoSupplier,
                          @NonNull final Supplier<CoverStorage> coverStorageSupplier,
                          @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
                          @NonNull final Book book,
                          final boolean isNew) {
-        this.identifierDaoSupplier = identifierDaoSupplier;
         this.coverStorageSupplier = coverStorageSupplier;
         this.reorderHelperSupplier = reorderHelperSupplier;
         this.book = book;
@@ -324,7 +320,7 @@ public class BookDaoHelper {
      */
     @VisibleForTesting
     public void processExternalIds() {
-        final IdentifierDao identifierDao = identifierDaoSupplier.get();
+        final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
         final List<Identifier> domains = identifierDao.getAll();
         final Map<String, Character> map = domains.stream().collect(
                 Collectors.toMap(Identifier::getKey, Identifier::getType));
