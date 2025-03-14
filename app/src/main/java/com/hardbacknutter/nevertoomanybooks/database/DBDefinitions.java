@@ -444,7 +444,7 @@ public final class DBDefinitions {
 
     /**
      * {@link #TBL_STRIPINFO_COLLECTION}.
-     * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_BOOK_IDENTIFIER_SID}
+     * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_IDENTIFIER_SID}
      * for rows where the {@link #DOM_FK_IDENTIFIER} == "stripinfo"
      * from {@link #TBL_IDENTIFIERS} column {@link #DOM_IDENTIFIER_KEY}
      */
