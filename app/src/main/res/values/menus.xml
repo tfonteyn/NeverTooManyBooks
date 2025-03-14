@@ -240,8 +240,8 @@
     <item name="MENU_NEXT_MISSING_COVER"
           type="id" />
 
-    <!-- Book - View a book at an external site. -->
-    <item name="SUBMENU_VIEW_BOOK_AT_SITE"
+    <!-- View a Book using an Identifier on an external site. -->
+    <item name="SUBMENU_VIEW_BOOK_ON_SITE"
           type="id" />
     <item name="SUBMENU_SEARCH_BOOKS_ON_SITE"
           type="id" />

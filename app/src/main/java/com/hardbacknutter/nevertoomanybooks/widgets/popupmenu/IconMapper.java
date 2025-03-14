@@ -87,7 +87,7 @@ final class IconMapper {
             Map.entry(R.id.MENU_CALIBRE_SETTINGS, R.drawable.settings_24px),
 
             // MenuHandlers
-            Map.entry(R.id.SUBMENU_VIEW_BOOK_AT_SITE, R.drawable.link_24px),
+            Map.entry(R.id.SUBMENU_VIEW_BOOK_ON_SITE, R.drawable.link_24px),
             Map.entry(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE, R.drawable.search_24px),
 
             // common to several menus
