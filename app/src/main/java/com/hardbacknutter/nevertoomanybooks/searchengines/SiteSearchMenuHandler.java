@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
  * We handle all engines in a single instance as we need to hide the entire submenu
  * if there are no relevant engines.
  */
-class SiteSearchMenuHandler
+public class SiteSearchMenuHandler
         implements MenuHandler {
 
     private final Map<EngineId, Integer> submenuIds = new EnumMap<>(EngineId.class);

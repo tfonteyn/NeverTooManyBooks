@@ -25,51 +25,36 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 /**
  * Collects all {@link Identifier}s present
- * and builds/displays a menu suitable for the given {@link Book}.
+ * and builds/displays a menu suitable for the given {@link Author}.
  * <p>
  * We hide the entire submenu if there are none.
  */
-public class ViewBookOnSiteMenuHandler
+public class ViewAuthorOnSiteMenuHandler
         extends ViewOnSiteMenuHandler {
 
-    public ViewBookOnSiteMenuHandler() {
-        super(R.id.SUBMENU_VIEW_BOOK_ON_SITE,
-              R.id.MENU_GROUP_BOOK,
-              (context, identifier) -> identifier.getBookUri(context));
+    public ViewAuthorOnSiteMenuHandler() {
+        super(R.id.SUBMENU_VIEW_AUTHOR_ON_SITE,
+              0,
+              (context, identifier) -> identifier.getAuthorUri(context));
     }
 
     @NonNull
     List<Identifier.Value> getSids(@NonNull final DataHolder rowData) {
-        final List<Identifier.Value> ivs = DataHolderUtils.getSids(DBKey.FK_BOOK, rowData);
-
-        if (ivs.stream().map(Identifier.Value::getKey).noneMatch(Identifier.SID_ASIN::equals)) {
-            //URGENT: is this a good idea? The browser/amazon gives a 404 if the isbn is not found
-            // When looking for the Amazon ASIN, fallback on an Isbn code if possible
-            if (rowData.contains(DBKey.ISBN)) {
-                final String isbnStr = rowData.getString(DBKey.ISBN);
-                final ISBN isbn = new ISBN(isbnStr, true);
-                if (isbn.isValid(true) && isbn.isIsbn10Compat()) {
-                    ivs.add(new Identifier.Value(Identifier.SID_ASIN,
-                                                 isbn.asText(ISBN.Type.Isbn10)));
-                }
-            }
-        }
-        return ivs;
+        return DataHolderUtils.getSids(DBKey.FK_AUTHOR, rowData);
     }
 
     @NonNull
     @Override
     Optional<String> getSid(@NonNull final DataHolder rowData,
                             @NonNull final String key) {
-        return DataHolderUtils.getSid(DBKey.FK_BOOK, rowData, key);
+        return DataHolderUtils.getSid(DBKey.FK_AUTHOR, rowData, key);
     }
 }

@@ -64,7 +64,8 @@
 
     <integer name="MENU_ORDER_CALIBRE">750</integer>
 
-    <integer name="MENU_ORDER_VIEW_BOOK_AT_SITE">800</integer>
+    <integer name="MENU_ORDER_VIEW_ON_SITE">800</integer>
+
     <integer name="MENU_ORDER_SEARCH_BOOKS_ON_SITE">900</integer>
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
@@ -243,6 +244,11 @@
     <!-- View a Book using an Identifier on an external site. -->
     <item name="SUBMENU_VIEW_BOOK_ON_SITE"
           type="id" />
+    <!-- View an Author using an Identifier on an external site. -->
+    <item name="SUBMENU_VIEW_AUTHOR_ON_SITE"
+          type="id" />
+
+    <!-- Search books on an external site using a limited set of search-criteria -->
     <item name="SUBMENU_SEARCH_BOOKS_ON_SITE"
           type="id" />
 
