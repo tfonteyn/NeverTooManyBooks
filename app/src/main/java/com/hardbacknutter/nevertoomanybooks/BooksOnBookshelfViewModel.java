@@ -85,6 +85,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteSearchMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.ViewAuthorOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
@@ -365,6 +366,7 @@ public class BooksOnBookshelfViewModel
         }
 
         menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
+                               new ViewAuthorOnSiteMenuHandler(),
                                new SiteSearchMenuHandler());
 
         // create if not explicitly set above
