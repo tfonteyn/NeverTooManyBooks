@@ -240,7 +240,7 @@ public final class DBDefinitions {
     public static final Domain DOM_IDENTIFIER_SITE_URL;
     public static final Domain DOM_IDENTIFIER_BOOK_URI;
     /** {@link #TBL_BOOK_IDENTIFIER}. */
-    public static final Domain DOM_BOOK_IDENTIFIER_SID;
+    public static final Domain DOM_IDENTIFIER_SID;
 
     /** {@link #TBL_TAGS}. */
     public static final Domain DOM_TAG;
@@ -438,7 +438,7 @@ public final class DBDefinitions {
 
     /**
      * {@link #TBL_STRIPINFO_COLLECTION}.
-     * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_BOOK_IDENTIFIER_SID}
+     * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_IDENTIFIER_SID}
      * for rows where the {@link #DOM_FK_IDENTIFIER} == "stripinfo"
      * from {@link #TBL_IDENTIFIERS} column {@link #DOM_IDENTIFIER_KEY}
      */
@@ -1081,7 +1081,7 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.IDENTIFIERS.BOOK_URI, SqLiteDataType.Text)
                         .build();
 
-        DOM_BOOK_IDENTIFIER_SID =
+        DOM_IDENTIFIER_SID =
                 new Domain.Builder(DBKey.IDENTIFIERS.SID, SqLiteDataType.Text)
                         .notNull()
                         .build();
@@ -1761,7 +1761,7 @@ public final class DBDefinitions {
         TBL_BOOK_IDENTIFIER
                 .addDomains(DOM_FK_BOOK,
                             DOM_FK_IDENTIFIER,
-                            DOM_BOOK_IDENTIFIER_SID)
+                            DOM_IDENTIFIER_SID)
                 .setPrimaryKey(DOM_FK_BOOK, DOM_FK_IDENTIFIER)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_IDENTIFIERS, DOM_FK_IDENTIFIER)
