@@ -51,6 +51,7 @@ public class IdentifierCoder
         // null urls will be discarded
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl(context));
         out.put(DBKey.IDENTIFIERS.BOOK_URI, identifier.getBookUri(context));
+        out.put(DBKey.IDENTIFIERS.AUTHOR_URI, identifier.getAuthorUri(context));
         return out;
     }
 
@@ -64,8 +65,9 @@ public class IdentifierCoder
         // nulls allowed
         final String siteUrl = data.optString(DBKey.IDENTIFIERS.SITE_URL, null);
         final String bookUrl = data.optString(DBKey.IDENTIFIERS.BOOK_URI, null);
+        final String authorUrl = data.optString(DBKey.IDENTIFIERS.AUTHOR_URI, null);
 
-        final Identifier identifier = new Identifier(key, type, name, siteUrl, bookUrl);
+        final Identifier identifier = new Identifier(key, type, name, siteUrl, bookUrl, authorUrl);
         identifier.setId(data.getLong(DBKey.PK_ID));
         return identifier;
     }

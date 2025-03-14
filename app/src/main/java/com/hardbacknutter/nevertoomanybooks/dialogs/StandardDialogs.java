@@ -358,7 +358,8 @@ public final class StandardDialogs {
     public static void deleteIdentifier(@NonNull final Context context,
                                         @NonNull final Identifier identifier,
                                         @NonNull final Runnable onConfirm) {
-        final int books = ServiceLocator.getInstance().getIdentifierDao().countBooks(identifier);
+        final int books = ServiceLocator.getInstance().getBookIdentifierDao()
+                                        .countLinks(identifier);
         final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
                                                                           books, books);
         final String msg = context.getString(R.string.confirm_delete_identifier_from_x_books,

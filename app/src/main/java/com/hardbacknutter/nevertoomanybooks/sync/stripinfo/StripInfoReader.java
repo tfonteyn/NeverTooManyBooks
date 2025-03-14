@@ -36,6 +36,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -55,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -110,7 +111,7 @@ public class StripInfoReader
     @NonNull
     private final BookDao bookDao;
 
-    private final IdentifierDao identifierDao;
+    private final IdentifierValueDao bookIdentifierDao;
 
     private ReaderResults results;
 
@@ -141,7 +142,7 @@ public class StripInfoReader
 
         final ServiceLocator locator = ServiceLocator.getInstance();
         bookDao = locator.getBookDao();
-        identifierDao = locator.getIdentifierDao();
+        bookIdentifierDao = locator.getBookIdentifierDao();
     }
 
     /**
@@ -316,11 +317,12 @@ public class StripInfoReader
         final String externalId = siBook.requireIdentifierValue(Identifier.SID_STRIP_INFO);
 
         // lookup locally using the externalId.
-        final long bookId = identifierDao.findBookId(Identifier.SID_STRIP_INFO, externalId);
+        final Optional<Long> oBookId = bookIdentifierDao.findFkId(Identifier.SID_STRIP_INFO,
+                                                                  externalId);
         try {
             // check if we already have the StripInfo book in the local database
-            if (bookId > 0) {
-                try (Cursor cursor = bookDao.fetchById(bookId)) {
+            if (oBookId.isPresent()) {
+                try (Cursor cursor = bookDao.fetchById(oBookId.get())) {
                     if (cursor.moveToFirst()) {
                         // handle the update according to the users choice
                         switch (updateOption) {

@@ -25,6 +25,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -56,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -96,10 +98,11 @@ public class DBHelper
      * v7.0.0: 35
      * v7.0.3: 36
      * v7.1.0: 38
+     * v7.2.0: 39
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 38;
+    public static final int DATABASE_VERSION = 39;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -317,7 +320,8 @@ public class DBHelper
 
     /**
      * <strong>REMINDER: foreign key constraints are DISABLED here.</strong>
-     * <strong>WARNING: do NOT use SynchronizedDb here!</strong>
+     * <strong>WARNING: do NOT use SynchronizedDb here!
+     * This implies: do NOT get dao's from the ServiceLocator!</strong>
      * <p>
      * {@inheritDoc}
      */
@@ -327,9 +331,6 @@ public class DBHelper
 
         // Create all the app & user data tables in the correct dependency order
         TableDefinition.onCreate(db, getCollation(db), DBDefinitions.ALL_TABLES.values());
-
-
-        //URGENT: we should just use the ServiceLocator to get the dao's.
 
         StyleDaoImpl.onPostCreate(db);
         CalibreCustomFieldDaoImpl.onPostCreate(db);
@@ -354,6 +355,7 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
+        // reminder: do NOT get dao's!
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final Context context = serviceLocator.getLocalizedAppContext();
 
@@ -528,8 +530,7 @@ public class DBHelper
             LegacyUpgrades.migrateV35Genre(db);
 
             // Override the user should they have hidden the 'genre' field
-            final FieldVisibility globalFieldVisibility = ServiceLocator
-                    .getInstance().getGlobalFieldVisibility();
+            final FieldVisibility globalFieldVisibility = serviceLocator.getGlobalFieldVisibility();
             globalFieldVisibility.setVisible(DBKey.FK_TAG, true);
             globalFieldVisibility.save(PreferenceManager.getDefaultSharedPreferences(context));
 
@@ -578,6 +579,67 @@ public class DBHelper
                     db,
                     DBDefinitions.DOM_STYLE_SHOW_GROUP_BOOK_COUNT);
 
+        }
+        if (oldVersion < 39) {
+            TBL_IDENTIFIERS.alterTableAddColumns(db, DBDefinitions.DOM_IDENTIFIER_AUTHOR_URI);
+            TBL_AUTHOR_IDENTIFIER.create(db, true);
+            try (SQLiteStatement stmt = db.compileStatement(
+                    "UPDATE " + TBL_IDENTIFIERS + " SET " + DBKey.IDENTIFIERS.AUTHOR_URI + "=?"
+                    + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+                // see Identifier#createInitialList
+                // we don't check success, the row may have been deleted which is fine
+                stmt.bindString(1, "https://www.bedetheque.com/auteur-%s-BD-x.html");
+                stmt.bindString(2, Identifier.SID_BEDETHEQUE);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://catalogue.bnf.fr/ark:/12148/%s");
+                stmt.bindString(2, Identifier.SID_BNF);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://d-nb.info/gnd/%s");
+                stmt.bindString(2, Identifier.SID_DNB);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://www.douban.com/personage/%s");
+                stmt.bindString(2, Identifier.SID_DOUBAN);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://fantlab.ru/autor%s");
+                stmt.bindString(2, Identifier.SID_FANTLAB);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://www.goodreads.com/author/show/%s");
+                stmt.bindString(2, Identifier.SID_GOODREADS_BOOK);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://www.isfdb.org/cgi-bin/ea.cgi?%s");
+                stmt.bindString(2, Identifier.SID_ISFDB);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s");
+                stmt.bindString(2, Identifier.SID_KBNL);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://www.lastdodo.nl/nl/areas/%s");
+                stmt.bindString(2, Identifier.SID_LAST_DODO_NL);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://www.fantascienza.com/catalogo/autori/NILF%s");
+                stmt.bindString(2, Identifier.SID_NILF);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://www.noosfere.org/livres/auteur.asp?NumAuteur=%s");
+                stmt.bindString(2, Identifier.SID_NOOSFERE);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://id.oclc.org/worldcat/entity/%s");
+                stmt.bindString(2, Identifier.SID_OCLC);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://openlibrary.org/authors/%s");
+                stmt.bindString(2, Identifier.SID_OPEN_LIBRARY);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://stripinfo.be/auteur/index/%s");
+                stmt.bindString(2, Identifier.SID_STRIP_INFO);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://tercerafundacion.net/biblioteca/ver/persona/%s");
+                stmt.bindString(2, Identifier.SID_TERCERA_FUNDACION);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "%s");
+                stmt.bindString(2, Identifier.SID_URI);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://www.wikidata.org/wiki/%s");
+                stmt.bindString(2, Identifier.SID_WIKIDATA);
+                stmt.executeUpdateDelete();
+            }
         }
 
         // We have to do this here due to some users skipping updates (see github #30)

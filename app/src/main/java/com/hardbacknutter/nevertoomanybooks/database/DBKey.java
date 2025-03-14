@@ -464,7 +464,16 @@ public final class DBKey {
          * Typically a url, but we allow/use all uri style values.
          */
         public static final String BOOK_URI = "book_uri";
-        /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
+        /**
+         * <strong>URI</strong> with a "%s" taking a sid.
+         * Typically a url, but we allow/use all uri style values.
+         */
+        public static final String AUTHOR_URI = "author_uri";
+        /**
+         * {@link DBDefinitions#TBL_BOOK_IDENTIFIER},
+         * {@link DBDefinitions#TBL_AUTHOR_IDENTIFIER}.
+         * The external site id.
+         */
         public static final String SID = "sid";
 
         private IDENTIFIERS() {

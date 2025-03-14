@@ -313,7 +313,7 @@ public final class DataHolderUtils {
         if (dataHolder.contains(DBKey.FK_BOOK)) {
             final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             if (bookId > 0) {
-                return ServiceLocator.getInstance().getIdentifierDao()
+                return ServiceLocator.getInstance().getBookIdentifierDao()
                                      .findSid(identifierKey, bookId);
             }
         }
@@ -336,7 +336,7 @@ public final class DataHolderUtils {
         if (dataHolder.contains(DBKey.FK_BOOK)) {
             final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
             if (bookId > 0) {
-                return ServiceLocator.getInstance().getIdentifierDao().getByBookId(bookId);
+                return ServiceLocator.getInstance().getBookIdentifierDao().getByFkId(bookId);
             }
         }
 

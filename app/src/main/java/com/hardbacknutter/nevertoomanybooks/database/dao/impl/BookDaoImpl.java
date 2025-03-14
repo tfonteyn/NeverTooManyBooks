@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -126,7 +126,7 @@ public class BookDaoImpl
     @NonNull
     private final Supplier<LoaneeDao> loaneeDaoDaoSupplier;
     @NonNull
-    private final Supplier<IdentifierDao> identifierDaoSupplier;
+    private final Supplier<IdentifierValueDao> identifierDaoSupplier;
     @NonNull
     private final Supplier<TagDao> tagDaoSupplier;
     @NonNull
@@ -151,7 +151,7 @@ public class BookDaoImpl
      * @param bookshelfDaoSupplier  deferred supplier for the {@link BookshelfDao}
      * @param tocEntryDaoSupplier   deferred supplier for the {@link TocEntryDao}
      * @param loaneeDaoDaoSupplier  deferred supplier for the {@link LoaneeDao}
-     * @param identifierDaoSupplier deferred supplier for the {@link IdentifierDao}
+     * @param identifierDaoSupplier deferred supplier for the {@link IdentifierValueDao}
      * @param tagDaoSupplier        deferred supplier for the {@link TagDao}
      * @param calibreDaoSupplier    deferred supplier for the {@link CalibreDao}
      * @param stripInfoDaoSupplier  deferred supplier for the {@link StripInfoDao}
@@ -167,7 +167,7 @@ public class BookDaoImpl
                        @NonNull final Supplier<BookshelfDao> bookshelfDaoSupplier,
                        @NonNull final Supplier<TocEntryDao> tocEntryDaoSupplier,
                        @NonNull final Supplier<LoaneeDao> loaneeDaoDaoSupplier,
-                       @NonNull final Supplier<IdentifierDao> identifierDaoSupplier,
+                       @NonNull final Supplier<IdentifierValueDao> identifierDaoSupplier,
                        @NonNull final Supplier<TagDao> tagDaoSupplier,
                        @NonNull final Supplier<CalibreDao> calibreDaoSupplier,
                        @NonNull final Supplier<StripInfoDao> stripInfoDaoSupplier,

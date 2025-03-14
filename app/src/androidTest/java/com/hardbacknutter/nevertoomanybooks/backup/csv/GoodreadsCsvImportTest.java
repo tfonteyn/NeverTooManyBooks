@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -62,7 +62,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -74,7 +73,7 @@ public class GoodreadsCsvImportTest
 
     private BookDao bookDao;
     private int booksPresent;
-    private IdentifierDao identifierDao;
+    private IdentifierValueDao bookIdentifierDao;
 
     @Before
     public void setup()
@@ -83,11 +82,13 @@ public class GoodreadsCsvImportTest
 
         final ServiceLocator locator = ServiceLocator.getInstance();
 
-        identifierDao = locator.getIdentifierDao();
+        bookIdentifierDao = locator.getBookIdentifierDao();
         bookDao = locator.getBookDao();
         booksPresent = bookDao.count();
 
-        final long grId = identifierDao.findByKey(Identifier.SID_GOODREADS_BOOK).get().getId();
+        final long grId = locator.getIdentifierDao()
+                                 .findByKey(Identifier.SID_GOODREADS_BOOK).get()
+                                 .getId();
         locator.getDb().delete(DBDefinitions.TBL_BOOK_IDENTIFIER.getName(),
                                DBKey.FK_IDENTIFIER + "=" + grId,
                                null);
@@ -144,8 +145,10 @@ public class GoodreadsCsvImportTest
         // 5,3.99,Het Spectrum,Paperback,172,1973,1972,,2020/06/05,books,books (#8),read,
         // ,,,1,0
 
-        long bookId = identifierDao.findBookId(Identifier.SID_GOODREADS_BOOK, "8998451");
-        assertNotEquals(0, bookId);
+        Optional<Long> oBookId = bookIdentifierDao.findFkId(Identifier.SID_GOODREADS_BOOK,
+                                                            "8998451");
+        assertTrue(oBookId.isPresent());
+        long bookId = oBookId.get();
 
         try (Cursor cursor = bookDao.fetchById(bookId)) {
             assertEquals(1, cursor.getCount());
@@ -193,8 +196,9 @@ public class GoodreadsCsvImportTest
         // Tor Books,Hardcover,472,2014,2006,,2024/04/24,
         // "currently-reading, books","currently-reading (#3), books (#15)",currently-reading,
         // On my todo list,,my own notes on this book,1,0
-        bookId = identifierDao.findBookId(Identifier.SID_GOODREADS_BOOK, "20518872");
-        assertNotEquals(0, bookId);
+        oBookId = bookIdentifierDao.findFkId(Identifier.SID_GOODREADS_BOOK, "20518872");
+        assertTrue(oBookId.isPresent());
+        bookId = oBookId.get();
 
         try (Cursor cursor = bookDao.fetchById(bookId)) {
             assertEquals(1, cursor.getCount());

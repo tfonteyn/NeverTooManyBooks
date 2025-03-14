@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -50,11 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 
 public class IdentifierDaoImpl
@@ -72,6 +69,17 @@ public class IdentifierDaoImpl
      */
     public IdentifierDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param db     Underlying database
+     * @param logTag of this DAO for logging.
+     */
+    IdentifierDaoImpl(@NonNull final SynchronizedDb db,
+                      @NonNull final String logTag) {
+        super(db, logTag);
     }
 
     /**
@@ -124,6 +132,7 @@ public class IdentifierDaoImpl
         stmt.bindString(3, identifier.getName());
         stmt.bindString(4, identifier.getSiteUrl(context));
         stmt.bindString(5, identifier.getBookUri(context).orElse(null));
+        stmt.bindString(6, identifier.getAuthorUri(context));
         final long iId = stmt.executeInsert();
 
         if (iId != -1) {
@@ -153,8 +162,9 @@ public class IdentifierDaoImpl
         stmt.bindString(3, identifier.getName());
         stmt.bindString(4, identifier.getSiteUrl(context));
         stmt.bindString(5, identifier.getBookUri(context).orElse(null));
+        stmt.bindString(6, identifier.getAuthorUri(context));
 
-        stmt.bindLong(6, identifier.getId());
+        stmt.bindLong(7, identifier.getId());
         final int rowsAffected = stmt.executeUpdateDelete();
 
         if (rowsAffected > 0) {
@@ -281,51 +291,6 @@ public class IdentifierDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Context context,
-                               @IntRange(from = 1) final long bookId,
-                               @NonNull final Collection<Identifier.Value> list)
-            throws DaoInsertException, DaoUpdateException {
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (!db.inTransaction()) {
-                throw new TransactionException(TransactionException.REQUIRED);
-            }
-        }
-
-        pruneList(list);
-
-        // Just delete all current links
-        try (SynchronizedStatement stmt1 = db.compileStatement(Sql.DELETE_BOOK_LINKS_BY_BOOK_ID)) {
-            stmt1.bindLong(1, bookId);
-            stmt1.executeUpdateDelete();
-        }
-
-        // is there anything to insert ?
-        if (list.isEmpty()) {
-            return;
-        }
-
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK)) {
-            for (final Identifier.Value iv : list) {
-
-                Identifier identifier = findByKey(iv.getKey()).orElse(null);
-                if (identifier == null) {
-                    // We do NOT want to speculate it might be TYPE_LONG!
-                    // See docs on the Identifier class for usage.
-                    identifier = new Identifier(iv.getKey());
-                    insert(context, identifier);
-                }
-                stmt.bindLong(1, bookId);
-                stmt.bindLong(2, identifier.getId());
-                stmt.bindString(3, iv.getSid());
-                if (stmt.executeInsert() == -1) {
-                    throw new DaoInsertException("insert Book-Identifier");
-                }
-            }
-        }
-    }
-
-    @Override
     public boolean pruneList(@NonNull final Collection<Identifier.Value> list) {
         if (list.isEmpty()) {
             return false;
@@ -394,99 +359,7 @@ public class IdentifierDaoImpl
         return false;
     }
 
-    @Override
-    public int countBooks(@NonNull final Identifier identifier) {
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
-            stmt.bindLong(1, identifier.getId());
-            return (int) stmt.simpleQueryForLongOrZero();
-        }
-    }
-
-    @Override
-    public int moveBooks(@NonNull final Context context,
-                         @NonNull final Identifier source,
-                         @NonNull final Identifier target)
-            throws DaoInsertException, DaoUpdateException {
-
-        int booksMoved;
-
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-
-            // Relink books with the target.
-            // We don't hold 'position'... just do a mass update
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.FK_IDENTIFIER, target.getId());
-            booksMoved = db.update(TBL_BOOK_IDENTIFIER.getName(), cv,
-                                   DBKey.FK_IDENTIFIER + "=?",
-                                   new String[]{String.valueOf(source.getId())});
-
-            // delete the obsolete source.
-            delete(source);
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
-        }
-
-        return booksMoved;
-    }
-
-    @NonNull
-    @Override
-    public List<Identifier.Value> getByBookId(@IntRange(from = 1) final long bookId) {
-        final List<Identifier.Value> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_BOOK_ID,
-                                         new String[]{String.valueOf(bookId)})) {
-            final CursorRow rowData = new CursorRow(cursor);
-            while (cursor.moveToNext()) {
-                list.add(new Identifier.Value(
-                        rowData.getString(DBKey.IDENTIFIERS.KEY),
-                        rowData.getString(DBKey.IDENTIFIERS.SID)));
-            }
-        }
-        return list;
-    }
-
-    @Override
-    @NonNull
-    public Optional<String> findSid(@NonNull final String key,
-                                    final long bookId) {
-
-        try (SynchronizedStatement stmt = db.compileStatement(
-                Sql.FIND_SID_BY_BOOK_ID_AND_IDENTIFIER_KEY)) {
-            stmt.bindLong(1, bookId);
-            stmt.bindString(2, key);
-
-            final String sid = stmt.simpleQueryForStringOrNull();
-            // null check sure.. the rest is paranoia
-            if (sid != null && !sid.isEmpty() && !"0".equals(sid)) {
-                return Optional.of(sid);
-            }
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    @IntRange(from = 0)
-    public long findBookId(@NonNull final String key,
-                           @NonNull final String sid) {
-        try (SynchronizedStatement stmt = db.compileStatement(
-                Sql.FIND_BOOK_ID_BY_IDENTIFIER_KEY_AND_SID)) {
-            stmt.bindString(1, key);
-            stmt.bindString(2, sid);
-            return stmt.simpleQueryForLongOrZero();
-        }
-    }
-
-    private static final class Sql {
+    static final class Sql {
         /** Insert an {@link Identifier}. */
         static final String INSERT =
                 INSERT_INTO_ + TBL_IDENTIFIERS.getName()
@@ -495,7 +368,8 @@ public class IdentifierDaoImpl
                 + ',' + DBKey.IDENTIFIERS.NAME
                 + ',' + DBKey.IDENTIFIERS.SITE_URL
                 + ',' + DBKey.IDENTIFIERS.BOOK_URI
-                + ") VALUES(?,?,?,?,?)";
+                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
+                + ") VALUES(?,?,?,?,?,?)";
 
         /** Update an {@link Identifier}. */
         static final String UPDATE =
@@ -505,6 +379,7 @@ public class IdentifierDaoImpl
                 + ',' + DBKey.IDENTIFIERS.NAME + "=?"
                 + ',' + DBKey.IDENTIFIERS.SITE_URL + "=?"
                 + ',' + DBKey.IDENTIFIERS.BOOK_URI + "=?"
+                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Identifier}. */
@@ -522,7 +397,8 @@ public class IdentifierDaoImpl
                 + ',' + DBKey.IDENTIFIERS.TYPE + "=excluded." + DBKey.IDENTIFIERS.TYPE
                 + ',' + DBKey.IDENTIFIERS.NAME + "=excluded." + DBKey.IDENTIFIERS.NAME
                 + ',' + DBKey.IDENTIFIERS.SITE_URL + "=excluded." + DBKey.IDENTIFIERS.SITE_URL
-                + ',' + DBKey.IDENTIFIERS.BOOK_URI + "=excluded." + DBKey.IDENTIFIERS.BOOK_URI;
+                + ',' + DBKey.IDENTIFIERS.BOOK_URI + "=excluded." + DBKey.IDENTIFIERS.BOOK_URI
+                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI + "=excluded." + DBKey.IDENTIFIERS.AUTHOR_URI;
 
         static final String SELECT_ALL =
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID,
@@ -530,7 +406,8 @@ public class IdentifierDaoImpl
                                                 DBKey.IDENTIFIERS.TYPE,
                                                 DBKey.IDENTIFIERS.NAME,
                                                 DBKey.IDENTIFIERS.SITE_URL,
-                                                DBKey.IDENTIFIERS.BOOK_URI);
+                                                DBKey.IDENTIFIERS.BOOK_URI,
+                                                DBKey.IDENTIFIERS.AUTHOR_URI);
 
         static final String SELECT_ALL_ORDERED_BY_KEY =
                 SELECT_ALL + _FROM_ + TBL_IDENTIFIERS.ref()
@@ -548,44 +425,5 @@ public class IdentifierDaoImpl
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID)
                 + _FROM_ + TBL_IDENTIFIERS.ref()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
-
-        static final String COUNT_BOOKS =
-                SELECT_COUNT_FROM_ + TBL_BOOK_IDENTIFIER.ref()
-                + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_IDENTIFIER) + "=?";
-
-        static final String FIND_BOOK_ID_BY_IDENTIFIER_KEY_AND_SID =
-                SELECT_ + DBKey.FK_BOOK
-                + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
-                + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?"
-                + _AND_ + TBL_BOOK_IDENTIFIER.dot(DBKey.IDENTIFIERS.SID) + "=?";
-
-        static final String FIND_BY_BOOK_ID =
-                SELECT_ALL
-                + ',' + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENTIFIERS.SID)
-                + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
-                + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_BOOK) + "=?";
-
-        static final String FIND_SID_BY_BOOK_ID_AND_IDENTIFIER_KEY =
-                SELECT_ + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENTIFIERS.SID)
-                + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
-                + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_BOOK) + "=?"
-                + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
-
-        /** Insert the link between a {@link Book} and a {@link Identifier}. */
-        static final String INSERT_BOOK_LINK =
-                INSERT_INTO_ + TBL_BOOK_IDENTIFIER.getName()
-                + '(' + DBKey.FK_BOOK
-                + ',' + DBKey.FK_IDENTIFIER
-                + ',' + DBKey.IDENTIFIERS.SID
-                + ") VALUES(?,?,?)";
-
-        /**
-         * Delete the link between a {@link Book} and a {@link Identifier}.
-         * <p>
-         * This is done when a book is updated; first delete all links, then re-create them.
-         */
-        static final String DELETE_BOOK_LINKS_BY_BOOK_ID =
-                DELETE_FROM_ + TBL_BOOK_IDENTIFIER.getName()
-                + _WHERE_ + DBKey.FK_BOOK + "=?";
     }
 }

@@ -121,6 +121,8 @@ public class Identifier
     private final String siteUrl;
     @Nullable
     private final String bookUri;
+    @Nullable
+    private final String authorUri;
     private final char type;
     private long id;
 
@@ -135,31 +137,36 @@ public class Identifier
         this.name = key;
         this.siteUrl = null;
         this.bookUri = null;
+        this.authorUri = null;
     }
 
     /**
      * Constructor for the predefined Identifiers.
      * Will be used when updated app versions bring new and TESTED urls.
      *
-     * @param key     a key(word) for this Identifier. e.g. "oclc"
-     *                The size is not enforced, but should be {@link #MAX_KEY_LEN}
-     *                characters max, preferably less.
-     * @param type    {@link #TYPE_STRING} or {@link #TYPE_LONG}
-     * @param name    a short name
-     * @param siteUrl url to the main website page
-     * @param bookUri a url with a {@code %s%} placeholder for the sid,
-     *                to view a book on the site
+     * @param key       a key(word) for this Identifier. e.g. "oclc"
+     *                  The size is not enforced, but should be {@link #MAX_KEY_LEN}
+     *                  characters max, preferably less.
+     * @param type      {@link #TYPE_STRING} or {@link #TYPE_LONG}
+     * @param name      a short name
+     * @param siteUrl   url to the main website page
+     * @param bookUri   a url with a {@code %s%} placeholder for the sid,
+     *                  to view a {@code Book} on the site
+     * @param authorUri a url with a {@code %s%} placeholder for the sid,
+     *                  to view an {@code Author} on the site
      */
     public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key,
                       final char type,
                       @NonNull final String name,
                       @Nullable final String siteUrl,
-                      @Nullable final String bookUri) {
+                      @Nullable final String bookUri,
+                      @Nullable final String authorUri) {
         this.key = key;
         this.type = type;
         this.name = name;
         this.siteUrl = siteUrl;
         this.bookUri = bookUri;
+        this.authorUri = authorUri;
     }
 
     /**
@@ -176,6 +183,7 @@ public class Identifier
         name = rowData.getString(DBKey.IDENTIFIERS.NAME);
         siteUrl = rowData.getString(DBKey.IDENTIFIERS.SITE_URL, null);
         bookUri = rowData.getString(DBKey.IDENTIFIERS.BOOK_URI, null);
+        authorUri = rowData.getString(DBKey.IDENTIFIERS.AUTHOR_URI, null);
     }
 
     protected Identifier(@NonNull final Parcel in) {
@@ -187,6 +195,7 @@ public class Identifier
         name = in.readString();
         siteUrl = in.readString();
         bookUri = in.readString();
+        authorUri = in.readString();
     }
 
     /**
@@ -202,161 +211,192 @@ public class Identifier
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     @NonNull
     public static List<Identifier> createInitialList(@NonNull final Context context) {
+        // links have been verified at the date listed.
         return List.of(
-                // both links empty on purpose
+                // links empty on purpose
                 new Identifier(SID_ASIN, TYPE_STRING,
                                context.getString(R.string.identifier_amazon),
                                null,
+                               null,
                                null),
-                // bookUrl: 2025-01-29
+                // 2025-01-29
                 new Identifier(SID_AUDIBLE, TYPE_STRING,
                                context.getString(R.string.identifier_audible),
                                "https://www.audible.com",
-                               "https://www.audible.com/pd/%s"),
-                // bookUrl: 2025-01-29
+                               "https://www.audible.com/pd/%s",
+                               null),
+                // 2025-01-29
                 new Identifier(SID_BARNES_AND_NOBLE, TYPE_LONG,
                                context.getString(R.string.identifier_barnesandnoble),
                                "https://www.barnesandnoble.com",
-                               "https://www.barnesandnoble.com/w/%s"),
-                // bookUrl: 2025-01-29
+                               "https://www.barnesandnoble.com/w/%s",
+                               null),
+                // 2025-01-29
                 new Identifier(SID_BEDETHEQUE, TYPE_LONG,
                                context.getString(R.string.identifier_bedetheque),
                                "https://www.bedetheque.com",
-                               "https://www.bedetheque.com/BD-x-%s.html"),
-                // bookUrl: 2025-01-29
+                               "https://www.bedetheque.com/BD-x-%s.html",
+                               "https://www.bedetheque.com/auteur-%s-BD-x.html"),
+                // 2025-01-29
                 new Identifier(SID_BNF, TYPE_STRING,
                                context.getString(R.string.identifier_bnf),
                                "https://www.bnf.fr",
-                               "http://ark.bnf.fr/ark:/12148/%s"),
+                               // not entirely sure if we should use the host "ark"
+                               // or "catalogue"
+                               "http://ark.bnf.fr/ark:/12148/%s",
+                               "https://catalogue.bnf.fr/ark:/12148/%s"),
                 // FIXME: BL link disabled for now due to https://www.bl.uk/cyber-incident/
                 // The British National Bibliography ??
                 new Identifier(SID_BRITISH_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_british_library),
                                "https://www.bl.uk",
+                               null,
                                null),
-                // bookUrl: 2025-01-29
+                // 2025-01-29
                 new Identifier(SID_DNB, TYPE_STRING,
                                context.getString(R.string.identifier_dnb),
                                "https://www.dnb.de",
-                               "https://d-nb.info/%s"),
+                               "https://d-nb.info/%s",
+                               "https://d-nb.info/gnd/%s"),
                 // FIXME: openlibrary  https://www.doi.org/%s
                 // but none of the openlibrary provided doi numbers
-                // we tried are resolving, so leaving bookUrl empty on purpose.
+                // we tried are resolving, so leaving bookUrl/authorUrl empty on purpose.
                 new Identifier(SID_DOI, TYPE_STRING,
                                context.getString(R.string.identifier_doi),
                                "https://www.doi.org",
+                               null,
                                null),
-                // bookUrl: 2025-01-29
+                // 2025-01-29
                 new Identifier(SID_DOUBAN, TYPE_LONG,
                                context.getString(R.string.identifier_douban),
                                "https://book.douban.com",
-                               "https://book.douban.com/subject/%s"),
-                // bookUrl: 2025-01-29
+                               "https://book.douban.com/subject/%s",
+                               "https://www.douban.com/personage/%s"),
+                // 2025-01-29
                 new Identifier(SID_FANTLAB, TYPE_LONG,
                                context.getString(R.string.identifier_fantlab),
                                "https://fantlab.ru",
-                               "https://fantlab.ru/edition%s"),
-                // bookUrl: 2025-01-29
+                               "https://fantlab.ru/edition%s",
+                               "https://fantlab.ru/autor%s"),
+                // 2025-01-29
                 new Identifier(SID_GOODREADS_BOOK, TYPE_LONG,
                                context.getString(R.string.identifier_goodreads),
                                "https://www.goodreads.com",
-                               "https://www.goodreads.com/book/show/%s"),
-                // bookUrl: 2025-01-29
+                               "https://www.goodreads.com/book/show/%s",
+                               "https://www.goodreads.com/author/show/%s"),
+                // 2025-01-29
                 new Identifier(SID_GOOGLE, TYPE_STRING,
                                context.getString(R.string.identifier_google_books),
                                "https://books.google.com",
-                               "https://books.google.co.uk/books?id=%s"),
-                // bookUrl: 2025-01-29
+                               "https://books.google.co.uk/books?id=%s",
+                               null),
+                // 2025-01-29
                 new Identifier(SID_ISFDB, TYPE_LONG,
                                context.getString(R.string.identifier_isfdb),
                                "https://www.isfdb.org",
-                               "https://www.isfdb.org/cgi-bin/pl.cgi?%s"),
-                // bookUrl: 2025-01-29
+                               "https://www.isfdb.org/cgi-bin/pl.cgi?%s",
+                               "https://www.isfdb.org/cgi-bin/ea.cgi?%s"),
+                // 2025-01-29
                 new Identifier(SID_KBNL, TYPE_LONG,
                                context.getString(R.string.identifier_kb_nl),
                                "https://www.kb.nl",
-                               "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s"),
-                // bookUrl: 2025-01-29
+                               "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s",
+                               "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s"),
+                // 2025-01-29
                 new Identifier(SID_KBR, TYPE_LONG,
                                context.getString(R.string.identifier_kbr),
                                "https://opac.kbr.be",
-                               "https://opac.kbr.be/Library/doc/SYRACUSE/%s"),
-                // bookUrl: 2025-01-29
+                               "https://opac.kbr.be/Library/doc/SYRACUSE/%s",
+                               null),
+                // 2025-01-29
                 new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
                                context.getString(R.string.identifier_lastdodo_nl),
                                "https://www.lastdodo.nl",
-                               "https://www.lastdodo.nl/nl/items/%s"),
-                // bookUrl: 2025-01-29
+                               "https://www.lastdodo.nl/nl/items/%s",
+                               "https://www.lastdodo.nl/nl/areas/%s"),
+                // 2025-01-29
                 new Identifier(SID_LCCN, TYPE_STRING,
                                context.getString(R.string.identifier_lccn),
                                "https://catalog.loc.gov",
-                               "https://lccn.loc.gov/%s"),
-                // bookUrl: 2025-01-29
+                               "https://lccn.loc.gov/%s",
+                               null),
+                // 2025-01-29
                 new Identifier(SID_LIBRARY_THING, TYPE_LONG,
                                context.getString(R.string.identifier_library_thing),
                                "https://www.librarything.com",
-                               "https://www.librarything.com/work/%s"),
-                // bookUrl: 2025-01-29
+                               "https://www.librarything.com/work/%s",
+                               null),
+                // 2025-01-29
                 new Identifier(SID_LIBRIS, TYPE_LONG,
                                context.getString(R.string.identifier_libris),
                                "https://libris.kb.se",
-                               "https://libris.kb.se/bib/%s"),
-                // bookUrl: 2025-01-29
+                               "https://libris.kb.se/bib/%s",
+                               null),
+                // 2025-01-29
                 new Identifier(SID_LIBRIS_XL, TYPE_STRING,
                                context.getString(R.string.identifier_libris),
                                "https://libris.kb.se/katalogisering",
-                               "https://libris.kb.se/%s"),
-                // bookUrl: 2025-01-29
+                               "https://libris.kb.se/%s",
+                               null),
+                // 2025-01-29
                 new Identifier(SID_NILF, TYPE_LONG,
                                context.getString(R.string.identifier_nilf),
                                "https://www.fantascienza.com/catalogo/",
-                               "https://www.fantascienza.com/catalogo/volumi/NILF%s"),
-                // bookUrl: 2025-01-29
+                               "https://www.fantascienza.com/catalogo/volumi/NILF%s",
+                               "https://www.fantascienza.com/catalogo/autori/NILF%s"),
+                // 2025-01-29
                 new Identifier(SID_NOOSFERE, TYPE_LONG,
                                context.getString(R.string.identifier_noosfere),
                                "https://www.noosfere.org",
-                               "https://www.noosfere.org/livres/niourf.asp?numlivre=%s"),
-                // bookUrl: 2025-01-29
+                               "https://www.noosfere.org/livres/niourf.asp?numlivre=%s",
+                               "https://www.noosfere.org/livres/auteur.asp?NumAuteur=%s"),
+                // 2025-01-29
                 new Identifier(SID_OCLC, TYPE_LONG,
                                context.getString(R.string.identifier_worldcat),
                                "https://search.worldcat.org",
-                               "https://www.worldcat.org/oclc/%s"),
-                // bookUrl: 2025-01-29
+                               "https://www.worldcat.org/oclc/%s",
+                               "https://id.oclc.org/worldcat/entity/%s"),
+                // 2025-01-29
                 new Identifier(SID_OPEN_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_open_library),
                                "https://openlibrary.org",
-                               "https://openlibrary.org/books/%s"),
-
-                // bookUrl: 2025-01-29
+                               "https://openlibrary.org/books/%s",
+                               "https://openlibrary.org/authors/%s"),
+                // 2025-01-29
                 new Identifier(SID_PORBASE, TYPE_LONG,
                                context.getString(R.string.identifier_porbase),
                                "https://porbase.bnportugal.gov.pt",
-                               "http://id.bnportugal.gov.pt/bib/porbase/%s"),
-
-                // bookUrl: 2025-01-29
+                               "http://id.bnportugal.gov.pt/bib/porbase/%s",
+                               null),
+                // 2025-01-29
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
                                context.getString(R.string.identifier_stripinfo_be),
                                "https://stripinfo.be",
-                               "https://stripinfo.be/reeks/strip/%s"),
-                // bookUrl: 2025-01-29  a permalink to the product nr is not possible
+                               "https://stripinfo.be/reeks/strip/%s",
+                               "https://stripinfo.be/auteur/index/%s"),
+                // 2025-01-29  a permalink to the product nr is not possible
                 new Identifier(SID_STRIPWEB, TYPE_LONG,
                                context.getString(R.string.identifier_stripweb_be),
                                "https://www.stripweb.be",
+                               null,
                                null),
-                // bookUrl: 2025-01-29
+                // 2025-01-29
                 new Identifier(SID_TERCERA_FUNDACION, TYPE_LONG,
                                context.getString(R.string.identifier_tercerafundacion),
                                "https://tercerafundacion.net",
-                               "https://tercerafundacion.net/biblioteca/ver/libro/%s"),
-                // the bookUrl IS the sid
+                               "https://tercerafundacion.net/biblioteca/ver/libro/%s",
+                               "https://tercerafundacion.net/biblioteca/ver/persona/%s"),
+                // the bookUrl/authorUrl IS the sid
                 new Identifier(SID_URI, TYPE_STRING,
                                context.getString(R.string.identifier_uri),
                                null,
+                               "%s",
                                "%s"),
-                // bookUrl: 2025-01-29
+                // 2025-01-29
                 new Identifier(SID_WIKIDATA, TYPE_STRING,
                                context.getString(R.string.identifier_wikidata),
                                "https://www.wikidata.org",
+                               "https://www.wikidata.org/wiki/%s",
                                "https://www.wikidata.org/wiki/%s")
         );
     }
@@ -370,6 +410,7 @@ public class Identifier
         dest.writeString(name);
         dest.writeString(siteUrl);
         dest.writeString(bookUri);
+        dest.writeString(authorUri);
     }
 
     @Override
@@ -470,6 +511,25 @@ public class Identifier
         return bookUri != null ? Optional.of(bookUri) : Optional.empty();
     }
 
+    /**
+     * Get the <strong>uri</strong> for viewing an author on the site.
+     * The uri will have a single {@code %s} placeholder where the Identifier value needs to go.
+     *
+     * @param context Current context
+     *
+     * @return uri
+     */
+    @Nullable
+    public String getAuthorUri(@NonNull final Context context) {
+        // Always overrule the db stored url for amazon
+        if (SID_ASIN.equals(key)) {
+            //noinspection DataFlowIssue
+            return EngineId.Amazon.getConfig().getHostUrl(context) + "/stores/author/%s";
+        }
+
+        return authorUri;
+    }
+
     @Override
     @NonNull
     public String toString() {
@@ -480,12 +540,13 @@ public class Identifier
                + ", name=`" + name + '`'
                + ", siteUrl=`" + siteUrl + '`'
                + ", bookUri=`" + bookUri + '`'
+               + ", authorUri=`" + authorUri + '`'
                + '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, key, type, name, siteUrl, bookUri);
+        return Objects.hash(id, key, type, name, siteUrl, bookUri, authorUri);
     }
 
     @Override
@@ -507,7 +568,8 @@ public class Identifier
                && type == that.type
                && Objects.equals(name, that.name)
                && Objects.equals(siteUrl, that.siteUrl)
-               && Objects.equals(bookUri, that.bookUri);
+               && Objects.equals(bookUri, that.bookUri)
+               && Objects.equals(authorUri, that.authorUri);
     }
 
     public static class Value

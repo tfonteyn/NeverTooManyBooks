@@ -103,6 +103,7 @@ public final class DBDefinitions {
      * {@link #TBL_BOOK_LOANEE},
      * <p>
      * {@link #TBL_BOOK_IDENTIFIER}
+     * {@link #TBL_AUTHOR_IDENTIFIER}
      * {@link #TBL_BOOK_TAG}
      * <p>
      * {@link #TBL_CALIBRE_BOOKS},
@@ -161,6 +162,9 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_IDENTIFIER;
     /** link table. */
     public static final TableDefinition TBL_BOOK_TAG;
+
+    /** link table. */
+    public static final TableDefinition TBL_AUTHOR_IDENTIFIER;
 
     /** Map alternative names for Authors. */
     public static final TableDefinition TBL_PSEUDONYM_AUTHOR;
@@ -239,7 +243,9 @@ public final class DBDefinitions {
     public static final Domain DOM_IDENTIFIER_NAME;
     public static final Domain DOM_IDENTIFIER_SITE_URL;
     public static final Domain DOM_IDENTIFIER_BOOK_URI;
-    /** {@link #TBL_BOOK_IDENTIFIER}. */
+    public static final Domain DOM_IDENTIFIER_AUTHOR_URI;
+
+    /** {@link #TBL_BOOK_IDENTIFIER}, {@link #TBL_AUTHOR_IDENTIFIER}. */
     public static final Domain DOM_IDENTIFIER_SID;
 
     /** {@link #TBL_TAGS}. */
@@ -438,7 +444,7 @@ public final class DBDefinitions {
 
     /**
      * {@link #TBL_STRIPINFO_COLLECTION}.
-     * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_IDENTIFIER_SID}
+     * Foreign key with {@link #TBL_BOOK_IDENTIFIER} column {@link #DOM_BOOK_IDENTIFIER_SID}
      * for rows where the {@link #DOM_FK_IDENTIFIER} == "stripinfo"
      * from {@link #TBL_IDENTIFIERS} column {@link #DOM_IDENTIFIER_KEY}
      */
@@ -593,6 +599,7 @@ public final class DBDefinitions {
         TBL_BOOK_LOANEE = new TableDefinition("loan", "l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology", "bat");
         TBL_BOOK_IDENTIFIER = new TableDefinition("book_identifiers", "bid");
+        TBL_AUTHOR_IDENTIFIER = new TableDefinition("author_identifiers", "aid");
         TBL_BOOK_TAG = new TableDefinition("book_tags", "btgs");
 
         TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib", "clb_l");
@@ -1080,6 +1087,9 @@ public final class DBDefinitions {
         DOM_IDENTIFIER_BOOK_URI =
                 new Domain.Builder(DBKey.IDENTIFIERS.BOOK_URI, SqLiteDataType.Text)
                         .build();
+        DOM_IDENTIFIER_AUTHOR_URI =
+                new Domain.Builder(DBKey.IDENTIFIERS.AUTHOR_URI, SqLiteDataType.Text)
+                        .build();
 
         DOM_IDENTIFIER_SID =
                 new Domain.Builder(DBKey.IDENTIFIERS.SID, SqLiteDataType.Text)
@@ -1494,7 +1504,8 @@ public final class DBDefinitions {
                             DOM_IDENTIFIER_TYPE,
                             DOM_IDENTIFIER_NAME,
                             DOM_IDENTIFIER_SITE_URL,
-                            DOM_IDENTIFIER_BOOK_URI)
+                            DOM_IDENTIFIER_BOOK_URI,
+                            DOM_IDENTIFIER_AUTHOR_URI)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.IDENTIFIERS.KEY, true, DOM_IDENTIFIER_KEY);
         ALL_TABLES.put(TBL_IDENTIFIERS.getName(), TBL_IDENTIFIERS);
@@ -1767,6 +1778,16 @@ public final class DBDefinitions {
                 .addReference(TBL_IDENTIFIERS, DOM_FK_IDENTIFIER)
                 .addIndex(DBKey.FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_IDENTIFIER.getName(), TBL_BOOK_IDENTIFIER);
+
+        TBL_AUTHOR_IDENTIFIER
+                .addDomains(DOM_FK_AUTHOR,
+                            DOM_FK_IDENTIFIER,
+                            DOM_IDENTIFIER_SID)
+                .setPrimaryKey(DOM_FK_AUTHOR, DOM_FK_IDENTIFIER)
+                .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
+                .addReference(TBL_IDENTIFIERS, DOM_FK_IDENTIFIER)
+                .addIndex(DBKey.FK_AUTHOR, false, DOM_FK_AUTHOR);
+        ALL_TABLES.put(TBL_AUTHOR_IDENTIFIER.getName(), TBL_AUTHOR_IDENTIFIER);
 
         TBL_CALIBRE_BOOKS
                 .addDomains(DOM_FK_BOOK,

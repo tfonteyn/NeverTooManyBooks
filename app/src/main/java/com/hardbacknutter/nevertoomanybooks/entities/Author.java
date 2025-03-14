@@ -34,6 +34,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * ENHANCE: add support for https://en.wikipedia.org/wiki/International_Standard_Name_Identifier
  */
 public class Author
-        implements Parcelable, Entity, Mergeable {
+        implements Parcelable, Entity, Mergeable, IdentifierOwner {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR = new Creator<>() {
@@ -290,6 +291,9 @@ public class Author
     private String givenNames;
     /** whether we have all we want from this Author. */
     private boolean complete;
+
+    @NonNull
+    private final List<Identifier.Value> identifiers = new ArrayList<>();
 
     /**
      * If this Author is a pseudonym, then 'realAuthorId' points to that author.
@@ -650,6 +654,12 @@ public class Author
             a = null;
         }
         return a;
+    }
+
+    @Override
+    @NonNull
+    public List<Identifier.Value> getIdentifiers() {
+        return identifiers;
     }
 
     @Type

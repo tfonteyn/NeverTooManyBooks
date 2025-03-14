@@ -42,7 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.core.network.NetworkChecker;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
@@ -57,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.DeletedBooksDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IsoLanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
@@ -83,6 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.DeletedBooksDaoImp
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FormatDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierValueDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IsoLanguageDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LanguageDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LoaneeDaoImpl;
@@ -186,6 +190,10 @@ public class ServiceLocator {
     private FtsDao ftsDao;
     @Nullable
     private IdentifierDao identifierDao;
+    @Nullable
+    private IdentifierValueDao authorIdentifierDao;
+    @Nullable
+    private IdentifierValueDao bookIdentifierDao;
     @Nullable
     private IsoLanguageDao isoLanguageDao;
     @Nullable
@@ -562,7 +570,7 @@ public class ServiceLocator {
                                           this::getBookshelfDao,
                                           this::getTocEntryDao,
                                           this::getLoaneeDao,
-                                          this::getIdentifierDao,
+                                          this::getBookIdentifierDao,
                                           this::getTagDao,
                                           this::getCalibreDao,
                                           this::getStripInfoDao,
@@ -657,6 +665,11 @@ public class ServiceLocator {
         return ftsDao;
     }
 
+    /**
+     * Get the dao to handle {@code Identifier} keys.
+     *
+     * @return singleton
+     */
     @NonNull
     public IdentifierDao getIdentifierDao() {
         synchronized (this) {
@@ -665,6 +678,30 @@ public class ServiceLocator {
             }
         }
         return identifierDao;
+    }
+
+    @NonNull
+    public IdentifierValueDao getAuthorIdentifierDao() {
+        synchronized (this) {
+            if (authorIdentifierDao == null) {
+                authorIdentifierDao = new IdentifierValueDaoImpl(getDb(),
+                                                                 DBDefinitions.TBL_AUTHOR_IDENTIFIER,
+                                                                 DBKey.FK_AUTHOR);
+            }
+        }
+        return authorIdentifierDao;
+    }
+
+    @NonNull
+    public IdentifierValueDao getBookIdentifierDao() {
+        synchronized (this) {
+            if (bookIdentifierDao == null) {
+                bookIdentifierDao = new IdentifierValueDaoImpl(getDb(),
+                                                               DBDefinitions.TBL_BOOK_IDENTIFIER,
+                                                               DBKey.FK_BOOK);
+            }
+        }
+        return bookIdentifierDao;
     }
 
     @NonNull

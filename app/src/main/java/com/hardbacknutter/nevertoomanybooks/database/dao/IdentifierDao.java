@@ -30,19 +30,29 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
-/**
- * <strong>External-id</strong> or <strong>sid</strong>:
- * a book-id as defined by an external (to this app) source,
- * usually a website. Hence <strong>sid</strong>: site-id.
- * <p>
- * <strong>{@link Identifier}</strong>: a NAME for an external/site book-id.
- * <p>
- * <strong>Note:</strong>'ISBN' has dedicated handling and is NOT included here.
- */
 public interface IdentifierDao {
+
+    /**
+     * Find a {@link Identifier} by using the <strong>name</strong> field.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
+     *
+     * @param identifier to update
+     */
+    void fixId(@NonNull Identifier identifier);
+
+    /**
+     * Remove duplicates. We keep the first occurrence.
+     * <p>
+     * Dev note: the {@code sid} value is actually handled here, but in a pure-data way.
+     * i.o.w. not as a linked piece of key.
+     *
+     * @param list List to clean up
+     *
+     * @return {@code true} if the list was modified.
+     */
+    boolean pruneList(@NonNull Collection<Identifier.Value> list);
 
     /**
      * Find the {@link Identifier} for the given id.
@@ -109,100 +119,6 @@ public interface IdentifierDao {
      */
     boolean delete(@NonNull Identifier identifier);
 
-    /**
-     * Remove duplicates. We keep the first occurrence.
-     *
-     * @param list List to clean up
-     *
-     * @return {@code true} if the list was modified.
-     */
-    boolean pruneList(@NonNull Collection<Identifier.Value> list);
-
-    /**
-     * Find a {@link Identifier} by using the <strong>name</strong> field.
-     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
-     *
-     * @param identifier to update
-     */
-    void fixId(@NonNull Identifier identifier);
-
-    /**
-     * Insert or update a list of {@link Identifier.Value}s linked to a single {@link Book}.
-     * New {@link Identifier}s are added to the {@link Identifier} table,
-     * existing ones are NOT updated (nothing to do).
-     * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context Current context
-     * @param bookId  of the book
-     * @param list    the list of {@link Identifier.Value}s
-     *
-     * @throws DaoWriteException on failure
-     */
-    void insertOrUpdate(@NonNull Context context,
-                        @IntRange(from = 1) long bookId,
-                        @NonNull Collection<Identifier.Value> list)
-            throws DaoWriteException;
-
-    /**
-     * Moves all books from the 'source' {@link Identifier}, to the 'target' {@link Identifier}.
-     * The (now unused) 'source' {@link Identifier} is deleted.
-     *
-     * @param context Current context
-     * @param source  from where to move
-     * @param target  to move to
-     *
-     * @return amount of books moved
-     *
-     * @throws DaoWriteException on failure
-     */
-    int moveBooks(@NonNull Context context,
-                  @NonNull Identifier source,
-                  @NonNull Identifier target)
-            throws DaoWriteException;
-
-    /**
-     * Get a list of all {@link Identifier.Value}s for the given book id.
-     *
-     * @param bookId to get
-     *
-     * @return list
-     */
-    @NonNull
-    List<Identifier.Value> getByBookId(@IntRange(from = 1) long bookId);
-
-    /**
-     * Count the books for the given {@link Identifier}.
-     *
-     * @param identifier to count the books of
-     *
-     * @return the number of books
-     */
-    int countBooks(@NonNull Identifier identifier);
-
-    /**
-     * Get the SID value for the given {@link Identifier} of the given book id.
-     *
-     * @param key    to get
-     * @param bookId for this book id
-     *
-     * @return sid value
-     */
-    @NonNull
-    Optional<String> findSid(@NonNull String key,
-                             @IntRange(from = 1) long bookId);
-
-    /**
-     * Find the book id for the given SID and name.
-     *
-     * @param key one of the {@link Identifier} SID constants
-     * @param sid value
-     *
-     * @return book id, or {@code 0} if none found
-     */
-    @IntRange(from = 0)
-    long findBookId(@NonNull String key,
-                    @NonNull String sid);
 
     /**
      * Re-insert, or update the Identifiers which were setup

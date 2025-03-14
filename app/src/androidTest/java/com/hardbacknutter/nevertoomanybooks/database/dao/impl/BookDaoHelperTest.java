@@ -79,7 +79,6 @@ public class BookDaoHelperTest
                                                          "18306114")));
 
         final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,
-                                                              serviceLocator::getIdentifierDao,
                                                               serviceLocator::getCoverStorage,
                                                               serviceLocator::getReorderHelper,
                                                               book, false);
