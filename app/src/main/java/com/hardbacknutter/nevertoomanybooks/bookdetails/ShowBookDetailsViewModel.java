@@ -60,7 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
-import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteSearchMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -100,7 +101,8 @@ public class ShowBookDetailsViewModel
         if (book == null) {
             embedded = args.getBoolean(ShowBookDetailsFragment.BKEY_EMBEDDED, false);
 
-            menuHandlers = MenuHandlerFactory.create(context);
+            menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
+                                   new SiteSearchMenuHandler());
 
             initFields(context, style, ServiceLocator.getInstance().getLanguages());
         }

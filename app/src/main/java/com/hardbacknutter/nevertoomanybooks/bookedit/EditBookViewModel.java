@@ -91,7 +91,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormat
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
-import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteSearchMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -194,7 +195,8 @@ public class EditBookViewModel
             errStrNonBlankRequired = context.getString(R.string.vldt_non_blank_required);
             errStrReadStartAfterEnd = context.getString(R.string.vldt_read_start_after_end);
 
-            menuHandlers = MenuHandlerFactory.create(context);
+            menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
+                                   new SiteSearchMenuHandler());
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 

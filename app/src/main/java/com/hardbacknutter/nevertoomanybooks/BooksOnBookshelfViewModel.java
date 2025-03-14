@@ -84,7 +84,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
-import com.hardbacknutter.nevertoomanybooks.searchengines.MenuHandlerFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteSearchMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
@@ -363,7 +364,8 @@ public class BooksOnBookshelfViewModel
             rebuildMode = RebuildBooklist.FromSaved;
         }
 
-        menuHandlers = MenuHandlerFactory.create(context);
+        menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
+                               new SiteSearchMenuHandler());
 
         // create if not explicitly set above
         if (searchCriteria == null) {
