@@ -20,8 +20,11 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -44,6 +47,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
 public class ParseTest
@@ -76,7 +80,7 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book, List.of());
-        // Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
         assertEquals("9789463064385", book.getString(DBKey.ISBN, null));
@@ -105,20 +109,24 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
-        Author author = authors.get(1);
-        assertEquals("Duval", author.getFamilyName());
-        assertEquals("Fred", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        Optional<String> oIv;
+        Author author;
 
         author = authors.get(0);
         assertEquals("Gioux", author.getFamilyName());
         assertEquals("Thierry", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
+        assertTrue(oIv.isPresent());
+        assertEquals("2459", oIv.get());
 
-//        author = authors.get(2);
-//        assertEquals("Sayago", author.getFamilyName());
-//        assertEquals("Nuria", author.getGivenNames());
-//        assertEquals(Author.TYPE_COLORIST, author.getType());
+        author = authors.get(1);
+        assertEquals("Duval", author.getFamilyName());
+        assertEquals("Fred", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
+        assertTrue(oIv.isPresent());
+        assertEquals("4716", oIv.get());
     }
 
     /**

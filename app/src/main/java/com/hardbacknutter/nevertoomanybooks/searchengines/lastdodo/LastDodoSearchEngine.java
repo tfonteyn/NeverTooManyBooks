@@ -93,6 +93,8 @@ public class LastDodoSearchEngine
     private static final Pattern REAL_NAME_BRACKET_ALIAS_BRACKET =
             Pattern.compile("(.*)\\(([a-z].*)\\)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    /** It's a relative url. */
+    private static final Pattern AUTHOR_ID = Pattern.compile(".*/nl/areas/(\\d+)-.*");
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -713,7 +715,16 @@ public class LastDodoSearchEngine
                     text = split[1].strip() + ' ' + split[0].strip();
                 }
             }
-            addAuthor(Author.from(text), type, book);
+            final Author author = Author.from(text);
+            final String url = a.attr("href");
+            final Matcher matcher = AUTHOR_ID.matcher(url);
+            if (matcher.find()) {
+                final String siId = matcher.group(1);
+                if (siId != null) {
+                    author.setIdentifierValue(Identifier.SID_LAST_DODO_NL, siId);
+                }
+            }
+            addAuthor(author, type, book);
         }
     }
 
