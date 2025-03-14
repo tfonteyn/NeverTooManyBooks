@@ -19,8 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -87,7 +90,7 @@ public class ParseTest
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{true, true}, book,
                            mockAuthorResolvers);
-        // Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
         assertEquals("9789463064385", book.getString(DBKey.ISBN, null));
@@ -116,20 +119,30 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(3, authors.size());
 
+        Optional<String> oIv;
         Author author = authors.get(0);
         assertEquals("Duval", author.getFamilyName());
         assertEquals("Fred", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_STRIP_INFO);
+        assertTrue(oIv.isPresent());
+        assertEquals("473", oIv.get());
 
         author = authors.get(1);
         assertEquals("Gioux", author.getFamilyName());
         assertEquals("Thierry", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_STRIP_INFO);
+        assertTrue(oIv.isPresent());
+        assertEquals("157", oIv.get());
 
         author = authors.get(2);
         assertEquals("Sayago", author.getFamilyName());
         assertEquals("Nuria", author.getGivenNames());
         assertEquals(Author.TYPE_COLORIST, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_STRIP_INFO);
+        assertTrue(oIv.isPresent());
+        assertEquals("23596", oIv.get());
 
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);

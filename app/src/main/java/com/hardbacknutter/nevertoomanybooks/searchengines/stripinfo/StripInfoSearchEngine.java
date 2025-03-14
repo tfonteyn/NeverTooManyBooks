@@ -115,6 +115,10 @@ public class StripInfoSearchEngine
     /** The description contains h4 tags which we remove to make the text shorter. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>\\s*");
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("\\s*</h4>");
+
+    /** The hostname MIGHT be with or without the 'www' part. */
+    private static final Pattern AUTHOR_ID = Pattern.compile(
+            "https://.*/auteur/index/(\\d+)_.*");
     /**
      * When a multi-result page is returned, its title will start with this text.
      * (dutch for: Searching for...)
@@ -901,11 +905,21 @@ public class StripInfoSearchEngine
                             @NonNull final Book book) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
-            final Elements as = dataElement.select("a");
-            for (int i = 0; i < as.size(); i++) {
-                final String name = as.get(i).text();
-                addAuthor(Author.from(name), type, book);
-            }
+            dataElement.select("a").forEach(a -> {
+                final String name = a.text();
+                final Author author = Author.from(name);
+
+                final String url = a.attr("href");
+                final Matcher matcher = AUTHOR_ID.matcher(url);
+                if (matcher.find()) {
+                    final String siId = matcher.group(1);
+                    if (siId != null) {
+                        author.setIdentifierValue(Identifier.SID_STRIP_INFO, siId);
+                    }
+                }
+
+                addAuthor(author, type, book);
+            });
             return 1;
         }
         return 0;
