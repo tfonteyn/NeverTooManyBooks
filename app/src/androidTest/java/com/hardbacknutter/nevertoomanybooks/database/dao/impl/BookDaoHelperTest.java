@@ -75,7 +75,7 @@ public class BookDaoHelperTest
                              new Tag("Opera")
         ));
 
-        book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_GOODREADS_BOOK,
+        book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_GOODREADS,
                                                          "18306114")));
 
         final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,

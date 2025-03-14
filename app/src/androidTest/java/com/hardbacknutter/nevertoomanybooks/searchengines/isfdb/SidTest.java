@@ -127,7 +127,7 @@ public class SidTest
         assertEquals("440557", iv.getSid());
 
         iv = searchEngine.parseSid("https://www.goodreads.com/book/show/209796181").orElseThrow();
-        assertEquals(Identifier.SID_GOODREADS_BOOK, iv.getKey());
+        assertEquals(Identifier.SID_GOODREADS, iv.getKey());
         assertEquals("209796181", iv.getSid());
 
         iv = searchEngine.parseSid("http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=852323123")

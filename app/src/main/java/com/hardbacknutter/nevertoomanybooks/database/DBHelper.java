@@ -604,7 +604,7 @@ public class DBHelper
                 stmt.bindString(2, Identifier.SID_FANTLAB);
                 stmt.executeUpdateDelete();
                 stmt.bindString(1, "https://www.goodreads.com/author/show/%s");
-                stmt.bindString(2, Identifier.SID_GOODREADS_BOOK);
+                stmt.bindString(2, Identifier.SID_GOODREADS);
                 stmt.executeUpdateDelete();
                 stmt.bindString(1, "https://www.isfdb.org/cgi-bin/ea.cgi?%s");
                 stmt.bindString(2, Identifier.SID_ISFDB);

@@ -101,7 +101,7 @@ public class ParseTest
                 , book.getFloat(DBKey.RATING, realNumberParser), 0);
 
         assertEquals("9604419196", book.requireIdentifierValue(Identifier.SID_ASIN));
-        assertEquals("33838921", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("33838921", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
         assertEquals("Indonesian edition of <i>BD Pirate :"
                      + " Agent 212, tome 1 : 24 heures sur 24</i>",
@@ -178,7 +178,7 @@ public class ParseTest
         assertEquals(3, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
         assertEquals("B0D79GXMVR", book.requireIdentifierValue(Identifier.SID_ASIN));
-        assertEquals("215846772", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("215846772", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
         assertEquals(
                 "Johoo heeft een kleine chocoladewinkel in een steegje in Seoel."
@@ -209,7 +209,7 @@ public class ParseTest
         assertEquals("Ye-eun", author.getFamilyName());
         assertEquals("Kim", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
-        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS_BOOK);
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("50820550", oIv.get());
 
@@ -217,7 +217,7 @@ public class ParseTest
         assertEquals("Nuanxed", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_TRANSLATOR, author.getType());
-        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS_BOOK);
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("40652983", oIv.get());
 
@@ -254,7 +254,7 @@ public class ParseTest
         assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
         assertEquals("006268325X", book.requireIdentifierValue(Identifier.SID_ASIN));
-        assertEquals("49867186", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("49867186", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
         assertEquals("<strong>A girl’s quest to find her father leads her to an extended"
                      + " family of magical fighting booksellers who police the mythical Old World"
@@ -346,7 +346,7 @@ public class ParseTest
         assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
         assertEquals("0553803727", book.requireIdentifierValue(Identifier.SID_ASIN));
-        assertEquals("29581", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("29581", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
         assertEquals("Foundation and Empire tells the incredible story of a new breed"
                      + " of man who create a new force for galactic government. Thus, the"
@@ -435,7 +435,7 @@ public class ParseTest
         assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
         assertTrue(book.getIdentifierValue(Identifier.SID_ASIN).isEmpty());
-        assertEquals("37557163", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("37557163", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
         assertEquals("The Aeneid is an epic poem, written by Virgil between 29 and"
                      + " 19 BC, that tells the legendary story of Aeneas, a Trojan who travelled"

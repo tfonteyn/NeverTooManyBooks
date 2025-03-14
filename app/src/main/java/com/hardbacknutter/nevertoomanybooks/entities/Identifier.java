@@ -72,7 +72,8 @@ public class Identifier
     public static final String SID_DOI = "doi";
     public static final String SID_DOUBAN = "douban";
     public static final String SID_FANTLAB = "fantlab";
-    public static final String SID_GOODREADS_BOOK = "goodreads";
+    /** The original Goodreads "legacyId" which is in widespread use. */
+    public static final String SID_GOODREADS = "goodreads";
     public static final String SID_GOOGLE = "google";
     public static final String SID_ISFDB = "isfdb";
     public static final String SID_KBNL = "ppn";
@@ -279,7 +280,7 @@ public class Identifier
                                "https://fantlab.ru/edition%s",
                                "https://fantlab.ru/autor%s"),
                 // 2025-01-29
-                new Identifier(SID_GOODREADS_BOOK, TYPE_LONG,
+                new Identifier(SID_GOODREADS, TYPE_LONG,
                                context.getString(R.string.identifier_goodreads),
                                "https://www.goodreads.com",
                                "https://www.goodreads.com/book/show/%s",

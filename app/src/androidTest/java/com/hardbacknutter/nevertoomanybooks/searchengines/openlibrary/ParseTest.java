@@ -110,7 +110,7 @@ public class ParseTest
         assertEquals("OL22853304M", book.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
         assertEquals("2008054742", book.requireIdentifierValue(Identifier.SID_LCCN));
         assertEquals("8071257", book.requireIdentifierValue(Identifier.SID_LIBRARY_THING));
-        assertEquals("6383507", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("6383507", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertEquals("098020044X", book.requireIdentifierValue(Identifier.SID_ASIN));
         assertEquals("297222669", book.requireIdentifierValue(Identifier.SID_OCLC));
         assertEquals("4LQU1YwhY6kC", book.requireIdentifierValue(Identifier.SID_GOOGLE));
@@ -391,7 +391,7 @@ public class ParseTest
         assertEquals("Pacific Vortex!", book.getString(DBKey.TITLE, null));
         assertEquals("9780553276329", book.getString(DBKey.ISBN, null));
         assertEquals("OL7824144M", book.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
-        assertEquals("361081", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("361081", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertEquals("1182484", book.requireIdentifierValue(Identifier.SID_LIBRARY_THING));
 
         assertEquals("1984-10-01", book.getString(DBKey.PUBLICATION_DATE, null));

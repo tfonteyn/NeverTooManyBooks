@@ -455,7 +455,7 @@ public enum EngineId
                   .build(SearchEngineConfig::new);
         }
         if (Goodreads.isEnabled()) {
-            Goodreads.setIdentifierKey(Identifier.SID_GOODREADS_BOOK)
+            Goodreads.setIdentifierKey(Identifier.SID_GOODREADS)
                      .createConfig()
                      .build(SearchEngineConfig::new);
         }

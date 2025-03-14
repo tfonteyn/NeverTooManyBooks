@@ -72,7 +72,7 @@ public final class LegacyUpgrades {
 
     /** Archive ..7 import. */
     public static final Map<String, String> IDENTIFIERS = Map.of(
-            "goodreads_book_id", Identifier.SID_GOODREADS_BOOK,
+            "goodreads_book_id", Identifier.SID_GOODREADS,
             "isfdb_book_id", Identifier.SID_ISFDB,
             "lt_book_id", Identifier.SID_LIBRARY_THING,
             "ol_book_id", Identifier.SID_OPEN_LIBRARY,

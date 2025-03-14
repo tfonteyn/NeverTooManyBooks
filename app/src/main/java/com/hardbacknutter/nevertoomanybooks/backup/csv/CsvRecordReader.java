@@ -510,7 +510,7 @@ public class CsvRecordReader
                 // Read Count,Owned Copies
                 switch (name) {
                     case "book id":
-                        return Identifier.SID_GOODREADS_BOOK;
+                        return Identifier.SID_GOODREADS;
                     case "title":
                         return DBKey.TITLE;
                     case "author l-f":

@@ -111,7 +111,7 @@ public class BookCoderTest
 
     @Test
     public void putIdentifiersValid() {
-        book.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, 1234);
+        book.setIdentifierValue(Identifier.SID_GOODREADS, 1234);
         book.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, "ol123");
 
         final JSONObject encodedBook = bookCoder.encode(book);
@@ -123,13 +123,13 @@ public class BookCoderTest
         assertEquals(2, list.size());
 
         final Book decodedBook = bookCoder.decode(encodedBook);
-        assertEquals("1234", decodedBook.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("1234", decodedBook.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertEquals("ol123", decodedBook.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
     }
 
     @Test
     public void putIdentifiersInvalid() {
-        book.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, -1234);
+        book.setIdentifierValue(Identifier.SID_GOODREADS, -1234);
         book.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, "");
 
         final JSONObject encodedBook = bookCoder.encode(book);
@@ -139,7 +139,7 @@ public class BookCoderTest
 
         final Book decodedBook = bookCoder.decode(encodedBook);
         // Invalid values were not stored
-        assertTrue(decodedBook.getIdentifierValue(Identifier.SID_GOODREADS_BOOK).isEmpty());
+        assertTrue(decodedBook.getIdentifierValue(Identifier.SID_GOODREADS).isEmpty());
         assertTrue(decodedBook.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
     }
 }

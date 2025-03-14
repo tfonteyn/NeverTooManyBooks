@@ -172,7 +172,7 @@ public class BookTest
         //noinspection DataFlowIssue
         book.setIdentifiers(List.of(
                 // Long: valid number
-                new Identifier.Value(Identifier.SID_GOODREADS_BOOK, 2L),
+                new Identifier.Value(Identifier.SID_GOODREADS, 2L),
 
                 // Long: 0 -> should be removed
                 new Identifier.Value(Identifier.SID_ISFDB, 0L),
@@ -197,7 +197,7 @@ public class BookTest
         bdh.processExternalIds();
         dump(book);
 
-        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
         assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
         assertTrue(book.getIdentifierValue(Identifier.SID_LAST_DODO_NL).isEmpty());
@@ -208,7 +208,7 @@ public class BookTest
         bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
     }
 
     @Test
@@ -218,7 +218,7 @@ public class BookTest
         //noinspection DataFlowIssue
         book.setIdentifiers(List.of(
                 // Long: valid number
-                new Identifier.Value(Identifier.SID_GOODREADS_BOOK, 2L),
+                new Identifier.Value(Identifier.SID_GOODREADS, 2L),
                 // Long: 0 -> should be defaulted to null
                 new Identifier.Value(Identifier.SID_ISFDB, 0L),
                 // Long: null
@@ -243,7 +243,7 @@ public class BookTest
         bdh.processExternalIds();
         dump(book);
 
-        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
         assertTrue(book.getIdentifierValue(Identifier.SID_LAST_DODO_NL).isEmpty());
         assertTrue(book.getIdentifierValue(Identifier.SID_LIBRARY_THING).isEmpty());
@@ -255,7 +255,7 @@ public class BookTest
         bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+        assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
         assertTrue(book.getIdentifierValue(Identifier.SID_LAST_DODO_NL).isEmpty());
         assertTrue(book.getIdentifierValue(Identifier.SID_LIBRARY_THING).isEmpty());

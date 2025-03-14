@@ -353,7 +353,7 @@ public class GoodreadsSearchEngine
                 // Paranoia: parse to make sure it's a number
                 final long bookId = NumberParser.toLong(matcher.group(1));
                 if (bookId > 0) {
-                    book.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, bookId);
+                    book.setIdentifierValue(Identifier.SID_GOODREADS, bookId);
                 }
             }
         }
@@ -385,10 +385,10 @@ public class GoodreadsSearchEngine
         }
         book.setTitle(title);
 
-        if (book.getIdentifierValue(Identifier.SID_GOODREADS_BOOK).isEmpty()) {
+        if (book.getIdentifierValue(Identifier.SID_GOODREADS).isEmpty()) {
             final long legacyId = o.optLong("legacyId");
             if (legacyId > 0) {
-                book.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, legacyId);
+                book.setIdentifierValue(Identifier.SID_GOODREADS, legacyId);
             }
         }
 
@@ -548,7 +548,7 @@ public class GoodreadsSearchEngine
                             // It is this one we need to construct url's.
                             final String legacyId = refObj.optString("legacyId");
                             if (!legacyId.isEmpty()) {
-                                author.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, legacyId);
+                                author.setIdentifierValue(Identifier.SID_GOODREADS, legacyId);
                             } else {
                                 // if the explicit legacyId is absent, try the webUrl
                                 final String webUrl = refObj.optString("webUrl");
@@ -558,7 +558,7 @@ public class GoodreadsSearchEngine
                                         final String siId = matcher.group(1);
                                         if (siId != null) {
                                             author.setIdentifierValue(
-                                                    Identifier.SID_GOODREADS_BOOK, siId);
+                                                    Identifier.SID_GOODREADS, siId);
                                         }
                                     }
                                 }

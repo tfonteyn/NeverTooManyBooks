@@ -87,7 +87,7 @@ public class GoodreadsCsvImportTest
         booksPresent = bookDao.count();
 
         final long grId = locator.getIdentifierDao()
-                                 .findByKey(Identifier.SID_GOODREADS_BOOK).get()
+                                 .findByKey(Identifier.SID_GOODREADS).get()
                                  .getId();
         locator.getDb().delete(DBDefinitions.TBL_BOOK_IDENTIFIER.getName(),
                                DBKey.FK_IDENTIFIER + "=" + grId,
@@ -145,7 +145,7 @@ public class GoodreadsCsvImportTest
         // 5,3.99,Het Spectrum,Paperback,172,1973,1972,,2020/06/05,books,books (#8),read,
         // ,,,1,0
 
-        Optional<Long> oBookId = bookIdentifierDao.findFkId(Identifier.SID_GOODREADS_BOOK,
+        Optional<Long> oBookId = bookIdentifierDao.findFkId(Identifier.SID_GOODREADS,
                                                             "8998451");
         assertTrue(oBookId.isPresent());
         long bookId = oBookId.get();
@@ -165,7 +165,7 @@ public class GoodreadsCsvImportTest
             assertEquals("1972", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
             assertEquals("2020-06-05 00:00:00", book.getString(DBKey.DATE_ADDED__UTC, null));
 
-            assertEquals("8998451", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+            assertEquals("8998451", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
             final List<Publisher> allPublishers = book.getPublishers();
             assertEquals(1, allPublishers.size());
@@ -196,7 +196,7 @@ public class GoodreadsCsvImportTest
         // Tor Books,Hardcover,472,2014,2006,,2024/04/24,
         // "currently-reading, books","currently-reading (#3), books (#15)",currently-reading,
         // On my todo list,,my own notes on this book,1,0
-        oBookId = bookIdentifierDao.findFkId(Identifier.SID_GOODREADS_BOOK, "20518872");
+        oBookId = bookIdentifierDao.findFkId(Identifier.SID_GOODREADS, "20518872");
         assertTrue(oBookId.isPresent());
         bookId = oBookId.get();
 
@@ -219,7 +219,7 @@ public class GoodreadsCsvImportTest
             assertEquals("my own notes on this book\n\nOn my todo list",
                          book.getString(DBKey.PERSONAL_NOTES, null));
 
-            assertEquals("20518872", book.requireIdentifierValue(Identifier.SID_GOODREADS_BOOK));
+            assertEquals("20518872", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
             final List<Publisher> allPublishers = book.getPublishers();
             assertEquals(1, allPublishers.size());

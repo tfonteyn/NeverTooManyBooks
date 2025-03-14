@@ -1275,7 +1275,7 @@ public class EditBookViewModel
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new IdentifierField<>(fragmentId, R.id.site_goodreads,
-                                       Identifier.SID_GOODREADS_BOOK,
+                                         Identifier.SID_GOODREADS,
                                        sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_goodreads)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));

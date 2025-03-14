@@ -132,7 +132,7 @@ class IsfdbPublicationListHandler
             // 5 COPAC (defunct)
             Map.entry("6", Identifier.SID_DNB),
             Map.entry("7", Identifier.SID_FANTLAB),
-            Map.entry("8", Identifier.SID_GOODREADS_BOOK),
+            Map.entry("8", Identifier.SID_GOODREADS),
             Map.entry("9", "jpno"),
 
             Map.entry("10", Identifier.SID_LCCN),

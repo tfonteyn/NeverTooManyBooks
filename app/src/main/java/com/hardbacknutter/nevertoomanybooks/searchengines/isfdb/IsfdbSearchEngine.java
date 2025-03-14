@@ -279,7 +279,7 @@ public class IsfdbSearchEngine
             // "https://www.goodreads.com/book/show/%s"
             Map.entry(Pattern.compile("https://www\\.goodreads\\.com/book/show/(\\d*)",
                                       Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE),
-                      Identifier.SID_GOODREADS_BOOK),
+                      Identifier.SID_GOODREADS),
             // 16
             // "https://lccn.loc.gov/%s"
             Map.entry(Pattern.compile("https://lccn\\.loc\\.gov/(.*)",
