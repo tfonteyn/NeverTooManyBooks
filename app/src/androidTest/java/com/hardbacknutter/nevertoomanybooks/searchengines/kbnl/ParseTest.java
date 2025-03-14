@@ -19,12 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -42,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -49,6 +53,7 @@ import org.xml.sax.SAXException;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings("MissingJavadoc")
@@ -59,6 +64,46 @@ public class ParseTest
 
     private KbNlSearchEngine searchEngine;
     private SAXParser saxParser;
+
+    static void verify9020612476(@NonNull final Book book) {
+        assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
+        assertEquals("9020612476", book.getString(DBKey.ISBN, null));
+        assertEquals("428377971", book.requireIdentifierValue(Identifier.SID_KBNL));
+
+        assertEquals("1973", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("157", book.getString(DBKey.PAGES, null));
+        assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("zw. ill", book.getString(DBKey.COLOR, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(2, allPublishers.size());
+
+        assertEquals("Kluitman", allPublishers.get(0).getName());
+        assertEquals("Koninklijke Bibliotheek", allPublishers.get(1).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+        Author expectedAuthor;
+
+        expectedAuthor = new Author("Feenstra", "Ruurd");
+        expectedAuthor.setType(Author.TYPE_WRITER);
+        assertEquals(expectedAuthor, authors.get(0));
+        assertEquals(expectedAuthor.getType(), authors.get(0).getType());
+
+        expectedAuthor = new Author("van Straaten", "Gerard");
+        expectedAuthor.setType(Author.TYPE_ARTIST);
+        assertEquals(expectedAuthor, authors.get(1));
+        assertEquals(expectedAuthor.getType(), authors.get(1).getType());
+
+        final List<Series> series = book.getSeries();
+        assertNotNull(series);
+        assertEquals(1, series.size());
+        final Series expectedSeries;
+        expectedSeries = new Series("Discus-serie");
+        assertEquals(expectedSeries, series.get(0));
+    }
 
     @Before
     public void setup()
@@ -102,6 +147,7 @@ public class ParseTest
             throws IOException, SAXException {
 
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_book_1);
+        Log.d(TAG, book.toString());
 
         assertEquals("De Foundation", book.getString(DBKey.TITLE, null));
 
@@ -122,11 +168,24 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
-        Author expectedAuthor;
-        expectedAuthor = new Author("Ozimov", "Isaak Judovič");
-        assertEquals(expectedAuthor, authors.get(0));
-        expectedAuthor = new Author("Kröner", "Jack");
-        assertEquals(expectedAuthor, authors.get(1));
+        Optional<String> oIv;
+        Author author;
+
+        author = authors.get(0);
+        Assert.assertEquals("Ozimov", author.getFamilyName());
+        Assert.assertEquals("Isaak Judovič", author.getGivenNames());
+        Assert.assertEquals(Author.TYPE_WRITER, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_KBNL);
+        assertTrue(oIv.isPresent());
+        Assert.assertEquals("068561504", oIv.get());
+
+        author = authors.get(1);
+        Assert.assertEquals("Kröner", author.getFamilyName());
+        Assert.assertEquals("Jack", author.getGivenNames());
+        Assert.assertEquals(Author.TYPE_CONTRIBUTOR, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_KBNL);
+        assertTrue(oIv.isPresent());
+        Assert.assertEquals("072822333", oIv.get());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -188,45 +247,5 @@ public class ParseTest
         final Book book = getBook(com.hardbacknutter.nevertoomanybooks.test.R.raw.kbnl_old_book);
 
         verify9020612476(book);
-    }
-
-    static void verify9020612476(@NonNull final Book book) {
-        assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
-        assertEquals("9020612476", book.getString(DBKey.ISBN, null));
-        assertEquals("428377971", book.requireIdentifierValue(Identifier.SID_KBNL));
-
-        assertEquals("1973", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals("157", book.getString(DBKey.PAGES, null));
-        assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("zw. ill", book.getString(DBKey.COLOR, null));
-
-        final List<Publisher> allPublishers = book.getPublishers();
-        assertNotNull(allPublishers);
-        assertEquals(2, allPublishers.size());
-
-        assertEquals("Kluitman", allPublishers.get(0).getName());
-        assertEquals("Koninklijke Bibliotheek", allPublishers.get(1).getName());
-
-        final List<Author> authors = book.getAuthors();
-        assertNotNull(authors);
-        assertEquals(2, authors.size());
-        Author expectedAuthor;
-
-        expectedAuthor = new Author("Feenstra", "Ruurd");
-        expectedAuthor.setType(Author.TYPE_WRITER);
-        assertEquals(expectedAuthor, authors.get(0));
-        assertEquals(expectedAuthor.getType(), authors.get(0).getType());
-
-        expectedAuthor = new Author("van Straaten", "Gerard");
-        expectedAuthor.setType(Author.TYPE_ARTIST);
-        assertEquals(expectedAuthor, authors.get(1));
-        assertEquals(expectedAuthor.getType(), authors.get(1).getType());
-
-        final List<Series> series = book.getSeries();
-        assertNotNull(series);
-        assertEquals(1, series.size());
-        final Series expectedSeries;
-        expectedSeries = new Series("Discus-serie");
-        assertEquals(expectedSeries, series.get(0));
     }
 }

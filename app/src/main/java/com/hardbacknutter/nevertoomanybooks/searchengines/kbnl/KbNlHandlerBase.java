@@ -63,10 +63,14 @@ abstract class KbNlHandlerBase
     @SuppressWarnings("StringBufferField")
     private final StringBuilder builder = new StringBuilder();
     /** content of labelledData found. */
-    private final List<String> currentData = new ArrayList<>();
+    private final List<CurrentData> currentData = new ArrayList<>();
     /** The current labelledLabel. */
     @Nullable
     private String currentLabel;
+    /** The current psi:text href content (if any). */
+    @Nullable
+    private String currentTextUrl;
+
     @Nullable
     private String currentSessionVar;
 
@@ -142,9 +146,12 @@ abstract class KbNlHandlerBase
             }
             case PSI_TEXT: {
                 inText = true;
+                currentTextUrl = attributes.getValue("href");
                 // if in list-page mode, store the first reference found.
-                if (isList && inRecord && inLine && !book.contains(BKEY_SHOW_URL)) {
-                    book.putString(BKEY_SHOW_URL, attributes.getValue("href"));
+                if (isList && inRecord && inLine
+                    && !book.contains(BKEY_SHOW_URL)
+                    && currentTextUrl != null) {
+                    book.putString(BKEY_SHOW_URL, currentTextUrl);
                 }
                 break;
             }
@@ -214,10 +221,11 @@ abstract class KbNlHandlerBase
                                                            .replaceAll(" ")
                                                            .strip();
                         if (!s.isBlank()) {
-                            currentData.add(s);
+                            currentData.add(new CurrentData(s, currentTextUrl));
                         }
                     }
                 }
+                currentTextUrl = null;
                 inText = false;
                 break;
             }
@@ -249,5 +257,5 @@ abstract class KbNlHandlerBase
     protected abstract void processPermalink(@NonNull String permaLink);
 
     protected abstract void processEntry(@NonNull String currentLabel,
-                                         @NonNull List<String> currentData);
+                                         @NonNull List<CurrentData> currentData);
 }

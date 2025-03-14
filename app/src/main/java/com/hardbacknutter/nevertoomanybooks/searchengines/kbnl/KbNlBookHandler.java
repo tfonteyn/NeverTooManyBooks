@@ -50,9 +50,12 @@ class KbNlBookHandler
             ".*?https.*?PPN=(\\d+).*", Pattern.UNICODE_CASE);
     private static final Pattern PAGES_PATTERN = Pattern.compile(".*?(\\d+) pagina.*",
                                                                  Pattern.UNICODE_CASE);
+
+    /** Example: {@code REL?PPN=068561504}. */
+    private static final Pattern AUTHOR_ID = Pattern.compile("REL\\?PPN=(\\d+)");
+
     @NonNull
     private final KbNlSearchEngine searchEngine;
-
     @Nullable
     private String tmpSeriesNr;
 
@@ -115,7 +118,7 @@ class KbNlBookHandler
      * @param currentData  content of {@code labelledData}
      */
     protected void processEntry(@NonNull final String currentLabel,
-                                @NonNull final List<String> currentData) {
+                                @NonNull final List<CurrentData> currentData) {
         switch (currentLabel) {
             case "Title":
             case "Titel":
@@ -291,8 +294,9 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void parseAnnotation(final List<String> currentData) {
+    private void parseAnnotation(@NonNull final List<CurrentData> currentData) {
         final String data = currentData.stream()
+                                       .map(cd -> cd.data)
                                        .filter(s -> !s.isEmpty())
                                        .collect(Collectors.joining(" "));
 
@@ -331,8 +335,13 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processTitle(@NonNull final Iterable<String> currentData) {
-        final String[] cleanedData = String.join(" ", currentData).split("/");
+    private void processTitle(@NonNull final List<CurrentData> currentData) {
+
+        final String[] cleanedData = currentData.stream()
+                                                .map(cd -> cd.data)
+                                                .collect(Collectors.joining(" "))
+                                                .split("/");
+
         book.putString(DBKey.TITLE, cleanedData[0].strip());
         // It's temping to decode [1], as this is the author as it appears on the cover,
         // but the data has proven to be very unstructured and mostly unusable.
@@ -376,16 +385,14 @@ class KbNlBookHandler
      * The 2nd sample shows how the site is creative (hum) about authors using pen-names.
      * The 3rd example has a list of authors for the same author type.
      * The 4th sample shows that dates and other info can be added
-     * <p>
-     * Getting author names:
-     * http://opc4.kb.nl/DB=1/SET=1/TTL=1/REL?PPN=068561504
      *
      * @param currentData content of {@code labelledData}
      * @param type        the author type
      */
-    private void parseAuthor(@NonNull final Iterable<String> currentData,
+    private void parseAuthor(@NonNull final Iterable<CurrentData> currentData,
                              @Author.Type final int type) {
-        for (final String text : currentData) {
+        for (final CurrentData cd : currentData) {
+            final String text = cd.data;
             // remove any "(..)" parts in the name
             final String cleanedString = text.split("\\(")[0].strip();
             // reject separators as for example: <psi:text>;</psi:text>
@@ -393,7 +400,18 @@ class KbNlBookHandler
                 return;
             }
 
-            searchEngine.addAuthor(Author.from(cleanedString), type, book);
+            final Author author = Author.from(cleanedString);
+            if (cd.url != null) {
+                final Matcher matcher = AUTHOR_ID.matcher(cd.url);
+                if (matcher.find()) {
+                    final String siId = matcher.group(1);
+                    if (siId != null) {
+                        author.setIdentifierValue(Identifier.SID_KBNL, siId);
+                    }
+                }
+            }
+
+            searchEngine.addAuthor(author, type, book);
         }
     }
 
@@ -420,8 +438,8 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processSeries(@NonNull final List<String> currentData) {
-        book.add(Series.from(currentData.get(0)));
+    private void processSeries(@NonNull final List<CurrentData> currentData) {
+        book.add(Series.from(currentData.get(0).data));
         // the number part is totally unstructured
     }
 
@@ -436,10 +454,10 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processSeriesNumber(@NonNull final List<String> currentData) {
+    private void processSeriesNumber(@NonNull final List<CurrentData> currentData) {
         // This element is listed BEFORE the Series ("reeks") itself so store it tmp.
         // Note it's often missing altogether
-        final String[] nrStr = currentData.get(0).split("/")[0].split(" ");
+        final String[] nrStr = currentData.get(0).data.split("/")[0].split(" ");
         if (nrStr.length > 1) {
             tmpSeriesNr = nrStr[1];
         } else {
@@ -487,8 +505,9 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void parseIsbn(@NonNull final List<String> currentData) {
-        for (final String text : currentData) {
+    private void parseIsbn(@NonNull final List<CurrentData> currentData) {
+        for (final CurrentData cd : currentData) {
+            final String text = cd.data;
             if (Character.isDigit(text.charAt(0))) {
                 if (!book.contains(DBKey.ISBN)) {
                     final String isbnText = ISBN.cleanText(text.split(":")[0]);
@@ -537,8 +556,9 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void parsePublisher(@NonNull final List<String> currentData) {
+    private void parsePublisher(@NonNull final List<CurrentData> currentData) {
         String publisherName = currentData.stream()
+                                          .map(cd -> cd.data)
                                           .filter(name -> !name.isEmpty())
                                           .collect(Collectors.joining(" "));
         // the part before the ":" is (usually?) the city. 2nd part is the publisher
@@ -580,10 +600,10 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void parseDatePublished(@NonNull final List<String> currentData) {
+    private void parseDatePublished(@NonNull final List<CurrentData> currentData) {
         if (!book.contains(DBKey.PUBLICATION_DATE)) {
             // Grab the first bit before a comma, and strip it for digits + hope for the best
-            final String year = SearchEngineUtils.digits(currentData.get(0).split(",")[0]);
+            final String year = SearchEngineUtils.digits(currentData.get(0).data.split(",")[0]);
             if (!year.isEmpty()) {
                 try {
                     book.setPublicationDate(Integer.parseInt(year));
@@ -620,9 +640,9 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processPages(@NonNull final List<String> currentData) {
+    private void processPages(@NonNull final List<CurrentData> currentData) {
         if (!book.contains(DBKey.PAGES)) {
-            final String data = currentData.get(0);
+            final String data = currentData.get(0).data;
 
             final Matcher matcher = PAGES_PATTERN.matcher(data);
             if (matcher.find()) {
@@ -668,18 +688,19 @@ class KbNlBookHandler
      *
      * @param currentData content of {@code labelledData}
      */
-    private void processIllustration(@NonNull final List<String> currentData) {
+    private void processIllustration(@NonNull final List<CurrentData> currentData) {
         if (!book.contains(DBKey.COLOR)) {
-            book.putString(DBKey.COLOR, currentData.get(0));
+            book.putString(DBKey.COLOR, currentData.get(0).data);
         }
     }
 
-    private void parseDescription(@NonNull final List<String> currentData) {
+    private void parseDescription(@NonNull final List<CurrentData> currentData) {
         // Merging the lines is not perfect.
         // The data does not contain one sentence/paragraph in each line.
         // Sometimes just words mid-sentence... oh well.
         String desc = currentData
                 .stream()
+                .map(cd -> cd.data)
                 .filter(name -> !name.isEmpty())
                 .collect(Collectors.joining(" "));
         if (!desc.isBlank()) {
