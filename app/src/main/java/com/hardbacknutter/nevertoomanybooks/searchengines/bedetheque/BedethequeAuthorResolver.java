@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,14 +25,21 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -63,6 +70,7 @@ public class BedethequeAuthorResolver
     private final BedethequeSearchEngine searchEngine;
     @NonNull
     private final Locale locale;
+    private final FullDateParser dateParser;
 
     /**
      * Private Constructor.
@@ -75,6 +83,10 @@ public class BedethequeAuthorResolver
         this.context = context;
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
+
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+        final List<Locale> locales = LocaleListUtils.asList(context, locale);
+        dateParser = new FullDateParser(systemLocale, locales);
     }
 
     /**
@@ -87,10 +99,8 @@ public class BedethequeAuthorResolver
     @VisibleForTesting
     public BedethequeAuthorResolver(@NonNull final Context context,
                                     @Nullable final Cancellable caller) {
-        this.context = context;
-        searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
+        this(context, (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context));
         searchEngine.setCaller(caller);
-        locale = searchEngine.getLocale(context);
     }
 
     /**
@@ -179,27 +189,28 @@ public class BedethequeAuthorResolver
         // it should now be resolved.
 
         final String resolvedName = bdtAuthor.getResolvedName();
-        // If the author does not use a pen-name, we're done.
-        if (resolvedName == null) {
-            return false;
+        // If the author uses a pen-name, update accordingly
+        if (resolvedName != null) {
+            // The name was a pen-name and we have resolved it to their real name
+            // Add it accordingly to the original Author object
+            final Author realAuthor = Author.from(resolvedName);
+            authorDao.refresh(context, realAuthor, locale);
+            author.setRealAuthor(realAuthor);
+
+            // While resolving, the name of the bdtAuthor CAN be corrected/updated.
+            // Check that it still MATCHES the original author name
+            final Author penAuthor = Author.from(bdtAuthor.getName());
+            // Case-sensitive! We must allow correcting the case.
+            if (penAuthor.isSameName(author)) {
+                // It does, we now overwrite the original name; this will correct any diacritics
+                author.setName(penAuthor.getFamilyName(), penAuthor.getGivenNames());
+            }
+            return true;
         }
 
-        // The name was a pen-name and we have resolved it to their real name
-        // Add it accordingly to the original Author object
-        final Author realAuthor = Author.from(resolvedName);
-        authorDao.refresh(context, realAuthor, locale);
-        author.setRealAuthor(realAuthor);
+        // update birth/death/bio/image/...
 
-        // While resolving, the name of the bdtAuthor CAN be overwritten.
-        // Check that it still MATCHES the original author name
-        final Author penAuthor = Author.from(bdtAuthor.getName());
-        // Case-sensitive! We must allow correcting the case.
-        if (penAuthor.isSameName(author)) {
-            // It does, we now overwrite the original name; this will correct any diacritics
-            author.setName(penAuthor.getFamilyName(), penAuthor.getGivenNames());
-        }
-
-        return true;
+        return false;
     }
 
 
@@ -255,11 +266,26 @@ public class BedethequeAuthorResolver
             String familyName = "";
             String givenName = "";
             String penName = "";
+            String bdtId;
+            String website;
+            LocalDate birthDate;
+            LocalDate deathDate;
+            @Nullable
+            String birthCountry = null;
 
             for (final Element label : labels) {
                 //noinspection SwitchStatementWithoutDefaultBranch
                 switch (label.text()) {
+                    case "Identifiant :": {
+                        // <label>Identifiant :</label>13055
+                        final Node textNode = label.nextSibling();
+                        if (textNode != null) {
+                            bdtId = textNode.toString();
+                        }
+                        break;
+                    }
                     case "Nom :": {
+                        // <label>Nom :</label><span>Lemmens</span>
                         final Element span = label.nextElementSibling();
                         if (span != null) {
                             familyName = span.text();
@@ -267,6 +293,7 @@ public class BedethequeAuthorResolver
                         break;
                     }
                     case "Prénom :": {
+                        // <label>Prénom :</label><span>Xavier</span>
                         final Element span = label.nextElementSibling();
                         if (span != null) {
                             givenName = span.text();
@@ -274,9 +301,39 @@ public class BedethequeAuthorResolver
                         break;
                     }
                     case "Pseudo :": {
+                        // <label>Pseudo :</label>Lem
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
                             penName = textNode.toString();
+                        }
+                        break;
+                    }
+                    case "Naissance :": {
+                        // <label>Naissance :</label>le 13/10/1980 <span class="pays-auteur">(BELGIQUE)</span>
+                        final Node textNode = label.nextSibling();
+                        birthDate = parseDate(textNode).orElse(null);
+                        birthCountry = parseBirthCountry(label.nextElementSibling());
+                        break;
+                    }
+                    case "Décès :": {
+                        // <label>Décès :</label>le 27/03/2006
+                        final Node textNode = label.nextSibling();
+                        deathDate = parseDate(textNode).orElse(null);
+                        break;
+                    }
+                    case "": {
+                        // <label>Pays :</label><span class="pays-auteur">FRANCE</span>
+                        // Don't overwrite
+                        if (birthCountry == null) {
+                            birthCountry = parseBirthCountry(label.nextElementSibling());
+                        }
+                        break;
+                    }
+                    case "Site internet :": {
+                        // <label>Site internet :</label><a href="https://bealema.com" target="_blank">https://bealema.com</a>
+                        final Element a = label.nextElementSibling();
+                        if (a != null) {
+                            website = a.attr("href");
                         }
                         break;
                     }
@@ -293,5 +350,69 @@ public class BedethequeAuthorResolver
 
         bdtAuthor.setResolvedName(null);
         return false;
+    }
+
+    @Nullable
+    private String parseBirthCountry(@Nullable final Element span) {
+        String birthCountry = null;
+        if (span != null) {
+            birthCountry = span.text();
+            if (birthCountry.startsWith("(") && birthCountry.endsWith(")")) {
+                birthCountry = birthCountry.substring(1, birthCountry.length() - 1)
+                                           .trim();
+            }
+        }
+        return birthCountry;
+    }
+
+    @NonNull
+    private Optional<LocalDate> parseDate(@Nullable final Node textNode) {
+        if (textNode != null) {
+            String s = textNode.toString();
+            if (s.startsWith("le ")) {
+                s = s.substring(3);
+            }
+            return dateParser.parse(s, locale).map(LocalDate::from);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * <pre>
+     *     {@code
+     *     <div class="auteur-image">
+     *         <a class="zoom-format-icon colorbox cboxElement"
+     *            href="https://www.bedetheque.com/media/Photos/Photo_96.jpg"
+     *            title="Leloup, Roger">
+     *            <img src="https://www.bedetheque.com/media/Photos/Photo_96.jpg"
+     *                 class="fadeover" style="opacity: 1;">
+     *         </a>
+     *     </div>
+     *     }
+     * </pre>
+     */
+    @WorkerThread
+    @NonNull
+    private Optional<String> parseImage(@NonNull final Context context,
+                                        @NonNull final Document document,
+                                        @NonNull final String bdtId)
+            throws StorageException {
+        final Element a = document.selectFirst("div.auteur-image a");
+        if (a != null) {
+            final String url = a.attr("href");
+            if (!"https://www.bdgest.com/skin/nophoto.png".equals(url)) {
+                return searchEngine.saveImage(context, url, bdtId, 0, null);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Nullable
+    String parseBio(@NonNull final Document document) {
+        final Element bio = document.selectFirst("p.bio");
+        if (bio != null) {
+            return bio.wholeText();
+        }
+        return null;
     }
 }
