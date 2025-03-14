@@ -193,8 +193,8 @@
     <string name="lbl_author_type_colorist">Kolorista</string>
     <string name="lbl_author_type_storyboard">Návrhár scén</string>
     <string name="lbl_author_type_lettering">Písmo</string>
-    <string name="lbl_author_type_cover_artist">Obal</string>
-    <string name="lbl_author_type_cover_inking">Kresba tušom na obale</string>
+    <string name="lbl_author_type_cover_artist">Ilustrácia obálky</string>
+    <string name="lbl_author_type_cover_inking">Kresba tušom na obálke</string>
     <string name="lbl_author_type_cover_colorist">Kolorista obálky</string>
     <string name="option_storage_select">Použiť „%1$s“</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Ukončiť a znova vložiť správnu kartu SD</string>
@@ -342,7 +342,7 @@
     <string name="lbl_location">Umiestnenie</string>
     <string name="lbl_location_long">Umiestnenie knihy</string>
     <string name="lbl_publication">Publikácia</string>
-    <string name="lbl_print_run">Tlač</string>
+    <string name="lbl_print_run">Náklad</string>
     <string name="lbl_edition">Vydanie</string>
     <string name="lbl_condition">Stav</string>
     <string name="lbl_dust_cover">Prebal</string>
@@ -666,7 +666,7 @@
     <string name="lbl_assign_bookshelves">Priradiť police s knihami</string>
     <string name="option_view_book_at">Zobraziť na…</string>
     <string name="option_level_reset">Preferovaná úroveň rozbalenia</string>
-    <string name="option_cover_replace_from_alt_editions">Z Iných vydaní…</string>
+    <string name="option_cover_replace_from_alt_editions">Z iných vydaní…</string>
     <string name="confirm_delete_toc_entry_from_x_books">Odstrániť „%1$s“ od %2$s?\n\nBude odstránená z %3$s. Samotné knihy nebudú odstránené.</string>
     <string name="confirm_delete_bookshelf_from_x_books">Odstrániť knižnicu „%1$s“?\n\nBude odstránená z %2$s. Samotné knihy nebudú odstránené. Stále budú prítomné na všetkých ostatných policiach alebo na polici „%3$s“.</string>
     <string name="confirm_delete_series_from_x_books">Odstrániť sériu „%1$s“?\n\nBude odstránená z %2$s. Samotné knihy nebudú odstránené. Zvážte úpravu série a zmenu názvu série na názov inej série, aby ste zachovali tieto údaje.</string>
