@@ -305,8 +305,8 @@ public final class DataHolderUtils {
      * @return a sid
      */
     @NonNull
-    public static Optional<String> getExternalId(@NonNull final DataHolder dataHolder,
-                                                 @NonNull final String identifierKey) {
+    public static Optional<String> getSid(@NonNull final DataHolder dataHolder,
+                                          @NonNull final String identifierKey) {
 
         // The cursor REFERENCES a book
         // This is the common case used by the BoB
@@ -329,7 +329,7 @@ public final class DataHolderUtils {
     }
 
     @NonNull
-    public static List<Identifier.Value> getExternalIds(@NonNull final DataHolder dataHolder) {
+    public static List<Identifier.Value> getSids(@NonNull final DataHolder dataHolder) {
 
         // The cursor REFERENCES a book
         // This is the common case used by the BoB

@@ -60,7 +60,7 @@ class ViewBookOnSiteMenuHandler
 
     @NonNull
     private static List<Identifier.Value> getExternalIds(@NonNull final DataHolder rowData) {
-        final List<Identifier.Value> ivs = DataHolderUtils.getExternalIds(rowData);
+        final List<Identifier.Value> ivs = DataHolderUtils.getSids(rowData);
 
         if (ivs.stream().map(Identifier.Value::getKey).noneMatch(Identifier.SID_ASIN::equals)) {
             //URGENT: is this a good idea? The browser/amazon gives a 404 if the isbn is not found
@@ -147,7 +147,7 @@ class ViewBookOnSiteMenuHandler
 
         // Sanity check, it should be there!
         if (oBookUri.isPresent()) {
-            final Optional<String> oSid = DataHolderUtils.getExternalId(rowData, key);
+            final Optional<String> oSid = DataHolderUtils.getSid(rowData, key);
             // Sanity check, it should be there!
             if (oSid.isEmpty()) {
                 return false;
