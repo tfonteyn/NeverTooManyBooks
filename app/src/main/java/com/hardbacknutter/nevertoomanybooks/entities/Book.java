@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -118,7 +117,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class Book
         extends DataManager
-        implements AuthorWork, Entity {
+        implements AuthorWork, Entity, IdentifierOwner {
 
     /** {@link Parcelable}. */
     public static final Creator<Book> CREATOR = new Creator<>() {
@@ -1063,88 +1062,15 @@ public class Book
         putParcelableCollection(BKEY_TAG_LIST, tags);
     }
 
-    /**
-     * Get the list of {@link Identifier.Value}s.
-     *
-     * @return List
-     */
+    @Override
     @NonNull
     public List<Identifier.Value> getIdentifiers() {
         return getParcelableArrayList(BKEY_IDENTIFIER_LIST);
     }
 
-    /**
-     * Set/replace the list of {@link Identifier.Value}s.
-     *
-     * @param ivs list
-     */
+    @Override
     public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
         putParcelableCollection(BKEY_IDENTIFIER_LIST, ivs);
-    }
-
-    /**
-     * Set the value for the given {@link Identifier}.
-     * <p>
-     * Convenience method.
-     *
-     * @param key   to set
-     * @param value to set; a {@code 0} will remove the field
-     */
-    public void setIdentifierValue(@NonNull final String key,
-                                   final long value) {
-        setIdentifierValue(key, value <= 0 ? null : String.valueOf(value));
-    }
-
-    /**
-     * Set the value for the given {@link Identifier}.
-     *
-     * @param key   to set
-     * @param value to set; a {@code null}, {@code "0"} or an empty string
-     *              will remove the field
-     */
-    public void setIdentifierValue(@NonNull final String key,
-                                   @Nullable final String value) {
-        // get and remove old value if present
-        final List<Identifier.Value> ivs = getIdentifiers()
-                .stream().filter(iv -> !iv.getKey().equals(key))
-                .collect(Collectors.toList());
-
-        // add the new value if valid
-        if (value != null && !value.isBlank() && !"0".equals(value)) {
-            ivs.add(new Identifier.Value(key, value));
-        }
-        // and store the new list
-        setIdentifiers(ivs);
-    }
-
-    /**
-     * Get the value for the given {@link Identifier}.
-     *
-     * @param key to get
-     *
-     * @return a valid, non-empty value
-     */
-    @NonNull
-    public Optional<String> getIdentifierValue(@NonNull final String key) {
-        return getIdentifiers().stream()
-                               .filter(iv -> iv.getKey().equals(key))
-                               .map(Identifier.Value::getSid)
-                               .findAny();
-    }
-
-    /**
-     * Get the value for the given {@link Identifier}.
-     *
-     * @param key to get
-     *
-     * @return a valid, non-empty value
-     *
-     * @throws IllegalArgumentException if not found, which indicates a bug
-     */
-    @NonNull
-    public String requireIdentifierValue(@NonNull final String key) {
-        return getIdentifierValue(key)
-                .orElseThrow(() -> new IllegalArgumentException("Missing Identifier: " + key));
     }
 
     /**
