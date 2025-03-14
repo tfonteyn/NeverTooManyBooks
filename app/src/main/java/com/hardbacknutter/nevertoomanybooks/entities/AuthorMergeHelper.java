@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,10 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.Locale;
+
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public class AuthorMergeHelper
         extends EntityMergeHelper<Author> {
@@ -40,8 +43,15 @@ public class AuthorMergeHelper
 
         final boolean canMerge = mergeRealAuthor(previous, current);
 
-        if (canMerge && current.getId() > 0) {
-            previous.setId(current.getId());
+        if (canMerge) {
+            // overwrite the id
+            if (current.getId() > 0) {
+                previous.setId(current.getId());
+            }
+            // merge the identifiers
+            final List<Identifier.Value> identifiers = previous.getIdentifiers();
+            identifiers.addAll(current.getIdentifiers());
+            ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
         }
 
         return canMerge;

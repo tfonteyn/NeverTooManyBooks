@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -488,6 +489,9 @@ public class AuthorDaoImpl
 
             if (iId != -1) {
                 author.setId(iId);
+
+                ServiceLocator.getInstance().getAuthorIdentifierDao()
+                              .insertOrUpdate(context, author.getId(), author.getIdentifiers());
                 insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {
@@ -533,6 +537,8 @@ public class AuthorDaoImpl
             }
 
             if (rowsAffected > 0) {
+                ServiceLocator.getInstance().getAuthorIdentifierDao()
+                              .insertOrUpdate(context, author.getId(), author.getIdentifiers());
                 insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {

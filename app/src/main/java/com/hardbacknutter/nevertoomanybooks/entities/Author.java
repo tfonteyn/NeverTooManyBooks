@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -332,6 +333,8 @@ public class Author
         givenNames = rowData.getString(DBKey.AUTHOR.GIVEN_NAMES);
         complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
 
+        setIdentifiers(ServiceLocator.getInstance().getAuthorIdentifierDao().getByFkId(this.id));
+
         if (rowData.contains(DBKey.AUTHOR.BOOK_AUTHOR_TYPE)) {
             type = rowData.getInt(DBKey.AUTHOR.BOOK_AUTHOR_TYPE);
         }
@@ -371,6 +374,7 @@ public class Author
         complete = in.readByte() != 0;
         type = in.readInt();
         realAuthor = in.readParcelable(getClass().getClassLoader());
+        ParcelUtils.readParcelableList(in, identifiers, getClass().getClassLoader());
     }
 
     /**
@@ -951,6 +955,8 @@ public class Author
         complete = source.complete;
         // Do not deep copy! We WANT the same/original object
         realAuthor = source.realAuthor;
+        identifiers.clear();
+        identifiers.addAll(source.identifiers);
 
         if (includeBookFields) {
             type = source.type;
@@ -966,6 +972,7 @@ public class Author
         dest.writeByte((byte) (complete ? 1 : 0));
         dest.writeInt(type);
         dest.writeParcelable(realAuthor, flags);
+        ParcelUtils.writeParcelableList(dest, identifiers, flags);
     }
 
     @Override
@@ -997,7 +1004,8 @@ public class Author
      */
     public boolean isIdentical(@Nullable final Author that) {
         return equals(that)
-               && complete == that.complete;
+               && complete == that.complete
+               && identifiers.equals(that.identifiers);
     }
 
     /**
@@ -1005,6 +1013,7 @@ public class Author
      * <ul>
      *   <li>'complete' is a user setting and is ignored here.</li>
      *   <li>'type' is a book field and is ignored here.</li>
+     *   <li>'identifiers' is ignored here.</li>
      * </ul>
      *
      * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
