@@ -305,22 +305,29 @@ public final class DataHolderUtils {
      * @return a sid
      */
     @NonNull
-    public static Optional<String> getSid(@NonNull final DataHolder dataHolder,
+    public static Optional<String> getSid(@NonNull final String fk,
+                                          @NonNull final DataHolder dataHolder,
                                           @NonNull final String identifierKey) {
 
-        // The cursor REFERENCES a book
+        // The cursor REFERENCES a book, or an author
         // This is the common case used by the BoB
-        if (dataHolder.contains(DBKey.FK_BOOK)) {
-            final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
-            if (bookId > 0) {
+        if (DBKey.FK_BOOK.equals(fk) && dataHolder.contains(DBKey.FK_BOOK)) {
+            final long fkId = dataHolder.getLong(DBKey.FK_BOOK);
+            if (fkId > 0) {
                 return ServiceLocator.getInstance().getBookIdentifierDao()
-                                     .findSid(identifierKey, bookId);
+                                     .findSid(identifierKey, fkId);
+            }
+        } else if (DBKey.FK_AUTHOR.equals(fk) && dataHolder.contains(DBKey.FK_AUTHOR)) {
+            final long fkId = dataHolder.getLong(DBKey.FK_AUTHOR);
+            if (fkId > 0) {
+                return ServiceLocator.getInstance().getAuthorIdentifierDao()
+                                     .findSid(identifierKey, fkId);
             }
         }
 
-        // If the row IS a Book; This is the case used with the book details screen
-        if (dataHolder instanceof Book) {
-            return ((Book) dataHolder).getIdentifierValue(identifierKey);
+        // If the row IS an object holding identifiers
+        if (dataHolder instanceof IdentifierOwner) {
+            return ((IdentifierOwner) dataHolder).getIdentifierValue(identifierKey);
         }
 
         // Paranoia.. DO NOT throw here; Not entirely sure we can never get here..
@@ -329,20 +336,26 @@ public final class DataHolderUtils {
     }
 
     @NonNull
-    public static List<Identifier.Value> getSids(@NonNull final DataHolder dataHolder) {
+    public static List<Identifier.Value> getSids(@NonNull final String fk,
+                                                 @NonNull final DataHolder dataHolder) {
 
-        // The cursor REFERENCES a book
+        // The cursor REFERENCES a book, or an author
         // This is the common case used by the BoB
-        if (dataHolder.contains(DBKey.FK_BOOK)) {
-            final long bookId = dataHolder.getLong(DBKey.FK_BOOK);
-            if (bookId > 0) {
-                return ServiceLocator.getInstance().getBookIdentifierDao().getByFkId(bookId);
+        if (DBKey.FK_BOOK.equals(fk) && dataHolder.contains(DBKey.FK_BOOK)) {
+            final long fkId = dataHolder.getLong(DBKey.FK_BOOK);
+            if (fkId > 0) {
+                return ServiceLocator.getInstance().getBookIdentifierDao().getByFkId(fkId);
+            }
+        } else if (DBKey.FK_AUTHOR.equals(fk) && dataHolder.contains(DBKey.FK_AUTHOR)) {
+            final long fkId = dataHolder.getLong(DBKey.FK_AUTHOR);
+            if (fkId > 0) {
+                return ServiceLocator.getInstance().getAuthorIdentifierDao().getByFkId(fkId);
             }
         }
 
-        // If the row IS a Book; This is the case used with the book details screen
-        if (dataHolder instanceof Book) {
-            return ((Book) dataHolder).getIdentifiers();
+        // If the row IS an object holding identifiers
+        if (dataHolder instanceof IdentifierOwner) {
+            return ((IdentifierOwner) dataHolder).getIdentifiers();
         }
 
         // Paranoia.. DO NOT throw here; Not entirely sure we can never get here..
