@@ -465,7 +465,7 @@ public final class DBKey {
          */
         public static final String BOOK_URI = "book_uri";
         /** {@link DBDefinitions#TBL_BOOK_IDENTIFIER}. The external site id. */
-        public static final String IDENTIFIER_SID = "sid";
+        public static final String SID = "sid";
 
         private IDENTIFIERS() {
         }

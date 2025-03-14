@@ -36,7 +36,7 @@ public class IdentifierValueCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
         out.put(DBKey.IDENTIFIERS.KEY, element.getKey());
-        out.put(DBKey.IDENTIFIERS.IDENTIFIER_SID, element.getSid());
+        out.put(DBKey.IDENTIFIERS.SID, element.getSid());
         return out;
     }
 
@@ -45,6 +45,6 @@ public class IdentifierValueCoder
     public Identifier.Value decode(@NonNull final JSONObject data)
             throws JSONException {
         return new Identifier.Value(data.getString(DBKey.IDENTIFIERS.KEY),
-                                    data.getString(DBKey.IDENTIFIERS.IDENTIFIER_SID));
+                                    data.getString(DBKey.IDENTIFIERS.SID));
     }
 }

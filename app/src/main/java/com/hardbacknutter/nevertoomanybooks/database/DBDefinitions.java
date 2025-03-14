@@ -1082,7 +1082,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_IDENTIFIER_SID =
-                new Domain.Builder(DBKey.IDENTIFIERS.IDENTIFIER_SID, SqLiteDataType.Text)
+                new Domain.Builder(DBKey.IDENTIFIERS.SID, SqLiteDataType.Text)
                         .notNull()
                         .build();
 

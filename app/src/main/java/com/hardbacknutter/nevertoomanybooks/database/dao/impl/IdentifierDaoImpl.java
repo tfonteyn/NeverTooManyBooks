@@ -449,7 +449,7 @@ public class IdentifierDaoImpl
             while (cursor.moveToNext()) {
                 list.add(new Identifier.Value(
                         rowData.getString(DBKey.IDENTIFIERS.KEY),
-                        rowData.getString(DBKey.IDENTIFIERS.IDENTIFIER_SID)));
+                        rowData.getString(DBKey.IDENTIFIERS.SID)));
             }
         }
         return list;
@@ -557,16 +557,16 @@ public class IdentifierDaoImpl
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?"
-                + _AND_ + TBL_BOOK_IDENTIFIER.dot(DBKey.IDENTIFIERS.IDENTIFIER_SID) + "=?";
+                + _AND_ + TBL_BOOK_IDENTIFIER.dot(DBKey.IDENTIFIERS.SID) + "=?";
 
         static final String FIND_BY_BOOK_ID =
                 SELECT_ALL
-                + ',' + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENTIFIERS.IDENTIFIER_SID)
+                + ',' + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENTIFIERS.SID)
                 + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
                 + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_BOOK) + "=?";
 
         static final String FIND_SID_BY_BOOK_ID_AND_IDENTIFIER_KEY =
-                SELECT_ + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENTIFIERS.IDENTIFIER_SID)
+                SELECT_ + TBL_BOOK_IDENTIFIER.dotAs(DBKey.IDENTIFIERS.SID)
                 + _FROM_ + TBL_BOOK_IDENTIFIER.startJoin(TBL_IDENTIFIERS)
                 + _WHERE_ + TBL_BOOK_IDENTIFIER.dot(DBKey.FK_BOOK) + "=?"
                 + _AND_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
@@ -576,7 +576,7 @@ public class IdentifierDaoImpl
                 INSERT_INTO_ + TBL_BOOK_IDENTIFIER.getName()
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_IDENTIFIER
-                + ',' + DBKey.IDENTIFIERS.IDENTIFIER_SID
+                + ',' + DBKey.IDENTIFIERS.SID
                 + ") VALUES(?,?,?)";
 
         /**
