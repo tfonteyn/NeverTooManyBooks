@@ -23,6 +23,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -129,6 +130,7 @@ public class ParseTest
         assertEquals("Litwin Books", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
+        Optional<String> oIv;
         Author author;
         assertNotNull(authors);
         assertEquals(String.valueOf(authors), 3, authors.size());
@@ -137,12 +139,16 @@ public class ParseTest
         assertEquals("Miedema", author.getFamilyName());
         assertEquals("John", author.getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL6548935A", oIv.get());
 
         author = authors.get(1);
         assertEquals("Miedema.", author.getFamilyName());
         assertEquals("John", author.getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
 
+        // from "contributors" which does not provide author id's
         author = authors.get(2);
         assertEquals("Ekholm", author.getFamilyName());
         assertEquals("C.", author.getGivenNames());

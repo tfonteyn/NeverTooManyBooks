@@ -778,7 +778,14 @@ public class OpenLibrarySearchEngine
                     final JSONObject jsonObject = new JSONObject(response);
                     final String name = jsonObject.optString("name", null);
                     if (name != null && !name.isEmpty()) {
-                        addAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
+                        final Author author = Author.from(name);
+                        // extract the OL id it from the key as it's not in the json
+                        // Sanity check
+                        if (key.startsWith("/authors/")) {
+                            final String iv = key.substring(9);
+                            author.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, iv);
+                        }
+                        addAuthor(author, Author.TYPE_UNKNOWN, book);
                     }
                 }
             }
