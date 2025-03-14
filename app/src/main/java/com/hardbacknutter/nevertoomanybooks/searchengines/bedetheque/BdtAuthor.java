@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,9 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -36,6 +39,9 @@ public class BdtAuthor {
     private boolean resolved;
     @Nullable
     private String resolvedName;
+
+    @Nullable
+    private String bdtId;
 
     public BdtAuthor(final long id,
                      @NonNull final DataHolder rowData) {
@@ -52,6 +58,12 @@ public class BdtAuthor {
         this.url = url;
     }
 
+    /**
+     * Get the local row-id in the cache database for this author.
+     * Do <strong>NOT</strong> confuse with the bedetheque author-id.
+     *
+     * @return id
+     */
     public long getId() {
         return id;
     }
@@ -65,9 +77,37 @@ public class BdtAuthor {
         return name;
     }
 
+    private static final Pattern BDT_ID_PATTERN =
+            Pattern.compile("https://www.bedetheque.com/auteur-(\\d+)-BD.*");
+
+    /**
+     * Get the author url.
+     * <p>
+     * Example:{@code https://www.bedetheque.com/auteur-1888-BD-Jacobs-Edgar-Pierre.html}
+     *
+     * @return the full url to the website author page.
+     */
     @Nullable
     public String getUrl() {
         return url;
+    }
+
+    @Nullable
+    public String getBdtId() {
+        if (bdtId != null && !bdtId.isEmpty()) {
+            return bdtId;
+        }
+        if (url != null && !url.isEmpty()) {
+            final Matcher matcher = BDT_ID_PATTERN.matcher(url);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        }
+        return null;
+    }
+
+    public void setBdtId(@Nullable final String bdtId) {
+        this.bdtId = bdtId;
     }
 
     public boolean isResolved() {

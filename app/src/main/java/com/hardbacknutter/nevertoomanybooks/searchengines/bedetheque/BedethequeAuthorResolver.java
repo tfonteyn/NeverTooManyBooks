@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -186,7 +187,16 @@ public class BedethequeAuthorResolver
             }
         }
 
-        // it should now be resolved.
+        // it should now be resolved
+        // Copy temporary info from bdtAuthor to the author, and resolve the realAuthor
+        boolean modified = false;
+
+        // update birth/death/bio/image/...
+        final String bdtId = bdtAuthor.getBdtId();
+        if (bdtId != null) {
+            author.setIdentifierValue(Identifier.SID_BEDETHEQUE, bdtId);
+            modified = true;
+        }
 
         final String resolvedName = bdtAuthor.getResolvedName();
         // If the author uses a pen-name, update accordingly
@@ -208,9 +218,7 @@ public class BedethequeAuthorResolver
             return true;
         }
 
-        // update birth/death/bio/image/...
-
-        return false;
+        return modified;
     }
 
 
@@ -266,7 +274,6 @@ public class BedethequeAuthorResolver
             String familyName = "";
             String givenName = "";
             String penName = "";
-            String bdtId;
             String website;
             LocalDate birthDate;
             LocalDate deathDate;
@@ -280,7 +287,7 @@ public class BedethequeAuthorResolver
                         // <label>Identifiant :</label>13055
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            bdtId = textNode.toString();
+                            bdtAuthor.setBdtId(textNode.toString());
                         }
                         break;
                     }
