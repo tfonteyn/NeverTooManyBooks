@@ -276,7 +276,7 @@
     <string name="lbl_author_type_contributor">Spolupracovník</string>
     <string name="lbl_author_type_cover_artist">Ilustrace knihy</string>
     <string name="lbl_author_type_cover_colorist">Kolorista obálky</string>
-    <string name="lbl_author_type_cover_inking">Kresba tuší na obalu</string>
+    <string name="lbl_author_type_cover_inking">Kresba tuší na obálce</string>
     <string name="lbl_author_type_editor">Editor</string>
     <string name="lbl_author_type_inking">Inkoust</string>
     <string name="lbl_author_type_intro">Úvod atd.</string>
@@ -397,7 +397,7 @@
     <string name="lbl_personal_notes">Osobní poznámky</string>
     <string name="lbl_price_listed">Ceník</string>
     <string name="lbl_price_paid">Zaplacená cena</string>
-    <string name="lbl_print_run">Tisk</string>
+    <string name="lbl_print_run">Náklad</string>
     <string name="lbl_publication">Vydání</string>
     <string name="lbl_date_published_month">Měsíc vydání</string>
     <string name="lbl_date_published_year">Rok vydání</string>
