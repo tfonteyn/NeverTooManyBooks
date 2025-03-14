@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
@@ -97,7 +98,7 @@ public class ParseTest
                                                locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
         assertEquals("Like Nothing on Earth", book.getString(DBKey.TITLE, null));
         assertEquals("0413600106", book.getString(DBKey.ISBN, null));
@@ -126,13 +127,25 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
-        assertEquals("Russell", authors.get(0).getFamilyName());
-        assertEquals("Eric Frank", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
-        assertEquals("Oakes", authors.get(1).getFamilyName());
-        assertEquals("Terry", authors.get(1).getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
+        Optional<String> oIv;
+        Author author;
+
+        author = authors.get(0);
+        assertEquals("Russell", author.getFamilyName());
+        assertEquals("Eric Frank", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
+        assertTrue(oIv.isPresent());
+        assertEquals("51", oIv.get());
+
+        author = authors.get(1);
+        assertEquals("Oakes", author.getFamilyName());
+        assertEquals("Terry", author.getGivenNames());
+        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
+        assertTrue(oIv.isPresent());
+        assertEquals("25102", oIv.get());
 
         // don't do this: we don't take authors from the TOC yet
 //        assertEquals("Hugi", authors.get(1).getFamilyName());

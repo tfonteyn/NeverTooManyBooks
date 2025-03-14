@@ -179,6 +179,8 @@ public class IsfdbSearchEngine
     /** A CSS select query. */
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
 
+    private static final Pattern AUTHOR_ID = Pattern.compile(".*ea\\.cgi\\?(\\d+)");
+
     /**
      * We TRY to get the books language, but this is not always possible.
      * For those occasions, default the English.
@@ -486,7 +488,6 @@ public class IsfdbSearchEngine
     }
 
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
-
     /** set during book load, used during content table load. */
     @Nullable
     private String bookTitle;
@@ -510,6 +511,21 @@ public class IsfdbSearchEngine
     public IsfdbSearchEngine(@NonNull final Context appContext,
                              @NonNull final SearchEngineConfig config) {
         super(appContext, config, CHARSET_DECODE_PAGE);
+    }
+
+    @NonNull
+    private static Author parseAuthor(@NonNull final Element a) {
+        final Author author = Author.from(a.text());
+        final String url = a.attr("href");
+        final Matcher matcher = AUTHOR_ID.matcher(url);
+        if (matcher.find()) {
+            final String siId = matcher.group(1);
+            if (siId != null) {
+                author.setIdentifierValue(Identifier.SID_ISFDB, siId);
+            }
+        }
+
+        return author;
     }
 
     @Override
@@ -855,6 +871,14 @@ public class IsfdbSearchEngine
 
                     } else if (author == null && href.contains(CGI_EA)) {
                         author = Author.from(SearchEngineUtils.cleanName(a.text()));
+                        final String url = a.attr("href");
+                        final Matcher matcher = AUTHOR_ID.matcher(url);
+                        if (matcher.find()) {
+                            final String siId = matcher.group(1);
+                            if (siId != null) {
+                                author.setIdentifierValue(Identifier.SID_ISFDB, siId);
+                            }
+                        }
 
                     } else if (addSeriesFromToc && href.contains(CGI_PE)) {
                         final Series series = Series.from(a.text());
@@ -1161,7 +1185,7 @@ public class IsfdbSearchEngine
                         case "Author:":
                         case "Authors:": {
                             for (final Element a : li.select("a")) {
-                                addAuthor(Author.from(a.text()), Author.TYPE_UNKNOWN, book);
+                                addAuthor(parseAuthor(a), Author.TYPE_UNKNOWN, book);
                             }
                             break;
                         }
@@ -1283,7 +1307,7 @@ public class IsfdbSearchEngine
                             final Elements as = li.select("a");
                             if (as.size() > 1) {
                                 final Element a = as.get(1);
-                                addAuthor(Author.from(a.text()), Author.TYPE_COVER_ARTIST, book);
+                                addAuthor(parseAuthor(a), Author.TYPE_COVER_ARTIST, book);
                             }
                             break;
                         }
@@ -1295,7 +1319,7 @@ public class IsfdbSearchEngine
                         case "Editor:":
                         case "Editors:": {
                             for (final Element a : li.select("a")) {
-                                addAuthor(Author.from(a.text()), Author.TYPE_EDITOR, book);
+                                addAuthor(parseAuthor(a), Author.TYPE_EDITOR, book);
                             }
                             break;
                         }
