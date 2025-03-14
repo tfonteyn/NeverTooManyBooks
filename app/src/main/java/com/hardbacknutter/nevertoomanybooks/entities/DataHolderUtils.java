@@ -311,13 +311,17 @@ public final class DataHolderUtils {
 
         // The cursor REFERENCES a book, or an author
         // This is the common case used by the BoB
-        if (DBKey.FK_BOOK.equals(fk) && dataHolder.contains(DBKey.FK_BOOK)) {
+        if (DBKey.FK_BOOK.equals(fk)
+            && dataHolder.contains(DBKey.FK_BOOK)
+            && dataHolder.getLong(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
             final long fkId = dataHolder.getLong(DBKey.FK_BOOK);
             if (fkId > 0) {
                 return ServiceLocator.getInstance().getBookIdentifierDao()
                                      .findSid(identifierKey, fkId);
             }
-        } else if (DBKey.FK_AUTHOR.equals(fk) && dataHolder.contains(DBKey.FK_AUTHOR)) {
+        } else if (DBKey.FK_AUTHOR.equals(fk)
+                   && dataHolder.contains(DBKey.FK_AUTHOR)
+                   && dataHolder.getLong(DBKey.BL_NODE.GROUP) == BooklistGroup.AUTHOR) {
             final long fkId = dataHolder.getLong(DBKey.FK_AUTHOR);
             if (fkId > 0) {
                 return ServiceLocator.getInstance().getAuthorIdentifierDao()
@@ -341,12 +345,16 @@ public final class DataHolderUtils {
 
         // The cursor REFERENCES a book, or an author
         // This is the common case used by the BoB
-        if (DBKey.FK_BOOK.equals(fk) && dataHolder.contains(DBKey.FK_BOOK)) {
+        if (DBKey.FK_BOOK.equals(fk)
+            && dataHolder.contains(DBKey.FK_BOOK)
+            && dataHolder.getLong(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
             final long fkId = dataHolder.getLong(DBKey.FK_BOOK);
             if (fkId > 0) {
                 return ServiceLocator.getInstance().getBookIdentifierDao().getByFkId(fkId);
             }
-        } else if (DBKey.FK_AUTHOR.equals(fk) && dataHolder.contains(DBKey.FK_AUTHOR)) {
+        } else if (DBKey.FK_AUTHOR.equals(fk)
+                   && dataHolder.contains(DBKey.FK_AUTHOR)
+                   && dataHolder.getLong(DBKey.BL_NODE.GROUP) == BooklistGroup.AUTHOR) {
             final long fkId = dataHolder.getLong(DBKey.FK_AUTHOR);
             if (fkId > 0) {
                 return ServiceLocator.getInstance().getAuthorIdentifierDao().getByFkId(fkId);
