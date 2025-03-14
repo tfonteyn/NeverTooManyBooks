@@ -97,7 +97,9 @@ public class GoodreadsSearchEngine
     private static final Pattern LANG_SPLITTER = Pattern.compile("[,;]");
     /** divider to convert milliseconds TO SECONDS. */
     private static final int MILLI_TO_SECONDS = 1000;
-
+    /** Example: {@code "https://www.goodreads.com/author/show/40652983.Nuanxed"}. */
+    private static final Pattern AUTHOR_WEB_URL_ID = Pattern.compile(
+            "https://www.goodreads.com/author/show/(\\d+)\\..*");
     private final RatingParser ratingParser;
     private final AuthorTypeMapper authorTypeMapper;
     @Nullable
@@ -197,7 +199,6 @@ public class GoodreadsSearchEngine
         }
         return book;
     }
-
 
     /**
      * Call the site with the ISBN and get the Goodreads id back.
@@ -543,6 +544,25 @@ public class GoodreadsSearchEngine
                         if (!name.isEmpty()) {
                             final Author author = Author.from(name);
                             author.setType(role);
+                            // Get the legacyId as the SID_GOODREADS_BOOK.
+                            // It is this one we need to construct url's.
+                            final String legacyId = refObj.optString("legacyId");
+                            if (!legacyId.isEmpty()) {
+                                author.setIdentifierValue(Identifier.SID_GOODREADS_BOOK, legacyId);
+                            } else {
+                                // if the explicit legacyId is absent, try the webUrl
+                                final String webUrl = refObj.optString("webUrl");
+                                if (!webUrl.isEmpty()) {
+                                    final Matcher matcher = AUTHOR_WEB_URL_ID.matcher(webUrl);
+                                    if (matcher.find()) {
+                                        final String siId = matcher.group(1);
+                                        if (siId != null) {
+                                            author.setIdentifierValue(
+                                                    Identifier.SID_GOODREADS_BOOK, siId);
+                                        }
+                                    }
+                                }
+                            }
                             book.add(author);
                         }
                     }

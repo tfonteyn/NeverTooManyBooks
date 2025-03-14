@@ -20,8 +20,11 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -162,6 +165,8 @@ public class ParseTest
         assertNotNull(book);
         assertFalse(book.isEmpty());
 
+        Log.d(TAG, book.toString());
+
         assertEquals("De chocoladewinkel van verloren liefdes", book.getTitle());
         assertEquals("9789028453807", book.getIsbn());
         assertEquals("Dutch", book.getString(DBKey.LANGUAGE));
@@ -198,15 +203,23 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
+        Optional<String> oIv;
         Author author;
         author = authors.get(0);
         assertEquals("Ye-eun", author.getFamilyName());
         assertEquals("Kim", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS_BOOK);
+        assertTrue(oIv.isPresent());
+        assertEquals("50820550", oIv.get());
+
         author = authors.get(1);
         assertEquals("Nuanxed", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS_BOOK);
+        assertTrue(oIv.isPresent());
+        assertEquals("40652983", oIv.get());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
