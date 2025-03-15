@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,8 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
-
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -56,13 +54,6 @@ public class LibraryThingSearchEngine
     public LibraryThingSearchEngine(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-    }
-
-    @NonNull
-    @Override
-    public Locale getLocale(@NonNull final Context context) {
-        // Derive the Locale from the user configured url.
-        return getLocale(context, getHostUrl(context));
     }
 
     @NonNull

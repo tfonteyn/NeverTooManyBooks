@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -92,13 +91,6 @@ public class BookFinderSearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(5);
-    }
-
-    @NonNull
-    @Override
-    public Locale getLocale(@NonNull final Context context) {
-        // Derive the Locale from the user configured url.
-        return getLocale(context, getHostUrl(context));
     }
 
     @NonNull
