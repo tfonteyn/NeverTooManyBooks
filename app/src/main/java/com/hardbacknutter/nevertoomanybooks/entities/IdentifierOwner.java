@@ -47,6 +47,12 @@ public interface IdentifierOwner {
      */
     void setIdentifiers(@NonNull Collection<Identifier.Value> ivs);
 
+    default void addIdentifiers(@NonNull Collection<Identifier.Value> ivs) {
+        final List<Identifier.Value> identifiers = getIdentifiers();
+        identifiers.addAll(ivs);
+        setIdentifiers(identifiers);
+    }
+
     /**
      * Set the value for the given {@link Identifier}.
      * <p>

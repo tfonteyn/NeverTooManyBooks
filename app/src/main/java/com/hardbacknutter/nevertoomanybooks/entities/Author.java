@@ -669,8 +669,12 @@ public class Author
 
     @Override
     public void setIdentifiers(@NonNull final Collection<Identifier.Value> ivs) {
-        identifiers.clear();
-        identifiers.addAll(ivs);
+        // The incoming list might be physically OUR list
+        // ONLY clear/update if it's not; otherwise no action needed
+        if (ivs != identifiers) {
+            identifiers.clear();
+            identifiers.addAll(ivs);
+        }
     }
 
     @Type

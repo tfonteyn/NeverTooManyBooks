@@ -1062,6 +1062,17 @@ public class Book
         putParcelableCollection(BKEY_TAG_LIST, tags);
     }
 
+    /**
+     * Convenience method combining get/add/set.
+     *
+     * @param tags to add
+     */
+    public void addTags(@NonNull final Collection<Tag> tags) {
+        final List<Tag> bt = getParcelableArrayList(BKEY_TAG_LIST);
+        bt.addAll(tags);
+        putParcelableCollection(BKEY_TAG_LIST, bt);
+    }
+
     @Override
     @NonNull
     public List<Identifier.Value> getIdentifiers() {

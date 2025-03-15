@@ -474,9 +474,10 @@ public abstract class SearchEngineBase
                 // merge types.
                 author.addType(currentAuthorType);
                 // merge identifiers
-                final List<Identifier.Value> identifiers = author.getIdentifiers();
-                identifiers.addAll(currentAuthor.getIdentifiers());
-                author.setIdentifiers(identifiers);
+                // ENHANCE: we could now have multiple identifiers
+                //  for a single Author. As we don't support that...
+                //  first id "wins"
+                author.addIdentifiers(currentAuthor.getIdentifiers());
 
                 add = false;
                 // keep looping
