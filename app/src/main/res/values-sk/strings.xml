@@ -130,7 +130,7 @@
     <string name="info_story_in_single_book">„%1$s“ sa nachádza v jednej knihe:\n\n%2$s</string>
     <string name="info_tap_to_select">Klepnite pre výber.</string>
     <string name="info_tap_to_move_tag">Klepnite na štítok pre jeho presun do/z knihy.</string>
-    <string name="lbl_add_or_edit_substitution">Pridať/Upraviť pravidlo pre nahradzovanie</string>
+    <string name="lbl_add_or_edit_substitution">Pridať/Upraviť pravidlo nahradenia</string>
     <string name="info_download_successful">Sťahovanie úspešné</string>
     <string name="cd_btn_drag_handle">Presunutím zmeníte poradie tohto zoznamu</string>
     <string name="cd_clear_text_end_icon">Vymazať text</string>
