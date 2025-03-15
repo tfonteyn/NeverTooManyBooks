@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -825,7 +822,7 @@
     <string name="info_progress_page_x_of_y">Страница: %1$d из %2$d</string>
     <string name="lbl_track_progress_long">Отслеживайте свой прогресс</string>
     <string name="lbl_total_pages">Всего страниц</string>
-    <string name="lbl_percentage_read">% читать</string>
+    <string name="lbl_percentage_read">% прочитано</string>
     <string name="lbl_track_progress">Прогресс</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Должна быть больше или равна текущей странице</string>
     <string name="info_builtin_style_asterix">(* стили по умолчанию)</string>
