@@ -260,4 +260,87 @@ public class ParseTest
         assertEquals("70610", oIv.get());
     }
 
+
+    @Test
+    public void parseMulti01()
+            throws IOException, SearchException, CredentialsException, StorageException {
+
+        final String locationHeader = "https://www.databazeknih.cz/search?in=books&q=foundation+asi&hledat=";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.databazeknih_multi_foundation_asi;
+
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parseMultiResult(context, document, new boolean[]{false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Nadace", book.getString(DBKey.TITLE, null));
+        assertEquals("8020409319", book.getString(DBKey.ISBN, null));
+        assertEquals("40000", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
+        assertEquals("2001", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("český", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("250", book.getString(DBKey.PAGES, null));
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals("měkká / brožovaná", book.getString(DBKey.FORMAT, null));
+        assertEquals("1951", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
+
+        assertTrue(book.getString(DBKey.DESCRIPTION, null)
+                       .startsWith("První kniha série Nadace."));
+
+        assertEquals("Foundation",
+                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+
+        assertEquals("klasická kniha",
+                     book.getString(DatabazeKnihSearchEngine.SiteField.FORMA, null));
+
+        final List<Tag> bookTags = book.getTags();
+
+        assertEquals(6, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Literatura světová"));
+        assertTrue(tags.contains("Romány"));
+        assertTrue(tags.contains("Sci-fi"));
+        assertTrue(tags.contains("space opera"));
+        assertTrue(tags.contains("sci-fi"));
+        assertTrue(tags.contains("zfilmováno – TV seriál"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Mladá fronta", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+
+        Author author;
+        Optional<String> oIv;
+
+        author = authors.get(0);
+        assertEquals("Asimov", author.getFamilyName());
+        assertEquals("Isaac", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
+        assertTrue(oIv.isPresent());
+        assertEquals("79", oIv.get());
+
+        author = authors.get(1);
+        assertEquals("Janiš", author.getFamilyName());
+        assertEquals("Viktor", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
+        assertTrue(oIv.isPresent());
+        assertEquals("12", oIv.get());
+
+        final List<Series> series = book.getSeries();
+        assertNotNull(series);
+        assertEquals(1, series.size());
+
+        assertEquals("Nadace", series.get(0).getTitle());
+        assertEquals("1. díl", series.get(0).getNumber());
+    }
 }

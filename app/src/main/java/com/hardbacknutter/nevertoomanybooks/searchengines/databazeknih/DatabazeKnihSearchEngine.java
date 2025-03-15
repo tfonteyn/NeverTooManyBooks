@@ -70,6 +70,7 @@ public class DatabazeKnihSearchEngine
     private static final String TAG = "DatabazeKnihSearchEngin";
 
     private static final String SEARCH = "/search?in=books&q=%1$s";
+    private static final String MULTI_RESULT_PAGE_TITLE = "Vyhledávání";
 
     private final RatingParser ratingParser;
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
@@ -132,9 +133,41 @@ public class DatabazeKnihSearchEngine
         final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book);
+            if (isMultiResult(document)) {
+                parseMultiResult(context, document, fetchCovers, book);
+            } else {
+                parse(context, document, fetchCovers, book);
+            }
         }
         return book;
+    }
+
+    @VisibleForTesting
+    void parseMultiResult(@NonNull final Context context,
+                          @NonNull final Document document,
+                          @NonNull final boolean[] fetchCovers,
+                          @NonNull final Book book)
+            throws SearchException, CredentialsException, StorageException {
+
+        Element element = document.selectFirst("p.new");
+        if (element != null) {
+            element = element.selectFirst("a.new");
+            if (element != null) {
+                String url = element.attr("href");
+                if (!url.isEmpty()) {
+                    url = getHostUrl(context) + url;
+                    final Document redirected = loadDocument(context, url, null);
+                    // sanity check
+                    if (!isMultiResult(redirected)) {
+                        parse(context, redirected, fetchCovers, book);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isMultiResult(@NonNull final Document document) {
+        return document.title().startsWith(MULTI_RESULT_PAGE_TITLE);
     }
 
     /**
