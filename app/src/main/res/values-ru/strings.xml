@@ -42,8 +42,8 @@
     <plurals name="n_tags">
         <item quantity="one">%1$d тег</item>
         <item quantity="few">%1$d теги</item>
-        <item quantity="many">%1$d теги</item>
-        <item quantity="other">%1$d теги</item>
+        <item quantity="many">%1$d тегов</item>
+        <item quantity="other">%1$d тегов</item>
     </plurals>
     <string name="X_action_clear_credentials">Очистить учетные данные</string>
     <string name="X_action_execute">Выполнить</string>
@@ -103,7 +103,7 @@
     <string name="action_skip">Пропустить</string>
     <string name="action_synchronize">Синхронизировать</string>
     <string name="and_others">%1$s…</string>
-    <string name="and_others_textual">%1$s et al.</string>
+    <string name="and_others_textual">%1$s и др.</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Автор отсутствует)</string>
     <string name="bob_empty_day">(День не назначен)</string>
@@ -545,7 +545,7 @@
     <string name="pt_field_visibility">Видимость полей</string>
     <string name="preference_not_set">Не указано</string>
     <string name="info_backup_successful">Резервное копирование выполнено успешно</string>
-    <string name="info_tap_to_move_tag">Нажмите на метку, чтобы переместить ее в книгу или из книги.</string>
+    <string name="info_tap_to_move_tag">Нажмите на тег, чтобы переместить его в книгу или из книги.</string>
     <string name="lbl_add_or_edit_substitution">Добавление/редактирование правила подстановки</string>
     <string name="info_substitutions_one_per_line">Добавьте по одной подстановке на строку</string>
     <string name="info_download_successful">Загрузка прошла успешно</string>
