@@ -32,6 +32,7 @@ import androidx.annotation.WorkerThread;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -62,11 +64,12 @@ import org.jsoup.select.Elements;
 
 public class DatabazeKnihSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByIsbn {
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByText {
 
     private static final String TAG = "DatabazeKnihSearchEngin";
 
-    private static final String BY_ISBN = "/search?in=books&q=%1$s";
+    private static final String SEARCH = "/search?in=books&q=%1$s";
 
     private final RatingParser ratingParser;
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
@@ -94,10 +97,40 @@ public class DatabazeKnihSearchEngine
                              @NonNull final String validIsbn,
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
-        final String url = getHostUrl(context) + String.format(BY_ISBN, validIsbn);
+
+        return search(context, validIsbn, fetchCovers);
+    }
+
+    @NonNull
+    @Override
+    public Book search(@NonNull final Context context,
+                       @NonNull final SearchCoordinatorCriteria criteria,
+                       @Nullable final String code,
+                       @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+        // Searches are just a string of 'words', we can simply concatenate all available options.
+        final StringJoiner words = criteria.concat(" ");
+        if (code != null && !code.isEmpty()) {
+            words.add(code);
+        }
+
+        return search(context, words.toString(), fetchCovers);
+    }
+
+    @NonNull
+    private Book search(@NonNull final Context context,
+                        @NonNull final CharSequence queryParams,
+                        @NonNull final boolean[] fetchCovers)
+            throws SearchException, CredentialsException, StorageException {
+        final Book book = new Book();
+        // Sanity check
+        if (queryParams.length() == 0) {
+            return book;
+        }
+
+        final String url = getHostUrl(context) + String.format(SEARCH, queryParams);
         final Document document = loadDocument(context, url, null);
 
-        final Book book = new Book();
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book);
         }
