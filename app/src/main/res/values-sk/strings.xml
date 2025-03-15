@@ -185,7 +185,7 @@
     <string name="lbl_condition_dust_cover_none">Žiadny</string>
     <string name="lbl_author_type_writer">Spisovateľ</string>
     <string name="lbl_author_type_editor">Editor</string>
-    <string name="lbl_author_type_contributor">Prispievateľ</string>
+    <string name="lbl_author_type_contributor">Spolupracovník</string>
     <string name="lbl_author_type_intro">Úvod atď.</string>
     <string name="lbl_author_type_narrator">Rozprávač</string>
     <string name="lbl_author_type_artist">Ilustrácie</string>
@@ -223,7 +223,7 @@
     <string name="option_fab_add_book_manually">Pridať ručne</string>
     <string name="option_select_all">Vybrať všetko</string>
     <string name="option_select_none">Zrušiť výber všetkého</string>
-    <string name="lbl_all_bookshelves">Všetky knižnice</string>
+    <string name="lbl_all_bookshelves">Všetky police s knihami</string>
     <string name="option_fab_add_book_by_external_id">ID knihy na webovej stránke</string>
     <string name="btn_just_this_shelf">Len táto polica</string>
     <string name="option_apply_to_all_related_books">Všetky súvisiace knihy</string>
@@ -518,7 +518,7 @@
     <string name="lbl_lending">Požičanie</string>
     <string name="ps_use_read_progress_off">Použiť jednoduchý stav Prečítané/Neprečítané.</string>
     <string name="lbl_track_progress_long">Sledovať svoj pokrok</string>
-    <string name="lbl_percentage">Percento</string>
+    <string name="lbl_percentage">Percent</string>
     <string name="lbl_percentage_read">% prečítaných</string>
     <string name="lbl_total_pages">Celkový počet strán</string>
     <string name="cancel">Zrušiť</string>
