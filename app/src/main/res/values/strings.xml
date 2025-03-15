@@ -424,6 +424,7 @@
     <!-- website info: languages. -->
     <string name="site_description_various_languages">Various languages</string>
     <string name="site_description_chinese">Chinese</string>
+    <string name="site_description_czech">Czech and more</string>
     <string name="site_description_dutch_and_more">Dutch and more</string>
     <string name="site_description_english_and_more">English and more</string>
     <string name="site_description_french">French</string>

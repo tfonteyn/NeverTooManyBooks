@@ -68,6 +68,7 @@ public class Identifier
     public static final String SID_BEDETHEQUE = "bedetheque";
     public static final String SID_BNF = "bnf";
     public static final String SID_BRITISH_LIBRARY = "bl";
+    public static final String SID_DATABAZE_KNIH = "databazeknih";
     public static final String SID_DNB = "dnb";
     public static final String SID_DOI = "doi";
     public static final String SID_DOUBAN = "douban";
@@ -253,6 +254,11 @@ public class Identifier
                                "https://www.bl.uk",
                                null,
                                null),
+                new Identifier(SID_DATABAZE_KNIH, TYPE_STRING,
+                               context.getString(R.string.identifier_databaze_knih),
+                               "https://www.databazeknih.cz",
+                               "https://www.databazeknih.cz/prehled-knihy/x-%s",
+                               "https://www.databazeknih.cz/autori/x-%s"),
                 // 2025-01-29
                 new Identifier(SID_DNB, TYPE_STRING,
                                context.getString(R.string.identifier_dnb),

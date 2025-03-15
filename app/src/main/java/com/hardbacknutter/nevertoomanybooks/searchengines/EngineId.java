@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeS
 import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
@@ -200,6 +201,18 @@ public enum EngineId
                Locale.US,
                BookFinderSearchEngine.class,
                BuildConfig.ENABLE_BOOKFINDER),
+
+    /**
+     * Czech.
+     */
+    DatabazeKnih("databazeknih",
+                 R.string.site_databazeknih_cz,
+                 List.of(R.string.site_description_czech,
+                         R.string.site_description_catalog),
+                 "https://www.databazeknih.cz",
+                 new Locale("cs", "CZ"),
+                 DatabazeKnihSearchEngine.class,
+                 BuildConfig.ENABLE_DATABAZE_KNIH),
 
     /** German language books & comics. */
     Dnb("dnb",
@@ -444,6 +457,11 @@ public enum EngineId
             BookFinder.createConfig()
                       .build(SearchEngineConfig::new);
         }
+        if (DatabazeKnih.isEnabled()) {
+            DatabazeKnih.setIdentifierKey(Identifier.SID_DATABAZE_KNIH)
+                        .createConfig()
+                        .build(SearchEngineConfig::new);
+        }
         if (Dnb.isEnabled()) {
             Dnb.setIdentifierKey(Identifier.SID_DNB)
                .createConfig()
@@ -526,6 +544,9 @@ public enum EngineId
         // Site activation is partially done depending on the device or user set language
         // matching the site language.
         final boolean isChinese = languages.isUserLanguage(context, "zho");
+        final boolean isCzech = languages.isUserLanguage(context, "cze");
+        final boolean isSlovak = languages.isUserLanguage(context, "slo");
+
         final boolean isDutch = languages.isUserLanguage(context, "nld");
         final boolean isFrench = languages.isUserLanguage(context, "fra");
         final boolean isGerman = languages.isUserLanguage(context, "deu");
@@ -548,6 +569,9 @@ public enum EngineId
                 if (isChinese) {
                     type.addSite(Douban, true);
                 }
+                if (isCzech || isSlovak) {
+                    type.addSite(DatabazeKnih, true);
+                }
 
                 // All sites unless added above
                 type.addSite(Amazon, true);
@@ -569,6 +593,9 @@ public enum EngineId
 
                 if (!isChinese) {
                     type.addSite(Douban, false);
+                }
+                if (!isCzech && !isSlovak) {
+                    type.addSite(DatabazeKnih, false);
                 }
                 break;
             }

@@ -66,6 +66,9 @@ public final class FormatMapper
         MAPPINGS.put("capa dura", R.string.book_format_hardcover);
         // simplified chinese - Douban
         MAPPINGS.put("精装", R.string.book_format_hardcover);
+        // czech
+        MAPPINGS.put("pevná / vázaná", R.string.book_format_hardcover);
+        MAPPINGS.put("pevná / vázaná s přebalem", R.string.book_format_hardcover);
 
         // ################## Plain paperback ##################
 
@@ -83,6 +86,8 @@ public final class FormatMapper
         MAPPINGS.put("capa mole", R.string.book_format_paperback);
         // simplified chinese - Douban
         MAPPINGS.put("平装", R.string.book_format_paperback);
+        // czech
+        MAPPINGS.put("měkká / brožovaná", R.string.book_format_paperback);
 
 
         // ################## Mid-size (a.k.a 'trade') format paperback ##################
@@ -105,6 +110,8 @@ public final class FormatMapper
         MAPPINGS.put("livre numérique", R.string.book_format_ebook);
         // simplified chinese - Douban
         MAPPINGS.put("电子图书", R.string.book_format_ebook);
+        // czech
+        MAPPINGS.put("ekniha", R.string.book_format_ebook);
 
         // ################## Audio-books ##################
         MAPPINGS.put("audiobook", R.string.book_format_audiobook);

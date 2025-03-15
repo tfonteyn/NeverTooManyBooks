@@ -43,6 +43,8 @@
             translatable="false">bol.com</string>
     <string name="site_bookfinder"
             translatable="false">BookFinder</string>
+    <string name="site_databazeknih_cz"
+            translatable="false">Databaze Knih</string>
     <string name="site_dnb_de"
             translatable="false">DNB.DE</string>
     <string name="site_douban"
@@ -87,6 +89,8 @@
             translatable="false">Bibliothèque nationale de France</string>
     <string name="identifier_british_library"
             translatable="false">The British Library</string>
+    <string name="identifier_databaze_knih"
+            translatable="false">Databaze Knih</string>
     <string name="identifier_dnb"
             translatable="false">Deutsche Nationalbibliothek</string>
     <string name="identifier_doi"
