@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -212,7 +213,15 @@ public class DatabazeKnihSearchEngine
                     final Element desc = itemProp.nextElementSibling();
                     if (desc != null) {
                         String text = desc.wholeText();
-                        // remove the "click to see more" if present
+                        // text contains \n and lots of whitespace, cleanup
+                        text = Arrays.stream(text.split("\n"))
+                                     .map(String::strip)
+                                     // remove the "click to see more" if present
+                                     .filter(t -> !t.equals("... celý text"))
+                                     .collect(Collectors.joining("\n"))
+                                     // empty lines at end
+                                     .stripTrailing();
+                        // depending on the formatting it might still have the "click" text
                         if (text.endsWith("... celý text")) {
                             text = text.substring(0, text.length() - 13);
                         }

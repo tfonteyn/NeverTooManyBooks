@@ -106,9 +106,16 @@ public class ParseTest
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("2007", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        assertEquals(
-                "Enola se stále skrývá před svým bratrem – slavným detektivem Sherlockem Holmesem. Když ale objeví tajnou skrýš plnou brilantních kreseb, vyrazí po stopě jejich autorky, mladé lady Cecily, která beze stopy zmizela ze své ložnice. Enola se vydá do nočních ulic Londýna, kterými se potulují vrazi, aby rozluštila záhadu a zachránila talentovanou aristokratku před mocným padouchem. Riskuje však, že odhalí víc, než by měla...",
-                book.getString(DBKey.DESCRIPTION, null));
+        assertEquals("Enola se stále skrývá před svým\n"
+                     + "bratrem – slavným detektivem Sherlockem Holmesem. Když ale\n"
+                     + "objeví tajnou skrýš plnou brilantních kreseb, vyrazí po\n"
+                     + "stopě jejich autorky, mladé lady Cecily, která beze stopy\n"
+                     + "zmizela ze své ložnice. Enola se vydá do nočních ulic\n"
+                     + "Londýna, kterými se potulují vr\n"
+                     + "azi, aby rozluštila záhadu\n"
+                     + "a zachránila talentovanou aristokratku před mocným\n"
+                     + "padouchem. Riskuje však, že odhalí víc, než by měla...",
+                     book.getString(DBKey.DESCRIPTION, null));
 
         assertEquals("klasická kniha",
                      book.getString(DatabazeKnihSearchEngine.SiteField.FORMA, null));
@@ -203,9 +210,16 @@ public class ParseTest
         assertEquals("pevná / vázaná", book.getString(DBKey.FORMAT, null));
         assertEquals("2015", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        assertEquals(
-                "Soubor fejetonů, kterými herečka Aňa Geislerová přispívala do magazínu ELLE, nyní vychází knižně. V souhrnném vydání vyvstává příběh, který mohl dříve čtenářům snadno uniknout; příběh části života, ve které jako by se odehrálo úplně všechno. Příchod nových členů rodiny, odcházení těch starých, lásky, pády, úspěchy, problémy. Pět podivuhodných let, k nimž autorka přidala ještě několik dříve nepublikovaných textů.",
-                book.getString(DBKey.DESCRIPTION, null));
+        assertEquals("Soubor fejetonů, kterými herečka\n"
+                     + "Aňa Geislerová přispívala do magazínu ELLE, nyní vychází\n"
+                     + "knižně. V souhrnném vydání vyvstává příběh, který mohl dříve\n"
+                     + "čtenářům snadno uniknout; příběh části života, ve které jako\n"
+                     + "by se odehrálo úplně všechno. Příchod nových členů rodiny,\n"
+                     + "odcházení těch starých,\n"
+                     + "lásky, pády, úspěchy, problémy. Pět podivuhodných let, k\n"
+                     + "nimž autorka přidala ještě několik dříve nepublikovaných\n"
+                     + "textů.",
+                     book.getString(DBKey.DESCRIPTION, null));
 
         assertEquals("klasická kniha",
                      book.getString(DatabazeKnihSearchEngine.SiteField.FORMA, null));
@@ -286,8 +300,24 @@ public class ParseTest
         assertEquals("měkká / brožovaná", book.getString(DBKey.FORMAT, null));
         assertEquals("1951", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        assertTrue(book.getString(DBKey.DESCRIPTION, null)
-                       .startsWith("První kniha série Nadace."));
+        assertEquals("První kniha série Nadace.\n"
+                     + "\n"
+                     + "Po dlouhých dvanácti tisíciletích existence spěje galaktická Říše pomalu,"
+                     + " ale jistě k zániku. Prozatím jsou však trendy vedoucí k jejímu rozkladu"
+                     + " sotva postřehnutelné – vysledovat je dokáže pouze geniální matematik"
+                     + " Hari Seldon. Na základě psychohistorického modelu předpoví, že po pádu"
+                     + " Říše čeká galaxii nepopsatelný chaos a že následná éra barbarství se"
+                     + " protáhne na celých třicet tisíc let. Seldon se však s touto myšlenkou"
+                     + " nehodlá smířit. Na samém okraji galaxie proto založí na planetě"
+                     + " Terminus Nadaci, která má nejen uchovat kulturu a vědění předchozích"
+                     + " věků, ale stát se i zárodkem Druhé říše. Toto je příběh prvních dvou"
+                     + " set let její pohnuté historie…\n"
+                     + "\n"
+                     + "Nadace, Nadace a Říše, Druhá Nadace jsou trilogií skládající se z"
+                     + " příběhů z historie vzdálené budoucnosti trvající více než milión let v"
+                     + " době, kdy jsou planety v celé mléčné dráze spojené do obrovské"
+                     + " Galaktické Říše.",
+                     book.getString(DBKey.DESCRIPTION, null));
 
         assertEquals("Foundation",
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
@@ -345,7 +375,7 @@ public class ParseTest
 
     @Test
     public void parseWithToc01()
-            throws IOException, SearchException, CredentialsException, StorageException {
+            throws IOException {
 
         final String locationHeader = "https://www.databazeknih.cz/povidky-z-knihy/ja-robot-246";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
