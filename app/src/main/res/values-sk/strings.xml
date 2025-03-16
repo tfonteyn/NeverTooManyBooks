@@ -137,11 +137,11 @@
     <string name="info_isfdb_warning_limited_to">(podporované iba webovou stránkou ISFDB)</string>
     <string name="info_site_list">Vyhľadávania sú obmedzené na: %1$s</string>
     <string name="site_description_chinese">Čínština</string>
-    <string name="site_description_dutch_and_more">Holandčina a viac</string>
-    <string name="site_description_english_and_more">Angličtina a viac</string>
+    <string name="site_description_dutch_and_more">Holandčina a ďalšie</string>
+    <string name="site_description_english_and_more">Angličtina a ďalšie</string>
     <string name="site_description_french">Francúzština</string>
-    <string name="site_description_french_and_more">Francúzština a viac</string>
-    <string name="site_description_portuguese_and_more">Portugalčina a viac</string>
+    <string name="site_description_french_and_more">Francúzština a ďalšie</string>
+    <string name="site_description_portuguese_and_more">Portugalčina a ďalšie</string>
     <string name="site_description_shop">Obchod</string>
     <string name="site_description_eu_comics">Európske komiksy</string>
     <string name="site_description_fsf">Fantasy a sci-fi</string>
@@ -177,11 +177,11 @@
     <string name="lbl_edition_limited">Limitované vydanie</string>
     <string name="lbl_edition_slipcase">Puzdro</string>
     <string name="lbl_edition_book_club">Vydanie knižného klubu</string>
-    <string name="lbl_condition_fine">Ako nová</string>
+    <string name="lbl_condition_fine">Ako nový</string>
     <string name="lbl_condition_very_good">Veľmi dobrý</string>
     <string name="lbl_condition_good">Dobrý</string>
     <string name="lbl_condition_reading_copy">Čítaná kópia</string>
-    <string name="lbl_condition_dust_cover_missing_or_bad">Chýbajúca/zlý</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Chýbajúci/zlý</string>
     <string name="lbl_condition_dust_cover_none">Žiadny</string>
     <string name="lbl_author_type_writer">Spisovateľ</string>
     <string name="lbl_author_type_editor">Editor</string>
@@ -846,4 +846,5 @@
     <string name="strict">Prísne</string>
     <string name="X_error_authentication_failed">Autentifikácia zlyhala</string>
     <string name="unknown_author">[Neznámý autor]</string>
+    <string name="site_description_czech">Čeština a ďalšie</string>
 </resources>
