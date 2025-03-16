@@ -71,12 +71,15 @@ import org.jsoup.select.Elements;
 public class DatabazeKnihSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByText {
+                   SearchEngine.ByText,
+                   SearchEngine.ByExternalId {
 
     private static final String TAG = "DatabazeKnihSearchEngin";
 
     /** Used for isbn, or any other set of keywords. */
     private static final String SEARCH = "/search?in=books&q=%1$s";
+    private static final String BY_SID = "/prehled-knihy/x-%s";
+
     /** The html title attribute starts with this if we get a list back. */
     private static final String MULTI_RESULT_PAGE_TITLE = "Vyhledávání";
 
@@ -116,6 +119,23 @@ public class DatabazeKnihSearchEngine
         ratingParser = new RatingParser(5);
 
         resolver = DatabazeKnihAuthorResolver.create(appContext, this);
+    }
+
+    @NonNull
+    @Override
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final String externalId,
+                                   @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+        final Book book = new Book();
+
+        final String url = getHostUrl(context) + String.format(BY_SID, externalId);
+        final Document document = loadDocument(context, url, null);
+
+        if (!isCancelled()) {
+            parse(context, document, fetchCovers, book);
+        }
+        return book;
     }
 
     @NonNull
@@ -271,7 +291,7 @@ public class DatabazeKnihSearchEngine
                 }
                 case "datePublished": {
                     final String text = itemProp.text();
-                    if (!text.isEmpty()) {
+                    if (!text.isEmpty() && !"?".equals(text)) {
                         partialDateParser.parse(text).ifPresent(book::setPublicationDate);
                     }
                     break;
@@ -596,7 +616,7 @@ public class DatabazeKnihSearchEngine
         if (img != null) {
             url = img.attr("src");
         }
-        if (url == null) {
+        if (url == null || url.contains("empty_bmid.jpg")) {
             return Optional.empty();
         }
 
