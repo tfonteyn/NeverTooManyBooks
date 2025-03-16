@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -76,7 +77,7 @@ public class DatabazeKnihSearchEngine
 
     private final RatingParser ratingParser;
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
-    private final DatabazeKnihAuthorResolver resolver;
+    private final AuthorResolver resolver;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -91,7 +92,7 @@ public class DatabazeKnihSearchEngine
 
         ratingParser = new RatingParser(5);
 
-        resolver = new DatabazeKnihAuthorResolver(appContext, this);
+        resolver = DatabazeKnihAuthorResolver.create(appContext, this);
     }
 
     @NonNull
