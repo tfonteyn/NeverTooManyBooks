@@ -281,8 +281,8 @@ class ResultsAccumulator {
      * classes of {@code EditBookBaseFragment},
      * where in the {@code onPopulateViews} method the lists are pruned.
      * We do it there because each list might/does not some specific
-     * handling.
-     * TODO: maybe we *should* add a simple (no db lookups) check on duplicates?
+     * handling. Similar pruning is done when an "Update from .." is run during
+     * the database save.
      *
      * @param <T>      type of items in the ArrayList
      * @param key      Key of data
