@@ -61,7 +61,7 @@
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_dnb,site_isfdb,site_kbnl,site_open_library,site_bedetheque,site_last_dodo_nl,site_strip_info_be,"
+            app:constraint_referenced_ids="site_amazon,site_databaze_knih,site_dnb,site_isfdb,site_kbnl,site_open_library,site_bedetheque,site_last_dodo_nl,site_strip_info_be,"
             tools:ignore="MissingConstraints"
             />
 
@@ -83,6 +83,17 @@
             />
 
         <RadioButton
+            android:id="@+id/site_databaze_knih"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_databazeknih_cz"
+            app:layout_constraintEnd_toStartOf="@id/col0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/site_amazon"
+            />
+
+        <RadioButton
             android:id="@+id/site_dnb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -91,7 +102,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_amazon"
+            app:layout_constraintTop_toBottomOf="@id/site_databaze_knih"
             tools:visibility="visible"
             />
 
