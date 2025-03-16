@@ -338,10 +338,10 @@
     <string name="option_storage_edit_settings">Изменить настройки</string>
     <string name="lbl_edit_style">Редактировать стиль</string>
     <string name="lbl_edition">Издание</string>
-    <string name="lbl_edition_book_club">Книжный клуб Издание</string>
-    <string name="lbl_edition_first_edition">первое издание</string>
-    <string name="lbl_edition_first_impression">первый отпечаток</string>
-    <string name="lbl_edition_limited">ограниченный выпуск</string>
+    <string name="lbl_edition_book_club">Издание книжного клуба</string>
+    <string name="lbl_edition_first_edition">Первое издание</string>
+    <string name="lbl_edition_first_impression">Первый тираж</string>
+    <string name="lbl_edition_limited">Ограниченное издание</string>
     <string name="lbl_edition_slipcase">шкатулка</string>
     <string name="lbl_export_books_option_all">Все книги</string>
     <string name="lbl_export_books_option_since_last_full_backup">Новые и обновленные книги</string>
@@ -730,8 +730,8 @@
     <string name="info_story_in_single_book">«%1$s» присутствует в одной книге:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Импортируйте текстовый файл с номерами ISBN. Файл должен иметь один ISBN в каждой строке. Результаты будут помещены в очередь.</string>
     <string name="lbl_date_added">Дата добавления</string>
-    <string name="lbl_group_1st_char_author_family_name">1-й символ фамилии Автора</string>
-    <string name="lbl_group_1st_char_series_title">1-й персонаж названия сериала</string>
+    <string name="lbl_group_1st_char_author_family_name">1-й символ фамилии автора</string>
+    <string name="lbl_group_1st_char_series_title">1-й знак названия серии</string>
     <string name="lbl_group_1st_char_publisher_name">1-й символ имени издателя</string>
     <string name="lbl_group_1st_char_book_title">1-й символ названия книги</string>
     <string name="debug_select_items">Выберите, что вы хотите включить:</string>
@@ -853,7 +853,7 @@
     <string name="lbl_capitalize_none">Без изменений</string>
     <string name="lbl_capitalize_words">Начало слов</string>
     <string name="lbl_capitalize_sentence">Начало предложений</string>
-    <string name="lbl_assign_location">Назначить местоположение</string>
+    <string name="lbl_assign_location">Назначение местоположения</string>
     <string name="lbl_identifier">Идентификатор</string>
     <string name="lbl_identifiers">Идентификаторы</string>
     <string name="confirm_apply_substitutions">Применить правила замены? Все применимые книги будут обновлены.</string>
