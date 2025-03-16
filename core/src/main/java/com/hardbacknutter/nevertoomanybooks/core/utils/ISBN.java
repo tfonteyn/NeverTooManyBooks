@@ -306,6 +306,8 @@ public class ISBN {
      * Check if we have a valid code. Does not check for a specific type.
      *
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
+     *                   {@code false} to allow other codes which
+     *                   <strong>MUST</strong> be valid
      *
      * @return validity
      */
@@ -313,6 +315,7 @@ public class ISBN {
         if (strictIsbn) {
             return codeType == Type.Isbn13 || codeType == Type.Isbn10;
         } else {
+            // other codes accepted as long as they are valid
             return codeType != Type.Invalid;
         }
     }
