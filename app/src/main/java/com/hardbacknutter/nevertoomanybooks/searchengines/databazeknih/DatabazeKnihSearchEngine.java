@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -301,9 +303,22 @@ public class DatabazeKnihSearchEngine
         // Sanity check
         if (sid != null && !sid.isEmpty()) {
             // fetch the "more details" and parse
-            final Document additional = loadDocument(
+            final Document d2 = loadDocument(
                     context, getHostUrl(context) + "/book-detail-more-info/" + sid, null);
-            parseAdditional(context, additional, book);
+            parseAdditional(context, d2, book);
+        }
+
+        final Element linksElement = document.selectFirst("ul#newIcons");
+        if (linksElement != null) {
+            final Element a = linksElement.selectFirst("a[href^=/povidky-z-knihy/]");
+            if (a != null) {
+                final String url = a.attr("href");
+                if (!url.isEmpty()) {
+                    final Document d2 = loadDocument(
+                            context, getHostUrl(context) + url, null);
+                    parseToc(context, d2, book);
+                }
+            }
         }
 
         if (isCancelled()) {
@@ -416,6 +431,42 @@ public class DatabazeKnihSearchEngine
                         book.putString(SiteField.FORMA, text);
                     }
                 }
+            }
+        }
+    }
+
+    @VisibleForTesting
+    void parseToc(@NonNull final Context context,
+                  @NonNull final Document root,
+                  @NonNull final Book book) {
+
+        final Element element = root.selectFirst("table.new.odtop_big");
+        if (element != null) {
+            final Elements tds = element.select("td");
+
+            Author primaryAuthor = book.getPrimaryAuthor();
+            if (primaryAuthor == null) {
+                primaryAuthor = Author.createUnknownAuthor(context);
+            }
+
+            final List<TocEntry> toc = new ArrayList<>();
+            for (final Element td : tds) {
+                final Element a = td.selectFirst("a");
+                if (a != null) {
+                    final String title = a.text();
+                    if (!title.isEmpty()) {
+                        final TocEntry tocEntry = new TocEntry(primaryAuthor, title);
+                        final Element year = a.nextElementSibling();
+                        if (year != null) {
+                            partialDateParser.parse(year.text()).ifPresent(
+                                    tocEntry::setFirstPublicationDate);
+                        }
+                        toc.add(tocEntry);
+                    }
+                }
+            }
+            if (!toc.isEmpty()) {
+                book.setToc(toc);
             }
         }
     }

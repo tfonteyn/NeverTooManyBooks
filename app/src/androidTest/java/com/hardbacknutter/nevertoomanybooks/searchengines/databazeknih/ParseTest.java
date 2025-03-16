@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -175,7 +176,6 @@ public class ParseTest
                                           + "_9788025368626_0_.jpg"));
     }
 
-
     @Test
     public void parse02()
             throws SearchException, IOException, CredentialsException, StorageException {
@@ -260,7 +260,6 @@ public class ParseTest
         assertEquals("70610", oIv.get());
     }
 
-
     @Test
     public void parseMulti01()
             throws IOException, SearchException, CredentialsException, StorageException {
@@ -342,5 +341,53 @@ public class ParseTest
 
         assertEquals("Nadace", series.get(0).getTitle());
         assertEquals("1. díl", series.get(0).getNumber());
+    }
+
+    @Test
+    public void parseWithToc01()
+            throws IOException, SearchException, CredentialsException, StorageException {
+
+        final String locationHeader = "https://www.databazeknih.cz/povidky-z-knihy/ja-robot-246";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.databazeknih_8023739611_povidky;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parseToc(context, document, book);
+        Log.d(TAG, book.toString());
+
+        final List<TocEntry> toc = book.getToc();
+        assertEquals(9, toc.size());
+
+        TocEntry te;
+        int i = 0;
+
+        te = toc.get(i++);
+        assertEquals("Chyť toho králíka! / Najprv zabiť vlka", te.getTitle());
+        assertEquals("1944", te.getFirstPublicationDate().getIsoString());
+        te = toc.get(i++);
+        assertEquals("Důkaz / Dôkaz", te.getTitle());
+        assertEquals("1946", te.getFirstPublicationDate().getIsoString());
+        te = toc.get(i++);
+        assertEquals("Hra na honěnou / Kolotoč", te.getTitle());
+        assertEquals("1942", te.getFirstPublicationDate().getIsoString());
+        te = toc.get(i++);
+        assertEquals("Konflikt nikoli nevyhnutelný / Odvrátiteľný konflikt", te.getTitle());
+        assertEquals("1950", te.getFirstPublicationDate().getIsoString());
+        te = toc.get(i++);
+        assertEquals("Lhář! / Klamár!", te.getTitle());
+        assertEquals("1941", te.getFirstPublicationDate().getIsoString());
+        te = toc.get(i++);
+        assertEquals("Malý ztracený robot / Stratený robot", te.getTitle());
+        assertEquals("1947", te.getFirstPublicationDate().getIsoString());
+        te = toc.get(i++);
+        assertEquals("Robbie", te.getTitle());
+        assertEquals("1940", te.getFirstPublicationDate().getIsoString());
+        te = toc.get(i++);
+        assertEquals("Rozum", te.getTitle());
+        assertEquals("1941", te.getFirstPublicationDate().getIsoString());
+        te = toc.get(i++);
+        assertEquals("Únik", te.getTitle());
+        assertEquals("1945", te.getFirstPublicationDate().getIsoString());
     }
 }
