@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -211,43 +211,47 @@ public class SearchTask
 
         final Book book;
         switch (by) {
-            case ExternalId:
+            case ExternalId: {
                 if (externalId == null || externalId.isEmpty()) {
                     throw new IllegalArgumentException("externalId not set");
                 }
                 book = ((SearchEngine.ByExternalId) searchEngine)
                         .searchByExternalId(context, externalId, fetchCovers);
                 break;
-
-            case Isbn:
+            }
+            case Isbn: {
                 if (isbnStr == null || isbnStr.isEmpty()) {
                     throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
                 }
                 book = ((SearchEngine.ByIsbn) searchEngine)
                         .searchByIsbn(context, isbnStr, fetchCovers);
                 break;
-
-            case Barcode:
+            }
+            case Barcode: {
                 if (isbnStr == null || isbnStr.isEmpty()) {
                     throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
                 }
                 book = ((SearchEngine.ByBarcode) searchEngine)
                         .searchByBarcode(context, isbnStr, fetchCovers);
                 break;
-
-            case Text:
+            }
+            case Text: {
+                // FIXME: github #131 "ISBN: 01-001-86" allow searches with null/empty criteria
+                //  when there is an isbnStr
+                //  => must update code in ALL SearchEngines to allow this!
                 if (criteria == null || criteria.isEmpty()) {
                     throw new IllegalArgumentException("criteria not set");
                 }
                 book = ((SearchEngine.ByText) searchEngine)
                         .search(context, criteria, isbnStr, fetchCovers);
                 break;
-
-            default:
+            }
+            default: {
                 // we should never get here...
                 throw new IllegalArgumentException("SearchEngine "
                                                    + searchEngine.getName(context)
                                                    + " does not implement By=" + by);
+            }
         }
 
         return book;
