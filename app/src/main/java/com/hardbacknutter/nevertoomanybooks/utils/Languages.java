@@ -25,6 +25,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
@@ -423,8 +424,9 @@ public class Languages {
      * @param context Current context
      * @param locale  the Locale for which to create a mapping
      */
-    private void createLanguageMappingCache(@NonNull final Context context,
-                                            @NonNull final Locale locale) {
+    @VisibleForTesting
+    public void createLanguageMappingCache(@NonNull final Context context,
+                                           @NonNull final Locale locale) {
         final SharedPreferences preferences =
                 PreferenceManager.getDefaultSharedPreferences(context);
 

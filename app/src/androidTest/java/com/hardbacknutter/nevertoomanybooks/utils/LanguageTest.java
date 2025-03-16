@@ -55,4 +55,75 @@ public class LanguageTest
         // This fails as Ancient Greek is not a supported Locale on Android
         Log.d(TAG, "locale =" + new Locale("grc"));
     }
+
+    @Test
+    public void databazeKnihCzech() {
+        // 'český': 'cs',
+        // 'slovenský': 'sk',
+        // 'německý': 'de',
+        // 'polský': 'pl',
+        // 'anglický': 'en',
+        // 'francouzský': 'fr',
+        // 'španělský': 'es',
+        // 'italský': 'it'}
+        final Languages l = serviceLocator.getLanguages();
+
+        final Locale locale = new Locale("cs", "CZ");
+        l.createLanguageMappingCache(context, locale);
+
+        // ces=cs
+        Log.d(TAG, "ces=" + l.getLocaleIsoFromISO3(Locale.UK, "ces"));
+        // display:Czech
+        Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "ces"));
+        // cze=cs
+        Log.d(TAG, "cze=" + l.getLocaleIsoFromISO3(Locale.UK, "cze"));
+        // display:Czech
+        Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "cze"));
+
+
+        Log.d(TAG, "český=" + l.getISO3FromDisplayLanguage(context, locale, "český"));
+        Log.d(TAG, "slovenský=" + l.getISO3FromDisplayLanguage(context, locale, "slovenský"));
+        Log.d(TAG, "německý=" + l.getISO3FromDisplayLanguage(context, locale, "německý"));
+        Log.d(TAG, "polský=" + l.getISO3FromDisplayLanguage(context, locale, "polský"));
+        Log.d(TAG, "anglický=" + l.getISO3FromDisplayLanguage(context, locale, "anglický"));
+        Log.d(TAG, "francouzský=" + l.getISO3FromDisplayLanguage(context, locale, "francouzský"));
+        Log.d(TAG, "španělský=" + l.getISO3FromDisplayLanguage(context, locale, "španělský"));
+        Log.d(TAG, "italský=" + l.getISO3FromDisplayLanguage(context, locale, "italský"));
+
+    }
+
+    @Test
+    public void databazeKnihSlovak() {
+        //     * //         lang_mapping = {'český': 'cs',
+        // 'slovenský': 'sk',
+        // 'německý': 'de',
+        // 'polský': 'pl',
+        // 'anglický': 'en',
+        // 'francouzský': 'fr',
+        // 'španělský': 'es',
+        // 'italský': 'it'}
+        final Languages l = serviceLocator.getLanguages();
+
+        final Locale locale = new Locale("sk", "SK");
+        l.createLanguageMappingCache(context, locale);
+
+        // slk=sk
+        Log.d(TAG, "slk=" + l.getLocaleIsoFromISO3(Locale.UK, "slk"));
+        // display:Slovak
+        Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "slk"));
+        // slo=sk
+        Log.d(TAG, "slo=" + l.getLocaleIsoFromISO3(Locale.UK, "slo"));
+        // display:Slovak
+        Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "slo"));
+
+        Log.d(TAG, "český=" + l.getISO3FromDisplayLanguage(context, locale, "český"));
+        Log.d(TAG, "slovenský=" + l.getISO3FromDisplayLanguage(context, locale, "slovenský"));
+        Log.d(TAG, "německý=" + l.getISO3FromDisplayLanguage(context, locale, "německý"));
+        Log.d(TAG, "polský=" + l.getISO3FromDisplayLanguage(context, locale, "polský"));
+        Log.d(TAG, "anglický=" + l.getISO3FromDisplayLanguage(context, locale, "anglický"));
+        Log.d(TAG, "francouzský=" + l.getISO3FromDisplayLanguage(context, locale, "francouzský"));
+        Log.d(TAG, "španělský=" + l.getISO3FromDisplayLanguage(context, locale, "španělský"));
+        Log.d(TAG, "italský=" + l.getISO3FromDisplayLanguage(context, locale, "italský"));
+
+    }
 }
