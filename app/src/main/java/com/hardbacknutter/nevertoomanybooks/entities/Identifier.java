@@ -254,7 +254,7 @@ public class Identifier
                                "https://www.bl.uk",
                                null,
                                null),
-                new Identifier(SID_DATABAZE_KNIH, TYPE_STRING,
+                new Identifier(SID_DATABAZE_KNIH, TYPE_LONG,
                                context.getString(R.string.identifier_databaze_knih),
                                "https://www.databazeknih.cz",
                                "https://www.databazeknih.cz/prehled-knihy/x-%s",
