@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -845,4 +842,5 @@
     <string name="confirm_delete_identifier_from_x_books">删除识别符 “%1$s”？\n\n将从 %2$s 处删除它。书籍本身不会被删除。</string>
     <string name="action_restore_default_identifiers">恢复默认识别符</string>
     <string name="pt_bob_show_group_book_count">显示每组中的书籍数。</string>
+    <string name="site_description_czech">捷克语及更多</string>
 </resources>
