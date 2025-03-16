@@ -212,7 +212,7 @@ public enum EngineId
                  "https://www.databazeknih.cz",
                  new Locale("cs", "CZ"),
                  DatabazeKnihSearchEngine.class,
-                 BuildConfig.ENABLE_DATABAZE_KNIH),
+                 true),
 
     /** German language books & comics. */
     Dnb("dnb",

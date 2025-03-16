@@ -91,7 +91,6 @@ android {
 
         // Under development; disabled for release builds in buildTypes.release
         buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
-        buildConfigField("boolean", "ENABLE_DATABAZE_KNIH", "true")
 
         buildConfigField("boolean", "ENABLE_ISFDB_LOGIN", "true")
         buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "true")
@@ -117,7 +116,6 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_BOOKFINDER", "false")
-            buildConfigField("boolean", "ENABLE_DATABAZE_KNIH", "false")
             buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "false")
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
 
