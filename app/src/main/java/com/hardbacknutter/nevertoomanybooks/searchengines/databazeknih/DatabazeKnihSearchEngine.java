@@ -70,9 +70,9 @@ import org.jsoup.select.Elements;
 
 public class DatabazeKnihSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByIsbn,
-                   SearchEngine.ByText,
-                   SearchEngine.ByExternalId {
+        implements SearchEngine.ByText,
+                   SearchEngine.ByExternalId,
+                   SearchEngine.ByBarcode {
 
     private static final String TAG = "DatabazeKnihSearchEngin";
 
