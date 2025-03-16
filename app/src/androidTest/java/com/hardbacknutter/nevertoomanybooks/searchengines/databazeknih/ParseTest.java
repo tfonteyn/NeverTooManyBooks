@@ -203,7 +203,7 @@ public class ParseTest
         assertEquals("P.S.", book.getString(DBKey.TITLE, null));
         assertEquals("9788024929613", book.getString(DBKey.ISBN, null));
         assertEquals("267961", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
-        assertEquals("2015", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("1997", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
         assertEquals("216", book.getString(DBKey.PAGES, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
@@ -273,6 +273,92 @@ public class ParseTest
         assertTrue(oIv.isPresent());
         assertEquals("70610", oIv.get());
     }
+
+    @Test
+    public void parse03()
+            throws SearchException, IOException, CredentialsException, StorageException {
+
+        final String locationHeader = "https://www.databazeknih.cz/prehled-knihy/sonety-milencin-narek-dvojjazycna-kniha-694";
+
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.databazeknih_8072210041;
+
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Sonety / Milenčin nářek (dvojjazyčná kniha)",
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("8072210041", book.getString(DBKey.ISBN, null));
+        assertEquals("694", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
+        assertEquals("1997", book.getString(DBKey.PUBLICATION_DATE, null));
+        // language=jiný -> "other", replaced with ""
+        assertEquals("", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("352", book.getString(DBKey.PAGES, null));
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals("pevná / vázaná s přebalem", book.getString(DBKey.FORMAT, null));
+
+        assertEquals("Sonnets / A lover's complaint",
+                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+
+        assertEquals("klasická kniha",
+                     book.getString(DatabazeKnihSearchEngine.SiteField.FORMA, null));
+
+        assertEquals("Dvojjazyčné vydání /česky a\n"
+                     + "anglicky/ kompletních Shakespearových sonetů s jeho méně\n"
+                     + "známou, rozsáhlou básnickou skladbou Milenčin nářek.\n"
+                     + "(Pozn.: v knize uvedeno chybné ISBN 80-7221-005-X)",
+                     book.getString(DBKey.DESCRIPTION, null));
+
+        final List<Tag> bookTags = book.getTags();
+
+        assertEquals(2, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Poezie"));
+        assertTrue(tags.contains("dvojjazyčná vydání"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Arca JiMfa", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(3, authors.size());
+
+        Author author;
+        Optional<String> oIv;
+
+        author = authors.get(0);
+        assertEquals("Shakespeare", author.getFamilyName());
+        assertEquals("William", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
+        assertTrue(oIv.isPresent());
+        assertEquals("73", oIv.get());
+
+        author = authors.get(1);
+        assertEquals("Lavický", author.getFamilyName());
+        assertEquals("Vladimír", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
+        assertTrue(oIv.isPresent());
+        assertEquals("55984", oIv.get());
+
+        author = authors.get(2);
+        assertEquals("Urbánková", author.getFamilyName());
+        assertEquals("Jarmila", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
+        assertTrue(oIv.isPresent());
+        assertEquals("664", oIv.get());
+    }
+
 
     @Test
     public void parseMulti01()

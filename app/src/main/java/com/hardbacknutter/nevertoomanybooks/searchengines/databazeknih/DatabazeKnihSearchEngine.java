@@ -96,7 +96,9 @@ public class DatabazeKnihSearchEngine
             "anglický", "eng",
             "francouzský", "fre",
             "španělský", "spa",
-            "italský", "ita"
+            "italský", "ita",
+            // other, remove it
+            "jiný", ""
     );
 
     @NonNull
@@ -332,13 +334,16 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 // <h4>The Case of the Left-Handed Lady<span class="gray">,</span> 2007</h4>
                 if ("h4".equals(element.tag().getName())) {
-                    if (element.childNodeSize() == 3) {
-                        String text;
-                        text = SearchEngineUtils.cleanName(element.childNode(0).toString());
+                    if (element.childNodeSize() > 0) {
+                        final String text = SearchEngineUtils.cleanName(
+                                element.childNode(0).toString());
                         if (!text.isEmpty()) {
                             book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, text);
                         }
-                        text = SearchEngineUtils.cleanText(element.childNode(2).toString());
+                    }
+                    if (element.childNodeSize() > 2) {
+                        final String text = SearchEngineUtils.cleanText(
+                                element.childNode(2).toString());
                         partialDateParser.parse(text).ifPresent(
                                 book::setFirstPublicationDate);
                     }
