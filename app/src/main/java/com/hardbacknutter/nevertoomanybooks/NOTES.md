@@ -7,12 +7,15 @@ NEW:
 - new UI language: Slovak, kindly contributed by [Milan](https://hosted.weblate.org/user/Milan/)
   who also corrected/updated the Czech translation.
 - #131 Added https://www.databazeknih.cz for looking up Czech and Slovak books
-- #113/#129 rewritten the group-level summation of the books in that group
-  making it several orders of magnitude faster.
 - #125 allow grouping by "original language"
-- #120 improvements to scrolling to the correct book
+- #86 Now collecting identifiers for Authors and providing a "View on…" menu.
+  This is minimalistic for now, but will expand in the next versions.
 
 FIXES:
+
+- #113/#129 rewritten the group-level summation of the books in that group
+  making it several orders of magnitude faster.
+- #120 improvements to scrolling to the correct book
 
 REMOVED:
 
