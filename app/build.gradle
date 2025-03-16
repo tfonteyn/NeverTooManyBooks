@@ -76,13 +76,10 @@ android {
         targetSdk = rootProject.ext.targetSdkVersion
 
         // NEWTHINGS: add app language: add the string res file. No other app changes needed.
-        // Keep the two sub-lists in alphabetic order
         def supportedLocales = [
-                // Primary translations - done/checked by native speaker or pretty good.
-                "de", "en", "en_GB", "es", "fr", "it", "nl", "pt", "pt_BR", "ta", "tr", "vi",
-                "zh_CN", "zh_TW",
-                // Secondary translations - These really need checking by a native speaker
-                "cs", "el", "pl", "ru"]
+                "cs", "de", "el", "en", "en_GB", "es", "fr", "it", "nl",
+                "pl", "pt", "pt_BR", "ru", "sk", "ta", "tr", "vi",
+                "zh_CN", "zh_TW"]
         resourceConfigurations += supportedLocales
 
         buildConfigField("String[]", "SUPPORTED_LOCALES",
