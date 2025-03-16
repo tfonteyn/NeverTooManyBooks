@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -257,14 +254,14 @@
     <string name="option_archive_type_json">JSON-Export (.json)</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Autorentyp</string>
-    <string name="lbl_author_type_artist">Abbildungen</string>
-    <string name="lbl_author_type_colorist">Farbe</string>
-    <string name="lbl_author_type_contributor">Mitarbeiter</string>
+    <string name="lbl_author_type_artist">Illustrator</string>
+    <string name="lbl_author_type_colorist">Colorist</string>
+    <string name="lbl_author_type_contributor">Mitwirkender</string>
     <string name="lbl_author_type_cover_artist">Titelbild</string>
-    <string name="lbl_author_type_cover_colorist">Titelbild Farbe</string>
-    <string name="lbl_author_type_cover_inking">Titelbild Inkting</string>
+    <string name="lbl_author_type_cover_colorist">Colorist des Covers</string>
+    <string name="lbl_author_type_cover_inking">Inker des Covers</string>
     <string name="lbl_author_type_editor">Editor</string>
-    <string name="lbl_author_type_inking">Tinte</string>
+    <string name="lbl_author_type_inking">Inker</string>
     <string name="lbl_author_type_intro">Einführung etc.</string>
     <string name="lbl_author_type_narrator">Erzähler</string>
     <string name="lbl_author_type_translator">Übersetzer</string>
@@ -509,7 +506,7 @@
     <string name="password">Passwort</string>
     <string name="option_bob_filter_isbn_no">Ohne ISBN</string>
     <string name="option_bob_filter_isbn_yes">Mit ISBN</string>
-    <string name="option_bob_filter_lend_out_no">Bücher zur Verfügung</string>
+    <string name="option_bob_filter_lend_out_no">Verfügbare Bücher</string>
     <string name="option_bob_filter_lend_out_yes">Bücher ausgeliehen</string>
     <string name="X_option_bob_filter_read_no">Bücher ungelesen</string>
     <string name="X_option_bob_filter_read_yes">Bücher gelesen</string>
@@ -796,8 +793,8 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Bücherregale zuweisen</string>
     <string name="site_description_comics">Comics</string>
-    <string name="lbl_author_type_storyboard">Drehbuch</string>
-    <string name="lbl_author_type_lettering">Beschriftung</string>
+    <string name="lbl_author_type_storyboard">Szenarist</string>
+    <string name="lbl_author_type_lettering">Letterer</string>
     <string name="lbl_percentage">Prozentsatz</string>
     <string name="lbl_percentage_read" tools:ignore="StringFormatInvalid">% gelesen</string>
     <string name="lbl_current_page">Aktuelle Seite</string>
