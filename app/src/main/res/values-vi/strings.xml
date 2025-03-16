@@ -739,6 +739,7 @@
     <!-- Bản tổng kê == "Inventory"; Mua sắm == "Shopping" -->
     <string name="site_description_chinese">Người Trung Quốc</string>
     <string name="site_description_catalog">Bản tổng kê</string>
+    <string name="site_description_czech">Tiếng Séc và nhiều hơn nữa</string>
     <string name="site_description_dutch_and_more">Tiếng Hà Lan và hơn thế nữa</string>
     <string name="site_description_eu_comics">Truyện tranh Châu Âu</string>
     <string name="site_description_comics">Truyện tranh</string>

@@ -218,6 +218,7 @@
     <string name="info_site_search_field_optional">விரும்பினால். எல்லா வலைத்தளங்களும் ஆதரிக்கவில்லை.</string>
     <string name="site_description_various_languages">பல்வேறு மொழிகள்</string>
     <string name="site_description_chinese">சீன</string>
+    <string name="site_description_czech">செக் மற்றும் பல</string>
     <string name="site_description_dutch_and_more">டச்சு மற்றும் பல</string>
     <string name="site_description_english_and_more">ஆங்கிலம் மற்றும் பல</string>
     <string name="site_description_french">பிரஞ்சு</string>

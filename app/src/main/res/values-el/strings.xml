@@ -760,6 +760,7 @@ A question mark is written as the character semicolon: ';'
     <string name="site_description_shop">Αγορές</string>
     <string name="site_description_catalog">Κατάστημα</string>
     <string name="site_description_chinese">Κινέζικα</string>
+    <string name="site_description_czech">Τσέχικα και άλλα</string>
     <string name="site_description_dutch_and_more">Ολλανδικά και άλλα</string>
     <string name="site_description_english_and_more">Αγγλικά και άλλα</string>
     <string name="site_description_french">Γαλλικά</string>

@@ -775,6 +775,7 @@
     <string name="option_sync_deleted_book_records">Sincronizar livros eliminados</string>
     <string name="info_site_search_field_optional">Opcional. Não é suportado por todos os sítios Web.</string>
     <string name="site_description_catalog">Catálogo</string>
+    <string name="site_description_czech">Checo e mais</string>
     <string name="site_description_dutch_and_more">Holandês e mais</string>
     <string name="site_description_eu_comics">Banda desenhada europeia</string>
     <string name="site_description_english_and_more">Inglês e mais</string>

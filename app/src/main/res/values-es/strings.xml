@@ -754,6 +754,7 @@
     <string name="option_sync_deleted_book_records">Sincronizar libros borrados</string>
     <string name="info_maintenance_sync_deleted_book_records">Esto comprobará el historial de los libros eliminados de una importación anterior desde otro dispositivo y sincronizará esas eliminaciones. En otras palabras, los libros marcados como borrados en el otro dispositivo también se borrarán en este dispositivo.</string>
     <string name="site_description_catalog">Catálogo</string>
+    <string name="site_description_czech">Checo y más</string>
     <string name="site_description_dutch_and_more">Holandés y más</string>
     <string name="site_description_eu_comics">Cómics europeos</string>
     <string name="site_description_english_and_more">Inglés y más</string>

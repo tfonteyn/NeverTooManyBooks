@@ -758,6 +758,7 @@
     <string name="option_sync_deleted_book_records">Synchroniser les livres supprimés</string>
     <string name="info_site_search_field_optional">Optionnel. N’est pas pris en charge par tous les sites web.</string>
     <string name="site_description_catalog">Catalogue</string>
+    <string name="site_description_czech">Tchèque et autres</string>
     <string name="site_description_dutch_and_more">Néerlandais et autres</string>
     <string name="site_description_eu_comics">Bandes dessinées européennes</string>
     <string name="site_description_english_and_more">Anglais et autres</string>

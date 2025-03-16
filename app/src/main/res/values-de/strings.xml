@@ -753,6 +753,7 @@
     <string name="option_sync_deleted_book_records">Gelöschte Bücher synchronisieren</string>
     <string name="info_site_search_field_optional">Optional. Wird nicht von allen Websites unterstützt.</string>
     <string name="site_description_catalog">Katalog</string>
+    <string name="site_description_czech">Tschechisch und mehr</string>
     <string name="site_description_dutch_and_more">Niederländisch und mehr</string>
     <string name="site_description_eu_comics">Europäische Comics</string>
     <string name="site_description_english_and_more">Englisch und mehr</string>

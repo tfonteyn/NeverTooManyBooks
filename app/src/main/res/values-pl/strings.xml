@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -755,13 +758,14 @@
     <string name="option_sync_deleted_book_records">Synchronizacja usuniętych książek</string>
     <string name="info_site_search_field_optional">Opcjonalne. Nie jest obsługiwane przez wszystkie strony internetowe.</string>
     <string name="site_description_catalog">Katalog</string>
+    <string name="site_description_czech">Czeski i nie tylko</string>
     <string name="site_description_dutch_and_more">Holenderski i nie tylko</string>
     <string name="site_description_eu_comics">Komiksy europejskie</string>
-    <string name="site_description_english_and_more">Angielski i więcej</string>
+    <string name="site_description_english_and_more">Angielski i nie tylko</string>
     <string name="site_description_chinese">Chiński</string>
     <string name="site_description_fsf">Fantasy i science fiction</string>
     <string name="site_description_french">Francuski</string>
-    <string name="site_description_french_and_more">Francuski i więcej</string>
+    <string name="site_description_french_and_more">Francuski i nie tylko</string>
     <string name="site_description_portuguese_and_more">Portugalski i nie tylko</string>
     <string name="site_description_various_languages">Różne języki</string>
     <string name="site_description_shop">Zakupy</string>

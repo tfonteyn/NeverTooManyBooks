@@ -754,6 +754,7 @@
     <string name="option_sync_deleted_book_records">Verwijderde boeken synchroniseren</string>
     <string name="info_site_search_field_optional">Optioneel. Niet ondersteund door alle websites.</string>
     <string name="site_description_catalog">Catalogus</string>
+    <string name="site_description_czech">Tsjechisch en meer</string>
     <string name="site_description_dutch_and_more">Nederlands en meer</string>
     <string name="site_description_eu_comics">Europese Strips</string>
     <string name="site_description_english_and_more">Engels en meer</string>

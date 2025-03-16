@@ -762,6 +762,7 @@
     <string name="option_sync_deleted_book_records">Silinen kitapları senkronize edin</string>
     <string name="info_site_search_field_optional">İsteğe bağlı. Tüm web siteleri tarafından desteklenmez.</string>
     <string name="site_description_catalog">Katalog</string>
+    <string name="site_description_czech">Çekçe ve daha fazlası</string>
     <string name="site_description_dutch_and_more">Hollandaca ve daha fazlası</string>
     <string name="site_description_eu_comics">Avrupa Çizgi Romanları</string>
     <string name="site_description_english_and_more">İngilizce ve daha fazlası</string>
