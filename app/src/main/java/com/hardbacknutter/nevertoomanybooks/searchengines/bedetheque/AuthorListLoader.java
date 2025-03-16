@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,12 +31,22 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+/**
+ * Fetches the author-list pages from the Bedetheque website.
+ * The site has 27 pages with name lists. The 26 [A-Z] + a '0' page with
+ * all the names which don't start with an [A-Z].
+ * <p>
+ * The results are stored in a local <strong>cache</strong> database.
+ *
+ * @see BedethequeCacheDao
+ */
 class AuthorListLoader {
 
     private static final String TAG = "AuthorListLoader";

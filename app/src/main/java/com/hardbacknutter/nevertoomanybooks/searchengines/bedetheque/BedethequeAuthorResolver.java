@@ -57,8 +57,20 @@ import org.jsoup.select.Elements;
 
 /**
  * Connects to the Bedetheque website to resolve author pseudonyms.
+ * Authors are searched for in the local cache database, or fetched in bulk
+ * from the website and stored in the cache.
+ * <p>
+ * {@link #resolve(Author)} will:
+ * <ul>
+ *     <li>add the {@link Identifier#SID_BEDETHEQUE} if it's missing</li>
+ *     <li>update/correct any diacritics in the names</li>
+ *     <li>add the {@link Author#setRealAuthor(Author)} if applicable</li>
+ * </ul>
  * <p>
  * Aside of Bedetheque itself, this class is also used by StripInfo and LastDodo.
+ *
+ * @see BedethequeCacheDao
+ * @see AuthorListLoader
  */
 public class BedethequeAuthorResolver
         implements AuthorResolver {
@@ -122,7 +134,6 @@ public class BedethequeAuthorResolver
             return new BedethequeAuthorResolver(context, searchEngine);
         }
     }
-
 
     /**
      * Take the first character from the given name and normalize it to [0A-Z]
