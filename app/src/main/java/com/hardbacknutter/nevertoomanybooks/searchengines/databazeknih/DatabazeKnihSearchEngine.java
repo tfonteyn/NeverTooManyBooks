@@ -515,6 +515,9 @@ public class DatabazeKnihSearchEngine
             for (final Element td : tds) {
                 final Element a = td.selectFirst("a");
                 if (a != null) {
+                    // ENHANCE: if we follow the link, we can get the actual author
+                    //  and original lang. title... but we don't support the latter yet
+                    // https://www.databazeknih.cz/povidky-z-knihy/fantasy-a-science-fiction-1994-04-87630
                     final String title = a.text();
                     if (!title.isEmpty()) {
                         final TocEntry tocEntry = new TocEntry(primaryAuthor, title);
