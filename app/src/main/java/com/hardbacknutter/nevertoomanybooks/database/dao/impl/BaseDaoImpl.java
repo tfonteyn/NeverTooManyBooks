@@ -43,6 +43,9 @@ class BaseDaoImpl {
      * <p>
      * We now use COLLATE LOCALE and check to see if it is case sensitive.
      * Maybe in the future Android will add LOCALE_CI (or equivalent).
+     *
+     * @see <a href="https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase">
+     *         SQLiteDatabase</a>
      */
     static final String _COLLATION = " COLLATE LOCALIZED";
 

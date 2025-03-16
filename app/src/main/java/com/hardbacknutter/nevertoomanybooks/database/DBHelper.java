@@ -81,6 +81,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
 /**
  * {@link SQLiteOpenHelper} for the main database.
  * Uses the application context.
+ *
+ * ENHANCE: dump android sqlite and replace with
+ * https://sqlite.org/android/doc/trunk/www/index.wiki
+ * https://sqlite.org/android/doc/trunk/www/usage.wiki
+ * https://github.com/android-rooting-tools/android_libsqlite/blob/master/android/sqlite3_android.cpp
  */
 public class DBHelper
         extends SQLiteOpenHelper {
