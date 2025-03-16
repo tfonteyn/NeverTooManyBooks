@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -41,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -81,7 +83,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
 /**
  * {@link SQLiteOpenHelper} for the main database.
  * Uses the application context.
- *
+ * <p>
  * ENHANCE: dump android sqlite and replace with
  * https://sqlite.org/android/doc/trunk/www/index.wiki
  * https://sqlite.org/android/doc/trunk/www/usage.wiki
@@ -518,9 +520,15 @@ public class DBHelper
             db.beginTransaction();
         }
         if (oldVersion < 35) {
-            TBL_BOOKLIST_STYLES.alterTableAddColumns(
-                    db,
-                    DBDefinitions.DOM_STYLE_CITATION_TYPE);
+            // depending on the install/upgrade path, we might already have
+            // added the CITATION_TYPE column
+            final ColumnInfo citationType = TBL_BOOKLIST_STYLES
+                    .getTableInfo(db).getColumn(DBKey.STYLE.CITATION_TYPE);
+            if (citationType == null) {
+                TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                        db,
+                        DBDefinitions.DOM_STYLE_CITATION_TYPE);
+            }
 
             TBL_IDENTIFIERS.create(db, true);
             TBL_BOOK_IDENTIFIER.create(db, true);
@@ -583,68 +591,98 @@ public class DBHelper
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
                     DBDefinitions.DOM_STYLE_SHOW_GROUP_BOOK_COUNT);
-
         }
         if (oldVersion < 39) {
-            TBL_IDENTIFIERS.alterTableAddColumns(db, DBDefinitions.DOM_IDENTIFIER_AUTHOR_URI);
-            TBL_AUTHOR_IDENTIFIER.create(db, true);
-            try (SQLiteStatement stmt = db.compileStatement(
-                    "UPDATE " + TBL_IDENTIFIERS + " SET " + DBKey.IDENTIFIERS.AUTHOR_URI + "=?"
-                    + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
-                // see Identifier#createInitialList
-                // we don't check success, the row may have been deleted which is fine
-                stmt.bindString(1, "https://www.bedetheque.com/auteur-%s-BD-x.html");
-                stmt.bindString(2, Identifier.SID_BEDETHEQUE);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://catalogue.bnf.fr/ark:/12148/%s");
-                stmt.bindString(2, Identifier.SID_BNF);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://d-nb.info/gnd/%s");
-                stmt.bindString(2, Identifier.SID_DNB);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://www.douban.com/personage/%s");
-                stmt.bindString(2, Identifier.SID_DOUBAN);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://fantlab.ru/autor%s");
-                stmt.bindString(2, Identifier.SID_FANTLAB);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://www.goodreads.com/author/show/%s");
-                stmt.bindString(2, Identifier.SID_GOODREADS);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://www.isfdb.org/cgi-bin/ea.cgi?%s");
-                stmt.bindString(2, Identifier.SID_ISFDB);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s");
-                stmt.bindString(2, Identifier.SID_KBNL);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://www.lastdodo.nl/nl/areas/%s");
-                stmt.bindString(2, Identifier.SID_LAST_DODO_NL);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://www.fantascienza.com/catalogo/autori/NILF%s");
-                stmt.bindString(2, Identifier.SID_NILF);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://www.noosfere.org/livres/auteur.asp?NumAuteur=%s");
-                stmt.bindString(2, Identifier.SID_NOOSFERE);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://id.oclc.org/worldcat/entity/%s");
-                stmt.bindString(2, Identifier.SID_OCLC);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://openlibrary.org/authors/%s");
-                stmt.bindString(2, Identifier.SID_OPEN_LIBRARY);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://stripinfo.be/auteur/index/%s");
-                stmt.bindString(2, Identifier.SID_STRIP_INFO);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://tercerafundacion.net/biblioteca/ver/persona/%s");
-                stmt.bindString(2, Identifier.SID_TERCERA_FUNDACION);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "%s");
-                stmt.bindString(2, Identifier.SID_URI);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://www.wikidata.org/wiki/%s");
-                stmt.bindString(2, Identifier.SID_WIKIDATA);
-                stmt.executeUpdateDelete();
+            // depending on the install/upgrade path, we might already have
+            // added the AUTHOR_URI column and the identifier updates.
+            final ColumnInfo authorUri = TBL_IDENTIFIERS
+                    .getTableInfo(db).getColumn(DBKey.IDENTIFIERS.AUTHOR_URI);
+            if (authorUri == null) {
+                TBL_IDENTIFIERS.alterTableAddColumns(db, DBDefinitions.DOM_IDENTIFIER_AUTHOR_URI);
+
+                // update the Identifiers adding the AuthorUri
+                try (SQLiteStatement stmt = db.compileStatement(
+                        "UPDATE " + TBL_IDENTIFIERS
+                        + " SET " + DBKey.IDENTIFIERS.AUTHOR_URI + "=?"
+                        + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+                    // see Identifier#createInitialList
+                    // we don't check success, the row may have been deleted which is fine
+                    stmt.bindString(1, "https://www.bedetheque.com/auteur-%s-BD-x.html");
+                    stmt.bindString(2, Identifier.SID_BEDETHEQUE);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://catalogue.bnf.fr/ark:/12148/%s");
+                    stmt.bindString(2, Identifier.SID_BNF);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://d-nb.info/gnd/%s");
+                    stmt.bindString(2, Identifier.SID_DNB);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://www.douban.com/personage/%s");
+                    stmt.bindString(2, Identifier.SID_DOUBAN);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://fantlab.ru/autor%s");
+                    stmt.bindString(2, Identifier.SID_FANTLAB);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://www.goodreads.com/author/show/%s");
+                    stmt.bindString(2, Identifier.SID_GOODREADS);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://www.isfdb.org/cgi-bin/ea.cgi?%s");
+                    stmt.bindString(2, Identifier.SID_ISFDB);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s");
+                    stmt.bindString(2, Identifier.SID_KBNL);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://www.lastdodo.nl/nl/areas/%s");
+                    stmt.bindString(2, Identifier.SID_LAST_DODO_NL);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://www.fantascienza.com/catalogo/autori/NILF%s");
+                    stmt.bindString(2, Identifier.SID_NILF);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://www.noosfere.org/livres/auteur.asp?NumAuteur=%s");
+                    stmt.bindString(2, Identifier.SID_NOOSFERE);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://id.oclc.org/worldcat/entity/%s");
+                    stmt.bindString(2, Identifier.SID_OCLC);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://openlibrary.org/authors/%s");
+                    stmt.bindString(2, Identifier.SID_OPEN_LIBRARY);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://stripinfo.be/auteur/index/%s");
+                    stmt.bindString(2, Identifier.SID_STRIP_INFO);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://tercerafundacion.net/biblioteca/ver/persona/%s");
+                    stmt.bindString(2, Identifier.SID_TERCERA_FUNDACION);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "%s");
+                    stmt.bindString(2, Identifier.SID_URI);
+                    stmt.executeUpdateDelete();
+                    stmt.bindString(1, "https://www.wikidata.org/wiki/%s");
+                    stmt.bindString(2, Identifier.SID_WIKIDATA);
+                    stmt.executeUpdateDelete();
+                }
             }
+
+            // likewise, the SID_DATABAZE_KNIH may already exist
+            final boolean exists;
+            try (Cursor cursor = db.rawQuery("SELECT 1 FROM " + TBL_IDENTIFIERS.getName()
+                                             + " WHERE " + DBKey.IDENTIFIERS.KEY + "='"
+                                             + Identifier.SID_DATABAZE_KNIH + "'", null)) {
+                exists = cursor.moveToFirst();
+            }
+            if (!exists) {
+                final ContentValues cv = new ContentValues();
+                cv.put(DBKey.IDENTIFIERS.KEY, Identifier.SID_DATABAZE_KNIH);
+                cv.put(DBKey.IDENTIFIERS.TYPE, String.valueOf(Identifier.TYPE_LONG));
+                cv.put(DBKey.IDENTIFIERS.NAME,
+                       context.getString(R.string.identifier_databaze_knih));
+                cv.put(DBKey.IDENTIFIERS.SITE_URL, "https://www.databazeknih.cz");
+                cv.put(DBKey.IDENTIFIERS.BOOK_URI,
+                       "https://www.databazeknih.cz/prehled-knihy/x-%s");
+                cv.put(DBKey.IDENTIFIERS.AUTHOR_URI, "https://www.databazeknih.cz/autori/x-%s");
+                db.insert(TBL_IDENTIFIERS.getName(), null, cv);
+            }
+
+            // this is new for this release
+            TBL_AUTHOR_IDENTIFIER.create(db, true);
         }
 
         // We have to do this here due to some users skipping updates (see github #30)
