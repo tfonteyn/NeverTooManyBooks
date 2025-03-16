@@ -52,6 +52,7 @@ public class AuthorMergeHelper
             final List<Identifier.Value> identifiers = previous.getIdentifiers();
             identifiers.addAll(current.getIdentifiers());
             ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
+            previous.setIdentifiers(identifiers);
         }
 
         return canMerge;
