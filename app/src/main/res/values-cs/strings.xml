@@ -733,8 +733,8 @@
     <string name="tip_import_isbn_list">Importujte textový soubor s čísly ISBN. Soubor by měl mít na každém řádku jedno ISBN. Výsledky budou zařazeny do fronty.</string>
     <string name="lbl_date_added">Datum přidání</string>
     <string name="debug_select_items">Vyberte, co chcete zahrnout:</string>
-    <string name="lbl_group_1st_char_author_family_name">1. znak příjmení Author</string>
-    <string name="lbl_group_1st_char_series_title">1. postava názvu seriálu</string>
+    <string name="lbl_group_1st_char_author_family_name">1. znak příjmení autora</string>
+    <string name="lbl_group_1st_char_series_title">1. znak názvu série</string>
     <string name="lbl_group_1st_char_publisher_name">1. znak jména vydavatele</string>
     <string name="lbl_group_1st_char_book_title">1. znak názvu knihy</string>
     <string name="lbl_author_is_a_pen_name_of">Toto je pseudonym:</string>
@@ -863,4 +863,5 @@
     <string name="info_partial_date_picker">Klepnutím na dříve vybraný měsíc nebo den zrušíte jeho výběr.</string>
     <string name="action_restore_default_identifiers">Obnovení výchozích identifikátorů</string>
     <string name="lbl_select_style">Zvolit styl</string>
+    <string name="site_description_czech">Čeština a další</string>
 </resources>
