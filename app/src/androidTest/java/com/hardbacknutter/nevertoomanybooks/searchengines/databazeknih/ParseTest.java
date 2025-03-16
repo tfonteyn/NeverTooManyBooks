@@ -97,7 +97,7 @@ public class ParseTest
         assertEquals("9788025368626", book.getString(DBKey.ISBN, null));
         assertEquals("546691", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
         assertEquals("2024", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals("český", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
         assertEquals("192", book.getString(DBKey.PAGES, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
         assertEquals("pevná / vázaná", book.getString(DBKey.FORMAT, null));
@@ -204,7 +204,7 @@ public class ParseTest
         assertEquals("9788024929613", book.getString(DBKey.ISBN, null));
         assertEquals("267961", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
         assertEquals("2015", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals("český", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
         assertEquals("216", book.getString(DBKey.PAGES, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
         assertEquals("pevná / vázaná", book.getString(DBKey.FORMAT, null));
@@ -294,7 +294,7 @@ public class ParseTest
         assertEquals("8020409319", book.getString(DBKey.ISBN, null));
         assertEquals("40000", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
         assertEquals("2001", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals("český", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
         assertEquals("250", book.getString(DBKey.PAGES, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
         assertEquals("měkká / brožovaná", book.getString(DBKey.FORMAT, null));

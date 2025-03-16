@@ -33,6 +33,8 @@ import androidx.annotation.WorkerThread;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -73,11 +75,31 @@ public class DatabazeKnihSearchEngine
 
     private static final String TAG = "DatabazeKnihSearchEngin";
 
+    /** Used for isbn, or any other set of keywords. */
     private static final String SEARCH = "/search?in=books&q=%1$s";
+    /** The html title attribute starts with this if we get a list back. */
     private static final String MULTI_RESULT_PAGE_TITLE = "Vyhledávání";
 
+    /**
+     * The site uses non-standard language names.
+     *
+     * @see #mapLanguage(String)
+     */
+    private static final Map<String, String> LANG_MAPPING = Map.of(
+            "český", "ces",
+            "slovenský", "slo",
+            "německý", "deu",
+            "polský", "pol",
+            "anglický", "eng",
+            "francouzský", "fre",
+            "španělský", "spa",
+            "italský", "ita"
+    );
+
+    @NonNull
     private final RatingParser ratingParser;
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
+    @NonNull
     private final AuthorResolver resolver;
 
     /**
@@ -360,7 +382,7 @@ public class DatabazeKnihSearchEngine
         if (element != null) {
             final String text = element.text();
             if (!text.isEmpty()) {
-                book.putString(DBKey.LANGUAGE, text);
+                book.putString(DBKey.LANGUAGE, mapLanguage(text));
             }
         }
 
@@ -443,6 +465,11 @@ public class DatabazeKnihSearchEngine
                 }
             }
         }
+    }
+
+    @NonNull
+    private String mapLanguage(@NonNull final String s) {
+        return Objects.requireNonNullElse(LANG_MAPPING.get(s), s);
     }
 
     @VisibleForTesting
