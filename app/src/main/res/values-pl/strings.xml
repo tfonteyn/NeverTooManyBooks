@@ -198,7 +198,7 @@
     <string name="error_import_csv_column_count_mismatch">Nieprawidłowa liczba kolumn w wierszu %1$d</string>
     <string name="error_import_csv_line">Nieznany błąd w wierszu %1$d</string>
     <string name="error_import_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
-    <string name="error_import_csv_missing_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
+    <string name="error_import_csv_missing_columns_x">Plik musi zawierać kolumnę o jednej z następujących nazw: %1$s</string>
     <string name="error_import_failed">Nie udało się zaimportować</string>
     <string name="error_import_failed_for_record">Nie udało się zaimportować (%1$s)</string>
     <string name="error_import_file_not_supported">Wybranego pliku nie można zaimportować.</string>
@@ -305,7 +305,7 @@
     <string name="lbl_condition_fine">Jak nowy</string>
     <string name="lbl_condition_good">Dobry</string>
     <string name="lbl_condition_reading_copy">Czytanie kopii</string>
-    <string name="lbl_condition_very_good">Bardzo dobre</string>
+    <string name="lbl_condition_very_good">Bardzo dobry</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Łączenie wielkich/małych liter</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Usuń nieużywane tagi</string>
     <string name="lbl_connection_timeout">Limit czasu połączenia (sekundy)</string>
@@ -333,7 +333,7 @@
     <string name="option_storage_edit_settings">Edytuj ustawienia</string>
     <string name="lbl_edit_style">Edytuj styl</string>
     <string name="lbl_edition">Wydanie</string>
-    <string name="lbl_edition_book_club">Klub Książki</string>
+    <string name="lbl_edition_book_club">Wydanie klubowe</string>
     <string name="lbl_edition_first_edition">Pierwsza edycja</string>
     <string name="lbl_edition_first_impression">Pierwszy wydruk</string>
     <string name="lbl_edition_limited">Edycja limitowana</string>
