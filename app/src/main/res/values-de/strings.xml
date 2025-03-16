@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -258,8 +261,8 @@
     <string name="lbl_author_type_colorist">Farbe</string>
     <string name="lbl_author_type_contributor">Mitarbeiter</string>
     <string name="lbl_author_type_cover_artist">Titelbild</string>
-    <string name="lbl_author_type_cover_colorist">Farbgestalter</string>
-    <string name="lbl_author_type_cover_inking">Farbgebung des Covers</string>
+    <string name="lbl_author_type_cover_colorist">Titelbild Farbe</string>
+    <string name="lbl_author_type_cover_inking">Titelbild Inkting</string>
     <string name="lbl_author_type_editor">Editor</string>
     <string name="lbl_author_type_inking">Tinte</string>
     <string name="lbl_author_type_intro">Einführung etc.</string>
