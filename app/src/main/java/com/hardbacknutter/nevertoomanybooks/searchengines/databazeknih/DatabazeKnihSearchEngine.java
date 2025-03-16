@@ -256,20 +256,24 @@ public class DatabazeKnihSearchEngine
                 case "description": {
                     final Element desc = itemProp.nextElementSibling();
                     if (desc != null) {
-                        String text = desc.wholeText();
-                        // text contains \n and lots of whitespace, cleanup
-                        text = Arrays.stream(text.split("\n"))
-                                     .map(String::strip)
-                                     // remove the "click to see more" if present
-                                     .filter(t -> !t.equals("... celý text"))
-                                     .collect(Collectors.joining("\n"))
-                                     // empty lines at end
-                                     .stripTrailing();
-                        // depending on the formatting it might still have the "click" text
-                        if (text.endsWith("... celý text")) {
-                            text = text.substring(0, text.length() - 13);
+                        String text = desc.wholeText().strip();
+                        // Check/skip if it is "no description"
+                        if (!"Popis knihy zde zatím bohužel není...".equals(text)) {
+                            // text contains \n and lots of whitespace, cleanup
+                            text = Arrays.stream(text.split("\n"))
+                                         .map(String::strip)
+                                         // remove the "click to see more" if present
+                                         .filter(t -> !t.equals("... celý text"))
+                                         .collect(Collectors.joining("\n"))
+                                         // empty lines at end
+                                         .stripTrailing();
+
+                            // depending on the formatting it might still have the "click" text
+                            if (text.endsWith("... celý text")) {
+                                text = text.substring(0, text.length() - 13);
+                            }
+                            book.putString(DBKey.DESCRIPTION, text);
                         }
-                        book.putString(DBKey.DESCRIPTION, text);
                     }
                     break;
                 }
