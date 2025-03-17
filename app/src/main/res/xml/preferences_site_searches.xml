@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -56,6 +56,12 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderPreferencesFragment"
             android:key="psk_search_site_bookfinder"
             android:title="@string/site_bookfinder">
+        </Preference>
+
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihPreferencesFragment"
+            android:key="psk_search_site_databaze_knih"
+            android:title="@string/site_databazeknih_cz">
         </Preference>
 
         <Preference
