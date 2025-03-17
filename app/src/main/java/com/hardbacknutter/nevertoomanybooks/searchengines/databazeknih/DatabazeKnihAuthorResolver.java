@@ -49,7 +49,7 @@ import org.jsoup.nodes.Element;
  *     <li>add the {@link Author#setRealAuthor(Author)} if applicable</li>
  * </ul>
  */
-class DatabazeKnihAuthorResolver
+final class DatabazeKnihAuthorResolver
         implements AuthorResolver {
     private static final String TAG = "DatabazeKnihAuthorRes";
     @NonNull
@@ -85,8 +85,8 @@ class DatabazeKnihAuthorResolver
      *                to the (internal) {@link DatabazeKnihSearchEngine}
      */
     @VisibleForTesting
-    public DatabazeKnihAuthorResolver(@NonNull final Context context,
-                                      @Nullable final Cancellable caller) {
+    private DatabazeKnihAuthorResolver(@NonNull final Context context,
+                                       @Nullable final Cancellable caller) {
         this(context, (DatabazeKnihSearchEngine) EngineId.DatabazeKnih.createSearchEngine(context));
         searchEngine.setCaller(caller);
     }
