@@ -258,15 +258,20 @@ public class AuthorWorksFragment
 
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
+                                 @NonNull final MenuInflater inflater) {
             MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.author_works, menu);
+            inflater.inflate(R.menu.author_works, menu);
+
+            final Context context = getContext();
 
             //noinspection DataFlowIssue
-            MenuUtils.customizeMenuGroupTitle(getContext(), menu,
+            MenuUtils.customizeMenuGroupTitle(context, menu,
                                               R.id.sm_title_author_works_sort);
-            MenuUtils.customizeMenuGroupTitle(getContext(), menu,
+            MenuUtils.customizeMenuGroupTitle(context, menu,
                                               R.id.sm_title_author_works_filter);
+
+            vm.getMenuHandlers().forEach(
+                    h -> h.onCreateMenu(context, menu, inflater, vm.getAuthor()));
         }
 
         @Override
@@ -276,6 +281,11 @@ public class AuthorWorksFragment
             menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES)
                 .setVisible(vm.getBookshelfId() != Bookshelf.ALL_BOOKS)
                 .setChecked(vm.isAllBookshelves());
+
+            //noinspection DataFlowIssue
+            vm.getMenuHandlers().forEach(
+                    h -> h.onPrepareMenu(getContext(), menu, vm.getAuthor()));
+
         }
 
         @SuppressLint("NotifyDataSetChanged")
@@ -332,7 +342,11 @@ public class AuthorWorksFragment
                 return true;
             }
 
-            return false;
+            //noinspection DataFlowIssue
+            return vm.getMenuHandlers()
+                     .stream()
+                     .anyMatch(h -> h.onMenuItemSelected(
+                             getContext(), menuItemId, vm.getAuthor()));
         }
     }
 }

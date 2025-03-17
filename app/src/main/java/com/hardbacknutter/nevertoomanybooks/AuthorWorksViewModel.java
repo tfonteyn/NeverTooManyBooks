@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.menus.AuthorViewAuthorOnSiteMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
 
 @SuppressWarnings("WeakerAccess")
 public class AuthorWorksViewModel
@@ -76,6 +78,7 @@ public class AuthorWorksViewModel
     private boolean dataModified;
 
     private Style style;
+    private List<MenuHandler<Author>> menuHandlers;
 
     /**
      * Pseudo constructor.
@@ -90,6 +93,8 @@ public class AuthorWorksViewModel
 
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
+
+            menuHandlers = List.of(new AuthorViewAuthorOnSiteMenuHandler());
 
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);
@@ -116,6 +121,11 @@ public class AuthorWorksViewModel
             withBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, withBooks);
             reloadWorkList();
         }
+    }
+
+    @NonNull
+    public List<MenuHandler<Author>> getMenuHandlers() {
+        return menuHandlers;
     }
 
     void setFilter(final boolean withTocEntries,
