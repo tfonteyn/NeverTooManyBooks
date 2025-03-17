@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.menus;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +29,10 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
+/**
+ * Used for {@link DataHolder} related menus.
+ * This includes the BoB row menus and Book detail/edit screens.
+ */
 public interface MenuHandler {
 
     /**

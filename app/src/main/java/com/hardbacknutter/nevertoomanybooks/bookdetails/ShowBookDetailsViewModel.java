@@ -60,10 +60,10 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteSearchMenuHandler;
-import com.hardbacknutter.nevertoomanybooks.searchengines.ViewBookOnSiteMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.SiteSearchMenuHandler;
+import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * Shared data between details and Read fragments.

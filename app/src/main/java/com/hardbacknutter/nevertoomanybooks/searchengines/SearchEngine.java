@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 
 /**
  * The interface a search engine for an {@link EngineId} needs to implement.

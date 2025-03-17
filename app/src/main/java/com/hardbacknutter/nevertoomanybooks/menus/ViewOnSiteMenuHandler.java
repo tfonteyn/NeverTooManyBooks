@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.searchengines;
+package com.hardbacknutter.nevertoomanybooks.menus;
 
 import android.content.Context;
 import android.content.Intent;
@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 abstract class ViewOnSiteMenuHandler
         implements MenuHandler {

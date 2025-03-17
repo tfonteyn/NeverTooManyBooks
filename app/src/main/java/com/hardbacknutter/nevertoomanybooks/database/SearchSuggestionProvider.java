@@ -33,7 +33,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 
 /**
  * We're using the default search action view and the standard "SUGGEST" Uri and MIME types.

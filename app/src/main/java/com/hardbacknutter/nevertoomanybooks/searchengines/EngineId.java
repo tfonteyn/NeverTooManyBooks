@@ -668,7 +668,7 @@ public enum EngineId
      *
      * @return list
      */
-    static List<EngineId> getSearchOnSite() {
+    public static List<EngineId> getSearchOnSite() {
         return Arrays.stream(values())
                      .filter(EngineId::isEnabled)
                      .filter(engineId -> engineId.supports(
