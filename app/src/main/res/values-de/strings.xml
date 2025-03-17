@@ -199,7 +199,7 @@
     <string name="error_no_image_editor">Kein Bild-Editor gefunden.</string>
     <string name="error_search_could_not_be_started">Die Suche nach dem Buch ist fehlgeschlagen.</string>
     <string name="error_search_failed_network">Öffne die Einstellungen und überprüfe deine Netzwerk- und Site-Sucheinstellungen.\nÜberprüfe auch die Netzwerkeinstellungen deines Geräts.</string>
-    <string name="error_search_x_failed_y">Suche auf %1$s fehlgeschlagen: %2$s</string>
+    <string name="error_search_x_failed_y">Suche bei %1$s fehlgeschlagen: %2$s</string>
     <string name="error_site_authentication_failed">Authentifizierung bei %1$s fehlgeschlagen</string>
     <string name="error_http_401_site_authorization_failed">Die Autorisierung bei %1$s endete fehlerhaft.</string>
     <string name="error_insufficient_storage">Nicht genügend Speicherplatz.</string>
@@ -216,7 +216,7 @@
     <string name="option_fab_add_book_by_barcode_scan_batch">Barcodes im Stapel scannen</string>
     <string name="option_fab_add_book_by_external_id">Website-Buch-ID</string>
     <string name="option_fab_add_book_by_internet_search">Suche nach Titel</string>
-    <string name="option_fab_add_book_by_isbn">Suche mit ISBN</string>
+    <string name="option_fab_add_book_by_isbn">Suche nach ISBN</string>
     <string name="option_fab_add_book_manually">Manuell hinzufügen</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="httpError">Ein Netzwerkfehler ist aufgetreten.</string>
@@ -260,7 +260,7 @@
     <string name="lbl_author_type_cover_artist">Titelbild</string>
     <string name="lbl_author_type_cover_colorist">Colorist des Covers</string>
     <string name="lbl_author_type_cover_inking">Inker des Covers</string>
-    <string name="lbl_author_type_editor">Editor</string>
+    <string name="lbl_author_type_editor">Herausgeber</string>
     <string name="lbl_author_type_inking">Inker</string>
     <string name="lbl_author_type_intro">Einführung etc.</string>
     <string name="lbl_author_type_narrator">Erzähler</string>
@@ -334,7 +334,7 @@
     <string name="lbl_export_options">Auswahl der Daten, die exportiert werden sollen.</string>
     <string name="lbl_family_name">Familienname</string>
     <string name="option_field_usage_append">hängt zusätzliche Daten an</string>
-    <string name="option_field_usage_copy_if_blank">Kopieren wenn leer</string>
+    <string name="option_field_usage_copy_if_blank">Kopieren, wenn leer</string>
     <string name="option_field_usage_overwrite">überschreibt zusätzliche Daten</string>
     <string name="lbl_filter">Filter</string>
     <string name="lbl_date_first_publication_month">Erstveröffentlichungsmonat</string>
@@ -359,7 +359,7 @@
     <string name="lbl_lend_book_to_colon">Verleihe dieses Buch an:</string>
     <string name="lbl_lend_out">Verliehen</string>
     <string name="lbl_lend_out_to_name">Leihgabe an %1$s</string>
-    <string name="lbl_lending">Ausleihen</string>
+    <string name="lbl_lending">Leihgabe</string>
     <string name="option_level_collapse">Alles minimieren</string>
     <string name="option_level_expand">Alles ausklappen</string>
     <string name="option_level_reset">Bevorzugte Ausbaustufe</string>
@@ -385,7 +385,7 @@
     <string name="lbl_date_published_month">Monat der Veröffentlichung</string>
     <string name="lbl_date_published_year">Jahr der Veröffentlichung</string>
     <string name="lbl_publisher">Verlag</string>
-    <string name="lbl_publishers">Verlag</string>
+    <string name="lbl_publishers">Verlage</string>
     <string name="pe_ui_context_menu_mode_by_size">Kleinere Bildschirme zeigen lange Menüs am unteren Rand des Bildschirms und kurze Menüs als klassische Kontextmenüs an.\nGrößere Bildschirme, wie Tablets, verwenden immer klassische Kontextmenüs.</string>
     <string name="option_purge_files">Dateien bereinigen</string>
     <string name="option_purge_image_cache">Zwischenspeicher für Bilder löschen</string>
@@ -458,7 +458,7 @@
     <string name="size_megabytes">%1$.2fMB</string>
     <string name="option_search_books_by_author">Bücher von diesem Autor</string>
     <string name="option_search_books_by_author_in_series">Bücher nach Autor/Serie</string>
-    <string name="option_search_books_on">Suche auf…</string>
+    <string name="option_search_books_on">Suche bei…</string>
     <string name="option_search_books_in_series">Bücher in dieser Serie</string>
     <string name="option_author_details">Alle Werke dieses Autors</string>
     <string name="option_author_works_book">Nur Bücher</string>
@@ -482,8 +482,8 @@
     <string name="option_download_folder">Lokaler Download-Ordner</string>
     <string name="option_enable_sync_options">Synchronisierungsoptionen aktivieren</string>
     <string name="option_import">Importieren</string>
-    <string name="option_lend_out_book">Buch verleihen…</string>
-    <string name="option_lend_return_book">Geliehenes Buch ist zurück</string>
+    <string name="option_lend_out_book">Verleihen an…</string>
+    <string name="option_lend_return_book">Zurückbuchen</string>
     <string name="option_purge_bedetheque_authors_cache">Cache der Bedetheque-Autoren leeren</string>
     <string name="option_rebuild_fts">Volltext-Suchdaten neu aufbauen</string>
     <string name="option_rebuild_index">Neuaufbau der Indizes</string>
@@ -507,7 +507,7 @@
     <string name="option_bob_filter_isbn_no">Ohne ISBN</string>
     <string name="option_bob_filter_isbn_yes">Mit ISBN</string>
     <string name="option_bob_filter_lend_out_no">Verfügbare Bücher</string>
-    <string name="option_bob_filter_lend_out_yes">Bücher ausgeliehen</string>
+    <string name="option_bob_filter_lend_out_yes">Verliehene Bücher</string>
     <string name="X_option_bob_filter_read_no">Bücher ungelesen</string>
     <string name="X_option_bob_filter_read_yes">Bücher gelesen</string>
     <string name="option_bob_filter_signed_no">Bücher unsigniert</string>
@@ -587,7 +587,7 @@
     <string name="pt_scanning_beep_on_barcode_found">Tonsignal, wenn ein Barcode gefunden wird</string>
     <string name="pt_scanning_beep_on_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>
     <string name="pt_scanning_beep_on_valid">Tonsignal bei gültig gescannter ISBN</string>
-    <string name="pt_search_prefer_isbn10">Wenn möglich verwende ISBN-10</string>
+    <string name="pt_search_prefer_isbn10">Wenn möglich, verwende ISBN-10</string>
     <string name="pt_search_reformat_color">Standardisiere die Namen der Buchfarben</string>
     <string name="pt_search_reformat_format">Standardisiere die Namen der Buchformate</string>
     <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
@@ -643,7 +643,7 @@
     <string name="tip_book_search_by_text">Das Hinzufügen der Bücher über die ISBN ist genauer als das Hinzufügen über Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachte, dass der korrekte Barcode manchmal auf der Innenseite des Covers zu finden ist.</string>
     <string name="tip_booklist_style_groups">Auf diesem Bildschirm kann man die Hierarchie der Gruppen für einen bestimmten Stil ändern. Verwende das Kontrollkästchen, um auszuwählen, welche Gruppen in der Liste angezeigt werden sollen, und ordne die Hierarchie neu an, indem du das Symbol am Ende der Zeile nach oben oder unten ziehst.</string>
     <string name="tip_booklist_style_properties">Auf diesem Bildschirm kann man die Merkmale eines bestimmten Stils festlegen. Man kann den Namen ändern, die Gruppierungen bearbeiten, um die Hierarchie zu ändern, und eine Vielzahl anderer Einstellungen vornehmen, um einen Stil zu erstellen, der nützlich erscheint.</string>
-    <string name="tip_booklist_styles_editor">Auf diesem Bildschirm kann man die Liste der Stile, die im Standardmenü angezeigt werden, anpassen. Verwende das Kontrollkästchen, um auszuwählen, welche Stile in der Liste angezeigt werden sollen. Wenn keine Stile ausgewählt sind, werden alle Stile angezeigt. Man kann die Hierarchie neu ordnen, indem man das Symbol am Ende der Zeile nach oben oder unten zieht. Wenn man an einer anderen Stelle in einer Reihe lange drückt, kann man die Details eines bestimmten Stils bearbeiten oder klonen. Wenn man einen Stil klont und die Meinung ändert, muss man ihn selbst löschen.</string>
+    <string name="tip_booklist_styles_editor">Auf diesem Seite kann man die Liste der Stile, die im Standardmenü angezeigt werden, anpassen. Verwende das Kontrollkästchen, um auszuwählen, welche Stile in der Liste angezeigt werden sollen. Wenn keine Stile ausgewählt sind, werden alle Stile angezeigt. Man kann die Hierarchie neu ordnen, indem man das Symbol am Ende der Zeile nach oben oder unten zieht. Wenn man an einer anderen Stelle in einer Reihe lange drückt, kann man die Details eines bestimmten Stils bearbeiten oder klonen. Wenn man einen Stil klont und die Meinung ändert, muss man ihn selbst löschen.</string>
     <string name="lbl_tip">Hinweis</string>
     <string name="option_reset_all_tips">Hinweise zurücksetzen</string>
     <string name="site_description_german">Deutsch</string>
@@ -688,7 +688,7 @@
     <string name="warning_enable_at_least_1_website">Aktiviere mindestens eine Website für jede Kategorie.</string>
     <string name="warning_export_contains_no_data">Es gab nichts zu exportieren.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Wenn der Tag angegeben wird, muss auch Monat und Jahr angegeben werden.</string>
-    <string name="warning_if_month_set_year_must_be">Wenn das Monat angegeben wird, muss auch das Jahr angegeben werden.</string>
+    <string name="warning_if_month_set_year_must_be">Wenn der Monat angegeben wird, muss auch das Jahr angegeben werden.</string>
     <string name="warning_image_copy_failed">Bild konnte nicht kopiert werden.</string>
     <string name="warning_image_not_found">Bild konnte nicht gefunden werden.</string>
     <string name="warning_immediate_global_changes">WARNUNG: Gespeicherte Änderungen werden sofort für alle Bücher übernommen.</string>
@@ -696,7 +696,7 @@
     <string name="warning_import_csv_unescaped_quote">Unescaped-Anführungszeichen in Zeile %1$d, Position %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">und %1$d weitere.</string>
     <string name="warning_import_failed_for_these_books">Der Import ist für diese Bücher/Zeilen fehlgeschlagen:</string>
-    <string name="warning_no_editions">Keine zusätzlichen Ausgabeninformationen verfügbar.</string>
+    <string name="warning_no_editions">Keine zusätzlichen Informationen zur Ausgabe verfügbar.</string>
     <string name="warning_no_matching_book_found">Kein passendes Buch gefunden</string>
     <string name="warning_no_search_data_for_active_sites">Keine gültigen Suchdaten für aktive Websites.</string>
     <string name="warning_no_site_supports_this_method">ACHTUNG: Keine der derzeit ausgewählten Websites unterstützt die Suche nach %1$s. Bitte verwende das Website-Menü, um alternative Websites zu aktivieren, oder verwende eine andere Suchmethode.</string>
@@ -826,7 +826,7 @@
     <string name="pe_ui_theme_colors_dynamic">Dynamische Farben</string>
     <string name="warning_requires_android_x">Erfordert Android %1$d oder höher</string>
     <string name="anonymous_author">[Anonym]</string>
-    <string name="pt_search_result_order">Die Suche gibt das letzte oder das erste gefundene Buch zurück.</string>
+    <string name="pt_search_result_order">Die Suche gibt das neueste oder das zuerst gefundene Buch zurück.</string>
     <string name="pe_search_result_order_most_recent">Letztes gefundenes Buch</string>
     <string name="pe_search_result_order_first_found">Erstes gefundenes Buch</string>
     <string name="info_bulk_set_bookshelves">Auswahl der Bücherregale, die allen unter dem ausgewählten Knoten aufgeführten Büchern zugeordnet werden sollen.</string>
