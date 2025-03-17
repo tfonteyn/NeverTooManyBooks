@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -310,7 +309,13 @@ public class DatabazeKnihSearchEngine
                     break;
                 }
                 default:
-                    Log.d(TAG, "prop=" + prop);
+                    // prop=name => the title
+                    // prop=image
+                    // prop=aggregateRating
+                    // rop=ratingCount
+                    // prop=reviewCount
+                    //Log.d(TAG, "prop=" + prop);
+                    break;
             }
         }
 
