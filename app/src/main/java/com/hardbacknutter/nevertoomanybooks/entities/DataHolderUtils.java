@@ -299,8 +299,12 @@ public final class DataHolderUtils {
     /**
      * Extract an {@link Identifier} value (sid) from the given {@link DataHolder}.
      *
+     * @param fk            which entity we want to read the SID's from
+     *                      {@link DBKey#FK_BOOK} or {@link DBKey#FK_AUTHOR}
+     *                      Ignored if the DataHolder <strong>is</strong>
+     *                      an {@link IdentifierOwner}.
      * @param dataHolder    with data
-     * @param identifierKey to get
+     * @param identifierKey the key for the desired SID
      *
      * @return a sid
      */
@@ -339,6 +343,17 @@ public final class DataHolderUtils {
         return Optional.empty();
     }
 
+    /**
+     * Extract the list of {@link Identifier} values (sid) from the given {@link DataHolder}.
+     *
+     * @param fk         which entity we want to read the SID's from
+     *                   {@link DBKey#FK_BOOK} or {@link DBKey#FK_AUTHOR}
+     *                   Ignored if the DataHolder <strong>is</strong>
+     *                   an {@link IdentifierOwner}.
+     * @param dataHolder with data
+     *
+     * @return sid list
+     */
     @NonNull
     public static List<Identifier.Value> getSids(@NonNull final String fk,
                                                  @NonNull final DataHolder dataHolder) {
