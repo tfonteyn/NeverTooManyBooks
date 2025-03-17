@@ -376,7 +376,7 @@ public class DatabazeKnihSearchEngine
             // fetch the "more details" and parse
             final Document d2 = loadDocument(
                     context, getHostUrl(context) + "/book-detail-more-info/" + sid, null);
-            parseAdditional(context, d2, book);
+            parseAdditional(d2, book);
         }
 
         final Element linksElement = document.selectFirst("ul#newIcons");
@@ -411,15 +411,13 @@ public class DatabazeKnihSearchEngine
      *  but how reliable is this? Need more examples.
      *  https://www.databazeknih.cz/prehled-knihy/lucky-luke-crew-jak-se-daltonovi-polepsili-555445
      *
-     * @param context Current context
      * @param root    to parse
      * @param book    to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
-    private void parseAdditional(@NonNull final Context context,
-                                 @NonNull final Document root,
+    private void parseAdditional(@NonNull final Document root,
                                  @NonNull final Book book)
             throws SearchException, CredentialsException {
         Element element;
