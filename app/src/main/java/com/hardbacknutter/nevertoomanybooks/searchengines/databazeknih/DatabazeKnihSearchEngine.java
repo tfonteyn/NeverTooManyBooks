@@ -319,6 +319,11 @@ public class DatabazeKnihSearchEngine
         if (element != null) {
             final String seriesName = SearchEngineUtils.cleanName(element.text());
             if (!seriesName.isEmpty()) {
+                // some series will parse wrong.
+                // Example "Lucky Luke (Crew)"
+                // The "Crew" part is actually the publisher, but we parse it as the number.
+                // Not much we can do about that, as we need to rely on "()" parsing
+                // for many sites to BE the number.
                 final Series series = Series.from(seriesName);
                 element = document.selectFirst(
                         "span.nowrap > span.odright_pet, span.nowrap > span.odleft_pet ");
@@ -393,6 +398,21 @@ public class DatabazeKnihSearchEngine
         }
     }
 
+    /**
+     * Note that authors in the section of the page do NOT use the "(p)" suffix
+     * to indicate pseudonyms.
+     * Instead we find e.g. " Maurice De Bévère - Morris".
+     * TODO/TEST: check if we should/could split on "-" for "author - pseudonym"
+     *  but how reliable is this? Need more examples.
+     *  https://www.databazeknih.cz/prehled-knihy/lucky-luke-crew-jak-se-daltonovi-polepsili-555445
+     *
+     * @param context Current context
+     * @param root    to parse
+     * @param book    to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     */
     private void parseAdditional(@NonNull final Context context,
                                  @NonNull final Document root,
                                  @NonNull final Book book)
