@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
  * We hide the entire submenu if there are none.
  */
 public class ViewAuthorOnSiteMenuHandler
-        extends ViewOnSiteMenuHandler {
+        extends ViewOnSiteMenuHandler<DataHolder> {
 
     public ViewAuthorOnSiteMenuHandler() {
         super(R.id.SUBMENU_VIEW_AUTHOR_ON_SITE,
@@ -47,14 +47,14 @@ public class ViewAuthorOnSiteMenuHandler
     }
 
     @NonNull
-    List<Identifier.Value> getSids(@NonNull final DataHolder rowData) {
-        return DataHolderUtils.getSids(DBKey.FK_AUTHOR, rowData);
+    List<Identifier.Value> getSids(@NonNull final DataHolder data) {
+        return DataHolderUtils.getSids(DBKey.FK_AUTHOR, data);
     }
 
     @NonNull
     @Override
-    Optional<String> getSid(@NonNull final DataHolder rowData,
+    Optional<String> getSid(@NonNull final DataHolder data,
                             @NonNull final String key) {
-        return DataHolderUtils.getSid(DBKey.FK_AUTHOR, rowData, key);
+        return DataHolderUtils.getSid(DBKey.FK_AUTHOR, data, key);
     }
 }

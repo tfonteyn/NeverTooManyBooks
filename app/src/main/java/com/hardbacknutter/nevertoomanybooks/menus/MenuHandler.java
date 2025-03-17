@@ -27,13 +27,7 @@ import android.view.MenuInflater;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-
-/**
- * Used for {@link DataHolder} related menus.
- * This includes the BoB row menus and Book detail/edit screens.
- */
-public interface MenuHandler {
+public interface MenuHandler<T> {
 
     /**
      * Inflate/create the menu.
@@ -41,23 +35,23 @@ public interface MenuHandler {
      * @param context  Current context
      * @param menu     The Menu to inflate into
      * @param inflater to use
-     * @param rowData  the row data
+     * @param data     the data
      */
     void onCreateMenu(@NonNull Context context,
                       @NonNull Menu menu,
                       @NonNull MenuInflater inflater,
-                      @NonNull DataHolder rowData);
+                      @NonNull T data);
 
     /**
      * Prepare the menu before opening it.
      *
      * @param context Current context
      * @param menu    to prepare
-     * @param rowData the row data
+     * @param data    the data
      */
     void onPrepareMenu(@NonNull Context context,
                        @NonNull Menu menu,
-                       @NonNull DataHolder rowData);
+                       @NonNull T data);
 
     /**
      * Called after the user selected a menu item.
@@ -65,11 +59,11 @@ public interface MenuHandler {
      * @param context    Current context;
      *                   Must be suitable to use with {@link Context#startActivity(Intent)}
      * @param menuItemId The menu item that was invoked.
-     * @param rowData    the row data
+     * @param data       the data
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
     boolean onMenuItemSelected(@NonNull Context context,
                                @IdRes int menuItemId,
-                               @NonNull DataHolder rowData);
+                               @NonNull T data);
 }

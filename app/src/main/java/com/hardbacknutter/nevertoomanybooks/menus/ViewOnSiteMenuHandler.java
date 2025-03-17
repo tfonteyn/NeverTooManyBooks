@@ -41,11 +41,10 @@ import java.util.function.BiFunction;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
-abstract class ViewOnSiteMenuHandler
-        implements MenuHandler {
+abstract class ViewOnSiteMenuHandler<T>
+        implements MenuHandler<T> {
 
     private final Map<Integer, String> menuIds = new HashMap<>();
 
@@ -66,17 +65,17 @@ abstract class ViewOnSiteMenuHandler
     }
 
     @NonNull
-    abstract List<Identifier.Value> getSids(@NonNull DataHolder rowData);
+    abstract List<Identifier.Value> getSids(@NonNull T data);
 
     @NonNull
-    abstract Optional<String> getSid(@NonNull DataHolder rowData,
+    abstract Optional<String> getSid(@NonNull T data,
                                      @NonNull String key);
 
     @Override
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater,
-                             @NonNull final DataHolder rowData) {
+                             @NonNull final T data) {
         final MenuItem item = menu.findItem(subMenuResId);
         if (item == null) {
             final SubMenu parent = menu
@@ -90,7 +89,7 @@ abstract class ViewOnSiteMenuHandler
 
             // add to the menu if the Identifier has a valid url
             final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
-            getSids(rowData)
+            getSids(data)
                     .stream()
                     .map(Identifier.Value::getKey)
                     .map(dao::findByKey)
@@ -112,7 +111,7 @@ abstract class ViewOnSiteMenuHandler
     @Override
     public void onPrepareMenu(@NonNull final Context context,
                               @NonNull final Menu menu,
-                              @NonNull final DataHolder rowData) {
+                              @NonNull final T data) {
 
         final MenuItem subMenuItem = menu.findItem(subMenuResId);
         // Sanity check
@@ -127,7 +126,7 @@ abstract class ViewOnSiteMenuHandler
     @Override
     public boolean onMenuItemSelected(@NonNull final Context context,
                                       @IdRes final int menuItemId,
-                                      @NonNull final DataHolder rowData) {
+                                      @NonNull final T data) {
 
         final String key = menuIds.get(menuItemId);
         if (key == null) {
@@ -143,7 +142,7 @@ abstract class ViewOnSiteMenuHandler
 
         // Sanity check, it should be there!
         if (oUri.isPresent()) {
-            final Optional<String> oSid = getSid(rowData, key);
+            final Optional<String> oSid = getSid(data, key);
             // Sanity check, it should be there!
             if (oSid.isEmpty()) {
                 return false;

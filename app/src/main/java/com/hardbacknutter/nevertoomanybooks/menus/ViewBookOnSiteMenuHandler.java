@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
  * We hide the entire submenu if there are none.
  */
 public class ViewBookOnSiteMenuHandler
-        extends ViewOnSiteMenuHandler {
+        extends ViewOnSiteMenuHandler<DataHolder> {
 
     public ViewBookOnSiteMenuHandler() {
         super(R.id.SUBMENU_VIEW_BOOK_ON_SITE,
@@ -48,14 +48,14 @@ public class ViewBookOnSiteMenuHandler
     }
 
     @NonNull
-    List<Identifier.Value> getSids(@NonNull final DataHolder rowData) {
-        final List<Identifier.Value> ivs = DataHolderUtils.getSids(DBKey.FK_BOOK, rowData);
+    List<Identifier.Value> getSids(@NonNull final DataHolder data) {
+        final List<Identifier.Value> ivs = DataHolderUtils.getSids(DBKey.FK_BOOK, data);
 
         if (ivs.stream().map(Identifier.Value::getKey).noneMatch(Identifier.SID_ASIN::equals)) {
             //URGENT: is this a good idea? The browser/amazon gives a 404 if the isbn is not found
             // When looking for the Amazon ASIN, fallback on an Isbn code if possible
-            if (rowData.contains(DBKey.ISBN)) {
-                final String isbnStr = rowData.getString(DBKey.ISBN);
+            if (data.contains(DBKey.ISBN)) {
+                final String isbnStr = data.getString(DBKey.ISBN);
                 final ISBN isbn = new ISBN(isbnStr, true);
                 if (isbn.isValid(true) && isbn.isIsbn10Compat()) {
                     ivs.add(new Identifier.Value(Identifier.SID_ASIN,
@@ -68,8 +68,8 @@ public class ViewBookOnSiteMenuHandler
 
     @NonNull
     @Override
-    Optional<String> getSid(@NonNull final DataHolder rowData,
+    Optional<String> getSid(@NonNull final DataHolder data,
                             @NonNull final String key) {
-        return DataHolderUtils.getSid(DBKey.FK_BOOK, rowData, key);
+        return DataHolderUtils.getSid(DBKey.FK_BOOK, data, key);
     }
 }

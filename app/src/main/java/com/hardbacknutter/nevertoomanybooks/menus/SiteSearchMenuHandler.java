@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
  * if there are no relevant engines.
  */
 public class SiteSearchMenuHandler
-        implements MenuHandler {
+        implements MenuHandler<DataHolder> {
 
     private final Map<EngineId, Integer> submenuIds = new EnumMap<>(EngineId.class);
     private final Map<EngineId, Integer> menuIdsByAuthor = new EnumMap<>(EngineId.class);
@@ -65,7 +65,7 @@ public class SiteSearchMenuHandler
     public void onCreateMenu(@NonNull final Context context,
                              @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater,
-                             @NonNull final DataHolder rowData) {
+                             @NonNull final DataHolder data) {
         final MenuItem menuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
         if (menuItem == null) {
             final SubMenu parent = menu
@@ -115,7 +115,7 @@ public class SiteSearchMenuHandler
     @Override
     public void onPrepareMenu(@NonNull final Context context,
                               @NonNull final Menu menu,
-                              @NonNull final DataHolder rowData) {
+                              @NonNull final DataHolder data) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE);
         // Sanity check
@@ -138,8 +138,8 @@ public class SiteSearchMenuHandler
             final MenuItem engineMenu = menu.findItem(engineMenuId);
             boolean visible = searchEngine.isShowSearchOnSiteMenu(context);
             if (visible) {
-                final boolean hasAuthor = DataHolderUtils.hasAuthor(rowData);
-                final boolean hasSeries = DataHolderUtils.hasSeries(rowData);
+                final boolean hasAuthor = DataHolderUtils.hasAuthor(data);
+                final boolean hasSeries = DataHolderUtils.hasSeries(data);
                 visible = hasAuthor || hasSeries;
 
                 engineMenu.setVisible(visible);
@@ -170,7 +170,7 @@ public class SiteSearchMenuHandler
     @Override
     public boolean onMenuItemSelected(@NonNull final Context context,
                                       @IdRes final int menuItemId,
-                                      @NonNull final DataHolder rowData) {
+                                      @NonNull final DataHolder data) {
 
         for (final EngineId engineId : submenuIds.keySet()) {
 
@@ -178,7 +178,7 @@ public class SiteSearchMenuHandler
             id = menuIdsByAuthor.get(engineId);
             if (id != null && id == menuItemId) {
                 startSearchActivity(context, engineId,
-                                    DataHolderUtils.requireAuthor(rowData),
+                                    DataHolderUtils.requireAuthor(data),
                                     null);
                 return true;
             }
@@ -187,15 +187,15 @@ public class SiteSearchMenuHandler
             if (id != null && id == menuItemId) {
                 startSearchActivity(context, engineId,
                                     null,
-                                    DataHolderUtils.requireSeries(rowData));
+                                    DataHolderUtils.requireSeries(data));
                 return true;
             }
 
             id = menuIdsByAuthorAndSeries.get(engineId);
             if (id != null && id == menuItemId) {
                 startSearchActivity(context, engineId,
-                                    DataHolderUtils.requireAuthor(rowData),
-                                    DataHolderUtils.requireSeries(rowData));
+                                    DataHolderUtils.requireAuthor(data),
+                                    DataHolderUtils.requireSeries(data));
                 return true;
             }
         }

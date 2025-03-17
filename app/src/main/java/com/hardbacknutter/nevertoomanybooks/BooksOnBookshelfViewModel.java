@@ -242,7 +242,7 @@ public class BooksOnBookshelfViewModel
      * The currently selected (highlighted) adapter position.
      */
     private int selectedAdapterPosition = RecyclerView.NO_POSITION;
-    private List<MenuHandler> menuHandlers;
+    private List<MenuHandler<DataHolder>> menuHandlers;
 
     /**
      * Observable to receive progress.
@@ -438,7 +438,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    List<MenuHandler> getMenuHandlers() {
+    List<MenuHandler<DataHolder>> getMenuHandlers() {
         return menuHandlers;
     }
 
