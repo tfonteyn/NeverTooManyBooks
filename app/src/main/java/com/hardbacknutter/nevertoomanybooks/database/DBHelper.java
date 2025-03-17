@@ -87,7 +87,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * ENHANCE: dump android sqlite and replace with
  * https://sqlite.org/android/doc/trunk/www/index.wiki
  * https://sqlite.org/android/doc/trunk/www/usage.wiki
- * https://github.com/android-rooting-tools/android_libsqlite/blob/master/android/sqlite3_android.cpp
+ * https://android.googlesource.com/platform/external/sqlite/+/refs/heads/main
  */
 public class DBHelper
         extends SQLiteOpenHelper {
