@@ -80,7 +80,7 @@
     <string name="error_record_must_contain_column">Záznam musí obsahovať pole s názvom „%1$s“.</string>
     <string name="error_export_failed">Export zlyhal.</string>
     <string name="error_type_not_supported">Typ nie je podporovaný: %1$s…</string>
-    <string name="warning_import_csv_unescaped_quote">Nevypísaná úvodzovka v riadku %1$d, pozícia %2$d\"</string>
+    <string name="warning_import_csv_unescaped_quote">Neuvedená úvodzovka v riadku %1$d, pozícia %2$d\"</string>
     <string name="warning_import_failed_for_these_books_and_more">a ešte %1$d ďalších.</string>
     <string name="warning_export_contains_no_data">Nebolo čo exportovať.</string>
     <string name="warning_book_not_found">Nepodarilo sa nájsť zadanú knihu.</string>
@@ -168,7 +168,7 @@
     <string name="size_medium">Stredné</string>
     <string name="size_large">Velké</string>
     <string name="book_format_comic">Komiks</string>
-    <string name="book_format_other">Iné</string>
+    <string name="book_format_other">Iný</string>
     <string name="book_format_ebook">eKniha</string>
     <string name="style_type_builtin">Vstavaný</string>
     <string name="lbl_group_1st_char_author_family_name">Prvé písmeno priezviska autora</string>
@@ -640,7 +640,7 @@
     <string name="book_format_digest">Kompaktné vydanie</string>
     <string name="tip_configure_sites">Jednotlivé webové stránky je možné konfigurovať pomocou ikony nastavení v hornej časti obrazovky.</string>
     <string name="tip_authors_works">Použité ikony</string>
-    <string name="bob_empty_field">(Nenastavené)</string>
+    <string name="bob_empty_field">(Prázdné)</string>
     <string name="bob_empty_rating">(Nehodnotené)</string>
     <string name="lbl_condition_fair">Prijateľný</string>
     <string name="size_megabytes">%1$.2fMB</string>
