@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
+// TODO: either use Function or use abstract methods.. not both
 abstract class ViewOnSiteMenuHandler<T>
         implements MenuHandler<T> {
 
@@ -101,8 +102,8 @@ abstract class ViewOnSiteMenuHandler<T>
                                  menuIds.put(menuItemId, identifier.getKey());
 
                         parent.add(menuGroupResId, menuItemId, 0,
-                                             identifier.getName())
-                                        .setIcon(R.drawable.link_24px);
+                                   identifier.getName())
+                              .setIcon(R.drawable.link_24px);
                              }
                     );
         }
