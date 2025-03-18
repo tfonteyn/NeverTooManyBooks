@@ -322,8 +322,12 @@ public class DatabazeKnihSearchEngine
                 element = document.selectFirst(
                         "span.nowrap > span.odright_pet, span.nowrap > span.odleft_pet ");
                 if (element != null) {
-                    final String nr = element.text();
+                    String nr = element.text();
                     if (!nr.isEmpty()) {
+                        // these usually/always end with ". díl" == "episode"; remove
+                        if (nr.endsWith(". díl")) {
+                            nr = nr.substring(0, nr.length() - 5);
+                        }
                         series.setNumber(nr);
                     }
                 }
