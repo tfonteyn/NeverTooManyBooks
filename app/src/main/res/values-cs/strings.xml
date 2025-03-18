@@ -124,7 +124,7 @@
     <string name="book_format_other">Jiný</string>
     <string name="book_format_digest">Kompaktní vydání</string>
     <string name="book_format_dimensions">Rozměry</string>
-    <string name="book_format_ebook">Elektronická kniha</string>
+    <string name="book_format_ebook">E-kniha</string>
     <string name="book_format_hardcover">Pevná vazba</string>
     <string name="book_format_paperback">Brožovaná kniha</string>
     <string name="book_format_paperback_large">Velká brožovaná vazba</string>
@@ -231,7 +231,7 @@
     <string name="error_upgrade_not_supported">Upgrade z verzí starších než %1$s není podporován.</string>
     <string name="option_fab_add_book_by_barcode_scan">Naskenování čárového kódu</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Dávkové skenování čárových kódů</string>
-    <string name="option_fab_add_book_by_external_id">ID webové stránky</string>
+    <string name="option_fab_add_book_by_external_id">ID knihy webové stránky</string>
     <string name="option_fab_add_book_by_internet_search">Vyhledávání podle názvu</string>
     <string name="option_fab_add_book_by_isbn">Vyhledávání podle ISBN</string>
     <string name="option_fab_add_book_manually">Přidat ručně</string>
@@ -304,7 +304,7 @@
     <string name="lbl_certificates">Certifikáty</string>
     <string name="lbl_clone_style">Klonovat styl</string>
     <string name="lbl_book_type_collection">Sbírka</string>
-    <string name="lbl_ebook_file_type">Typ souboru elektronické knihy</string>
+    <string name="lbl_ebook_file_type">Typ souboru e-knihy</string>
     <string name="lbl_color">Barva</string>
     <string name="lbl_condition">Stav</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Chybějící/špatný</string>
@@ -395,7 +395,7 @@
     <string name="lbl_owned">Vlastněno</string>
     <string name="lbl_pages">Počet stran</string>
     <string name="lbl_personal_notes">Osobní poznámky</string>
-    <string name="lbl_price_listed">Ceník</string>
+    <string name="lbl_price_listed">Katalogová cena</string>
     <string name="lbl_price_paid">Zaplacená cena</string>
     <string name="lbl_print_run">Náklad</string>
     <string name="lbl_publication">Vydání</string>
@@ -495,7 +495,7 @@
     <string name="option_cover_rotate_automatic">Automaticky</string>
     <string name="option_cover_rotate_ccw">Proti směru hodinových ručiček</string>
     <string name="option_cover_rotate_cw">Po směru hodinových ručiček</string>
-    <string name="option_download_ebook_format">Stáhnout eBook (%1$s)</string>
+    <string name="option_download_ebook_format">Stáhnout e-knihu (%1$s)</string>
     <string name="option_download_folder">Místní složka pro stahování</string>
     <string name="option_enable_sync_options">Povolit možnosti synchronizace</string>
     <string name="option_import">Importovat</string>
