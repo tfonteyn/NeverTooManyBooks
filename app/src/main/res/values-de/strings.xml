@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -260,7 +263,7 @@
     <string name="lbl_author_type_cover_artist">Titelbild</string>
     <string name="lbl_author_type_cover_colorist">Colorist des Covers</string>
     <string name="lbl_author_type_cover_inking">Inker des Covers</string>
-    <string name="lbl_author_type_editor">Herausgeber</string>
+    <string name="lbl_author_type_editor">Editor</string>
     <string name="lbl_author_type_inking">Inker</string>
     <string name="lbl_author_type_intro">Einführung etc.</string>
     <string name="lbl_author_type_narrator">Erzähler</string>
@@ -483,7 +486,7 @@
     <string name="option_enable_sync_options">Synchronisierungsoptionen aktivieren</string>
     <string name="option_import">Importieren</string>
     <string name="option_lend_out_book">Verleihen an…</string>
-    <string name="option_lend_return_book">Zurückbuchen</string>
+    <string name="option_lend_return_book">Buch zurückgegeben</string>
     <string name="option_purge_bedetheque_authors_cache">Cache der Bedetheque-Autoren leeren</string>
     <string name="option_rebuild_fts">Volltext-Suchdaten neu aufbauen</string>
     <string name="option_rebuild_index">Neuaufbau der Indizes</string>
@@ -793,7 +796,7 @@
     <string name="a_space_b">%1$s %2$s</string>
     <string name="lbl_assign_bookshelves">Bücherregale zuweisen</string>
     <string name="site_description_comics">Comics</string>
-    <string name="lbl_author_type_storyboard">Szenarist</string>
+    <string name="lbl_author_type_storyboard">Drehbuch</string>
     <string name="lbl_author_type_lettering">Letterer</string>
     <string name="lbl_percentage">Prozentsatz</string>
     <string name="lbl_percentage_read" tools:ignore="StringFormatInvalid">% gelesen</string>
