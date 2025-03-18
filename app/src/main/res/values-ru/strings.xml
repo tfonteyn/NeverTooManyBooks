@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -312,7 +309,7 @@
     <string name="lbl_condition_fair">Приемлемо</string>
     <string name="lbl_condition_fine">Как новый</string>
     <string name="lbl_condition_good">Хорошо</string>
-    <string name="lbl_condition_reading_copy">Чтение копии</string>
+    <string name="lbl_condition_reading_copy">Читанный экземпляр</string>
     <string name="lbl_condition_very_good">Очень хорошо</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">Объединение верхнего и нижнего регистров</string>
     <string name="lbl_tag_mapper_apply_purge_unused">Удаление неиспользуемых тегов</string>
@@ -395,8 +392,8 @@
     <string name="lbl_owned">В собственности</string>
     <string name="lbl_pages">Страницы</string>
     <string name="lbl_personal_notes">Личные заметки</string>
-    <string name="lbl_price_listed">Список цен</string>
-    <string name="lbl_price_paid">Цена оплачена</string>
+    <string name="lbl_price_listed">Цена по каталогу</string>
+    <string name="lbl_price_paid">Уплаченная цена</string>
     <string name="lbl_print_run">Тираж</string>
     <string name="lbl_publication">публикация</string>
     <string name="lbl_date_published_month">Месяц публикации</string>
@@ -638,8 +635,8 @@
     <string name="size_x_small">X-Маленький</string>
     <string name="pe_fast_scroller_overlay_static">статический</string>
     <string name="strict">Строгий</string>
-    <string name="style_builtin_author_series">Сначала автор потом серия</string>
-    <string name="style_builtin_author_year">Автор и год</string>
+    <string name="style_builtin_author_series">Автор, серия</string>
+    <string name="style_builtin_author_year">Автор, год</string>
     <string name="lbl_date_read">Дата прочтения</string>
     <string name="lbl_defaults">По умолчанию</string>
     <string name="style_type_builtin">Встроенный</string>
