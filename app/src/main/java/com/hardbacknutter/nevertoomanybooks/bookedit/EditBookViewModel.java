@@ -1271,6 +1271,11 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_site_bedetheque)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
+        fields.add(new IdentifierField<>(fragmentId, R.id.site_databaze_knih,
+                                         Identifier.SID_DATABAZE_KNIH)
+                           .setTextInputLayoutId(R.id.lbl_site_databaze_knih)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+
         fields.add(new IdentifierField<>(fragmentId, R.id.site_dnb,
                                          Identifier.SID_DNB)
                            .setTextInputLayoutId(R.id.lbl_site_dnb_de)
