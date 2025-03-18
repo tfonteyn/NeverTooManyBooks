@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -107,7 +104,7 @@
     <string name="action_skip">Pomiń</string>
     <string name="action_synchronize">Synchronizować</string>
     <string name="and_others">%1$s…</string>
-    <string name="and_others_textual">%1$s Wsp.</string>
+    <string name="and_others_textual">%1$s i wsp.</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Brakuje autora)</string>
     <string name="bob_empty_day">(Nie ustawiono dnia)</string>
@@ -115,7 +112,7 @@
     <string name="bob_empty_language">(Bez wypełnionego języka)</string>
     <string name="bob_empty_month">(Nie ustawiono miesiąca)</string>
     <string name="bob_empty_publisher">(Brak wydawcy)</string>
-    <string name="bob_empty_rating">(Nie oceniony)</string>
+    <string name="bob_empty_rating">(Nie oceniono)</string>
     <string name="bob_empty_read_status">(Status odczytu nieznany)</string>
     <string name="bob_empty_series">(Bez serii)</string>
     <string name="bob_empty_year">(Rok nieustawiony)</string>
@@ -123,13 +120,13 @@
     <string name="book_color_support_color">Dwukolorowy</string>
     <string name="book_color_black_and_white">czarno-biały</string>
     <string name="book_format_audiobook">Książka audio</string>
-    <string name="book_format_comic">komiks</string>
+    <string name="book_format_comic">Komiks</string>
     <string name="book_format_other">Inny</string>
     <string name="book_format_digest">Mały</string>
     <string name="book_format_dimensions">Wymiary</string>
     <string name="book_format_ebook">e-książka</string>
-    <string name="book_format_hardcover">Twarda</string>
-    <string name="book_format_paperback">Miękka</string>
+    <string name="book_format_hardcover">Oprawa twarda</string>
+    <string name="book_format_paperback">Oprawa miękka</string>
     <string name="book_format_paperback_large">Miękki / duży</string>
     <string name="book_format_softcover">Miękka okładka</string>
     <string name="bookshelf_all_books">Wszystkie książki</string>
@@ -153,7 +150,7 @@
     <string name="camera_next_action">Działanie po zrobieniu zdjęcia</string>
     <string name="pe_camera_other">Inne</string>
     <string name="cancelled">Anulowane</string>
-    <string name="cd_btn_drag_handle">Przeciągnij mnie, aby zmienić kolejność tej listy</string>
+    <string name="cd_btn_drag_handle">Przeciągnij, aby zmienić kolejność tej listy</string>
     <string name="cd_clear_text_end_icon">Wyczyść tekst</string>
     <string name="lbl_certificate_issued_by">Wystawca: %1$s</string>
     <string name="lbl_certificate_issued_to">Wystawiony dla: %1$s</string>
@@ -213,7 +210,7 @@
     <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.\nSprawdź także ustawienia sieciowe urządzenia.</string>
     <string name="error_search_x_failed_y">Wyszukiwanie w %1$s nie powiodło się: %2$s</string>
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>
-    <string name="error_http_401_site_authorization_failed">Autoryzacja %1$s spowodowała błąd.</string>
+    <string name="error_http_401_site_authorization_failed">Autoryzacja %1$s zakończyła się błędem.</string>
     <string name="error_insufficient_storage">Za mało miejsca w pamięci.</string>
     <string name="error_http_403_site_forbidden">%1$s zablokował dostęp.</string>
     <string name="error_http_403_forbidden">Witryna zablokowała dostęp.</string>
@@ -544,7 +541,7 @@
     <string name="preference_not_set">Nie ustawiono</string>
     <string name="info_backup_successful">Резервное копирование выполнено успешно</string>
     <string name="info_tap_to_move_tag">Stuknij tag, aby przenieść go do/z książki.</string>
-    <string name="lbl_add_or_edit_substitution">Dodawanie/edycja reguły zastępowania</string>
+    <string name="lbl_add_or_edit_substitution">Dodanie/edycja reguły zastępowania</string>
     <string name="info_substitutions_one_per_line">Dodaj jedno podstawienie w każdym wierszu</string>
     <string name="info_download_successful">Pobieranie powiodło się</string>
     <string name="info_export_report">W wybranym folderze został utworzony plik %1$s o nazwie „%2$s”. Należy go ręcznie skopiować w inne miejsce, aby chronić dane w przypadku uszkodzenia, zgubienia lub kradzieży urządzenia.</string>
@@ -567,7 +564,7 @@
     <string name="progress_msg_skip_s">Pomiń - %1$s</string>
     <string name="progress_msg_starting_up">Rozpoczęcie…</string>
     <string name="progress_msg_upgrading">Aktualizacja…</string>
-    <string name="progress_msg_x_created">%1$d Utworzono</string>
+    <string name="progress_msg_x_created">%1$d utworzono</string>
     <string name="progress_msg_x_updated">%1$d zaktualizowano</string>
     <string name="progress_msg_x_skipped">%1$d pominięto</string>
     <string name="pt_allow_editing_external_id">Zezwalaj na edycję natywnego identyfikatora książki w witrynie</string>
@@ -625,7 +622,7 @@
     <string name="pv_bob_header_filters">Filtry</string>
     <string name="pv_bob_header_nr_of_books">Liczba książek</string>
     <string name="pv_bob_header_style_name">Nazwa stylu</string>
-    <string name="size_hidden">Ukryty</string>
+    <string name="size_hidden">Ukryte</string>
     <string name="size_large">Duży</string>
     <string name="size_medium">Średni</string>
     <string name="size_small">Mały</string>
@@ -660,7 +657,7 @@
     <string name="X_tip_update_fields_from_internet">Linki do zewnętrznych stron są przetwarzane tylko wtedy, gdy rzeczywiście nawiązano kontakt ze stroną. W rezultacie menu „Widok na……” pokaże tylko to, co jest dostępne.</string>
     <string name="tip_view_only_help">Możesz przesuwać palcem w lewo lub w prawo, aby przejść do innych książek.</string>
     <string name="info_cleanup_files">Pliki pomocnicze możliwe do usunięcia zajmują %1$s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij „%2$s” najpierw.</string>
-    <string name="info_displaying_n_books_in_m_entries">%1$d książek, w %2$d wpisów</string>
+    <string name="info_displaying_n_books_in_m_entries">%1$d książek, w %2$d wpisach</string>
     <string name="info_export_books_option_since_last_full_backup">Wszystkie książki dodane lub zaktualizowane od ostatniej pełnej kopii zapasowej.</string>
     <string name="option_info_import_books_option_all">Importuj nowe książki i nadpisz istniejące książki. Użyj tego do przywrócenia kopii zapasowej.</string>
     <string name="option_info_import_books_option_new_and_updated">Importuj nowe książki i synchronizuj istniejące książki na podstawie daty ich ostatniej modyfikacji.</string>
@@ -704,7 +701,7 @@
     <string name="warning_import_csv_unescaped_quote">Nieokreślony znak cytatu w wierszu %1$d, pozycja %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">i %1$d innych.</string>
     <string name="warning_import_failed_for_these_books">Import nie powiódł się dla tych książek/wierszy:</string>
-    <string name="warning_no_editions">Brak wydań.</string>
+    <string name="warning_no_editions">Brak dodatkowych informacji o edycji.</string>
     <string name="warning_no_matching_book_found">Nie znaleziono pasującej książki</string>
     <string name="warning_no_search_data_for_active_sites">Brak prawidłowych danych wyszukiwania dla aktywnych witryn.</string>
     <string name="warning_no_site_supports_this_method">OSTRZEŻENIE: żadna z aktualnie wybranych witryn nie obsługuje wyszukiwania według %1$s. Użyj menu witryny, aby włączyć alternatywne witryny lub użyj innej metody wyszukiwania.</string>
@@ -717,7 +714,7 @@
     <string name="warning_select_at_least_1_group">Wybierz co najmniej jedną grupę.</string>
     <string name="warning_toc_confirm">Potwierdź, czy te pozycje antologii są (zasadniczo) poprawne.</string>
     <string name="warning_x_already_exists">%1$s już istnieje.</string>
-    <string name="warning_x_is_not_a_valid_code">„%1$s” nie jest prawidłowym kod</string>
+    <string name="warning_x_is_not_a_valid_code">„%1$s” nie jest prawidłowym kodem</string>
     <string name="whichEditApplication">Edytuj w aplikacji</string>
     <string name="whichSendApplication">Udostępnij</string>
     <string name="whichViewApplication">Otwórz w aplikacji</string>
@@ -768,7 +765,7 @@
     <string name="site_description_french_and_more">Francuski i nie tylko</string>
     <string name="site_description_portuguese_and_more">Portugalski i nie tylko</string>
     <string name="site_description_various_languages">Różne języki</string>
-    <string name="site_description_shop">Zakupy</string>
+    <string name="site_description_shop">Sklep</string>
     <string name="info_maintenance_sync_deleted_book_records">Spowoduje to sprawdzenie historii usuniętych książek z poprzedniego importu z innego urządzenia i synchronizację tych usunięć. Innymi słowy, książki usunięte na innym urządzeniu zostaną również usunięte na tym urządzeniu.</string>
     <string name="option_clear_deleted_book_records">Wyczyść historię usuniętych książek</string>
     <string name="info_maintenance_clear_deleted_book_records">Spowoduje to wyczyszczenie historii usuniętych książek. Żadne książki nie zostaną usunięte.</string>
