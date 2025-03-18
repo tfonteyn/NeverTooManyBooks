@@ -179,6 +179,8 @@ public class SearchBookUpdatesViewModel
         final SortedMap<String, String[]> map = new TreeMap<>();
         map.put(context.getString(R.string.lbl_title),
                 new String[]{DBKey.TITLE});
+        map.put(context.getString(R.string.lbl_original_title),
+                new String[]{DBKey.TRANSLATION_ORIGINAL_TITLE});
         map.put(context.getString(R.string.lbl_isbn),
                 new String[]{DBKey.ISBN});
         map.put(context.getString(R.string.lbl_description),
@@ -199,6 +201,8 @@ public class SearchBookUpdatesViewModel
                 new String[]{DBKey.COLOR});
         map.put(context.getString(R.string.lbl_language),
                 new String[]{DBKey.LANGUAGE});
+        map.put(context.getString(R.string.lbl_original_language),
+                new String[]{DBKey.TRANSLATION_ORIGINAL_LANGUAGE});
         map.put(context.getString(R.string.lbl_tags)
                 + " / " + context.getString(R.string.lbl_genre),
                 new String[]{DBKey.FK_TAG, Book.BKEY_TAG_LIST});
