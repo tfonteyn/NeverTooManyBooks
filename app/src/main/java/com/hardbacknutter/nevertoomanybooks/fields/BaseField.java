@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -352,7 +353,14 @@ public abstract class BaseField<T, V extends View>
     @Override
     public void setParentView(@NonNull final View parent) {
 
-        viewReference = new WeakReference<>(parent.findViewById(fieldViewId));
+        final V view = parent.findViewById(fieldViewId);
+        if (BuildConfig.DEBUG /* always */) {
+            if (view == null) {
+                Log.d(TAG, "setParentView|view not found" + parent
+                        .getContext().getResources().getResourceName(fieldViewId));
+            }
+        }
+        viewReference = new WeakReference<>(view);
         // Unused fields are hidden here BEFORE they are displayed at all.
         if (!isUsed()) {
             requireView().setVisibility(View.GONE);
