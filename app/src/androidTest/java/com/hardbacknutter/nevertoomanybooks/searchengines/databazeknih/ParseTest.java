@@ -117,9 +117,6 @@ public class ParseTest
                      + "padouchem. Riskuje však, že odhalí víc, než by měla...",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals("klasická kniha",
-                     book.getString(DatabazeKnihSearchEngine.SiteField.FORMA, null));
-
         final List<Tag> bookTags = book.getTags();
 
         assertEquals(13, bookTags.size());
@@ -221,9 +218,6 @@ public class ParseTest
                      + "textů.",
                      book.getString(DBKey.DESCRIPTION, null));
 
-        assertEquals("klasická kniha",
-                     book.getString(DatabazeKnihSearchEngine.SiteField.FORMA, null));
-
         final List<Tag> bookTags = book.getTags();
 
         assertEquals(8, bookTags.size());
@@ -304,9 +298,6 @@ public class ParseTest
 
         assertEquals("Sonnets / A lover's complaint",
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
-
-        assertEquals("klasická kniha",
-                     book.getString(DatabazeKnihSearchEngine.SiteField.FORMA, null));
 
         assertEquals("Dvojjazyčné vydání /česky a\n"
                      + "anglicky/ kompletních Shakespearových sonetů s jeho méně\n"
@@ -407,9 +398,6 @@ public class ParseTest
 
         assertEquals("Foundation",
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
-
-        assertEquals("klasická kniha",
-                     book.getString(DatabazeKnihSearchEngine.SiteField.FORMA, null));
 
         final List<Tag> bookTags = book.getTags();
 

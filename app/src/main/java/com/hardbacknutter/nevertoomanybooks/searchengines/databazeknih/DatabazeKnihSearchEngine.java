@@ -718,14 +718,4 @@ public class DatabazeKnihSearchEngine
 
         return saveImage(context, url, bookId, cIdx, null);
     }
-
-    /**
-     * specific field names we add to the bundle based on parsed XML data.
-     */
-    static final class SiteField {
-        static final String FORMA = "__DATABAZE_KNIH_FORMA";
-
-        private SiteField() {
-        }
-    }
 }
