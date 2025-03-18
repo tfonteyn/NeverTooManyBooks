@@ -123,6 +123,8 @@ public final class FormatMapper
         MAPPINGS.put("livre audio numérique", R.string.book_format_audiobook);
         // portuguese
         MAPPINGS.put("audiolivro", R.string.book_format_audiobook);
+        // czech
+        MAPPINGS.put("audiokniha", R.string.book_format_audiobook);
 
 
         // ################## Special ##################

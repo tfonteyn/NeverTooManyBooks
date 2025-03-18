@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -83,6 +84,14 @@ public class DatabazeKnihSearchEngine
     private static final String MULTI_RESULT_PAGE_TITLE = "Vyhledávání";
     /** a link txt we need to remove from the description field. */
     private static final String CELY_TEXT = "... celý text";
+    /** website shows this if the book has no description. */
+    private static final String NO_DESCRIPTION_TEXT = "Popis knihy zde zatím bohužel není...";
+    /** website indication it's an eBook. */
+    private static final String EBOOK = "ekniha";
+    /** website indication it's an eBook. */
+    private static final String AUDIOBOOK = "audiokniha";
+    /** website indication it's a normal/paper book. */
+    private static final String CLASSIC_BOOK = "klasická kniha";
 
     /**
      * The site uses non-standard language names.
@@ -101,7 +110,6 @@ public class DatabazeKnihSearchEngine
             // other, remove it
             "jiný", ""
     );
-    static final String EBOOK = "ekniha";
 
     @NonNull
     private final RatingParser ratingParser;
@@ -252,38 +260,16 @@ public class DatabazeKnihSearchEngine
             final String prop = itemProp.attr("itemprop");
             switch (prop) {
                 case "author": {
-                    parseAuthor(itemProp, Author.TYPE_WRITER, book);
+                    parseAuthors(itemProp, Author.TYPE_WRITER, book);
                     break;
                 }
                 case "description": {
-                    final Element desc = itemProp.nextElementSibling();
-                    if (desc != null) {
-                        String text = desc.wholeText().strip();
-                        // Check/skip if it is "no description"
-                        if (!"Popis knihy zde zatím bohužel není...".equals(text)) {
-                            // text contains \n and lots of whitespace, cleanup
-                            text = Arrays.stream(text.split("\n"))
-                                         .map(String::strip)
-                                         // remove the "click to see more" if present
-                                         .filter(t -> !CELY_TEXT.equals(t))
-                                         .collect(Collectors.joining("\n"))
-                                         // empty lines at end
-                                         .stripTrailing();
-
-                            // depending on the formatting it might still have the "click" text
-                            if (text.endsWith(CELY_TEXT)) {
-                                text = text.substring(0, text.length() - 13);
-                            }
-                            book.putString(DBKey.DESCRIPTION, text);
-                        }
-                    }
+                    parseDescription(itemProp, book);
                     break;
                 }
                 case "ratingValue": {
-                    ratingParser.parse(itemProp.text()).ifPresent(rating ->
-                                                                          book.putFloat(
-                                                                                  DBKey.RATING,
-                                                                                  rating));
+                    ratingParser.parse(itemProp.text())
+                                .ifPresent(rating -> book.putFloat(DBKey.RATING, rating));
                     break;
                 }
                 case "genre": {
@@ -368,6 +354,17 @@ public class DatabazeKnihSearchEngine
             }
         }
 
+        element = document.selectFirst("span:contains(Interpreti:)");
+        if (element != null) {
+            element = element.nextElementSibling();
+            if (element != null) {
+                final String url = element.attr("href");
+                if (!url.isEmpty()) {
+                    parseAuthor(element, element.text(), Author.TYPE_NARRATOR, book);
+                }
+            }
+        }
+
         // in addition to the "genre" tags parsed above
         book.addTags(document.select("a.tag").stream()
                              .map(Element::text)
@@ -382,6 +379,7 @@ public class DatabazeKnihSearchEngine
             parseAdditional(d2, book);
         }
 
+        // Check if there is TOC: there will be a link on the lower menu bar.
         final Element linksElement = document.selectFirst("ul#newIcons");
         if (linksElement != null) {
             final Element a = linksElement.selectFirst("a[href^=/povidky-z-knihy/]");
@@ -403,6 +401,31 @@ public class DatabazeKnihSearchEngine
             final String isbn = book.getString(DBKey.ISBN);
             parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        }
+    }
+
+    private void parseDescription(@NonNull final Element itemProp,
+                                  @NonNull final Book book) {
+        final Element desc = itemProp.nextElementSibling();
+        if (desc != null) {
+            String text = desc.wholeText().strip();
+            // Check/skip if it is "no description"
+            if (!NO_DESCRIPTION_TEXT.equals(text)) {
+                // text contains \n and lots of whitespace, cleanup
+                text = Arrays.stream(text.split("\n"))
+                             .map(String::strip)
+                             // remove the "click to see more" if present
+                             .filter(t -> !CELY_TEXT.equals(t))
+                             .collect(Collectors.joining("\n"))
+                             // empty lines at end
+                             .stripTrailing();
+
+                // depending on the formatting it might still have the "click" text
+                if (text.endsWith(CELY_TEXT)) {
+                    text = text.substring(0, text.length() - 13);
+                }
+                book.putString(DBKey.DESCRIPTION, text);
+            }
         }
     }
 
@@ -454,15 +477,15 @@ public class DatabazeKnihSearchEngine
 
         element = root.selectFirst("[itemprop='ilustrator']");
         if (element != null) {
-            parseAuthor(element, Author.TYPE_ARTIST, book);
+            parseAuthors(element, Author.TYPE_ARTIST, book);
         }
         element = root.selectFirst("[itemprop='cover']");
         if (element != null) {
-            parseAuthor(element, Author.TYPE_COVER_ARTIST, book);
+            parseAuthors(element, Author.TYPE_COVER_ARTIST, book);
         }
         element = root.selectFirst("[itemprop='translator']");
         if (element != null) {
-            parseAuthor(element, Author.TYPE_TRANSLATOR, book);
+            parseAuthors(element, Author.TYPE_TRANSLATOR, book);
         }
 
         // for translations, we keep that date if already set.
@@ -505,6 +528,11 @@ public class DatabazeKnihSearchEngine
         }
 
         // Forma == form
+        // This field contains one of:
+        // "klasická kniha" (klassiek boek)
+        // "ekniha" (eBook)
+        // "audiokniha" (audio-book)
+        // Not seen other entries, but not looked to exhaustion...
         element = root.selectFirst("span:contains(Forma:)");
         if (element != null) {
             final Node textNode = element.nextSibling();
@@ -513,8 +541,10 @@ public class DatabazeKnihSearchEngine
                 if (!text.isEmpty()) {
                     if (EBOOK.equals(text)) {
                         book.putString(DBKey.FORMAT, EBOOK);
-                    } else {
-                        book.putString(SiteField.FORMA, text);
+                    } else if (AUDIOBOOK.equals(text)) {
+                        book.putString(DBKey.FORMAT, AUDIOBOOK);
+                    } else if (!CLASSIC_BOOK.equals(text)) {
+                        LoggerFactory.getLogger().w(TAG, "found Forma: " + text);
                     }
                 }
             }
@@ -565,35 +595,64 @@ public class DatabazeKnihSearchEngine
         }
     }
 
-    private void parseAuthor(@NonNull final Element element,
-                             @Author.Type final int type,
-                             @NonNull final Book book)
+    /**
+     * Parse all "a" links in the given element for Authors.
+     *
+     * @param element to parse
+     * @param type    of author
+     * @param book    to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     */
+    private void parseAuthors(@NonNull final Element element,
+                              @Author.Type final int type,
+                              @NonNull final Book book)
             throws SearchException, CredentialsException {
         for (final Element a : element.select("a")) {
             final String text = a.text();
             if (!text.isEmpty()) {
-                final Author author = Author.from(text);
-
-                final String url = a.attr("href");
-                final int index = url.lastIndexOf('-');
-                if (index > 0 && (index + 1) < url.length()) {
-                    final String id = url.substring(index + 1);
-                    if (!id.isEmpty()) {
-                        author.setIdentifierValue(Identifier.SID_DATABAZE_KNIH, id);
-                    }
-                }
-
-                // an adjacent "(p)" indicates this is a Pseudonym.
-                final Element maybePseudonym = a.nextElementSibling();
-                if (maybePseudonym != null
-                    && "span".equals(maybePseudonym.tag().getName())
-                    && "(p)".equals(maybePseudonym.text())) {
-                    resolver.resolve(author);
-                }
-
-                addAuthor(author, type, book);
+                parseAuthor(a, text, type, book);
             }
         }
+    }
+
+    /**
+     * Parse the given link/text for an Author.
+     *
+     * @param a    to parse
+     * @param text author name
+     * @param type of author
+     * @param book to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     */
+    private void parseAuthor(@NonNull final Element a,
+                             @NonNull final String text,
+                             @Author.Type final int type,
+                             @NonNull final Book book)
+            throws SearchException, CredentialsException {
+        final Author author = Author.from(text);
+
+        final String url = a.attr("href");
+        final int index = url.lastIndexOf('-');
+        if (index > 0 && (index + 1) < url.length()) {
+            final String id = url.substring(index + 1);
+            if (!id.isEmpty()) {
+                author.setIdentifierValue(Identifier.SID_DATABAZE_KNIH, id);
+            }
+        }
+
+        // an adjacent "(p)" indicates this is a Pseudonym.
+        final Element maybePseudonym = a.nextElementSibling();
+        if (maybePseudonym != null
+            && "span".equals(maybePseudonym.tag().getName())
+            && "(p)".equals(maybePseudonym.text())) {
+            resolver.resolve(author);
+        }
+
+        addAuthor(author, type, book);
     }
 
     @Nullable
