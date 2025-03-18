@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.fields.BooleanIndicatorField;
@@ -83,7 +84,7 @@ public class ShowBookDetailsViewModel
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
     @Nullable
     private Book book;
-    private List<MenuHandler> menuHandlers;
+    private List<MenuHandler<DataHolder>> menuHandlers;
 
     private boolean embedded;
 
@@ -240,7 +241,7 @@ public class ShowBookDetailsViewModel
 
 
     @NonNull
-    List<MenuHandler> getMenuHandlers() {
+    List<MenuHandler<DataHolder>> getMenuHandlers() {
         return menuHandlers;
     }
 

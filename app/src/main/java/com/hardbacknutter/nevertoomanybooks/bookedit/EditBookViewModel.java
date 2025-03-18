@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -110,7 +111,7 @@ public class EditBookViewModel
     private final Collection<FragmentId> fragmentsWithUnfinishedEdits =
             EnumSet.noneOf(FragmentId.class);
     private final MutableLiveData<Boolean> onReadStatusUpdateUI = new MutableLiveData<>();
-    private List<MenuHandler> menuHandlers;
+    private List<MenuHandler<DataHolder>> menuHandlers;
     /**
      * The Book we're editing (creating/updating).
      * It will never be {@code null} after being loaded in {@link #init(Context, Bundle)}.
@@ -261,7 +262,7 @@ public class EditBookViewModel
     }
 
     @NonNull
-    List<MenuHandler> getMenuHandlers() {
+    List<MenuHandler<DataHolder>> getMenuHandlers() {
         return menuHandlers;
     }
 
