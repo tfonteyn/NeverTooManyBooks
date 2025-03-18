@@ -81,6 +81,8 @@ public class DatabazeKnihSearchEngine
 
     /** The html title attribute starts with this if we get a list back. */
     private static final String MULTI_RESULT_PAGE_TITLE = "Vyhledávání";
+    /** a link txt we need to remove from the description field. */
+    private static final String CELY_TEXT = "... celý text";
 
     /**
      * The site uses non-standard language names.
@@ -99,6 +101,7 @@ public class DatabazeKnihSearchEngine
             // other, remove it
             "jiný", ""
     );
+    static final String EBOOK = "ekniha";
 
     @NonNull
     private final RatingParser ratingParser;
@@ -262,13 +265,13 @@ public class DatabazeKnihSearchEngine
                             text = Arrays.stream(text.split("\n"))
                                          .map(String::strip)
                                          // remove the "click to see more" if present
-                                         .filter(t -> !t.equals("... celý text"))
+                                         .filter(t -> !CELY_TEXT.equals(t))
                                          .collect(Collectors.joining("\n"))
                                          // empty lines at end
                                          .stripTrailing();
 
                             // depending on the formatting it might still have the "click" text
-                            if (text.endsWith("... celý text")) {
+                            if (text.endsWith(CELY_TEXT)) {
                                 text = text.substring(0, text.length() - 13);
                             }
                             book.putString(DBKey.DESCRIPTION, text);
@@ -411,8 +414,8 @@ public class DatabazeKnihSearchEngine
      *  but how reliable is this? Need more examples.
      *  https://www.databazeknih.cz/prehled-knihy/lucky-luke-crew-jak-se-daltonovi-polepsili-555445
      *
-     * @param root    to parse
-     * @param book    to update
+     * @param root to parse
+     * @param book to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -508,9 +511,8 @@ public class DatabazeKnihSearchEngine
             if (textNode != null) {
                 final String text = textNode.toString().trim();
                 if (!text.isEmpty()) {
-                    // eBook
-                    if ("ekniha".equals(text)) {
-                        book.putString(DBKey.FORMAT, "ekniha");
+                    if (EBOOK.equals(text)) {
+                        book.putString(DBKey.FORMAT, EBOOK);
                     } else {
                         book.putString(SiteField.FORMA, text);
                     }

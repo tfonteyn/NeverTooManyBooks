@@ -187,6 +187,7 @@ public class BooklistNodeDao {
         }
 
         // levelOperand is concatenated!!!
+        //noinspection StringConcatenationMissingWhitespace
         final String sql =
                 Sql.UPDATE_ + listTable.getName()
                 + Sql._SET_ + DBKey.BL_NODE.EXPANDED + "=?," + DBKey.BL_NODE.VISIBLE + "=?"
@@ -201,6 +202,7 @@ public class BooklistNodeDao {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
+            //noinspection StringConcatenationMissingWhitespace
             LoggerFactory.getLogger().d(TAG, "updateNodesForLevel"
                                              + "|level=" + levelOperand + nodeLevel
                                              + "|expand=" + expand

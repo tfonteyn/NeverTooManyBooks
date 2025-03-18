@@ -31,6 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public class BdtAuthor {
 
+    private static final Pattern BDT_ID_PATTERN =
+            Pattern.compile("https://www.bedetheque.com/auteur-(\\d+)-BD.*");
     @NonNull
     private final String name;
     @Nullable
@@ -43,6 +45,12 @@ public class BdtAuthor {
     @Nullable
     private String bdtId;
 
+    /**
+     * Full constructor.
+     *
+     * @param id      the Bookshelf id
+     * @param rowData with data
+     */
     public BdtAuthor(final long id,
                      @NonNull final DataHolder rowData) {
         this.id = id;
@@ -76,9 +84,6 @@ public class BdtAuthor {
     public String getName() {
         return name;
     }
-
-    private static final Pattern BDT_ID_PATTERN =
-            Pattern.compile("https://www.bedetheque.com/auteur-(\\d+)-BD.*");
 
     /**
      * Get the author url.
@@ -139,6 +144,7 @@ public class BdtAuthor {
     public String toString() {
         return "BdtAuthor{"
                + "id=" + id
+               + ", bdtId=" + bdtId
                + ", name=`" + name + '`'
                + ", url=`" + url + '`'
                + ", resolved=" + resolved
