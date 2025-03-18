@@ -492,6 +492,20 @@ public class DatabazeKnihSearchEngine
             parseAuthors(element, Author.TYPE_TRANSLATOR, book);
         }
 
+        // Audio books duration
+        if (book.getString(DBKey.PAGES).isEmpty()) {
+            element = root.selectFirst("span:contains(Délka:)");
+            if (element != null) {
+                final Node textNode = element.nextSibling();
+                if (textNode != null) {
+                    final String text = textNode.toString().trim();
+                    if (!text.isEmpty()) {
+                        book.putString(DBKey.PAGES, text);
+                    }
+                }
+            }
+        }
+
         // for translations, we keep that date if already set.
         if (!book.getFirstPublicationDate().isPresent()) {
             // 1. vydání originálu:
