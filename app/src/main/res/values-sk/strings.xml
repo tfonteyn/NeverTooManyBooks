@@ -169,7 +169,7 @@
     <string name="size_large">Velké</string>
     <string name="book_format_comic">Komiks</string>
     <string name="book_format_other">Iný</string>
-    <string name="book_format_ebook">eKniha</string>
+    <string name="book_format_ebook">E-kniha</string>
     <string name="style_type_builtin">Vstavaný</string>
     <string name="lbl_group_1st_char_author_family_name">Prvé písmeno priezviska autora</string>
     <string name="lbl_group_1st_char_book_title">Prvé písmeno názvu knihy</string>
@@ -239,7 +239,7 @@
     <string name="option_import">Importovať</string>
     <string name="option_download_folder">Lokálny priečinok pre sťahovanie</string>
     <string name="option_download_set_folder">Nastaviť priečinok pre sťahovanie</string>
-    <string name="option_download_ebook_format">Stiahnuť eKnihu (%1$s)</string>
+    <string name="option_download_ebook_format">Stiahnuť e-knihu (%1$s)</string>
     <string name="confirm_unsaved_edits">Máte neuložené zmeny, ak teraz skončíte, stratia sa.</string>
     <string name="X_confirm_delete_tag">Odstrániť štítok „%1$s“?\n\nBude odstránený zo všetkých kníh. Samotné knihy nebudú odstránené.</string>
     <string name="confirm_delete_identifier_from_x_books">Odstrániť identifikátor „%1$s“?\n\nBude odstránený z %2$s. Samotné knihy nebudú odstránené.</string>
@@ -324,10 +324,10 @@
     <string name="lbl_pages">Strany</string>
     <string name="lbl_group">Skupina</string>
     <string name="lbl_currency">Mena</string>
-    <string name="lbl_price_listed">Odporúčaná cena</string>
+    <string name="lbl_price_listed">Katalógová cena</string>
     <string name="lbl_bookshelves">Police s knihami</string>
     <string name="lbl_format">Formát</string>
-    <string name="lbl_ebook_file_type">Typ súboru eKnihy</string>
+    <string name="lbl_ebook_file_type">Typ súboru e-knihy</string>
     <string name="lbl_language">Jazyk</string>
     <string name="lbl_genre">Žáner</string>
     <string name="lbl_tag">Štítok</string>
@@ -652,7 +652,7 @@
     <string name="book_format_softcover_oblong">Mäkká väzba - Obdĺžniková</string>
     <string name="lbl_group_read_and_unread">Prečítané &amp; Neprečítané</string>
     <string name="lbl_styles_long">Úprava police s knihami</string>
-    <string name="book_format_audiobook">AudioKniha</string>
+    <string name="book_format_audiobook">Audiokniha</string>
     <string name="book_color_support_color">Dvojfarebná</string>
     <string name="bookshelf_my_books">Moje knihy</string>
     <string name="style_builtin_author_year">Autor, Rok</string>
