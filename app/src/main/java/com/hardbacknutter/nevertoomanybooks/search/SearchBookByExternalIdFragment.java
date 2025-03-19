@@ -80,14 +80,14 @@ public class SearchBookByExternalIdFragment
      */
     private static final Map<Integer, EngineId> VIEW_TO_ENGINE = Map.of(
             R.id.site_amazon, EngineId.Amazon,
+            R.id.site_bedetheque, EngineId.Bedetheque,
             R.id.site_databaze_knih, EngineId.DatabazeKnih,
             R.id.site_dnb, EngineId.Dnb,
+            R.id.site_goodreads, EngineId.Goodreads,
             R.id.site_isfdb, EngineId.Isfdb,
             R.id.site_kbnl, EngineId.KbNl,
-            R.id.site_open_library, EngineId.OpenLibrary,
-            // comics
-            R.id.site_bedetheque, EngineId.Bedetheque,
             R.id.site_last_dodo_nl, EngineId.LastDodoNl,
+            R.id.site_open_library, EngineId.OpenLibrary,
             R.id.site_strip_info_be, EngineId.StripInfoBe
     );
 

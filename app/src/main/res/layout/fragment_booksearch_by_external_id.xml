@@ -56,18 +56,40 @@
             app:layout_constraintGuide_percent="1"
             />
 
+        <!-- NEWTHINGS: adding a new search engine:
+        optional: external id KEY add a RadioButton widget
+        and add the name to the ConstraintRadioGroup#constraint_referenced_ids
+        and Flow#constraint_referenced_ids.
+        -->
+
         <!--suppress LongLine -->
         <com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_databaze_knih,site_dnb,site_isfdb,site_kbnl,site_open_library,site_bedetheque,site_last_dodo_nl,site_strip_info_be,"
+            app:constraint_referenced_ids="site_amazon,site_bedetheque,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
             tools:ignore="MissingConstraints"
             />
 
-        <!-- NEWTHINGS: adding a new search engine:
-                optional: external id KEY add a RadioButton widget
-                and add the name to the ConstraintRadioGroup#constraint_referenced_ids. -->
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow_sites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:constraint_referenced_ids="site_amazon,site_bedetheque,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
+            app:flow_horizontalAlign="start"
+            app:flow_horizontalBias="0.5"
+            app:flow_horizontalGap="@dimen/field_margin_inline"
+            app:flow_horizontalStyle="packed"
+            app:flow_maxElementsWrap="5"
+            app:flow_verticalBias="0"
+            app:flow_verticalGap="@dimen/field_margin_top"
+            app:flow_verticalStyle="packed"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_site"
+            />
 
         <RadioButton
             android:id="@+id/site_amazon"
@@ -76,9 +98,6 @@
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_amazon"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/col0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site"
             tools:visibility="visible"
             />
 
@@ -88,9 +107,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_databazeknih_cz"
-            app:layout_constraintEnd_toStartOf="@id/col0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_amazon"
             />
 
         <RadioButton
@@ -100,10 +116,15 @@
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_dnb_de"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/col0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_databaze_knih"
             tools:visibility="visible"
+            />
+
+        <RadioButton
+            android:id="@+id/site_goodreads"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_goodreads"
             />
 
         <RadioButton
@@ -112,9 +133,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_isfdb"
-            app:layout_constraintEnd_toStartOf="@id/col0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_dnb"
             />
 
         <RadioButton
@@ -123,9 +141,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_kb_nl"
-            app:layout_constraintEnd_toStartOf="@id/col0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_isfdb"
             />
 
         <RadioButton
@@ -134,9 +149,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_open_library"
-            app:layout_constraintEnd_toStartOf="@id/col0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_kbnl"
             />
 
         <RadioButton
@@ -145,9 +157,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_bedetheque"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintStart_toEndOf="@id/col0"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site"
             />
 
         <RadioButton
@@ -156,9 +165,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_lastdodo_nl"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintStart_toEndOf="@id/col0"
-            app:layout_constraintTop_toBottomOf="@id/site_bedetheque"
             />
 
         <RadioButton
@@ -167,18 +173,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_stripinfo_be"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintStart_toEndOf="@id/col0"
-            app:layout_constraintTop_toBottomOf="@id/site_last_dodo_nl"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_bottom_section"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:barrierMargin="@dimen/section_margin_top"
-            app:constraint_referenced_ids="site_open_library,site_strip_info_be"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -191,7 +185,7 @@
             app:layout_constraintEnd_toStartOf="@id/btn_search"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_bottom_section"
+            app:layout_constraintTop_toBottomOf="@id/flow_sites"
             app:layout_constraintWidth_max="216dp"
             >
 
