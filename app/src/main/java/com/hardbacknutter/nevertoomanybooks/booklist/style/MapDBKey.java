@@ -75,7 +75,6 @@ public final class MapDBKey {
             Map.entry(DBKey.FK_TAG, R.string.lbl_tags),
             Map.entry(DBKey.FK_TOC_ENTRY, R.string.lbl_table_of_content),
             Map.entry(DBKey.FORMAT, R.string.lbl_format),
-            Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
             Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lending),
             Map.entry(DBKey.LOCATION, R.string.lbl_location),
             Map.entry(DBKey.PAGES, R.string.lbl_pages),
@@ -92,7 +91,12 @@ public final class MapDBKey {
             Map.entry(DBKey.SIGNED__BOOL, R.string.lbl_signed),
             Map.entry(DBKey.TITLE, R.string.lbl_title),
             Map.entry(DBKey.TRANSLATION_ORIGINAL_TITLE, R.string.lbl_original_title),
+
+            Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
             Map.entry(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, R.string.lbl_original_language),
+            // URGENT: github #125 TEMPORARY FIX: lang AND orig_lang will have
+            //  the same group name in the style book-level-sorting settings
+            Map.entry(DBKey.LANG_MAPPING.DISPLAY_NAME, R.string.lbl_language),
 
             // The BooklistGroup specific domains for sorting
             // NEWTHINGS: BooklistGroup add BlgDBKey.SORT_ as needed
