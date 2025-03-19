@@ -371,10 +371,10 @@ public final class GroupKeyFactory {
                                 // is not a "real" language.,
                                 // but sorting will work regardless.
                                 new DomainExpression(
-                                        // The display-name is the sort-key here
-                                        // we don't need an additional
-                                        // BooklistGroup.BlgDBKey.SORT_
-                                        DBDefinitions.DOM_LANG_DISPLAY_NAME,
+                                        new Domain.Builder(
+                                                BooklistGroup.BlgDBKey.SORT_LANGUAGE,
+                                                SqLiteDataType.Text)
+                                                .build(),
                                         "COALESCE("
                                         + DBDefinitions.TBL_LANG_MAPPINGS.dot(
                                                 DBKey.LANG_MAPPING.DISPLAY_NAME)
@@ -398,10 +398,10 @@ public final class GroupKeyFactory {
                                 // is not a "real" language.,
                                 // but sorting will work regardless.
                                 new DomainExpression(
-                                        // The display-name is the sort-key here
-                                        // we don't need an additional
-                                        // BooklistGroup.BlgDBKey.SORT_
-                                        DBDefinitions.DOM_LANG_DISPLAY_NAME,
+                                        new Domain.Builder(
+                                                BooklistGroup.BlgDBKey.SORT_TRANSLATION_ORIGINAL_LANGUAGE,
+                                                SqLiteDataType.Text)
+                                                .build(),
                                         "COALESCE("
                                         + DBDefinitions.TBL_LANG_MAPPINGS.dot(
                                                 DBKey.LANG_MAPPING.DISPLAY_NAME)

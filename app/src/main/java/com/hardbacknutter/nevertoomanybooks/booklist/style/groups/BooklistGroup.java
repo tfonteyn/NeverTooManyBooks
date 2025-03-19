@@ -337,6 +337,8 @@ public interface BooklistGroup {
         public static final String SORT_SERIES_NUM_FLOAT = "blg_sort_ser_num_f";
         public static final String SORT_SERIES_TITLE = "blg_sort_ser";
         public static final String SORT_TAG = "blg_sort_tags";
+        public static final String SORT_LANGUAGE = "blg_sort_lang";
+        public static final String SORT_TRANSLATION_ORIGINAL_LANGUAGE = "blg_sort_orig_lang";
 
         private BlgDBKey() {
         }

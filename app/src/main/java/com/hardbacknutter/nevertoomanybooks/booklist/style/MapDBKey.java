@@ -55,11 +55,9 @@ public final class MapDBKey {
             Map.entry(DBKey.COVER[1], R.string.lbl_cover_back),
 
             Map.entry(DBKey.AUTHOR.BOOK_AUTHOR_TYPE, R.string.lbl_author_type),
+            Map.entry(DBKey.COLOR, R.string.lbl_color),
             Map.entry(DBKey.CONDITION_BOOK, R.string.lbl_condition),
             Map.entry(DBKey.CONDITION_COVER, R.string.lbl_dust_cover),
-            Map.entry(DBKey.ISBN, R.string.lbl_isbn),
-            Map.entry(DBKey.PUBLICATION_DATE, R.string.lbl_date_published),
-            Map.entry(DBKey.COLOR, R.string.lbl_color),
             Map.entry(DBKey.DATE_ACQUIRED, R.string.lbl_date_acquired),
             Map.entry(DBKey.DATE_ADDED__UTC, R.string.lbl_date_added),
             Map.entry(DBKey.DATE_LAST_UPDATED__UTC, R.string.lbl_date_last_updated),
@@ -75,6 +73,8 @@ public final class MapDBKey {
             Map.entry(DBKey.FK_TAG, R.string.lbl_tags),
             Map.entry(DBKey.FK_TOC_ENTRY, R.string.lbl_table_of_content),
             Map.entry(DBKey.FORMAT, R.string.lbl_format),
+            Map.entry(DBKey.ISBN, R.string.lbl_isbn),
+            Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
             Map.entry(DBKey.LOANEE_NAME, R.string.lbl_lending),
             Map.entry(DBKey.LOCATION, R.string.lbl_location),
             Map.entry(DBKey.PAGES, R.string.lbl_pages),
@@ -82,31 +82,30 @@ public final class MapDBKey {
             Map.entry(DBKey.PRICE_LISTED, R.string.lbl_price_listed),
             Map.entry(DBKey.PRICE_PAID, R.string.lbl_price_paid),
             Map.entry(DBKey.PRINT_RUN, R.string.lbl_print_run),
+            Map.entry(DBKey.PUBLICATION_DATE, R.string.lbl_date_published),
             Map.entry(DBKey.RATING, R.string.lbl_rating),
             Map.entry(DBKey.READ_END__DATE, R.string.lbl_read_end),
+            Map.entry(DBKey.READ_PROGRESS, R.string.lbl_track_progress),
             Map.entry(DBKey.READ_START__DATE, R.string.lbl_read_start),
             Map.entry(DBKey.READ__BOOL, R.string.lbl_read),
-            Map.entry(DBKey.READ_PROGRESS, R.string.lbl_track_progress),
-            Map.entry(DBKey.TAGS.TAG, R.string.lbl_tags),
             Map.entry(DBKey.SIGNED__BOOL, R.string.lbl_signed),
+            Map.entry(DBKey.TAGS.TAG, R.string.lbl_tags),
             Map.entry(DBKey.TITLE, R.string.lbl_title),
-            Map.entry(DBKey.TRANSLATION_ORIGINAL_TITLE, R.string.lbl_original_title),
-
-            Map.entry(DBKey.LANGUAGE, R.string.lbl_language),
             Map.entry(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, R.string.lbl_original_language),
-            // URGENT: github #125 TEMPORARY FIX: lang AND orig_lang will have
-            //  the same group name in the style book-level-sorting settings
-            Map.entry(DBKey.LANG_MAPPING.DISPLAY_NAME, R.string.lbl_language),
+            Map.entry(DBKey.TRANSLATION_ORIGINAL_TITLE, R.string.lbl_original_title),
 
             // The BooklistGroup specific domains for sorting
             // NEWTHINGS: BooklistGroup add BlgDBKey.SORT_ as needed
             Map.entry(BooklistGroup.BlgDBKey.SORT_AUTHOR, R.string.lbl_author),
             Map.entry(BooklistGroup.BlgDBKey.SORT_BOOKSHELF, R.string.lbl_bookshelf),
             Map.entry(BooklistGroup.BlgDBKey.SORT_IDENTIFIER, R.string.lbl_identifier),
+            Map.entry(BooklistGroup.BlgDBKey.SORT_LANGUAGE, R.string.lbl_language),
             Map.entry(BooklistGroup.BlgDBKey.SORT_PUBLISHER, R.string.lbl_publisher),
-            Map.entry(BooklistGroup.BlgDBKey.SORT_SERIES_TITLE, R.string.lbl_series),
             Map.entry(BooklistGroup.BlgDBKey.SORT_SERIES_NUM_FLOAT, R.string.lbl_series_num),
-            Map.entry(BooklistGroup.BlgDBKey.SORT_TAG, R.string.lbl_tags)
+            Map.entry(BooklistGroup.BlgDBKey.SORT_SERIES_TITLE, R.string.lbl_series),
+            Map.entry(BooklistGroup.BlgDBKey.SORT_TAG, R.string.lbl_tags),
+            Map.entry(BooklistGroup.BlgDBKey.SORT_TRANSLATION_ORIGINAL_LANGUAGE,
+                      R.string.lbl_original_language)
     );
 
     private MapDBKey() {
