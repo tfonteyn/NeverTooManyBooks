@@ -27,9 +27,9 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 If you're migrating from the app "Book Catalogue", please
 see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
 
-### Download the latest release: 7.1.0
+### Download the latest release: 7.2.0
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.1.0/NeverTooManyBooks-7.1.0.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.2.0/NeverTooManyBooks-7.2.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
@@ -38,10 +38,11 @@ see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBook
 ## User Interface languages:
 
 - Chinese Simplified(CN), Chinese Traditional(TW),
-  Dutch, English, French, German, Italian,
+  Czech, Dutch, English, French, German, Italian,
   Portuguese, Portuguese(Brazil),
-  Spanish, Tamil, Turkish, Vietnamese.
-- Machine translated, no guarantees for quality: Czech, Greek, Polish, Russian.
+  Slovak, Spanish, Tamil, Turkish, Vietnamese.
+- Mostly machine translated, but being improved: Polish, Russian.
+- Machine translated, no guarantees for quality: Greek.
 
 Translations are editable on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
 
@@ -73,6 +74,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 - **Bedetheque** (French and more; Catalogue; European Comics)
 - **Bertrand.pt** (Portuguese and more; Shop)
 - **BOL.com** (Dutch and more; Shop)
+- **databazeknih.cz** (Czech and more; Catalogue)
 - **dnb.de** (German; Catalogue)
 - **Douban.com** (Chinese; Catalogue)
 - **Goodreads** (English and more; Catalogue)
@@ -109,6 +111,8 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 ## Thanks
 
+- Slovak translation + major improvements to the Czech translation
+  by [Milan](https://hosted.weblate.org/user/Milan/)
 - Tamil translation: [தமிழ்நேரம்](https://hosted.weblate.org/user/TamilNeram/)
 - Portuguese(Brazil) translation: [Suburbanno](https://github.com/Suburbanno)
 - Chinese (Simplified) translation: [CloneWith](https://github.com/CloneWith)

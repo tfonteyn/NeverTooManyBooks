@@ -1,0 +1,13 @@
+NEW:
+- #91 Date (first) published: the date-picker has been redesigned
+- #93 sorting by language now uses the full language name
+- #96 translated book language field
+- #113 group-level summation of the books in that group.
+- local search new UI
+- local advanced search now showing the results live
+- added filter for identifiers
+
+FIXES:
+
+- #114 crash due to https://issuetracker.google.com/issues/309593253
+- #109 sorting by dates on the book level now supports mixing partial-dates
