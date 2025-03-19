@@ -691,6 +691,9 @@ class BooklistBuilder {
         joinWithAuthors(sb);
         leftOuterJoins.remove(TBL_BOOK_AUTHOR);
 
+        // URGENT: BooklistGroup joins need to be done via callbacks.
+        //  i.e. config the join on the BooklistGroup so it won't drop through
+        //  the cracks when creating a new group.
         if (style.hasGroup(BooklistGroup.SERIES)
             || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_SERIES)) {
             joinWithSeries(sb);
@@ -705,7 +708,12 @@ class BooklistBuilder {
 
         if (style.hasGroup(BooklistGroup.LANGUAGE)
             || style.isShowField(FieldVisibility.Screen.List, DBKey.LANGUAGE)) {
-            joinWithLanguageMappings(context, sb);
+            joinWithLanguageMappings(context, DBKey.LANGUAGE, sb);
+        }
+        if (style.hasGroup(BooklistGroup.ORIGINAL_LANGUAGE)
+            || style.isShowField(FieldVisibility.Screen.List,
+                                 DBKey.TRANSLATION_ORIGINAL_LANGUAGE)) {
+            joinWithLanguageMappings(context, DBKey.TRANSLATION_ORIGINAL_LANGUAGE, sb);
         }
 
         if (style.hasGroup(BooklistGroup.TAGS_GENRE)) {
@@ -799,6 +807,7 @@ class BooklistBuilder {
     }
 
     private void joinWithLanguageMappings(@NonNull final Context context,
+                                          @NonNull final String bookTableColumn,
                                           @NonNull final StringBuilder sb) {
         final String userIso3 = context.getResources().getConfiguration().getLocales().get(0)
                                        .getISO3Language();
@@ -806,7 +815,7 @@ class BooklistBuilder {
         // This is using a non-enforced reference, build the JOIN manually
         final String join =
                 " LEFT OUTER JOIN " + TBL_LANG_MAPPINGS.ref()
-                + _ON_ + TBL_BOOKS.dot(DBKey.LANGUAGE)
+                + _ON_ + TBL_BOOKS.dot(bookTableColumn)
                 + '=' + TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3)
                 + _AND_
                 + TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3_USER)
