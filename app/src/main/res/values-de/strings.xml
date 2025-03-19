@@ -263,7 +263,7 @@
     <string name="lbl_author_type_cover_artist">Titelbild</string>
     <string name="lbl_author_type_cover_colorist">Colorist des Covers</string>
     <string name="lbl_author_type_cover_inking">Inker des Covers</string>
-    <string name="lbl_author_type_editor">Editor</string>
+    <string name="lbl_author_type_editor">Herausgeber</string>
     <string name="lbl_author_type_inking">Inker</string>
     <string name="lbl_author_type_intro">Einführung etc.</string>
     <string name="lbl_author_type_narrator">Erzähler</string>
