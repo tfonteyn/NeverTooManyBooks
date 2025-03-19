@@ -795,7 +795,7 @@
     <string name="option_archive_type_csv">Knihy (.csv)</string>
     <string name="option_info_import_books_option_new_only">Importovať iba nové knihy. Akékoľvek aktualizácie existujúcich kníh budú ignorované.</string>
     <string name="lbl_original_title_long">Pôvodný názov, ak je táto kniha preklad</string>
-    <string name="info_import_partially_complete">Čiastočný import hotový</string>
+    <string name="info_import_partially_complete">Čiastočný import dokončený</string>
     <string name="lbl_date_acquired">Dátum získania</string>
     <string name="lbl_date_acquired_as_single_char">🏠</string>
     <string name="lbl_date_first_publication_as_single_char">1️⃣</string>

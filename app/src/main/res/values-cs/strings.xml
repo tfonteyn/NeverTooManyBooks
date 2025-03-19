@@ -263,7 +263,7 @@
     <string name="option_info_archive_format_db">Databáze SQLite.</string>
     <string name="option_info_archive_format_json">Všechna data ve formátu JSON.</string>
     <string name="option_info_lbl_archive_is_export_only">Toto je pouze pro export dat; import není podporován.</string>
-    <string name="option_info_lbl_archive_type_backup">Úplný archiv zálohy / obnovy</string>
+    <string name="option_info_lbl_archive_type_backup">Úplná záloha / obnovení archivu</string>
     <string name="option_archive_type_backup_zip">Záložní kopie (.zip)</string>
     <string name="option_archive_type_csv">Knihy (.csv)</string>
     <string name="option_info_archive_type_csv">Export knih do souboru CSV</string>
@@ -383,7 +383,7 @@
     <string name="lbl_library">Knihovny</string>
     <string name="lbl_local_search">Místní vyhledávání</string>
     <string name="lbl_local_search_long">Rozšířené místní vyhledávání</string>
-    <string name="lbl_location">Místo</string>
+    <string name="lbl_location">Umístění</string>
     <string name="lbl_location_long">Umístění knihy</string>
     <string name="option_bug_report_logfiles">Záznam souborů</string>
     <string name="lbl_login_to_search">Přihlaste se k vyhledávání</string>
@@ -444,7 +444,7 @@
     <string name="lbl_style">Styl</string>
     <string name="lbl_styles">Styly</string>
     <string name="lbl_styles_long">Stylování knihovny</string>
-    <string name="lbl_sync_date">Od té doby</string>
+    <string name="lbl_sync_date">Od</string>
     <string name="lbl_tab_alternative_editions">Alt. vyd.</string>
     <string name="lbl_tab_details">Podrobnosti</string>
     <string name="lbl_tab_lbl_ext_id">Externí ID</string>
@@ -641,7 +641,7 @@
     <string name="style_builtin_author_series">Autor, série</string>
     <string name="style_builtin_author_year">Autor, rok</string>
     <string name="lbl_date_read">Datum přečtení</string>
-    <string name="lbl_defaults">Výchozí aplikace</string>
+    <string name="lbl_defaults">Výchozí</string>
     <string name="style_type_builtin">Vestavěný</string>
     <string name="style_type_user_defined">Definován uživatelem</string>
     <string name="X_lbl_system">(Systém)</string>
