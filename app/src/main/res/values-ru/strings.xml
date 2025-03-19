@@ -270,7 +270,7 @@
     <string name="lbl_author_type">Тип автора</string>
     <string name="lbl_author_type_artist">иллюстрации</string>
     <string name="lbl_author_type_colorist">колорист</string>
-    <string name="lbl_author_type_contributor">участник</string>
+    <string name="lbl_author_type_contributor">Соавтор</string>
     <string name="lbl_author_type_cover_artist">иллюстрация обложки книги</string>
     <string name="lbl_author_type_cover_colorist">цвета обложки книги</string>
     <string name="lbl_author_type_cover_inking">Обложка для книги</string>
