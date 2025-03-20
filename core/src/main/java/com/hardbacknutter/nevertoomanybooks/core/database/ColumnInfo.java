@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,6 +54,10 @@ public class ColumnInfo {
     @NonNull
     public String getName() {
         return name;
+    }
+
+    public int getPosition() {
+        return position;
     }
 
     public boolean isNullable() {
