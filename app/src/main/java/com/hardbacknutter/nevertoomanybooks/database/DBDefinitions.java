@@ -171,7 +171,15 @@ public final class DBDefinitions {
     /** Map site tags to local Tags. */
     public static final TableDefinition TBL_TAG_MAPPINGS;
 
+    /**
+     * IMPORTANT: this table can be joined by {@link DBKey#LANGUAGE}
+     * <strong>AND</strong> {@link DBKey#TRANSLATION_ORIGINAL_LANGUAGE}.
+     * Each join <strong>MUST</strong> use a unique alias instead
+     * of the default one.
+     */
     public static final TableDefinition TBL_LANG_MAPPINGS;
+    public static final String ALIAS_LANG_MAPPINGS_LANGUAGE;
+    public static final String ALIAS_LANG_MAPPINGS_ORIGINAL_LANGUAGE;
 
     /** User defined styles. */
     public static final TableDefinition TBL_BOOKLIST_STYLES;
@@ -589,6 +597,8 @@ public final class DBDefinitions {
         TBL_TAG_MAPPINGS = new TableDefinition("tag_mappings", "tgmp");
 
         TBL_LANG_MAPPINGS = new TableDefinition("lang_mappings", "lm");
+        ALIAS_LANG_MAPPINGS_LANGUAGE = "lm_lang";
+        ALIAS_LANG_MAPPINGS_ORIGINAL_LANGUAGE = "lm_olang";
 
         TBL_PSEUDONYM_AUTHOR = new TableDefinition("pseudonym_author", "ap");
 
