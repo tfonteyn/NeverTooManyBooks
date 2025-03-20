@@ -492,7 +492,7 @@ public final class GroupKeyFactory {
                                                     .notNull()
                                                     .build(),
                                             "UPPER(SUBSTR("
-                                            + TBL_BOOKS.dot(DBKey.PUBLISHER.NAME_OB)
+                                            + TBL_PUBLISHERS.dot(DBKey.PUBLISHER.NAME_OB)
                                             + ",1,1))",
                                             Sort.Asc));
             }
