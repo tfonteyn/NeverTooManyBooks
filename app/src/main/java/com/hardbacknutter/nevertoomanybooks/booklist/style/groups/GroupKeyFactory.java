@@ -188,7 +188,6 @@ public final class GroupKeyFactory {
                                                      TBL_BOOK_AUTHOR,
                                                      Sort.Unsorted))
 
-                        // Extra data we need:
                         .addGroupDomain(
                                 new DomainExpression(DOM_AUTHOR_IS_COMPLETE,
                                                      TBL_AUTHORS,
@@ -203,13 +202,12 @@ public final class GroupKeyFactory {
                 // We use the foreign ID to create the key-domain.
                 // It is NOT used to display the data; instead we use
                 // SeriesBooklistGroup#displayDomainExpression.
-                // We do NOT sort by the display-domain; instead we use
-                // the OB column, sorted, added as a group domain.
                 return new GroupKey(id, R.string.lbl_series, "s",
                                     new DomainExpression(DOM_FK_SERIES,
                                                          TBL_SERIES.dot(DBKey.PK_ID),
                                                          Sort.Unsorted))
                         .addGroupDomain(
+                                // Sort by TITLE_OB
                                 new DomainExpression(
                                         new Domain.Builder(
                                                 BooklistGroup.BlgDBKey.SORT_SERIES_TITLE,
@@ -222,7 +220,6 @@ public final class GroupKeyFactory {
                                                      TBL_BOOK_SERIES,
                                                      Sort.Unsorted))
 
-                        // Extra data we need:
                         .addGroupDomain(
                                 new DomainExpression(DOM_SERIES_IS_COMPLETE,
                                                      TBL_SERIES,
@@ -255,13 +252,12 @@ public final class GroupKeyFactory {
                 // We use the foreign ID to create the key-domain.
                 // It is NOT used to display the data; instead we use
                 // PublisherBooklistGroup#displayDomainExpression.
-                // We do NOT sort by the display-domain; instead we use
-                // the OB column, sorted, added as a group domain.
                 return new GroupKey(id, R.string.lbl_publisher, "p",
                                     new DomainExpression(DOM_FK_PUBLISHER,
                                                          TBL_PUBLISHERS.dot(DBKey.PK_ID),
                                                          Sort.Unsorted))
                         .addGroupDomain(
+                                // Sort by NAME_OB
                                 new DomainExpression(
                                         new Domain.Builder(
                                                 BooklistGroup.BlgDBKey.SORT_PUBLISHER,
@@ -279,13 +275,12 @@ public final class GroupKeyFactory {
                 // We use the foreign ID to create the key-domain.
                 // It is NOT used to display the data; instead we use
                 // BookshelfBooklistGroup#displayDomainExpression.
-                // We do NOT sort by the foreign-key display-domain; instead we use
-                // the name column, sorted, added as a group domain.
                 return new GroupKey(id, R.string.lbl_bookshelf, "shelf",
                                     new DomainExpression(DOM_FK_BOOKSHELF,
                                                          TBL_BOOKSHELF.dot(DBKey.PK_ID),
                                                          Sort.Unsorted))
                         .addGroupDomain(
+                                // Sort by Bookshelf name
                                 new DomainExpression(
                                         new Domain.Builder(
                                                 BooklistGroup.BlgDBKey.SORT_BOOKSHELF,
@@ -303,13 +298,12 @@ public final class GroupKeyFactory {
                 // We use the foreign ID to create the key-domain.
                 // It is NOT used to display the data; instead we use
                 // TagsBooklistGroup#displayDomainExpression.
-                // We do NOT sort by the foreign-key display-domain; instead we use
-                // the name column, sorted, added as a group domain.
                 return new GroupKey(id, R.string.lbl_tags, "tg",
                                     new DomainExpression(DOM_FK_TAG,
                                                          TBL_TAGS.dot(DBKey.PK_ID),
                                                          Sort.Unsorted))
                         .addGroupDomain(
+                                // Sort by tag name
                                 new DomainExpression(
                                         new Domain.Builder(
                                                 BooklistGroup.BlgDBKey.SORT_TAG,
@@ -326,13 +320,12 @@ public final class GroupKeyFactory {
                 // We use the foreign ID to create the key-domain.
                 // It is NOT used to display the data; instead we use
                 // IdentifierBooklistGroup#displayDomainExpression.
-                // We do NOT sort by the foreign-key display-domain; instead we use
-                // the name column, sorted, added as a group domain.
                 return new GroupKey(id, R.string.lbl_identifiers, "gkids",
                                     new DomainExpression(DOM_FK_IDENTIFIER,
                                                          TBL_IDENTIFIERS.dot(DBKey.PK_ID),
                                                          Sort.Unsorted))
                         .addGroupDomain(
+                                // Sort by Identifier key
                                 new DomainExpression(
                                         new Domain.Builder(
                                                 BooklistGroup.BlgDBKey.SORT_IDENTIFIER,
@@ -356,20 +349,17 @@ public final class GroupKeyFactory {
                                     new DomainExpression(DOM_BOOK_FORMAT, TBL_BOOKS, Sort.Asc));
             }
             case BooklistGroup.LANGUAGE: {
-                // Formatting is done after fetching.
+                // Formatting is done using the iso3 code after fetching.
                 return new GroupKey(id, R.string.lbl_language, "lng",
                                     new DomainExpression(
                                             DOM_BOOK_LANGUAGE,
                                             TBL_BOOKS,
                                             Sort.Unsorted))
                         .addGroupDomain(
-                                // link with the languages to get the full
-                                // name to sort on.
-                                // If no mapping is found, coalesce to use
-                                // the original book language field.
-                                // This will happen when the book language
-                                // is not a "real" language.,
-                                // but sorting will work regardless.
+                                // Sorting:
+                                // link with TBL_LANG_MAPPINGS to get the full name to SORT on.
+                                // If no mapping is found, use the original book language field.
+                                // The latter happens if the book language is not a "real" language.
                                 new DomainExpression(
                                         new Domain.Builder(
                                                 BooklistGroup.BlgDBKey.SORT_LANGUAGE,
@@ -384,23 +374,21 @@ public final class GroupKeyFactory {
                                         Sort.Asc));
             }
             case BooklistGroup.ORIGINAL_LANGUAGE: {
-                // Formatting is done after fetching.
+                // Formatting is done using the iso3 code after fetching.
                 return new GroupKey(id, R.string.lbl_original_language, "lngor",
                                     new DomainExpression(
                                             DOM_TRANSLATION_ORIGINAL_LANGUAGE,
                                             TBL_BOOKS,
                                             Sort.Unsorted))
                         .addGroupDomain(
-                                // link with the languages to get the full
-                                // name to sort on.
-                                // If no mapping is found, coalesce to use
-                                // the original book language field.
-                                // This will happen when the book language
-                                // is not a "real" language.,
-                                // but sorting will work regardless.
+                                // Sorting:
+                                // link with TBL_LANG_MAPPINGS to get the full name to SORT on.
+                                // If no mapping is found, use the original book language field.
+                                // The latter happens if the book language is not a "real" language.
                                 new DomainExpression(
                                         new Domain.Builder(
-                                                BooklistGroup.BlgDBKey.SORT_TRANSLATION_ORIGINAL_LANGUAGE,
+                                                BooklistGroup.BlgDBKey
+                                                        .SORT_TRANSLATION_ORIGINAL_LANGUAGE,
                                                 SqLiteDataType.Text)
                                                 .build(),
                                         "COALESCE("
