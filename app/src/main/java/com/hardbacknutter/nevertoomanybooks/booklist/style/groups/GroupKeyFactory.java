@@ -376,10 +376,11 @@ public final class GroupKeyFactory {
                                                 SqLiteDataType.Text)
                                                 .build(),
                                         "COALESCE("
-                                        + DBDefinitions.TBL_LANG_MAPPINGS.dot(
-                                                DBKey.LANG_MAPPING.DISPLAY_NAME)
+                                        + DBDefinitions.ALIAS_LANG_MAPPINGS_LANGUAGE
+                                        + "." + DBKey.LANG_MAPPING.DISPLAY_NAME
                                         + ","
-                                        + TBL_BOOKS.dot(DOM_BOOK_LANGUAGE) + ")",
+                                        + TBL_BOOKS.dot(DOM_BOOK_LANGUAGE)
+                                        + ")",
                                         Sort.Asc));
             }
             case BooklistGroup.ORIGINAL_LANGUAGE: {
@@ -403,10 +404,11 @@ public final class GroupKeyFactory {
                                                 SqLiteDataType.Text)
                                                 .build(),
                                         "COALESCE("
-                                        + DBDefinitions.TBL_LANG_MAPPINGS.dot(
-                                                DBKey.LANG_MAPPING.DISPLAY_NAME)
+                                        + DBDefinitions.ALIAS_LANG_MAPPINGS_ORIGINAL_LANGUAGE
+                                        + "." + DBKey.LANG_MAPPING.DISPLAY_NAME
                                         + ","
-                                        + TBL_BOOKS.dot(DOM_TRANSLATION_ORIGINAL_LANGUAGE) + ")",
+                                        + TBL_BOOKS.dot(DOM_TRANSLATION_ORIGINAL_LANGUAGE)
+                                        + ")",
                                         Sort.Asc));
             }
             case BooklistGroup.LOCATION: {
