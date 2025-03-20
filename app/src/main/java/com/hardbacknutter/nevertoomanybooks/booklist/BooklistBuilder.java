@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -708,12 +709,18 @@ class BooklistBuilder {
 
         if (style.hasGroup(BooklistGroup.LANGUAGE)
             || style.isShowField(FieldVisibility.Screen.List, DBKey.LANGUAGE)) {
-            joinWithLanguageMappings(context, DBKey.LANGUAGE, sb);
+            joinWithLanguageMappings(context,
+                                     DBDefinitions.ALIAS_LANG_MAPPINGS_LANGUAGE,
+                                     DBKey.LANGUAGE,
+                                     sb);
         }
         if (style.hasGroup(BooklistGroup.ORIGINAL_LANGUAGE)
             || style.isShowField(FieldVisibility.Screen.List,
                                  DBKey.TRANSLATION_ORIGINAL_LANGUAGE)) {
-            joinWithLanguageMappings(context, DBKey.TRANSLATION_ORIGINAL_LANGUAGE, sb);
+            joinWithLanguageMappings(context,
+                                     DBDefinitions.ALIAS_LANG_MAPPINGS_ORIGINAL_LANGUAGE,
+                                     DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
+                                     sb);
         }
 
         if (style.hasGroup(BooklistGroup.TAGS_GENRE)) {
@@ -807,19 +814,19 @@ class BooklistBuilder {
     }
 
     private void joinWithLanguageMappings(@NonNull final Context context,
+                                          @NonNull final String tableAlias,
                                           @NonNull final String bookTableColumn,
                                           @NonNull final StringBuilder sb) {
         final String userIso3 = context.getResources().getConfiguration().getLocales().get(0)
                                        .getISO3Language();
 
-        // This is using a non-enforced reference, build the JOIN manually
+        // This is using a non-enforced reference, build the JOIN manually.
         final String join =
-                " LEFT OUTER JOIN " + TBL_LANG_MAPPINGS.ref()
-                + _ON_ + TBL_BOOKS.dot(bookTableColumn)
-                + '=' + TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3)
+                " LEFT OUTER JOIN " + TBL_LANG_MAPPINGS.getName() + _AS_ + tableAlias
+                + _ON_
+                + TBL_BOOKS.dot(bookTableColumn) + '=' + tableAlias + "." + DBKey.LANG_MAPPING.ISO3
                 + _AND_
-                + TBL_LANG_MAPPINGS.dot(DBKey.LANG_MAPPING.ISO3_USER)
-                + "='" + userIso3 + '\'';
+                + tableAlias + "." + DBKey.LANG_MAPPING.ISO3_USER + "='" + userIso3 + '\'';
         sb.append(join);
     }
 
