@@ -26,6 +26,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import java.io.File;
@@ -195,6 +196,18 @@ public class Booklist
                              + _WHERE_ + listTable.dot(DBKey.BL_NODE.VISIBLE) + "=1"
                              + _ORDER_BY_ + listTable.dot(DBKey.PK_ID)
                              + " LIMIT ? OFFSET ?";
+    }
+
+    @VisibleForTesting
+    @NonNull
+    TableDefinition getListTable() {
+        return listTable;
+    }
+
+    @VisibleForTesting
+    @NonNull
+    TableDefinition getNavTable() {
+        return navTable;
     }
 
     @NonNull
