@@ -258,7 +258,7 @@ public class StylesHelper {
      *
      * @return {@code true} on success
      *
-     * @throws IllegalStateException if the UUID is missing
+     * @throws IllegalStateException (debug) if the UUID is missing
      */
     public boolean insertOrUpdate(@NonNull final Context context,
                                   @NonNull final Style style) {
