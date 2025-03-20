@@ -18,18 +18,21 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.booklist;
+package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.DBExpr;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,13 +40,35 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
-public class BoBTaskTest
+public class DomainExpressionsTest
         extends BaseDBTest {
+
+    private BookshelfDao bookshelfDao;
+    private Bookshelf bookshelf;
+    private UserStyle style;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        style = (UserStyle) getBuiltinStyle().clone(context);
+        style.setName("test");
+        serviceLocator.getStyles().insertOrUpdate(context, style);
+
+        bookshelfDao = serviceLocator.getBookshelfDao();
+        bookshelf = bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT)
+                                .orElseThrow();
+        bookshelf.setStyle(context, style);
+        bookshelfDao.update(context, bookshelf, Locale.UK);
+    }
+
+    @After
+    public void breakdown()
+            throws DaoWriteException {
+        bookshelf.setStyle(context, getBuiltinStyle());
+        bookshelfDao.update(context, bookshelf, Locale.UK);
+        serviceLocator.getStyles().delete(style);
     }
 
     /**
@@ -52,14 +77,15 @@ public class BoBTaskTest
      */
     @Test
     public void visibilityKeysHaveDomainExpressions() {
-        final Style s1 = getBuiltinStyle();
+        // force all fields
+        style.setFieldVisibility(FieldVisibility.Screen.List, Long.MAX_VALUE);
 
-        final Set<String> keys = s1.getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
+        final Set<String> keys = style.getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
         assertFalse(keys.isEmpty());
 
         final long expressionCount = keys
                 .stream()
-                .map(key -> DBExpr.forBookLevelField(key, Sort.Unsorted, s1))
+                .map(key -> DBExpr.forBookLevelField(key, Sort.Unsorted, style))
                 .filter(list -> !list.isEmpty())
                 .count();
 
@@ -74,14 +100,13 @@ public class BoBTaskTest
      */
     @Test
     public void sortableBookLevelKeysHaveDomainExpressions() {
-        final Style s1 = getBuiltinStyle();
-
-        final Set<String> keys = s1.getBookLevelFieldsOrderBy().keySet();
+        // all supported fields will be there.
+        final Set<String> keys = style.getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());
 
         final long expressionCount = keys
                 .stream()
-                .map(key -> DBExpr.forBookLevelField(key, Sort.Unsorted, s1))
+                .map(key -> DBExpr.forBookLevelField(key, Sort.Unsorted, style))
                 .filter(list -> !list.isEmpty())
                 .count();
 
