@@ -152,7 +152,7 @@
     <string name="cd_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке</string>
     <string name="cd_clear_text_end_icon">Очистить текстовое поле</string>
     <string name="lbl_certificate_issued_by">Кем выдан: %1$s</string>
-    <string name="lbl_certificate_issued_to">Кому выдан: %1$s</string>
+    <string name="lbl_certificate_issued_to">Выдан для: %1$s</string>
     <string name="confirm_delete_book">Книга с названием «%1$s» будет полностью удалена %2$s.\n\n Вы уверены?</string>
     <string name="confirm_delete_bookshelf_from_x_books">Действительно удалить книжную полку «%1$s»?\n\nОн будет удален с %2$s. Сами книги удалены не будут. Они по-прежнему будут присутствовать на любых других полках или на полке «%3$s».</string>
     <string name="confirm_delete_publisher_from_x_books">Действительно удалить издателя «%1$s»?\n\nОн будет удален с %2$s. Сами книги не будут удалены. Рассмотрите возможность изменения издателя и изменения имени издателя на имя другого издателя, чтобы сохранить эти данные.</string>
@@ -189,7 +189,7 @@
     <string name="confirm_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
     <string name="acra_dialog_message">Похоже, что приложение &APP_NAME; потерпело крах. Нажмите «%1$s», чтобы сохранить отчет в выбранном вами месте. Этот отчет можно использовать для сообщения о новой проблеме на сайте проекта.</string>
     <string name="disabled">Выключен</string>
-    <string name="pe_fast_scroller_overlay_dynamic">динамический</string>
+    <string name="pe_fast_scroller_overlay_dynamic">Динамический</string>
     <string name="enabled">Включено</string>
     <string name="error_http_401_authorization_failed">Авторизация не удалась</string>
     <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось.</string>
@@ -500,7 +500,7 @@
     <string name="option_lend_return_book">Заимствованная книга возвращается</string>
     <string name="option_purge_bedetheque_authors_cache">Очистить кэш авторов Bedetheque</string>
     <string name="option_rebuild_fts">Перестроить данные полнотекстового поиска</string>
-    <string name="option_rebuild_index">Перестройте индексы</string>
+    <string name="option_rebuild_index">Перестроить индексы</string>
     <string name="option_set_complete">Отметка завершена</string>
     <string name="option_download_set_folder">Установите папку загрузки</string>
     <string name="option_set_incomplete">Отметить не полностью</string>
@@ -526,8 +526,8 @@
     <string name="X_option_bob_filter_read_yes">Книги читают</string>
     <string name="option_bob_filter_signed_no">Книги без подписи</string>
     <string name="option_bob_filter_signed_yes">Книги подписаны</string>
-    <string name="pe_bob_list_rebuild_state_collapsed">Сложить все</string>
-    <string name="pe_bob_list_rebuild_state_expanded">Расширить все</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Всегда запускать упакованные</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Всегда запускать распакованные</string>
     <string name="pe_bob_list_rebuild_state_preferred">Используйте предпочтительное состояние</string>
     <string name="pe_bob_list_rebuild_state_preserve">Сохранить текущее состояние</string>
     <string name="loose">свободно</string>
@@ -594,7 +594,7 @@
     <string name="pe_bob_row_menu_button">Всегда показывать кнопку.</string>
     <string name="pe_bob_row_menu_button_when_space">Покажите кнопку, если есть место, в противном случае используйте долгий щелчок.</string>
     <string name="pe_bob_row_menu_long_click">Всегда используйте длинный щелчок.</string>
-    <string name="pt_fast_scroller_overlay">Текстовая всплывающая подсказка при прокрутке.</string>
+    <string name="pt_fast_scroller_overlay">Текстовый пузырь при прокрутке.</string>
     <string name="pt_line_spacing">Межстрочный интервал</string>
     <string name="pt_maintenance">Обслуживание</string>
     <string name="pt_main_author_type">Основной тип автора</string>
@@ -611,7 +611,7 @@
     <string name="ps_cover_undo_disabled">Редактирование/замена обложки не может быть отменено (используется меньший объем памяти)</string>
     <string name="ps_cover_undo_enabled">Редактирование/замена обложки может быть отменено (используется больше памяти)</string>
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
-    <string name="pt_thumbnails_rotate_auto">Повернуть фотографии</string>
+    <string name="pt_thumbnails_rotate_auto">Повернуть изображения</string>
     <string name="pt_ui_language">язык</string>
     <string name="pt_ui_system_locale">Язык системы</string>
     <string name="pt_ui_theme">тема</string>
@@ -841,7 +841,7 @@
     <string name="lbl_tab_alternative_editions_long">Альтернативные издания</string>
     <string name="warning_restart_required">Требуется перезапуск приложения</string>
     <string name="pt_ui_theme_colors">Цвета темы</string>
-    <string name="pe_ui_theme_colors_blue_grey">Сине-серый</string>
+    <string name="pe_ui_theme_colors_blue_grey">Синесерый</string>
     <string name="pe_ui_theme_colors_dynamic">Динамические цвета</string>
     <string name="warning_requires_android_x">Требуется Android %1$d или более поздняя версия</string>
     <string name="anonymous_author">[Аноним]</string>
