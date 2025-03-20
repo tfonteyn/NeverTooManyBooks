@@ -20,13 +20,17 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,10 +41,32 @@ import static org.junit.Assert.assertFalse;
 public class MapDBKeyTest
         extends BaseDBTest {
 
+    private BookshelfDao bookshelfDao;
+    private Bookshelf bookshelf;
+    private UserStyle style;
+
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        style = (UserStyle) getBuiltinStyle().clone(context);
+        style.setName("test");
+        serviceLocator.getStyles().insertOrUpdate(context, style);
+
+        bookshelfDao = serviceLocator.getBookshelfDao();
+        bookshelf = bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT)
+                                .orElseThrow();
+        bookshelf.setStyle(context, style);
+        bookshelfDao.update(context, bookshelf, Locale.UK);
+    }
+
+    @After
+    public void breakdown()
+            throws DaoWriteException {
+        bookshelf.setStyle(context, getBuiltinStyle());
+        bookshelfDao.update(context, bookshelf, Locale.UK);
+        serviceLocator.getStyles().delete(style);
     }
 
     /**
@@ -67,9 +93,8 @@ public class MapDBKeyTest
      */
     @Test
     public void sortableBookLevelKeysHaveLabels() {
-        final Style s1 = getBuiltinStyle();
-
-        final Set<String> keys = s1.getBookLevelFieldsOrderBy().keySet();
+        // all supported fields will be there.
+        final Set<String> keys = style.getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());
 
         final long labelCount = keys
@@ -88,9 +113,10 @@ public class MapDBKeyTest
      */
     @Test
     public void visibilityKeysHaveDomainNames() {
-        final Style s1 = getBuiltinStyle();
+        // force all fields
+        style.setFieldVisibility(FieldVisibility.Screen.List, Long.MAX_VALUE);
 
-        final Set<String> keys = s1.getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
+        final Set<String> keys = style.getFieldVisibilityKeys(FieldVisibility.Screen.List, true);
         assertFalse(keys.isEmpty());
 
         final long domainCount = keys
@@ -108,9 +134,8 @@ public class MapDBKeyTest
      */
     @Test
     public void sortableBookLevelKeysHaveDomainNames() {
-        final Style s1 = getBuiltinStyle();
-
-        final Set<String> keys = s1.getBookLevelFieldsOrderBy().keySet();
+        // all supported fields will be there.
+        final Set<String> keys = style.getBookLevelFieldsOrderBy().keySet();
         assertFalse(keys.isEmpty());
 
         final long domainCount = keys
@@ -121,6 +146,4 @@ public class MapDBKeyTest
 
         assertEquals(domainCount, keys.size());
     }
-
-
 }
