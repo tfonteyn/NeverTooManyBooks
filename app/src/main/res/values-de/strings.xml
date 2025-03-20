@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -173,7 +170,7 @@
     <string name="confirm_registration_benefits">Diese Funktion profitiert von der Registrierung bei %1$s. Sollen weitere Informationen angezeigt oder die Nachricht deaktiviert werden?\nDie Informationen finden sich zu einem späteren Zeitpunkt in den Einstellungen unter „%2$s“.</string>
     <string name="confirm_registration_required">Diese Funktion erfordert eine Registrierung bei %1$s. Sollen weitere Informationen angezeigt werden?</string>
     <string name="confirm_remove_toc_entry">Den Titel „%1$s“ von %2$s aus diesem Buch entfernen?</string>
-    <string name="confirm_scope_for_change">Du hast Folgendes geändert:\n „%1$s“\n in\n „%2$s“\n\nWie soll diese Änderung übernommen werden?\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen. Bei der Auswahl von „%4$s“ wird ein neues %5$s erstellt.</string>
+    <string name="confirm_scope_for_change">Du hast Folgendes geändert:\n „%1$s“\n in\n „%2$s“\n\nWie soll diese Änderung angewandt werden?\nHinweis: „%3$s“ hat Auswirkung auf den gesamten Katalog. Bei der Auswahl von „%4$s“ wird ein neuer Eintrag für %5$s erstellt.</string>
     <string name="confirm_scope_for_delete">Lösche den Titel „%1$s“ von %2$s.\n\nWie soll die Änderung angewandt werden?\nWARNUNG: Die Auswahl „%3$s“ kann nicht rückgängig gemacht werden!</string>
     <string name="confirm_test_connection">Es ist ratsam, diese Verbindung zu testen, um später Probleme zu vermeiden.</string>
     <string name="confirm_unsaved_edits">Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen verloren.</string>
