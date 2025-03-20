@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ public final class DEBUG_SWITCHES {
 //    }
 
     /** Make the {@link Booklist} use a standard table instead of Temporary ones. */
-    public static final boolean BOOK_LIST_USES_STANDARD_TABLE = false;
+    public static boolean BOB_USES_STANDARD_TABLE = false;
 
     /** {@link Booklist}. */
     public static final boolean BOB_THE_BUILDER = false;

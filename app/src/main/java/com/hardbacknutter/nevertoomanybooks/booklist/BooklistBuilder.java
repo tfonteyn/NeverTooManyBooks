@@ -256,7 +256,7 @@ class BooklistBuilder {
                 .setPrimaryKey(DOM_PK_ID);
 
         // Allow debug mode to use a standard table so we can export and inspect the content.
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_USES_STANDARD_TABLE) {
             listTable.setType(TableDefinition.TableType.Standard);
             navTable.setType(TableDefinition.TableType.Standard);
         } else {

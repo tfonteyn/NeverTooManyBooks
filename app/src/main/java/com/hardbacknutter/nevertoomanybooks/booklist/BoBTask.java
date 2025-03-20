@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
@@ -116,7 +117,9 @@ public class BoBTask
 
         Booklist booklist = null;
         try {
-            booklist = buildBooklist(context, db, style);
+            booklist = buildBooklist(context, db, bookshelf, style,
+                                     rebuildMode,
+                                     criteriaFilters);
 
             // pre-count and cache these while we're in the background.
             // They are used for the header, and will not change even if the list cursor changes.
@@ -139,22 +142,30 @@ public class BoBTask
     /**
      * Build the temporary list of books.
      *
-     * @param context Current context
-     * @param db      db
-     * @param style   to use
+     * @param context         Current context
+     * @param db              db
+     * @param bookshelf       the shelf for which we're building the list
+     * @param style           to use
+     * @param rebuildMode     see {@link RebuildBooklist}
+     * @param criteriaFilters filters
      *
      * @return the Booklist ready to use
      *
      * @throws IllegalArgumentException if the rebuild-mode is unknown
      */
+    @VisibleForTesting
     @NonNull
-    private Booklist buildBooklist(@NonNull final Context context,
-                                   @NonNull final SynchronizedDb db,
-                                   @NonNull final Style style) {
+    Booklist buildBooklist(@NonNull final Context context,
+                           @NonNull final SynchronizedDb db,
+                           @NonNull final Bookshelf bookshelf,
+                           @NonNull final Style style,
+                           @NonNull final RebuildBooklist rebuildMode,
+                           @NonNull final Collection<Filter> criteriaFilters) {
 
         final int instanceId = ID_COUNTER.incrementAndGet();
 
-        final BooklistBuilder booklistBuilder = new BooklistBuilder(instanceId, style, bookshelf);
+        final BooklistBuilder booklistBuilder = new BooklistBuilder(instanceId, style,
+                                                                    bookshelf);
 
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
@@ -165,7 +176,8 @@ public class BoBTask
             final TableDefinition listTable = tables.first;
             final TableDefinition navTable = tables.second;
 
-            final BooklistNodeDao rowStateDao = createNodeDao(db, listTable, style);
+            final BooklistNodeDao rowStateDao = createNodeDao(db, listTable, bookshelf, style,
+                                                              rebuildMode);
 
             db.setTransactionSuccessful();
 
@@ -179,7 +191,9 @@ public class BoBTask
     @NonNull
     private BooklistNodeDao createNodeDao(@NonNull final SynchronizedDb db,
                                           @NonNull final TableDefinition listTable,
-                                          @NonNull final Style style) {
+                                          @NonNull final Bookshelf bookshelf,
+                                          @NonNull final Style style,
+                                          @NonNull final RebuildBooklist rebuildMode) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!db.inTransaction()) {
