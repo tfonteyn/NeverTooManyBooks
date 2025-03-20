@@ -1,6 +1,6 @@
 Draft notes for next version:
 
-### 7.2.1
+### 7.2.2
 
 NEW:
 

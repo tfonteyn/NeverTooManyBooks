@@ -1,3 +1,12 @@
+### 7.2.1
+
+FIXES:
+
+- #125 several fixes
+- editing/searching by website book id:
+  - "Database Knih" with phone in landscape mode was missing
+  - Goodreads was missing
+
 ### 7.2.0
 
 NEW:
