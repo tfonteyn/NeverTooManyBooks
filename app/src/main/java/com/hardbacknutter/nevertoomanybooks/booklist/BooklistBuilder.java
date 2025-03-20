@@ -737,6 +737,8 @@ class BooklistBuilder {
             leftOuterJoins.remove(TBL_BOOK_IDENTIFIER);
         }
 
+        // NEWTHINGS: BooklistGroup: add joins if needed
+
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger().d(TAG, "build|leftOuterJoins final=" + leftOuterJoins);
         }
