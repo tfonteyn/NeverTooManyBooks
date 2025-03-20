@@ -244,8 +244,9 @@ public final class DBExpr {
                 case DBKey.LANGUAGE: {
                     return List.of(
                             new DomainExpression(
-                                    DBDefinitions.DOM_LANG_DISPLAY_NAME,
-                                    DBDefinitions.TBL_LANG_MAPPINGS,
+                                    DBDefinitions.DOM_BOOK_LANGUAGE,
+                                    DBDefinitions.ALIAS_LANG_MAPPINGS_LANGUAGE
+                                    + "." + DBKey.LANG_MAPPING.DISPLAY_NAME,
                                     sort));
                 }
                 case DBKey.LOANEE_NAME: {
@@ -339,7 +340,8 @@ public final class DBExpr {
                     return List.of(
                             new DomainExpression(
                                     DBDefinitions.DOM_TRANSLATION_ORIGINAL_LANGUAGE,
-                                    DBDefinitions.TBL_BOOKS,
+                                    DBDefinitions.ALIAS_LANG_MAPPINGS_ORIGINAL_LANGUAGE
+                                    + "." + DBKey.LANG_MAPPING.DISPLAY_NAME,
                                     sort)
                     );
                 }
