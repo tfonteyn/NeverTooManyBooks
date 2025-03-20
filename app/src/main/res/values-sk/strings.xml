@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -449,7 +446,7 @@
     <string name="pe_ui_theme_dark">Tmavá</string>
     <string name="pe_ui_theme_light">Svetlá</string>
     <string name="pt_ui_theme_colors">Farby témy</string>
-    <string name="pe_ui_theme_colors_blue_grey">Modro-sivá</string>
+    <string name="pe_ui_theme_colors_blue_grey">Modrosivá</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamické farby</string>
     <string name="X_pt_dialog_and_menu_popup_tuning">Dialógy a ponuky</string>
     <string name="pt_ui_dialogs_mode">Dialógy</string>
@@ -459,9 +456,9 @@
     <string name="option_purge_files">Vyčistiť súbory</string>
     <string name="option_purge_image_cache">Vymazať vyrovnávaciu pamäť obrázkov</string>
     <string name="option_purge_bedetheque_authors_cache">Vymazať vyrovnávaciu pamäť autorov Bedetheque</string>
-    <string name="option_rebuild_fts">Prebudovať údaje fulltextového vyhľadávania</string>
-    <string name="option_rebuild_index">Prebudovať indexy</string>
-    <string name="info_rebuild_scheduled">Prebudovanie naplánované</string>
+    <string name="option_rebuild_fts">Obnoviť údaje fulltextového vyhľadávania</string>
+    <string name="option_rebuild_index">Obnoviť indexy</string>
+    <string name="info_rebuild_scheduled">Obnovenie naplánované</string>
     <string name="option_clear_deleted_book_records">Vymazať históriu odstránených kníh</string>
     <string name="info_purge_blns_all">Vymazať stav uzla pre všetky zoznamy</string>
     <string name="option_bug_report_database_upgrade">Súbory aktualizácie databázy</string>
@@ -473,9 +470,9 @@
     <string name="lbl_timeouts">Časové limity</string>
     <string name="lbl_website_address">Adresa stránky (URL)</string>
     <string name="lbl_login_to_search">Prihlásiť sa na vyhľadávanie</string>
-    <string name="lbl_credentials">Používateľské prihlasovacie údaje</string>
-    <string name="lbl_certificate_issued_to">Vydané pre: %1$s</string>
-    <string name="lbl_certificate_issued_by">Vydané spoločnosťou: %1$s</string>
+    <string name="lbl_credentials">Prihlasovacie údaje používateľa</string>
+    <string name="lbl_certificate_issued_to">Vydaný pre: %1$s</string>
+    <string name="lbl_certificate_issued_by">Vydaný spoločnosťou: %1$s</string>
     <string name="pc_bob_list">Zoznam</string>
     <string name="pc_bob_layout">Rozloženie zoznamu</string>
     <string name="pc_book_detail_screen">Stránka s podrobnosťami o knihe</string>
@@ -738,7 +735,7 @@
     <string name="lbl_date_added_as_single_char">➕</string>
     <string name="lbl_date_last_updated_as_single_char">🔄</string>
     <string name="lbl_date_first_publication">Prvá publikácia</string>
-    <string name="option_bug_report_logfiles">Súbory denníka</string>
+    <string name="option_bug_report_logfiles">Logovacie súbory</string>
     <string name="option_bob_filter_isbn_yes">S ISBN</string>
     <string name="lbl_troubleshooting">Riešenie problémov</string>
     <string name="ps_show_titles_reordered_off">Platí len pre jazyky, ktoré používajú členy.\nNapríklad v angličtine:„The Lord of The Rings“</string>
@@ -752,7 +749,7 @@
     <string name="lbl_capitalize_full">Všetko veľkými písmenami</string>
     <string name="pt_thumbnails_cache_resized">Zmenšené obrázky sú uložené vo vyrovnávacej pamäti</string>
     <string name="ps_show_titles_reordered_on">Platí len pre jazyky, ktoré používajú členy. Presunúť člen na začiatku názvu na koniec.\nNapríklad v angličtine:„Lord of The Rings, The“</string>
-    <string name="pc_context_menus">Kontextové ponuky a ponuky riadkov</string>
+    <string name="pc_context_menus">Kontextové a riadkové ponuky</string>
     <string name="ps_cover_undo_enabled">Úpravu/výmenu obálky je možné vrátiť (používa viac úložiska)</string>
     <string name="pt_allow_metered_network_data">Povoliť používanie mobilných dát</string>
     <string name="pe_thumbnails_cache_resized_each_time">Zmeniť veľkosť obrázkov vždy, keď sú potrebné (používa menej úložiska, posúvanie bude pomalšie)</string>
