@@ -28,7 +28,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -51,16 +50,17 @@ public class StyleFragment
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection DataFlowIssue
-                    final boolean modified = vm.insertOrUpdateStyle(getContext());
+                    final StyleViewModel.Saved dbResult = vm.insertOrUpdateStyle(getContext());
+                    if (dbResult.success) {
+                        final Intent resultIntent = EditStyleContract
+                                .createResult(vm.getTemplateUuid(),
+                                              dbResult.wasModified,
+                                              vm.getStyle().getUuid());
 
-                    final Intent resultIntent = EditStyleContract
-                            .createResult(vm.getTemplateUuid(),
-                                          modified,
-                                          vm.getStyle().getUuid());
-
-                    //noinspection DataFlowIssue
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
-                    getActivity().finish();
+                        //noinspection DataFlowIssue
+                        getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                        getActivity().finish();
+                    }
                 }
             };
 
@@ -107,25 +107,10 @@ public class StyleFragment
         super.onResume();
 
         // for new (i.e. cloned) styles, auto-popup the name field for the user to change it.
-        if (vm.getStyle().getId() == 0) {
-            pName.setViewId(R.id.STYLE_NAME_VIEW);
-            // We need this convoluted approach as the view we want to click
-            // will only exist after the RecyclerView has bound it.
-            getListView().addOnChildAttachStateChangeListener(
-                    new RecyclerView.OnChildAttachStateChangeListener() {
-                        @Override
-                        public void onChildViewAttachedToWindow(@NonNull final View view) {
-                            if (view.getId() == R.id.STYLE_NAME_VIEW && !nameSet) {
-                                // We only do auto-clicking once.
-                                nameSet = true;
-                                view.performClick();
-                            }
-                        }
-
-                        @Override
-                        public void onChildViewDetachedFromWindow(@NonNull final View view) {
-                        }
-                    });
+        // We only do this once.
+        if (vm.getStyle().getId() == 0 && !nameSet) {
+            nameSet = true;
+            getPreferenceManager().showDialog(pName);
         }
     }
 

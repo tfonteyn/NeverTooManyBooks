@@ -144,8 +144,8 @@ public class PreferredStylesViewModelTest
         final String modifiedName = NAME_CLONE_BUILTIN + System.nanoTime();
         styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, modifiedName);
         // pretend leaving the style-editor, this will trigger a call to:
-        final boolean dbResult = styleVm.insertOrUpdateStyle(context);
-        assertTrue(dbResult);
+        final StyleViewModel.Saved dbResult = styleVm.insertOrUpdateStyle(context);
+        assertTrue(dbResult.success);
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();
@@ -224,7 +224,8 @@ public class PreferredStylesViewModelTest
         final String modifiedName = NAME_CLONE_USER + System.nanoTime();
         styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, modifiedName);
         // pretend leaving the style-editor, this will trigger a call to:
-        styleVm.insertOrUpdateStyle(context);
+        final StyleViewModel.Saved dbResult = styleVm.insertOrUpdateStyle(context);
+        assertTrue(dbResult.success);
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();
@@ -294,7 +295,8 @@ public class PreferredStylesViewModelTest
         final String modifiedName = NAME_CLONE_USER + System.nanoTime();
         styleVm.getStyleDataStore().putString(StyleDataStore.PK_NAME, modifiedName);
         // pretend leaving the style-editor, this will trigger a call to:
-        styleVm.insertOrUpdateStyle(context);
+        final StyleViewModel.Saved dbResult = styleVm.insertOrUpdateStyle(context);
+        assertTrue(dbResult.success);
 
         final long editedStyleId = editedStyle.getId();
         final String editedStyleUuid = editedStyle.getUuid();

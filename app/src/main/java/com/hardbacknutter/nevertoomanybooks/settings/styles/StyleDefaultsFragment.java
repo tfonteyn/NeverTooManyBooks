@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,13 +50,15 @@ public class StyleDefaultsFragment
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection DataFlowIssue
-                    final boolean modified = vm.insertOrUpdateStyle(getContext());
-                    if (modified) {
-                        settingsViewModel.setForceRebuildBooklist();
-                    }
+                    final StyleViewModel.Saved dbResult = vm.insertOrUpdateStyle(getContext());
+                    if (dbResult.success) {
+                        if (dbResult.wasModified) {
+                            settingsViewModel.setForceRebuildBooklist();
+                        }
 
-                    // just pop, we're always called from a fragment
-                    getParentFragmentManager().popBackStack();
+                        // just pop, we're always called from a fragment
+                        getParentFragmentManager().popBackStack();
+                    }
                 }
             };
 

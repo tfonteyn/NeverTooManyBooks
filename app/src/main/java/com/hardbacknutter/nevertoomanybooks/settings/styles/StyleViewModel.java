@@ -39,9 +39,12 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
@@ -54,13 +57,21 @@ public class StyleViewModel
 
     private static final String TAG = "StyleViewModel";
 
+    /** boolean. Flag indicating we're editing the global style settings. */
     public static final String BKEY_GLOBAL_STYLE = TAG + ":global";
 
     private final MutableLiveData<Void> onModified = new MutableLiveData<>();
+    private final MutableLiveData<String> onNameNotUnique = new MutableLiveData<>();
+
     @NonNull
     private final List<WrappedBookLevelColumn> wrappedBookLevelColumnList = new ArrayList<>();
     private String templateUuid;
-    /** The style we're editing. */
+    /**
+     * The style we're editing.
+     * <p>
+     * A {@link UserStyle} or {@link GlobalStyle},
+     * but <strong>never</strong> a {@link BuiltinStyle}
+     */
     private WritableStyle style;
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
@@ -161,6 +172,11 @@ public class StyleViewModel
     }
 
     @NonNull
+    MutableLiveData<String> onNameNotUnique() {
+        return onNameNotUnique;
+    }
+
+    @NonNull
     WritableStyle getStyle() {
         return style;
     }
@@ -187,13 +203,20 @@ public class StyleViewModel
      *
      * @param context Current context
      *
-     * @return {@code true} if the style was modified
+     * @return status
      */
-    boolean insertOrUpdateStyle(@NonNull final Context context) {
-        if (styleDataStore.isModified()) {
-            return stylesHelper.insertOrUpdate(context, style);
+    @NonNull
+    Saved insertOrUpdateStyle(@NonNull final Context context) {
+        if (!styleDataStore.isModified()) {
+            return new Saved(true, false);
         }
-        return false;
+
+        if (!isNameUnique(context)) {
+            return new Saved(false, true);
+        }
+
+        final boolean success = stylesHelper.insertOrUpdate(context, style);
+        return new Saved(success, true);
     }
 
     @NonNull
@@ -265,6 +288,61 @@ public class StyleViewModel
                                                  column.getLabel(context),
                                                  column.getSort().getSymbol()))
                 .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * It IS legal to use the same name as a builtin Style.
+     * It is NOT legal to use the same name as another {@link UserStyle}.
+     * <p>
+     * Example: clone a built-in style using the same name,
+     * and set the original builtin to 'not preferred' is fine.
+     *
+     * @param context Current context
+     *
+     * @return flag
+     */
+    private boolean isNameUnique(@NonNull final Context context) {
+        // always ... flw
+        if (style instanceof GlobalStyle) {
+            return true;
+        }
+
+        final long id = style.getId();
+        final String name = ((UserStyle) style).getName();
+
+        if (name.isEmpty()) {
+            onNameNotUnique.setValue(context.getString(R.string.vldt_non_blank_required_for_x,
+                                                       context.getString(R.string.lbl_name)));
+            return false;
+        }
+
+        final boolean exists = stylesHelper.getStyles(true)
+                                           .stream()
+                                           .filter(s -> s.getType() == Style.Type.User)
+                                           // skip THIS style obviously
+                                           .filter(s -> s.getId() != id)
+                                           .anyMatch(s -> ((UserStyle) s).getName().equals(name));
+
+        if (exists) {
+            onNameNotUnique.setValue(context.getString(R.string.warning_x_already_exists,
+                                                       context.getString(R.string.quoted, name)));
+            return false;
+        }
+
+        return true;
+    }
+
+    // temporary until the db layer is updated... almost certain we'll regret doing it this way...
+    static class Saved {
+        final boolean success;
+        /** {@code true} if the style was modified. */
+        final boolean wasModified;
+
+        Saved(final boolean success,
+              final boolean wasModified) {
+            this.success = success;
+            this.wasModified = wasModified;
+        }
     }
 
     /**

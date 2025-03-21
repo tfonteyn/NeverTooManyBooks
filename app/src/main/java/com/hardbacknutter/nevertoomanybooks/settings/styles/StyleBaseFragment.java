@@ -160,7 +160,7 @@ public abstract class StyleBaseFragment
             updateSummaries();
             updateLayoutPrefs();
         });
-        vm.onErrorSaving().observe(getViewLifecycleOwner(), this::onErrorSaving);
+        vm.onNameNotUnique().observe(getViewLifecycleOwner(), this::onNameNotUnique);
     }
 
     @Override
@@ -284,13 +284,16 @@ public abstract class StyleBaseFragment
         }
     }
 
-    private void onErrorSaving(@NonNull final CharSequence message) {
+    private void onNameNotUnique(@NonNull final CharSequence message) {
         //noinspection DataFlowIssue
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.warning_24px)
                 .setTitle(R.string.dialog_alert_title)
                 .setMessage(message)
-                .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.ok, (d, w) -> {
+                    d.dismiss();
+                    getPreferenceManager().showDialog(pName);
+                })
                 .create()
                 .show();
     }
