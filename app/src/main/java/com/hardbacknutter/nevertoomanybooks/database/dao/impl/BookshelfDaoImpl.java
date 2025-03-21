@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -659,11 +658,11 @@ public class BookshelfDaoImpl
 
             // Relink books with the target Bookshelf.
             // We don't hold 'position' for bookshelves... just do a mass update
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.FK_BOOKSHELF, target.getId());
-            booksMoved = db.update(TBL_BOOK_BOOKSHELF.getName(), cv,
-                                   DBKey.FK_BOOKSHELF + "=?",
-                                   new String[]{String.valueOf(source.getId())});
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_BOOKSHELF)) {
+                stmt.bindLong(1, target.getId());
+                stmt.bindLong(2, source.getId());
+                booksMoved = stmt.executeUpdateDelete();
+            }
 
             // delete the obsolete source.
             if (source.getId() > Bookshelf.HARD_DEFAULT) {
@@ -838,6 +837,15 @@ public class BookshelfDaoImpl
         static final String FIND_FILTERS_BY_BOOKSHELF_ID =
                 SELECT_ + DBKey.BOOKSHELF.FILTER_NAME + ',' + DBKey.BOOKSHELF.FILTER_VALUE
                 + _FROM_ + TBL_BOOKSHELF_FILTERS.getName()
+                + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
+
+        /**
+         * Bulk update/replace one bookshelf id with another;
+         * effectively moving books from one bookshelf to the other.
+         */
+        static final String BULK_UPDATE_BOOKSHELF =
+                UPDATE_ + TBL_BOOK_BOOKSHELF.getName()
+                + _SET_ + DBKey.FK_BOOKSHELF + "=?"
                 + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
     }
 }
