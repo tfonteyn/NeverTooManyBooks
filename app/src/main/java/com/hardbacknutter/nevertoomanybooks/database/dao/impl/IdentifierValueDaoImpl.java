@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -143,11 +142,11 @@ public class IdentifierValueDaoImpl
 
             // Relink fks with the target.
             // We don't hold 'position'... just do a mass update
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.FK_IDENTIFIER, target.getId());
-            moved = db.update(linkTable.getName(), cv,
-                              DBKey.FK_IDENTIFIER + "=?",
-                              new String[]{String.valueOf(source.getId())});
+            try (SynchronizedStatement stmt = db.compileStatement(sql.BULK_UPDATE_IDENTIFIER)) {
+                stmt.bindLong(1, target.getId());
+                stmt.bindLong(2, source.getId());
+                moved = stmt.executeUpdateDelete();
+            }
 
             // delete the obsolete source.
             delete(source);
@@ -233,6 +232,12 @@ public class IdentifierValueDaoImpl
          */
         final String DELETE_LINK_BY_FK;
 
+        /**
+         * Bulk update/replace one Identifier id with another;
+         * effectively moving links from one Identifier to the other.
+         */
+        final String BULK_UPDATE_IDENTIFIER;
+
         Sql(@NonNull final TableDefinition linkTable,
             @NonNull final String fk) {
 
@@ -268,6 +273,11 @@ public class IdentifierValueDaoImpl
             DELETE_LINK_BY_FK =
                     DELETE_FROM_ + linkTable.getName()
                     + _WHERE_ + fk + "=?";
+
+            BULK_UPDATE_IDENTIFIER =
+                    UPDATE_ + linkTable.getName()
+                    + _SET_ + DBKey.FK_IDENTIFIER + "=?"
+                    + _WHERE_ + DBKey.FK_IDENTIFIER + "=?";
         }
     }
 }
