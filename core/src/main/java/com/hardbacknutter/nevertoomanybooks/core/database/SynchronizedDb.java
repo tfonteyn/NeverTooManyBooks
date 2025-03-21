@@ -254,6 +254,7 @@ public class SynchronizedDb
      * <p>
      * <strong>Dev.Note</strong>: SQLExceptions are swallowed and {@code -1} returned!
      * Other (unlikely) RuntimeExceptions can still be thrown.
+     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
      *
      * @param table  the table to insert the row into
      * @param values this map contains the initial column values for the
@@ -295,6 +296,7 @@ public class SynchronizedDb
      * <strong>native code</strong> based on sql string matching.
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
+     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
      *
      * @param table       the table to delete from
      * @param values      a map from column names to new column values.
@@ -342,6 +344,7 @@ public class SynchronizedDb
      * <p>
      * 2023-12-03: all regular use of this method was phased out in favour of
      * {@link #compileStatement(String)}.
+     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
      *
      * @param table       the table to delete from
      * @param whereClause the optional WHERE clause to apply when deleting.

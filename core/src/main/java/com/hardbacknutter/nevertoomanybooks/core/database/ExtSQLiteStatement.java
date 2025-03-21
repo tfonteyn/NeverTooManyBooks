@@ -257,7 +257,7 @@ public class ExtSQLiteStatement
      * This means that callers no longer need to take any RuntimeException into account.
      * Just check for {@code -1} which finally simplifies their logic!</strong>
      * <p>
-     * URGENT: catch SQLiteFullException and throw DaoUpdateException?
+     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
      *
      * @return the number of rows affected by this SQL statement execution,
      *         or {@code -1} if an error occurred
@@ -293,7 +293,7 @@ public class ExtSQLiteStatement
      * This means that callers no longer need to take any RuntimeException into account.
      * Just check for {@code -1} which finally simplifies their logic!</strong>
      * <p>
-     * URGENT: catch SQLiteFullException and throw DaoInsertException?
+     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
      *
      * @return the row id of the newly inserted row,
      *         or {@code -1} if an error occurred
