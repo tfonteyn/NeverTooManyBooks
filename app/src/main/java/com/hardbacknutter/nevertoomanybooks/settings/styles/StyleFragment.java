@@ -45,7 +45,6 @@ public class StyleFragment
     private static final String TAG = "StylePreferenceFragment";
     private static final String SIS_NAME_SET = TAG + ":nameSet";
 
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -117,9 +116,7 @@ public class StyleFragment
                         @Override
                         public void onChildViewAttachedToWindow(@NonNull final View view) {
                             if (view.getId() == R.id.STYLE_NAME_VIEW && !nameSet) {
-                                // We only do this once. It IS legal to use the same name.
-                                // Example: clone a built-in style using the same name,
-                                // and set the original built-in to 'not preferred'.
+                                // We only do auto-clicking once.
                                 nameSet = true;
                                 view.performClick();
                             }
