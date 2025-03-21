@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -683,11 +682,12 @@ public class AuthorDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            // Updating all TOCs is easy: just do a mass update
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.FK_AUTHOR, target.getId());
-            db.update(TBL_TOC_ENTRIES.getName(), cv, DBKey.FK_AUTHOR + "=?",
-                      new String[]{String.valueOf(source.getId())});
+            // Updating the author on all TOCs is easy: just do a mass update
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_AUTHOR)) {
+                stmt.bindLong(1, target.getId());
+                stmt.bindLong(2, source.getId());
+                stmt.executeUpdateDelete();
+            }
 
             // Relink books with the target Author,
             // respecting the position of the Author in the list for each book.
@@ -1016,5 +1016,14 @@ public class AuthorDaoImpl
                 + _GROUP_BY_ + DBKey.FK_BOOK
                 + ')'
                 + _WHERE_ + "mp>1";
+
+        /**
+         * Bulk update/replace one Author id with another;
+         * effectively moving toc-entries from one Author to the other.
+         */
+        static final String BULK_UPDATE_AUTHOR =
+                UPDATE_ + TBL_TOC_ENTRIES.getName()
+                + _SET_ + DBKey.FK_AUTHOR + "=?"
+                + _WHERE_ + DBKey.FK_AUTHOR + "=?";
     }
 }
