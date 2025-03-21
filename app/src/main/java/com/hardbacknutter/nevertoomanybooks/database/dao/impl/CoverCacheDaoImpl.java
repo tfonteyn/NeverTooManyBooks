@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
@@ -95,9 +94,10 @@ public class CoverCacheDaoImpl
      * <p>
      * <strong>Note:</strong> Any changes to the resulting name MUST be reflected in {@link #delete}
      *
-     * @param uuid      UUID of the book
-     * @param cIdx      0..n image index
-     * @param maxWidth  used to construct the cacheId
+     * @param uuid     UUID of the book
+     * @param cIdx     0..n image index
+     * @param maxWidth used to construct the cacheId
+     *
      * @return cache id string
      */
     @NonNull
@@ -221,21 +221,24 @@ public class CoverCacheDaoImpl
                         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                             stmt.bindString(1, cacheId);
                             stmt.bindBlob(2, out.toByteArray());
+
                             if (stmt.executeInsert() == -1) {
                                 logAndDisableCache(new DaoInsertException(cacheId));
                             }
                         }
                     } else {
-                        final ContentValues cv = new ContentValues();
-                        cv.put(CacheDbHelper.IMAGE_ID, cacheId);
-                        cv.put(CacheDbHelper.IMAGE_BLOB, out.toByteArray());
-                        cv.put(CacheDbHelper.IMAGE_LAST_UPDATED__UTC, LocalDateTime
-                                .now(ZoneOffset.UTC)
-                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                        if (0 >= db.update(CacheDbHelper.TBL_IMAGE.getName(), cv,
-                                           CacheDbHelper.IMAGE_ID + "=?",
-                                           new String[]{cacheId})) {
-                            logAndDisableCache(new DaoUpdateException(cacheId));
+                        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+                            stmt.bindString(1, cacheId);
+                            stmt.bindBlob(2, out.toByteArray());
+                            stmt.bindString(3, LocalDateTime
+                                    .now(ZoneOffset.UTC)
+                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+
+                            stmt.bindString(4, cacheId);
+
+                            if (stmt.executeUpdateDelete() <= 0) {
+                                logAndDisableCache(new DaoUpdateException(cacheId));
+                            }
                         }
                     }
                 }
@@ -269,6 +272,14 @@ public class CoverCacheDaoImpl
                 + '(' + CacheDbHelper.IMAGE_ID
                 + ',' + CacheDbHelper.IMAGE_BLOB
                 + ") VALUES (?,?)";
+
+        static final String UPDATE =
+                "UPDATE " + CacheDbHelper.TBL_IMAGE.getName()
+                + " SET " + CacheDbHelper.IMAGE_ID + "=?"
+                + ',' + CacheDbHelper.IMAGE_BLOB + "=?"
+                + ',' + CacheDbHelper.IMAGE_LAST_UPDATED__UTC + "=?"
+                + _WHERE_ + CacheDbHelper.IMAGE_ID + "=?";
+
         static final String COUNT =
                 SELECT_COUNT_FROM_ + CacheDbHelper.TBL_IMAGE.getName();
 
