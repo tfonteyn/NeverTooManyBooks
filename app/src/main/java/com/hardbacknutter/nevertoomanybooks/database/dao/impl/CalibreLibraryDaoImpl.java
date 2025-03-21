@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -220,18 +219,21 @@ public class CalibreLibraryDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            // The getMappedBookshelfId MUST have been previously verified/'fixId' against
-            // the BookshelfDao!
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.CALIBRE.LIBRARY_UUID, library.getUuid());
-            cv.put(DBKey.CALIBRE.LIBRARY_STRING_ID, library.getLibraryStringId());
-            cv.put(DBKey.CALIBRE.LIBRARY_NAME, library.getName());
-            cv.put(DBKey.CALIBRE.LIBRARY_LAST_SYNC_DATE__UTC, library.getLastSyncDateAsString());
-            cv.put(DBKey.FK_BOOKSHELF, library.getMappedBookshelfId());
+            // The CalibreLibrary#getMappedBookshelfId MUST have been previously
+            // verified/'fixId' against the BookshelfDao!
+            final int rowsAffected;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_LIBRARY)) {
+                int c = 0;
+                stmt.bindString(++c, library.getUuid());
+                stmt.bindString(++c, library.getLibraryStringId());
+                stmt.bindString(++c, library.getName());
+                stmt.bindString(++c, library.getLastSyncDateAsString());
+                stmt.bindLong(++c, library.getMappedBookshelfId());
 
-            final int rowsAffected = db.update(TBL_CALIBRE_LIBRARIES.getName(), cv,
-                                               DBKey.PK_ID + "=?",
-                                               new String[]{String.valueOf(library.getId())});
+                stmt.bindLong(++c, library.getId());
+                rowsAffected = stmt.executeUpdateDelete();
+            }
+
             if (rowsAffected > 0) {
                 // just delete and recreate...
                 deleteVirtualLibraries(library.getId());
@@ -307,15 +309,18 @@ public class CalibreLibraryDaoImpl
     public void update(@NonNull final CalibreVirtualLibrary library)
             throws DaoUpdateException {
 
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.FK_CALIBRE_LIBRARY, library.getLibraryId());
-        cv.put(DBKey.CALIBRE.LIBRARY_NAME, library.getName());
-        cv.put(DBKey.CALIBRE.VIRT_LIB_EXPR, library.getExpr());
-        cv.put(DBKey.FK_BOOKSHELF, library.getMappedBookshelfId());
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_VIRTUAL_LIBRARY)) {
+            int c = 0;
+            stmt.bindLong(++c, library.getLibraryId());
+            stmt.bindString(++c, library.getName());
+            stmt.bindString(++c, library.getExpr());
+            stmt.bindLong(++c, library.getMappedBookshelfId());
 
-        final int rowsAffected = db.update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
-                                           DBKey.PK_ID + "=?",
-                                           new String[]{String.valueOf(library.getId())});
+            stmt.bindLong(++c, library.getId());
+            rowsAffected = stmt.executeUpdateDelete();
+        }
+
         if (rowsAffected > 0) {
             return;
         }
@@ -395,6 +400,15 @@ public class CalibreLibraryDaoImpl
                 + ',' + DBKey.FK_BOOKSHELF
                 + ") VALUES (?,?,?,?,?)";
 
+        static final String UPDATE_LIBRARY =
+                UPDATE_ + TBL_CALIBRE_LIBRARIES.getName()
+                + _SET_ + DBKey.CALIBRE.LIBRARY_UUID + "=?"
+                + ',' + DBKey.CALIBRE.LIBRARY_STRING_ID + "=?"
+                + ',' + DBKey.CALIBRE.LIBRARY_NAME + "=?"
+                + ',' + DBKey.CALIBRE.LIBRARY_LAST_SYNC_DATE__UTC + "=?"
+                + ',' + DBKey.FK_BOOKSHELF + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
         /** Delete a {@link CalibreLibrary}. */
         static final String DELETE_LIBRARY_BY_ID =
                 DELETE_FROM_ + TBL_CALIBRE_LIBRARIES.getName()
@@ -408,6 +422,14 @@ public class CalibreLibraryDaoImpl
                 + ',' + DBKey.CALIBRE.VIRT_LIB_EXPR
                 + ',' + DBKey.FK_BOOKSHELF
                 + ") VALUES (?,?,?,?)";
+
+        static final String UPDATE_VIRTUAL_LIBRARY =
+                UPDATE_ + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
+                + _SET_ + DBKey.FK_CALIBRE_LIBRARY + "=?"
+                + ',' + DBKey.CALIBRE.LIBRARY_NAME + "=?"
+                + ',' + DBKey.CALIBRE.VIRT_LIB_EXPR + "=?"
+                + ',' + DBKey.FK_BOOKSHELF + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete all {@link CalibreVirtualLibrary}s for a given {@link CalibreLibrary}. */
         static final String DELETE_VIRTUAL_LIBRARIES_BY_LIBRARY_ID =
