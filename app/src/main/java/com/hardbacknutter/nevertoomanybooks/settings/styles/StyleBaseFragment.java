@@ -34,6 +34,8 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -158,6 +160,7 @@ public abstract class StyleBaseFragment
             updateSummaries();
             updateLayoutPrefs();
         });
+        vm.onErrorSaving().observe(getViewLifecycleOwner(), this::onErrorSaving);
     }
 
     @Override
@@ -279,5 +282,16 @@ public abstract class StyleBaseFragment
             default:
                 throw new IllegalArgumentException(layout.toString());
         }
+    }
+
+    private void onErrorSaving(@NonNull final CharSequence message) {
+        //noinspection DataFlowIssue
+        new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.warning_24px)
+                .setTitle(R.string.dialog_alert_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
+                .create()
+                .show();
     }
 }
