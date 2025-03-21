@@ -282,13 +282,14 @@ public class EditBookshelvesFragment
         return false;
     }
 
+    // notifyDataSetChanged: because we used to do it "properly"
+    // but RecyclerView can really only deal with one change at
+    // a time OR it wants a full reload.
+    @SuppressLint("NotifyDataSetChanged")
     private void onModified(@NonNull final Bookshelf bookshelf) {
-        // first update the previous, now unselected, row.
-        adapter.notifyItemChanged(vm.getSelectedPosition());
         // store the newly selected row.
         vm.onBookshelfEdited(bookshelf.getId());
-        // update the newly selected row.
-        adapter.notifyItemChanged(vm.getSelectedPosition());
+        adapter.notifyDataSetChanged();
     }
 
     /**
