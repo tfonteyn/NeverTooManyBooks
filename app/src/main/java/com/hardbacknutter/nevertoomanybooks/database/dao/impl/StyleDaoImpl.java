@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -87,14 +86,15 @@ public class StyleDaoImpl
         // read/written from/to the database.
         try (SQLiteStatement stmt = db.compileStatement(Sql.INSERT_BUILTIN_STYLE)) {
             int menuPos = 1;
+            int c = 0;
             for (final BuiltinStyle.Definition styleDef : BuiltinStyle.getAll()) {
-                stmt.bindLong(1, styleDef.getId());
-                stmt.bindString(2, styleDef.getUuid());
-                stmt.bindLong(3, Style.Type.Builtin.getId());
+                stmt.bindLong(++c, styleDef.getId());
+                stmt.bindString(++c, styleDef.getUuid());
+                stmt.bindLong(++c, Style.Type.Builtin.getId());
                 // preferred: false
-                stmt.bindLong(4, 0);
+                stmt.bindLong(++c, 0);
                 // menu position, initially just in the order defined.
-                stmt.bindLong(5, menuPos++);
+                stmt.bindLong(++c, menuPos++);
 
                 // after inserting the id '-1' debug logging will claim that the insert failed.
                 if (BuildConfig.DEBUG /* always */) {
@@ -268,54 +268,62 @@ public class StyleDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Style style)
             throws DaoUpdateException {
-        final ContentValues cv = new ContentValues();
+
         // Note that the Style.Type is NEVER updated.
 
-        cv.put(DBKey.STYLE.IS_PREFERRED, style.isPreferred());
-        cv.put(DBKey.STYLE.MENU_POSITION, style.getMenuPosition());
+        final int rowsAffected;
+        if (style.getType() == Style.Type.Builtin) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_BUILTIN_STYLE)) {
+                int c = 0;
+                stmt.bindBoolean(++c, style.isPreferred());
+                stmt.bindLong(++c, style.getMenuPosition());
 
-        if (style.getType() != Style.Type.Builtin) {
-            cv.put(DBKey.STYLE.NAME, style.getLabel(context));
-
-            cv.put(DBKey.STYLE.EXP_LEVEL, style.getExpansionLevel());
-            cv.put(DBKey.STYLE.GROUPS, getGroupIdsAsCsv(style));
-            cv.put(DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE, style.getPrimaryAuthorType());
-            for (final Style.UnderEach item : Style.UnderEach.values()) {
-                cv.put(item.getDbKey(), style.isShowBooksUnderEachGroup(item.getGroupId()));
+                stmt.bindLong(++c, style.getId());
+                rowsAffected = stmt.executeUpdateDelete();
             }
+        } else {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE_STYLE)) {
+                int c = 0;
+                stmt.bindBoolean(++c, style.isPreferred());
+                stmt.bindLong(++c, style.getMenuPosition());
+                stmt.bindString(++c, style.getLabel(context));
 
-            cv.put(DBKey.STYLE.LAYOUT, style.getLayout().getId());
-            cv.put(DBKey.STYLE.COVER_CLICK_ACTION, style.getCoverClickAction().getId());
-            cv.put(DBKey.STYLE.COVER_LONG_CLICK_ACTION, style.getCoverLongClickAction().getId());
-            cv.put(DBKey.STYLE.COVER_SCALE, style.getCoverScale().getId());
-            cv.put(DBKey.STYLE.TEXT_SCALE, style.getTextScale().getId());
-            cv.put(DBKey.STYLE.ROW_USES_PREF_HEIGHT, style.isGroupRowUsesPreferredHeight());
+                stmt.bindLong(++c, style.getLayout().getId());
+                stmt.bindLong(++c, style.getCoverClickAction().getId());
+                stmt.bindLong(++c, style.getCoverLongClickAction().getId());
+                stmt.bindLong(++c, style.getCoverScale().getId());
+                stmt.bindLong(++c, style.getTextScale().getId());
+                stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
 
-            cv.put(DBKey.STYLE.LIST_HEADER, style.getHeaderFieldVisibilityValue());
-            cv.put(DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY,
-                   style.getFieldVisibilityValue(FieldVisibility.Screen.List));
-            cv.put(DBKey.STYLE.BOOK_LIST_FIELD_ORDER_BY,
-                   StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
-            cv.put(DBKey.STYLE.AUTHOR_SORT_BY_GIVEN_NAME,
-                   style.isSortAuthorByGivenName());
+                stmt.bindLong(++c, style.getHeaderFieldVisibilityValue());
+                stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.List));
+                stmt.bindString(++c, StyleCoder.getBookLevelFieldsOrderByAsJsonString(style));
+                stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
 
-            cv.put(DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME, style.isShowAuthorByGivenName());
-            cv.put(DBKey.STYLE.TITLE_SHOW_REORDERED, style.isShowReorderedTitle());
-            cv.put(DBKey.STYLE.SHOW_GROUP_BOOK_COUNT, style.isShowGroupBookCount());
+                stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
+                stmt.bindBoolean(++c, style.isShowReorderedTitle());
+                stmt.bindBoolean(++c, style.isShowGroupBookCount());
 
-            cv.put(DBKey.STYLE.READ_STATUS_WITH_PROGRESS, style.useReadProgress());
+                stmt.bindBoolean(++c, style.useReadProgress());
+                stmt.bindLong(++c, style.getCitationType().getId());
 
-            cv.put(DBKey.STYLE.CITATION_TYPE, style.getCitationType().getId());
+                stmt.bindLong(++c, style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
 
-            cv.put(DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY,
-                   style.getFieldVisibilityValue(FieldVisibility.Screen.Detail));
+                stmt.bindLong(++c, style.getExpansionLevel());
+                stmt.bindString(++c, getGroupIdsAsCsv(style));
+                stmt.bindLong(++c, style.getPrimaryAuthorType());
 
-            //NEWTHINGS: style option: add to the UPDATE
+                //NEWTHINGS: style option: add to the UPDATE
+
+                for (final Style.UnderEach item : Style.UnderEach.values()) {
+                    stmt.bindBoolean(++c, style.isShowBooksUnderEachGroup(item.getGroupId()));
+                }
+
+                stmt.bindLong(++c, style.getId());
+                rowsAffected = stmt.executeUpdateDelete();
+            }
         }
 
-        final int rowsAffected = db.update(DBDefinitions.TBL_BOOKLIST_STYLES.getName(), cv,
-                                           DBKey.PK_ID + "=?",
-                                           new String[]{String.valueOf(style.getId())});
         if (rowsAffected > 0) {
             return;
         }
@@ -414,8 +422,17 @@ public class StyleDaoImpl
                 + ',' + DBKey.STYLE.MENU_POSITION
                 + ") VALUES(?,?,?,?,?)";
 
+        /** Update a {@link BuiltinStyle}. */
+        static final String UPDATE_BUILTIN_STYLE =
+                UPDATE_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
+                + _SET_ + DBKey.STYLE.IS_PREFERRED + "=?"
+                + ',' + DBKey.STYLE.MENU_POSITION + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
         /** Insert a {@link Style}. */
         static final String INSERT_STYLE;
+        /** Insert a {@link Style}. */
+        static final String UPDATE_STYLE;
 
         /** Delete a {@link Style}. */
         static final String DELETE_STYLE_BY_ID =
@@ -443,7 +460,7 @@ public class StyleDaoImpl
                 + _WHERE_ + DBKey.FK_STYLE + "=?";
 
         static {
-            final StringBuilder tmp = new StringBuilder(
+            StringBuilder tmp = new StringBuilder(
                     INSERT_INTO_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
                     + '(' + DBKey.STYLE.UUID
                     + ',' + DBKey.STYLE.TYPE
@@ -474,7 +491,8 @@ public class StyleDaoImpl
 
                     + ',' + DBKey.STYLE.EXP_LEVEL
                     + ',' + DBKey.STYLE.GROUPS
-                    + ',' + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE);
+                    + ',' + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE
+            );
 
             //NEWTHINGS: style option: add to the INSERT
 
@@ -489,6 +507,48 @@ public class StyleDaoImpl
             tmp.append(String.join(",", Collections.nCopies(count, "?"))).append(")");
 
             INSERT_STYLE = tmp.toString();
+
+            tmp = new StringBuilder(
+                    UPDATE_ + DBDefinitions.TBL_BOOKLIST_STYLES.getName()
+                    + _SET_ + DBKey.STYLE.IS_PREFERRED + "=?"
+                    + ',' + DBKey.STYLE.MENU_POSITION + "=?"
+                    + ',' + DBKey.STYLE.NAME + "=?"
+
+                    + ',' + DBKey.STYLE.LAYOUT + "=?"
+                    + ',' + DBKey.STYLE.COVER_CLICK_ACTION + "=?"
+                    + ',' + DBKey.STYLE.COVER_LONG_CLICK_ACTION + "=?"
+                    + ',' + DBKey.STYLE.COVER_SCALE + "=?"
+                    + ',' + DBKey.STYLE.TEXT_SCALE + "=?"
+                    + ',' + DBKey.STYLE.ROW_USES_PREF_HEIGHT + "=?"
+
+                    + ',' + DBKey.STYLE.LIST_HEADER + "=?"
+                    + ',' + DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY + "=?"
+                    + ',' + DBKey.STYLE.BOOK_LIST_FIELD_ORDER_BY + "=?"
+                    + ',' + DBKey.STYLE.AUTHOR_SORT_BY_GIVEN_NAME + "=?"
+
+                    + ',' + DBKey.STYLE.AUTHOR_SHOW_BY_GIVEN_NAME + "=?"
+                    + ',' + DBKey.STYLE.TITLE_SHOW_REORDERED + "=?"
+                    + ',' + DBKey.STYLE.SHOW_GROUP_BOOK_COUNT + "=?"
+
+                    + ',' + DBKey.STYLE.READ_STATUS_WITH_PROGRESS + "=?"
+                    + ',' + DBKey.STYLE.CITATION_TYPE + "=?"
+
+                    + ',' + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY + "=?"
+
+                    + ',' + DBKey.STYLE.EXP_LEVEL + "=?"
+                    + ',' + DBKey.STYLE.GROUPS + "=?"
+                    + ',' + DBKey.STYLE.GROUPS_AUTHOR_PRIMARY_TYPE + "=?"
+            );
+
+            //NEWTHINGS: style option: add to the UPDATE
+
+            for (final Style.UnderEach item : Style.UnderEach.values()) {
+                tmp.append(',').append(item.getDbKey()).append("=?");
+            }
+
+            tmp.append(_WHERE_ + DBKey.PK_ID + "=?");
+
+            UPDATE_STYLE = tmp.toString();
         }
     }
 }
