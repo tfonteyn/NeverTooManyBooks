@@ -119,15 +119,16 @@ public class CalibreCustomFieldDaoImpl
     public void update(@NonNull final CalibreCustomField calibreCustomField)
             throws DaoUpdateException {
 
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.CALIBRE.CUSTOM_FIELD_NAME, calibreCustomField.getCalibreKey());
-        cv.put(DBKey.CALIBRE.CUSTOM_FIELD_TYPE, calibreCustomField.getType());
-        cv.put(DBKey.CALIBRE.CUSTOM_FIELD_MAPPING, calibreCustomField.getDbKey());
+        final int rowsAffected;
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+            stmt.bindString(1, calibreCustomField.getCalibreKey());
+            stmt.bindString(2, calibreCustomField.getType());
+            stmt.bindString(3, calibreCustomField.getDbKey());
 
-        final int rowsAffected = db.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
-                                           DBKey.PK_ID + "=?",
-                                           new String[]{String.valueOf(
-                                                   calibreCustomField.getId())});
+            stmt.bindLong(4, calibreCustomField.getId());
+            rowsAffected = stmt.executeUpdateDelete();
+        }
+
         if (rowsAffected > 0) {
             return;
         }
@@ -181,6 +182,13 @@ public class CalibreCustomFieldDaoImpl
                 + ',' + DBKey.CALIBRE.CUSTOM_FIELD_TYPE
                 + ',' + DBKey.CALIBRE.CUSTOM_FIELD_MAPPING
                 + ") VALUES(?,?,?)";
+
+        static final String UPDATE =
+                UPDATE_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
+                + _SET_ + DBKey.CALIBRE.CUSTOM_FIELD_NAME + "=?"
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_TYPE + "=?"
+                + ',' + DBKey.CALIBRE.CUSTOM_FIELD_MAPPING + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link CalibreCustomField}. */
         static final String DELETE_BY_ID =
