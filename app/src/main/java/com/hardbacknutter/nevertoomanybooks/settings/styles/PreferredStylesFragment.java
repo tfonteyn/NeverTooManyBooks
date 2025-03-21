@@ -263,6 +263,7 @@ public class PreferredStylesFragment
 
     @Override
     public void onPause() {
+        //TODO: track changes and ONLY run this update when actually needed
         //noinspection DataFlowIssue
         vm.updateMenuOrder(getContext());
         super.onPause();
