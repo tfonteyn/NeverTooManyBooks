@@ -66,8 +66,8 @@ public class StyleViewModel
     @Nullable
     private List<WrappedGroup> wrappedGroupList;
 
-    @Nullable
     private StyleDataStore styleDataStore;
+    private StylesHelper stylesHelper;
 
     @DrawableRes
     static int getIconResId(@NonNull final Sort sort) {
@@ -106,8 +106,6 @@ public class StyleViewModel
         }
         return labelResId;
     }
-
-    private StylesHelper stylesHelper;
 
     /**
      * Pseudo constructor.
@@ -167,7 +165,7 @@ public class StyleViewModel
         return style;
     }
 
-    @Nullable
+    @NonNull
     StyleDataStore getStyleDataStore() {
         return styleDataStore;
     }
@@ -192,7 +190,6 @@ public class StyleViewModel
      * @return {@code true} if the style was modified
      */
     boolean insertOrUpdateStyle(@NonNull final Context context) {
-        //noinspection DataFlowIssue
         if (styleDataStore.isModified()) {
             return stylesHelper.insertOrUpdate(context, style);
         }
@@ -232,7 +229,6 @@ public class StyleViewModel
                                            .filter(WrappedGroup::isPresent)
                                            .map(WrappedGroup::getGroup)
                                            .collect(Collectors.toList()));
-        //noinspection DataFlowIssue
         styleDataStore.setModified();
     }
 
@@ -257,7 +253,6 @@ public class StyleViewModel
                                                   },
                                                   LinkedHashMap::new)));
 
-        //noinspection DataFlowIssue
         styleDataStore.setModified();
     }
 
