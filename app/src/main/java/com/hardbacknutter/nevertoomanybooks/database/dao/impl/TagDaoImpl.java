@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -163,6 +162,7 @@ public class TagDaoImpl
             return (int) stmt.simpleQueryForLongOrZero();
         }
     }
+
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Tag> list,
@@ -342,11 +342,11 @@ public class TagDaoImpl
 
             // Relink books with the target Tag.
             // We don't hold 'position' for tags... just do a mass update
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.FK_TAG, target.getId());
-            booksMoved = db.update(TBL_BOOK_TAG.getName(), cv,
-                                   DBKey.FK_TAG + "=?",
-                                   new String[]{String.valueOf(source.getId())});
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_TAG)) {
+                stmt.bindLong(1, target.getId());
+                stmt.bindLong(2, source.getId());
+                booksMoved = stmt.executeUpdateDelete();
+            }
 
             // delete the obsolete source.
             delete(source);
@@ -621,5 +621,14 @@ public class TagDaoImpl
                 + ',' + "GROUP_CONCAT(" + TBL_TAGS.dot(DBKey.TAGS.TAG) + ", '\\,')"
                 + _FROM_ + TBL_BOOK_TAG.ref() + TBL_BOOK_TAG.leftOuterJoin(TBL_TAGS)
                 + _GROUP_BY_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK);
+
+        /**
+         * Bulk update/replace one tag id with another; effectively moving books
+         * from one tag to the other.
+         */
+        static final String BULK_UPDATE_TAG =
+                UPDATE_ + TBL_BOOK_TAG.getName()
+                + _SET_ + DBKey.FK_TAG + "=?"
+                + _WHERE_ + DBKey.FK_TAG + "=?";
     }
 }
