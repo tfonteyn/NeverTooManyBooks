@@ -84,6 +84,8 @@
 
     <!-- show text between brackets. Some languages use different bracket characters. -->
     <string name="brackets">(%1$s)</string>
+    <!-- show text between quotes. Some languages use different quote characters. -->
+    <string name="quoted">“%1$s”</string>
 
     <!-- Append (or prepend) the ellipsis character to another string.
          Support for RTL languages;

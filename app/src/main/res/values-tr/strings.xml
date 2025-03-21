@@ -40,6 +40,7 @@
         <item quantity="one">%1$d etiket</item>
         <item quantity="other">%1$d etiketler</item>
     </plurals>
+    <string name="quoted">“%1$s”</string>
     <string name="X_action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="X_action_execute">Çalıştır</string>
     <string name="X_action_move">Taşı</string>

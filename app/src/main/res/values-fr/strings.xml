@@ -45,6 +45,7 @@
         <item quantity="other">%1$d étiquettes</item>
         <item quantity="many">%1$d étiquettes</item>
     </plurals>
+    <string name="quoted">« %1$s »</string>
     <string name="X_action_clear_credentials">Effacer les identifiants</string>
     <string name="X_action_execute">Exécuter</string>
     <string name="X_action_move">Déplacer</string>

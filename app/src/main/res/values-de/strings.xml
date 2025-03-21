@@ -40,6 +40,7 @@
         <item quantity="one">%1$d Tag</item>
         <item quantity="other">%1$d Tags</item>
     </plurals>
+    <string name="quoted">„%1$s“</string>
     <string name="X_action_clear_credentials">Anmeldedaten löschen</string>
     <string name="X_action_execute">Ausführen</string>
     <string name="X_action_move">Verschieben</string>
@@ -538,7 +539,7 @@
     <string name="lbl_add_or_edit_substitution">Hinzufügen/Bearbeiten einer Substitutionsregel</string>
     <string name="info_substitutions_one_per_line">Eine Ersetzung pro Zeile hinzufügen</string>
     <string name="info_download_successful">Herunterladen erfolgreich</string>
-    <string name="info_export_report">Eine %1$s-Datei namens “%2$s” wurde im ausgewählten Ordner erstellt. Sie sollte manuell an einen anderen Ort kopiert werden, um die Daten zu schützen, falls das Gerät beschädigt wird, verloren geht oder gestohlen wird.</string>
+    <string name="info_export_report">Eine %1$s-Datei namens “%2$s“ wurde im ausgewählten Ordner erstellt. Sie sollte manuell an einen anderen Ort kopiert werden, um die Daten zu schützen, falls das Gerät beschädigt wird, verloren geht oder gestohlen wird.</string>
     <string name="info_export_successful">Export erfolgreich</string>
     <string name="option_info_delete_removed_books">Bücher, die auf dem anderen Gerät gelöscht wurden, werden auch auf diesem Gerät gelöscht.</string>
     <string name="info_import_complete">Import abgeschlossen</string>

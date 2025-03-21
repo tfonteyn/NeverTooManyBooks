@@ -44,6 +44,7 @@ A question mark is written as the character semicolon: ';'
         <item quantity="one">%1$d ετικέτας</item>
         <item quantity="other">%1$d ετικέτες</item>
     </plurals>
+    <string name="quoted">«%1$s»</string>
     <string name="X_action_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
     <string name="X_action_execute">Εκτέλεση</string>
     <string name="X_action_move">Μετακίνηση</string>

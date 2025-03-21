@@ -44,6 +44,7 @@
         <item quantity="many">%1$d etiquetas</item>
         <item quantity="other">%1$d etiquetas</item>
     </plurals>
+    <string name="quoted">“%1$s”</string>
     <string name="X_action_clear_credentials">Limpar credenciais</string>
     <string name="X_action_execute">Executar</string>
     <string name="X_action_go">Ir</string>

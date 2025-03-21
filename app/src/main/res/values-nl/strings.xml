@@ -40,6 +40,7 @@
         <item quantity="one">%1$d tag</item>
         <item quantity="other">%1$d tags</item>
     </plurals>
+    <string name="quoted">„%1$s”</string>
     <string name="X_action_clear_credentials">Certificaatgegevens wissen</string>
     <string name="X_action_execute">Uitvoeren</string>
     <string name="X_action_go">Ga</string>
@@ -148,7 +149,7 @@
     <string name="confirm_delete_bookshelf_from_x_books">Verwijder de boekenplank „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd. Ze zullen nog steeds aanwezig zijn op alle andere schappen, of op de „%3$s” -plank.</string>
     <string name="confirm_delete_publisher_from_x_books">Verwijder de uitgever „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd. Overweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_series_from_x_books">Verwijder de reeks „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd. Overweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
-    <string name="confirm_delete_substitutions">De substituties voor “%1$s” verwijderen?</string>
+    <string name="confirm_delete_substitutions">De substituties voor „%1$s” verwijderen?</string>
     <string name="X_confirm_delete_tag">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit alle boeken waarop deze tag is gezet. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_tag_from_x_books">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_identifier_from_x_books">Verwijder de identificatiecode „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd.</string>

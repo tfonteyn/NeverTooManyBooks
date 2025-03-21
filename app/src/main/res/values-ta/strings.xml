@@ -24,6 +24,7 @@
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="quoted">“%1$s”</string>
     <string name="list_element">• %s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="x_of_y">%1$d %2$d</string>
