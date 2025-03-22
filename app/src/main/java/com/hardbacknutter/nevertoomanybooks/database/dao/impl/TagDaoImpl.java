@@ -22,9 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
@@ -340,12 +342,41 @@ public class TagDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            // Relink books with the target Tag.
-            // We don't hold 'position' for tags... just do a mass update
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_TAG)) {
-                stmt.bindLong(1, target.getId());
-                stmt.bindLong(2, source.getId());
-                booksMoved = stmt.executeUpdateDelete();
+            // We don't hold 'position' for bookshelves,
+            // but a bulk update can fail if it creates duplicates.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // UPDATE OR REPLACE is supported... just do a mass update
+                try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_TAG)) {
+                    stmt.bindLong(1, target.getId());
+                    stmt.bindLong(2, source.getId());
+                    booksMoved = stmt.executeUpdateDelete();
+                }
+            } else {
+                // manual labour...
+                final List<Long> bookIds = getBookIds(source.getId());
+                booksMoved = bookIds.size();
+
+                final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+                for (final long bookId : bookIds) {
+                    final Book book = Book.from(bookId);
+
+                    final List<Tag> fromBook = book.getTags();
+                    final List<Tag> destList = new ArrayList<>();
+
+                    for (final Tag item : fromBook) {
+                        if (source.getId() == item.getId()) {
+                            destList.add(target);
+                            // We could 'break' here as there should be no duplicates,
+                            // but paranoia...
+                        } else {
+                            // just keep/copy
+                            destList.add(item);
+                        }
+                    }
+                    // delete old links and store all new links
+                    // We KNOW there are no updates needed.
+                    insertOrUpdate(context, bookId, destList, tag -> locale);
+                }
             }
 
             // delete the obsolete source.
@@ -623,11 +654,12 @@ public class TagDaoImpl
                 + _GROUP_BY_ + TBL_BOOK_TAG.dot(DBKey.FK_BOOK);
 
         /**
-         * Bulk update/replace one tag id with another; effectively moving books
-         * from one tag to the other.
+         * Bulk update/replace one tag id with another;
+         * effectively moving books from one tag to the other.
          */
+        @RequiresApi(Build.VERSION_CODES.R)
         static final String BULK_UPDATE_TAG =
-                UPDATE_ + TBL_BOOK_TAG.getName()
+                UPDATE_OR_REPLACE_ + TBL_BOOK_TAG.getName()
                 + _SET_ + DBKey.FK_TAG + "=?"
                 + _WHERE_ + DBKey.FK_TAG + "=?";
     }

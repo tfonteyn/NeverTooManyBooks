@@ -22,9 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
@@ -646,7 +648,8 @@ public class BookshelfDaoImpl
     @Override
     public int moveBooks(@NonNull final Context context,
                          @NonNull final Bookshelf source,
-                         @NonNull final Bookshelf target) {
+                         @NonNull final Bookshelf target)
+            throws DaoInsertException {
 
         int booksMoved;
 
@@ -656,12 +659,39 @@ public class BookshelfDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            // Relink books with the target Bookshelf.
-            // We don't hold 'position' for bookshelves... just do a mass update
-            try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_BOOKSHELF)) {
-                stmt.bindLong(1, target.getId());
-                stmt.bindLong(2, source.getId());
-                booksMoved = stmt.executeUpdateDelete();
+            // We don't hold 'position' for bookshelves,
+            // but a bulk update can fail if it creates duplicates.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // UPDATE OR REPLACE is supported... just do a mass update
+                try (SynchronizedStatement stmt = db.compileStatement(Sql.BULK_UPDATE_BOOKSHELF)) {
+                    stmt.bindLong(1, target.getId());
+                    stmt.bindLong(2, source.getId());
+                    booksMoved = stmt.executeUpdateDelete();
+                }
+            } else {
+                // manual labour...
+                final List<Long> bookIds = getBookIds(source.getId());
+                booksMoved = bookIds.size();
+                for (final long bookId : bookIds) {
+                    final Book book = Book.from(bookId);
+
+                    final List<Bookshelf> fromBook = book.getBookshelves();
+                    final List<Bookshelf> destList = new ArrayList<>();
+
+                    for (final Bookshelf item : fromBook) {
+                        if (source.getId() == item.getId()) {
+                            destList.add(target);
+                            // We could 'break' here as there should be no duplicates,
+                            // but paranoia...
+                        } else {
+                            // just keep/copy
+                            destList.add(item);
+                        }
+                    }
+                    // delete old links and store all new links
+                    // We KNOW there are no updates needed.
+                    insertOrUpdate(context, bookId, destList);
+                }
             }
 
             // delete the obsolete source.
@@ -843,8 +873,9 @@ public class BookshelfDaoImpl
          * Bulk update/replace one bookshelf id with another;
          * effectively moving books from one bookshelf to the other.
          */
+        @RequiresApi(Build.VERSION_CODES.R)
         static final String BULK_UPDATE_BOOKSHELF =
-                UPDATE_ + TBL_BOOK_BOOKSHELF.getName()
+                UPDATE_OR_REPLACE_ + TBL_BOOK_BOOKSHELF.getName()
                 + _SET_ + DBKey.FK_BOOKSHELF + "=?"
                 + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
     }
