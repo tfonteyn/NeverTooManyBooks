@@ -537,7 +537,7 @@
     <string name="pe_ui_theme_from_device">Тема устройства</string>
     <string name="pe_ui_theme_light">свет</string>
     <string name="pt_barcode_scanner">Сканер штрих-кода</string>
-    <string name="pt_bob_show_details">Информация о книге отображается в списке</string>
+    <string name="pt_bob_show_details">Детали книги, отображаемые в списке</string>
     <string name="lbl_filters">Фильтры</string>
     <string name="pc_image_cache">Кэш изображений</string>
     <string name="pt_bob_groups">Группирование</string>
@@ -583,7 +583,7 @@
     <string name="pe_bob_cover_long_click_ignore">С помощью кнопки.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Долгим щелчком по изображению обложки.</string>
     <string name="pt_bob_cover_scale">Размер изображения на обложке</string>
-    <string name="pt_bob_cover_show">Показывать миниатюры</string>
+    <string name="pt_bob_cover_show">Показать обложки</string>
     <string name="pt_bob_font_size">Размер шрифта</string>
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
     <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
@@ -625,7 +625,7 @@
     <string name="ps_bob_books_under_multiple_publishers_main_only">только под своим основным издателем</string>
     <string name="ps_bob_books_under_multiple_series_main_only">Только под первым серии</string>
     <string name="pv_bob_header_filters">Фильтры</string>
-    <string name="pv_bob_header_nr_of_books">Показывать номера книг</string>
+    <string name="pv_bob_header_nr_of_books">Количество книг</string>
     <string name="pv_bob_header_style_name">Название стиля</string>
     <string name="size_hidden">скрытый</string>
     <string name="size_large">большой</string>
@@ -671,8 +671,8 @@
     <string name="info_rebuild_scheduled">Перестройка запланирована</string>
     <string name="info_select_fields_to_update">Выбранные поля будут обновлены через интернет. Остальные останутся неизменными.</string>
     <string name="lbl_citation_type">Формат цитирования/обмена</string>
-    <string name="lbl_citation_type_default">Я читаю…</string>
-    <string name="citation_share_book_im_reading">Я читаю «%1$s» %2$s %3$s %4$s</string>
+    <string name="lbl_citation_type_default">Читаю…</string>
+    <string name="citation_share_book_im_reading">Читаю «%1$s» %2$s от %3$s %4$s</string>
     <string name="X_info_tap_on_image_to_select">Нажмите на увеличенное изображение, чтобы выбрать его.</string>
     <string name="info_tap_on_thumbnail_to_zoom">Нажмите на миниатюру, чтобы отобразить увеличенное изображение.</string>
     <string name="info_x_pages">Страниц: %1$d</string>
