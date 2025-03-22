@@ -66,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
@@ -82,15 +81,6 @@ public class EditBookshelvesFragment
     private static final String RK_MENU = TAG + ":rk:menu";
 
     private EditBookshelvesViewModel vm;
-
-    /** React to changes in the adapter. */
-    private final SimpleAdapterDataObserver adapterDataObserver =
-            new SimpleAdapterDataObserver() {
-                @Override
-                public void onChanged() {
-                    prepareMenu(getToolbar().getMenu(), vm.getSelectedPosition());
-                }
-            };
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -129,7 +119,6 @@ public class EditBookshelvesFragment
                                     final int listIndex) {
             final Context context = anchor.getContext();
             final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
-            prepareMenu(menu, gridPosition);
 
             //noinspection DataFlowIssue
             final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
@@ -147,6 +136,7 @@ public class EditBookshelvesFragment
 
     /** View Binding. */
     private FragmentEditBookshelvesBinding vb;
+    private ToolbarMenuProvider toolbarMenuProvider;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -189,7 +179,8 @@ public class EditBookshelvesFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_bookshelves);
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
 
         // FAB button to add a new Bookshelf
         final FloatingActionButton fab = getFab();
@@ -201,20 +192,12 @@ public class EditBookshelvesFragment
         //noinspection DataFlowIssue
         adapter = new BookshelfAdapter(getContext(), layoutManager.getSpanCount(),
                                        vm.getList(), positionHandler);
-        adapter.registerAdapterDataObserver(adapterDataObserver);
 
         final GridDividerItemDecoration decoration =
                 new GridDividerItemDecoration(getContext(), false, true);
         vb.list.addItemDecoration(decoration);
 
-        vb.list.setHasFixedSize(true);
         vb.list.setAdapter(adapter);
-    }
-
-    @Override
-    public void onDestroyView() {
-        adapter.unregisterAdapterDataObserver(adapterDataObserver);
-        super.onDestroyView();
     }
 
     private void editNewBookshelf() {
@@ -222,18 +205,6 @@ public class EditBookshelvesFragment
         // Not as 'add' as we DO want this new shelf stored in the database when edited.
         //noinspection DataFlowIssue
         editLauncher.editInPlace(getActivity(), new Bookshelf("", style));
-    }
-
-    /**
-     * Called for toolbar and list adapter context menu.
-     *
-     * @param menu     to prepare
-     * @param position as selected in the adapter
-     */
-    private void prepareMenu(@NonNull final Menu menu,
-                             final int position) {
-        // only if a shelf is selected
-        menu.findItem(R.id.MENU_PURGE_BLNS).setVisible(position != RecyclerView.NO_POSITION);
     }
 
     /**
@@ -249,7 +220,6 @@ public class EditBookshelvesFragment
                                        @IdRes final int menuItemId) {
 
         // If there is no Bookshelf selected, just quit here.
-        // 2024-07-19: seen this happen, but not sure why - cannot reproduce.
         if (listIndex < 0) {
             return true;
         }
@@ -394,7 +364,6 @@ public class EditBookshelvesFragment
                         positionHandler.showContextMenu(v, gridPosition, listIndex);
                     });
 
-
             return holder;
         }
 
@@ -428,7 +397,14 @@ public class EditBookshelvesFragment
                                  @NonNull final MenuInflater menuInflater) {
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.edit_bookshelves, menu);
-            prepareMenu(menu, vm.getSelectedPosition());
+            onPrepareMenu(menu);
+        }
+
+        @Override
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            // only if a shelf is selected
+            menu.findItem(R.id.MENU_PURGE_BLNS)
+                .setEnabled(vm.getSelectedPosition() != RecyclerView.NO_POSITION);
         }
 
         @Override
