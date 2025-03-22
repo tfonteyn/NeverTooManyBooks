@@ -20,8 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +53,10 @@ class BaseDaoImpl {
 
     static final String DELETE_FROM_ = "DELETE FROM ";
     static final String INSERT_INTO_ = "INSERT INTO ";
+
     static final String INSERT_OR_IGNORE_INTO_ = "INSERT OR IGNORE INTO ";
+    @RequiresApi(Build.VERSION_CODES.R)
+    static final String UPDATE_OR_REPLACE_ = "UPDATE OR REPLACE ";
 
     static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
     static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
