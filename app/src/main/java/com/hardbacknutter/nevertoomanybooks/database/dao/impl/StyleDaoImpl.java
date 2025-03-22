@@ -86,8 +86,8 @@ public class StyleDaoImpl
         // read/written from/to the database.
         try (SQLiteStatement stmt = db.compileStatement(Sql.INSERT_BUILTIN_STYLE)) {
             int menuPos = 1;
-            int c = 0;
             for (final BuiltinStyle.Definition styleDef : BuiltinStyle.getAll()) {
+                int c = 0;
                 stmt.bindLong(++c, styleDef.getId());
                 stmt.bindString(++c, styleDef.getUuid());
                 stmt.bindLong(++c, Style.Type.Builtin.getId());
