@@ -54,8 +54,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Android 14,  API 34    3.39.2
  * Android 12,  API 31    3.32.2
  * Android 11,  API 30    3.28.0   Android 11 is required for:
- *                                 UPSERT support
- *                                 UPDATE OR REPLACE
+ * UPSERT support
+ * UPDATE OR REPLACE
  * Android 9,   API 28    3.22.0
  * Android 8.1, API 27    3.19.4
  * Android 8.0, API 26*   3.18.2
@@ -214,7 +214,8 @@ public class SynchronizedDb
      * @throws TransactionException if paranoia was justified
      */
     public void recreate(@NonNull final TableDefinition table,
-                         final boolean withDomainConstraints) {
+                         final boolean withDomainConstraints)
+            throws TransactionException {
 
         // We're being paranoid here... we should always be called in a transaction,
         // which means we should not bother with LOCK_EXCLUSIVE.
@@ -253,11 +254,6 @@ public class SynchronizedDb
      * <strong>native code</strong> based on sql string matching.
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
-     * <p>
-     * <strong>Dev.Note</strong>: SQLExceptions are swallowed and {@code -1} returned!
-     * Other (unlikely) RuntimeExceptions can still be thrown.
-     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
-     *  2025-03-21: we only use this method for books now.
      *
      * @param table  the table to insert the row into
      * @param values this map contains the initial column values for the
@@ -267,9 +263,11 @@ public class SynchronizedDb
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      *
      * @throws TransactionException when currently inside a shared lock
+     * @throws RuntimeException     whenever...
      */
     public long insert(@NonNull final String table,
-                       @NonNull final ContentValues values) {
+                       @NonNull final ContentValues values)
+            throws TransactionException {
 
         Synchronizer.SyncLock txLock = null;
         if (currentTxLock != null) {
@@ -299,8 +297,6 @@ public class SynchronizedDb
      * <strong>native code</strong> based on sql string matching.
      * However, to avoid the Android code overhead,
      * loops should use {@link #compileStatement} instead.
-     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
-     *  2025-03-21: we only use this method for books now.
      *
      * @param table       the table to delete from
      * @param values      a map from column names to new column values.
@@ -312,11 +308,13 @@ public class SynchronizedDb
      * @return the number of rows affected
      *
      * @throws TransactionException when currently inside a shared lock
+     * @throws RuntimeException     whenever...
      */
     public int update(@NonNull final String table,
                       @NonNull final ContentValues values,
                       @NonNull final String whereClause,
-                      @Nullable final String[] whereArgs) {
+                      @Nullable final String[] whereArgs)
+            throws TransactionException {
 
         Synchronizer.SyncLock txLock = null;
         if (currentTxLock != null) {
@@ -348,7 +346,6 @@ public class SynchronizedDb
      * <p>
      * 2023-12-03: all regular use of this method was phased out in favour of
      * {@link #compileStatement(String)}.
-     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
      *
      * @param table       the table to delete from
      * @param whereClause the optional WHERE clause to apply when deleting.
@@ -360,12 +357,14 @@ public class SynchronizedDb
      *         whereClause.
      *
      * @throws TransactionException when currently inside a shared lock
+     * @throws RuntimeException     whenever...
      */
     @SuppressWarnings("UnusedReturnValue")
     @VisibleForTesting
     public int delete(@NonNull final String table,
                       @Nullable final String whereClause,
-                      @Nullable final String[] whereArgs) {
+                      @Nullable final String[] whereArgs)
+            throws TransactionException {
 
         Synchronizer.SyncLock txLock = null;
         if (currentTxLock != null) {
@@ -399,7 +398,8 @@ public class SynchronizedDb
      * @throws TransactionException when currently inside a shared lock
      */
     @NonNull
-    public SynchronizedStatement compileStatement(@NonNull final String sql) {
+    public SynchronizedStatement compileStatement(@NonNull final String sql)
+            throws TransactionException {
         Synchronizer.SyncLock txLock = null;
         if (currentTxLock != null) {
             if (currentTxLock.getType() != Synchronizer.LockType.Exclusive) {
@@ -433,7 +433,8 @@ public class SynchronizedDb
      *
      * @throws TransactionException when currently inside a shared lock
      */
-    public void execSQL(@NonNull final String sql) {
+    public void execSQL(@NonNull final String sql)
+            throws TransactionException {
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
             LoggerFactory.getLogger().d(TAG, "execSQL", sql);
         }
@@ -696,5 +697,4 @@ public class SynchronizedDb
     private Synchronizer getSynchronizer() {
         return synchronizer;
     }
-
 }
