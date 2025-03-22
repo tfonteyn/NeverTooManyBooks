@@ -64,24 +64,6 @@ public interface IdentifierValueDao {
             throws DaoWriteException;
 
     /**
-     * Moves all foreign-key id from the 'source' {@link Identifier},
-     * to the 'target' {@link Identifier}.
-     * The (now unused) 'source' {@link Identifier} is deleted.
-     *
-     * @param context Current context
-     * @param source  from where to move
-     * @param target  to move to
-     *
-     * @return amount of foreign-key id moved
-     *
-     * @throws DaoWriteException on failure
-     */
-    int moveLinks(@NonNull Context context,
-                  @NonNull Identifier source,
-                  @NonNull Identifier target)
-            throws DaoWriteException;
-
-    /**
      * Get a list of all {@link Identifier.Value}s for the given foreign-key id.
      *
      * @param fkId foreign-key id: the {@link Book} or {@link Author} id.

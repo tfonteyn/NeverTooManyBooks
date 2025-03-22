@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -55,7 +54,6 @@ public class IdentifierValueDaoImpl
     private static final String TAG = "IdentifierValueDaoImpl";
     @NonNull
     private final Sql sql;
-    private final TableDefinition linkTable;
 
     /**
      * Constructor.
@@ -68,8 +66,6 @@ public class IdentifierValueDaoImpl
                                   @NonNull final TableDefinition linkTable,
                                   @NonNull final String fk) {
         super(db, TAG);
-
-        this.linkTable = linkTable;
         sql = new Sql(linkTable, fk);
     }
 
@@ -124,43 +120,6 @@ public class IdentifierValueDaoImpl
             stmt.bindLong(1, identifier.getId());
             return (int) stmt.simpleQueryForLongOrZero();
         }
-    }
-
-    @Override
-    public int moveLinks(@NonNull final Context context,
-                         @NonNull final Identifier source,
-                         @NonNull final Identifier target)
-            throws DaoInsertException, DaoUpdateException {
-
-        int moved;
-
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!db.inTransaction()) {
-                txLock = db.beginTransaction(true);
-            }
-
-            // Relink fks with the target.
-            // We don't hold 'position'... just do a mass update
-            try (SynchronizedStatement stmt = db.compileStatement(sql.BULK_UPDATE_IDENTIFIER)) {
-                stmt.bindLong(1, target.getId());
-                stmt.bindLong(2, source.getId());
-                moved = stmt.executeUpdateDelete();
-            }
-
-            // delete the obsolete source.
-            delete(source);
-
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
-        }
-
-        return moved;
     }
 
     @NonNull
@@ -232,12 +191,6 @@ public class IdentifierValueDaoImpl
          */
         final String DELETE_LINK_BY_FK;
 
-        /**
-         * Bulk update/replace one Identifier id with another;
-         * effectively moving links from one Identifier to the other.
-         */
-        final String BULK_UPDATE_IDENTIFIER;
-
         Sql(@NonNull final TableDefinition linkTable,
             @NonNull final String fk) {
 
@@ -273,11 +226,6 @@ public class IdentifierValueDaoImpl
             DELETE_LINK_BY_FK =
                     DELETE_FROM_ + linkTable.getName()
                     + _WHERE_ + fk + "=?";
-
-            BULK_UPDATE_IDENTIFIER =
-                    UPDATE_ + linkTable.getName()
-                    + _SET_ + DBKey.FK_IDENTIFIER + "=?"
-                    + _WHERE_ + DBKey.FK_IDENTIFIER + "=?";
         }
     }
 }
