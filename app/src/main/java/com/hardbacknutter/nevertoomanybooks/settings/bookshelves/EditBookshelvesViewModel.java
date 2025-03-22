@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -52,10 +53,10 @@ public class EditBookshelvesViewModel
     private List<Bookshelf> list;
 
     /**
-     * Stores the bookshelf id we received when the fragment/vm got started.
-     * We'll return it if there is no selected Bookshelf when the user taps 'back'
+     * Stores the {@link Bookshelf} id we received when the fragment/vm got started.
+     * We'll return it if there is no selected {@link Bookshelf} when the user taps 'back'
      */
-    private long weCameFromBookshelfId;
+    private long initialBookshelfId;
 
     private BookshelfDao bookshelfDao;
 
@@ -70,26 +71,27 @@ public class EditBookshelvesViewModel
 
             list = bookshelfDao.getAll();
             if (args != null) {
-                weCameFromBookshelfId = args.getLong(DBKey.FK_BOOKSHELF);
-                if (weCameFromBookshelfId > 0) {
-                    selectedPosition = findSelectedPosition(weCameFromBookshelfId);
-                }
+                initialBookshelfId = args.getLong(DBKey.FK_BOOKSHELF);
+                selectedPosition = findSelectedPosition(initialBookshelfId);
             }
         }
     }
 
     /**
-     * Find the position in the list of the Bookshelf with the given id.
+     * Find the position in the list of the {@link Bookshelf} with the given id.
      *
-     * @param id to find
+     * @param id of the bookshelf to find
      *
-     * @return position
+     * @return position; or {@link RecyclerView#NO_POSITION} if the bookshelf
+     *         id is either invalid, or not present
      */
     private int findSelectedPosition(final long id) {
-        for (int i = 0; i < list.size(); i++) {
-            final Bookshelf bookshelf = list.get(i);
-            if (bookshelf.getId() == id) {
-                return i;
+        if (id > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                final Bookshelf bookshelf = list.get(i);
+                if (bookshelf.getId() == id) {
+                    return i;
+                }
             }
         }
         return RecyclerView.NO_POSITION;
@@ -102,7 +104,8 @@ public class EditBookshelvesViewModel
     }
 
     /**
-     * Get the currently selected Bookshelf id, or the id we originally got when started.
+     * Get the currently selected {@link Bookshelf} id,
+     * or the id we originally got when started.
      *
      * @return Bookshelf id
      */
@@ -110,7 +113,7 @@ public class EditBookshelvesViewModel
         if (selectedPosition != RecyclerView.NO_POSITION) {
             return list.get(selectedPosition).getId();
         }
-        return weCameFromBookshelfId;
+        return initialBookshelfId;
     }
 
     @NonNull
@@ -127,19 +130,24 @@ public class EditBookshelvesViewModel
     }
 
     /**
-     * Called after a Bookshelf has been edited.
+     * Called after a {@link Bookshelf} has been edited.
      * Reloads the entire list, and sets the edited row as the selected.
      *
-     * @param bookshelfId id of the modified Bookshelf
+     * @param context   Current context
+     * @param bookshelf the modified Bookshelf
      */
-    void onBookshelfEdited(final long bookshelfId) {
+    void onBookshelfEdited(@NonNull final Context context,
+                           @NonNull final Bookshelf bookshelf) {
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        bookshelfDao.fixId(context, bookshelf, locale);
+
         list.clear();
         list.addAll(bookshelfDao.getAll());
-        selectedPosition = findSelectedPosition(bookshelfId);
+        selectedPosition = findSelectedPosition(bookshelf.getId());
     }
 
     /**
-     * Delete the given Bookshelf.
+     * Delete the given {@link Bookshelf}.
      *
      * @param context   Current context
      * @param bookshelf to delete
@@ -148,11 +156,11 @@ public class EditBookshelvesViewModel
                          @NonNull final Bookshelf bookshelf) {
         bookshelfDao.delete(context, bookshelf);
         list.remove(bookshelf);
-        selectedPosition = RecyclerView.NO_POSITION;
+        selectedPosition = findSelectedPosition(initialBookshelfId);
     }
 
     /**
-     * User explicitly wants to purge the node states for the given Bookshelf.
+     * User explicitly wants to purge the node states for the given {@link Bookshelf}.
      *
      * @param bookshelf to purge
      */

@@ -95,13 +95,6 @@ public class EditBookshelvesFragment
                 }
             };
 
-    /** The adapter for the list. */
-    private BookshelfAdapter adapter;
-
-    /** Accept the result from the dialog. */
-    private EditParcelableLauncher<Bookshelf> editLauncher;
-    private ExtMenuLauncher menuLauncher;
-
     private final PositionHandler positionHandler = new PositionHandler() {
         @Override
         public int getSelectedPosition() {
@@ -115,28 +108,19 @@ public class EditBookshelvesFragment
 
         @Override
         public void showContextMenu(@NonNull final View anchor,
-                                    final int gridPosition,
-                                    final int listIndex) {
-            final Context context = anchor.getContext();
-            final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
-
-            //noinspection DataFlowIssue
-            final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
-            if (menuMode.isPopup()) {
-                new ExtMenuPopupWindow(context)
-                        .setListener(EditBookshelvesFragment.this::onMenuItemSelected)
-                        .setMenuOwner(listIndex)
-                        .setMenu(menu, true)
-                        .show(anchor, menuMode);
-            } else {
-                menuLauncher.launch(getActivity(), null, null, listIndex, menu, true);
-            }
+                                    final int position) {
+            EditBookshelvesFragment.this.showContextMenu(anchor, position);
         }
     };
 
+    /** The adapter for the list. */
+    private BookshelfAdapter adapter;
+    /** Accept the result from the dialog. */
+    private EditParcelableLauncher<Bookshelf> editLauncher;
+    private ExtMenuLauncher menuLauncher;
     /** View Binding. */
     private FragmentEditBookshelvesBinding vb;
-    private ToolbarMenuProvider toolbarMenuProvider;
+
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -179,14 +163,13 @@ public class EditBookshelvesFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_bookshelves);
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         // FAB button to add a new Bookshelf
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.add_24px);
         fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> editNewBookshelf());
+        fab.setOnClickListener(v -> createNewBookshelf());
 
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.list.getLayoutManager();
         //noinspection DataFlowIssue
@@ -200,11 +183,33 @@ public class EditBookshelvesFragment
         vb.list.setAdapter(adapter);
     }
 
-    private void editNewBookshelf() {
+    private void createNewBookshelf() {
         final Style style = ServiceLocator.getInstance().getStyles().getDefault();
-        // Not as 'add' as we DO want this new shelf stored in the database when edited.
+        // Do not use {@code EditParcelableLauncher#add} as we DO want this
+        // new shelf stored in the database when edited.
         //noinspection DataFlowIssue
         editLauncher.editInPlace(getActivity(), new Bookshelf("", style));
+    }
+
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
+    private void showContextMenu(@NonNull final View anchor,
+                                 final int position) {
+        final Context context = anchor.getContext();
+        final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
+        menu.findItem(R.id.MENU_DELETE).setEnabled(vm.getBookshelf(position).getId()
+                                                   != Bookshelf.HARD_DEFAULT);
+
+        //noinspection DataFlowIssue
+        final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
+        if (menuMode.isPopup()) {
+            new ExtMenuPopupWindow(context)
+                    .setListener(EditBookshelvesFragment.this::onMenuItemSelected)
+                    .setMenuOwner(position)
+                    .setMenu(menu, true)
+                    .show(anchor, menuMode);
+        } else {
+            menuLauncher.launch(getActivity(), null, null, position, menu, true);
+        }
     }
 
     /**
@@ -252,18 +257,16 @@ public class EditBookshelvesFragment
         return false;
     }
 
-    // notifyDataSetChanged: because we used to do it "properly"
-    // but RecyclerView can really only deal with one change at
-    // a time OR it wants a full reload.
     @SuppressLint("NotifyDataSetChanged")
     private void onModified(@NonNull final Bookshelf bookshelf) {
         // store the newly selected row.
-        vm.onBookshelfEdited(bookshelf.getId());
+        vm.onBookshelfEdited(getContext(), bookshelf);
+        // due to transposing row and columns, we MUST refresh the whole set.
         adapter.notifyDataSetChanged();
     }
 
     /**
-     * Proxy between adapter and ViewModel.
+     * Proxy between adapter and Fragment/ViewModel.
      */
     private interface PositionHandler {
 
@@ -274,15 +277,11 @@ public class EditBookshelvesFragment
         /**
          * Show the menu.
          *
-         * @param anchor       view
-         * @param gridPosition the position in the adapter, this can/will be different
-         *                     from the listIndex as we're using a
-         *                     {@link GridLayoutManager}.
-         * @param listIndex    the actual index/position in the list of items.
+         * @param anchor   view
+         * @param position the position (index) in the list of items.
          */
         void showContextMenu(@NonNull View anchor,
-                             int gridPosition,
-                             int listIndex);
+                             int position);
     }
 
     public static class Holder
@@ -335,36 +334,36 @@ public class EditBookshelvesFragment
             final Holder holder = new Holder(
                     RowEditBookshelfBinding.inflate(getInflater(), parent, false));
 
-            holder.setOnRowClickListener((v, position) -> {
+            holder.setOnRowClickListener((v, gridPosition) -> {
                 // first update the previous, now unselected, row.
-                final int oldListIndex = positionHandler.getSelectedPosition();
-                final int oldPosition = revert(oldListIndex);
-                notifyItemChanged(oldPosition);
+                notifyItemChanged(revert(positionHandler.getSelectedPosition()));
 
                 // store the newly selected row.
-                final int listIndex = transpose(position);
-                if (listIndex == RecyclerView.NO_POSITION) {
-                    // Should never get here
-                    throw new IllegalStateException(ERROR_NO_LIST_INDEX_FOR_POSITION + position);
-                }
-                positionHandler.setSelectedPosition(listIndex);
+                final int position = transpose(gridPosition);
+                requireValidOrThrow(position, gridPosition);
+                positionHandler.setSelectedPosition(position);
+
                 // update the newly selected row.
-                notifyItemChanged(position);
+                notifyItemChanged(gridPosition);
             });
 
             // long-click -> context menu
             holder.setOnRowLongClickListener(
                     ExtMenuButton.getPreferredMode(parent.getContext()), (v, gridPosition) -> {
-                        final int listIndex = transpose(gridPosition);
-                        if (listIndex == RecyclerView.NO_POSITION) {
-                            // Should never get here
-                            throw new IllegalStateException(
-                                    ERROR_NO_LIST_INDEX_FOR_POSITION + gridPosition);
-                        }
-                        positionHandler.showContextMenu(v, gridPosition, listIndex);
+                        final int position = transpose(gridPosition);
+                        requireValidOrThrow(position, gridPosition);
+                        positionHandler.showContextMenu(v, position);
                     });
 
             return holder;
+        }
+
+        private void requireValidOrThrow(final int position,
+                                         final int gridPosition) {
+            if (position == RecyclerView.NO_POSITION) {
+                // Should never get here
+                throw new IllegalStateException(ERROR_NO_LIST_INDEX_FOR_POSITION + gridPosition);
+            }
         }
 
         @Override
