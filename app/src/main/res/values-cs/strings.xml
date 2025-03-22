@@ -157,7 +157,7 @@
     <string name="cd_btn_drag_handle">Přetažením změníte pořadí tohoto seznamu</string>
     <string name="cd_clear_text_end_icon">Vymazat text</string>
     <string name="lbl_certificate_issued_by">Vydal: %1$s</string>
-    <string name="lbl_certificate_issued_to">Vydáno pro: %1$s</string>
+    <string name="lbl_certificate_issued_to">Vydán pro: %1$s</string>
     <string name="confirm_delete_book">Tímto kompletně odstraníte knihu „%1$s“ od %2$s.\n\n Určitě chcete pokračovat?</string>
     <string name="confirm_delete_bookshelf_from_x_books">Opravdu odstranit polici „%1$s“?\n\nBude odstraněna z %2$s. Knihy samotné smazány nebudou. Stále budou přítomny na jakýchkoli jiných policích nebo na polici „%3$s“.</string>
     <string name="confirm_delete_publisher_from_x_books">Opravdu smazat vydavatele „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou. Všechny úpravy vydavatele a změna názvu vydavatele na jméno jiného vydavatele za účelem uchování těchto dat.</string>
@@ -389,7 +389,7 @@
     <string name="lbl_local_search_long">Rozšířené místní vyhledávání</string>
     <string name="lbl_location">Umístění</string>
     <string name="lbl_location_long">Umístění knihy</string>
-    <string name="option_bug_report_logfiles">Záznam souborů</string>
+    <string name="option_bug_report_logfiles">Logovací soubory</string>
     <string name="lbl_login_to_search">Přihlaste se k vyhledávání</string>
     <string name="lbl_month">Měsíc</string>
     <string name="lbl_moving_data">Probíhá přesun dat</string>
@@ -533,8 +533,8 @@
     <string name="X_option_bob_filter_read_yes">Přečtené knihy</string>
     <string name="option_bob_filter_signed_no">Nepodepsané knihy</string>
     <string name="option_bob_filter_signed_yes">Podepsané knihy</string>
-    <string name="pe_bob_list_rebuild_state_collapsed">Složte vše</string>
-    <string name="pe_bob_list_rebuild_state_expanded">Rozšířit vše</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Vždy spouštět sbalené</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Vždy spouštět rozbalené</string>
     <string name="pe_bob_list_rebuild_state_preferred">Použijte upřednostňovaný stav</string>
     <string name="pe_bob_list_rebuild_state_preserve">Zachovat aktuální stav</string>
     <string name="loose">Uvolněné</string>
@@ -675,7 +675,7 @@
     <string name="option_info_import_books_option_new_and_updated">Importujte nové knihy a synchronizujte existující knihy na základě data jejich poslední úpravy.</string>
     <string name="option_info_import_books_option_new_only">Importujte pouze nové knihy. Všechny aktualizace existujících knih budou ignorovány.</string>
     <string name="ps_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
-    <string name="info_rebuild_scheduled">Přestavba naplánována</string>
+    <string name="info_rebuild_scheduled">Obnovení naplánované</string>
     <string name="info_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
     <string name="lbl_citation_type">Formát citace/sdílení</string>
     <string name="lbl_citation_type_default">Čtu…</string>

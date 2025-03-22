@@ -524,8 +524,8 @@
     <string name="X_option_bob_filter_read_yes">Książki czytane</string>
     <string name="option_bob_filter_signed_no">Książki niepodpisane</string>
     <string name="option_bob_filter_signed_yes">Podpisane książki</string>
-    <string name="pe_bob_list_rebuild_state_collapsed">Złóż wszystko</string>
-    <string name="pe_bob_list_rebuild_state_expanded">Rozwiń wszystkie</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Zawsze uruchamiaj spakowane</string>
+    <string name="pe_bob_list_rebuild_state_expanded">Zawsze uruchamiaj rozpakowane</string>
     <string name="pe_bob_list_rebuild_state_preferred">Użyj preferowanego stanu</string>
     <string name="pe_bob_list_rebuild_state_preserve">Zachowaj obecny stan</string>
     <string name="loose">Luźny</string>
@@ -533,7 +533,7 @@
     <string name="pe_thumbnails_cache_resized_stored">Buforuj obrazy o zmienionym rozmiarze (przewijanie będzie szybsze, zużyje więcej pamięci)</string>
     <string name="pe_ui_theme_dark">Ciemny</string>
     <string name="pe_ui_theme_from_device">Motyw urządzenia</string>
-    <string name="pe_ui_theme_light">Światło</string>
+    <string name="pe_ui_theme_light">Jasny</string>
     <string name="pt_barcode_scanner">Skaner kodów kreskowych</string>
     <string name="pt_bob_show_details">Szczegóły książki pokazane na liście</string>
     <string name="lbl_filters">Filtry</string>
@@ -581,7 +581,7 @@
     <string name="pe_bob_cover_long_click_ignore">Za pomocą przycisku.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Długim kliknięciem obrazu okładki.</string>
     <string name="pt_bob_cover_scale">Rozmiar obrazu okładki</string>
-    <string name="pt_bob_cover_show">Pokaż miniaturki</string>
+    <string name="pt_bob_cover_show">Pokaż okładki</string>
     <string name="pt_bob_font_size">Rozmiar czcionki</string>
     <string name="pt_bob_header">Szczegóły podsumowujące w nagłówku</string>
     <string name="pt_bob_list_rebuild_state">Stan uruchamiania listy książek</string>
@@ -666,7 +666,7 @@
     <string name="option_info_import_books_option_new_and_updated">Importuj nowe książki i synchronizuj istniejące książki na podstawie daty ich ostatniej modyfikacji.</string>
     <string name="option_info_import_books_option_new_only">Importuj tylko nowe książki. Wszelkie aktualizacje istniejących książek będą ignorowane.</string>
     <string name="ps_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
-    <string name="info_rebuild_scheduled">Przebudowano zaplanowano</string>
+    <string name="info_rebuild_scheduled">Odbudowanie zaplanowano</string>
     <string name="info_select_fields_to_update">Wybrane pola będą zaktualizowane wg danych z sieci. Pozostałe nie zostaną zmienione.</string>
     <string name="lbl_citation_type">Format cytowania/udostępniania</string>
     <string name="lbl_citation_type_default">Czytam…</string>
@@ -837,7 +837,7 @@
     <string name="lbl_tab_alternative_editions_long">Wydania alternatywne</string>
     <string name="warning_restart_required">Wymagany restart aplikacji</string>
     <string name="pt_ui_theme_colors">Kolory motywu</string>
-    <string name="pe_ui_theme_colors_blue_grey">Niebiesko-szary</string>
+    <string name="pe_ui_theme_colors_blue_grey">Niebieskoszary</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamiczne kolory</string>
     <string name="warning_requires_android_x">Wymaga systemu Android %1$d lub nowszego</string>
     <string name="anonymous_author">[Anonimowy]</string>
