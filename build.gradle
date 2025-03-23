@@ -34,9 +34,12 @@ ext {
     applicationVersionCode = 100
     applicationVersionName = "7.2.2"
 
-    // see NOTES.txt in the app module
-    toolChain = 17
+    // JDK used by gradle
+    toolChain = 21
+
+    // Android 8.0
     minSdkVersion = 26
+    // Android 15
     targetSdkVersion = 35
     compileSdkVersion = 35
 }
