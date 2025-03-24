@@ -6,6 +6,8 @@ NEW:
 
 FIXES:
 
+- github #135: creating duplicate style names caused a crash
+
 REMOVED:
 
 <hr style="border:1px solid blue;">
@@ -18,18 +20,19 @@ https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwi
 
 https://apilevels.com/
 
-2025-01-31:
+2025-02-31:
 
 | version | %     |     
 |---------|-------|
-| 14.0    | 37.09 |
-| 13.0    | 57.66 |
-| 12.0    | 70.73 |
-| 11.0    | 82.35 |
-| 10.0    | 88.56 |
-| 9.0     | 92.15 |
-| 8.1     | 93.23 |
-| 8.0     | 95.24 |
+| 15.0    | 4.58  |
+| 14.0    | 40.09 |
+| 13.0    | 58.1  |
+| 12.0    | 70.98 |
+| 11.0    | 82.41 |
+| 10.0    | 88.45 |
+| 9.0     | 91.99 |
+| 8.1     | 93.07 |
+| 8.0     | 95.14 |
 
 <hr style="border:1px solid blue;">
 
@@ -41,6 +44,7 @@ Need to make a decision on adding WindowInsetsCompat.Type.systemGestures()
 
 According to the docs, we should apply this to the ViewPager2 usage and BottomSheets.
 Tried it out for the ViewPager2 usage:
+
 - book details + book edit
   Effect is not really visible, but touching area is indeed as per gesture docs.
   Not sure this is really useful on these screens.
@@ -50,8 +54,8 @@ Tried it out for the ViewPager2 usage:
   Not enabling for now.
 
 BottomSheets:
-  I don't see the need... BottomSheet is the "focus". If the user decides they
-  want to go 'back' while a BottomSheet is displayed, they should close the BottomSheet first.
+I don't see the need... BottomSheet is the "focus". If the user decides they
+want to go 'back' while a BottomSheet is displayed, they should close the BottomSheet first.
 
 <hr style="border:1px solid blue;">
 
@@ -61,7 +65,7 @@ ENHANCE: https://www.belgischebibliografie.be
 
 ENHANCE: add book by search: allow publisher + present list of finds instead of using first found.
 ==> SearchCoordinator.search when isbn not provided, will run a search until it finds an isbn,
-    and then redo the search WITH the isbn
+and then redo the search WITH the isbn
 ==> so this is why we only ever get ONE result back.
 
 Look into using
@@ -69,26 +73,26 @@ https://developer.android.com/guide/navigation/navigation-custom-back
 https://developer.android.com/training/appbar/up-action
 
 FIXME: check all cover logic where source and destination is allowed to be the same
- We should ALWAYS use a temporary file to write to, and only on success rename it to
- the actual destination file to prevent loss of original on failure.
+We should ALWAYS use a temporary file to write to, and only on success rename it to
+the actual destination file to prevent loss of original on failure.
 
 FIXME: the dialog-fragment launcher api is increasingly adding overhead.
- It needs to be replaced by ViewModel sharing on Activity level.
+It needs to be replaced by ViewModel sharing on Activity level.
 
 TODO: bring some unity to our use of child-fragments (e.g. ReadStatus)
- and helper/handlers (e.g. CoverHandler) and similar constructs
+and helper/handlers (e.g. CoverHandler) and similar constructs
 
 TODO: TEST migrate to JUnit5 for on-device tests as well.
 
 ENHANCE: add rotating functions to the cropper activity. This would allow
- multi-rotate-undo by simply quiting the cropper.
+multi-rotate-undo by simply quiting the cropper.
 
 ENHANCE Pseudonyms on ISFDB:
- While reading the book page, we could follow the author url,
- and from there check the header for "Used As Alternate Name By"
- Problem: if it's the real-author anyhow, then loading
- that url can become very slow if the author has many books.
- Alternative: lookup Author names individually.
+While reading the book page, we could follow the author url,
+and from there check the header for "Used As Alternate Name By"
+Problem: if it's the real-author anyhow, then loading
+that url can become very slow if the author has many books.
+Alternative: lookup Author names individually.
 
 <hr style="border:1px solid red;">
 Known issues:
@@ -100,17 +104,17 @@ https://issuetracker.google.com/issues/388867281
 
 2025-02-19: allegedly fixed in aug-2024, but not available in any image for the emulator...
 
- On Android 15 (emulator standard image + ext-14 image), when the user changes the Theme Colors,
- ... THE ACTIVITY WILL RESTART as is normal...
- the toolbar is automatically changed, but the background of the status bar
- will switch to transparent.
- When quitting settings back to the BoB, the status bar background will be correct again.
+On Android 15 (emulator standard image + ext-14 image), when the user changes the Theme Colors,
+... THE ACTIVITY WILL RESTART as is normal...
+the toolbar is automatically changed, but the background of the status bar
+will switch to transparent.
+When quitting settings back to the BoB, the status bar background will be correct again.
 
- Second scenario: from BoB, do an import which changes preferences.
- We force an activity restart, and now the BoB screen status bar is incorrect.
+Second scenario: from BoB, do an import which changes preferences.
+We force an activity restart, and now the BoB screen status bar is incorrect.
 
- Emulator set to use "no cutout" or a "double cutout"
- Android 14, 13 and 12 work FINE.
+Emulator set to use "no cutout" or a "double cutout"
+Android 14, 13 and 12 work FINE.
 
 <hr style="border:1px solid red;">
 
@@ -155,21 +159,21 @@ You can either:
 <hr style="border:1px solid red;">
 
 The node-management, i.e. storing the tree-state of the nodes in the booklist
- is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
- the display from time to time. There are no plans to fix this for now as the foolproof solution
- would take far to much disk space.
+is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
+the display from time to time. There are no plans to fix this for now as the foolproof solution
+would take far to much disk space.
 
 <hr style="border:1px solid red;">
 
 Prices: when importing books with a price field containing a value which cannot be parsed,
- the price field is silently dropped. Details see BookDaoHelper#filterValues.
- Some code can already deal with string-values in the Book bundle, but it is very likely
- that IF such a string would end up in the database somehow, we'll
- get a crash when trying to display it using a MoneyFormatter (FieldFormatter)
- FIXME: Solution would be to allow Money to have string (instead/aside-of double) values.
+the price field is silently dropped. Details see BookDaoHelper#filterValues.
+Some code can already deal with string-values in the Book bundle, but it is very likely
+that IF such a string would end up in the database somehow, we'll
+get a crash when trying to display it using a MoneyFormatter (FieldFormatter)
+FIXME: Solution would be to allow Money to have string (instead/aside-of double) values.
 
 <hr style="border:1px solid red;">
 
 Booklist style sorting by date-read or date-added etc...:
- samsung A520 with A8.0, month name not shown; we get the month number instead.
- Does not happen on other devices/emulators. Won't pursue/fix.
+samsung A520 with A8.0, month name not shown; we get the month number instead.
+Does not happen on other devices/emulators. Won't pursue/fix.
