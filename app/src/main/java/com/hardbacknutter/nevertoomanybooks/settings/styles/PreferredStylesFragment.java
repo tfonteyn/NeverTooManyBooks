@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.IdRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -49,6 +50,7 @@ import com.google.android.material.divider.MaterialDividerItemDecoration;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.SimpleItemTouchHelperCallback;
@@ -78,55 +80,52 @@ public class PreferredStylesFragment
     /** Fragment/Log tag. */
     private static final String TAG = "PreferredStylesFragment";
     private static final String RK_MENU = TAG + ":rk:menu";
-
     private PreferredStylesViewModel vm;
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Style selectedStyle = vm.getSelectedStyle();
-                    final String uuid = selectedStyle != null ? selectedStyle.getUuid() : null;
+                    final String uuid = vm.getSelectedUuid();
                     final Intent resultIntent = EditPreferredStylesContract
-                            .createResult(uuid, vm.isDirty());
+                            .createResult(uuid, vm.isModified());
 
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
             };
+
     private final PositionHandler positionHandler = new PositionHandler() {
 
         @Override
-        public int getSelectedPosition() {
-            return vm.getSelectedPosition();
+        public String getSelectedUuid() {
+            return vm.getSelectedUuid();
         }
 
         @Override
-        public int findPreferredAndSelect(final int position) {
-            return vm.findPreferredAndSelect(position);
-        }
-
-        @Override
-        public void swapItems(final int fromPosition,
-                              final int toPosition) {
-            vm.onItemMove(fromPosition, toPosition);
+        public int findPreferredAndSelect(@IntRange(from = 0) final int position) {
+            return vm.findPreferredAndSelectIt(position);
         }
     };
-    /** The adapter for the list. */
-    private StylesAdapter listAdapter;
-    /** React to changes in the adapter. */
-    private final SimpleAdapterDataObserver adapterDataObserver =
-            new SimpleAdapterDataObserver() {
 
-                /** called if the user flipped the 'isPreferred' status. */
+    /** The adapter for the list. */
+    private StylesAdapter adapter;
+    /** React to changes in the adapter. */
+    private final RecyclerView.AdapterDataObserver adapterObserver =
+            new SimpleAdapterDataObserver() {
+                /**
+                 * Called when the {@code preferred} status is changed by the user.
+                 * <p>
+                 * Called when the {@code selected} status is changed by the user:
+                 * once for the row deselected + once for the row selected.
+                 */
                 @Override
-                public void onItemRangeChanged(final int positionStart,
+                public void onItemRangeChanged(@IntRange(from = 0) final int positionStart,
                                                final int itemCount) {
-                    // The style settings in its SharedPreference file are already stored.
-                    // But (some of) the database settings also need to be stored.
                     //noinspection DataFlowIssue
-                    vm.updateStyle(getContext(), listAdapter.getItem(positionStart));
+                    vm.updateStyle(getContext(), adapter.getItem(positionStart));
                     onChanged();
                 }
 
@@ -134,23 +133,23 @@ public class PreferredStylesFragment
                 public void onChanged() {
                     prepareMenu(getToolbar().getMenu(), vm.getSelectedPosition());
                     // We'll save the list order in onPause.
-                    vm.setDirty(true);
+                    vm.setModified(true);
                 }
             };
+
     @SuppressLint("NotifyDataSetChanged")
     private final ActivityResultLauncher<EditStyleContract.Input> editStyleContract =
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(data -> {
                 if (data.isModified()) {
-                    if (data.getUuid().isPresent()) {
-                        //noinspection DataFlowIssue
-                        vm.getStyle(data.getUuid().get())
-                          .ifPresent(style -> vm.onStyleEdited(getContext(),
-                                                               style, data.getTemplateUuid()));
-                    }
+                    //noinspection DataFlowIssue
+                    data.getUuid().ifPresent(uuid -> vm.onStyleEdited(getContext(), uuid,
+                                                                      data.getTemplateUuid()));
+
                     // always update ALL rows as the order might have changed
-                    listAdapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
                 }
             }));
+
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
     /** View Binding. */
@@ -196,22 +195,21 @@ public class PreferredStylesFragment
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         //noinspection DataFlowIssue
-        listAdapter = new StylesAdapter(getContext(), vm.getStyleList(), positionHandler,
-                                        vh -> itemTouchHelper.startDrag(vh));
-        listAdapter.setOnRowClickListener((v, position) -> {
+        adapter = new StylesAdapter(getContext(), vm.getList(), positionHandler,
+                                    vh -> itemTouchHelper.startDrag(vh));
+        adapter.setOnRowClickListener((v, position) -> {
             // click -> set the row as 'selected'.
             // Do NOT modify the 'preferred' state of the row here.
 
             // first update the previous, now unselected, row.
-            listAdapter.notifyItemChanged(vm.getSelectedPosition());
+            adapter.notifyItemChanged(vm.getSelectedPosition());
             // store the newly selected row.
             vm.setSelectedPosition(position);
             // update the newly selected row.
-            listAdapter.notifyItemChanged(position);
+            adapter.notifyItemChanged(position);
         });
-        listAdapter.setOnRowShowMenuListener(
-                ExtMenuButton.getPreferredMode(getContext()),
-                (anchor, position) -> {
+        adapter.setOnRowShowMenuListener(
+                ExtMenuButton.getPreferredMode(getContext()), (anchor, position) -> {
                     final Context context = anchor.getContext();
 
                     final Menu menu = MenuUtils.create(context, R.menu.preferred_styles);
@@ -228,15 +226,16 @@ public class PreferredStylesFragment
                         menuLauncher.launch(getActivity(), null, null, position, menu, true);
                     }
                 });
-        listAdapter.registerAdapterDataObserver(adapterDataObserver);
+        adapter.registerAdapterDataObserver(adapterObserver);
 
-        vb.list.addItemDecoration(
-                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
-        vb.list.setHasFixedSize(true);
-        vb.list.setAdapter(listAdapter);
+        final MaterialDividerItemDecoration decoration =
+                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL);
+        vb.list.addItemDecoration(decoration);
+
+        vb.list.setAdapter(adapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(listAdapter);
+                new SimpleItemTouchHelperCallback(adapter);
         itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         itemTouchHelper.attachToRecyclerView(vb.list);
 
@@ -247,23 +246,12 @@ public class PreferredStylesFragment
 
     @Override
     public void onDestroyView() {
-        listAdapter.unregisterAdapterDataObserver(adapterDataObserver);
+        adapter.unregisterAdapterDataObserver(adapterObserver);
         super.onDestroyView();
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    @Override
-    public void onResume() {
-        super.onResume();
-        // We're always refreshing here which is overkill.
-        // We should only do this if the user just returned from editing the default.
-        vm.refreshStyleList();
-        listAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onPause() {
-        //TODO: track changes and ONLY run this update when actually needed
         //noinspection DataFlowIssue
         vm.updateMenuOrder(getContext());
         super.onPause();
@@ -273,12 +261,13 @@ public class PreferredStylesFragment
      * Called for toolbar and list adapter context menu.
      *
      * @param menu     to prepare
-     * @param position in the list
+     * @param position in the list; or {@link RecyclerView#NO_POSITION}
      */
     private void prepareMenu(@NonNull final Menu menu,
-                             final int position) {
-        final Style style = position == RecyclerView.NO_POSITION
-                            ? null : vm.getStyle(position);
+                             @IntRange(from = RecyclerView.NO_POSITION) final int position) {
+
+        @Nullable
+        final Style style = position == RecyclerView.NO_POSITION ? null : vm.getStyle(position);
 
         // only user styles can be edited/deleted
         final boolean isUserStyle = style != null && style.getType() == Style.Type.User;
@@ -298,8 +287,14 @@ public class PreferredStylesFragment
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(final int position,
+    @SuppressLint("Range")
+    private boolean onMenuItemSelected(@IntRange(from = RecyclerView.NO_POSITION) final int position,
                                        @IdRes final int menuItemId) {
+
+        // should never be the case.... flw
+        if (position == RecyclerView.NO_POSITION) {
+            return false;
+        }
 
         final Style style = vm.getStyle(position);
 
@@ -314,21 +309,15 @@ public class PreferredStylesFragment
         } else if (menuItemId == R.id.MENU_DELETE) {
             //noinspection DataFlowIssue
             StandardDialogs.deleteStyle(getContext(), style, () -> {
+                // If the deleted row was the 'selected' row,
+                // FIRST find a new row to select based on the CURRENT row
+                if (style.getUuid().equals(vm.getSelectedUuid())) {
+                    adapter.notifyItemChanged(vm.findPreferredAndSelectIt(position));
+                }
                 vm.deleteStyle(style);
-                listAdapter.notifyItemRemoved(position);
-                listAdapter.notifyItemChanged(vm.findPreferredAndSelect(position));
+                adapter.notifyItemRemoved(position);
             });
             return true;
-
-        } else if (menuItemId == R.id.MENU_EDIT_DEFAULT) {
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .setReorderingAllowed(true)
-                    .addToBackStack(StyleDefaultsFragment.TAG)
-                    .replace(R.id.main_fragment,
-                             StyleDefaultsFragment.create(),
-                             StyleDefaultsFragment.TAG)
-                    .commit();
 
         } else if (menuItemId == R.id.MENU_PURGE_BLNS) {
             final Context context = getContext();
@@ -346,19 +335,23 @@ public class PreferredStylesFragment
      */
     private interface PositionHandler {
 
-        int getSelectedPosition();
+        /**
+         * Get the currently selected {@link Style}.
+         *
+         * @return Style uuid
+         */
+        @Nullable
+        String getSelectedUuid();
 
         /**
-         * Find the best candidate position/style and make that one the 'selected'.
+         * Find the best candidate position/style and make that one the 'selected',
+         * starting from the currently selected row.
          *
          * @param position current position
          *
          * @return the new 'selected' position
          */
-        int findPreferredAndSelect(int position);
-
-        void swapItems(int fromPosition,
-                       int toPosition);
+        int findPreferredAndSelect(@IntRange(from = 0) int position);
     }
 
     private static class Holder
@@ -396,6 +389,7 @@ public class PreferredStylesFragment
          *
          * @param context           Current context
          * @param items             List of styles
+         * @param positionHandler   Proxy between adapter and ViewModel
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         StylesAdapter(@NonNull final Context context,
@@ -427,10 +421,11 @@ public class PreferredStylesFragment
                                      @SuppressLint("RecyclerView") final int position) {
             super.onBindViewHolder(holder, position);
 
-            holder.onBind(getItem(position));
+            final Style style = getItem(position);
+            holder.onBind(style);
 
             // set the 'selected' state of the current row
-            holder.itemView.setSelected(position == positionHandler.getSelectedPosition());
+            holder.itemView.setSelected(style.getUuid().equals(positionHandler.getSelectedUuid()));
         }
 
         /**
@@ -449,27 +444,19 @@ public class PreferredStylesFragment
          *
          * @return the new status
          */
-        private boolean togglePreferredStatus(final int position) {
+        private boolean togglePreferredStatus(@IntRange(from = 0) final int position) {
             final Style style = getItem(position);
             final boolean checked = !style.isPreferred();
             style.setPreferred(checked);
 
+            // update checked and selected status
+            notifyItemChanged(position);
+
             // if the current position/style is no longer 'preferred' but was 'selected' ...
-            if (!checked && positionHandler.getSelectedPosition() == position) {
+            if (!checked && style.getUuid().equals(positionHandler.getSelectedUuid())) {
                 notifyItemChanged(positionHandler.findPreferredAndSelect(position));
-            } else {
-                notifyItemChanged(position);
             }
             return checked;
-        }
-
-        @Override
-        public boolean onItemMove(final int fromPosition,
-                                  final int toPosition) {
-            // changes the 'preferred' position as needed
-            positionHandler.swapItems(fromPosition, toPosition);
-
-            return super.onItemMove(fromPosition, toPosition);
         }
     }
 
@@ -485,10 +472,33 @@ public class PreferredStylesFragment
         }
 
         @Override
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            menu.findItem(R.id.MENU_EDIT_DEFAULT).setVisible(true);
+        }
+
+        @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return PreferredStylesFragment.this.onMenuItemSelected(vm.getSelectedPosition(),
-                                                                   menuItem.getItemId()
-            );
+            final int menuItemId = menuItem.getItemId();
+
+            if (menuItemId == R.id.MENU_EDIT_DEFAULT) {
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .addToBackStack(StyleDefaultsFragment.TAG)
+                        .replace(R.id.main_fragment,
+                                 StyleDefaultsFragment.create(),
+                                 StyleDefaultsFragment.TAG)
+                        .commit();
+                return true;
+            }
+
+            final int position = vm.getSelectedPosition();
+            if (BuildConfig.DEBUG /* */) {
+                if (position == RecyclerView.NO_POSITION) {
+                    throw new IllegalStateException("position=-1");
+                }
+            }
+            return PreferredStylesFragment.this.onMenuItemSelected(position, menuItemId);
         }
     }
 }

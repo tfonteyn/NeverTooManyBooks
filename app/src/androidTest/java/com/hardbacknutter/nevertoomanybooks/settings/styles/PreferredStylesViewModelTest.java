@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +50,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings("MissingJavadoc")
+@SuppressWarnings({"MissingJavadoc", "StringConcatenationMissingWhitespace"})
 public class PreferredStylesViewModelTest
         extends BaseDBTest {
 
@@ -69,15 +68,6 @@ public class PreferredStylesViewModelTest
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        final Style aDefault = ServiceLocator.getInstance().getStyles().getDefault();
-        listVm = new PreferredStylesViewModel();
-        final Bundle args = new Bundle(1);
-        args.putString(Style.BKEY_UUID, aDefault.getUuid());
-        listVm.init(args);
-    }
-
-    @AfterClass
-    public static void afterwards() {
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
         // delete any user-styles we created in previous tests.
         for (final String prefix : List.of(NAME_CLONE_BUILTIN, NAME_CLONE_USER)) {
@@ -88,31 +78,52 @@ public class PreferredStylesViewModelTest
                         .filter(userStyle -> userStyle.getName().startsWith(prefix))
                         .forEach(stylesHelper::delete);
         }
+
+        final Style aDefault = stylesHelper.getDefault();
+        listVm = new PreferredStylesViewModel();
+        final Bundle args = new Bundle(1);
+        args.putString(Style.BKEY_UUID, aDefault.getUuid());
+        listVm.init(args);
     }
 
     @Test
-    public void cloneBuiltinAsPreferred() {
+    public void cloneUserDefinedAsPreferred() {
         cloneBuiltin(true);
+        cloneUserDefined(true);
     }
 
     @Test
-    public void cloneBuiltinAsNotPreferred() {
+    public void cloneUserDefinedAsNotPreferred() {
         cloneBuiltin(false);
+        cloneUserDefined(false);
     }
+
+    @Test
+    public void editExistingAsPreferred() {
+        cloneBuiltin(true);
+        editExisting(true);
+    }
+
+    @Test
+    public void editExistingAsNotPreferred() {
+        cloneBuiltin(false);
+        editExisting(false);
+    }
+
 
     private void cloneBuiltin(final boolean asPreferred) {
-        listVm.refreshStyleList();
+        listVm.refreshList();
 
-        final List<Style> styleList = listVm.getStyleList();
+        final List<Style> styleList = listVm.getList();
         final int initialSize = styleList.size();
         // sanity check
         assertTrue(initialSize > 10);
 
         // Find a random built-in Style
-        Style initialStyle;
-        int initialPosition = styleList.size() - 10;
-        initialStyle = styleList.get(initialPosition);
+        int initialPosition = 3;
+        Style initialStyle = styleList.get(initialPosition);
         try {
+            // Skip all entries until we find a Builtin style.
             while (initialStyle.getType() != Style.Type.Builtin) {
                 initialStyle = styleList.get(++initialPosition);
             }
@@ -123,13 +134,8 @@ public class PreferredStylesViewModelTest
         initialStyle.setPreferred(asPreferred);
 
         // Prepare editing
-        final StyleViewModel styleVm = new StyleViewModel();
-        final Bundle args = new Bundle(3);
-        args.putString(Style.BKEY_UUID, initialStyle.getUuid());
-        args.putBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED, initialStyle.isPreferred());
-        args.putInt(EditStyleContract.BKEY_ACTION, EditStyleContract.ACTION_CLONE);
-        styleVm.init(context, args);
-        assertNotNull(styleVm.getStyleDataStore());
+        final StyleViewModel styleVm = initVm(
+                initialStyle, EditStyleContract.ACTION_CLONE);
 
 
         // Test the prepared style
@@ -146,53 +152,44 @@ public class PreferredStylesViewModelTest
         // pretend leaving the style-editor, this will trigger a call to:
         final StyleViewModel.Saved dbResult = styleVm.insertOrUpdateStyle(context);
         assertTrue(dbResult.success);
+        assertTrue(dbResult.wasModified);
 
-        final long editedStyleId = editedStyle.getId();
-        final String editedStyleUuid = editedStyle.getUuid();
-        final String editedStyleName = editedStyle.getLabel(context);
-        final boolean editedStylePreferred = editedStyle.isPreferred();
-
-        listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
+        listVm.onStyleEdited(context, editedStyle.getUuid(), initialStyle.getUuid());
 
         // We added a style
         assertEquals(initialSize + 1, styleList.size());
 
-        // The new one should be at the same position
-        final Style addedStyle = listVm.getStyle(initialPosition);
-        assertEquals(addedStyle.getId(), editedStyleId);
-        assertEquals(addedStyle.getUuid(), editedStyleUuid);
-        assertEquals(modifiedName, editedStyleName);
-        assertEquals(addedStyle.isPreferred(), editedStylePreferred);
+        // the vm reloaded the list from the database, resorting "preferred"
+        // styles at the top.
+
+        if (!asPreferred) {
+            // The new one should be at the same position
+            final Style addedStyle = listVm.getStyle(initialPosition);
+            assertEquals(addedStyle.getId(), editedStyle.getId());
+            assertEquals(addedStyle.getUuid(), editedStyle.getUuid());
+            assertEquals(modifiedName, editedStyle.getLabel(context));
+            assertEquals(addedStyle.isPreferred(), editedStyle.isPreferred());
+        }
 
         // The initial one should be demoted
         assertFalse(initialStyle.isPreferred());
 
-        final int movedInitialPosition = listVm.findRow(initialStyle);
-        if (asPreferred) {
-            // The original one should now be at the end of the list
-            assertEquals(listVm.getStyleList().size() - 1, movedInitialPosition);
-        } else {
-            // The original one should now be one lower on the list
-            assertEquals(initialPosition + 1, movedInitialPosition);
-        }
+        final int movedInitialPosition = listVm.findPosition(initialStyle.getUuid());
+        // The original one should now be one lower on the list
+        assertEquals(initialPosition + 1, movedInitialPosition);
     }
 
-    /**
-     * Relies on finding a user-defined style!
-     */
-    @Test
-    public void cloneUserDefined() {
-        listVm.refreshStyleList();
+    private void cloneUserDefined(final boolean asPreferred) {
+        listVm.refreshList();
 
-        final List<Style> styleList = listVm.getStyleList();
+        final List<Style> styleList = listVm.getList();
         final int initialSize = styleList.size();
         // sanity check
         assertTrue(initialSize > 10);
 
         // Find a random user-defined style
-        Style initialStyle;
         int initialPosition = 0;
-        initialStyle = styleList.get(initialPosition);
+        Style initialStyle = styleList.get(initialPosition);
         try {
             // Skip all entries until we find a User style.
             while (initialStyle.getType() != Style.Type.User) {
@@ -202,14 +199,11 @@ public class PreferredStylesViewModelTest
             fail("There were no user-defined styles. Create one and restart the test.");
         }
 
+        initialStyle.setPreferred(asPreferred);
+
         // Prepare editing
-        final StyleViewModel styleVm = new StyleViewModel();
-        final Bundle args = new Bundle(3);
-        args.putString(Style.BKEY_UUID, initialStyle.getUuid());
-        args.putBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED, initialStyle.isPreferred());
-        args.putInt(EditStyleContract.BKEY_ACTION, EditStyleContract.ACTION_CLONE);
-        styleVm.init(context, args);
-        assertNotNull(styleVm.getStyleDataStore());
+        final StyleViewModel styleVm = initVm(
+                initialStyle, EditStyleContract.ACTION_CLONE);
 
 
         // Test the prepared style
@@ -226,25 +220,29 @@ public class PreferredStylesViewModelTest
         // pretend leaving the style-editor, this will trigger a call to:
         final StyleViewModel.Saved dbResult = styleVm.insertOrUpdateStyle(context);
         assertTrue(dbResult.success);
+        assertTrue(dbResult.wasModified);
 
-        final long editedStyleId = editedStyle.getId();
-        final String editedStyleUuid = editedStyle.getUuid();
-        final String editedStyleName = editedStyle.getLabel(context);
-        final boolean editedStylePreferred = editedStyle.isPreferred();
-
-        listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
+        listVm.onStyleEdited(context, editedStyle.getUuid(), initialStyle.getUuid());
 
         // We added a style
         assertEquals(initialSize + 1, styleList.size());
 
-        // The new one should be at the same position
-        final Style addedStyle = listVm.getStyle(initialPosition);
-        assertEquals(addedStyle.getId(), editedStyleId);
-        assertEquals(addedStyle.getUuid(), editedStyleUuid);
-        assertEquals(modifiedName, editedStyleName);
-        assertEquals(addedStyle.isPreferred(), editedStylePreferred);
+        // the vm reloaded the list from the database, resorting "preferred"
+        // styles at the top.
 
-        final int movedInitialPosition = listVm.findRow(initialStyle);
+        if (!asPreferred) {
+            // The new one should be at the same position
+            final Style addedStyle = listVm.getStyle(initialPosition);
+            assertEquals(addedStyle.getId(), editedStyle.getId());
+            assertEquals(addedStyle.getUuid(), editedStyle.getUuid());
+            assertEquals(modifiedName, editedStyle.getLabel(context));
+            assertEquals(addedStyle.isPreferred(), editedStyle.isPreferred());
+        }
+
+        // The initial one should not be changed
+        assertEquals(asPreferred, initialStyle.isPreferred());
+
+        final int movedInitialPosition = listVm.findPosition(initialStyle.getUuid());
         // The original one should now be one lower on the list
         assertEquals(initialPosition + 1, movedInitialPosition);
     }
@@ -252,19 +250,17 @@ public class PreferredStylesViewModelTest
     /**
      * Relies on finding a user-defined style!
      */
-    @Test
-    public void editExisting() {
-        listVm.refreshStyleList();
+    private void editExisting(final boolean asPreferred) {
+        listVm.refreshList();
 
-        final List<Style> styleList = listVm.getStyleList();
+        final List<Style> styleList = listVm.getList();
         final int initialSize = styleList.size();
         // sanity check
         assertTrue(initialSize > 10);
 
         // Find a random user-defined style
-        Style initialStyle;
         int initialPosition = 0;
-        initialStyle = styleList.get(initialPosition);
+        Style initialStyle = styleList.get(initialPosition);
         try {
             // Skip all entries until we find a User style.
             while (initialStyle.getType() != Style.Type.User) {
@@ -274,14 +270,11 @@ public class PreferredStylesViewModelTest
             fail("There were no user-defined styles. Create one and restart the test.");
         }
 
+        initialStyle.setPreferred(asPreferred);
+
         // Prepare editing
-        final StyleViewModel styleVm = new StyleViewModel();
-        final Bundle args = new Bundle(3);
-        args.putString(Style.BKEY_UUID, initialStyle.getUuid());
-        args.putBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED, initialStyle.isPreferred());
-        args.putInt(EditStyleContract.BKEY_ACTION, EditStyleContract.ACTION_EDIT);
-        styleVm.init(context, args);
-        assertNotNull(styleVm.getStyleDataStore());
+        final StyleViewModel styleVm = initVm(
+                initialStyle, EditStyleContract.ACTION_EDIT);
 
 
         // Test the prepared style
@@ -297,22 +290,37 @@ public class PreferredStylesViewModelTest
         // pretend leaving the style-editor, this will trigger a call to:
         final StyleViewModel.Saved dbResult = styleVm.insertOrUpdateStyle(context);
         assertTrue(dbResult.success);
+        assertTrue(dbResult.wasModified);
 
-        final long editedStyleId = editedStyle.getId();
-        final String editedStyleUuid = editedStyle.getUuid();
-        final String editedStyleName = editedStyle.getLabel(context);
-        final boolean editedStylePreferred = editedStyle.isPreferred();
-
-        listVm.onStyleEdited(context, editedStyle, initialStyle.getUuid());
+        listVm.onStyleEdited(context, editedStyle.getUuid(), initialStyle.getUuid());
 
         // We only edited a style
         assertEquals(initialSize, styleList.size());
 
-        // The new one should be at the same position
-        final Style addedStyle = listVm.getStyle(initialPosition);
-        assertEquals(addedStyle.getId(), editedStyleId);
-        assertEquals(addedStyle.getUuid(), editedStyleUuid);
-        assertEquals(modifiedName, editedStyleName);
-        assertEquals(addedStyle.isPreferred(), editedStylePreferred);
+        // the vm reloaded the list from the database, resorting "preferred"
+        // styles at the top.
+
+        if (!asPreferred) {
+            // The new one should be at the same position
+            final Style addedStyle = listVm.getStyle(initialPosition);
+            assertEquals(addedStyle.getId(), editedStyle.getId());
+            assertEquals(addedStyle.getUuid(), editedStyle.getUuid());
+            assertEquals(modifiedName, editedStyle.getLabel(context));
+            assertEquals(addedStyle.isPreferred(), editedStyle.isPreferred());
+        }
     }
+
+    @NonNull
+    private StyleViewModel initVm(@NonNull final Style initialStyle,
+                                  final int action) {
+        final StyleViewModel styleVm = new StyleViewModel();
+        final Bundle args = new Bundle(3);
+        args.putString(Style.BKEY_UUID, initialStyle.getUuid());
+        args.putBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED, initialStyle.isPreferred());
+        args.putInt(EditStyleContract.BKEY_ACTION, action);
+        styleVm.init(context, args);
+        assertNotNull(styleVm.getStyleDataStore());
+        return styleVm;
+    }
+
 }
