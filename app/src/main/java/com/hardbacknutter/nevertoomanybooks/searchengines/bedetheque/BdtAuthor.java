@@ -105,14 +105,12 @@ public class BdtAuthor {
         if (url != null && !url.isEmpty()) {
             final Matcher matcher = BDT_ID_PATTERN.matcher(url);
             if (matcher.find()) {
-                return matcher.group(1);
+                bdtId = matcher.group(1);
+                return bdtId;
             }
         }
+        // we should never get here as there should always be a url
         return null;
-    }
-
-    public void setBdtId(@Nullable final String bdtId) {
-        this.bdtId = bdtId;
     }
 
     public boolean isResolved() {

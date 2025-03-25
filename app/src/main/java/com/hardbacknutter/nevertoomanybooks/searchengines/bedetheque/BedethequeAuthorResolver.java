@@ -132,6 +132,117 @@ public class BedethequeAuthorResolver
         }
     }
 
+    @Override
+    public boolean resolve(@NonNull final Context context,
+                           @NonNull final Author author)
+            throws SearchException, CredentialsException {
+
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        // We SHOULD pass in the book-locale here...
+        authorDao.refresh(context, author, locale);
+
+        // If we already have a real-author set, we're done.
+        if (author.getRealAuthor() != null) {
+            return false;
+        }
+
+        final BdtAuthor bdtAuthor = lookupInCache(context, author);
+        // If the author is not found, the website does not know that name at all, give up
+        if (bdtAuthor == null) {
+            return false;
+        }
+
+        boolean modified = false;
+
+        // Add/update the identifier while we have it.
+        final String bdtId = bdtAuthor.getBdtId();
+        if (bdtId != null) {
+            author.setIdentifierValue(Identifier.SID_BEDETHEQUE, bdtId);
+            modified = true;
+        }
+
+        // we have it in the cache, check if it's fully resolved
+        if (!bdtAuthor.isResolved()) {
+            // load the details-page from the site, and parse it.
+            if (!lookupOnSite(context, bdtAuthor, author)) {
+                // The website list page had it, but there is no details page.
+                // We should never get here... flw
+                return false;
+            }
+        }
+
+        // it should now be resolved
+        // Copy temporary info from bdtAuthor to the author, and resolve the realAuthor
+        modified = modified || resolvePenName(context, author, bdtAuthor);
+
+        return modified;
+    }
+
+    private boolean resolvePenName(@NonNull final Context context,
+                                   @NonNull final Author author,
+                                   @NonNull final BdtAuthor bdtAuthor) {
+        final String resolvedName = bdtAuthor.getResolvedName();
+        // If the author uses a pen-name, update accordingly
+        if (resolvedName != null) {
+            // The name was a pen-name and we have resolved it to their real name
+            // Add it accordingly to the original Author object
+            final Author realAuthor = Author.from(resolvedName);
+            ServiceLocator.getInstance().getAuthorDao().refresh(context, realAuthor, locale);
+
+            author.setRealAuthor(realAuthor);
+
+            // While resolving, the name of the bdtAuthor CAN be corrected/updated.
+            // Check that it still MATCHES the original author name
+            final Author penAuthor = Author.from(bdtAuthor.getName());
+            // Case-sensitive! We must allow correcting the case.
+            if (penAuthor.isSameName(author)) {
+                // It does, we now overwrite the original name; this will correct any diacritics
+                author.setName(penAuthor.getFamilyName(), penAuthor.getGivenNames());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Lookup the Author in the local cache.
+     * If not found, fetch the alphabet-page from the website which updates the cache,
+     * and check again.
+     *
+     * @param context current Context
+     * @param author  to lookup
+     *
+     * @return cached BdtAuthor, or {@code null} if not found
+     *
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     */
+    @Nullable
+    private BdtAuthor lookupInCache(@NonNull final Context context,
+                                    @NonNull final Author author)
+            throws SearchException, CredentialsException {
+
+        final BedethequeCacheDao cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
+
+        // Check if we have the author in the cache
+        final String name = author.getFormattedName(false);
+        BdtAuthor bdtAuthor = cacheDao.findByName(name, locale).orElse(null);
+        if (bdtAuthor == null) {
+            // If not resolved / not found,
+            final AuthorListLoader pageLoader = new AuthorListLoader(context, searchEngine);
+            final char c1 = firstChar(author.getFamilyName());
+            // and the list-page was never fetched before,
+            if (!cacheDao.isAuthorPageCached(c1)) {
+                // go fetch the the list-page on which the author should/could be
+                if (pageLoader.fetch(c1)) {
+                    // If the author was on the list page, we should find it in the cache now.
+                    bdtAuthor = cacheDao.findByName(name, locale).orElse(null);
+                }
+            }
+        }
+        return bdtAuthor;
+    }
+
     /**
      * Take the first character from the given name and normalize it to [0A-Z]
      * for use with the other class methods.
@@ -149,102 +260,22 @@ public class BedethequeAuthorResolver
         return Character.isAlphabetic(c1) ? c1 : '0';
     }
 
-    @Override
-    public boolean resolve(@NonNull final Context context,
-                           @NonNull final Author author)
-            throws SearchException, CredentialsException {
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-        // We SHOULD pass in the book-locale here...
-        authorDao.refresh(context, author, locale);
-
-        // If we already have a real-author set, we're done.
-        if (author.getRealAuthor() != null) {
-            return false;
-        }
-
-        final String name = author.getFormattedName(false);
-
-        final BedethequeCacheDao cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
-        // Check if we have the author in the cache
-        BdtAuthor bdtAuthor = cacheDao.findByName(name, locale).orElse(null);
-        if (bdtAuthor == null) {
-            // If not resolved / not found,
-            final AuthorListLoader pageLoader = new AuthorListLoader(context, searchEngine);
-            final char c1 = firstChar(author.getFamilyName());
-            // and the list-page was never fetched before,
-            if (!cacheDao.isAuthorPageCached(c1)) {
-                // go fetch the the list-page on which the author should/could be
-                if (pageLoader.fetch(c1)) {
-                    // If the author was on the list page, we should find it in the cache now.
-                    bdtAuthor = cacheDao.findByName(name, locale).orElse(null);
-                }
-            }
-        }
-
-        // If the author is still not found in the cache, give up
-        if (bdtAuthor == null) {
-            return false;
-        }
-
-        // we have it in the cache, check if it's fully resolved
-        if (!bdtAuthor.isResolved()) {
-            if (!lookup(context, bdtAuthor)) {
-                // The website list page had it, but there is no details page.
-                // We should never get here... flw
-                return false;
-            }
-        }
-
-        // it should now be resolved
-        // Copy temporary info from bdtAuthor to the author, and resolve the realAuthor
-        boolean modified = false;
-
-        // update birth/death/bio/image/...
-        final String bdtId = bdtAuthor.getBdtId();
-        if (bdtId != null) {
-            author.setIdentifierValue(Identifier.SID_BEDETHEQUE, bdtId);
-            modified = true;
-        }
-
-        final String resolvedName = bdtAuthor.getResolvedName();
-        // If the author uses a pen-name, update accordingly
-        if (resolvedName != null) {
-            // The name was a pen-name and we have resolved it to their real name
-            // Add it accordingly to the original Author object
-            final Author realAuthor = Author.from(resolvedName);
-            authorDao.refresh(context, realAuthor, locale);
-            author.setRealAuthor(realAuthor);
-
-            // While resolving, the name of the bdtAuthor CAN be corrected/updated.
-            // Check that it still MATCHES the original author name
-            final Author penAuthor = Author.from(bdtAuthor.getName());
-            // Case-sensitive! We must allow correcting the case.
-            if (penAuthor.isSameName(author)) {
-                // It does, we now overwrite the original name; this will correct any diacritics
-                author.setName(penAuthor.getFamilyName(), penAuthor.getGivenNames());
-            }
-            return true;
-        }
-
-        return modified;
-    }
-
-
     /**
      * Lookup the author on the website.
      * If successful, it will have been updated in the cache database.
      *
      * @param context   current Context
      * @param bdtAuthor to lookup
+     * @param author
      *
      * @return {@code true} on success
      *
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      */
-    private boolean lookup(@NonNull final Context context,
-                           @NonNull final BdtAuthor bdtAuthor)
+    private boolean lookupOnSite(@NonNull final Context context,
+                                 @NonNull final BdtAuthor bdtAuthor,
+                                 @NonNull final Author author)
             throws SearchException, CredentialsException {
         final String url = bdtAuthor.getUrl();
         if (url == null || url.isEmpty()) {
@@ -294,14 +325,6 @@ public class BedethequeAuthorResolver
             for (final Element label : labels) {
                 //noinspection SwitchStatementWithoutDefaultBranch
                 switch (label.text()) {
-                    case "Identifiant :": {
-                        // <label>Identifiant :</label>13055
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            bdtAuthor.setBdtId(textNode.toString());
-                        }
-                        break;
-                    }
                     case "Nom :": {
                         // <label>Nom :</label><span>Lemmens</span>
                         final Element span = label.nextElementSibling();
@@ -339,7 +362,7 @@ public class BedethequeAuthorResolver
                         deathDate = parseDate(textNode).orElse(null);
                         break;
                     }
-                    case "": {
+                    case "Pays :": {
                         // <label>Pays :</label><span class="pays-auteur">FRANCE</span>
                         // Don't overwrite
                         if (birthCountry == null) {
@@ -355,6 +378,10 @@ public class BedethequeAuthorResolver
                         }
                         break;
                     }
+                    default:
+                        // "Identifiant :"
+                        // skipped, we already have the bdtId from the url
+                        break;
                 }
             }
 
