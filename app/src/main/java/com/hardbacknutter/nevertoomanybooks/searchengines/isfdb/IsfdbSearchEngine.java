@@ -852,7 +852,7 @@ public class IsfdbSearchEngine
                     final String href = a.attr("href");
 
                     if (title == null && href.contains(CGI_TITLE)) {
-                        title = SearchEngineUtils.cleanName(a.text());
+                        title = SearchEngineUtils.cleanText(a.text());
                         //ENHANCE: tackle 'variant' titles later
 
                     } else if (author == null && href.contains(CGI_EA)) {
@@ -1166,7 +1166,7 @@ public class IsfdbSearchEngine
                         case "Publication:": {
                             nextSibling = labelElement.nextSibling();
                             if (nextSibling != null) {
-                                bookTitle = nextSibling.toString().trim();
+                                bookTitle = SearchEngineUtils.cleanText(nextSibling.toString());
                                 book.putString(DBKey.TITLE, bookTitle);
                             }
                             break;
