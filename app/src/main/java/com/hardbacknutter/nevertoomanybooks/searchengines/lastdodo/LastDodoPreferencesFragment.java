@@ -25,8 +25,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep
@@ -38,11 +36,5 @@ public class LastDodoPreferencesFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_lastdodo, rootKey);
-
-        final boolean useRealAuthor = ServiceLocator.getInstance()
-                                                    .isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
-        //noinspection DataFlowIssue
-        findPreference("lastdodo.resolve.authors.bedetheque")
-                .setEnabled(useRealAuthor);
     }
 }

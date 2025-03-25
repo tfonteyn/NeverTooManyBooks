@@ -27,8 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -43,12 +41,6 @@ public class StripWebPreferencesFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_stripweb, rootKey);
-
-        final boolean useRealAuthor = ServiceLocator.getInstance()
-                                                    .isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR);
-        //noinspection DataFlowIssue
-        findPreference("stripweb.resolve.authors.bedetheque")
-                .setEnabled(useRealAuthor);
 
         initSearchMenuPref(EngineId.StripWebBe);
     }
