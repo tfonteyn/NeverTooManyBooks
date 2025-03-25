@@ -122,11 +122,12 @@ public class JsoupLoader {
         document = null;
         docRequestUrl = url;
 
-        // If the site drops connection, we retry once
-        // Note this is NOT the same as the retry mechanism of TerminatorConnection.
+        // If the site drops connection, we retry once.
+        // Note this is NOT the same as the retry mechanism of FutureHttpBase.
         // The latter is a retry for the initial connect only.
-        // This retry is for when a successful connection gets dropped mid-read
-        // specifically due to SSLProtocolException | EOFException
+        //
+        // This retry tries to solve the situation when a successful connection gets
+        // dropped mid-read specifically due to SSLProtocolException | EOFException
         int attemptsLeft = 2;
 
         while (attemptsLeft > 0) {
@@ -194,7 +195,7 @@ public class JsoupLoader {
 
             } catch (@NonNull final StorageException e) {
                 // This is only here due to FutureHttpGet declaring StorageException;
-                // which her will never be thrown.
+                // which here will never be thrown.
                 throw new IOException(e);
 
             } catch (@NonNull final IOException e) {
