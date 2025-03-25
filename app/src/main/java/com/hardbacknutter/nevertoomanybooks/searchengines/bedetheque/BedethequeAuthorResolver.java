@@ -60,7 +60,7 @@ import org.jsoup.select.Elements;
  * Authors are searched for in the local cache database, or fetched in bulk
  * from the website and stored in the cache.
  * <p>
- * {@link #resolve(Author)} will:
+ * {@link AuthorResolver#resolve(Context, Author)} will:
  * <ul>
  *     <li>add the {@link Identifier#SID_BEDETHEQUE} if it's missing</li>
  *     <li>update/correct any diacritics in the names</li>
@@ -78,8 +78,6 @@ public class BedethequeAuthorResolver
     private static final String TAG = "BedethequeAuthorResolver";
 
     @NonNull
-    private final Context context;
-    @NonNull
     private final BedethequeSearchEngine searchEngine;
     @NonNull
     private final Locale locale;
@@ -93,7 +91,6 @@ public class BedethequeAuthorResolver
      */
     private BedethequeAuthorResolver(@NonNull final Context context,
                                      @NonNull final BedethequeSearchEngine searchEngine) {
-        this.context = context;
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
 
@@ -153,7 +150,8 @@ public class BedethequeAuthorResolver
     }
 
     @Override
-    public boolean resolve(@NonNull final Author author)
+    public boolean resolve(@NonNull final Context context,
+                           @NonNull final Author author)
             throws SearchException, CredentialsException {
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
@@ -191,7 +189,7 @@ public class BedethequeAuthorResolver
 
         // we have it in the cache, check if it's fully resolved
         if (!bdtAuthor.isResolved()) {
-            if (!lookup(bdtAuthor)) {
+            if (!lookup(context, bdtAuthor)) {
                 // The website list page had it, but there is no details page.
                 // We should never get here... flw
                 return false;
@@ -237,6 +235,7 @@ public class BedethequeAuthorResolver
      * Lookup the author on the website.
      * If successful, it will have been updated in the cache database.
      *
+     * @param context   current Context
      * @param bdtAuthor to lookup
      *
      * @return {@code true} on success
@@ -244,7 +243,8 @@ public class BedethequeAuthorResolver
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      */
-    private boolean lookup(@NonNull final BdtAuthor bdtAuthor)
+    private boolean lookup(@NonNull final Context context,
+                           @NonNull final BdtAuthor bdtAuthor)
             throws SearchException, CredentialsException {
         final String url = bdtAuthor.getUrl();
         if (url == null || url.isEmpty()) {

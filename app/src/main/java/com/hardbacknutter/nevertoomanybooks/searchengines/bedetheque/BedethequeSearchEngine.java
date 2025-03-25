@@ -489,7 +489,7 @@ public class BedethequeSearchEngine
 
             for (final AuthorResolver resolver : authorResolvers) {
                 for (final Author author : book.getAuthors()) {
-                    resolver.resolve(author);
+                    resolver.resolve(context, author);
                 }
             }
 

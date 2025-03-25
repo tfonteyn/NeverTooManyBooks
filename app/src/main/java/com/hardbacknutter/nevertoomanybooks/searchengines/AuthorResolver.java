@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -29,16 +31,22 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 public interface AuthorResolver {
 
     /**
-     * Update the given {@link Author} with any missing diacritics and resolve pen-names.
-     * Adds {@code Identifier}s if possible.
+     * Update the given {@link Author}.
+     * <ul>
+     *     <li>Resolve pen-names</li>
+     *     <li>Fix author names with any missing diacritics</li>
+     *     <li>Add {@code Identifier}s if possible</li>
+     * </ul>
      *
-     * @param author to lookup
+     * @param context current Context
+     * @param author  to lookup
      *
      * @return {@code true} if the {@link Author} was modified; {@code false} otherwise
      *
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws CredentialsException on authentication/login failures
      */
-    boolean resolve(@NonNull Author author)
+    boolean resolve(@NonNull Context context,
+                    @NonNull Author author)
             throws SearchException, CredentialsException;
 }

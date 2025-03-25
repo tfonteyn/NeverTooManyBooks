@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,7 @@ public class AuthorLookupTest
         final Author realAuthor;
 
         author = new Author("Leloup", "Roger");
-        modified = resolver.resolve(author);
+        modified = resolver.resolve(context, author);
         // no pen-name
         Assert.assertFalse(modified);
         Assert.assertEquals("Leloup", author.getFamilyName());
@@ -82,7 +82,7 @@ public class AuthorLookupTest
         final Author realAuthor;
 
         author = new Author("<Indéterminé>", "");
-        modified = resolver.resolve(author);
+        modified = resolver.resolve(context, author);
         // no pen-name
         Assert.assertFalse(modified);
         Assert.assertEquals("<Indéterminé>", author.getFamilyName());
@@ -99,7 +99,7 @@ public class AuthorLookupTest
         final Author realAuthor;
 
         author = new Author("Jije", "");
-        modified = resolver.resolve(author);
+        modified = resolver.resolve(context, author);
         Assert.assertTrue(modified);
         Assert.assertEquals("Jijé", author.getFamilyName());
         realAuthor = author.getRealAuthor();
@@ -118,7 +118,7 @@ public class AuthorLookupTest
         final Author realAuthor;
 
         author = new Author("61Chi", "");
-        modified = resolver.resolve(author);
+        modified = resolver.resolve(context, author);
         Assert.assertTrue(modified);
         Assert.assertEquals("61Chi", author.getFamilyName());
         realAuthor = author.getRealAuthor();

@@ -43,7 +43,7 @@ import org.jsoup.nodes.Element;
 /**
  * Connects to the DatabazeKnih website to resolve author pseudonyms.
  * <p>
- * {@link #resolve(Author)} relies on the {@link Identifier#SID_DATABAZE_KNIH}
+ * {@link AuthorResolver#resolve(Context, Author)} relies on the {@link Identifier#SID_DATABAZE_KNIH}
  * being correct to do  the lookup. It will:
  * <ul>
  *     <li>add the {@link Author#setRealAuthor(Author)} if applicable</li>
@@ -52,8 +52,7 @@ import org.jsoup.nodes.Element;
 final class DatabazeKnihAuthorResolver
         implements AuthorResolver {
     private static final String TAG = "DatabazeKnihAuthorRes";
-    @NonNull
-    private final Context context;
+
     @NonNull
     private final DatabazeKnihSearchEngine searchEngine;
     @Nullable
@@ -67,7 +66,6 @@ final class DatabazeKnihAuthorResolver
      */
     private DatabazeKnihAuthorResolver(@NonNull final Context context,
                                        @NonNull final DatabazeKnihSearchEngine searchEngine) {
-        this.context = context;
         this.searchEngine = searchEngine;
         // The engine is hardcoded/defined with the identifier,
         // but the author-uri can be absent
@@ -111,7 +109,8 @@ final class DatabazeKnihAuthorResolver
     }
 
     @Override
-    public boolean resolve(@NonNull final Author author)
+    public boolean resolve(@NonNull final Context context,
+                           @NonNull final Author author)
             throws SearchException, CredentialsException {
         // the user can delete it...
         if (authorUri == null) {
