@@ -31,6 +31,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 public interface AuthorResolver {
 
     /**
+     * Pref key.
+     * "[engine].resolve.authors.[resolver]"
+     */
+    String PK_RESOLVE_AUTHORS = ".resolve.authors.";
+
+    /**
      * Update the given {@link Author}.
      * <ul>
      *     <li>Resolve pen-names</li>

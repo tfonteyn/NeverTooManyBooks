@@ -38,12 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeA
  */
 public final class AuthorResolverFactory {
 
-    /**
-     * Pref key.
-     * "[engine].resolve.authors.[resolver]"
-     */
-    private static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
-
     private AuthorResolverFactory() {
     }
 
@@ -56,12 +50,13 @@ public final class AuthorResolverFactory {
      * @return list
      */
     @NonNull
-    public static List<AuthorResolver> getResolvers(@NonNull final Context context,
-                                                    @NonNull final SearchEngine searchEngine) {
+    public static List<AuthorResolver> getEuroComicAuthorResolvers(
+            @NonNull final Context context,
+            @NonNull final SearchEngine searchEngine) {
 
         // For now, we only support a single resolver, so the last part is hardcoded
         final String key = searchEngine.getEngineId().getPreferenceKey()
-                           + PK_RESOLVE_AUTHORS
+                           + AuthorResolver.PK_RESOLVE_AUTHORS
                            + EngineId.Bedetheque.getPreferenceKey();
 
         if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)

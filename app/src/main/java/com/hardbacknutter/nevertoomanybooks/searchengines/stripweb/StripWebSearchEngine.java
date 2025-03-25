@@ -124,7 +124,7 @@ public class StripWebSearchEngine
 
     @NonNull
     private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
-        return AuthorResolverFactory.getResolvers(context, this);
+        return AuthorResolverFactory.getEuroComicAuthorResolvers(context, this);
     }
 
     @NonNull
