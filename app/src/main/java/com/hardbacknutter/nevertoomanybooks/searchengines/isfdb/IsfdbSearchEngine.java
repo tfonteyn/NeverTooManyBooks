@@ -439,6 +439,11 @@ public class IsfdbSearchEngine
                       "cobiss.sr")
     );
 
+    // added due to https://github.com/square/okhttp/issues/1517
+    // it's a server issue, this is a workaround.
+    static final Map<String, String> REQUEST_PROPERTIES = Map.of(HttpConstants.CONNECTION,
+                                                                 HttpConstants.CONNECTION_CLOSE);
+
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
      Publication_Type</a>
@@ -566,11 +571,7 @@ public class IsfdbSearchEngine
 
         final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID, externalId);
 
-        // added due to https://github.com/square/okhttp/issues/1517
-        // it's a server issue, this is a workaround.
-        final Document document = loadDocument(context, url,
-                                               Map.of(HttpConstants.CONNECTION,
-                                                      HttpConstants.CONNECTION_CLOSE));
+        final Document document = loadDocument(context, url, REQUEST_PROPERTIES);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book);
             // ISFDB only shows the books language on the publications page.
@@ -1672,7 +1673,7 @@ public class IsfdbSearchEngine
                                                 @NonNull final String url)
             throws SearchException, CredentialsException {
 
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadDocument(context, url, REQUEST_PROPERTIES);
 
         if (!isCancelled()) {
             return parseEditions(context, document);
@@ -1694,10 +1695,7 @@ public class IsfdbSearchEngine
         // go get it.
         final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID,
                                                                edition.getIsfdbId());
-        // added due to https://github.com/square/okhttp/issues/1517
-        // it's a server issue, this is a workaround.
-        return loadDocument(context, url, Map.of(HttpConstants.CONNECTION,
-                                                 HttpConstants.CONNECTION_CLOSE));
+        return loadDocument(context, url, REQUEST_PROPERTIES);
     }
 
     /**
