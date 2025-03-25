@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +39,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
@@ -114,8 +116,6 @@ public class DatabazeKnihSearchEngine
     @NonNull
     private final RatingParser ratingParser;
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
-    @NonNull
-    private final AuthorResolver resolver;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -129,8 +129,6 @@ public class DatabazeKnihSearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(5);
-
-        resolver = DatabazeKnihAuthorResolver.create(appContext, this);
     }
 
     @NonNull
@@ -673,10 +671,27 @@ public class DatabazeKnihSearchEngine
         if (maybePseudonym != null
             && "span".equals(maybePseudonym.tag().getName())
             && "(p)".equals(maybePseudonym.text())) {
-            resolver.resolve(context, author);
+            final Optional<AuthorResolver> resolver = getResolver(context);
+            if (resolver.isPresent()) {
+                resolver.get().resolve(context, author);
+            }
         }
 
         addAuthor(author, type, book);
+    }
+
+    @NonNull
+    private Optional<AuthorResolver> getResolver(@NonNull final Context context) {
+        final String pk = getEngineId().getPreferenceKey();
+        final String key = pk + AuthorResolver.PK_RESOLVE_AUTHORS + pk;
+
+        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
+            && PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(key, false)) {
+            return Optional.of(DatabazeKnihAuthorResolver.create(context, this));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Nullable

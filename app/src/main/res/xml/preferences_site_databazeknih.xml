@@ -33,6 +33,14 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/cloud_download_24px"
+            android:key="databazeknih.resolve.authors.databazeknih"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_resolve_authors" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -1497,6 +1497,8 @@
     <!-- SwitchPreference title: search engines can collect Series information from the toc.
          This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from content table</string>
+    <!-- option to resolve author pen-names -->
+    <string name="pt_search_resolve_authors">Resolve author pen-names</string>
     <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
     <!-- MultiSelectListPreference title -->
