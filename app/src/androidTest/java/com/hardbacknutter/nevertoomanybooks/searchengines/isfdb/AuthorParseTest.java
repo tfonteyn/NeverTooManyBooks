@@ -62,6 +62,8 @@ public class AuthorParseTest
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+
         resolver = (IsfdbAuthorResolver) IsfdbAuthorResolver.create(context, searchEngine);
 
         final SharedPreferences preferences = PreferenceManager
