@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.core.network;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -31,14 +30,14 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import org.xml.sax.SAXException;
 
 @FunctionalInterface
-public interface ResponseProcessor<T> {
+public interface ResponseProcessor<T, INPUT> {
 
     /**
-     * Parse the given {@link InputStream}.
+     * Parse the given {@code INPUT}.
      *
-     * @param con for getting headers, url,..
-     *            Do <strong>NOT</strong> call {@link HttpURLConnection#getInputStream()}!
-     * @param is  to read and parse
+     * @param con   for getting headers, url,..
+     *              Do <strong>NOT</strong> call {@link HttpURLConnection#getInputStream()}!
+     * @param input to read and parse
      *
      * @return the resulting {@code T}
      *
@@ -47,7 +46,7 @@ public interface ResponseProcessor<T> {
      * @throws StorageException The covers directory is not available
      */
     T parse(@NonNull HttpURLConnection con,
-            @NonNull InputStream is)
+            @NonNull INPUT input)
             throws IOException,
                    SAXException,
                    StorageException;

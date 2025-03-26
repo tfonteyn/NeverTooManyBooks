@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -69,7 +73,7 @@ public final class FutureHttpGet<T>
      */
     @NonNull
     public T get(@NonNull final String url,
-                 @NonNull final ResponseProcessor<T> responseProcessor)
+                 @NonNull final ResponseProcessor<T, InputStream> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
@@ -97,7 +101,7 @@ public final class FutureHttpGet<T>
     @NonNull
     public T get(@NonNull final String url,
                  final int bufferSize,
-                 @NonNull final ResponseProcessor<T> responseProcessor)
+                 @NonNull final ResponseProcessor<T, InputStream> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
