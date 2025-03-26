@@ -31,8 +31,10 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
@@ -45,6 +47,7 @@ public final class FutureHttpGet<T>
         extends FutureHttpGetBase<T> {
 
     private static final int DEFAULT_BUFFER_SIZE = 8192;
+    private static final String GET = "GET";
 
     /**
      * Constructor.
@@ -107,7 +110,7 @@ public final class FutureHttpGet<T>
                    SocketTimeoutException,
                    IOException {
 
-        return Objects.requireNonNull(execute(url, "GET", false, request -> {
+        return Objects.requireNonNull(execute(url, GET, false, request -> {
             try {
                 final HttpURLConnection connection = connect(request);
 
@@ -121,6 +124,98 @@ public final class FutureHttpGet<T>
                         return responseProcessor.parse(connection, bis);
                     }
                 }
+            } catch (@NonNull final IOException e) {
+                throw new UncheckedIOException(e);
+            } catch (@NonNull final StorageException e) {
+                throw new UncheckedStorageException(e);
+            } catch (@NonNull final SAXException e) {
+                throw new UncheckedSAXException(e);
+            }
+        }));
+
+        // Note that we just let all Unchecked..Exceptions
+        // ripple upwards until they hit the task where the request came from.
+        // We always intercept and dissect unchecked exceptions in the task, so all is well.
+    }
+
+    /**
+     * Send the GET and use the given {@link ResponseProcessor} to handle the response.
+     * <p>
+     * This method handles gzip encoding automatically.
+     *
+     * @param url               to use
+     * @param responseProcessor which will receive the response page as a single {@code String}
+     *
+     * @return the response page as a single {@code String}
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on generic/other IO failures
+     * @throws StorageException       The covers directory is not available
+     */
+    @NonNull
+    public T getAsString(@NonNull final String url,
+                         @NonNull final ResponseProcessor<T, String> responseProcessor)
+            throws StorageException,
+                   CancellationException,
+                   SocketTimeoutException,
+                   IOException {
+        return getAsString(url, DEFAULT_BUFFER_SIZE, responseProcessor);
+    }
+
+    /**
+     * Send the GET and use the given {@link ResponseProcessor} to handle the response.
+     * <p>
+     * This method handles gzip encoding automatically.
+     *
+     * @param url               to use
+     * @param bufferSize        to use for the input stream
+     * @param responseProcessor which will receive the response page as a single {@code String}
+     *
+     * @return the response page as a single {@code String}
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on generic/other IO failures
+     * @throws StorageException       The covers directory is not available
+     */
+    @NonNull
+    public T getAsString(@NonNull final String url,
+                         final int bufferSize,
+                         @NonNull final ResponseProcessor<T, String> responseProcessor)
+            throws StorageException,
+                   CancellationException,
+                   SocketTimeoutException,
+                   IOException {
+
+        return Objects.requireNonNull(execute(url, GET, false, request -> {
+            try {
+                final HttpURLConnection connection = connect(request);
+
+                final String page;
+
+                try (InputStream is = connection.getInputStream()) {
+                    if (HttpConstants.isZipped(connection)) {
+                        try (GZIPInputStream gzs = new GZIPInputStream(is)) {
+                            try (Reader isr = new InputStreamReader(gzs, StandardCharsets.UTF_8)) {
+                                try (BufferedReader reader = new BufferedReader(isr, bufferSize)) {
+                                    page = reader.lines().collect(Collectors.joining());
+                                }
+                            }
+                            return responseProcessor.parse(connection, page);
+                        }
+                    } else {
+                        try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                            try (BufferedReader reader = new BufferedReader(isr, bufferSize)) {
+                                page = reader.lines().collect(Collectors.joining());
+                            }
+                        }
+                        return responseProcessor.parse(connection, page);
+                    }
+                }
+
             } catch (@NonNull final IOException e) {
                 throw new UncheckedIOException(e);
             } catch (@NonNull final StorageException e) {
