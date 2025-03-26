@@ -37,13 +37,11 @@ import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.PreferenceManager;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
@@ -65,7 +63,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.CancellationException;
-import java.util.stream.Collectors;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -1389,13 +1386,7 @@ public final class CalibreContentServer
                 futureJsonFetchRequest = createFutureGetRequest(true);
             }
         }
-        return futureJsonFetchRequest.get(url, (con, is) -> {
-            try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                 // Aren't we buffering twice here?
-                 BufferedReader reader = new BufferedReader(isr, buffer)) {
-                return reader.lines().collect(Collectors.joining());
-            }
-        });
+        return futureJsonFetchRequest.getAsString(url, buffer, (con, s) -> s);
     }
 
     /**

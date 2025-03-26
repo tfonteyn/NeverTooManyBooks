@@ -28,13 +28,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
 import java.net.CookieManager;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +37,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -242,8 +236,7 @@ public class OpenLibrarySearchEngine
 
         futureHttpGet = createGetDocumentRequest(context);
         try {
-            final String response = futureHttpGet.get(url, (con, is) ->
-                    readResponseStream(is));
+            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
 
             parse(context, new JSONObject(response), fetchCovers, book);
 
@@ -323,8 +316,8 @@ public class OpenLibrarySearchEngine
 
         try {
             // get and store the result into a string.
-            String response = futureHttpGet.get(url, (con, is) ->
-                    readResponseStream(is));
+            String response = futureHttpGet.getAsString(url, (con, s) -> s);
+
 
             final JSONObject jsonObject = new JSONObject(response);
             int numFound = jsonObject.optInt("numFound");
@@ -370,8 +363,7 @@ public class OpenLibrarySearchEngine
 
             // "/books/OL22853304M.json"
             final String editionUrl = getHostUrl(context) + key + ".json";
-            response = futureHttpGet.get(editionUrl, (con, is) ->
-                    readResponseStream(is));
+            response = futureHttpGet.getAsString(url, (con, s) -> s);
 
             parse(context, new JSONObject(response), fetchCovers, book);
 
@@ -382,25 +374,6 @@ public class OpenLibrarySearchEngine
         }
 
         Series.checkForSeriesNameInTitle(book);
-    }
-
-    /**
-     * Read the entire InputStream into a String.
-     *
-     * @param is to read
-     *
-     * @return the entire content
-     *
-     * @throws UncheckedIOException on any failure
-     */
-    @NonNull
-    private String readResponseStream(@NonNull final InputStream is)
-            throws UncheckedIOException {
-        // Don't close this stream!
-        final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        final BufferedReader reader = new BufferedReader(isr);
-
-        return reader.lines().collect(Collectors.joining());
     }
 
     /**
@@ -773,8 +746,7 @@ public class OpenLibrarySearchEngine
                 final String key = element.optString("key", null);
                 if (key != null && !key.isEmpty()) {
                     final String authorUrl = getHostUrl(context) + key + ".json";
-                    final String response = futureHttpGet.get(authorUrl, (con, is) ->
-                            readResponseStream(is));
+                    final String response = futureHttpGet.getAsString(authorUrl, (con, s) -> s);
                     final JSONObject jsonObject = new JSONObject(response);
                     final String name = jsonObject.optString("name", null);
                     if (name != null && !name.isEmpty()) {
@@ -959,7 +931,7 @@ public class OpenLibrarySearchEngine
      * </pre>
      *
      * @param document to parse
-     * @param book    to update
+     * @param book     to update
      */
     private void parseIdentifiers(@NonNull final JSONObject document,
                                   @NonNull final Book book) {
@@ -1080,16 +1052,14 @@ public class OpenLibrarySearchEngine
         String response;
         try {
             // get and store the result into a string.
-            response = futureHttpGet.get(url, (con, is) ->
-                    readResponseStream(is));
+            response = futureHttpGet.getAsString(url, (con, s) -> s);
 
             final JSONObject jsonObject = new JSONObject(response);
             final JSONArray works = jsonObject.optJSONArray("works");
             if (works != null && !works.isEmpty()) {
                 final String worksKey = works.getJSONObject(0).optString("key");
                 url = getHostUrl(context) + worksKey + "/editions.json";
-                response = futureHttpGet.get(url, (con, is) ->
-                        readResponseStream(is));
+                response = futureHttpGet.getAsString(url, (con, s) -> s);
                 return parseEditions(new JSONObject(response));
             }
         } catch (@NonNull final StorageException | IOException | JSONException e) {

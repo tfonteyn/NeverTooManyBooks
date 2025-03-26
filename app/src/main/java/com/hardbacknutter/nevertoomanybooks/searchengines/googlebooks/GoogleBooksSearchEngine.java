@@ -28,14 +28,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +40,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
@@ -217,8 +211,7 @@ public class GoogleBooksSearchEngine
 
         try {
             // get and store the result into a string.
-            final String response = futureHttpGet.get(url, (con, is) ->
-                    readResponseStream(is));
+            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
 
             final JSONObject document = new JSONObject(response);
             // https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes
@@ -245,25 +238,6 @@ public class GoogleBooksSearchEngine
         } finally {
             futureHttpGet = null;
         }
-    }
-
-    /**
-     * Read the entire InputStream into a String.
-     *
-     * @param is to read
-     *
-     * @return the entire content
-     *
-     * @throws UncheckedIOException on any failure
-     */
-    @NonNull
-    private String readResponseStream(@NonNull final InputStream is)
-            throws UncheckedIOException {
-        // Don't close this stream!
-        final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        final BufferedReader reader = new BufferedReader(isr);
-
-        return reader.lines().collect(Collectors.joining());
     }
 
     /**

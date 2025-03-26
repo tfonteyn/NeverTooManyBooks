@@ -26,12 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashSet;
@@ -41,7 +36,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
@@ -232,8 +226,7 @@ public class GoodreadsSearchEngine
 
         try {
             // get and store the result into a string.
-            final String response = futureHttpGet.get(url, (con, is) ->
-                    readResponseStream(is));
+            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
 
             final JSONArray responseArray = new JSONArray(response);
             if (!responseArray.isEmpty()) {
@@ -252,25 +245,6 @@ public class GoodreadsSearchEngine
         }
 
         return 0;
-    }
-
-    /**
-     * Read the entire InputStream into a String.
-     *
-     * @param is to read
-     *
-     * @return the entire content
-     *
-     * @throws UncheckedIOException on any failure
-     */
-    @NonNull
-    private String readResponseStream(@NonNull final InputStream is)
-            throws UncheckedIOException {
-        // Don't close this stream!
-        final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        final BufferedReader reader = new BufferedReader(isr);
-
-        return reader.lines().collect(Collectors.joining());
     }
 
     @VisibleForTesting
