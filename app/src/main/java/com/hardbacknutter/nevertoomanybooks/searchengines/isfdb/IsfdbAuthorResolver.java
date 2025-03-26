@@ -26,8 +26,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -36,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -72,11 +69,13 @@ public final class IsfdbAuthorResolver
         // The engine is hardcoded/defined with the identifier,
         // but the author-uri can be absent
         //noinspection OptionalGetWithoutIsPresent
-        authorUri = searchEngine.getEngineId()
-                                .getIdentifier().get()
-                                .getAuthorUri(context).orElse(null);
+        authorUri = this.searchEngine.getEngineId()
+                                     .getIdentifier().get()
+                                     .getAuthorUri(context)
+                                     .orElse(null);
 
-        authorSearchUrl = searchEngine.getHostUrl(context) + "/cgi-bin/se.cgi?arg=%s&type=Name";
+        authorSearchUrl = this.searchEngine.getHostUrl(context)
+                          + "/cgi-bin/se.cgi?arg=%s&type=Name";
     }
 
     /**
@@ -146,8 +145,8 @@ public final class IsfdbAuthorResolver
             throws SearchException, CredentialsException {
 
         final String url = String.format(authorSearchUrl, names);
-        final Document document = searchEngine.loadDocument(context, url,
-                                                            IsfdbSearchEngine.REQUEST_PROPERTIES);
+        final Document document = searchEngine.loadDocument(
+                context, url, IsfdbSearchEngine.REQUEST_PROPERTIES);
         if (!searchEngine.isCancelled()) {
             return parse(context, document);
         }
@@ -163,8 +162,8 @@ public final class IsfdbAuthorResolver
             return null;
         }
         final String url = String.format(authorUri, sid);
-        final Document document = searchEngine.loadDocument(context, url,
-                                                            IsfdbSearchEngine.REQUEST_PROPERTIES);
+        final Document document = searchEngine.loadDocument(
+                context, url, IsfdbSearchEngine.REQUEST_PROPERTIES);
         if (!searchEngine.isCancelled()) {
             return parse(context, document);
         }
@@ -258,10 +257,9 @@ public final class IsfdbAuthorResolver
         return null;
     }
 
-    public void parseExtraData(@NonNull final Element root,
-                               @NonNull final Author author) {
+    private void parseExtraData(@NonNull final Element root,
+                                @NonNull final Author author) {
 
-        final List<Tag> tags = new ArrayList<>();
         String birthPlace = null;
         String birthDate = null;
         String deathDate = null;
@@ -310,15 +308,8 @@ public final class IsfdbAuthorResolver
                     case "Additional Bibliographic Comments:":
                         break;
                     case "Author Tags:":
-                        final Elements as = li.select("a");
-                        for (final Element a : as) {
-                            final String text = a.text();
-                            if (!text.startsWith("View all tags")) {
-                                tags.add(new Tag(text));
-                            }
-                        }
+                        // these come from the books, skip them.
                         break;
-
                 }
             }
         }
@@ -327,6 +318,5 @@ public final class IsfdbAuthorResolver
         Log.d(TAG, "birthPlace: " + birthPlace);
         Log.d(TAG, "birthDate: " + birthDate);
         Log.d(TAG, "deathDate: " + deathDate);
-        Log.d(TAG, "tags: " + tags);
     }
 }
