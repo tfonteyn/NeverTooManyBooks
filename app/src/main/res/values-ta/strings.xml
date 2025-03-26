@@ -626,6 +626,7 @@
     <string name="pt_search_reformat_format">“புத்தக வடிவமைப்பு” பெயர்களை தரப்படுத்தவும்</string>
     <string name="pt_search_reformat_color">“புத்தக வண்ணம்” பெயர்களை தரப்படுத்தவும்</string>
     <string name="pt_search_uses_publisher">தேடல் வெளியீட்டாளரைப் பயன்படுத்துகிறது</string>
+    <string name="pt_search_resolve_authors">ஆசிரியர் புனைப்பெயர்களைத் தீர்க்கவும்</string>
     <string name="pt_search_resolve_authors_bedetheque">பெடெத்தெக் வலைத்தளத்தைப் பயன்படுத்தி ஆசிரியர் பேனா-பெயர்களை தீர்க்கவும்</string>
     <string name="pt_bedetheque_search_resolve_formats">பெடெதெக் (பிரஞ்சு) வடிவத்தை பெயரிடுதல்</string>
     <string name="pt_main_author_type">முதன்மை ஆசிரியர் வகை</string>

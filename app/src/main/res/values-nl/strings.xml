@@ -639,7 +639,8 @@
     <string name="pt_search_prefer_isbn10">Gebruik ISBN-10 indien mogelijk</string>
     <string name="pt_search_reformat_color">Standaardiseer namen van „boekkleuren”</string>
     <string name="pt_search_reformat_format">Standaardiseer namen van „boekformaten”</string>
-    <string name="pt_search_resolve_authors_bedetheque">Los auteursnamen op met behulp van de Bedetheque-website</string>
+    <string name="pt_search_resolve_authors">Auteurspseudoniemen oplossen</string>
+    <string name="pt_search_resolve_authors_bedetheque">Los auteurspseudoniemen op met behulp van de Bedetheque-website</string>
     <string name="pt_search_uses_publisher">Zoeken maakt gebruik van de uitgever</string>
     <string name="pt_show_title_reordered">Toon titels als…</string>
     <string name="pt_sort_title_reordered">Sorteer titels op</string>

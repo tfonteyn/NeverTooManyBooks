@@ -254,4 +254,5 @@
     <string name="lbl_original_language">Idioma original</string>
     <string name="action_restore_default_identifiers">Restaurar os identificadores padrão</string>
     <string name="site_description_czech">Tcheco e muito mais</string>
+    <string name="pt_search_resolve_authors">Resolver pseudônimos de autores</string>
 </resources>

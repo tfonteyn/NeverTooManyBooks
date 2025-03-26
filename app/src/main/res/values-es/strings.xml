@@ -731,6 +731,7 @@
     <string name="lbl_author_is_a_pen_name_of">Este es un seudónimo de:</string>
     <string name="vldt_real_author_must_be_valid">Debe estar en blanco o ser un autor existente</string>
     <string name="confirm_create_real_author">«%1$s» aún no existe. ¿Deberían crearse?</string>
+    <string name="pt_search_resolve_authors">Resolver los seudónimos de los autores</string>
     <string name="pt_search_resolve_authors_bedetheque">Resuelva los seudónimos de los autores utilizando el sitio web Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Preservar la nomenclatura en formato Bedetheque (francés)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Sustituir el autor de todas las entradas por el autor principal del libro «%1$s» ?</string>

@@ -744,7 +744,8 @@
     <string name="lbl_author_is_a_pen_name_of">Toto je pseudonym:</string>
     <string name="vldt_real_author_must_be_valid">Musí být prázdné nebo existující Autor</string>
     <string name="confirm_create_real_author">„%1$s“ zatím neexistuje. Měly by být vytvořeny?</string>
-    <string name="pt_search_resolve_authors_bedetheque">Vyřešte pseudonymy autorů pomocí webových stránek Bedetheque</string>
+    <string name="pt_search_resolve_authors">Řešení pseudonymů autorů</string>
+    <string name="pt_search_resolve_authors_bedetheque">Řešení pseudonymů autorů pomocí webu Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovat pojmenování ve formátu Bedetheque (francouzský)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Nahradit autora u všech záznamů hlavním autorem knihy „%1$s“ ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Všechny knihy pod tímto řádkem mají obálky. Hledat znovu shora?</string>

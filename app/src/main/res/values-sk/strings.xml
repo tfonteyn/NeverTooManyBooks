@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -422,7 +425,8 @@
     <string name="pt_search_reformat_color">Štandardizovať názvy farieb knihy</string>
     <string name="pt_search_prefer_isbn10">Ak je to možné, použiť ISBN-10</string>
     <string name="pt_collect_series_info_from_toc">Zhromažďovať informácie o sérii z prehľadu obsahu</string>
-    <string name="pt_search_resolve_authors_bedetheque">Rozlíšiť pseudonymy autora pomocou webovej stránky Bedetheque</string>
+    <string name="pt_search_resolve_authors">Riešenie pseudonymov autorov</string>
+    <string name="pt_search_resolve_authors_bedetheque">Riešenie pseudonymov autorov pomocou webovej stránky Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovať názvoslovie (francúzskeho) formátu Bedetheque</string>
     <string name="pt_main_author_type">Primárny typ autora</string>
     <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>

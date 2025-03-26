@@ -736,6 +736,7 @@
     <string name="lbl_author_is_a_pen_name_of">Questo è uno pseudonimo di:</string>
     <string name="vldt_real_author_must_be_valid">Deve essere vuoto o deve essere un autore esistente</string>
     <string name="confirm_create_real_author">“%1$s” non esiste ancora. Devono essere creati?</string>
+    <string name="pt_search_resolve_authors">Risolvere gli pseudonimi degli autori</string>
     <string name="pt_search_resolve_authors_bedetheque">Risolvi gli pseudonimi degli autori utilizzando il sito Web di Bedetheque</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserva la denominazione del formato Bedetheque (francese)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Sostituire l’autore di tutte le voci con l’autore principale del libro «%1$s» ?</string>
