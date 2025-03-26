@@ -371,15 +371,30 @@ public abstract class FutureHttpBase<T> {
                 HttpURLConnection request = null;
                 try {
                     final URL url = new URL(urlStr);
-
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger().d(TAG, "execute|createRequest");
+                    }
                     request = createRequest(url, method, doOutput);
 
                     // The request is now ready to be connected/used,
                     // pass control to the specific method
                     return action.apply(request);
 
+                } catch (@NonNull final IOException e) {
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger().d(TAG, "execute|IOException: " + e);
+                    }
+                    throw e;
+                } catch (@NonNull final RuntimeException e) {
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger().d(TAG, "execute|RuntimeException: " + e);
+                    }
+                    throw e;
                 } finally {
                     if (request != null) {
+                        if (isLoggingEnabled()) {
+                            LoggerFactory.getLogger().d(TAG, "execute|disconnect");
+                        }
                         request.disconnect();
                     }
                 }
