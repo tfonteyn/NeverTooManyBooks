@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.9.0"
+androidGradlePlugin = "8.9.1"
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
 androidKotlinPlugin = "2.1.10"
 # https://github.com/mannodermaus/android-junit5
@@ -12,7 +12,7 @@ mannodermaus = "1.7.0"
 androidxActivity = "1.10.1"
 androidxAnnotation = '1.9.1'
 androidxAppcompat = '1.7.0'
-androidxCamerax = "1.4.1"
+androidxCamerax = "1.4.2"
 androidxCardview = "1.0.0"
 androidxCollection = '1.5.0'
 androidxConstraintlayoutCore = "1.1.1"
@@ -20,7 +20,7 @@ androidxConstraintlayout = "2.2.1"
 androidxCoordinatorlayout = "1.3.0"
 androidxCoreSplashscreen = '1.0.1'
 androidxCore = '1.15.0'
-androidxCustomview = "1.2.0-alpha02"
+androidxCustomview = "1.2.0-beta01"
 androidxDocumentfile = "1.1.0-alpha01"
 androidxDrawerlayout = "1.2.0"
 androidxExifinterface = "1.4.0"
