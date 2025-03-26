@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,7 +77,7 @@ public class FutureHttpGetBase<T>
     /**
      * Perform the actual opening of the connection.
      * <p>
-     * If the site fails to connect, we will retry up to {@link #NR_OF_TRIES}.
+     * If the site fails to connect, we will attempt up to {@link #NR_OF_TRIES}.
      * This is always enabled.
      * <p>
      * If the site sends a redirect which Android (in it's mysterious ways...) interprets
@@ -97,21 +97,21 @@ public class FutureHttpGetBase<T>
     protected HttpURLConnection connect(@NonNull final HttpURLConnection initialRequest)
             throws IOException {
 
-        int retry;
+        int attempt;
         // sanity check
         if (nrOfTries > 0) {
-            retry = nrOfTries;
+            attempt = nrOfTries;
         } else {
-            retry = NR_OF_TRIES;
+            attempt = NR_OF_TRIES;
         }
 
-        while (retry > 0) {
+        while (attempt > 0) {
             // Preserve for a potential manual redirect
             String requestUrlStr = initialRequest.getURL().toString();
 
             if (isLoggingEnabled()) {
                 LoggerFactory.getLogger().d(TAG, "Connect",
-                                            "retry=" + retry,
+                                            "attempt=" + attempt,
                                             "url=" + requestUrlStr);
             }
 
@@ -134,7 +134,7 @@ public class FutureHttpGetBase<T>
 
                     if (isLoggingEnabled()) {
                         LoggerFactory.getLogger().d(TAG, "Response",
-                                                    "retry=" + retry,
+                                                    "attempt=" + attempt,
                                                     "redirectCount=" + redirectCount,
                                                     "responseCode=" + req.getResponseCode(),
                                                     "responseUrlStr=" + responseUrlStr);
@@ -154,7 +154,7 @@ public class FutureHttpGetBase<T>
 
                         if (isLoggingEnabled()) {
                             LoggerFactory.getLogger().d(TAG, "Connect",
-                                                        "retry=" + retry,
+                                                        "attempt=" + attempt,
                                                         "redirectCount=" + redirectCount,
                                                         "requestUrlStr=" + requestUrlStr);
                         }
@@ -211,12 +211,12 @@ public class FutureHttpGetBase<T>
                 if (isLoggingEnabled()) {
                     LoggerFactory.getLogger().e(TAG, e,
                                                 "Recoverable error",
-                                                "retry=" + retry,
+                                                "attempt=" + attempt,
                                                 "url=`" + initialRequest.getURL() + '`');
                 }
 
-                retry--;
-                if (retry == 0) {
+                attempt--;
+                if (attempt == 0) {
                     initialRequest.disconnect();
                     throw e;
                 }
