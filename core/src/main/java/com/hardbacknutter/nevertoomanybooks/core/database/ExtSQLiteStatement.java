@@ -233,6 +233,8 @@ public class ExtSQLiteStatement
     /**
      * Execute this SQL statement, if it is not a SELECT / INSERT / DELETE / UPDATE, for example
      * CREATE / DROP table, view, trigger, index etc.
+     * <p>
+     * <strong>2025-03-27: Currently only used by FTS insert/update.</strong>
      */
     public void execute() {
         if (BuildConfig.DEBUG && DEBUG_FLAGS.DEBUG_EXEC_SQL) {
@@ -252,12 +254,13 @@ public class ExtSQLiteStatement
      * Execute this SQL statement, if the number of rows affected by execution of this SQL
      * statement is of any importance to the caller - for example, UPDATE / DELETE SQL statements.
      * <p>
-     * <strong>IMPORTANT: 2023-12-05: ALL SQLException AND RuntimeException's
-     * are swallowed (but written to the logfile) and a {@code -1} is returned.
-     * This means that callers no longer need to take any RuntimeException into account.
-     * Just check for {@code -1} which finally simplifies their logic!</strong>
+     * <strong>IMPORTANT: SQLException/RuntimeException 's are swallowed but logged
+     * and a {@code -1} is returned.</strong>
      * <p>
-     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
+     * <strong>SQLiteFullException</strong>: we're ignoring/logging with the assumption
+     * that if the device has no space left, the user will notice this during general usage.
+     * <p>
+     * URGENT: SQLiteConstraintException would indicate a BUG -> RETHROW IT?
      *
      * @return the number of rows affected by this SQL statement execution,
      *         or {@code -1} if an error occurred
@@ -288,12 +291,13 @@ public class ExtSQLiteStatement
      * Execute this SQL statement and return the id of the row inserted due to this call.
      * The SQL statement should be an INSERT for this to be a useful call.
      * <p>
-     * <strong>IMPORTANT: 2023-12-05: ALL SQLException AND RuntimeException's
-     * are swallowed (but written to the logfile) and a {@code -1} is returned.
-     * This means that callers no longer need to take any RuntimeException into account.
-     * Just check for {@code -1} which finally simplifies their logic!</strong>
+     * <strong>IMPORTANT: SQLException/RuntimeException 's are swallowed but logged
+     * and a {@code -1} is returned.</strong>
      * <p>
-     * URGENT: catch SQLiteFullException, SQLiteConstraintException and throw DaoUpdateException?
+     * <strong>SQLiteFullException</strong>: we're ignoring/logging with the assumption
+     * that if the device has no space left, the user will notice this during general usage.
+     * <p>
+     * URGENT: SQLiteConstraintException would indicate a BUG -> RETHROW IT?
      *
      * @return the row id of the newly inserted row,
      *         or {@code -1} if an error occurred
