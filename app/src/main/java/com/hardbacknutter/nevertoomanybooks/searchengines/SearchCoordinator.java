@@ -132,7 +132,10 @@ public class SearchCoordinator
     /** Original ISBN text for search. */
     @NonNull
     private String isbnSearchText = "";
-    /** {@code true} for strict ISBN checking, {@code false} for allowing generic codes. */
+    /**
+     * {@code true} for strict ISBN checking,
+     * {@code false} for allowing other valid generic codes.
+     */
     private boolean strictIsbn = true;
     /**
      * Created by {@link #prepareSearch()} from {@link #isbnSearchText}.
@@ -141,7 +144,7 @@ public class SearchCoordinator
     private ISBN isbn;
     /** Site external id for search. */
     @Nullable
-    private Map<EngineId, String> externalIdSearchText;
+    private Map<EngineId, String> sidSearchText;
 
     /** Whether of not to fetch thumbnails. */
     @Nullable
@@ -535,24 +538,24 @@ public class SearchCoordinator
     /**
      * Search the given engine with the site specific book id.
      *
-     * @param engineId             to use
-     * @param externalIdSearchText to search for
+     * @param engineId to use
+     * @param sid      to search for
      *
      * @return {@code true} if the search was started.
      *
-     * @throws IllegalArgumentException if externalIdSearchText was invalid
+     * @throws IllegalArgumentException if {@link #sidSearchText} was invalid
      */
     public boolean searchByExternalId(@NonNull final EngineId engineId,
-                                      @NonNull final String externalIdSearchText) {
-        if (externalIdSearchText.isEmpty()) {
-            throw new IllegalArgumentException("externalIdSearchText.isEmpty()");
+                                      @NonNull final String sid) {
+        if (sid.isEmpty()) {
+            throw new IllegalArgumentException("sid.isEmpty()");
         }
 
         // remove all other criteria (this is CRUCIAL)
         clearSearchCriteria();
 
-        this.externalIdSearchText = new EnumMap<>(EngineId.class);
-        this.externalIdSearchText.put(engineId, externalIdSearchText);
+        this.sidSearchText = new EnumMap<>(EngineId.class);
+        this.sidSearchText.put(engineId, sid);
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         prepareSearch();
@@ -621,7 +624,7 @@ public class SearchCoordinator
 
             if (criteria.isEmpty()
                 && isbnSearchText.isEmpty()
-                && (externalIdSearchText == null || externalIdSearchText.isEmpty())) {
+                && (sidSearchText == null || sidSearchText.isEmpty())) {
                 throw new IllegalArgumentException("Nothing to search for");
             }
         }
@@ -638,7 +641,7 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "prepareSearch",
-                                        "externalIdSearchText=" + externalIdSearchText
+                                        "sidSearchText=" + sidSearchText
                                         + "|isbnSearchText=" + isbnSearchText
                                         + "|isbn=" + isbn
                                         + "|strictIsbn=" + strictIsbn
@@ -717,18 +720,18 @@ public class SearchCoordinator
         task.setFetchCovers(fetchCovers);
 
         // check for a external id matching the site.
-        String externalId = null;
-        if (externalIdSearchText != null
-            && !externalIdSearchText.isEmpty()) {
-            if (externalIdSearchText.get(engineId) != null) {
-                externalId = externalIdSearchText.get(engineId);
+        String sid = null;
+        if (sidSearchText != null
+            && !sidSearchText.isEmpty()) {
+            if (sidSearchText.get(engineId) != null) {
+                sid = sidSearchText.get(engineId);
             }
         }
 
-        if (externalId != null && !externalId.isEmpty()
+        if (sid != null && !sid.isEmpty()
             && engineId.supports(SearchEngine.SearchBy.ExternalId)) {
             task.setSearchBy(SearchEngine.SearchBy.ExternalId);
-            task.setExternalId(externalId);
+            task.setExternalId(sid);
 
         } else if (isbn.isValid(true)
                    && engineId.supports(SearchEngine.SearchBy.Isbn)) {
@@ -769,12 +772,12 @@ public class SearchCoordinator
     /**
      * Search criteria.
      *
-     * @param externalIds one or more ID's
-     *                    The key is the engine id,
-     *                    The value us the value of the external domain for that engine
+     * @param sids one or more ID's
+     *             The key is the engine id,
+     *             The value is the SID for that engine
      */
-    protected void setExternalIds(@Nullable final Map<EngineId, String> externalIds) {
-        externalIdSearchText = externalIds;
+    protected void setExternalIds(@Nullable final Map<EngineId, String> sids) {
+        sidSearchText = sids;
     }
 
     /**
@@ -790,7 +793,7 @@ public class SearchCoordinator
      * Clear all search criteria.
      */
     public void clearSearchCriteria() {
-        externalIdSearchText = null;
+        sidSearchText = null;
         criteria.clear();
     }
 
@@ -876,7 +879,7 @@ public class SearchCoordinator
         prepareSearch();
 
         // If we have one or more ID's
-        if (externalIdSearchText != null && !externalIdSearchText.isEmpty()
+        if (sidSearchText != null && !sidSearchText.isEmpty()
             // or we have a valid code
             || isbn.isValid(strictIsbn)) {
 
@@ -907,6 +910,12 @@ public class SearchCoordinator
         this.isbnSearchText = isbnSearchText;
     }
 
+    /**
+     * Search criteria.
+     *
+     * @return {@code true} for strict ISBN checking,
+     *         {@code false} for allowing other valid generic codes.
+     */
     public boolean isStrictIsbn() {
         return strictIsbn;
     }
@@ -914,8 +923,8 @@ public class SearchCoordinator
     /**
      * Search criteria.
      *
-     * @param strictIsbn Flag: set to {@code false} to allow invalid isbn numbers
-     *                   to be passed to the searches
+     * @param strictIsbn {@code true} for strict ISBN checking,
+     *                   {@code false} for allowing other valid generic codes.
      */
     public void setStrictIsbn(final boolean strictIsbn) {
         this.strictIsbn = strictIsbn;
@@ -1144,7 +1153,7 @@ public class SearchCoordinator
      * Each time we format the code, methods and variables jump around.
      * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
      */
-    private class SearchTaskListener
+    private final class SearchTaskListener
             implements TaskListener<Book> {
 
         @Override
