@@ -533,7 +533,6 @@ public abstract class SearchEngineBase
             return;
         }
 
-        // This is a little silly micro-optimization which we can/should remove...
         if (dateStr.length() == 4) {
             // we have a 4-digit year, use the simplified notation.
             try {
@@ -550,6 +549,22 @@ public abstract class SearchEngineBase
                 .ifPresent(book::setPublicationDate);
     }
 
+    /**
+     * Process the first-publication-date field according to the given site locale.
+     * <p>
+     * If the given date-string consists of 4 characters, it is assumed it's
+     * a year-value and the simplified form will be set on the book.
+     * Otherwise full parsing is done.
+     * <p>
+     * Note that the input <strong>MUST</strong> be either a 4-digit year,
+     * or a full-date string in one of the supported formats.
+     * Partial date-strings will <strong>FAIL</strong>
+     *
+     * @param context Current context
+     * @param locale  for parsing
+     * @param dateStr the date field as retrieved
+     * @param book    Bundle to update
+     */
     public void addFirstPublicationDate(@NonNull final Context context,
                                         @NonNull final Locale locale,
                                         @Nullable final String dateStr,
