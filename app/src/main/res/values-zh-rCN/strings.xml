@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») -->
-<!--suppress LongLine --><resources>
+<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <plurals name="n_stars">
         <item quantity="other">%1$s星</item>
     </plurals>
@@ -848,4 +844,5 @@
     <string name="action_restore_default_identifiers">恢复默认识别符</string>
     <string name="pt_bob_show_group_book_count">显示每组中的书籍数。</string>
     <string name="site_description_czech">捷克语及更多</string>
+    <string name="pt_search_resolve_authors">解析作者笔名</string>
 </resources>
