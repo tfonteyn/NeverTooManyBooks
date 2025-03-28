@@ -21,12 +21,8 @@
 package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
@@ -48,10 +44,8 @@ public class IdentifiersEditorViewModel
 
     /**
      * Pseudo constructor.
-     *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    void init(@Nullable final Bundle args) {
+    void init() {
         if (identifierDao == null) {
             identifierDao = ServiceLocator.getInstance().getIdentifierDao();
         }
@@ -71,6 +65,11 @@ public class IdentifiersEditorViewModel
         modified = true;
     }
 
+    void refreshList() {
+        identifiers.clear();
+        identifiers.addAll(identifierDao.getAll());
+    }
+
     @NonNull
     List<Identifier> getIdentifiers() {
         return identifiers;
@@ -81,5 +80,13 @@ public class IdentifiersEditorViewModel
         identifierDao.restore(context);
         identifiers.clear();
         identifiers.addAll(identifierDao.getAll());
+        setModified();
+    }
+
+    void delete(@NonNull final Identifier identifier) {
+        identifierDao.delete(identifier);
+        identifiers.remove(identifier);
+        // brute force... the user modified something
+        setModified();
     }
 }

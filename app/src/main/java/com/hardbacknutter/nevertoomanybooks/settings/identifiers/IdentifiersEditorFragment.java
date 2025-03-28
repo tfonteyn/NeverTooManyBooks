@@ -21,7 +21,9 @@
 package com.hardbacknutter.nevertoomanybooks.settings.identifiers;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,11 +32,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IdRes;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,12 +50,25 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditIdentifiersBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditIdentifierBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.identifier.EditIdentifierBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.identifier.EditIdentifierDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
+import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
+import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 @Keep
@@ -59,18 +77,48 @@ public class IdentifiersEditorFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "IdentifiersEditorFrag";
+    private static final String RK_MENU = TAG + ":rk:menu";
+    private static final int POS_NEW_ENTRY = -1;
 
     private IdentifiersEditorViewModel vm;
     /** View Binding. */
     private FragmentEditIdentifiersBinding vb;
     private IdentifierAdapter adapter;
+    private ExtMenuLauncher menuLauncher;
+    private EditParcelableLauncher<Identifier> editLauncher;
+
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback backPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    final Intent resultIntent = SettingsOutput.createResult(
+                            false,
+                            vm.isModified());
+                    //noinspection DataFlowIssue
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().finish();
+                }
+            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(IdentifiersEditorViewModel.class);
-        vm.init(getArguments());
+        vm.init();
+
+        final FragmentManager fm = getChildFragmentManager();
+
+        editLauncher = new EditParcelableLauncher<>(
+                DBKey.FK_IDENTIFIER,
+                EditIdentifierDialogFragment::new,
+                EditIdentifierBottomSheet::new);
+        editLauncher.setOnEditInPlaceListener(this::onEditEntryDone);
+        editLauncher.registerForFragmentResult(fm, this);
+
+        menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
+        menuLauncher.registerForFragmentResult(fm, this);
     }
 
     @Nullable
@@ -89,6 +137,10 @@ public class IdentifiersEditorFragment
         // Allow edge-to-edge for the root view, but apply margin insets to the list itself.
         InsetsListenerBuilder.apply(vb.list);
 
+        //noinspection DataFlowIssue
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_identifiers);
 
@@ -104,11 +156,88 @@ public class IdentifiersEditorFragment
 
         adapter = new IdentifierAdapter(context, vm.getIdentifiers());
 
+        adapter.setOnRowClickListener((v, position) -> editEntry(position));
+        adapter.setOnRowShowMenuListener(
+                ExtMenuButton.getPreferredMode(context),
+                (v, position) -> {
+                    final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
+
+                    //noinspection DataFlowIssue
+                    final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
+                    if (menuMode.isPopup()) {
+                        new ExtMenuPopupWindow(v.getContext())
+                                .setListener(this::onMenuItemSelected)
+                                .setMenuOwner(position)
+                                .setMenu(menu, true)
+                                .show(v, menuMode);
+                    } else {
+                        menuLauncher.launch(getActivity(), null, null, position, menu, true);
+                    }
+                });
+
         vb.list.setAdapter(adapter);
     }
 
+    /**
+     * Menu selection listener.
+     *
+     * @param position   in the list
+     * @param menuItemId The menu item that was invoked.
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onMenuItemSelected(final int position,
+                                       @IdRes final int menuItemId) {
+
+        if (menuItemId == R.id.MENU_EDIT) {
+            editEntry(position);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_DELETE) {
+            deleteEntry(position);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Start the fragment dialog to edit an entry.
+     *
+     * @param position the position of the item; use {@link #POS_NEW_ENTRY} for a new entry.
+     */
+    private void editEntry(final int position) {
+        final Identifier identifier;
+        if (position == POS_NEW_ENTRY) {
+            identifier = new Identifier("");
+        } else {
+            identifier = vm.getIdentifiers().get(position);
+        }
+        //noinspection DataFlowIssue
+        editLauncher.editInPlace(getContext(), identifier);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void onEditEntryDone(@NonNull final Identifier identifier) {
+        vm.refreshList();
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Prompt the user to delete the given item.
+     *
+     * @param position the position of the item
+     */
+    private void deleteEntry(final int position) {
+        final Identifier identifier = vm.getIdentifiers().get(position);
+        //noinspection DataFlowIssue
+        StandardDialogs.deleteIdentifier(getContext(), identifier, () -> {
+            vm.delete(identifier);
+            adapter.notifyItemRemoved(position);
+        });
+    }
+
     private static class Holder
-            extends RecyclerView.ViewHolder {
+            extends RowViewHolder {
 
         @NonNull
         private final RowEditIdentifierBinding vb;
@@ -143,6 +272,12 @@ public class IdentifiersEditorFragment
         private final List<Identifier> identifiers;
         private final LayoutInflater inflater;
         private final HtmlFormatter<String> htmlFormatter;
+        @Nullable
+        private OnRowClickListener rowClickListener;
+        @Nullable
+        private OnRowClickListener rowShowMenuListener;
+        @Nullable
+        private ExtMenuButton contextMenuMode;
 
         IdentifierAdapter(@NonNull final Context context,
                           @NonNull final List<Identifier> identifiers) {
@@ -153,13 +288,39 @@ public class IdentifiersEditorFragment
                     .setEnableLinks(true);
         }
 
+        /**
+         * Set the {@link OnRowClickListener} for a click on a row.
+         * This listener will be propagated to all row ViewHolders.
+         *
+         * @param listener to set
+         */
+        void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
+            this.rowClickListener = listener;
+        }
+
+        /**
+         * Set the {@link OnRowClickListener} for showing the context menu on a row.
+         * This listener will be propagated to all row ViewHolders.
+         *
+         * @param contextMenuMode how to show context menus
+         * @param listener        to receive clicks
+         */
+        void setOnRowShowMenuListener(@NonNull final ExtMenuButton contextMenuMode,
+                                      @Nullable final OnRowClickListener listener) {
+            this.rowShowMenuListener = listener;
+            this.contextMenuMode = contextMenuMode;
+        }
+
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
             final RowEditIdentifierBinding vb = RowEditIdentifierBinding
                     .inflate(inflater, parent, false);
-            return new Holder(vb, htmlFormatter);
+            final Holder holder = new Holder(vb, htmlFormatter);
+            holder.setOnRowClickListener(rowClickListener);
+            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
+            return holder;
         }
 
         @Override
@@ -179,13 +340,23 @@ public class IdentifiersEditorFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
+
+            menu.add(Menu.NONE, R.id.MENU_ACTION_ADD, 0, R.string.action_add)
+                .setIcon(R.drawable.add_24px)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_restore_default_identifiers);
         }
 
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            if (menuItem.getItemId() == R.id.MENU_RESET) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_ACTION_ADD) {
+                editEntry(POS_NEW_ENTRY);
+                return true;
+
+            } else if (itemId == R.id.MENU_RESET) {
                 try {
                     //noinspection DataFlowIssue
                     vm.restoreBuiltin(getContext());
@@ -193,7 +364,6 @@ public class IdentifiersEditorFragment
                 } catch (@NonNull final DaoWriteException e) {
                     ErrorDialog.show(getContext(), TAG, e);
                 }
-
                 return true;
             }
             return false;

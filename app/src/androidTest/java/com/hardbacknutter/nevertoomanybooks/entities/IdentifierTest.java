@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.UrlPatterns;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -34,6 +35,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("MissingJavadoc")
 public class IdentifierTest
@@ -60,6 +62,29 @@ public class IdentifierTest
                     1,
                     PATTERN.split(bookUri, -1).length - 1));
         });
+    }
 
+    @Test
+    public void validateSiteUrl() {
+        for (final Identifier identifier : Identifier.createInitialList(context)) {
+            final String url = identifier.getSiteUrl(context);
+            assertTrue(url, UrlPatterns.isBlankOrValidUrl(url));
+        }
+    }
+
+    @Test
+    public void validateBookUri() {
+        for (final Identifier identifier : Identifier.createInitialList(context)) {
+            final String uri = identifier.getBookUri(context).orElse("");
+            assertTrue(uri, UrlPatterns.isBlankOrValidUriWith1s(uri));
+        }
+    }
+
+    @Test
+    public void validateAuthorUri() {
+        for (final Identifier identifier : Identifier.createInitialList(context)) {
+            final String uri = identifier.getAuthorUri(context).orElse("");
+            assertTrue(uri, UrlPatterns.isBlankOrValidUriWith1s(uri));
+        }
     }
 }

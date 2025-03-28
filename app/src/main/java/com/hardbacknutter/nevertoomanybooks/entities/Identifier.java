@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
  * and an unknown identifier is always assumed to be a {@code TYPE_STRING}.
  */
 public class Identifier
-        implements Parcelable, Entity {
+        implements Parcelable, Entity, Mergeable {
 
     public static final String SID_ASIN = "asin";
     public static final String SID_AUDIBLE = "audible-asin";
@@ -116,16 +116,16 @@ public class Identifier
     };
 
     @NonNull
-    private final String key;
+    private String key;
     @NonNull
-    private final String name;
+    private String name;
     @Nullable
-    private final String siteUrl;
+    private String siteUrl;
     @Nullable
-    private final String bookUri;
+    private String bookUri;
     @Nullable
-    private final String authorUri;
-    private final char type;
+    private String authorUri;
+    private char type;
     private long id;
 
     /**
@@ -143,12 +143,22 @@ public class Identifier
     }
 
     /**
+     * Copy constructor.
+     *
+     * @param identifier to copy
+     */
+    public Identifier(final Identifier identifier) {
+        copyFrom(identifier);
+    }
+
+    /**
      * Constructor for the predefined Identifiers.
      * Will be used when updated app versions bring new and TESTED urls.
      *
      * @param key       a key(word) for this Identifier. e.g. "oclc"
-     *                  The size is not enforced, but should be {@link #MAX_KEY_LEN}
-     *                  characters max, preferably less.
+     *                  The size is not enforced when importing or coming from a website,
+     *                  but should be {@link #MAX_KEY_LEN} characters max, preferably less.
+     *                  The UI editor does enforce length and lowercase.
      * @param type      {@link #TYPE_STRING} or {@link #TYPE_LONG}
      * @param name      a short name
      * @param siteUrl   url to the main website page
@@ -462,6 +472,16 @@ public class Identifier
         return key;
     }
 
+    public void setKey(@NonNull final String key) {
+        this.key = key;
+    }
+
+    @NonNull
+    @Override
+    public List<String> getNameFields() {
+        return List.of(key, name);
+    }
+
     /**
      * Get the user displayable name.
      *
@@ -470,6 +490,10 @@ public class Identifier
     @NonNull
     public String getName() {
         return name;
+    }
+
+    public void setName(@NonNull final String name) {
+        this.name = name;
     }
 
     @NonNull
@@ -497,6 +521,18 @@ public class Identifier
         }
 
         return siteUrl;
+    }
+
+    public void setSiteUrl(@Nullable final String siteUrl) {
+        this.siteUrl = siteUrl;
+    }
+
+    public void setBookUri(@Nullable final String bookUri) {
+        this.bookUri = bookUri;
+    }
+
+    public void setAuthorUri(@Nullable final String authorUri) {
+        this.authorUri = authorUri;
     }
 
     /**
@@ -536,6 +572,20 @@ public class Identifier
         }
 
         return authorUri != null ? Optional.of(authorUri) : Optional.empty();
+    }
+
+    /**
+     * Replace local details from another Identifier.
+     *
+     * @param source to copy from
+     */
+    public void copyFrom(@NonNull final Identifier source) {
+        key = source.key;
+        type = source.type;
+        name = source.name;
+        siteUrl = source.siteUrl;
+        bookUri = source.bookUri;
+        authorUri = source.authorUri;
     }
 
     @Override

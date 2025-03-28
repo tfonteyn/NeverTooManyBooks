@@ -323,6 +323,11 @@
     <string name="vldt_non_blank_required_for_x">Non-empty value required for “%1$s”</string>
     <!-- The (param 1) field MUST be blank. (todo: is this actually used?) -->
     <string name="vldt_blank_required_for_x">Empty value required for “%1$s”</string>
+    <!-- The field must either be blank, or a valid URL -->
+    <string name="vldt_blank_or_valid_url_required">Empty value or valid URL required</string>
+    <!-- The field must either be blank, the literal string "%s", or a valid URL with a single "%s" embedded -->
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Empty value or valid URI required</string>
+
     <!-- Specific to a check on the "reading started" versus "reading ended" dates. -->
     <string name="vldt_read_start_after_end">The date reading started, is after the end date</string>
     <!-- Specific msg for when the user edits the 'real' name for an Author who normally uses a pseudonym. -->
@@ -2072,5 +2077,8 @@
             translatable="false">Tuning</string>
 
     <string name="action_restore_default_identifiers">Restore the default Identifiers</string>
+    <string name="lbl_identifier_key">Key</string>
+    <string name="lbl_book_uri">Book URI</string>
+    <string name="lbl_author_uri">Author URI</string>
 
 </resources>
