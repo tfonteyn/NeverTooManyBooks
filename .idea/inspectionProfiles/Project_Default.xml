@@ -263,6 +263,7 @@
           <option value="SlowListContainsAll" />
           <option value="FieldNotUsedInToString" />
           <option value="InnerClassFieldHidesOuterClassField" />
+          <option value="ReturnOfNull" />
         </list>
       </option>
     </inspection_tool>
