@@ -27,43 +27,43 @@ import androidx.annotation.Nullable;
 import java.util.regex.Pattern;
 
 /**
- * Seemingly very robust. The original here in the comment has been stripped
+ * Seemingly very robust. The original here in {@link #FULL} has been stripped
  * of some protocols and the 'localhost' string.
- * <p>
- * {@code java double \\
- * ^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$
- * }
- * {@code raw single \
- * ^(?:(?:http|https|ftp)://)(?:\S+(?::\S*)?@)?(?:(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[0-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))|localhost)(?::\d{2,5})?(?:(/|\?|#)[^\s]*)?$
- * }
  *
  * @see <a href="https://github.com/validatorjs/validator.js/tree/master/src/lib">
  *         validator.js</a>
  */
+@SuppressWarnings("RegExpUnnecessaryNonCapturingGroup")
 public final class UrlPatterns {
 
+    /**
+     * For doc only.
+     */
+    private static final String FULL =
+            "^"
+            + "(?!mailto:)"
+            + "(?:(?:http|https|ftp)://)"
+            + "(?:\\S+(?::\\S*)?@)?"
+            + "(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))"
+            + "|"
+            + "(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)"
+            + "(?::\\d{2,5})?"
+            + "(?:(/|\\?|#)[^\\s]*)?"
+            + "$";
+
+
     /** Redirecting to the browser. */
-    private static final String BROWSER_PROTOCOL = "^(?:http|https)://";
+    private static final String BROWSER_PROTOCOL = "^(?:(?:http|https)://)";
     /** Internal app usage is limited to https. */
-    private static final String APP_PROTOCOL = "^https://";
+    private static final String APP_PROTOCOL = "(?:(?:https)://)";
 
     private static final String USER_INFO = "(?:\\S+(?::\\S*)?@)?";
 
     private static final String IPV4 =
-            // 1st: 1..223
-            "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])"
-            // 2nd and 3rd same expression: 0..255
-            + "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}"
-            // 4th: 0..254
-            + "\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4])";
+            "(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))";
 
     private static final String HOST_DOMAIN =
-            "(?:[a-z\\u00a1-\\uffff0-9]+-?)*"
-            + "[a-z\\u00a1-\\uffff0-9]+"
-            + "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*"
-            + "\\."
-            // root, must be minimum 2 characters
-            + "[a-z\\u00a1-\\uffff]{2,}";
+            "(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)";
 
 
     private static final String PORT = "(?::\\d{2,5})?";
@@ -101,7 +101,7 @@ public final class UrlPatterns {
         if (url == null || url.isEmpty()) {
             return true;
         }
-        return SITE_URL_PATTERN.matcher(url).find();
+        return SITE_URL_PATTERN.matcher(url).matches();
     }
 
     /**
@@ -116,7 +116,7 @@ public final class UrlPatterns {
             return true;
         }
 
-        return APP_URL_PATTERN.matcher(uri).find()
+        return APP_URL_PATTERN.matcher(uri).matches()
                && containsOneStringParam(uri);
     }
 
