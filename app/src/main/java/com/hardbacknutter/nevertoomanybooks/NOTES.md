@@ -1,12 +1,17 @@
 Draft notes for next version:
 
-### 7.2.2
+### 7.3.0
 
 NEW:
 
-FIXES:
+- Identifier editor (for Advanced users)
+- Rating field uses a new component for cleaner displays
+- Bookshelves/Styles list editor improvement
+- Databazeknih option to enable/disable author pen-name resolution
 
+FIXES:
 - github #135: creating duplicate style names caused a crash
+- fixes for Android 8..10 devices where merging Authors (etc) would sometimes fail.
 
 REMOVED:
 
