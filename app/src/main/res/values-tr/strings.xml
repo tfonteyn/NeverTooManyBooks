@@ -862,4 +862,6 @@
     <string name="action_restore_default_identifiers">Varsayılan Tanımlayıcıları geri yükleme</string>
     <string name="lbl_select_style">Biçem seç</string>
     <string name="vldt_blank_or_valid_url_required">Boş değer veya geçerli URL gerekli</string>
+    <string name="lbl_book_uri">Kitap URL\'si</string>
+    <string name="lbl_author_uri">Yazar URL\'si</string>
 </resources>

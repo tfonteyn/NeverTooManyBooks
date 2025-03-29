@@ -854,4 +854,6 @@
     <string name="site_description_czech">Čeština a ďalšie</string>
     <!-- NOT APPLICABLE FOR BOOKS IN SLOVAK. MUST be set to a single vertical bar character. -->
     <string name="pv_reformat_titles_prefixes">"|"</string>
+    <string name="lbl_book_uri">Adresa URL knihy</string>
+    <string name="lbl_author_uri">Adresa URL autora</string>
 </resources>

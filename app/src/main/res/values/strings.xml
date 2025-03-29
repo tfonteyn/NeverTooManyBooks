@@ -2077,7 +2077,8 @@
             translatable="false">Tuning</string>
 
     <string name="action_restore_default_identifiers">Restore the default Identifiers</string>
-    <string name="lbl_identifier_key">Identifier Key</string>
+    <string name="lbl_identifier_key"
+            translatable="false">@string/lbl_identifier</string>
     <string name="lbl_book_uri">Book URL</string>
     <string name="lbl_author_uri">Author URL</string>
 

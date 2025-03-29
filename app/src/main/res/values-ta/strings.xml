@@ -851,5 +851,7 @@
     <string name="info_partial_date_picker">முன்னர் தேர்ந்தெடுக்கப்பட்ட மாதம் அல்லது நாளைத் தேர்ந்தெடுத்ததை நீக்க அதைத் தட்டவும்.</string>
     <string name="action_restore_default_identifiers">இயல்புநிலை அடையாளங்காட்டிகளை மீட்டமை</string>
     <string name="vldt_blank_or_valid_url_required">வெற்று மதிப்பு அல்லது செல்லுபடியாகும் URL தேவை.</string>
+    <string name="lbl_book_uri">புத்தக URL</string>
+    <string name="lbl_author_uri">ஆசிரியர் URL</string>
 
 </resources>

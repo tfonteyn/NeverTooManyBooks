@@ -869,4 +869,6 @@
     <string name="action_restore_default_identifiers">Obnovení výchozích identifikátorů</string>
     <string name="lbl_select_style">Zvolit styl</string>
     <string name="site_description_czech">Čeština a další</string>
+    <string name="lbl_book_uri">Adresa URL knihy</string>
+    <string name="lbl_author_uri">Adresa URL autora</string>
 </resources>

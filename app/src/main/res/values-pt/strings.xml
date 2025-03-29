@@ -855,4 +855,6 @@
     <string name="action_restore_default_identifiers">Repor os identificadores predefinidos</string>
     <string name="lbl_select_style">Selecione Estilo</string>
     <string name="vldt_blank_or_valid_url_required">É necessário um valor vazio ou um URL válido</string>
+    <string name="lbl_book_uri">URL do livro</string>
+    <string name="lbl_author_uri">URL do autor</string>
 </resources>

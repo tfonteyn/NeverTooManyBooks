@@ -851,4 +851,6 @@
     <string name="action_restore_default_identifiers">De standaard Identifiers herstellen</string>
     <string name="lbl_select_style">Selecteer een stijl</string>
     <string name="vldt_blank_or_valid_url_required">Lege waarde of geldige URL vereist</string>
+    <string name="lbl_book_uri">Boek URL</string>
+    <string name="lbl_author_uri">Auteur URL</string>
 </resources>
