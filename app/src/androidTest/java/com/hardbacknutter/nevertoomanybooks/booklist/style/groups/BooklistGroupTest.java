@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroupImpl;
+import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupKey;
+import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupKeyFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 

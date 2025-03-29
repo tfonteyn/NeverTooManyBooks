@@ -91,10 +91,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.PositioningHelper;
+import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
@@ -1823,7 +1823,7 @@ public class BooksOnBookshelf
         private final EditParcelableLauncher<Series> editSeriesLauncher;
         /** Edit a {@link Publisher} which appears as a {@link BooklistGroup} (node). */
         private final EditParcelableLauncher<Publisher> editPublisherLauncher;
-        /** Edit a {@code Book Tag} which appears as a {@link BooklistGroup} (node). */
+        /** Edit a {@link  Tag} which appears as a {@link BooklistGroup} (node). */
         private final EditParcelableLauncher<Tag> editTagLauncher;
 
         /** Edit a {@code Book Color} which appears as a {@link BooklistGroup} (node). */

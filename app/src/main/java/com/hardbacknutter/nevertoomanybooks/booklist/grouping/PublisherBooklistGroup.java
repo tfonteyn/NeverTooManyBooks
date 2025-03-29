@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
+package com.hardbacknutter.nevertoomanybooks.booklist.grouping;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,24 +28,22 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
- * All plumbing present, but the 'under each' preference is not exposed to the user yet,
- * because there is no 'position' column for bookshelves.
- * <p>
- * Specialized BooklistGroup representing a {@link Bookshelf} group.
+ * Specialized BooklistGroup representing a {@link Publisher} group.
  * Includes extra attributes based on preferences.
  * <p>
  * {@link #getDisplayDomainExpression()} returns a customized display domain
+ * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
-class BookshelfBooklistGroup
+class PublisherBooklistGroup
         extends BooklistGroupImpl
         implements UnderEachGroup {
 
     private static final GroupPrefs GROUP_PREFS =
-            new GroupPrefs("psk_style_bookshelf",
-                           Style.UnderEach.Bookshelf.getPrefKey());
+            new GroupPrefs("psk_style_publisher",
+                           Style.UnderEach.Publisher.getPrefKey());
 
     /** DomainExpression for displaying the data. */
     @NonNull
@@ -58,13 +56,11 @@ class BookshelfBooklistGroup
      *
      * @param groupKey of group to create
      */
-    BookshelfBooklistGroup(@NonNull final GroupKey groupKey) {
+    PublisherBooklistGroup(@NonNull final GroupKey groupKey) {
         super(groupKey);
-        // Not sorted; we sort on the name domain as defined in GroupKeyFactory#create
-        // This is "replacing" the foreign-key domain; it's NOT duplicating the
-        // group/sort domain from the GroupKey
-        displayDomainExpression = new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME,
-                                                       DBDefinitions.TBL_BOOKSHELF,
+        // Not sorted; we sort on the OB domain as defined in GroupKeyFactory#create
+        displayDomainExpression = new DomainExpression(DBDefinitions.DOM_PUBLISHER_NAME,
+                                                       DBDefinitions.TBL_PUBLISHERS,
                                                        Sort.Unsorted);
     }
 
@@ -101,7 +97,7 @@ class BookshelfBooklistGroup
         if (!super.equals(o)) {
             return false;
         }
-        final BookshelfBooklistGroup that = (BookshelfBooklistGroup) o;
+        final PublisherBooklistGroup that = (PublisherBooklistGroup) o;
         return underEach == that.underEach
                && displayDomainExpression.equals(that.displayDomainExpression);
     }
@@ -114,10 +110,10 @@ class BookshelfBooklistGroup
     @Override
     @NonNull
     public String toString() {
-        return "BookshelfBooklistGroup{"
+        return "PublisherBooklistGroup{"
                + super.toString()
                + ", displayDomainExpression=" + displayDomainExpression
                + ", underEach=" + underEach
-               + '}';
+               + "}";
     }
 }

@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.ReadStatus;
+import com.hardbacknutter.nevertoomanybooks.booklist.grouping.ReadStatus;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 

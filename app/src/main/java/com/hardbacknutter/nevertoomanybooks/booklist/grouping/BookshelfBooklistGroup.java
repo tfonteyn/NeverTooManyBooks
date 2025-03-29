@@ -17,46 +17,54 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
+package com.hardbacknutter.nevertoomanybooks.booklist.grouping;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
- * Specialized {@link BooklistGroup} representing a {@link Tag} group.
+ * All plumbing present, but the 'under each' preference is not exposed to the user yet,
+ * because there is no 'position' column for bookshelves.
  * <p>
- * 'under each' preference is hardcoded to {@code true}
- * There is no 'position' column for Tags
+ * Specialized BooklistGroup representing a {@link Bookshelf} group.
+ * Includes extra attributes based on preferences.
  * <p>
  * {@link #getDisplayDomainExpression()} returns a customized display domain
  */
-class TagBooklistGroup
+class BookshelfBooklistGroup
         extends BooklistGroupImpl
         implements UnderEachGroup {
+
+    private static final GroupPrefs GROUP_PREFS =
+            new GroupPrefs("psk_style_bookshelf",
+                           Style.UnderEach.Bookshelf.getPrefKey());
 
     /** DomainExpression for displaying the data. */
     @NonNull
     private final DomainExpression displayDomainExpression;
+    /** Show a book under each item it is linked to. */
+    private boolean underEach;
 
     /**
      * Constructor.
      *
      * @param groupKey of group to create
      */
-    TagBooklistGroup(@NonNull final GroupKey groupKey) {
+    BookshelfBooklistGroup(@NonNull final GroupKey groupKey) {
         super(groupKey);
         // Not sorted; we sort on the name domain as defined in GroupKeyFactory#create
         // This is "replacing" the foreign-key domain; it's NOT duplicating the
         // group/sort domain from the GroupKey
-        displayDomainExpression = new DomainExpression(DBDefinitions.DOM_TAG,
-                                                       DBDefinitions.TBL_TAGS,
+        displayDomainExpression = new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME,
+                                                       DBDefinitions.TBL_BOOKSHELF,
                                                        Sort.Unsorted);
     }
 
@@ -68,12 +76,18 @@ class TagBooklistGroup
 
     @Override
     public boolean isShowBooksUnderEach() {
-        return true;
+        return underEach;
     }
 
     @Override
     public void setShowBooksUnderEach(final boolean value) {
-        // ignore, always true
+        underEach = value;
+    }
+
+    @NonNull
+    @Override
+    public GroupPrefs getGroupPrefs() {
+        return GROUP_PREFS;
     }
 
     @Override
@@ -87,22 +101,23 @@ class TagBooklistGroup
         if (!super.equals(o)) {
             return false;
         }
-        final TagBooklistGroup that = (TagBooklistGroup) o;
-        return displayDomainExpression.equals(that.displayDomainExpression);
+        final BookshelfBooklistGroup that = (BookshelfBooklistGroup) o;
+        return underEach == that.underEach
+               && displayDomainExpression.equals(that.displayDomainExpression);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), displayDomainExpression);
+        return Objects.hash(super.hashCode(), underEach, displayDomainExpression);
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "TagBooklistGroup{"
+        return "BookshelfBooklistGroup{"
                + super.toString()
                + ", displayDomainExpression=" + displayDomainExpression
-               + ", underEach=true"
+               + ", underEach=" + underEach
                + '}';
     }
 }

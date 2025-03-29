@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,50 +17,46 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
+package com.hardbacknutter.nevertoomanybooks.booklist.grouping;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.core.database.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 /**
- * Specialized BooklistGroup representing a {@link Series} group.
- * Includes extra attributes based on preferences.
+ * Specialized {@link BooklistGroup} representing an {@link Identifier} group.
+ * <p>
+ * 'under each' preference is hardcoded to {@code true}
+ * There is no 'position' column for Identifier
  * <p>
  * {@link #getDisplayDomainExpression()} returns a customized display domain
- * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
-class SeriesBooklistGroup
+class IdentifierBooklistGroup
         extends BooklistGroupImpl
         implements UnderEachGroup {
-
-    private static final GroupPrefs GROUP_PREFS =
-            new GroupPrefs("psk_style_series",
-                           Style.UnderEach.Series.getPrefKey());
 
     /** DomainExpression for displaying the data. */
     @NonNull
     private final DomainExpression displayDomainExpression;
-    /** Show a book under each item it is linked to. */
-    private boolean underEach;
 
     /**
      * Constructor.
      *
      * @param groupKey of group to create
      */
-    SeriesBooklistGroup(@NonNull final GroupKey groupKey) {
+    IdentifierBooklistGroup(@NonNull final GroupKey groupKey) {
         super(groupKey);
-        // Not sorted; we sort on the OB domain as defined in GroupKeyFactory#create
-        displayDomainExpression = new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
-                                                       DBDefinitions.TBL_SERIES,
+        // Not sorted; we sort on the name domain as defined in GroupKeyFactory#create
+        // This is "replacing" the foreign-key domain; it's NOT duplicating the
+        // group/sort domain from the GroupKey
+        displayDomainExpression = new DomainExpression(DBDefinitions.DOM_IDENTIFIER_KEY,
+                                                       DBDefinitions.TBL_IDENTIFIERS,
                                                        Sort.Unsorted);
     }
 
@@ -72,18 +68,12 @@ class SeriesBooklistGroup
 
     @Override
     public boolean isShowBooksUnderEach() {
-        return underEach;
+        return true;
     }
 
     @Override
     public void setShowBooksUnderEach(final boolean value) {
-        underEach = value;
-    }
-
-    @NonNull
-    @Override
-    public GroupPrefs getGroupPrefs() {
-        return GROUP_PREFS;
+        // ignore, always true
     }
 
     @Override
@@ -97,23 +87,22 @@ class SeriesBooklistGroup
         if (!super.equals(o)) {
             return false;
         }
-        final SeriesBooklistGroup that = (SeriesBooklistGroup) o;
-        return underEach == that.underEach
-               && displayDomainExpression.equals(that.displayDomainExpression);
+        final IdentifierBooklistGroup that = (IdentifierBooklistGroup) o;
+        return displayDomainExpression.equals(that.displayDomainExpression);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), underEach, displayDomainExpression);
+        return Objects.hash(super.hashCode(), displayDomainExpression);
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "SeriesBooklistGroup{"
+        return "IdentifierBooklistGroup{"
                + super.toString()
                + ", displayDomainExpression=" + displayDomainExpression
-               + ", underEach=" + underEach
+               + ", underEach=true"
                + '}';
     }
 }
