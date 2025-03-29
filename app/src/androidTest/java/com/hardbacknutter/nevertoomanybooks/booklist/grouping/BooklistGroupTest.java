@@ -17,16 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
+package com.hardbacknutter.nevertoomanybooks.booklist.grouping;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroupImpl;
-import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupKey;
-import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupKeyFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
@@ -64,7 +60,7 @@ public class BooklistGroupTest {
             final BooklistGroup group = BooklistGroup.newInstance(id, style);
             assertNotNull("Missing id: " + id, group);
 
-            final String prefix = ((BooklistGroupImpl) group).getGroupKey().getKeyPrefix();
+            final String prefix = group.getGroupKey().getKeyPrefix();
             if (!prefixes.add(prefix)) {
                 fail("Duplicate keyPrefix: " + prefix);
             }
