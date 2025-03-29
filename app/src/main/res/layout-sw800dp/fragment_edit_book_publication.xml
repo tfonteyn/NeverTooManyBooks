@@ -256,9 +256,9 @@
             <!--                />-->
         </com.google.android.material.chip.ChipGroup>
 
-        <RatingBar
+        <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Editable"
+            style="@style/Field.ZRatingBar.Editable"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

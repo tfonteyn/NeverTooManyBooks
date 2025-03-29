@@ -143,13 +143,11 @@
             tools:layout="@layout/fragment_read_progress"
             />
 
-        <RatingBar
+        <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Indicator.Medium"
+            style="@style/Field.ZRatingBar.Indicator"
             android:layout_marginStart="@dimen/field_margin_inline"
             app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintHorizontal_bias="0.8"
-            app:layout_constraintBottom_toTopOf="@id/author"
             app:layout_constraintTop_toBottomOf="@id/barrier_titles"
             />
 

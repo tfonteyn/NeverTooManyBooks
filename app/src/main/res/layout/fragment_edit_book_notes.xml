@@ -35,9 +35,9 @@
         android:layout_margin="@dimen/container_margin"
         >
 
-        <RatingBar
+        <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Editable"
+            style="@style/Field.ZRatingBar.Editable"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

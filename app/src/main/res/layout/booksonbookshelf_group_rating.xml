@@ -27,9 +27,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <RatingBar
+    <com.hardbacknutter.zratingbar.MaterialRatingBar
         android:id="@+id/rating"
-        style="@style/Field.RatingBar.Indicator.Small"
+        style="@style/Field.ZRatingBar.Indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

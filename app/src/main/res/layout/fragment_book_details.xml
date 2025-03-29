@@ -124,12 +124,14 @@
             app:constraint_referenced_ids="title,original_title,original_language"
             />
 
-        <RatingBar
+        <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Indicator"
+            style="@style/Field.ZRatingBar.Indicator"
+            android:layout_width="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/barrier_titles"
-            />
+            app:layout_constraintWidth_default="wrap" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_read"

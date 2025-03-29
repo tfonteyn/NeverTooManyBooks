@@ -156,7 +156,7 @@
             <!--                app:constraint_referenced_ids="cover_image_0,series_num_long,series_num,title,original_title,original_language,series_title"-->
             <!--                />-->
 
-            <RatingBar
+            <com.hardbacknutter.zratingbar.MaterialRatingBar
                 android:id="@+id/rating"
                 style="@style/BoB.Group.Book.RatingBar"
                 android:layout_width="0dp"

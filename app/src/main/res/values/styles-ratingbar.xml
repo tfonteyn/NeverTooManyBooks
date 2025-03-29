@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,10 +22,8 @@
 <resources
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Overridden in sw360 -->
-    <style name="Field.RatingBar.Indicator" parent="Field.RatingBar.Indicator.Small" />
-
-    <style name="Field.RatingBar.Indicator.Small" parent="Widget.AppCompat.RatingBar.Small">
+    <style name="Field.ZRatingBar.Indicator"
+           parent="Widget.MaterialRatingBar.RatingBar.Indicator">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:numStars">5</item>
@@ -34,23 +32,12 @@
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
     </style>
 
-    <style name="Field.RatingBar.Indicator.Medium" parent="Widget.AppCompat.RatingBar.Indicator">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:numStars">5</item>
-        <!-- There is no label. -->
-        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
-        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
-    </style>
-
-    <!-- Large size, editable -->
-    <style name="Field.RatingBar.Editable" parent="Widget.AppCompat.RatingBar">
+    <style name="Field.ZRatingBar.Editable"
+           parent="Widget.MaterialRatingBar.RatingBar">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:numStars">5</item>
         <!--  There is no label.
-              Don't add a margin to top/bottom; the height is already 57dp which
-               is 1dp more then actually wanted.
               As this is always used on screens with TIL fields, we use the TIL margins here.
          -->
         <item name="android:layout_marginStart">@dimen/til_margin</item>

@@ -213,9 +213,9 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <RatingBar
+        <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Editable"
+            style="@style/Field.ZRatingBar.Editable"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintTop_toTopOf="parent"

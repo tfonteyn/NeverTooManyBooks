@@ -239,6 +239,7 @@ android {
 dependencies {
     implementation project(path: ":core")
     implementation project(path: ":fastscroller")
+    implementation project(path: ":zratingbar")
     implementation project(path: ":Insets")
     implementation project(path: ":Logger")
     implementation project(path: ":repacked-org-json")

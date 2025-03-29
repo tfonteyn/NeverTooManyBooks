@@ -125,7 +125,10 @@
         <item name="android:layout_width">wrap_content</item>
     </style>
 
-    <style name="BoB.Group.Book.RatingBar" parent="Field.RatingBar.Indicator.Small">
+    <style name="BoB.Group.Book.RatingBar"
+           parent="Field.ZRatingBar.Indicator">
+        <item name="android:minHeight">16dp</item>
+        <item name="android:maxHeight">16dp</item>
         <item name="android:layout_marginTop">0dp</item>
         <item name="android:layout_marginStart">0dp</item>
     </style>

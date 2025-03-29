@@ -142,20 +142,19 @@
             app:constraint_referenced_ids="rating,btn_show_toc"
             />
 
-        <RatingBar
+        <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Indicator"
+            style="@style/Field.ZRatingBar.Indicator"
             android:layout_marginStart="@dimen/field_margin_inline"
+            app:layout_constraintBottom_toTopOf="@id/btn_show_toc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_titles"
-            app:layout_constraintBottom_toTopOf="@id/author"
             />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_read"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintEnd_toStartOf="@+id/barrier_rating_toc"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/barrier_titles"
@@ -165,6 +164,7 @@
         <TextView
             android:id="@+id/author"
             style="@style/Field.Generic"
+            android:layout_marginTop="@dimen/field_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/fragment_read"
@@ -196,6 +196,7 @@
             android:layout_marginStart="@dimen/field_margin_start"
             android:layout_marginTop="@dimen/field_margin_top"
             android:text="@string/action_show_toc_long"
+            app:layout_constraintBottom_toTopOf="@id/barrier_covers_bottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/author"
             tools:visibility="visible"

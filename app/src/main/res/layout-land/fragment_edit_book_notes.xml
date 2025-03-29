@@ -47,9 +47,9 @@
             app:layout_constraintGuide_percent="0.5"
             />
 
-        <RatingBar
+        <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Editable"
+            style="@style/Field.ZRatingBar.Editable"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
