@@ -846,4 +846,5 @@
     <string name="lbl_default_x">Mặc định: %1$s</string>
     <string name="info_partial_date_picker">Nhấn vào tháng hoặc ngày đã chọn trước đó để bỏ chọn.</string>
     <string name="action_restore_default_identifiers">Khôi phục lại Mã định danh mặc định</string>
+    <string name="vldt_blank_or_valid_url_required">Giá trị trống hoặc URL hợp lệ là bắt buộc</string>
 </resources>

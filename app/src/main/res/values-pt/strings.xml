@@ -194,8 +194,7 @@
     <string name="error_network_site_access_failed">Ocorreu um problema de rede ao aceder a %1$s. Verifique se o site está no ar e, se o problema persistir, entre em contacto com o suporte.</string>
     <string name="error_http_401_site_authorization_failed">A autorização %1$s resultou num erro.</string>
     <string name="error_storage_not_writable">Por favor verifique se o armazenamento tem permissões de gravação e se tem espaço suficiente.</string>
-    <string name="error_search_failed_network">Abra as Configurações e verifique as preferências de rede e do Site de Pesquisa.
-\nVerifique também as configurações de rede do seu dispositivo.</string>
+    <string name="error_search_failed_network">Abra as Configurações e verifique as preferências de rede e do Site de Pesquisa.\nVerifique também as configurações de rede do seu dispositivo.</string>
     <string name="error_file_not_found">Ficheiro não encontrado: %1$s</string>
     <string name="warning_import_csv_unescaped_quote">Falta fechar as aspas na linha %1$d, posição %2$d</string>
     <string name="error_site_authentication_failed">Falha na autenticação %1$s</string>
@@ -258,12 +257,8 @@
     <string name="progress_msg_x_updated">%1$d atualizado</string>
     <string name="progress_msg_x_skipped">%1$d ignorado</string>
     <string name="info_authorized">Autorizado</string>
-    <string name="info_story_in_multiple_books">“%1$s” está presente em vários livros:
-\n
-\n%2$s</string>
-    <string name="info_story_in_single_book">“%1$s” está presente num único livro:
-\n
-\n%2$s</string>
+    <string name="info_story_in_multiple_books">“%1$s” está presente em vários livros:\n\n%2$s</string>
+    <string name="info_story_in_single_book">“%1$s” está presente num único livro:\n\n%2$s</string>
     <string name="info_all_books_have_covers">Todos os livros nesta prateleira têm capas</string>
     <string name="lbl_citation_type">Formato de citação/partilha</string>
     <string name="lbl_citation_type_default">Estou a ler…</string>
@@ -392,17 +387,13 @@
     <string name="progress_msg_loading_page">A carregar a página %1$d…</string>
     <string name="option_cover_rotate_automatic">Automático</string>
     <string name="option_select_all">Selecionar tudo</string>
-    <string name="confirm_delete_book">Isso excluirá completamente o livro intitulado “%1$s” por %2$s.
-\n
-\nTem certeza de que deseja continuar?</string>
+    <string name="confirm_delete_book">Isso excluirá completamente o livro intitulado “%1$s” por %2$s.\n\nTem certeza de que deseja continuar?</string>
     <string name="confirm_merge_authors">O autor que está a modificar já existe. Gostaria de as fundir?</string>
     <string name="confirm_merge_series">A série que está a modificar já existe. Gostaria de as fundir?</string>
     <string name="confirm_merge_publishers">O editor que está a modificar já existe. Gostaria de as fundir?</string>
     <string name="confirm_merge_tags">A etiqueta que está a modificar já existe. Gostaria de as fundir?</string>
     <string name="confirm_duplicate_book_message">O livro que está a tentar adicionar já existe na base de dados, tem a certeza de que deseja adicionar outra cópia?</string>
-    <string name="confirm_overwrite_cover">Isso atualizará os campos selecionados conforme mostrado, mas as imagens podem, opcionalmente, ser transferidas para TODOS os livros.
-\n
-\nDeseja substituir todas as imagens existentes? Atenção, isso pode levar muito tempo.</string>
+    <string name="confirm_overwrite_cover">Isso atualizará os campos selecionados conforme mostrado, mas as imagens podem, opcionalmente, ser transferidas para TODOS os livros.\n\nDeseja substituir todas as imagens existentes? Atenção, isso pode levar muito tempo.</string>
     <string name="vldt_non_blank_required_for_x">Valor não vazio necessário para “%1$s”</string>
     <string name="progress_msg_skip_s">A ignorar “%1$s”</string>
     <string name="progress_msg_cleaning_up">A limpar…</string>
@@ -425,10 +416,7 @@
     <string name="option_isfdb_menu_populate_toc">Preencher títulos (somente ISFDB)</string>
     <string name="option_toc_list_update_with_main_author">Atualizar autores</string>
     <string name="option_auto_updates">Permitir atualizações automáticas da internet.</string>
-    <string name="confirm_scope_for_delete">Excluir o título “%1$s” por %2$s
-\n
-\nComo deseja aplicar essa alteração?
-\nNota: A escolha “%3$s” não pode ser desfeita!</string>
+    <string name="confirm_scope_for_delete">Excluir o título “%1$s” por %2$s\n\nComo deseja aplicar essa alteração?\nNota: A escolha “%3$s” não pode ser desfeita!</string>
     <string name="tip_book_search_by_text">Adicionar livros por ISBN é muito mais preciso do que adicionar por autor e título e é geralmente preferido. Por favor, lembre-se que às vezes pode encontrar o código de barras correto na tampa frontal interna.</string>
     <string name="tip_autorotate_camera_images">Se estiver sempre a rodar as imagens da câmara na mesma direção, tente alterar as preferências da aplicação para especificar uma rotação a ser aplicada automaticamente.</string>
     <string name="lbl_edition_slipcase">Caixa de cartão</string>
@@ -715,13 +703,7 @@
     <string name="warning_no_site_supports_this_method">AVISO: nenhum dos sites atualmente selecionados suporta pesquisar por %1$s. Por favor, use o menu do site para ativar sites alternativos ou use um método de pesquisa diferente.</string>
     <string name="tip_booklist_style_groups">Utilize este ecrã para modificar a hierarquia dos grupos para um estilo específico. Utilize a caixa de verificação para selecionar os grupos que serão mostrados na lista e reordene a hierarquia arrastando o ícone no final de cada linha para cima ou para baixo.</string>
     <string name="X_tip_update_fields_from_internet">Os links externos do site só são processados se o site for realmente contactado. Como resultado, o menu “Exibir em…” da mesma forma, mostrará apenas o que está disponível.</string>
-    <string name="confirm_scope_for_change">Mudou:
-\n“%1$s”
-\npara
-\n“%2$s”
-\n
-\nComo deseja aplicar esta mudança?
-\nNota: A escolha “%3$s” será aplicada instantaneamente. Se escolher “%4$s”, então um novo %5$s será criado.</string>
+    <string name="confirm_scope_for_change">Mudou:\n“%1$s”\npara\n“%2$s”\n\nComo deseja aplicar esta mudança?\nNota: A escolha “%3$s” será aplicada instantaneamente. Se escolher “%4$s”, então um novo %5$s será criado.</string>
     <string name="tip_booklist_styles_editor">Utilize este ecrã para personalizar a lista de estilos que serão apresentados no seu menu de estilos predefinido. Use a caixa de seleção para selecionar quais estilos serão mostrados na lista.  Se nenhum estilo for selecionado, serão mostrados todos os estilos. É possível reordenar a hierarquia arrastando o ícone no extremo direito de cada linha para cima ou para baixo. Se premir longamente qualquer outro ponto de uma linha, poderá editar ou clonar os detalhes de um estilo específico. Se clonou um estilo e mudou de ideias, terá de o apagar.</string>
     <string name="info_cleanup_files">Ficheiros que possam ser eliminados usam actualmente %1$s do cartão SD. Ficheiros de registo e outros dados são guardados no cartão SD a cada atualização, quando faz cópias de segurança da base de dados ou quando a aplicação falha. Prima o botão abaixo para limpar esses ficheiros do seu cartão SD. Se estiverem a ocorrer falhas ou outros erros, considere usar o botão “%2$s” primeiro.</string>
     <string name="tip_booklist_style_defaults">Utilize este ecrã para definir as características predefinidas de todos os estilos. Estas são utilizadas por todos os estilos incorporados e como ponto de partida para qualquer estilo definido pelo utilizador.</string>
@@ -734,8 +716,7 @@
     <string name="option_fab_add_book_by_external_id">ID do livro do site</string>
     <string name="confirm_create_real_author">“%1$s” ainda não existe. Devem ser criados?</string>
     <string name="confirm_rebuild_orderby_columns">Isto recriará os dados de classificação quando a aplicação for reiniciada. Tem certeza de que deseja continuar\?</string>
-    <string name="confirm_registration_benefits">Esta função beneficia do registo em %1$s. Gostaria de ver mais informações, ou desativar esta mensagem?
-\n Pode encontrar estas informações posteriormente na secção “%2$s” das configurações.</string>
+    <string name="confirm_registration_benefits">Esta função beneficia do registo em %1$s. Gostaria de ver mais informações, ou desativar esta mensagem?\n Pode encontrar estas informações posteriormente na secção “%2$s” das configurações.</string>
     <string name="action_add_with_details">Adicionar com detalhes</string>
     <string name="lbl_importing">Importando…</string>
     <string name="lbl_backup">Cópia de segurança</string>
@@ -872,4 +853,5 @@
     <string name="info_partial_date_picker">Toque num mês ou dia previamente selecionado para o anular.</string>
     <string name="action_restore_default_identifiers">Repor os identificadores predefinidos</string>
     <string name="lbl_select_style">Selecione Estilo</string>
+    <string name="vldt_blank_or_valid_url_required">É necessário um valor vazio ou um URL válido</string>
 </resources>

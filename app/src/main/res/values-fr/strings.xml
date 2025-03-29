@@ -855,4 +855,5 @@
     <string name="info_partial_date_picker">Touchez un mois ou un jour précédemment sélectionné pour le désélectionner.</string>
     <string name="action_restore_default_identifiers">Rétablir les identifiants par défaut</string>
     <string name="lbl_select_style">Sélectionner un style</string>
+    <string name="vldt_blank_or_valid_url_required">Valeur vide ou URL valide requis</string>
 </resources>
