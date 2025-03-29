@@ -16,9 +16,9 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/fastscroller" />
             <option value="$PROJECT_DIR$/repacked-org-json" />
+            <option value="$PROJECT_DIR$/zratingbar" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>
