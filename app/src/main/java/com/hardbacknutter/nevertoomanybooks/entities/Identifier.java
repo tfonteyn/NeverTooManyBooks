@@ -253,9 +253,7 @@ public class Identifier
                 new Identifier(SID_BNF, TYPE_STRING,
                                context.getString(R.string.identifier_bnf),
                                "https://www.bnf.fr",
-                               // not entirely sure if we should use the host "ark"
-                               // or "catalogue"
-                               "http://ark.bnf.fr/ark:/12148/%s",
+                               "https://catalogue.bnf.fr/ark:/12148/%s",
                                "https://catalogue.bnf.fr/ark:/12148/%s"),
                 // FIXME: BL link disabled for now due to https://www.bl.uk/cyber-incident/
                 // The British National Bibliography ??
@@ -383,7 +381,7 @@ public class Identifier
                 new Identifier(SID_PORBASE, TYPE_LONG,
                                context.getString(R.string.identifier_porbase),
                                "https://porbase.bnportugal.gov.pt",
-                               "http://id.bnportugal.gov.pt/bib/porbase/%s",
+                               "https://id.bnportugal.gov.pt/bib/porbase/%s",
                                null),
                 // 2025-01-29
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,

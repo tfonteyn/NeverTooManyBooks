@@ -106,10 +106,11 @@ public class DBHelper
      * v7.0.3: 36
      * v7.1.0: 38
      * v7.2.0: 39
+     * v7.3.0: 40
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 39;
+    public static final int DATABASE_VERSION = 40;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -683,6 +684,29 @@ public class DBHelper
 
             // this is new for this release
             TBL_AUTHOR_IDENTIFIER.create(db, true);
+        }
+        if (oldVersion < 40) {
+            // fix 2 urls
+            try (SQLiteStatement stmt = db.compileStatement(
+                    "UPDATE " + TBL_IDENTIFIERS
+                    + " SET " + DBKey.IDENTIFIERS.BOOK_URI + "=?"
+                    + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+                stmt.bindString(1, "https://catalogue.bnf.fr/ark:/12148/%s");
+                stmt.bindString(2, Identifier.SID_BNF);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "https://id.bnportugal.gov.pt/bib/porbase/%s");
+                stmt.bindString(2, Identifier.SID_PORBASE);
+                stmt.executeUpdateDelete();
+            }
+            // fix name
+            try (SQLiteStatement stmt = db.compileStatement(
+                    "UPDATE " + TBL_IDENTIFIERS
+                    + " SET " + DBKey.IDENTIFIERS.NAME + "=?"
+                    + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+                stmt.bindString(1, context.getString(R.string.identifier_dnb));
+                stmt.bindString(2, Identifier.SID_DNB);
+                stmt.executeUpdateDelete();
+            }
         }
 
         // We have to do this here due to some users skipping updates (see github #30)
