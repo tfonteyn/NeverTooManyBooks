@@ -683,6 +683,7 @@
     <string name="vldt_integer_expected_for_x">«%1$s» debe ser un entero</string>
     <string name="vldt_non_blank_required">no puede estar en blanco</string>
     <string name="vldt_non_blank_required_for_x">«%1$s» no puede estar en blanco</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Se requiere un valor vacío o un URL «https» válido con un único marcador de posición de id «%s»</string>
     <string name="vldt_read_start_after_end">La fecha de inicio de lectura es posterior a la de finalización</string>
     <string name="vldt_real_expected_for_x">«%1$s» debe ser un número real</string>
     <string name="warning_already_in_list">¡Ya en la lista!</string>

@@ -682,6 +682,7 @@
     <string name="vldt_integer_expected_for_x">Es wird ein Integer-Wert für „%1$s“ erwartet</string>
     <string name="vldt_non_blank_required">Es ist ein Wert erforderlich</string>
     <string name="vldt_non_blank_required_for_x">Es ist ein Wert für „%1$s“ erforderlich</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Leerer Wert oder gültiger „https“-URL mit einem einzelnen „%s“-ID-Platzhalter erforderlich</string>
     <string name="vldt_read_start_after_end">Das Datum Lesen beendet ist vor dem Datum mit Lesen begonnen</string>
     <string name="vldt_real_expected_for_x">Es wird ein Gleitkomma-Wert für „%1$s“ erwartet</string>
     <string name="warning_already_in_list">Schon in der Liste!</string>

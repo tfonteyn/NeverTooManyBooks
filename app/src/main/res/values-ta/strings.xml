@@ -179,6 +179,7 @@
     <string name="vldt_non_blank_required">காலியாக இல்லாத மதிப்பு தேவை</string>
     <string name="vldt_non_blank_required_for_x">“%1$s” க்கு காலியாக இல்லாத மதிப்பு</string>
     <string name="vldt_blank_required_for_x">“%1$s” க்கு தேவைப்படும் வெற்று மதிப்பு</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">ஒற்றை “%s” ஐடி இடம்-பிடிப்புடன் காலியான மதிப்பு அல்லது செல்லுபடியாகும் “https” URL தேவை.</string>
     <string name="vldt_read_start_after_end">தேதி வாசிப்பு தொடங்கியது, இறுதி தேதிக்குப் பிறகு</string>
     <string name="vldt_real_author_must_be_valid">காலியாக அல்லது ஏற்கனவே உள்ள எழுத்தாளராக இருக்க வேண்டும்</string>
     <string name="progress_msg_please_wait">தயவுசெய்து காத்திருங்கள்…</string>

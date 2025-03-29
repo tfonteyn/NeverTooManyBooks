@@ -326,7 +326,7 @@
     <!-- The field must either be blank, or a valid URL -->
     <string name="vldt_blank_or_valid_url_required">Empty value or valid URL required</string>
     <!-- The field must either be blank, the literal string "%s", or a valid URL with a single "%s" embedded -->
-    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Empty value or valid URI required</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Empty value or valid “https” URL with a single “%s” id placeholder required</string>
 
     <!-- Specific to a check on the "reading started" versus "reading ended" dates. -->
     <string name="vldt_read_start_after_end">The date reading started, is after the end date</string>

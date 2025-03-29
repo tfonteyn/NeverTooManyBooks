@@ -705,6 +705,7 @@
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_non_blank_required">Veld mag niet leeg zijn</string>
     <string name="vldt_non_blank_required_for_x">Veld mag niet leeg zijn voor „%1$s”</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Lege waarde of geldige „https” URL met een enkele „%s” id plaatshouder vereist</string>
     <string name="vldt_read_start_after_end">De begindatum moet vóór de einddatum liggen</string>
     <string name="vldt_real_author_must_be_valid">Moet leeg zijn of een bestaande auteur zijn</string>
     <string name="vldt_real_expected_for_x">Verwachtte een reëele waarde voor „%1$s”</string>

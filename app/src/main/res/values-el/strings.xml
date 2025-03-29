@@ -686,6 +686,7 @@ A question mark is written as the character semicolon: ';'
     <string name="vldt_integer_expected_for_x">Αναμένεται ακέραια τιμή για «%1$s»</string>
     <string name="vldt_non_blank_required">Απαιτείται μη κενή τιμή</string>
     <string name="vldt_non_blank_required_for_x">Απαιτείται μη κενή τιμή για «%1$s»</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Απαιτείται κενή τιμή ή έγκυρο URL «https» με έναν μόνο αντικαταστάτη «%s» id</string>
     <string name="vldt_read_start_after_end">Η ημερομηνία έναρξης ανάγνωσης είναι μετά την ημερομηνία λήξης</string>
     <string name="vldt_real_expected_for_x">Αναμένεται ένας πραγματικός αριθμός για «%1$s»</string>
     <string name="warning_already_in_list">Ήδη στη λίστα!</string>

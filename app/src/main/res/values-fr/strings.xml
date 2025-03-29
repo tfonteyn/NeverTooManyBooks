@@ -688,6 +688,7 @@
     <string name="vldt_integer_expected_for_x">Valeur entière attendue pour « %1$s »</string>
     <string name="vldt_non_blank_required">Valeur non vide attendue</string>
     <string name="vldt_non_blank_required_for_x">Valeur non vide attendue pour « %1$s »</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Valeur vide ou URL « https » valide avec un seul identifiant « %s » requis</string>
     <string name="vldt_read_start_after_end">La date de début de lecture est après la date de fin</string>
     <string name="vldt_real_expected_for_x">Valeur décimale attendue pour « %1$s »</string>
     <string name="warning_already_in_list">Déjà dans la liste !</string>

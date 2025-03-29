@@ -800,6 +800,7 @@
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_non_blank_required">Cần có giá trị không trống</string>
     <string name="vldt_non_blank_required_for_x">Cần có giá trị không trống cho “%1$s”</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Giá trị trống hoặc URL “https” hợp lệ với một chỗ giữ chỗ id “%s” duy nhất là bắt buộc</string>
     <string name="vldt_read_start_after_end">Ngày bắt đầu đọc là sau ngày kết thúc</string>
     <string name="vldt_real_author_must_be_valid">Phải để trống hoặc phải có Tác giả</string>
     <string name="vldt_real_expected_for_x">Cần một số thực cho “%1$s”</string>

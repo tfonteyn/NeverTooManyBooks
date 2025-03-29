@@ -383,6 +383,7 @@
     <string name="vldt_real_expected_for_x">Espera-se um número real para “%1$s”</string>
     <string name="vldt_date_expected_for_x">Espera-se uma data para “%1$s”</string>
     <string name="vldt_non_blank_required">Valor não vazio necessário</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Valor vazio ou URL “https” válido com um único marcador de posição de id “%s” obrigatório</string>
     <string name="vldt_read_start_after_end">A data de início da leitura é posterior à data de término</string>
     <string name="progress_msg_loading_page">A carregar a página %1$d…</string>
     <string name="option_cover_rotate_automatic">Automático</string>

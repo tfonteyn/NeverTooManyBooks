@@ -684,6 +684,7 @@
     <string name="vldt_integer_expected_for_x">“%1$s” için bir tamsayı değeri gerekli</string>
     <string name="vldt_non_blank_required">boş olmayan bir değer gerekli</string>
     <string name="vldt_non_blank_required_for_x">“%1$s” için boş olmayan bir değer gerekli</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Boş değer veya tek bir “%s” id yer tutucu ile geçerli “https” URL’si gereklidir</string>
     <string name="vldt_read_start_after_end">Okunmaya başlama süresi bitiş süresinden sonra</string>
     <string name="vldt_real_expected_for_x">“%1$s” için bir gerçek sayı gerekli</string>
     <string name="warning_already_in_list">Zaten listede!</string>
