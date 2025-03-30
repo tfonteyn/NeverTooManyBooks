@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.SingleDatePicker;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -82,6 +83,9 @@ public class SyncReaderFragment
                     getActivity().finish();
                 }
             };
+
+    /** MUST keep a strong reference. */
+    private final DatePickerListener onSyncDateSet = this::onSyncDateSet;
     /** The ViewModel. */
     private SyncReaderViewModel vm;
 
@@ -181,7 +185,7 @@ public class SyncReaderFragment
                                               vb.lblSyncDate.getId());
 
         vb.syncDate.setOnClickListener(v -> syncDatePicker.launch(
-                vm.getSyncDate(), this::onSyncDateSet));
+                vm.getSyncDate(), onSyncDateSet));
 
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.download_24px);
@@ -196,7 +200,7 @@ public class SyncReaderFragment
     @Override
     public void onResume() {
         super.onResume();
-        syncDatePicker.onResume(this::onSyncDateSet);
+        syncDatePicker.onResume(onSyncDateSet);
     }
 
     /**
