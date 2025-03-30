@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  * @see <a href="https://github.com/validatorjs/validator.js/tree/master/src/lib">
  *         validator.js</a>
  */
-@SuppressWarnings("RegExpUnnecessaryNonCapturingGroup")
+@SuppressWarnings({"RegExpUnnecessaryNonCapturingGroup", "Annotator"})
 public final class UrlPatterns {
 
     /**

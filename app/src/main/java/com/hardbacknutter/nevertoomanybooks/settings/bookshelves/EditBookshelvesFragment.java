@@ -260,6 +260,7 @@ public class EditBookshelvesFragment
     @SuppressLint("NotifyDataSetChanged")
     private void onModified(@NonNull final Bookshelf bookshelf) {
         // store the newly selected row.
+        //noinspection DataFlowIssue
         vm.onBookshelfEdited(getContext(), bookshelf);
         // due to transposing row and columns, we MUST refresh the whole set.
         adapter.notifyDataSetChanged();

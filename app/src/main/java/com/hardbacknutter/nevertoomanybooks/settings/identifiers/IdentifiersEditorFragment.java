@@ -162,7 +162,6 @@ public class IdentifiersEditorFragment
                 (v, position) -> {
                     final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
 
-                    //noinspection DataFlowIssue
                     final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
                     if (menuMode.isPopup()) {
                         new ExtMenuPopupWindow(v.getContext())

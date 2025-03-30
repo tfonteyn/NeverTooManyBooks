@@ -57,6 +57,7 @@ public class TuningFragment
         p.setMin(BooksOnBookshelf.DEFAULT_OFFSCREEN_CACHE_SIZE);
         p.setMax(BooksOnBookshelf.MAX_OFFSCREEN_CACHE_SIZE);
         // because androidx.preferences is [bug]'d
+        //noinspection DataFlowIssue
         p.setValue(prefs.getInt(BooksOnBookshelf.PK_OFFSCREEN_CACHE_SIZE,
                                 BooksOnBookshelf.DEFAULT_OFFSCREEN_CACHE_SIZE));
 

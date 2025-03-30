@@ -49,6 +49,7 @@ public class MaterialRatingBar
 
     private MaterialRatingDrawable drawable;
 
+    @Nullable
     private OnRatingChangeListener onRatingChangeListener;
     private float lastKnownRating;
 

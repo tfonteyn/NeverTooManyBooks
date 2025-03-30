@@ -323,7 +323,6 @@ public class BedethequeAuthorResolver
             String birthCountry = null;
 
             for (final Element label : labels) {
-                //noinspection SwitchStatementWithoutDefaultBranch
                 switch (label.text()) {
                     case "Nom :": {
                         // <label>Nom :</label><span>Lemmens</span>

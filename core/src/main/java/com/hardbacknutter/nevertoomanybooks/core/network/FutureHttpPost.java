@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,6 +105,7 @@ public class FutureHttpPost<T>
                         }
                     }
                 }
+                //noinspection ReturnOfNull
                 return null;
 
             } catch (@NonNull final IOException e) {

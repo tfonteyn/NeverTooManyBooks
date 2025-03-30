@@ -117,6 +117,7 @@ class AuthorListLoader {
                     }
                 }
                 // End-of-list indication
+                //noinspection ReturnOfNull
                 return null;
             });
             return true;
