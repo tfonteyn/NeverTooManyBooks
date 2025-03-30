@@ -264,6 +264,8 @@
           <option value="FieldNotUsedInToString" />
           <option value="InnerClassFieldHidesOuterClassField" />
           <option value="ReturnOfNull" />
+          <option value="RegExpUnnecessaryNonCapturingGroup" />
+          <option value="Annotator" />
         </list>
       </option>
     </inspection_tool>
