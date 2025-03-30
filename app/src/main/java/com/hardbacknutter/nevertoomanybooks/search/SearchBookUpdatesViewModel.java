@@ -302,7 +302,7 @@ public class SearchBookUpdatesViewModel
     /**
      * Reset current usage back to defaults, and write to preferences.
      */
-    void resetAll() {
+    void resetSyncProcessor() {
         syncProcessorBuilder.resetPreferences();
     }
 
@@ -311,7 +311,8 @@ public class SearchBookUpdatesViewModel
      *
      * @param action to set
      */
-    public void setAll(@NonNull final SyncAction action) {
+    @SuppressWarnings("SameParameterValue")
+    void setSyncAction(@NonNull final SyncAction action) {
         syncProcessorBuilder.setSyncAction(action);
     }
 

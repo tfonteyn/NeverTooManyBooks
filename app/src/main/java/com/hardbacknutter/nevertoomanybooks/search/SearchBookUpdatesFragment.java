@@ -320,12 +320,12 @@ public class SearchBookUpdatesFragment
                 vm.setStrictIsbn(checked);
 
             } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
-                vm.setAll(SyncAction.Skip);
+                vm.setSyncAction(SyncAction.Skip);
                 initAdapter();
                 return true;
 
             } else if (menuItemId == R.id.MENU_RESET) {
-                vm.resetAll();
+                vm.resetSyncProcessor();
                 initAdapter();
                 return true;
             }
