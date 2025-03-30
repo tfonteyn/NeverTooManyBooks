@@ -515,7 +515,7 @@ public class SyncReaderProcessor {
         /**
          * Write current settings to the user preferences.
          */
-        public void writePreferences() {
+        private void writePreferences() {
             final SharedPreferences.Editor ed = prefs.edit();
             for (final SyncField syncField : fields.values()) {
                 ed.putInt(preferencePrefix + syncField.getKey(),
@@ -688,6 +688,9 @@ public class SyncReaderProcessor {
         @NonNull
         public SyncReaderProcessor build(
                 @NonNull final Function<Builder, SyncReaderProcessor> supplier) {
+
+            writePreferences();
+
             relatedFields.forEach((key, relatedKey) -> {
                 final SyncField syncField = fields.get(key);
                 if (syncField != null && syncField.getAction() != SyncAction.Skip) {
