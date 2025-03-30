@@ -1,7 +1,7 @@
 [versions]
 androidGradlePlugin = "8.9.1"
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
-androidKotlinPlugin = "2.1.10"
+androidKotlinPlugin = "2.1.20"
 # https://github.com/mannodermaus/android-junit5
 mannodermausPlugin = "1.11.2.0"
 
