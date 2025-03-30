@@ -26,10 +26,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 
 public class SyncWriterViewModel
@@ -58,8 +56,7 @@ public class SyncWriterViewModel
             final SyncServer syncServer = Objects.requireNonNull(
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
 
-            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            syncWriterHelper = new SyncWriterHelper(syncServer, systemLocale);
+            syncWriterHelper = new SyncWriterHelper(syncServer);
         }
     }
 

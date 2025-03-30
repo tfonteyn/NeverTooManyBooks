@@ -41,21 +41,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -72,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
@@ -103,15 +97,10 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * Note we're not taking "books.pubdate"; most metadata downloaded by Calibre contains
  * bad/incorrect dates (at least the ones we've seen)
- * <p>
- * ENHANCE: implement {@link SyncAction}.
- * For now overwrite/skip is a bit ad-hoc.
  */
 public class CalibreContentServerReader
         implements DataReader<SyncReaderMetaData, ReaderResults> {
 
-    private static final String SYNC_PROCESSOR_PREFIX =
-            CalibreContentServer.PREF_KEY + ".fields.update.";
     /** Log tag. */
     private static final String TAG = "CalibreServerReader";
     private static final String BKEY_VIRTUAL_LIBRARY_LIST = TAG + ":vlibs";
@@ -167,35 +156,27 @@ public class CalibreContentServerReader
     /**
      * Constructor.
      *
-     * @param context              Current context
-     * @param systemLocale         to use for ISO date parsing
-     * @param updateOption         options
-     * @param recordTypes          the record types to accept and read
-     * @param syncProcessorBuilder synchronization configuration
-     * @param syncDate             optional cut-off date
-     * @param extraArgs            Bundle with reader specific arguments
+     * @param context       Current context
+     * @param recordTypes   the record types to accept and read
+     * @param syncProcessor synchronization configuration
+     * @param syncDate      optional cut-off date
+     * @param updateOption  options
+     * @param extraArgs     Bundle with reader specific arguments
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerReader(
             @NonNull final Context context,
-            @NonNull final Locale systemLocale,
-            @NonNull final DataReader.Updates updateOption,
             @NonNull final Set<RecordType> recordTypes,
-            @Nullable final SyncReaderProcessor.Builder syncProcessorBuilder,
+            @NonNull final SyncReaderProcessor syncProcessor,
             @Nullable final LocalDateTime syncDate,
+            @NonNull final Updates updateOption,
             @NonNull final Bundle extraArgs)
             throws CertificateException {
 
         this.updateOption = updateOption;
         this.syncDate = syncDate;
-
-        // Use either the custom passed-in, or the built-in default.
-        if (syncProcessorBuilder != null) {
-            this.syncProcessor = syncProcessorBuilder.build();
-        } else {
-            this.syncProcessor = createSyncProcessorBuilder(context).build();
-        }
+        this.syncProcessor = syncProcessor;
 
         doCovers = recordTypes.contains(RecordType.Cover);
         library = extraArgs.getParcelable(CalibreContentServer.BKEY_LIBRARY);
@@ -206,92 +187,11 @@ public class CalibreContentServerReader
         bookDao = serviceLocator.getBookDao();
         calibreLibraryDao = serviceLocator.getCalibreLibraryDao();
 
-        dateParser = new ISODateParser(systemLocale);
+        dateParser = new ISODateParser(ServiceLocator.getInstance()
+                                                     .getSystemLocaleList()
+                                                     .get(0));
 
         eBookString = context.getString(R.string.book_format_ebook);
-    }
-
-    /**
-     * Create the default {@link SyncReaderProcessor.Builder}.
-     * <p>
-     * Simple fields are set to {@link SyncAction#CopyIfBlank}.
-     * List fields are set to {@link SyncAction#Append}.
-     *
-     * @param context Current context
-     *
-     * @return a {@link SyncReaderProcessor.Builder}
-     */
-    @NonNull
-    public static SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
-        final SortedMap<String, String[]> map = new TreeMap<>();
-        map.put(context.getString(R.string.site_calibre),
-                new String[]{DBKey.CALIBRE.BOOK_ID});
-
-        map.put(context.getString(R.string.lbl_date_last_updated),
-                new String[]{DBKey.DATE_LAST_UPDATED__UTC});
-
-        map.put(context.getString(R.string.lbl_cover_front),
-                new String[]{DBKey.COVER[0]});
-        map.put(context.getString(R.string.lbl_cover_back),
-                new String[]{DBKey.COVER[1]});
-
-        map.put(context.getString(R.string.lbl_title),
-                new String[]{DBKey.TITLE});
-        map.put(context.getString(R.string.lbl_authors),
-                new String[]{DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST});
-        map.put(context.getString(R.string.lbl_series_multiple),
-                new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
-        map.put(context.getString(R.string.lbl_description),
-                new String[]{DBKey.DESCRIPTION});
-        map.put(context.getString(R.string.lbl_publishers),
-                new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
-        map.put(context.getString(R.string.lbl_tags),
-                new String[]{DBKey.FK_TAG, Book.BKEY_TAG_LIST});
-        map.put(context.getString(R.string.lbl_identifiers),
-                new String[]{DBKey.FK_IDENTIFIER, Book.BKEY_IDENTIFIER_LIST});
-
-        map.put(context.getString(R.string.lbl_date_published),
-                new String[]{DBKey.PUBLICATION_DATE});
-
-        map.put(context.getString(R.string.lbl_format),
-                new String[]{DBKey.FORMAT});
-        map.put(context.getString(R.string.lbl_language),
-                new String[]{DBKey.LANGUAGE});
-        map.put(context.getString(R.string.lbl_rating),
-                new String[]{DBKey.RATING});
-
-        // The site specific fields
-        map.put(context.getString(R.string.lbl_ebook_file_type),
-                new String[]{DBKey.CALIBRE.BOOK_MAIN_FORMAT});
-
-        // The site specific CustomFields
-        ServiceLocator.getInstance()
-                      .getCalibreCustomFieldDao()
-                      .getCustomFields().stream()
-                      .map(CalibreCustomField::getDbKey)
-                      .forEach(dbKey -> {
-                          try {
-                              map.put(MapDBKey.getLabel(context, dbKey), new String[]{dbKey});
-                          } catch (@NonNull final IllegalArgumentException ignore) {
-                              // will currently never fail, as all custom fields are hardcoded.
-                              LoggerFactory.getLogger().w(
-                                      TAG, "No MapDBKey for: " + dbKey);
-                          }
-                      });
-
-        final List<Locale> locales = LocaleListUtils.asList(context);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX, realNumberParser);
-
-        // add the sorted fields
-        map.forEach(builder::add);
-
-        builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
-               .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
-               .addRelatedField(DBKey.CALIBRE.BOOK_ID, DBKey.CALIBRE.BOOK_UUID);
-
-        return builder;
     }
 
     @Override
@@ -472,15 +372,14 @@ public class CalibreContentServerReader
                 // yes, we do - handle the update according to the users choice
                 switch (updateOption) {
                     case Overwrite: {
-                        // Get the full local book data; overwrite it with remote data
-                        // as needed, and update. We don't use a delta.
+                        // Get the full local book data.
                         final Book book = Book.from(databaseBookId);
+                        // update according to the syncProcessor
                         updateBook(context, calibreBook, book);
                         break;
                     }
                     case OnlyNewer: {
-                        // Get the full local book data; overwrite it with remote data
-                        // as needed, and update. We don't use a delta.
+                        // Get the full local book data.
                         final Book book = Book.from(databaseBookId);
                         final Optional<LocalDateTime> localDate = book.getLastModified(dateParser);
                         final Optional<LocalDateTime> remoteDate = calibreBook.getLastModified(
@@ -491,6 +390,7 @@ public class CalibreContentServerReader
                                                 // is the server data newer then our data ?
                                                 && remoteDate.get().isAfter(localDate.get());
                         if (isNewer) {
+                            // update according to the syncProcessor
                             updateBook(context, calibreBook, book);
 
                         } else {
@@ -611,13 +511,11 @@ public class CalibreContentServerReader
 
         // paranoia ...
         if (!calibreBook.isNull(CalibreBookJsonKey.TITLE)) {
-            // always overwrite
             book.putString(DBKey.TITLE,
                            calibreBook.getString(CalibreBookJsonKey.TITLE));
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.DESCRIPTION)) {
-            // always overwrite
             book.putString(DBKey.DESCRIPTION,
                            calibreBook.getString(CalibreBookJsonKey.DESCRIPTION));
         }
@@ -625,7 +523,7 @@ public class CalibreContentServerReader
         if (!calibreBook.isNull(CalibreBookJsonKey.RATING)) {
             // The rating is a simple int 0..5
             final int rating = calibreBook.getInt(CalibreBookJsonKey.RATING);
-            // don't overwrite the local value with a remote 'not-set' value
+            // ignore a remote 'not-set' value
             if (rating > 0) {
                 book.putFloat(DBKey.RATING, rating);
             }
@@ -699,7 +597,7 @@ public class CalibreContentServerReader
         if (languages != null && !languages.isEmpty()) {
             // We only support one language, so grab the first one
             final String lang = languages.optString(0);
-            if (lang != null && !lang.isEmpty()) {
+            if (!lang.isEmpty()) {
                 book.putString(DBKey.LANGUAGE, lang);
             }
         }
@@ -717,7 +615,7 @@ public class CalibreContentServerReader
             if (authors != null && !authors.isEmpty()) {
                 for (int i = 0; i < authors.length(); i++) {
                     final String author = authors.optString(i);
-                    if (author != null && !author.isEmpty()) {
+                    if (!author.isEmpty()) {
                         bookAuthors.add(Author.from(author));
                     }
                 }
@@ -734,7 +632,7 @@ public class CalibreContentServerReader
     private void convertSeries(@NonNull final JSONObject calibreBook,
                                @NonNull final Book book) {
         final String seriesName = calibreBook.optString(CalibreBookJsonKey.SERIES);
-        if (seriesName != null && !seriesName.isEmpty()) {
+        if (!seriesName.isEmpty()) {
             if (VALUE_IS_NULL.equals(seriesName)) {
                 throw new IllegalArgumentException(ERROR_NULL_STRING);
             }
@@ -742,7 +640,7 @@ public class CalibreContentServerReader
             // "series_index": null,
             // "series_index": 2,  --> it's a float, but we grab it as a string
             String seriesNr = calibreBook.optString(CalibreBookJsonKey.SERIES_INDEX);
-            if (seriesNr != null && !seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
+            if (!seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
                 // transform "3.0" to just "3" (and similar) but leave "3.1" alone
                 if (seriesNr.endsWith(".0")) {
                     seriesNr = seriesNr.substring(0, seriesNr.length() - 2);
@@ -758,7 +656,7 @@ public class CalibreContentServerReader
     private void convertPublisher(@NonNull final JSONObject calibreBook,
                                   @NonNull final Book book) {
         final String publisherName = calibreBook.optString(CalibreBookJsonKey.PUBLISHER);
-        if (publisherName != null && !publisherName.isEmpty()) {
+        if (!publisherName.isEmpty()) {
             if (VALUE_IS_NULL.equals(publisherName)) {
                 throw new IllegalArgumentException(ERROR_NULL_STRING);
             }
@@ -780,7 +678,7 @@ public class CalibreContentServerReader
                 String calKey = it.next();
                 if (!remotes.isNull(calKey)) {
                     final String sid = remotes.optString(calKey);
-                    if (sid != null && !sid.isEmpty()) {
+                    if (!sid.isEmpty()) {
                         // MUST be converted to lc before we try and map
                         calKey = calKey.toLowerCase(Locale.ENGLISH);
 
@@ -827,7 +725,6 @@ public class CalibreContentServerReader
                     if (!data.isNull(CalibreCustomField.VALUE)) {
                         switch (cf.getType()) {
                             case CalibreCustomField.TYPE_BOOL: {
-                                // always overwrite
                                 book.putBoolean(cf.getDbKey(),
                                                 data.getBoolean(CalibreCustomField.VALUE));
                                 break;
@@ -836,7 +733,7 @@ public class CalibreContentServerReader
                             case CalibreCustomField.TYPE_COMMENTS:
                             case CalibreCustomField.TYPE_TEXT: {
                                 final String value = data.getString(CalibreCustomField.VALUE);
-                                // don't overwrite the local value with a remote 'not-set' value
+                                // ignore a remote 'not-set' value
                                 if (!VALUE_IS_NONE.equals(value)) {
                                     book.putString(cf.getDbKey(), value);
                                 }
@@ -929,7 +826,7 @@ public class CalibreContentServerReader
             throws StorageException, IOException {
         if (!calibreBook.isNull(CalibreBookJsonKey.COVER)) {
             final String coverUrl = calibreBook.optString(CalibreBookJsonKey.COVER);
-            if (coverUrl != null && !coverUrl.isEmpty()) {
+            if (!coverUrl.isEmpty()) {
                 final File file = server.getCover(calibreBookId, coverUrl)
                                         .orElse(null);
                 try {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -165,7 +165,7 @@ public final class SyncField
      * @return label
      */
     @NonNull
-    public String getFieldLabel() {
+    String getFieldLabel() {
         return label;
     }
 
@@ -177,7 +177,7 @@ public final class SyncField
      * @return label
      */
     @NonNull
-    public String getActionLabel(@NonNull final Context context) {
+    String getActionLabel(@NonNull final Context context) {
         return syncAction.getLabel(context);
     }
 
@@ -187,7 +187,7 @@ public final class SyncField
      * if (canAppend): Skip -> CopyIfBlank -> Append -> Overwrite -> Skip
      * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
      */
-    public void nextState() {
+    void nextState() {
         syncAction = syncAction.nextState(canAppend);
     }
 

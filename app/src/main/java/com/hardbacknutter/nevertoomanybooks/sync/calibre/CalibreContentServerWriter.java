@@ -33,8 +33,8 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -77,7 +76,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * We only UPDATE books which exist on the server.
  * We're not pushing new books to the server !
- * If a book no longer exists on the server, {@link SyncWriterHelper#isDeleteLocalBooks()} decides.
  */
 public class CalibreContentServerWriter
         implements DataWriter<SyncWriterResults> {
@@ -88,10 +86,11 @@ public class CalibreContentServerWriter
     @NonNull
     private final CalibreContentServer server;
     /** Export configuration. */
-    @NonNull
-    private final SyncWriterHelper helper;
     private final boolean doCovers;
+    /** Export configuration. */
     private final boolean deleteLocalBook;
+    /** Export configuration. */
+    private final boolean incremental;
 
     @NonNull
     private final DateParser<LocalDateTime> dateParser;
@@ -102,24 +101,29 @@ public class CalibreContentServerWriter
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
-     * @param helper       export configuration
+     * @param context         Current context
+     * @param recordTypes     the record types to write
+     * @param incremental     flag: if {@link CalibreLibrary#getLastSyncDateAsString()} should
+     *                        be used to do an incremental write
+     * @param deleteLocalBook flag: delete the local book if it no longer exists on the remote
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerWriter(@NonNull final Context context,
-                                      @NonNull final SyncWriterHelper helper,
-                                      @NonNull final Locale systemLocale)
+                                      @NonNull final Set<RecordType> recordTypes,
+                                      final boolean incremental,
+                                      final boolean deleteLocalBook)
             throws CertificateException {
 
-        this.helper = helper;
+        this.doCovers = recordTypes.contains(RecordType.Cover);
+        this.incremental = incremental;
+        this.deleteLocalBook = deleteLocalBook;
 
         server = new CalibreContentServer.Builder(context).build();
-        doCovers = this.helper.getRecordTypes().contains(RecordType.Cover);
-        deleteLocalBook = this.helper.isDeleteLocalBooks();
-
-        dateParser = new ISODateParser(systemLocale);
+        dateParser = new ISODateParser(ServiceLocator
+                                               .getInstance()
+                                               .getSystemLocaleList()
+                                               .get(0));
         realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
     }
 
@@ -152,7 +156,7 @@ public class CalibreContentServerWriter
 
                 @Nullable
                 final LocalDateTime dateSince;
-                if (helper.isIncremental()) {
+                if (incremental) {
                     dateSince = dateParser.parse(library.getLastSyncDateAsString()).orElse(null);
                 } else {
                     dateSince = null;

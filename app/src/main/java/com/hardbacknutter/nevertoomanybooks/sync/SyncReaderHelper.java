@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
-import java.util.Locale;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -37,8 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
 public final class SyncReaderHelper
         extends DataReaderHelperBase<SyncReaderMetaData, ReaderResults> {
@@ -48,8 +48,6 @@ public final class SyncReaderHelper
     private final SyncServer syncServer;
     /** Extra arguments for specific readers. The reader must define them. */
     private final Bundle extraArgs = ServiceLocator.getInstance().newBundle();
-    @SuppressWarnings("FieldNotUsedInToString")
-    private final Locale systemLocale;
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @NonNull
     private final SyncReaderProcessor.Builder syncProcessorBuilder;
@@ -59,15 +57,13 @@ public final class SyncReaderHelper
     /**
      * Constructor.
      *
-     * @param context      Current Context
-     * @param syncServer   to use
-     * @param systemLocale to use for ISO date parsing
+     * @param context    Current Context
+     * @param syncServer to use
      */
     SyncReaderHelper(@NonNull final Context context,
-                     @NonNull final SyncServer syncServer,
-                     @NonNull final Locale systemLocale) {
+                     @NonNull final SyncServer syncServer) {
         this.syncServer = syncServer;
-        this.systemLocale = systemLocale;
+        this.syncProcessorBuilder = syncServer.createSyncProcessorBuilder(context);
 
         // set the defaults
         addRecordType(RecordType.Books, RecordType.Cover);
@@ -75,24 +71,12 @@ public final class SyncReaderHelper
         setUpdateOption(this.syncServer.hasLastUpdateDateField()
                         ? DataReader.Updates.OnlyNewer
                         : DataReader.Updates.Skip);
-
-        switch (syncServer) {
-            case CalibreCS:
-                syncProcessorBuilder = CalibreContentServerReader
-                        .createSyncProcessorBuilder(context);
-                break;
-            case StripInfo:
-                syncProcessorBuilder = StripInfoReader.createSyncProcessorBuilder(context);
-                break;
-            default:
-                throw new IllegalArgumentException(syncServer.toString());
-        }
     }
 
     /**
      * Get the location to read from.
      *
-     * @return the syncserver to use
+     * @return the SyncServer to use
      */
     @NonNull
     SyncServer getSyncServer() {
@@ -100,8 +84,25 @@ public final class SyncReaderHelper
     }
 
     @NonNull
-    SyncReaderProcessor.Builder getSyncProcessorBuilder() {
-        return syncProcessorBuilder;
+    Collection<SyncField> getSyncFields() {
+        return syncProcessorBuilder.getSyncFields();
+    }
+
+    /**
+     * Reset current usage back to defaults, and write to preferences.
+     */
+    void resetSyncProcessor() {
+        syncProcessorBuilder.resetPreferences();
+    }
+
+    /**
+     * Update the {@link SyncAction} for all keys.
+     *
+     * @param action to set
+     */
+    @SuppressWarnings("SameParameterValue")
+    void setSyncAction(@NonNull final SyncAction action) {
+        syncProcessorBuilder.setSyncAction(action);
     }
 
     @NonNull
@@ -130,6 +131,22 @@ public final class SyncReaderHelper
         this.syncDate = syncDate;
     }
 
+    boolean isReadyToGo() {
+        switch (syncServer) {
+            case CalibreCS: {
+                @Nullable
+                final CalibreLibrary selected = extraArgs
+                        .getParcelable(CalibreContentServer.BKEY_LIBRARY);
+                return selected != null && selected.getTotalBooks() > 0;
+            }
+            case StripInfo:
+                return true;
+
+            default:
+                throw new IllegalArgumentException(syncServer.toString());
+        }
+    }
+
     @NonNull
     protected DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull final Context context)
@@ -137,9 +154,13 @@ public final class SyncReaderHelper
                    CredentialsException,
                    CertificateException,
                    IOException {
-        return syncServer.createReader(context, systemLocale,
-                                       getUpdateOption(), getRecordTypes(),
-                                       syncProcessorBuilder, syncDate,
+
+        if (getRecordTypes().isEmpty()) {
+            throw new IllegalArgumentException("no recordTypes set");
+        }
+        return syncServer.createReader(context,
+                                       getRecordTypes(), syncProcessorBuilder, syncDate,
+                                       getUpdateOption(),
                                        extraArgs);
     }
 

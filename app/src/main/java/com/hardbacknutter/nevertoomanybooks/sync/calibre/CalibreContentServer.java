@@ -138,7 +138,7 @@ public final class CalibreContentServer
     public static final String SERVER_CA = "CalibreContentServer.ca";
 
     /** Preferences prefix. */
-    static final String PREF_KEY = "calibre";
+    public static final String PREF_KEY = "calibre";
 
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
     static final String PK_HOST_URL = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
@@ -146,6 +146,7 @@ public final class CalibreContentServer
     static final String PK_HOST_PASS = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
     private static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
 
+    private static final String AMAZON = "amazon";
     /**
      * Key's that map 1:1 are not listed.
      * This list only maps <strong>known</strong> keys
@@ -159,7 +160,7 @@ public final class CalibreContentServer
     static final Map<String, String> IDENTIFIER_MAPPING_READER = Map.ofEntries(
             // I'm not clear on why calibre prefers 'amazon' above 'asin'
             // but heck, just convert it.
-            Map.entry("amazon", Identifier.SID_ASIN),
+            Map.entry(AMAZON, Identifier.SID_ASIN),
             // mobi is obsolete so we always map it to pure 'asin'
             Map.entry("mobi-asin", Identifier.SID_ASIN),
             // Calibre typically uses 'uri' but sometimes we see 'url
@@ -173,7 +174,7 @@ public final class CalibreContentServer
     static final Map<String, String> IDENTIFIER_MAPPING_WRITER = Map.ofEntries(
             // I'm not clear on why calibre prefers 'amazon' above 'asin'
             // but heck, just convert it.
-            Map.entry(Identifier.SID_ASIN, "amazon")
+            Map.entry(Identifier.SID_ASIN, AMAZON)
     );
 
     /**
@@ -256,6 +257,10 @@ public final class CalibreContentServer
     private static final String GET_BOOKS = "%1$s/ajax/books/%2$s?category_urls=false&ids=%3$s";
 
     /**
+     * Fetch all book.
+     * <p>
+     * {@code "616c6c626f6f6b73" == "allbooks"}
+     *
      * Param 1: serverUri
      * Param 2: libraryStringId
      * Param 3: number of books
@@ -267,6 +272,8 @@ public final class CalibreContentServer
             "%1$s/ajax/category/616c6c626f6f6b73/%2$s?num=%3$d&offset=%4$d";
 
     /**
+     * Fetch a book by its Calibre uuid.
+     * <p>
      * Param 1: serverUri
      * Param 2: book UUID
      * Param 3: libraryStringId
@@ -274,6 +281,8 @@ public final class CalibreContentServer
     private static final String GET_BOOK_BY_UUID = "%1$s/ajax/book/%2$s/%3$s?id_is_uuid=true";
 
     /**
+     * Fetch a book by its Calibre numeric id.
+     * <p>
      * Param 1: serverUri
      * Param 2: book id
      * Param 3: libraryStringId

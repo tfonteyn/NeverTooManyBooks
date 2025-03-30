@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -47,9 +46,6 @@ public class SyncWriterHelper
 
     /** Extra arguments for specific writers. The writer must define them. */
     private final Bundle extraArgs = ServiceLocator.getInstance().newBundle();
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final Locale systemLocale;
     /** <strong>Where</strong> we write to. */
     @Nullable
     private SyncServer syncServer;
@@ -59,13 +55,10 @@ public class SyncWriterHelper
     /**
      * Constructor.
      *
-     * @param syncServer   to write to
-     * @param systemLocale to use for ISO date parsing
+     * @param syncServer to write to
      */
-    SyncWriterHelper(@NonNull final SyncServer syncServer,
-                     @NonNull final Locale systemLocale) {
+    SyncWriterHelper(@NonNull final SyncServer syncServer) {
         this.syncServer = syncServer;
-        this.systemLocale = systemLocale;
 
         // set the default
         getRecordTypes().addAll(EnumSet.of(RecordType.Books,
@@ -105,9 +98,14 @@ public class SyncWriterHelper
                    IOException {
 
         Objects.requireNonNull(syncServer, ERROR_SYNC_SERVER_NULL);
+        if (getRecordTypes().isEmpty()) {
+            throw new IllegalArgumentException("helper.getRecordTypes().isEmpty()");
+        }
 
         try {
-            dataWriter = syncServer.createWriter(context, this, systemLocale);
+            dataWriter = syncServer.createWriter(context, getRecordTypes(),
+                                                 isIncremental(), deleteLocalBooks
+            );
             return dataWriter.write(context, progressListener);
         } finally {
             close();

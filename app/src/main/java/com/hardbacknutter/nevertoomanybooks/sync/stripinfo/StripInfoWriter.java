@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -46,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -56,12 +54,10 @@ public class StripInfoWriter
 
     /** Log tag. */
     private static final String TAG = "StripInfoWriter";
-
     /** Export configuration. */
-    @NonNull
-    private final SyncWriterHelper syncWriterHelper;
-
     private final boolean deleteLocalBook;
+    /** Export configuration. */
+    private final boolean incremental;
 
     @NonNull
     private final CollectionFormUploader collectionForm;
@@ -73,17 +69,22 @@ public class StripInfoWriter
     /**
      * Constructor.
      *
-     * @param context          Current context
-     * @param syncWriterHelper export configuration
-     * @param systemLocale     to use for ISO date parsing
+     * @param context         Current context
+     * @param incremental     flag: if the last-sync-date setting should
+     *                        be used to do an incremental write
+     * @param deleteLocalBook flag: delete the local book if it no longer exists on the remote
      */
     public StripInfoWriter(@NonNull final Context context,
-                           @NonNull final SyncWriterHelper syncWriterHelper,
-                           @NonNull final Locale systemLocale) {
-        this.syncWriterHelper = syncWriterHelper;
-        this.dateParser = new ISODateParser(systemLocale);
+                           final boolean incremental,
+                           final boolean deleteLocalBook) {
+        this.deleteLocalBook = deleteLocalBook;
+        this.incremental = incremental;
+
+        this.dateParser = new ISODateParser(ServiceLocator
+                                                    .getInstance()
+                                                    .getSystemLocaleList()
+                                                    .get(0));
         collectionForm = new CollectionFormUploader(context);
-        deleteLocalBook = this.syncWriterHelper.isDeleteLocalBooks();
     }
 
     @Override
@@ -108,7 +109,7 @@ public class StripInfoWriter
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         @Nullable
         final LocalDateTime dateSince;
-        if (syncWriterHelper.isIncremental()) {
+        if (incremental) {
             dateSince = dateParser.parse(global.getString(StripInfoHandler.PK_LAST_SYNC, null))
                                   .orElse(null);
         } else {

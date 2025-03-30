@@ -34,12 +34,9 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -50,10 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
@@ -69,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
@@ -92,9 +86,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class StripInfoReader
         implements DataReader<SyncReaderMetaData, ReaderResults> {
 
-    @SuppressWarnings("WeakerAccess")
-    public static final String SYNC_PROCESSOR_PREFIX = EngineId.StripInfoBe.getPreferenceKey()
-                                                       + ".fields.update.";
     private static final String TAG = "StripInfoReader";
     @NonNull
     private final Updates updateOption;
@@ -118,17 +109,18 @@ public class StripInfoReader
     /**
      * Constructor.
      *
-     * @param context              Current context
-     * @param updateOption         options
-     * @param recordTypes          the record types to accept and read
-     * @param syncProcessorBuilder synchronization configuration
+     * @param context       Current context
+     * @param recordTypes   the record types to accept and read
+     * @param syncProcessor synchronization configuration
+     * @param updateOption  options
      */
     public StripInfoReader(@NonNull final Context context,
-                           @NonNull final DataReader.Updates updateOption,
                            @NonNull final Set<RecordType> recordTypes,
-                           @Nullable final SyncReaderProcessor.Builder syncProcessorBuilder) {
+                           @NonNull final SyncReaderProcessor syncProcessor,
+                           @NonNull final Updates updateOption) {
 
         this.updateOption = updateOption;
+        this.syncProcessor = syncProcessor;
 
         final boolean doCovers = recordTypes.contains(RecordType.Cover);
         coversForNewBooks = new boolean[]{doCovers, doCovers};
@@ -136,78 +128,10 @@ public class StripInfoReader
         // create a new instance just for our own use
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
 
-        // Use either the custom passed-in, or the built-in default.
-        if (syncProcessorBuilder != null) {
-            this.syncProcessor = syncProcessorBuilder
-                    .build(StripInfoSyncReaderProcessor::new);
-        } else {
-            this.syncProcessor = createSyncProcessorBuilder(context)
-                    .build(StripInfoSyncReaderProcessor::new);
-        }
 
         final ServiceLocator locator = ServiceLocator.getInstance();
         bookDao = locator.getBookDao();
         bookIdentifierDao = locator.getBookIdentifierDao();
-    }
-
-    /**
-     * Create the default {@link SyncReaderProcessor.Builder}.
-     * <p>
-     * Simple fields are set to {@link SyncAction#CopyIfBlank}.
-     * List fields are set to {@link SyncAction#Append}.
-     *
-     * @param context Current context
-     *
-     * @return a {@link SyncReaderProcessor.Builder}
-     */
-    @NonNull
-    public static SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
-        final SortedMap<String, String[]> map = new TreeMap<>();
-        map.put(context.getString(R.string.lbl_cover_front),
-                new String[]{DBKey.COVER[0]});
-        map.put(context.getString(R.string.lbl_cover_back),
-                new String[]{DBKey.COVER[1]});
-
-        // the wishlist
-        map.put(context.getString(R.string.lbl_bookshelves),
-                new String[]{DBKey.FK_BOOKSHELF, Book.BKEY_BOOKSHELF_LIST});
-        map.put(context.getString(R.string.lbl_date_acquired),
-                new String[]{DBKey.DATE_ACQUIRED});
-        map.put(context.getString(R.string.lbl_location),
-                new String[]{DBKey.LOCATION});
-        map.put(context.getString(R.string.lbl_personal_notes),
-                new String[]{DBKey.PERSONAL_NOTES});
-        map.put(context.getString(R.string.lbl_rating),
-                new String[]{DBKey.RATING});
-        map.put(context.getString(R.string.lbl_read),
-                new String[]{DBKey.READ__BOOL});
-        map.put(context.getString(R.string.lbl_price_paid),
-                new String[]{DBKey.PRICE_PAID});
-
-        // The collection-data: see StripInfoSyncReaderProcessor
-        map.put(context.getString(R.string.site_stripinfo_be),
-                new String[]{StripInfoCollectionData.BKEY});
-
-
-        final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-
-        final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX, realNumberParser);
-
-        // add the sorted fields
-        map.forEach(builder::add);
-
-        builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
-               .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
-               .addRelatedField(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
-
-        // The single external-id field is added at the end of the list.
-        map.put(context.getString(R.string.lbl_identifiers),
-                new String[]{Identifier.SID_STRIP_INFO});
-
-        return builder;
     }
 
     @NonNull
@@ -455,34 +379,6 @@ public class StripInfoReader
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "processPage",
                                         "externalId=" + externalId);
-        }
-    }
-
-    private static class StripInfoSyncReaderProcessor
-            extends SyncReaderProcessor {
-
-        StripInfoSyncReaderProcessor(@NonNull final Builder builder) {
-            super(builder);
-        }
-
-        @NonNull
-        @Override
-        protected FilterResult filter(@NonNull final SyncField field,
-                                      @NonNull final Book localBook) {
-            if (StripInfoCollectionData.BKEY.equals(field.getKey())) {
-                return FilterResult.Add;
-            } else {
-                return FilterResult.ApplyDefault;
-            }
-        }
-
-        @Override
-        protected boolean process(@NonNull final Context context,
-                                  @NonNull final Book localBook,
-                                  @NonNull final Book remoteBook,
-                                  @NonNull final SyncField field) {
-            // When present, we always/effectively do a SyncAction.Overwrite
-            return StripInfoCollectionData.BKEY.equals(field.getKey());
         }
     }
 }

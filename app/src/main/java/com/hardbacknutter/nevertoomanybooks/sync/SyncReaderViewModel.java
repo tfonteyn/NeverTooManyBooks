@@ -26,15 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
 public class SyncReaderViewModel
         extends DataReaderViewModel<SyncReaderMetaData, ReaderResults> {
@@ -55,8 +51,7 @@ public class SyncReaderViewModel
             final SyncServer syncServer = Objects.requireNonNull(
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
 
-            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            syncReaderHelper = new SyncReaderHelper(context, syncServer, systemLocale);
+            syncReaderHelper = new SyncReaderHelper(context, syncServer);
         }
     }
 
@@ -111,20 +106,6 @@ public class SyncReaderViewModel
     @Override
     public boolean isReadyToGo() {
         Objects.requireNonNull(syncReaderHelper, ERROR_SYNC_READER_HELPER);
-
-        final SyncServer syncServer = syncReaderHelper.getSyncServer();
-        switch (syncServer) {
-            case CalibreCS: {
-                @Nullable
-                final CalibreLibrary selected = syncReaderHelper
-                        .getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
-                return selected != null && selected.getTotalBooks() > 0;
-            }
-            case StripInfo:
-                return true;
-
-            default:
-                throw new IllegalArgumentException(syncServer.toString());
-        }
+        return syncReaderHelper.isReadyToGo();
     }
 }
