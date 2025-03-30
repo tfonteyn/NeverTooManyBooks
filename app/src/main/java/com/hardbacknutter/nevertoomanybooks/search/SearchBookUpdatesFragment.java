@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,13 +36,11 @@ import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -55,15 +51,14 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncFieldAdapter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
@@ -293,94 +288,6 @@ public class SearchBookUpdatesFragment
             //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
-        }
-    }
-
-    private static class Holder
-            extends RecyclerView.ViewHolder {
-
-        @NonNull
-        private final RowUpdateFromInternetBinding vb;
-
-        Holder(@NonNull final RowUpdateFromInternetBinding vb) {
-            super(vb.getRoot());
-            this.vb = vb;
-        }
-
-        void onBind(@Nullable final SyncField syncField) {
-            if (syncField == null) {
-                vb.field.setVisibility(View.INVISIBLE);
-                vb.cbxUsage.setVisibility(View.INVISIBLE);
-            } else {
-                vb.field.setVisibility(View.VISIBLE);
-                vb.cbxUsage.setVisibility(View.VISIBLE);
-                vb.field.setText(Html.fromHtml(syncField.getFieldLabel(), 0));
-                vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
-                vb.cbxUsage.setText(syncField.getActionLabel(vb.cbxUsage.getContext()));
-            }
-        }
-    }
-
-    private static class SyncFieldAdapter
-            extends MultiColumnRecyclerViewAdapter<Holder> {
-
-        static final SyncField[] Z_ARRAY_SYNC_FIELD = new SyncField[0];
-
-        @NonNull
-        private final SyncField[] syncFields;
-
-        /**
-         * Constructor.
-         *
-         * @param context     Current context.
-         * @param syncFields  to show
-         * @param columnCount the number of columns to be used
-         */
-        SyncFieldAdapter(@NonNull final Context context,
-                         @NonNull final Collection<SyncField> syncFields,
-                         final int columnCount) {
-            super(context, columnCount);
-            this.syncFields = syncFields.toArray(Z_ARRAY_SYNC_FIELD);
-        }
-
-        @NonNull
-        @Override
-        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                         final int viewType) {
-
-            final Holder holder = new Holder(
-                    RowUpdateFromInternetBinding.inflate(getInflater(), parent, false));
-
-            holder.vb.cbxUsage.setOnClickListener(v -> {
-                final int position = holder.getBindingAdapterPosition();
-                final int listIndex = transpose(position);
-                if (listIndex == RecyclerView.NO_POSITION) {
-                    // Should never get here
-                    throw new IllegalStateException("No ListIndex for position=" + position);
-                }
-                final SyncField fs = syncFields[listIndex];
-                fs.nextState();
-                holder.vb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
-                holder.vb.cbxUsage.setText(fs.getActionLabel(holder.vb.cbxUsage.getContext()));
-            });
-            return holder;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-
-            final int listIndex = transpose(position);
-            if (listIndex == RecyclerView.NO_POSITION) {
-                holder.onBind(null);
-            } else {
-                holder.onBind(syncFields[listIndex]);
-            }
-        }
-
-        @Override
-        protected int getRealItemCount() {
-            return syncFields.length;
         }
     }
 
