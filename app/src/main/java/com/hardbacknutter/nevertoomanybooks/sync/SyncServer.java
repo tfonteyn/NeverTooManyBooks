@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -105,10 +106,16 @@ public enum SyncServer
     }
 
 
-    /** A short label. Used in drop down menus and similar. */
-    @StringRes
-    public int getLabelResId() {
-        return labelResId;
+    /**
+     * A short label. Used in drop down menus and similar.
+     *
+     * @param context Current context
+     *
+     * @return label
+     */
+    @NonNull
+    public String getLabel(@NonNull final Context context) {
+        return context.getString(labelResId);
     }
 
     /**
@@ -194,8 +201,9 @@ public enum SyncServer
      *
      * @return a new reader
      *
-     * @throws DataReaderException      if the input is not recognized
+     * @throws CertificateException     on failures related to a user installed CA.
      * @throws CredentialsException     on authentication/login failures
+     * @throws DataReaderException      if the input is not recognized
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if there are no record types set
      * @throws IllegalStateException    if there is no reader available
@@ -208,7 +216,7 @@ public enum SyncServer
             @NonNull final Locale systemLocale,
             @NonNull final DataReader.Updates updateOption,
             @NonNull final Set<RecordType> recordTypes,
-            @Nullable final SyncReaderProcessor syncProcessor,
+            @Nullable final SyncReaderProcessor.Builder syncProcessor,
             @Nullable final LocalDateTime syncDate,
             @NonNull final Bundle extraArgs)
             throws DataReaderException,
@@ -258,7 +266,7 @@ public enum SyncServer
     @NonNull
     public String toString() {
         return "SyncServer{"
-               + "labelResId=" + labelResId
+               + "label=" + ServiceLocator.getInstance().getAppContext().getString(labelResId)
                + ", hasLastUpdateDateField=" + hasLastUpdateDateField
                + ", syncDateIsUserEditable=" + syncDateIsUserEditable
                + '}';

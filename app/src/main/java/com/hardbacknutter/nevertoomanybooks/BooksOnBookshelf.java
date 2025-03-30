@@ -955,6 +955,8 @@ public class BooksOnBookshelf
         // but the CURRENT style. Needs further investigation.
         // Not recreating here is no big-deal as this is really only to apply
         // any UI setting changes coming from the imported preferences.
+        // The downside: the sync menu is not updated/visible.
+        // ... the user needs to quit the app and restart
         if (result.preferences > 0) {
             //ActivityRestarter.recreate();
         }

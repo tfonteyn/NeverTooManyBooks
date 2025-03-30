@@ -167,31 +167,35 @@ public class CalibreContentServerReader
     /**
      * Constructor.
      *
-     * @param context       Current context
-     * @param systemLocale  to use for ISO date parsing
-     * @param updateOption  options
-     * @param recordTypes   the record types to accept and read
-     * @param syncProcessor synchronization configuration
-     * @param syncDate      optional cut-off date
-     * @param extraArgs     Bundle with reader specific arguments
+     * @param context              Current context
+     * @param systemLocale         to use for ISO date parsing
+     * @param updateOption         options
+     * @param recordTypes          the record types to accept and read
+     * @param syncProcessorBuilder synchronization configuration
+     * @param syncDate             optional cut-off date
+     * @param extraArgs            Bundle with reader specific arguments
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
-    public CalibreContentServerReader(@NonNull final Context context,
-                                      @NonNull final Locale systemLocale,
-                                      @NonNull final DataReader.Updates updateOption,
-                                      @NonNull final Set<RecordType> recordTypes,
-                                      @Nullable final SyncReaderProcessor syncProcessor,
-                                      @Nullable final LocalDateTime syncDate,
-                                      @NonNull final Bundle extraArgs)
+    public CalibreContentServerReader(
+            @NonNull final Context context,
+            @NonNull final Locale systemLocale,
+            @NonNull final DataReader.Updates updateOption,
+            @NonNull final Set<RecordType> recordTypes,
+            @Nullable final SyncReaderProcessor.Builder syncProcessorBuilder,
+            @Nullable final LocalDateTime syncDate,
+            @NonNull final Bundle extraArgs)
             throws CertificateException {
 
         this.updateOption = updateOption;
         this.syncDate = syncDate;
 
-        // Get either the custom passed-in, or the built-in default.
-        this.syncProcessor = syncProcessor != null ? syncProcessor
-                                                   : getDefaultSyncProcessor(context);
+        // Use either the custom passed-in, or the built-in default.
+        if (syncProcessorBuilder != null) {
+            this.syncProcessor = syncProcessorBuilder.build();
+        } else {
+            this.syncProcessor = createSyncProcessorBuilder(context).build();
+        }
 
         doCovers = recordTypes.contains(RecordType.Cover);
         library = extraArgs.getParcelable(CalibreContentServer.BKEY_LIBRARY);
@@ -208,17 +212,17 @@ public class CalibreContentServerReader
     }
 
     /**
-     * Get the default {@link SyncReaderProcessor}.
+     * Create the default {@link SyncReaderProcessor.Builder}.
      * <p>
      * Simple fields are set to {@link SyncAction#CopyIfBlank}.
      * List fields are set to {@link SyncAction#Append}.
      *
      * @param context Current context
      *
-     * @return a {@link SyncReaderProcessor}
+     * @return a {@link SyncReaderProcessor.Builder}
      */
     @NonNull
-    private static SyncReaderProcessor getDefaultSyncProcessor(@NonNull final Context context) {
+    public static SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
         final SortedMap<String, String[]> map = new TreeMap<>();
         map.put(context.getString(R.string.site_calibre),
                 new String[]{DBKey.CALIBRE.BOOK_ID});
@@ -287,7 +291,7 @@ public class CalibreContentServerReader
                .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
                .addRelatedField(DBKey.CALIBRE.BOOK_ID, DBKey.CALIBRE.BOOK_UUID);
 
-        return builder.build();
+        return builder;
     }
 
     @Override

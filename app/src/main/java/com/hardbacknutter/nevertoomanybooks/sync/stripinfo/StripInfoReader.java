@@ -118,15 +118,15 @@ public class StripInfoReader
     /**
      * Constructor.
      *
-     * @param context       Current context
-     * @param updateOption  options
-     * @param recordTypes   the record types to accept and read
-     * @param syncProcessor synchronization configuration
+     * @param context              Current context
+     * @param updateOption         options
+     * @param recordTypes          the record types to accept and read
+     * @param syncProcessorBuilder synchronization configuration
      */
     public StripInfoReader(@NonNull final Context context,
                            @NonNull final DataReader.Updates updateOption,
                            @NonNull final Set<RecordType> recordTypes,
-                           @Nullable final SyncReaderProcessor syncProcessor) {
+                           @Nullable final SyncReaderProcessor.Builder syncProcessorBuilder) {
 
         this.updateOption = updateOption;
 
@@ -136,9 +136,14 @@ public class StripInfoReader
         // create a new instance just for our own use
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);
 
-        // Get either the custom passed-in, or the built-in default.
-        this.syncProcessor = syncProcessor != null ? syncProcessor
-                                                   : getDefaultSyncProcessor(context);
+        // Use either the custom passed-in, or the built-in default.
+        if (syncProcessorBuilder != null) {
+            this.syncProcessor = syncProcessorBuilder
+                    .build(StripInfoSyncReaderProcessor::new);
+        } else {
+            this.syncProcessor = createSyncProcessorBuilder(context)
+                    .build(StripInfoSyncReaderProcessor::new);
+        }
 
         final ServiceLocator locator = ServiceLocator.getInstance();
         bookDao = locator.getBookDao();
@@ -146,17 +151,17 @@ public class StripInfoReader
     }
 
     /**
-     * Get the default {@link SyncReaderProcessor}.
+     * Create the default {@link SyncReaderProcessor.Builder}.
      * <p>
      * Simple fields are set to {@link SyncAction#CopyIfBlank}.
      * List fields are set to {@link SyncAction#Append}.
      *
      * @param context Current context
      *
-     * @return a {@link SyncReaderProcessor}
+     * @return a {@link SyncReaderProcessor.Builder}
      */
     @NonNull
-    private SyncReaderProcessor getDefaultSyncProcessor(@NonNull final Context context) {
+    public static SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
         final SortedMap<String, String[]> map = new TreeMap<>();
         map.put(context.getString(R.string.lbl_cover_front),
                 new String[]{DBKey.COVER[0]});
@@ -184,7 +189,7 @@ public class StripInfoReader
                 new String[]{StripInfoCollectionData.BKEY});
 
 
-        final Locale siteLocale = searchEngine.getLocale(context);
+        final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
         final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
@@ -202,7 +207,7 @@ public class StripInfoReader
         map.put(context.getString(R.string.lbl_identifiers),
                 new String[]{Identifier.SID_STRIP_INFO});
 
-        return builder.build(StripInfoSyncReaderProcessor::new);
+        return builder;
     }
 
     @NonNull

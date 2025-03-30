@@ -162,6 +162,16 @@ public class SearchBookUpdatesViewModel
         }
     }
 
+    /**
+     * Create the default {@link SyncReaderProcessor.Builder}.
+     * <p>
+     * Simple fields are set to {@link SyncAction#CopyIfBlank}.
+     * List fields are set to {@link SyncAction#Append}.
+     *
+     * @param context Current context
+     *
+     * @return a {@link SyncReaderProcessor.Builder}
+     */
     @NonNull
     private SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
         final RealNumberParser realNumberParser =
@@ -230,7 +240,7 @@ public class SearchBookUpdatesViewModel
     @NonNull
     public SyncReaderProcessor.Builder getSyncProcessorBuilder() {
         if (syncProcessor != null) {
-            throw new IllegalStateException("syncProcessor exists");
+            throw new IllegalStateException("syncProcessor already exists");
         }
         return Objects.requireNonNull(syncProcessorBuilder);
     }

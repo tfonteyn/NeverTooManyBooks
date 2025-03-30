@@ -490,6 +490,7 @@ public class SyncReaderProcessor {
         private final String preferencePrefix;
         @NonNull
         private final SharedPreferences prefs;
+        @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
         private final RealNumberParser realNumberParser;
 
@@ -694,6 +695,17 @@ public class SyncReaderProcessor {
                 }
             });
             return supplier.apply(this);
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Builder{"
+                   + "preferencePrefix='" + preferencePrefix + '\''
+                   + ", prefs=" + prefs
+                   + ", fields=" + fields
+                   + ", relatedFields=" + relatedFields
+                   + '}';
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
 
 public final class SyncReaderHelper
         extends DataReaderHelperBase<SyncReaderMetaData, ReaderResults> {
@@ -49,18 +51,20 @@ public final class SyncReaderHelper
     @SuppressWarnings("FieldNotUsedInToString")
     private final Locale systemLocale;
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
-    @Nullable
-    private SyncReaderProcessor syncProcessor;
+    @NonNull
+    private final SyncReaderProcessor.Builder syncProcessorBuilder;
     @Nullable
     private LocalDateTime syncDate;
 
     /**
      * Constructor.
      *
+     * @param context      Current Context
      * @param syncServer   to use
      * @param systemLocale to use for ISO date parsing
      */
-    SyncReaderHelper(@NonNull final SyncServer syncServer,
+    SyncReaderHelper(@NonNull final Context context,
+                     @NonNull final SyncServer syncServer,
                      @NonNull final Locale systemLocale) {
         this.syncServer = syncServer;
         this.systemLocale = systemLocale;
@@ -71,6 +75,18 @@ public final class SyncReaderHelper
         setUpdateOption(this.syncServer.hasLastUpdateDateField()
                         ? DataReader.Updates.OnlyNewer
                         : DataReader.Updates.Skip);
+
+        switch (syncServer) {
+            case CalibreCS:
+                syncProcessorBuilder = CalibreContentServerReader
+                        .createSyncProcessorBuilder(context);
+                break;
+            case StripInfo:
+                syncProcessorBuilder = StripInfoReader.createSyncProcessorBuilder(context);
+                break;
+            default:
+                throw new IllegalArgumentException(syncServer.toString());
+        }
     }
 
     /**
@@ -83,13 +99,9 @@ public final class SyncReaderHelper
         return syncServer;
     }
 
-    @Nullable
-    SyncReaderProcessor getSyncProcessor() {
-        return syncProcessor;
-    }
-
-    void setSyncProcessor(@Nullable final SyncReaderProcessor syncProcessor) {
-        this.syncProcessor = syncProcessor;
+    @NonNull
+    SyncReaderProcessor.Builder getSyncProcessorBuilder() {
+        return syncProcessorBuilder;
     }
 
     @NonNull
@@ -127,7 +139,7 @@ public final class SyncReaderHelper
                    IOException {
         return syncServer.createReader(context, systemLocale,
                                        getUpdateOption(), getRecordTypes(),
-                                       syncProcessor, syncDate,
+                                       syncProcessorBuilder, syncDate,
                                        extraArgs);
     }
 
@@ -138,7 +150,7 @@ public final class SyncReaderHelper
                + super.toString()
                + ", syncDate=" + syncDate
                + ", extraArgs=" + extraArgs
-               + ", syncProcessor=" + syncProcessor
+               + ", syncProcessorBuilder=" + syncProcessorBuilder
                + ", syncServer=" + syncServer
                + '}';
     }

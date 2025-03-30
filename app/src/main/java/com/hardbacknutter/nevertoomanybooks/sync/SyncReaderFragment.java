@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -115,7 +115,7 @@ public class SyncReaderFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(SyncReaderViewModel.class);
-        vm.init(requireArguments());
+        vm.init(requireContext(), requireArguments());
     }
 
     @Nullable

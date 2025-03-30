@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,22 +46,24 @@ public class SyncReaderViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args Bundle with arguments
+     * @param context Current Context
+     * @param args    Bundle with arguments
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @NonNull final Bundle args) {
         if (syncReaderHelper == null) {
             final SyncServer syncServer = Objects.requireNonNull(
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
 
             final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            syncReaderHelper = new SyncReaderHelper(syncServer, systemLocale);
+            syncReaderHelper = new SyncReaderHelper(context, syncServer, systemLocale);
         }
     }
 
     @NonNull
     @Override
     public String getSourceDisplayName(@NonNull final Context context) {
-        return context.getString(getDataReaderHelper().getSyncServer().getLabelResId());
+        return getDataReaderHelper().getSyncServer().getLabel(context);
     }
 
     /**

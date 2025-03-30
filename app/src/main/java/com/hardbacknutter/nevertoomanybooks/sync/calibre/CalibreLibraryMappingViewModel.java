@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,9 +45,15 @@ public class CalibreLibraryMappingViewModel
     private CalibreLibrary currentLibrary;
     private boolean extInstalled;
 
-    @Override
-    public void init(@NonNull final Bundle args) {
-        super.init(args);
+    /**
+     * Pseudo constructor.
+     *
+     * @param context Current Context
+     * @param args    Bundle with arguments
+     */
+    public void init(@NonNull final Context context,
+                     @NonNull final Bundle args) {
+        super.init(context, args);
         if (calibreLibraryDao == null) {
             calibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
         }
