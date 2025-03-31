@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.SortedMap;
@@ -174,8 +175,8 @@ public class SearchBookUpdatesViewModel
      */
     @NonNull
     private SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(LocaleListUtils.asList(context));
+        final List<Locale> locales = LocaleListUtils.asList(context);
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final SyncReaderProcessor.Builder builder =
                 new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX, realNumberParser);
 
@@ -187,45 +188,53 @@ public class SearchBookUpdatesViewModel
 
         // These fields will be locally sorted and come next on the list
         final SortedMap<String, String[]> map = new TreeMap<>();
-        map.put(context.getString(R.string.lbl_title),
-                new String[]{DBKey.TITLE});
-        map.put(context.getString(R.string.lbl_original_title),
-                new String[]{DBKey.TRANSLATION_ORIGINAL_TITLE});
-        map.put(context.getString(R.string.lbl_isbn),
-                new String[]{DBKey.ISBN});
+
+        // Note how we do NOT add DBKey.RATING
+        // Rating is taken when a book is initially added to the app,
+        // it is then assumed to user may update it with their personal rating.
+        // Hence we NEVER fetch it from the sites again.
+
+        map.put(context.getString(R.string.lbl_color),
+                new String[]{DBKey.COLOR});
+        map.put(context.getString(R.string.lbl_table_of_content),
+                new String[]{DBKey.CONTENT_TYPE, Book.BKEY_TOC_LIST});
         map.put(context.getString(R.string.lbl_description),
                 new String[]{DBKey.DESCRIPTION});
+        map.put(context.getString(R.string.lbl_date_first_publication),
+                new String[]{DBKey.FIRST_PUBLICATION_DATE});
+        map.put(context.getString(R.string.lbl_format),
+                new String[]{DBKey.FORMAT});
+        map.put(context.getString(R.string.lbl_isbn),
+                new String[]{DBKey.ISBN});
+        map.put(context.getString(R.string.lbl_language),
+                new String[]{DBKey.LANGUAGE});
+        map.put(context.getString(R.string.lbl_pages),
+                new String[]{DBKey.PAGES});
+        map.put(context.getString(R.string.lbl_price_listed),
+                new String[]{DBKey.PRICE_LISTED});
         map.put(context.getString(R.string.lbl_print_run),
                 new String[]{DBKey.PRINT_RUN});
         map.put(context.getString(R.string.lbl_date_published),
                 new String[]{DBKey.PUBLICATION_DATE});
-        map.put(context.getString(R.string.lbl_date_first_publication),
-                new String[]{DBKey.FIRST_PUBLICATION_DATE});
-        map.put(context.getString(R.string.lbl_price_listed),
-                new String[]{DBKey.PRICE_LISTED});
-        map.put(context.getString(R.string.lbl_pages),
-                new String[]{DBKey.PAGES});
-        map.put(context.getString(R.string.lbl_format),
-                new String[]{DBKey.FORMAT});
-        map.put(context.getString(R.string.lbl_color),
-                new String[]{DBKey.COLOR});
-        map.put(context.getString(R.string.lbl_language),
-                new String[]{DBKey.LANGUAGE});
+        map.put(context.getString(R.string.lbl_title),
+                new String[]{DBKey.TITLE});
         map.put(context.getString(R.string.lbl_original_language),
                 new String[]{DBKey.TRANSLATION_ORIGINAL_LANGUAGE});
-        map.put(context.getString(R.string.lbl_tags)
-                + " / " + context.getString(R.string.lbl_genre),
-                new String[]{DBKey.FK_TAG, Book.BKEY_TAG_LIST});
+        map.put(context.getString(R.string.lbl_original_title),
+                new String[]{DBKey.TRANSLATION_ORIGINAL_TITLE});
+
         map.put(context.getString(R.string.lbl_authors),
                 new String[]{DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST});
-        map.put(context.getString(R.string.lbl_series_multiple),
-                new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
-        map.put(context.getString(R.string.lbl_table_of_content),
-                new String[]{DBKey.CONTENT_TYPE, Book.BKEY_TOC_LIST});
-        map.put(context.getString(R.string.lbl_publishers),
-                new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
         map.put(context.getString(R.string.lbl_identifiers),
                 new String[]{DBKey.FK_IDENTIFIER, Book.BKEY_IDENTIFIER_LIST});
+        map.put(context.getString(R.string.lbl_publishers),
+                new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
+        map.put(context.getString(R.string.lbl_series_multiple),
+                new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
+        map.put(context.getString(R.string.a_bracket_b_bracket,
+                                  context.getString(R.string.lbl_tags),
+                                  context.getString(R.string.lbl_genre)),
+                new String[]{DBKey.FK_TAG, Book.BKEY_TAG_LIST});
 
         map.forEach(builder::add);
 
