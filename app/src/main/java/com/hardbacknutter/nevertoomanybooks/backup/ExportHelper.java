@@ -42,8 +42,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -78,19 +80,17 @@ public class ExportHelper
 
     /**
      * Constructor.
-     *
-     * @param dateParser to use for ISO date parsing
      */
-    ExportHelper(@NonNull final DateParser<LocalDateTime> dateParser) {
-        // set the default
+    ExportHelper() {
         this(ArchiveEncoding.Zip,
              EnumSet.of(RecordType.Styles,
                         RecordType.Preferences,
                         RecordType.Certificates,
                         RecordType.Books,
                         RecordType.Cover),
-             dateParser);
+             new ISODateParser(ServiceLocator.getInstance().getSystemLocaleList().get(0)));
     }
+
 
     /**
      * Constructor for testing individual options.

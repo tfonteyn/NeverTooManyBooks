@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -49,10 +48,6 @@ public final class ImportHelper
     @NonNull
     private final ArchiveEncoding encoding;
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final Locale systemLocale;
-
     /** <strong>Where</strong> we read from. */
     @NonNull
     private final Uri uri;
@@ -61,7 +56,6 @@ public final class ImportHelper
      * Constructor. The encoding will be determined from the Uri.
      *
      * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
      * @param uri          to read from
      *
      * @throws DataReaderException   on failure to recognise a supported archive
@@ -69,11 +63,9 @@ public final class ImportHelper
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public ImportHelper(@NonNull final Context context,
-                        @NonNull final Locale systemLocale,
                         @NonNull final Uri uri)
             throws FileNotFoundException, DataReaderException {
 
-        this.systemLocale = systemLocale;
         this.uri = uri;
 
         encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
@@ -140,7 +132,7 @@ public final class ImportHelper
             throws DataReaderException,
                    CredentialsException,
                    IOException {
-        return encoding.createReader(context, systemLocale, uri,
+        return encoding.createReader(context, uri,
                                      getUpdateOption(),
                                      getRecordTypes());
     }

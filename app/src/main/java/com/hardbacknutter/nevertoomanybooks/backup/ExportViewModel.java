@@ -28,11 +28,9 @@ import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
@@ -64,12 +62,10 @@ public class ExportViewModel
 
     /**
      * Pseudo constructor.
-     *
-     * @param systemLocale to use for ISO date parsing
      */
-    public void init(@NonNull final Locale systemLocale) {
+    public void init() {
         if (exportHelper == null) {
-            exportHelper = new ExportHelper(new ISODateParser(systemLocale));
+            exportHelper = new ExportHelper();
         }
     }
 

@@ -125,13 +125,11 @@ public class CsvRecordReader
      * <p>
      * Only supports {@link RecordType#Books}.
      *
-     * @param systemLocale to use for ISO date parsing
      * @param updateOption options
      */
     @AnyThread
-    public CsvRecordReader(@NonNull final Locale systemLocale,
-                           @NonNull final DataReader.Updates updateOption) {
-        super(systemLocale, updateOption);
+    public CsvRecordReader(@NonNull final DataReader.Updates updateOption) {
+        super(updateOption);
     }
 
     /**

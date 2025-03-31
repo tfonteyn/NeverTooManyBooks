@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -149,8 +148,6 @@ public class ZipArchiveReader
     private final ImportResults results;
 
     @NonNull
-    private final Locale systemLocale;
-    @NonNull
     private final Uri uri;
     @NonNull
     private final Updates updateOption;
@@ -176,18 +173,15 @@ public class ZipArchiveReader
      * Constructor.
      *
      * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
      * @param uri          to read from
      * @param updateOption options
      * @param recordTypes  the record types to accept and read
      */
     public ZipArchiveReader(@NonNull final Context context,
-                            @NonNull final Locale systemLocale,
                             @NonNull final Uri uri,
                             @NonNull final DataReader.Updates updateOption,
                             @NonNull final Set<RecordType> recordTypes) {
         this.contentResolver = context.getContentResolver();
-        this.systemLocale = systemLocale;
         this.uri = uri;
         this.updateOption = updateOption;
         this.recordTypes = RecordType.addRelatedTypes(recordTypes);
@@ -241,7 +235,7 @@ public class ZipArchiveReader
                                 context.getString(R.string.error_file_not_recognized)));
 
                 reader = encoding
-                        .createReader(context, systemLocale,
+                        .createReader(context,
                                       EnumSet.of(RecordType.MetaData),
                                       updateOption)
                         .orElseThrow(() -> new DataReaderException(
@@ -472,7 +466,7 @@ public class ZipArchiveReader
             RecordReader reader = null;
             try {
                 final Optional<RecordReader> optReader =
-                        recordEncoding.get().createReader(context, systemLocale,
+                        recordEncoding.get().createReader(context,
                                                           allowedTypes,
                                                           updateOption);
                 if (optReader.isPresent()) {

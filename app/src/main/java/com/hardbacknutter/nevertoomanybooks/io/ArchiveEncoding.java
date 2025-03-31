@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -285,7 +284,6 @@ public enum ArchiveEncoding
      * Create an {@link DataReader} based on the type.
      *
      * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
      * @param uri          to read from
      * @param updateOption options
      * @param recordTypes  the record types to accept and read
@@ -302,7 +300,6 @@ public enum ArchiveEncoding
     @NonNull
     public DataReader<ArchiveMetaData, ImportResults> createReader(
             @NonNull final Context context,
-            @NonNull final Locale systemLocale,
             @NonNull final Uri uri,
             @NonNull final DataReader.Updates updateOption,
             @NonNull final Set<RecordType> recordTypes)
@@ -317,13 +314,12 @@ public enum ArchiveEncoding
         final DataReader<ArchiveMetaData, ImportResults> reader;
         switch (this) {
             case Zip: {
-                reader = new ZipArchiveReader(context, systemLocale, uri,
+                reader = new ZipArchiveReader(context, uri,
                                               updateOption, recordTypes);
                 break;
             }
             case Csv: {
-                reader = new CsvArchiveReader(systemLocale, uri,
-                                              updateOption);
+                reader = new CsvArchiveReader(uri, updateOption);
                 break;
             }
             case SqLiteDb: {
@@ -331,7 +327,7 @@ public enum ArchiveEncoding
                 break;
             }
             case Json: {
-                reader = new JsonArchiveReader(systemLocale, uri,
+                reader = new JsonArchiveReader(uri,
                                                updateOption, recordTypes);
                 break;
             }

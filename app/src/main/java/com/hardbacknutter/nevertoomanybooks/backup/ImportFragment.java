@@ -42,7 +42,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -227,8 +226,7 @@ public class ImportFragment
 
         try {
             //noinspection DataFlowIssue
-            vm.setSource(getContext(), uri,
-                         ServiceLocator.getInstance().getSystemLocaleList().get(0));
+            vm.setSource(getContext(), uri);
 
             // FIRST show the screen for better user feedback
             updateUI();
@@ -345,9 +343,7 @@ public class ImportFragment
                                                    origin.getLabel(context)));
                     }
 
-                    final Locale systemLocale = ServiceLocator
-                            .getInstance().getSystemLocaleList().get(0);
-                    metaData.getCreatedLocalDate(systemLocale).ifPresent(date -> info
+                    metaData.getCreatedLocalDate().ifPresent(date -> info
                             .add(DateUtils.displayDateTime(context, date)));
 
                     metaData.getBookCount().ifPresent(count -> info

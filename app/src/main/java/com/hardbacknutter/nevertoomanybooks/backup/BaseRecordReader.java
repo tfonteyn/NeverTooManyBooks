@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -59,15 +58,14 @@ public abstract class BaseRecordReader
     /**
      * Constructor.
      *
-     * @param systemLocale to use for ISO date parsing
      * @param updateOption options
      */
-    protected BaseRecordReader(@NonNull final Locale systemLocale,
-                               @NonNull final DataReader.Updates updateOption) {
+    protected BaseRecordReader(@NonNull final DataReader.Updates updateOption) {
         this.updateOption = updateOption;
-        this.bookDao = ServiceLocator.getInstance().getBookDao();
 
-        this.dateParser = new ISODateParser(systemLocale);
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        this.bookDao = serviceLocator.getBookDao();
+        this.dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
     }
 
     @NonNull

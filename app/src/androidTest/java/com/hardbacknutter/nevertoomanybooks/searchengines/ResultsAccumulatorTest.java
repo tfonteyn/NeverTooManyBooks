@@ -59,8 +59,6 @@ public class ResultsAccumulatorTest
 
     private static final String SEARCH_ISBN = "9780552574471";
 
-    private final Locale systemLocale = Locale.US;
-
     @Before
     public void setup()
             throws DaoWriteException, StorageException {

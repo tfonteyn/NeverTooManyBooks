@@ -41,6 +41,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
@@ -144,7 +145,6 @@ public class BookDaoImpl
      * Constructor.
      *
      * @param db                    Underlying database
-     * @param systemLocale          to use for ISO date parsing
      * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
      * @param seriesDaoSupplier     deferred supplier for the {@link SeriesDao}
      * @param publisherDaoSupplier  deferred supplier for the {@link PublisherDao}
@@ -160,7 +160,6 @@ public class BookDaoImpl
      * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      */
     public BookDaoImpl(@NonNull final SynchronizedDb db,
-                       @NonNull final Locale systemLocale,
                        @NonNull final Supplier<AuthorDao> authorDaoSupplier,
                        @NonNull final Supplier<SeriesDao> seriesDaoSupplier,
                        @NonNull final Supplier<PublisherDao> publisherDaoSupplier,
@@ -175,7 +174,8 @@ public class BookDaoImpl
                        @NonNull final Supplier<CoverStorage> coverStorageSupplier,
                        @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
         super(db, TAG);
-        dateParser = new ISODateParser(systemLocale);
+        dateParser = new ISODateParser(ServiceLocator.getInstance().getSystemLocaleList().get(0));
+
         this.authorDaoSupplier = authorDaoSupplier;
         this.seriesDaoSupplier = seriesDaoSupplier;
         this.publisherDaoSupplier = publisherDaoSupplier;

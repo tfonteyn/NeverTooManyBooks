@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
@@ -66,7 +65,6 @@ public class ZipArchiveWriterTest
     private int bookInDb;
     private int nrOfStyles;
 
-    private Locale systemLocale;
     private ISODateParser dateParser;
 
     @Before
@@ -74,8 +72,7 @@ public class ZipArchiveWriterTest
             throws DaoWriteException, StorageException, IOException, DataReaderException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        systemLocale = serviceLocator.getSystemLocaleList().get(0);
-        dateParser = new ISODateParser(systemLocale);
+        dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
 
         bookInDb = new DbPrep().maybeInstallTestData(context);
         // +1 for the global style which will be added during export
@@ -122,7 +119,7 @@ public class ZipArchiveWriterTest
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
-        final ImportHelper importHelper = new ImportHelper(context, systemLocale, uri);
+        final ImportHelper importHelper = new ImportHelper(context, uri);
         // The default, fail if the default was changed without changing this test!
         assertEquals(DataReader.Updates.OnlyNewer, importHelper.getUpdateOption());
 

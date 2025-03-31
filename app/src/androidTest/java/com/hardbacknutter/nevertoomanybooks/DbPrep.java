@@ -29,7 +29,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.TestUtils;
@@ -97,15 +96,13 @@ public class DbPrep {
         final File file = TestUtils.createFile(
                 resId, new File(context.getCacheDir(), "testdata.json"));
 
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-
-        final ImportHelper helper = new ImportHelper(context, locale, Uri.fromFile(file));
+        final ImportHelper helper = new ImportHelper(context, Uri.fromFile(file));
         helper.setUpdateOption(DataReader.Updates.Overwrite);
 
-        try (final JsonArchiveReader reader = new JsonArchiveReader(locale,
-                                                                    helper.getUri(),
-                                                                    helper.getUpdateOption(),
-                                                                    helper.getRecordTypes())) {
+        try (final JsonArchiveReader reader = new JsonArchiveReader(
+                helper.getUri(),
+                helper.getUpdateOption(),
+                helper.getRecordTypes())) {
             reader.validate(context);
             reader.read(context, new TestProgressListener("installTestData"));
         }

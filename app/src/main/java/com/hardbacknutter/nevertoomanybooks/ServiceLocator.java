@@ -563,7 +563,7 @@ public class ServiceLocator {
     public BookDao getBookDao() {
         synchronized (this) {
             if (bookDao == null) {
-                bookDao = new BookDaoImpl(getDb(), getSystemLocaleList().get(0),
+                bookDao = new BookDaoImpl(getDb(),
                                           this::getAuthorDao,
                                           this::getSeriesDao,
                                           this::getPublisherDao,

@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.FileNotFoundException;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -49,19 +48,17 @@ public class ImportViewModel
     /**
      * Store the source uri the user picked and create the {@link ImportHelper}.
      *
-     * @param context      Current context
-     * @param uri          as picked by the user
-     * @param systemLocale to use
+     * @param context Current context
+     * @param uri     as picked by the user
      *
      * @throws DataReaderException   on failure to recognise a supported archive
      * @throws FileNotFoundException if the uri cannot be resolved
      */
     void setSource(@NonNull final Context context,
-                   @NonNull final Uri uri,
-                   final Locale systemLocale)
+                   @NonNull final Uri uri)
             throws DataReaderException, FileNotFoundException {
 
-        importHelper = new ImportHelper(context, systemLocale, uri);
+        importHelper = new ImportHelper(context, uri);
     }
 
     /**
@@ -138,7 +135,7 @@ public class ImportViewModel
 
     /**
      * Check the meta-data to see if the archive contains the necessary date information
-     * to support doing updates using {@code DataReader.Updates#OnlyNewer}
+     * to support doing updates using {@code DataReader.Updates#OnlyNewer}.
      * <p>
      * Note that we assume all archives support this unless individual implementations
      * explicitly state they do not!

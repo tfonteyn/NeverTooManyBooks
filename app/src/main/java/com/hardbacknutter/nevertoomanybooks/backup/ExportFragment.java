@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -97,7 +96,7 @@ public class ExportFragment
 
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
-        vm.init(ServiceLocator.getInstance().getSystemLocaleList().get(0));
+        vm.init();
     }
 
     @Override

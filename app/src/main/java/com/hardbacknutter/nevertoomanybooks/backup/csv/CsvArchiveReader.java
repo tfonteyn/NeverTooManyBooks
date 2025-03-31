@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -67,8 +67,6 @@ public class CsvArchiveReader
     private static final int DB_BACKUP_COPIES = 3;
 
     @NonNull
-    private final Locale systemLocale;
-    @NonNull
     private final Uri uri;
     @NonNull
     private final DataReader.Updates updateOption;
@@ -76,14 +74,11 @@ public class CsvArchiveReader
     /**
      * Constructor.
      *
-     * @param systemLocale to use for ISO date parsing
      * @param uri          to read from
      * @param updateOption options
      */
-    public CsvArchiveReader(@NonNull final Locale systemLocale,
-                            @NonNull final Uri uri,
+    public CsvArchiveReader(@NonNull final Uri uri,
                             @NonNull final DataReader.Updates updateOption) {
-        this.systemLocale = systemLocale;
         this.uri = uri;
         this.updateOption = updateOption;
     }
@@ -138,8 +133,7 @@ public class CsvArchiveReader
         FileUtils.copy(source, destination);
 
         try (InputStream is = context.getContentResolver().openInputStream(uri);
-             RecordReader recordReader = new CsvRecordReader(systemLocale,
-                                                             updateOption)) {
+             RecordReader recordReader = new CsvRecordReader(updateOption)) {
             if (is == null) {
                 throw new FileNotFoundException(uri.toString());
             }

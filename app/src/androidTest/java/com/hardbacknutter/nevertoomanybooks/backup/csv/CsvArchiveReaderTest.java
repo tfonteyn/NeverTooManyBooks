@@ -99,7 +99,6 @@ public class CsvArchiveReaderTest
                    StorageException, CredentialsException, CertificateException {
 
         File file;
-        Locale locale;
         ImportHelper importHelper;
         Optional<ArchiveMetaData> oMetaData;
         ArchiveMetaData metaData;
@@ -111,9 +110,7 @@ public class CsvArchiveReaderTest
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
                 new File(context.getCacheDir(), "testdata.csv"));
 
-        locale = context.getResources().getConfiguration().getLocales().get(0);
-
-        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+        importHelper = new ImportHelper(context, Uri.fromFile(file));
 
         oMetaData = importHelper.readMetaData(context);
         assertTrue(oMetaData.isPresent());
@@ -155,9 +152,7 @@ public class CsvArchiveReaderTest
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
                 new File(context.getCacheDir(), "testdata.csv"));
 
-        locale = context.getResources().getConfiguration().getLocales().get(0);
-
-        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+        importHelper = new ImportHelper(context, Uri.fromFile(file));
         importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.Overwrite);
         importResults = importHelper.read(context, new TestProgressListener(TAG));
@@ -186,9 +181,7 @@ public class CsvArchiveReaderTest
                     com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
                     new File(context.getCacheDir(), "testdata.csv"));
 
-            locale = context.getResources().getConfiguration().getLocales().get(0);
-
-            importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+            importHelper = new ImportHelper(context, Uri.fromFile(file));
             importHelper.addRecordType(RecordType.Books);
             importHelper.setUpdateOption(DataReader.Updates.OnlyNewer);
             importResults = importHelper.read(context, new TestProgressListener(TAG));
@@ -211,9 +204,7 @@ public class CsvArchiveReaderTest
                     com.hardbacknutter.nevertoomanybooks.test.R.raw.testdata_csv,
                     new File(context.getCacheDir(), "testdata.csv"));
 
-            locale = context.getResources().getConfiguration().getLocales().get(0);
-
-            importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+            importHelper = new ImportHelper(context, Uri.fromFile(file));
             importHelper.addRecordType(RecordType.Books);
             importHelper.setUpdateOption(DataReader.Updates.Overwrite);
             importResults = importHelper.read(context, new TestProgressListener(TAG));

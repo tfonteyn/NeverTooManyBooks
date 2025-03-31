@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -62,7 +61,6 @@ public class JsonArchiveReader
     private final Updates updateOption;
     @NonNull
     private final Set<RecordType> recordTypes;
-    private final Locale systemLocale;
 
     @Nullable
     private ArchiveMetaData metaData;
@@ -70,16 +68,13 @@ public class JsonArchiveReader
     /**
      * Constructor.
      *
-     * @param systemLocale to use for ISO date parsing
      * @param uri          to read from
      * @param updateOption options
      * @param recordTypes  the record types to accept and read
      */
-    public JsonArchiveReader(@NonNull final Locale systemLocale,
-                             @NonNull final Uri uri,
+    public JsonArchiveReader(@NonNull final Uri uri,
                              @NonNull final DataReader.Updates updateOption,
                              @NonNull final Set<RecordType> recordTypes) {
-        this.systemLocale = systemLocale;
         this.uri = uri;
         this.updateOption = updateOption;
         this.recordTypes = RecordType.addRelatedTypes(recordTypes);
@@ -113,9 +108,9 @@ public class JsonArchiveReader
             }
 
             try (is; RecordReader recordReader =
-                    new JsonRecordReader(systemLocale,
-                                         EnumSet.of(RecordType.MetaData),
-                                         updateOption)) {
+                    new JsonRecordReader(
+                            EnumSet.of(RecordType.MetaData),
+                            updateOption)) {
                 // wrap the entire input into a single record.
                 final ArchiveReaderRecord record = new JsonArchiveRecord(
                         new UriInfo(uri).getDisplayName(context), is);
@@ -141,10 +136,8 @@ public class JsonArchiveReader
                    StorageException,
                    IOException {
 
-        try (final InputStream is = context.getContentResolver().openInputStream(uri);
-             final RecordReader recordReader = new JsonRecordReader(systemLocale,
-                                                                    recordTypes,
-                                                                    updateOption)) {
+        try (InputStream is = context.getContentResolver().openInputStream(uri);
+             RecordReader recordReader = new JsonRecordReader(recordTypes, updateOption)) {
             if (is == null) {
                 throw new FileNotFoundException(uri.toString());
             }

@@ -139,15 +139,13 @@ public class JsonRecordReader
     /**
      * Constructor.
      *
-     * @param systemLocale to use for ISO date parsing
      * @param allowedTypes the record types we're allowed to read
      * @param updateOption options
      */
     @AnyThread
-    public JsonRecordReader(@NonNull final Locale systemLocale,
-                            @NonNull final Set<RecordType> allowedTypes,
+    public JsonRecordReader(@NonNull final Set<RecordType> allowedTypes,
                             @NonNull final DataReader.Updates updateOption) {
-        super(systemLocale, updateOption);
+        super(updateOption);
         this.allowedTypes = allowedTypes;
     }
 

@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -105,7 +104,6 @@ public class GoodreadsCsvImportTest
                 LocaleListUtils.asList(context));
 
         File file;
-        Locale locale;
         ImportHelper importHelper;
         Optional<ArchiveMetaData> oMetaData;
         ArchiveMetaData metaData;
@@ -115,9 +113,7 @@ public class GoodreadsCsvImportTest
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.goodreads_library_export_csv,
                 new File(context.getCacheDir(), "goodreads_library_export.csv"));
 
-        locale = context.getResources().getConfiguration().getLocales().get(0);
-
-        importHelper = new ImportHelper(context, locale, Uri.fromFile(file));
+        importHelper = new ImportHelper(context, Uri.fromFile(file));
 
         oMetaData = importHelper.readMetaData(context);
         assertTrue(oMetaData.isPresent());

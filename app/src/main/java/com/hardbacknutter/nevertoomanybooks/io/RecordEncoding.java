@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -138,7 +138,6 @@ public enum RecordEncoding {
      * Create a {@link RecordReader} for this encoding.
      *
      * @param context      Current context
-     * @param systemLocale to use for ISO date parsing
      * @param allowedTypes the {@link RecordType}s which the reader
      *                     will be <strong>allowed</strong> to read.
      *                     This allows filtering/skipping unwanted entries
@@ -151,17 +150,13 @@ public enum RecordEncoding {
      */
     @NonNull
     public Optional<RecordReader> createReader(@NonNull final Context context,
-                                               @NonNull final Locale systemLocale,
                                                @NonNull final Set<RecordType> allowedTypes,
                                                @NonNull final DataReader.Updates updateOption) {
         switch (this) {
             case Json:
-                return Optional.of(new JsonRecordReader(systemLocale,
-                                                        allowedTypes,
-                                                        updateOption));
+                return Optional.of(new JsonRecordReader(allowedTypes, updateOption));
             case Csv: {
-                return Optional.of(new CsvRecordReader(systemLocale,
-                                                       updateOption));
+                return Optional.of(new CsvRecordReader(updateOption));
             }
             case Xml:
                 //noinspection deprecation

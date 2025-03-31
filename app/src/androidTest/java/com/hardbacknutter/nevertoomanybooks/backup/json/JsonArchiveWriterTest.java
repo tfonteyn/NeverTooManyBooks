@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -74,7 +73,6 @@ public class JsonArchiveWriterTest
     private long bookInDb;
     private int nrOfStyles;
 
-    private Locale systemLocale;
     private ISODateParser dateParser;
 
     @Before
@@ -82,8 +80,7 @@ public class JsonArchiveWriterTest
             throws DaoWriteException, StorageException, IOException, DataReaderException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
-        systemLocale = serviceLocator.getSystemLocaleList().get(0);
-        dateParser = new ISODateParser(systemLocale);
+        dateParser = new ISODateParser(serviceLocator.getSystemLocaleList().get(0));
 
         bookInDb = new DbPrep().maybeInstallTestData(context);
         // +1 for the global style which will be added during export
@@ -115,8 +112,7 @@ public class JsonArchiveWriterTest
         assertEquals(nrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
-        final ImportHelper importHelper = new ImportHelper(context, systemLocale,
-                                                           Uri.fromFile(file));
+        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
         // The default, fail if the default was changed without changing this test!
         assertEquals(DataReader.Updates.OnlyNewer, importHelper.getUpdateOption());
 
@@ -175,8 +171,7 @@ public class JsonArchiveWriterTest
                        "MODIFIED " + book.getString(DBKey.PERSONAL_NOTES, null));
         bookDao.update(context, book, Set.of());
 
-        final ImportHelper importHelper = new ImportHelper(context, systemLocale,
-                                                           Uri.fromFile(file));
+        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
         // The default, fail if the default was changed without changing this test!
         assertEquals(DataReader.Updates.OnlyNewer, importHelper.getUpdateOption());
 
