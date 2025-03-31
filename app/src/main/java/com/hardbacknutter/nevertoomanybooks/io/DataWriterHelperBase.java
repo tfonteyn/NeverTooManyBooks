@@ -29,16 +29,14 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Set;
-import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 
 /**
- * For better or worse... this class and it's children implementations
- * are passed around a lot, and hence tightly coupled.
- * The alternative was a lot of duplicate code and a LOT of individual parameter passing.
+ * A delegate used by ViewModels which holds common settings and logic
+ * for doing a write to a remote.
  *
  * <ul>
  *     <li>{@link CredentialsException}: We cannot authenticate to the site,
@@ -121,7 +119,6 @@ public abstract class DataWriterHelperBase<RESULTS> {
             throws DataWriterException,
                    CertificateException,
                    CredentialsException,
-                   SSLException,
                    StorageException,
                    IOException;
 

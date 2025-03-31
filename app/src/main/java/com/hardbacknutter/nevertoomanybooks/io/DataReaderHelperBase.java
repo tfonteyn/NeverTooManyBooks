@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,9 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 
 /**
- * For better or worse... this class and it's children implementations
- * are passed around a lot, and hence tightly coupled.
- * The alternative was a lot of duplicate code and a LOT of individual parameter passing.
+ * A delegate used by ViewModels which holds common settings and logic
+ * for doing a read from a remote.
  *
  * <ul>
  *     <li>{@link CredentialsException}: We cannot authenticate to the site,
