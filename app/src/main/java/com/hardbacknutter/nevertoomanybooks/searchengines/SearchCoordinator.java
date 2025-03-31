@@ -375,10 +375,8 @@ public class SearchCoordinator
             allSites = Site.Type.Data.getSites();
 
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-            final Locale systemLocale = serviceLocator.getSystemLocaleList().get(0);
 
-            resultsAccumulator = new ResultsAccumulator(context, systemLocale,
-                                                        serviceLocator::getLanguages);
+            resultsAccumulator = new ResultsAccumulator(context, serviceLocator::getLanguages);
 
             listElementPrefixString = context.getString(R.string.list_element);
 

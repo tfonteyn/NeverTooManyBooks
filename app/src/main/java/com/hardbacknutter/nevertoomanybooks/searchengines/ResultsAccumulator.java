@@ -38,6 +38,7 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
@@ -72,7 +73,7 @@ class ResultsAccumulator {
     /** Mappers to apply. */
     private final Collection<Mapper> mappers = new ArrayList<>();
     @NonNull
-    private final Locale systemLocale;
+    private final ISODateParser isoDateParser;
     @NonNull
     private final Supplier<Languages> languagesSupplier;
 
@@ -80,15 +81,15 @@ class ResultsAccumulator {
      * Constructor.
      *
      * @param context           Current context
-     * @param systemLocale      for date parsing
      * @param languagesSupplier deferred supplier for the {@link Languages}
      */
     ResultsAccumulator(@NonNull final Context context,
-                       @NonNull final Locale systemLocale,
                        @NonNull final Supplier<Languages> languagesSupplier) {
 
-        this.systemLocale = systemLocale;
         this.languagesSupplier = languagesSupplier;
+        isoDateParser = new ISODateParser(ServiceLocator.getInstance()
+                                                        .getSystemLocaleList()
+                                                        .get(0));
 
         ColorMapper.create(context).ifPresent(mappers::add);
         FormatMapper.create(context).ifPresent(mappers::add);
@@ -134,13 +135,13 @@ class ResultsAccumulator {
     void process(@NonNull final Context context,
                  @NonNull final List<Pair<Locale, Book>> results,
                  @NonNull final Book book) {
+
         results.forEach(localeBookPair -> {
             final Locale locale = localeBookPair.first;
             final Book result = localeBookPair.second;
             final List<Locale> locales = LocaleListUtils.asList(context, locale);
             final RealNumberParser realNumberParser = new RealNumberParser(locales);
-            final DateParser<LocalDateTime> dateParser =
-                    new FullDateParser(new ISODateParser(systemLocale), locales);
+            final DateParser<LocalDateTime> dateParser = new FullDateParser(isoDateParser, locales);
 
             result.keySet().forEach(key -> {
                 if (DBKey.DATE_KEYS.contains(key)) {

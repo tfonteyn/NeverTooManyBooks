@@ -412,8 +412,7 @@ public class ResultsAccumulatorTest
     @Test
     public void process() {
         final ResultsAccumulator resultsAccumulator =
-                new ResultsAccumulator(context, systemLocale,
-                                       serviceLocator::getLanguages);
+                new ResultsAccumulator(context, serviceLocator::getLanguages);
 
         final List<Pair<Locale, Book>> results = new ArrayList<>();
         results.add(create01());
