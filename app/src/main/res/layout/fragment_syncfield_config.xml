@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
         tools:itemCount="20"
-        tools:listitem="@layout/row_update_from_internet"
+        tools:listitem="@layout/row_syncfield_config"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

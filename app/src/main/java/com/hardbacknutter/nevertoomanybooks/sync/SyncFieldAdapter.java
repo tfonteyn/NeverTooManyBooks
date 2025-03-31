@@ -31,7 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collection;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowSyncfieldConfigBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 
 public class SyncFieldAdapter
@@ -62,7 +62,7 @@ public class SyncFieldAdapter
                                      final int viewType) {
 
         final Holder holder = new Holder(
-                RowUpdateFromInternetBinding.inflate(getInflater(), parent, false));
+                RowSyncfieldConfigBinding.inflate(getInflater(), parent, false));
 
         holder.vb.cbxUsage.setOnClickListener(v -> {
             final int position = holder.getBindingAdapterPosition();
@@ -100,9 +100,9 @@ public class SyncFieldAdapter
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        private final RowUpdateFromInternetBinding vb;
+        private final RowSyncfieldConfigBinding vb;
 
-        Holder(@NonNull final RowUpdateFromInternetBinding vb) {
+        Holder(@NonNull final RowSyncfieldConfigBinding vb) {
             super(vb.getRoot());
             this.vb = vb;
         }

@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncfieldConfigBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -88,7 +88,7 @@ public class SearchBookUpdatesFragment
     @Nullable
     private ProgressDelegate progressDelegate;
     /** View Binding. */
-    private FragmentUpdateFromInternetBinding vb;
+    private FragmentSyncfieldConfigBinding vb;
 
 
     @Override
@@ -105,7 +105,7 @@ public class SearchBookUpdatesFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = FragmentUpdateFromInternetBinding.inflate(inflater, container, false);
+        vb = FragmentSyncfieldConfigBinding.inflate(inflater, container, false);
         return vb.getRoot();
     }
 
