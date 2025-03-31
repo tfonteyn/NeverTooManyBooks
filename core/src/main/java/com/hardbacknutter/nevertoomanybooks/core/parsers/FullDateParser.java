@@ -115,12 +115,12 @@ public class FullDateParser
     /**
      * Constructor.
      *
-     * @param systemLocale to use for ISO date parsing
-     * @param locales      the locales to creates further parsers as needed.
+     * @param isoDateParser to use for ISO date parsing
+     * @param locales       the locales to creates further parsers as needed.
      */
-    public FullDateParser(@NonNull final Locale systemLocale,
+    public FullDateParser(@NonNull final DateParser<LocalDateTime> isoDateParser,
                           @NonNull final List<Locale> locales) {
-        this.isoDateParser = new ISODateParser(systemLocale);
+        this.isoDateParser = isoDateParser;
         this.locales = locales;
     }
 

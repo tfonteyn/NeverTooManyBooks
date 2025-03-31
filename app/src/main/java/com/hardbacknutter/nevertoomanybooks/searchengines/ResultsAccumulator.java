@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -138,7 +139,8 @@ class ResultsAccumulator {
             final Book result = localeBookPair.second;
             final List<Locale> locales = LocaleListUtils.asList(context, locale);
             final RealNumberParser realNumberParser = new RealNumberParser(locales);
-            final DateParser<LocalDateTime> dateParser = new FullDateParser(systemLocale, locales);
+            final DateParser<LocalDateTime> dateParser =
+                    new FullDateParser(new ISODateParser(systemLocale), locales);
 
             result.keySet().forEach(key -> {
                 if (DBKey.DATE_KEYS.contains(key)) {

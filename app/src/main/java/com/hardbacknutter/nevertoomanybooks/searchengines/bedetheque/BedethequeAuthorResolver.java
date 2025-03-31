@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -96,7 +97,7 @@ public class BedethequeAuthorResolver
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context, locale);
-        dateParser = new FullDateParser(systemLocale, locales);
+        dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
     }
 
     /**

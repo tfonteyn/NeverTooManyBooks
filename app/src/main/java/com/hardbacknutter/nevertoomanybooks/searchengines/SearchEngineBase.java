@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -194,7 +195,7 @@ public abstract class SearchEngineBase
         final List<Locale> locales = LocaleListUtils.asList(context, locale);
         final Locale systemLocale = ServiceLocator
                 .getInstance().getSystemLocaleList().get(0);
-        return new FullDateParser(systemLocale, locales);
+        return new FullDateParser(new ISODateParser(systemLocale), locales);
     }
 
     @AnyThread

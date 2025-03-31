@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -622,7 +623,7 @@ public class AmazonSearchEngine
         }
         final Locale systemLocale = ServiceLocator
                 .getInstance().getSystemLocaleList().get(0);
-        return new FullDateParser(systemLocale, locales);
+        return new FullDateParser(new ISODateParser(systemLocale), locales);
     }
 
     /**

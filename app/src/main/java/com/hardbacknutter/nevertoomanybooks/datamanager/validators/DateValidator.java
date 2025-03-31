@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -58,7 +59,7 @@ public class DateValidator
     public DateValidator(@NonNull final Locale systemLocale,
                          @NonNull final List<Locale> locales,
                          @NonNull final String defaultValue) {
-        fullDateParser = new FullDateParser(systemLocale, locales);
+        fullDateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
         this.defaultValue = defaultValue;
     }
 

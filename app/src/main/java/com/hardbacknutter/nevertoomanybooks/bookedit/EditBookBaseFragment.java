@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
@@ -105,7 +106,7 @@ public abstract class EditBookBaseFragment
         final List<Locale> locales = LocaleListUtils.asList(getContext());
         // We need a FullDateParser to cope with international Locale formats
         // as the fields will contain user-locale specific representations.
-        dateParser = new FullDateParser(systemLocale, locales);
+        dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
         realNumberParser = new RealNumberParser(locales);
 
         final FragmentManager fm = getChildFragmentManager();

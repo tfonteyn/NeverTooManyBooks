@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -140,7 +141,7 @@ public class BookCoder {
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context);
-        dateParser = new FullDateParser(systemLocale, locales);
+        dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
         ratingParser = origin.createRatingParser();
 
         tagMapper = new TagMapper(context);
