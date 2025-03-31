@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -74,6 +75,7 @@ public class JsonArchiveWriterTest
     private int nrOfStyles;
 
     private Locale systemLocale;
+    private ISODateParser dateParser;
 
     @Before
     public void setup()
@@ -81,6 +83,7 @@ public class JsonArchiveWriterTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         systemLocale = serviceLocator.getSystemLocaleList().get(0);
+        dateParser = new ISODateParser(systemLocale);
 
         bookInDb = new DbPrep().maybeInstallTestData(context);
         // +1 for the global style which will be added during export
@@ -100,7 +103,7 @@ public class JsonArchiveWriterTest
 
         final ExportHelper exportHelper = new ExportHelper(ArchiveEncoding.Json,
                                                            EnumSet.of(RecordType.Styles),
-                                                           systemLocale);
+                                                           dateParser);
 
         exportHelper.setUri(Uri.fromFile(file));
 
@@ -142,7 +145,7 @@ public class JsonArchiveWriterTest
                                                            EnumSet.of(RecordType.Preferences,
                                                                       RecordType.Styles,
                                                                       RecordType.Books),
-                                                           systemLocale);
+                                                           dateParser);
 
         exportHelper.setUri(Uri.fromFile(file));
 

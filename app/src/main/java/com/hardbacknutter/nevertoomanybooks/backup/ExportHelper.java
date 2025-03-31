@@ -38,14 +38,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -81,9 +79,9 @@ public class ExportHelper
     /**
      * Constructor.
      *
-     * @param systemLocale to use for ISO date parsing
+     * @param dateParser to use for ISO date parsing
      */
-    ExportHelper(@NonNull final Locale systemLocale) {
+    ExportHelper(@NonNull final DateParser<LocalDateTime> dateParser) {
         // set the default
         this(ArchiveEncoding.Zip,
              EnumSet.of(RecordType.Styles,
@@ -91,22 +89,22 @@ public class ExportHelper
                         RecordType.Certificates,
                         RecordType.Books,
                         RecordType.Cover),
-             systemLocale);
+             dateParser);
     }
 
     /**
      * Constructor for testing individual options.
      *
-     * @param encoding     of the archive we'll be exporting to
-     * @param systemLocale to use for ISO date parsing
-     * @param recordTypes  to write
+     * @param encoding    of the archive we'll be exporting to
+     * @param recordTypes to write
+     * @param dateParser  to use for ISO date parsing
      */
     @VisibleForTesting
     public ExportHelper(@NonNull final ArchiveEncoding encoding,
                         @NonNull final Set<RecordType> recordTypes,
-                        @NonNull final Locale systemLocale) {
+                        @NonNull final DateParser<LocalDateTime> dateParser) {
         this.encoding = encoding;
-        this.dateParser = new ISODateParser(systemLocale);
+        this.dateParser = dateParser;
         getRecordTypes().addAll(recordTypes);
     }
 

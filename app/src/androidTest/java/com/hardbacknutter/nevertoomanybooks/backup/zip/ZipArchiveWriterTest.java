@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
@@ -66,6 +67,7 @@ public class ZipArchiveWriterTest
     private int nrOfStyles;
 
     private Locale systemLocale;
+    private ISODateParser dateParser;
 
     @Before
     public void setup()
@@ -73,6 +75,7 @@ public class ZipArchiveWriterTest
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
         systemLocale = serviceLocator.getSystemLocaleList().get(0);
+        dateParser = new ISODateParser(systemLocale);
 
         bookInDb = new DbPrep().maybeInstallTestData(context);
         // +1 for the global style which will be added during export
@@ -97,7 +100,7 @@ public class ZipArchiveWriterTest
                                                                       RecordType.Preferences,
                                                                       RecordType.Certificates,
                                                                       RecordType.Styles),
-                                                           systemLocale);
+                                                           dateParser);
         exportHelper.setEncoding(ArchiveEncoding.Zip);
         exportHelper.setUri(uri);
 
