@@ -515,12 +515,11 @@ class BooklistBuilder {
         // to populate the list-table
         final String sqlBulkInsert = createSqlBulkInsert(context, collationCaseSensitive);
 
-        // Create the list table and populate it.
+        // Create the list table
         //IMPORTANT: withDomainConstraints MUST BE false
         db.recreate(listTable, false);
 
-        // 2025-03-11: adding indexes on the group-keys
-        // for use the the "sums" sql.
+        // 2025-03-11: add indexes on the group-keys for use by the "sums" sql.
         // Not entirely sure how much impact, or lack-of, this has.
         style.getGroupList().stream()
              .map(BooklistGroup::getGroupKey)
@@ -540,7 +539,7 @@ class BooklistBuilder {
             initialInsertCount = stmt.executeUpdateDelete();
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
             LoggerFactory.getLogger()
                          .d(TAG, "build",
                             "insert(" + initialInsertCount + ")"
@@ -552,8 +551,10 @@ class BooklistBuilder {
             // can't use IndexDefinition class as it does not support sorting clause for now.
             final String indexCols = orderByDomainExpressions
                     .stream()
-                    .map(domainExpression -> domainExpression
-                            .getDomain().getOrderByString(domainExpression.getSort(), false))
+                    .map(domainExpression -> domainExpression.getDomain()
+                                                             .getOrderByString(
+                                                                     domainExpression.getSort(),
+                                                                     false))
                     .collect(Collectors.joining(",", "(", ")"));
 
             db.execSQL("CREATE INDEX " + listTable.getName() + "_SDI ON "
@@ -596,10 +597,10 @@ class BooklistBuilder {
         final StringJoiner sourceColumns = new StringJoiner(",");
 
         // Add the domain expressions
-        domainExpressions.forEach(expression -> {
-            destColumns.add(expression.getDomain().getName());
-            sourceColumns.add(expression.getExpression()
-                              + _AS_ + expression.getDomain().getName());
+        domainExpressions.forEach(domainExpression -> {
+            destColumns.add(domainExpression.getDomain().getName());
+            sourceColumns.add(domainExpression.getExpression()
+                              + _AS_ + domainExpression.getDomain().getName());
         });
 
         // Add the node key column
@@ -662,9 +663,9 @@ class BooklistBuilder {
             LoggerFactory.getLogger().d(TAG, "build|filters=" + filters);
         }
 
-        // Add any LEFT OUTER JOINS the filters ask for, but leave the books out.
-        // Others will removed if/when we're already using them for grouping
-        // see below
+        // Add any LEFT OUTER JOINS the filters ask for, but leave the BOOKS table out.
+        // Others will be removed if/when we're already using them for grouping,
+        // see below.
         filters.stream()
                .map(Filter::getLeftOuterJoinTable)
                .flatMap(Optional::stream)
@@ -763,6 +764,7 @@ class BooklistBuilder {
                 // The user has no specific type set, so just grab the first one (i.e. pos==1)
                 sb.append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR.BOOK_AUTHOR_POSITION)).append("=1");
             } else {
+                // FIXME: https://github.com/tfonteyn/NeverTooManyBooks/issues/82
                 // grab the desired type, or if no such type, grab the first one anyway
                 //   (
                 //      ((type & TYPE)<>0)
@@ -884,8 +886,10 @@ class BooklistBuilder {
     private String buildOrderBy(final boolean collationCaseSensitive) {
         return orderByDomainExpressions
                 .stream()
-                .map(de -> de.getDomain()
-                             .getOrderByString(de.getSort(), collationCaseSensitive))
+                .map(domainExpression -> domainExpression.getDomain()
+                                                         .getOrderByString(
+                                                                 domainExpression.getSort(),
+                                                                 collationCaseSensitive))
                 .collect(Collectors.joining(","));
     }
 
@@ -1138,22 +1142,10 @@ class BooklistBuilder {
         // the first level above the books == number of groups
         final int groupCount = style.getGroupCount();
 
-        final int bookLevel = groupCount + 1;
-
-        final String sqlBookCount = createLevelSumsBooks(bookLevel);
-
-        final long t0 = System.nanoTime();
         // count the number of books for each lowest-level group
         // and store the result on that group
+        final String sqlBookCount = createLevelSumsBooks(groupCount + 1);
         db.execSQL(sqlBookCount);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "build",
-                            "level=" + bookLevel
-                            + "|" + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms"
-                            + "|" + sqlBookCount);
-        }
 
         final List<String> keyColumns = style
                 .getGroupList().stream()
@@ -1167,17 +1159,8 @@ class BooklistBuilder {
             final String sqlGroupSum =
                     createLevelSumsGroups(keyColumns.subList(0, level - 1), level);
 
-            final long t1 = System.nanoTime();
             // for each group, sum the book-counts, and store them in the next group up.
             db.execSQL(sqlGroupSum);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "build",
-                                "level=" + level
-                                + "|" + ((System.nanoTime() - t1) / NANO_TO_MILLIS) + " ms"
-                                + "|" + sqlGroupSum);
-            }
         }
     }
 
