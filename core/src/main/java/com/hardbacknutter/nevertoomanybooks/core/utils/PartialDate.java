@@ -64,8 +64,8 @@ public class PartialDate
     /** An immutable 'empty' date. */
     public static final PartialDate NOT_SET = new PartialDate(null, null, null);
 
-    static final int YEAR_MAX = 9_999;
-    static final int YEAR_MIN = -YEAR_MAX;
+    private static final int YEAR_MAX = 9_999;
+    private static final int YEAR_MIN = -YEAR_MAX;
 
     /** NonNull - the partial date; using '1' for not-set day,month,year fields. */
     private LocalDate localDate;
@@ -224,6 +224,7 @@ public class PartialDate
      * @return (partial) string representation of the date.
      */
     @SuppressLint("DefaultLocale")
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public String getIsoStringWithDelim(@NonNull final String delimiter) {
         final StringJoiner sj = new StringJoiner(delimiter);
