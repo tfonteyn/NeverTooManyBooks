@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -118,6 +120,9 @@ public class DnbSearchEngine
     /** Example: {@code DE/resource.html?id=118646109&pr=0&sortA=bez&sortD=-dat&v=plist}. */
     private static final Pattern AUTHOR_ID = Pattern.compile(
             "DE/resource\\.html\\?id=(\\d+)&.*");
+    private static final Map<String, String> ROOT_REFERER =
+            Map.of(HttpConstants.REFERER,
+                   "https://katalog.dnb.de/DE/home.html?pr=0&sortA=bez&sortD=-dat&v=plist");
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
@@ -151,7 +156,7 @@ public class DnbSearchEngine
         final Book book = new Book();
 
         final String url = getHostUrl(context) + String.format(SEARCH_URL, "num", validIsbn);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadDocument(context, url, ROOT_REFERER);
         if (!isCancelled()) {
             // Check single result first
             final Element single = document.selectFirst(SELECT_SINGLE_RESULT);
@@ -190,7 +195,7 @@ public class DnbSearchEngine
         }
 
         final String url = getHostUrl(context) + String.format(SEARCH_URL, "all", words);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadDocument(context, url, ROOT_REFERER);
         if (!isCancelled()) {
             // Check multi result first
             final Element multi = document.selectFirst(SELECT_MULTI_RESULT);
@@ -242,8 +247,9 @@ public class DnbSearchEngine
             if (!bookUrl.startsWith("/")) {
                 bookUrl = "/" + bookUrl;
             }
-            final Document redirected = loadDocument(context, getHostUrl(context) + bookUrl,
-                                                     null);
+            final String url = getHostUrl(context) + bookUrl;
+            final Document redirected = loadDocument(context, url, Map.of(HttpConstants.REFERER,
+                                                                          document.location()));
             if (!isCancelled()) {
                 parse(context, redirected, fetchCovers, book);
             }
