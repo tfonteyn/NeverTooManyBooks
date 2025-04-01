@@ -111,7 +111,8 @@ public class AuthorParseTest
 
         final Author author = new Author("", "");
         author.setIdentifierValue(Identifier.SID_ISFDB, 49);
-        resolver.resolve(context, author);
+        final boolean modified = resolver.resolve(context, author);
+        assertTrue(modified);
 
         Log.d(TAG, author.toString());
 
@@ -147,7 +148,9 @@ public class AuthorParseTest
             throws SearchException, CredentialsException {
 
         final Author author = new Author("French", "Paul");
-        resolver.resolve(context, author);
+        final boolean modified = resolver.resolve(context, author);
+        assertTrue(modified);
+
         parsePaulFrench(author);
     }
 
