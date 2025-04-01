@@ -25,6 +25,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Optional;
 
@@ -170,9 +171,10 @@ public final class IsfdbAuthorResolver
         return null;
     }
 
+    @VisibleForTesting
     @Nullable
-    private Author parse(@NonNull final Context context,
-                         @NonNull final Document document)
+    Author parse(@NonNull final Context context,
+                 @NonNull final Document document)
             throws SearchException, CredentialsException {
         final String pageUrl = document.location();
         if (pageUrl.contains("ea.cgi")) {

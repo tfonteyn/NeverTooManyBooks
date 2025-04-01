@@ -23,8 +23,10 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -38,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import org.jsoup.nodes.Document;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,9 +80,34 @@ public class AuthorParseTest
 
     @Test
     public void parse49()
-            throws SearchException, CredentialsException {
+            throws IOException, SearchException, CredentialsException {
 
-        //final String locationHeader = "https://www.isfdb.org/cgi-bin/ea.cgi?49";
+        final String locationHeader = "https://www.isfdb.org/cgi-bin/ea.cgi?49";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_author_49;
+
+        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                               locationHeader);
+
+        final Author author = resolver.parse(context, document);
+        assertNotNull(author);
+
+        Log.d(TAG, author.toString());
+
+        assertEquals("Robinson", author.getFamilyName());
+        assertEquals("Kim Stanley", author.getGivenNames());
+
+        assertEquals(1, author.getIdentifiers().size());
+        final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
+        assertTrue(oIv.isPresent());
+        assertEquals("49", oIv.get());
+
+        assertNull(author.getRealAuthor());
+    }
+
+    @Test
+    public void liveParse49()
+            throws SearchException, CredentialsException {
 
         final Author author = new Author("", "");
         author.setIdentifierValue(Identifier.SID_ISFDB, 49);
@@ -100,10 +128,31 @@ public class AuthorParseTest
 
     @Test
     public void parsePaulFrench()
+            throws SearchException, CredentialsException, IOException {
+
+        final String locationHeader = "https://www.isfdb.org/cgi-bin/ea.cgi?3358";
+        ;
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_author_3358;
+
+        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                               locationHeader);
+
+        final Author author = resolver.parse(context, document);
+        parsePaulFrench(author);
+    }
+
+    @Test
+    public void liveParsePaulFrench()
             throws SearchException, CredentialsException {
 
-        Author author = new Author("French", "Paul");
+        final Author author = new Author("French", "Paul");
         resolver.resolve(context, author);
+        parsePaulFrench(author);
+    }
+
+    private void parsePaulFrench(@Nullable Author author) {
+        assertNotNull(author);
 
         Log.d(TAG, author.toString());
 
@@ -128,4 +177,6 @@ public class AuthorParseTest
         assertTrue(oIv.isPresent());
         assertEquals("5", oIv.get());
     }
+
+
 }
