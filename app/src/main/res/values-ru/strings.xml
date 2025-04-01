@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -870,4 +867,6 @@
     <string name="lbl_select_style">Выбрать стиль</string>
     <string name="lbl_book_uri">URL-адрес книги</string>
     <string name="lbl_author_uri">URL автора</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Требуется пустое значение или действительный URL-адрес \"https\" с единственным идентификатором \"%s\"</string>
+    <string name="vldt_blank_or_valid_url_required">Требуется пустое значение или действительный URL-адрес</string>
 </resources>

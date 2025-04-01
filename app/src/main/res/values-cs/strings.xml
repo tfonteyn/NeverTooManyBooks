@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -871,4 +868,6 @@
     <string name="site_description_czech">Čeština a další</string>
     <string name="lbl_book_uri">Adresa URL knihy</string>
     <string name="lbl_author_uri">Adresa URL autora</string>
+    <string name="vldt_blank_or_valid_url_required">Vyžadována prázdná hodnota nebo platná adresa URL</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Vyžadována prázdná hodnota nebo platná adresa URL \"https\" s jedním zástupným znakem \"%s\"</string>
 </resources>

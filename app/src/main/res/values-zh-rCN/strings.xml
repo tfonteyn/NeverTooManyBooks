@@ -845,4 +845,8 @@
     <string name="pt_bob_show_group_book_count">显示每组中的书籍数。</string>
     <string name="site_description_czech">捷克语及更多</string>
     <string name="pt_search_resolve_authors">解析作者笔名</string>
+    <string name="lbl_book_uri">书籍 URL</string>
+    <string name="lbl_author_uri">作者 URL</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">需为空值、或有单个“%s” id 占位符的有效 “https” URL</string>
+    <string name="vldt_blank_or_valid_url_required">需要空值或有效 URL</string>
 </resources>
