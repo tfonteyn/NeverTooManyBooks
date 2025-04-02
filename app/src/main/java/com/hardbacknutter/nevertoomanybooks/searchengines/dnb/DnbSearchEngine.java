@@ -55,6 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -281,6 +283,8 @@ public class DnbSearchEngine
 
         final Locale locale = getLocale(context);
         final Languages languages = ServiceLocator.getInstance().getLanguages();
+        final List<AuthorResolver> authorResolvers = AuthorResolverFactory
+                .getResolvers(context, this);
 
         final Element titleElement = document
                 .selectFirst("h3.c-catalog-result__ueberschrift > span");
@@ -311,7 +315,7 @@ public class DnbSearchEngine
                             }
                             case "Beteiligt":
                             case "Involved": {
-                                parseAuthor(context, td, book);
+                                parseAuthor(context, td, authorResolvers, book);
                                 break;
                             }
                             case "Erschienen":
@@ -457,7 +461,9 @@ public class DnbSearchEngine
 
     private void parseAuthor(@NonNull final Context context,
                              @NonNull final Element td,
-                             @NonNull final Book book) {
+                             @NonNull final List<AuthorResolver> authorResolvers,
+                             @NonNull final Book book)
+            throws SearchException, CredentialsException {
         final Iterator<Element> it = td.children().iterator();
         while (it.hasNext()) {
             @Nullable
@@ -491,6 +497,9 @@ public class DnbSearchEngine
                         final int authorType = authorTypeMapper
                                 .map(getLocale(context), authorTypeText);
 
+                        for (final AuthorResolver resolver : authorResolvers) {
+                            resolver.resolve(context, author);
+                        }
                         addAuthor(author, authorType, book);
                         if (it.hasNext()) {
                             // The tag AFTER the "small" can be a "br" or an "a"
@@ -499,6 +508,9 @@ public class DnbSearchEngine
                         }
                     }
                     if (e.nameIs("br")) {
+                        for (final AuthorResolver resolver : authorResolvers) {
+                            resolver.resolve(context, author);
+                        }
                         addAuthor(author, Author.TYPE_UNKNOWN, book);
                         if (it.hasNext()) {
                             e = it.next();
