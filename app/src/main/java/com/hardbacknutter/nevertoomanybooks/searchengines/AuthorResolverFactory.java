@@ -50,7 +50,7 @@ public final class AuthorResolverFactory {
      * @return list
      */
     @NonNull
-    public static List<AuthorResolver> getEuroComicAuthorResolvers(
+    public static List<AuthorResolver> getEuroComicResolvers(
             @NonNull final Context context,
             @NonNull final SearchEngine searchEngine) {
 
