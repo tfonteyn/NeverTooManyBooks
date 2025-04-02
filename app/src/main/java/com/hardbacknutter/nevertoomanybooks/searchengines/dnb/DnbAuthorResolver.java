@@ -52,7 +52,6 @@ import org.jsoup.select.Elements;
  * a referer to be set or we get a 403 Forbidden.
  * BUT... there is a workaround: setting referer to "https://katalog.dnb.de"
  * seems to work.
- * This needs more testing...
  */
 public final class DnbAuthorResolver
         implements AuthorResolver {
@@ -73,9 +72,11 @@ public final class DnbAuthorResolver
         this.searchEngine = searchEngine;
         // hardcode the beta website
         authorUri = "https://katalog.dnb.de/DE/resource.html?id=%s";
-        //        searchEngine.getEngineId()
-        //                                .getIdentifier().get()
-        //                                .getAuthorUri(context).orElse(null);
+        //        authorUri = searchEngine.getEngineId()
+        //                                .getIdentifier()
+        //                                .flatMap(identifier -> identifier
+        //                                        .getAuthorUri(context))
+        //                                .orElse(null);
     }
 
     /**

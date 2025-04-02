@@ -69,10 +69,10 @@ public final class DatabazeKnihAuthorResolver
         this.searchEngine = searchEngine;
         // The engine is hardcoded/defined with the identifier,
         // but the author-uri can be absent
-        //noinspection OptionalGetWithoutIsPresent
         authorUri = searchEngine.getEngineId()
-                                .getIdentifier().get()
-                                .getAuthorUri(context).orElse(null);
+                                .getIdentifier()
+                                .flatMap(identifier -> identifier
+                                        .getAuthorUri(context)).orElse(null);
     }
 
     /**
