@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -142,7 +142,8 @@ public final class ExMsg {
                    || e instanceof java.sql.SQLException) {
             return getUnexpectedErrorMessage(context);
 
-        } else if (e instanceof java.security.cert.CertificateEncodingException) {
+        } else if (e instanceof java.security.cert.CertificateEncodingException
+                   || e instanceof java.security.cert.CertPathValidatorException) {
             return context.getString(R.string.error_certificate_invalid);
 
         } else if (e instanceof java.security.cert.CertificateException) {
