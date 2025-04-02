@@ -171,7 +171,7 @@ public class ParseTest
         assertEquals(1, series.size());
 
         assertEquals("Enola Holmesová", series.get(0).getTitle());
-        assertEquals("2. díl", series.get(0).getNumber());
+        assertEquals("2", series.get(0).getNumber());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -200,7 +200,7 @@ public class ParseTest
         assertEquals("P.S.", book.getString(DBKey.TITLE, null));
         assertEquals("9788024929613", book.getString(DBKey.ISBN, null));
         assertEquals("267961", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
-        assertEquals("1997", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("2015", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
         assertEquals("216", book.getString(DBKey.PAGES, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
@@ -444,7 +444,7 @@ public class ParseTest
         assertEquals(1, series.size());
 
         assertEquals("Nadace", series.get(0).getTitle());
-        assertEquals("1. díl", series.get(0).getNumber());
+        assertEquals("1", series.get(0).getNumber());
     }
 
     @Test

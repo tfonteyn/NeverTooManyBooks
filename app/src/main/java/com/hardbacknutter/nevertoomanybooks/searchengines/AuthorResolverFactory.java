@@ -30,6 +30,8 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihAuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbAuthorResolver;
 
 /**
  * ENHANCE the use of AuthorResolver to let them access the website Author API/page
@@ -67,5 +69,39 @@ public final class AuthorResolverFactory {
         } else {
             return List.of();
         }
+    }
+
+    @NonNull
+    public static List<AuthorResolver> getResolvers(@NonNull final Context context,
+                                                    @NonNull final SearchEngine searchEngine) {
+        final String pk = searchEngine.getEngineId().getPreferenceKey();
+        // For now, we only support a single resolver,
+        // so the last part is the same as the first
+        final String key = pk + AuthorResolver.PK_RESOLVE_AUTHORS + pk;
+
+        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
+            && PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(key, false)) {
+
+            switch (searchEngine.getEngineId()) {
+                case DatabazeKnih:
+                    return List.of(DatabazeKnihAuthorResolver.create(context, searchEngine));
+                case Dnb:
+                    return List.of(DnbAuthorResolver.create(context, searchEngine));
+                case Isfdb:
+                    // URGENT: 2025-03-25. ongoing site issues SSLProtocolException
+                    // Read error: ssl=0x7a6b6d87b598: Failure in SSL library, usually a protocol error
+                    // error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT
+                    // (external/boringssl/src/crypto/cipher_extra/e_chacha20poly1305.c:259
+                    // 0x7a69b00547fb:0x00000000)
+                    // error:1000008b:SSL routines:OPENSSL_internal:DECRYPTION_FAILED_OR_BAD_RECORD_MAC
+                    // (external/boringssl/src/ssl/tls_record.cc:294 0x7a69b00547fb:0x00000000)
+                    // |docRequestUrl="https://www.isfdb.org/cgi-bin/ea.cgi?5"
+
+                    //return List.of(IsfdbAuthorResolver.create(context, searchEngine));
+                    return List.of();
+            }
+        }
+        return List.of();
     }
 }

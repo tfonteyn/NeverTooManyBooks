@@ -49,7 +49,7 @@ import org.jsoup.nodes.Element;
  *     <li>add the {@link Author#setRealAuthor(Author)} if applicable</li>
  * </ul>
  */
-final class DatabazeKnihAuthorResolver
+public final class DatabazeKnihAuthorResolver
         implements AuthorResolver {
     private static final String TAG = "DatabazeKnihAuthorRes";
 

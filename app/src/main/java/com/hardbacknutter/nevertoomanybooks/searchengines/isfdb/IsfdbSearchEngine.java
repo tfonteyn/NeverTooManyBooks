@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -1135,9 +1136,8 @@ public class IsfdbSearchEngine
         String tmpString;
         Node nextSibling;
 
-        // URGENT: 2025-03-25. ongoing site issues SSLProtocolException
-        @Nullable
-        final AuthorResolver authorResolver = null; // getResolver(context).orElse(null);
+        final List<AuthorResolver> authorResolvers = AuthorResolverFactory
+                .getResolvers(context, this);
 
         for (final Element li : lis) {
             if (isCancelled()) {
@@ -1176,7 +1176,7 @@ public class IsfdbSearchEngine
                         case "Author:":
                         case "Authors:": {
                             for (final Element a : li.select("a")) {
-                                addAuthor(parseAuthor(context, a, authorResolver),
+                                addAuthor(parseAuthor(context, a, authorResolvers),
                                           Author.TYPE_UNKNOWN, book);
                             }
                             break;
@@ -1299,7 +1299,7 @@ public class IsfdbSearchEngine
                             final Elements as = li.select("a");
                             if (as.size() > 1) {
                                 final Element a = as.get(1);
-                                addAuthor(parseAuthor(context, a, authorResolver),
+                                addAuthor(parseAuthor(context, a, authorResolvers),
                                           Author.TYPE_COVER_ARTIST, book);
                             }
                             break;
@@ -1312,7 +1312,7 @@ public class IsfdbSearchEngine
                         case "Editor:":
                         case "Editors:": {
                             for (final Element a : li.select("a")) {
-                                addAuthor(parseAuthor(context, a, authorResolver),
+                                addAuthor(parseAuthor(context, a, authorResolvers),
                                           Author.TYPE_EDITOR, book);
                             }
                             break;
@@ -1393,8 +1393,8 @@ public class IsfdbSearchEngine
     @NonNull
     private Author parseAuthor(@NonNull final Context context,
                                @NonNull final Element a,
-                               @Nullable final AuthorResolver authorResolver)
-            throws CredentialsException {
+                               @NonNull final List<AuthorResolver> authorResolvers)
+            throws CredentialsException, SearchException {
         final Author author = Author.from(a.text());
         final String url = a.attr("href");
         final Matcher matcher = AUTHOR_ID.matcher(url);
@@ -1404,19 +1404,8 @@ public class IsfdbSearchEngine
                 author.setIdentifierValue(Identifier.SID_ISFDB, siId);
             }
         }
-        if (authorResolver != null) {
-            try {
-                authorResolver.resolve(context, author);
-            } catch (@NonNull final SearchException ignore) {
-                // URGENT: 2025-03-25. swallow SSLProtocolException
-                // Read error: ssl=0x7a6b6d87b598: Failure in SSL library, usually a protocol error
-                // error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT
-                // (external/boringssl/src/crypto/cipher_extra/e_chacha20poly1305.c:259
-                // 0x7a69b00547fb:0x00000000)
-                // error:1000008b:SSL routines:OPENSSL_internal:DECRYPTION_FAILED_OR_BAD_RECORD_MAC
-                // (external/boringssl/src/ssl/tls_record.cc:294 0x7a69b00547fb:0x00000000)
-                // |docRequestUrl="https://www.isfdb.org/cgi-bin/ea.cgi?5"
-            }
+        for (final AuthorResolver resolver : authorResolvers) {
+            resolver.resolve(context, author);
         }
         return author;
     }
@@ -1511,20 +1500,6 @@ public class IsfdbSearchEngine
         }
         final String url = img.attr("src");
         return saveImage(context, url, bookId, cIdx, null);
-    }
-
-    @NonNull
-    private Optional<AuthorResolver> getResolver(@NonNull final Context context) {
-        final String pk = getEngineId().getPreferenceKey();
-        final String key = pk + AuthorResolver.PK_RESOLVE_AUTHORS + pk;
-
-        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
-            && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(key, false)) {
-            return Optional.of(IsfdbAuthorResolver.create(context, this));
-        } else {
-            return Optional.empty();
-        }
     }
 
     /**
