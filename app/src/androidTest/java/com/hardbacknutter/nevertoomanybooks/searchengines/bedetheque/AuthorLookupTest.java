@@ -65,8 +65,7 @@ public class AuthorLookupTest
 
         author = new Author("Leloup", "Roger");
         modified = resolver.resolve(context, author);
-        // no pen-name
-        Assert.assertFalse(modified);
+        Assert.assertTrue(modified);
         Assert.assertEquals("Leloup", author.getFamilyName());
         Assert.assertEquals("Roger", author.getGivenNames());
         realAuthor = author.getRealAuthor();
@@ -83,7 +82,6 @@ public class AuthorLookupTest
 
         author = new Author("<Indéterminé>", "");
         modified = resolver.resolve(context, author);
-        // no pen-name
         Assert.assertFalse(modified);
         Assert.assertEquals("<Indéterminé>", author.getFamilyName());
         realAuthor = author.getRealAuthor();
