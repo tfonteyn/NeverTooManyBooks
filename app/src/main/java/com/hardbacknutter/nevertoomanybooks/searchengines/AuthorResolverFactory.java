@@ -42,7 +42,7 @@ public final class AuthorResolverFactory {
     }
 
     /**
-     * Get a a list of the supported resolvers for the given engine.
+     * Get a list of the supported resolvers for the given engine.
      *
      * @param context      Current context
      * @param searchEngine to use
