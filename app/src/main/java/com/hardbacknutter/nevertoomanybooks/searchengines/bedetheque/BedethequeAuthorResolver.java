@@ -174,7 +174,9 @@ public class BedethequeAuthorResolver
 
         // it should now be resolved
         // Copy temporary info from bdtAuthor to the author, and resolve the realAuthor
-        modified = modified || resolvePenName(context, author, bdtAuthor);
+        if (resolvePenName(context, author, bdtAuthor)) {
+            modified = true;
+        }
 
         return modified;
     }
