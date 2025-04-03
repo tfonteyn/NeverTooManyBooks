@@ -52,6 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -146,7 +148,8 @@ public class OpenLibrarySearchEngine
             Map.entry("amazon.co.uk_asin", Identifier.SID_ASIN),
             Map.entry("oclc_numbers", Identifier.SID_OCLC)
     );
-
+    final String PK_LOGIN_TO_SEARCH = EngineId.OpenLibrary.getPreferenceKey()
+                                      + ".login.to.search";
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @NonNull
     private final CookieManager cookieManager;
@@ -546,6 +549,9 @@ public class OpenLibrarySearchEngine
                @NonNull final Book book)
             throws StorageException, IOException, SearchException, CredentialsException {
 
+        final List<AuthorResolver> authorResolvers = AuthorResolverFactory
+                .getResolvers(context, this);
+
         JSONObject element;
         JSONArray a;
         String s;
@@ -569,7 +575,7 @@ public class OpenLibrarySearchEngine
         // "authors" contains structured Author data
         a = document.optJSONArray("authors");
         if (a != null && !a.isEmpty()) {
-            parseAuthors(context, a, book);
+            parseAuthors(context, a, authorResolvers, book);
         }
         // "by_statement" contains NON-structured author data:
         //     "by John Miedema."
@@ -595,7 +601,7 @@ public class OpenLibrarySearchEngine
 
         a = document.optJSONArray("contributors");
         if (a != null && !a.isEmpty()) {
-            parseContributors(context, a, book);
+            parseContributors(context, a, authorResolvers, book);
         }
 
         // There is also a key "pagination" which for example
@@ -723,17 +729,19 @@ public class OpenLibrarySearchEngine
      * }
      * </pre>
      *
-     * @param context Current context
-     * @param a       array with author elements
-     * @param book    destination
+     * @param context         Current context
+     * @param a               array with author elements
+     * @param authorResolvers to use
+     * @param book            destination
      *
      * @throws IOException      when fetching the Author details fails
      * @throws StorageException on storage related failures
      */
     private void parseAuthors(@NonNull final Context context,
                               @NonNull final JSONArray a,
+                              @NonNull final List<AuthorResolver> authorResolvers,
                               @NonNull final Book book)
-            throws StorageException, IOException {
+            throws StorageException, IOException, SearchException, CredentialsException {
 
         // depending how we got here, we might not have GET build
         if (futureHttpGet == null) {
@@ -758,6 +766,9 @@ public class OpenLibrarySearchEngine
                             final String iv = key.substring(9);
                             author.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, iv);
                         }
+                        for (final AuthorResolver resolver : authorResolvers) {
+                            resolver.resolve(context, author);
+                        }
                         addAuthor(author, Author.TYPE_UNKNOWN, book);
                     }
                 }
@@ -767,7 +778,9 @@ public class OpenLibrarySearchEngine
 
     private void parseContributors(@NonNull final Context context,
                                    @NonNull final JSONArray a,
-                                   @NonNull final Book book) {
+                                   @NonNull final List<AuthorResolver> authorResolvers,
+                                   @NonNull final Book book)
+            throws SearchException, CredentialsException {
         for (int ai = 0; ai < a.length(); ai++) {
             final JSONObject c = a.optJSONObject(ai);
             if (c != null) {
@@ -780,6 +793,9 @@ public class OpenLibrarySearchEngine
                         type = authorTypeMapper.map(getLocale(context), role);
                     } else {
                         type = Author.TYPE_UNKNOWN;
+                    }
+                    for (final AuthorResolver resolver : authorResolvers) {
+                        resolver.resolve(context, author);
                     }
                     addAuthor(author, type, book);
                 }

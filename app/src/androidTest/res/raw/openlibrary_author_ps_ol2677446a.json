@@ -1,0 +1,39 @@
+{
+  "alternate_names": [
+    "Alice B. Sheldon",
+    "Alice Sheldon"
+  ],
+  "photos": [
+    5542273
+  ],
+  "name": "James Tiptree, Jr.",
+  "key": "/authors/OL2677446A",
+  "death_date": "19 May 1987",
+  "remote_ids": {
+    "wikidata": "Q234928",
+    "viaf": "62099890",
+    "isni": "0000000081419268"
+  },
+  "bio": "Alice Bradley Sheldon (August 24, 1915 - May 1987), aka James Tiptree, Jr., was an American science fiction writer. She was born in Chicago, Illinois, the daughter of Herbert Bradley, a lawyer, African explorer, and naturalist, and Mary Hastings Bradley, a prolific writer.  As a child, she travelled the world with her parents, including an African safari in 1921-22.  Initially, she worked as a graphic artist and a painter.  In 1934 she married William Davey, and they divorced in 1941.  Also in 1941, she became an art critic for the Chicago Sun, but she left that position in 1942 to join the U.S. Army Air Forces photo-intelligence group.  In 1945 she married her second husband, Huntington D. Sheldon, and became Alice Sheldon.  In 1946 she was discharged from the Army, and she and her husband started a business.  Her first published story, \"The Lucky Ones,\" appeared in The New Yorker in November of 1946\r\n\r\nIn 1952 she joined the C.I.A. as an agent in the Near East.  She resigned in 1955 to enrol in American University.  She earned her B.A. in 1959, then her doctorate in Experimental Psychology from George Washington University in 1967.  She began writing science fiction using the pseudonym \"James Tiptree Jr.\"  Although her true identity became known in 1977, she continued using the Tiptree pseudonym name for another decade.  In May of 1987, at age 71, she took the life of her 84-year-old husband and then took her own.\r\n\r\nOver the course of her career she wrote almost one hundred short stories and several novels.  She received two Hugo Awards: 1974 Best Novella for \"The Girl Who Was Plugged In\", and 1977 Best Novella for \"Houston, Houston, Do You Read?\"  She received three Nebula Awards: 1973 Short Story for \"Love Is the Plan the Plan Is Death,\" 1976 Novella for \"Houston, Houston, Do You Read?\" and 1977 Novelette for \"The Screwfly Solution\" (published under her other pseudonym, Raccoona Sheldon).  She also received the World Fantasy Award in 1987 for the collection Tales of the Quintana Roo.",
+  "type": {
+    "key": "/type/author"
+  },
+  "fuller_name": "Alice Bradley Sheldon",
+  "birth_date": "24 August 1915",
+  "personal_name": "James Tiptree",
+  "title": "Ph.D.",
+  "source_records": [
+    "ia:pardelalesmurs0000tipt",
+    "bwb:9781497611405",
+    "amazon:3902711078",
+    "promise:bwb_daily_pallets_2021-05-11",
+    "promise:bwb_daily_pallets_2023-01-05",
+    "amazon:1645241076",
+    "bwb:9781306589475",
+    "marc:harvard_bibliographic_metadata/ab.bib.11.20150123.full.mrc:497236113:722"
+  ],
+  "latest_revision": 14,
+  "revision": 14,
+  "created": {"type": "/type/datetime", "value": "2008-04-29T13:35:46.876380"},
+  "last_modified": {"type": "/type/datetime", "value": "2024-11-19T12:32:45.790950"}
+}

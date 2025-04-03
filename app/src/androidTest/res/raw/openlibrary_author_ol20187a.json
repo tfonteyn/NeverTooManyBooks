@@ -1,0 +1,64 @@
+{
+  "key": "/authors/OL20187A",
+  "birth_date": "11 November 1922",
+  "source_records": [
+    "amazon:2253016020",
+    "amazon:5170625170",
+    "amazon:0062314343",
+    "ia:godsrijkstezegen0000vonn",
+    "amazon:6055162407",
+    "amazon:6055162474",
+    "bwb:9781504034357",
+    "ia:tabakierazbagomb0000vonn",
+    "amazon:0440029295",
+    "promise:bwb_daily_pallets_2022-03-17",
+    "promise:bwb_daily_pallets_2021-07-13",
+    "promise:bwb_daily_pallets_2021-06-03",
+    "promise:bwb_daily_pallets_2021-05-14",
+    "promise:bwb_daily_pallets_2021-05-05",
+    "promise:bwb_daily_pallets_2023-02-08:W8-BOG-093",
+    "promise:bwb_daily_pallets_2023-02-03:W8-AAX-218",
+    "promise:bwb_daily_pallets_2023-02-03:W8-ABZ-419",
+    "promise:bwb_daily_pallets_2023-01-31:W8-AAU-001",
+    "promise:bwb_daily_pallets_2022-10-17:O8-ANK-806",
+    "promise:bwb_daily_pallets_2023-07-27:W8-CFM-530",
+    "promise:bwb_daily_pallets_2023-12-28:O9-CFF-944",
+    "promise:bwb_daily_pallets_2022-05-25"
+  ],
+  "title": "jr",
+  "remote_ids": {
+    "viaf": "71398958",
+    "wikidata": "Q49074",
+    "isni": "0000000121386537"
+  },
+  "death_date": "11 April 2007",
+  "links": [
+    {
+      "title": "Vonnegut.com",
+      "url": "http://www.vonnegut.com/",
+      "type": {"key": "/type/link"}
+    },
+    {
+      "title": "Canonical Entry",
+      "url": "https://openlibrary.org/authors/OL20187A",
+      "type": {"key": "/type/link"}
+    }
+  ],
+  "photos": [
+    6390595
+  ],
+  "personal_name": "Vonnegut, Kurt.",
+  "name": "Kurt Vonnegut",
+  "bio": "Kurt Vonnegut, Jr. was an American novelist who wrote works blending satire, black comedy, and science fiction, such as [*Slaughterhouse-Five* (1969)][1], [*Cat's Cradle* (1963)][2], and [*Breakfast of Champions* (1973)][3]. He was known for his humanist beliefs as well as being honorary president of the American Humanist Association. He is widely considered one of the most influential American writers of the 20th century.\r\n\r\n\r\n  [1]: https://openlibrary.org/works/OL98474W/Slaughterhouse-Five\r\n  [2]: https://openlibrary.org/works/OL98482W/Cat's_Cradle\r\n  [3]: https://openlibrary.org/works/OL98488W/Breakfast_of_Champions",
+  "type": {
+    "key": "/type/author"
+  },
+  "alternate_names": [
+    "Kurt Vonnegut, Jr.",
+    "\u041a\u0443\u0440\u0442 \u0412\u043e\u043d\u043d\u0435\u0433\u0443\u0442"
+  ],
+  "latest_revision": 19,
+  "revision": 19,
+  "created": {"type": "/type/datetime", "value": "2008-04-01T03:28:50.625462"},
+  "last_modified": {"type": "/type/datetime", "value": "2025-02-11T17:08:04.759772"}
+}

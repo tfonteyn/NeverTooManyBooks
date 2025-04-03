@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbAuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuthorResolver;
 
 /**
  * ENHANCE the use of AuthorResolver to let them access the website Author API/page
@@ -62,7 +63,7 @@ public final class AuthorResolverFactory {
             @NonNull final Context context,
             @NonNull final SearchEngine searchEngine) {
 
-        // For now, we only support a single resolver, so the last part is hardcoded
+        // For now, we only support the Bedetheque resolver, so the last part is hardcoded
         final String key = searchEngine.getEngineId().getPreferenceKey()
                            + PK_RESOLVE_AUTHORS
                            + EngineId.Bedetheque.getPreferenceKey();
@@ -81,7 +82,7 @@ public final class AuthorResolverFactory {
     public static List<AuthorResolver> getResolvers(@NonNull final Context context,
                                                     @NonNull final SearchEngine searchEngine) {
         final String pk = searchEngine.getEngineId().getPreferenceKey();
-        // For now, we only support a single resolver,
+        // For now, we only support a single resolver matching their own SearchEngine,
         // so the last part is the same as the first
         final String key = pk + PK_RESOLVE_AUTHORS + pk;
 
@@ -90,11 +91,13 @@ public final class AuthorResolverFactory {
                                 .getBoolean(key, false)) {
 
             switch (searchEngine.getEngineId()) {
-                case DatabazeKnih:
+                case DatabazeKnih: {
                     return List.of(DatabazeKnihAuthorResolver.create(context, searchEngine));
-                case Dnb:
+                }
+                case Dnb: {
                     return List.of(DnbAuthorResolver.create(context, searchEngine));
-                case Isfdb:
+                }
+                case Isfdb: {
                     // URGENT: 2025-03-25. ongoing site issues SSLProtocolException
                     // Read error: ssl=0x7a6b6d87b598: Failure in SSL library, usually a protocol error
                     // error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT
@@ -106,6 +109,10 @@ public final class AuthorResolverFactory {
 
                     //return List.of(IsfdbAuthorResolver.create(context, searchEngine));
                     return List.of();
+                }
+                case OpenLibrary: {
+                    return List.of(OpenLibraryAuthorResolver.create(context, searchEngine));
+                }
             }
         }
         return List.of();
