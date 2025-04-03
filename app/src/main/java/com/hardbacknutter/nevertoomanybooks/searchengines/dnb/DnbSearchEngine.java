@@ -29,6 +29,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -40,6 +49,8 @@ import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -65,6 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -129,6 +141,11 @@ public class DnbSearchEngine
             Map.of(HttpConstants.REFERER,
                    "https://katalog.dnb.de/DE/home.html?pr=0&sortA=bez&sortD=-dat&v=plist");
 
+    /** 3-cert chain. */
+    private static final String CERT_FILE_NAME = "katalog.dnb.de.pem";
+    /** 4-cert chain. */
+    private static final String CERT_FILE_NAME2 = "katalog.dnb.de2.pem";
+
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
@@ -142,6 +159,12 @@ public class DnbSearchEngine
     public DnbSearchEngine(@NonNull final Context appContext,
                            @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+
+        try {
+            setSslContext(getSslContext(appContext));
+        } catch (@NonNull final CertificateException e) {
+            LoggerFactory.getLogger().e(TAG, e);
+        }
     }
 
     @NonNull
@@ -730,5 +753,50 @@ public class DnbSearchEngine
         return saveImage(context, url,
                          Map.of(HttpConstants.REFERER, document.location()),
                          bookId, cIdx, null);
+    }
+
+    @Nullable
+    private SSLContext getSslContext(@NonNull final Context context)
+            throws CertificateException {
+
+        try {
+            final X509Certificate c1 = getCertificate(context, CERT_FILE_NAME);
+            final X509Certificate c2 = getCertificate(context, CERT_FILE_NAME2);
+
+            final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+            keyStore.setCertificateEntry(CERT_FILE_NAME, c1);
+            keyStore.setCertificateEntry(CERT_FILE_NAME2, c2);
+
+            final TrustManagerFactory tmf = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(keyStore);
+
+            final SSLContext tls = SSLContext.getInstance("TLS");
+            tls.init(null, tmf.getTrustManagers(), null);
+            return tls;
+
+        } catch (@NonNull final KeyManagementException e) {
+            // wrap for ease of handling; it is in fact almost certain that
+            // we would throw a CertificateException BEFORE we can even
+            // get a KeyManagementException
+            throw new CertificateException(e);
+
+        } catch (@NonNull final IOException | KeyStoreException | NoSuchAlgorithmException ignore) {
+            // All these exceptions, can be ignored and we are assuming
+            // that the server does not need a cert, or that the cert is
+            // loaded in the Android system keystore.
+            return null;
+        }
+    }
+
+    @NonNull
+    private X509Certificate getCertificate(@NonNull final Context context,
+                                           @NonNull final String fileName)
+            throws CertificateException, IOException {
+        try (InputStream is = context.getAssets().open(fileName)) {
+            return (X509Certificate) CertificateFactory
+                    .getInstance("X.509").generateCertificate(is);
+        }
     }
 }
