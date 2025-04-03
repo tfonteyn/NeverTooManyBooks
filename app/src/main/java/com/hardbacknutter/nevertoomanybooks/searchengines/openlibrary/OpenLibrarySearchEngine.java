@@ -149,7 +149,7 @@ public class OpenLibrarySearchEngine
             Map.entry("amazon.co.uk_asin", Identifier.SID_ASIN),
             Map.entry("oclc_numbers", Identifier.SID_OCLC)
     );
-    final String PK_LOGIN_TO_SEARCH = EngineId.OpenLibrary.getPreferenceKey()
+    static final String PK_LOGIN_TO_SEARCH = EngineId.OpenLibrary.getPreferenceKey()
                                       + ".login.to.search";
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @NonNull
