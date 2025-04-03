@@ -105,6 +105,8 @@
             translatable="false">Google Books</string>
     <string name="identifier_isfdb"
             translatable="false">The Internet Speculative Fiction Database</string>
+    <string name="identifier_isni"
+            translatable="false">International Standard Name Identifier</string>
     <string name="identifier_kb_nl"
             translatable="false">De nationale bibliotheek van Nederland</string>
     <string name="identifier_lastdodo_nl"
@@ -123,6 +125,8 @@
             translatable="false">OpenLibrary</string>
     <string name="identifier_porbase"
             translatable="false">Biblioteca Nacional de Portugal</string>
+    <string name="identifier_storygraph"
+            translatable="false">The StoryGraph</string>
     <string name="identifier_stripinfo_be"
             translatable="false">StripInfo</string>
     <string name="identifier_stripweb_be"
@@ -133,6 +137,8 @@
             translatable="false">URI</string>
     <string name="identifier_url"
             translatable="false">URL</string>
+    <string name="identifier_viaf"
+            translatable="false">Virtual International Authority File</string>
     <string name="identifier_wikidata"
             translatable="false">Wikidata</string>
     <string name="identifier_worldcat"

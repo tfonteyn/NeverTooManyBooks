@@ -38,13 +38,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
  * <a href="https://www.librarything.com/services/">LibraryThing API</a>
  * <p>
  * We can still open a "work" link to books on the site for which we previously stored a native id.
- *   The LT id can also be gathered from other sites (e.g. OpenLibrary)
+ * The LT id can also be gathered from other sites (e.g. OpenLibrary)
  */
 public class LibraryThingSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ViewBookByExternalId {
 
+    public static final String SITE_URL = "https://www.librarything.com";
     public static final String BOOK_URL = "https://www.librarything.com/work/%s";
+    public static final String AUTHOR_URL = null;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.

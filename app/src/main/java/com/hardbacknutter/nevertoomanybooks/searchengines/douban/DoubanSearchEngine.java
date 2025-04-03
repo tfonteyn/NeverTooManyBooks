@@ -92,6 +92,7 @@ public class DoubanSearchEngine
     @VisibleForTesting
     public static final String PK_FETCH_MOST_RECENT = EngineId.Douban.getPreferenceKey()
                                                       + ".search.result.order.by.date";
+    public static final String SITE_URL = "https://book.douban.com";
     public static final String BOOK_URL = "https://book.douban.com/subject/%s";
     public static final String AUTHOR_URL = "https://www.douban.com/personage/%s";
     /**

@@ -75,6 +75,7 @@ public class DatabazeKnihSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ByBarcode {
 
+    public static final String SITE_URL = "https://www.databazeknih.cz";
     public static final String BOOK_URL = "https://www.databazeknih.cz/prehled-knihy/x-%s";
     public static final String AUTHOR_URL = "https://www.databazeknih.cz/autori/x-%s";
     private static final String TAG = "DatabazeKnihSearchEngin";

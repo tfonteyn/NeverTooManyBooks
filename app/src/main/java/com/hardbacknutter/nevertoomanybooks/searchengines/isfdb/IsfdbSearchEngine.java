@@ -104,6 +104,10 @@ public class IsfdbSearchEngine
                    SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionIsfdb> {
 
+    public static final String SITE_URL = "https://www.isfdb.org";
+    public static final String BOOK_URL = "https://www.isfdb.org/cgi-bin/pl.cgi?%s";
+    public static final String AUTHOR_URL = "https://www.isfdb.org/cgi-bin/ea.cgi?%s";
+
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -125,8 +129,6 @@ public class IsfdbSearchEngine
                                              + ".search.toc.series";
     static final String PK_LOGIN_TO_SEARCH = EngineId.Isfdb.getPreferenceKey()
                                              + ".login.to.search";
-    public static final String BOOK_URL = "https://www.isfdb.org/cgi-bin/pl.cgi?%s";
-    public static final String AUTHOR_URL = "https://www.isfdb.org/cgi-bin/ea.cgi?%s";
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
 

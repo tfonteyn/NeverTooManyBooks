@@ -40,8 +40,11 @@ public class ISNI {
     /** Remove '-' and space chars. */
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ -]");
 
+    public static final String SITE_URL = "https://isni.org/";
     /** Leading {@code 0}'s <strong>MUST</strong> be present. */
-    private static final String ISNI_URL = "https://isni.org/isni/%s";
+    public static final String AUTHOR_URL = "https://isni.org/isni/%s";
+    /** 16 zeros for normalizing shorter strings. */
+    private static final String ZEROS = "0000000000000000";
 
     private final String isni;
     private final boolean valid;
@@ -59,7 +62,7 @@ public class ISNI {
         final String checksum = str.substring(str.length() - 1);
 
         valid = generateCheckDigit(digits).equals(checksum);
-        this.isni = ("0000000000000000" + str).substring(str.length());
+        this.isni = (ZEROS + str).substring(str.length());
     }
 
     @NonNull

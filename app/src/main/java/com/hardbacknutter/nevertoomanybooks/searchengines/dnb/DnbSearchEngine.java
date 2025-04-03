@@ -81,6 +81,7 @@ public class DnbSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.ViewBookByExternalId {
 
+    public static final String SITE_URL = "https://www.dnb.de";
     public static final String BOOK_URL = "https://d-nb.info/%s";
     public static final String AUTHOR_URL = "https://d-nb.info/gnd/%s";
     private static final String SELECT_SINGLE_RESULT = "div.l-catalog-single-content";

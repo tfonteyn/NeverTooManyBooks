@@ -90,6 +90,7 @@ public class OpenLibrarySearchEngine
                    SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
+    public static final String SITE_URL = "https://openlibrary.org";
     public static final String BOOK_URL = "https://openlibrary.org/books/%s";
     public static final String AUTHOR_URL = "https://openlibrary.org/authors/%s";
 

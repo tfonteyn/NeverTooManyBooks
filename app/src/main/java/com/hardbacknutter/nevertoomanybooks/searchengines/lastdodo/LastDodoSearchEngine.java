@@ -79,8 +79,10 @@ public class LastDodoSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId {
 
+    public static final String SITE_URL = "https://www.lastdodo.nl";
     public static final String BOOK_URL = "https://www.lastdodo.nl/nl/items/%s";
     public static final String AUTHOR_URL = "https://www.lastdodo.nl/nl/areas/%s";
+
     /**
      * Param 1: external book ID; really a 'long'.
      * Param 2: 147==comics

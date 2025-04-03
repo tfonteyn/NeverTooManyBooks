@@ -65,8 +65,10 @@ public class KbNlSearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.ViewBookByExternalId {
 
+    public static final String SITE_URL = "https://www.kb.nl";
     public static final String BOOK_URL = "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s";
     public static final String AUTHOR_URL = "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s";
+
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
      * We have no indication that this site has an image we want, we just try it.

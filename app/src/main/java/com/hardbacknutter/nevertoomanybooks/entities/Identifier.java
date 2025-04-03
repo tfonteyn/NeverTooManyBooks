@@ -34,6 +34,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
@@ -48,6 +49,24 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearc
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Audible;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BL;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BarnesAndNoble;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.DOI;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.KBR;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Lccn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.LibrisSE;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.NooSFere;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Porbase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WikiData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
 
 /**
  * External website id's (site-id, sid).
@@ -101,11 +120,17 @@ public class Identifier
     public static final String SID_OCLC = "oclc";
     public static final String SID_OPEN_LIBRARY = "openlibrary";
     public static final String SID_PORBASE = "porbase";
+    public static final String SID_STORYGRAPH = "storygraph";
     public static final String SID_STRIPWEB = "stripweb";
     public static final String SID_STRIP_INFO = "stripinfo";
     public static final String SID_TERCERA_FUNDACION = "ltf";
     public static final String SID_URI = "uri";
     public static final String SID_WIKIDATA = "wikidata";
+
+    /** {@link com.hardbacknutter.nevertoomanybooks.core.utils.ISNI}. */
+    public static final String SID_ISNI = "isni";
+    /** <a href="https://viaf.org">viaf</a>. */
+    public static final String SID_VIAF = "viaf";
 
     public static final char TYPE_LONG = 'L';
     public static final char TYPE_STRING = 'S';
@@ -237,194 +262,178 @@ public class Identifier
     public static List<Identifier> createInitialList(@NonNull final Context context) {
         // links have been verified at the date listed.
         return List.of(
-                // links empty on purpose
+                // links empty on purpose; created dynamically
                 new Identifier(SID_ASIN, TYPE_STRING,
                                context.getString(R.string.identifier_amazon),
                                null,
                                null,
                                null),
-                // 2025-01-29
                 new Identifier(SID_AUDIBLE, TYPE_STRING,
                                context.getString(R.string.identifier_audible),
-                               "https://www.audible.com",
-                               "https://www.audible.com/pd/%s",
-                               null),
-                // 2025-01-29
+                               Audible.SITE_URL,
+                               Audible.BOOK_URL,
+                               Audible.AUTHOR_URL),
                 new Identifier(SID_BARNES_AND_NOBLE, TYPE_LONG,
                                context.getString(R.string.identifier_barnesandnoble),
-                               "https://www.barnesandnoble.com",
-                               "https://www.barnesandnoble.com/w/%s",
-                               null),
-                // 2025-01-29
+                               BarnesAndNoble.SITE_URL,
+                               BarnesAndNoble.BOOK_URL,
+                               BarnesAndNoble.AUTHOR_URL),
                 new Identifier(SID_BEDETHEQUE, TYPE_LONG,
                                context.getString(R.string.identifier_bedetheque),
-                               "https://www.bedetheque.com",
+                               BedethequeSearchEngine.SITE_URL,
                                BedethequeSearchEngine.BOOK_URL,
                                BedethequeSearchEngine.AUTHOR_URL),
-                // 2025-01-29
                 new Identifier(SID_BNF, TYPE_STRING,
                                context.getString(R.string.identifier_bnf),
-                               "https://www.bnf.fr",
-                               "https://catalogue.bnf.fr/ark:/12148/%s",
-                               "https://catalogue.bnf.fr/ark:/12148/%s"),
-                // FIXME: BL link disabled for now due to https://www.bl.uk/cyber-incident/
-                // The British National Bibliography ??
+                               BNF.SITE_URL,
+                               BNF.BOOK_URL,
+                               BNF.AUTHOR_URL),
                 new Identifier(SID_BRITISH_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_british_library),
-                               "https://www.bl.uk",
-                               null,
-                               null),
+                               BL.SITE_URL,
+                               BL.BOOK_URL,
+                               BL.AUTHOR_URL),
                 new Identifier(SID_DATABAZE_KNIH, TYPE_LONG,
                                context.getString(R.string.identifier_databaze_knih),
-                               "https://www.databazeknih.cz",
+                               DatabazeKnihSearchEngine.SITE_URL,
                                DatabazeKnihSearchEngine.BOOK_URL,
                                DatabazeKnihSearchEngine.AUTHOR_URL),
-                // 2025-01-29
                 new Identifier(SID_DNB, TYPE_STRING,
                                context.getString(R.string.identifier_dnb),
-                               "https://www.dnb.de",
+                               DnbSearchEngine.SITE_URL,
                                DnbSearchEngine.BOOK_URL,
                                DnbSearchEngine.AUTHOR_URL),
-                // FIXME: openlibrary  https://www.doi.org/%s
-                // but none of the openlibrary provided doi numbers
-                // we tried are resolving, so leaving bookUrl/authorUrl empty on purpose.
                 new Identifier(SID_DOI, TYPE_STRING,
                                context.getString(R.string.identifier_doi),
-                               "https://www.doi.org",
-                               null,
-                               null),
-                // 2025-01-29
+                               DOI.SITE_URL,
+                               DOI.BOOK_URL,
+                               DOI.AUTHOR_URL),
                 new Identifier(SID_DOUBAN, TYPE_LONG,
                                context.getString(R.string.identifier_douban),
-                               "https://book.douban.com",
+                               DoubanSearchEngine.SITE_URL,
                                DoubanSearchEngine.BOOK_URL,
                                DoubanSearchEngine.AUTHOR_URL),
-                // 2025-01-29
                 new Identifier(SID_FANTLAB, TYPE_LONG,
                                context.getString(R.string.identifier_fantlab),
-                               "https://fantlab.ru",
-                               "https://fantlab.ru/edition%s",
-                               "https://fantlab.ru/autor%s"),
-                // 2025-01-29
+                               FantLab.SITE_URL,
+                               FantLab.BOOK_URL,
+                               FantLab.AUTHOR_URL),
                 new Identifier(SID_GOODREADS, TYPE_LONG,
                                context.getString(R.string.identifier_goodreads),
-                               "https://www.goodreads.com",
+                               GoodreadsSearchEngine.SITE_URL,
                                GoodreadsSearchEngine.BOOK_URL,
                                GoodreadsSearchEngine.AUTHOR_URL),
-                // 2025-01-29
                 new Identifier(SID_GOOGLE, TYPE_STRING,
                                context.getString(R.string.identifier_google_books),
-                               "https://books.google.com",
+                               GoogleBooksSearchEngine.SITE_URL,
                                GoogleBooksSearchEngine.BOOK_URL,
-                               null),
-                // 2025-01-29
+                               GoogleBooksSearchEngine.AUTHOR_URL),
                 new Identifier(SID_ISFDB, TYPE_LONG,
                                context.getString(R.string.identifier_isfdb),
-                               "https://www.isfdb.org",
+                               IsfdbSearchEngine.SITE_URL,
                                IsfdbSearchEngine.BOOK_URL,
                                IsfdbSearchEngine.AUTHOR_URL),
-                // 2025-01-29
+                new Identifier(SID_ISNI, TYPE_STRING,
+                               context.getString(R.string.identifier_isni),
+                               ISNI.SITE_URL,
+                               null,
+                               ISNI.AUTHOR_URL),
                 new Identifier(SID_KBNL, TYPE_LONG,
                                context.getString(R.string.identifier_kb_nl),
-                               "https://www.kb.nl",
+                               KbNlSearchEngine.SITE_URL,
                                KbNlSearchEngine.BOOK_URL,
                                KbNlSearchEngine.AUTHOR_URL),
-                // 2025-01-29
                 new Identifier(SID_KBR, TYPE_LONG,
                                context.getString(R.string.identifier_kbr),
-                               "https://opac.kbr.be",
-                               "https://opac.kbr.be/Library/doc/SYRACUSE/%s",
-                               null),
-                // 2025-01-29
+                               KBR.SITE_URL,
+                               KBR.BOOK_URL,
+                               KBR.AUTHOR_URL),
                 new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
                                context.getString(R.string.identifier_lastdodo_nl),
-                               "https://www.lastdodo.nl",
+                               LastDodoSearchEngine.SITE_URL,
                                LastDodoSearchEngine.BOOK_URL,
                                LastDodoSearchEngine.AUTHOR_URL),
-                // 2025-01-29
                 new Identifier(SID_LCCN, TYPE_STRING,
                                context.getString(R.string.identifier_lccn),
-                               "https://catalog.loc.gov",
-                               "https://lccn.loc.gov/%s",
-                               null),
-                // 2025-01-29
+                               Lccn.SITE_URL,
+                               Lccn.BOOK_URL,
+                               Lccn.AUTHOR_URL),
                 new Identifier(SID_LIBRARY_THING, TYPE_LONG,
                                context.getString(R.string.identifier_library_thing),
-                               "https://www.librarything.com",
+                               LibraryThingSearchEngine.SITE_URL,
                                LibraryThingSearchEngine.BOOK_URL,
-                               null),
-                // 2025-01-29
+                               LibraryThingSearchEngine.AUTHOR_URL),
                 new Identifier(SID_LIBRIS, TYPE_LONG,
                                context.getString(R.string.identifier_libris),
-                               "https://libris.kb.se",
-                               "https://libris.kb.se/bib/%s",
-                               null),
-                // 2025-01-29
+                               LibrisSE.SITE_URL,
+                               LibrisSE.BOOK_URL,
+                               LibrisSE.AUTHOR_URL),
                 new Identifier(SID_LIBRIS_XL, TYPE_STRING,
                                context.getString(R.string.identifier_libris),
-                               "https://libris.kb.se/katalogisering",
-                               "https://libris.kb.se/%s",
-                               null),
-                // 2025-01-29
+                               LibrisSE.XL_SITE_URL,
+                               LibrisSE.XL_BOOK_URL,
+                               LibrisSE.XL_AUTHOR_URL),
                 new Identifier(SID_NILF, TYPE_LONG,
                                context.getString(R.string.identifier_nilf),
-                               "https://www.fantascienza.com/catalogo/",
-                               "https://www.fantascienza.com/catalogo/volumi/NILF%s",
-                               "https://www.fantascienza.com/catalogo/autori/NILF%s"),
-                // 2025-01-29
+                               FantaScienza.SITE_URL,
+                               FantaScienza.BOOK_URL,
+                               FantaScienza.AUTHOR_URL),
                 new Identifier(SID_NOOSFERE, TYPE_LONG,
                                context.getString(R.string.identifier_noosfere),
-                               "https://www.noosfere.org",
-                               "https://www.noosfere.org/livres/niourf.asp?numlivre=%s",
-                               "https://www.noosfere.org/livres/auteur.asp?NumAuteur=%s"),
-                // 2025-01-29
+                               NooSFere.SITE_URL,
+                               NooSFere.BOOK_URL,
+                               NooSFere.AUTHOR_URL),
                 new Identifier(SID_OCLC, TYPE_LONG,
                                context.getString(R.string.identifier_worldcat),
-                               "https://search.worldcat.org",
-                               "https://www.worldcat.org/oclc/%s",
-                               "https://id.oclc.org/worldcat/entity/%s"),
-                // 2025-01-29
+                               WorldCat.SITE_URL,
+                               WorldCat.BOOK_URL,
+                               WorldCat.AUTHOR_URL),
                 new Identifier(SID_OPEN_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_open_library),
-                               "https://openlibrary.org",
+                               OpenLibrarySearchEngine.SITE_URL,
                                OpenLibrarySearchEngine.BOOK_URL,
                                OpenLibrarySearchEngine.AUTHOR_URL),
-                // 2025-01-29
                 new Identifier(SID_PORBASE, TYPE_LONG,
                                context.getString(R.string.identifier_porbase),
-                               "https://porbase.bnportugal.gov.pt",
-                               "https://id.bnportugal.gov.pt/bib/porbase/%s",
-                               null),
-                // 2025-01-29
+                               Porbase.SITE_URL,
+                               Porbase.BOOK_URL,
+                               Porbase.AUTHOR_URL),
+                new Identifier(SID_STORYGRAPH, TYPE_STRING,
+                               context.getString(R.string.identifier_storygraph),
+                               StoryGraph.SITE_URL,
+                               StoryGraph.BOOK_URL,
+                               StoryGraph.AUTHOR_URL),
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
                                context.getString(R.string.identifier_stripinfo_be),
-                               "https://stripinfo.be",
+                               StripInfoSearchEngine.SITE_URL,
                                StripInfoSearchEngine.BOOK_URL,
                                StripInfoSearchEngine.AUTHOR_URL),
-                // 2025-01-29  a permalink to the product nr is not possible
                 new Identifier(SID_STRIPWEB, TYPE_LONG,
                                context.getString(R.string.identifier_stripweb_be),
-                               "https://www.stripweb.be",
-                               null,
-                               null),
-                // 2025-01-29
+                               StripWebSearchEngine.SITE_URL,
+                               StripWebSearchEngine.BOOK_URL,
+                               StripWebSearchEngine.AUTHOR_URL),
                 new Identifier(SID_TERCERA_FUNDACION, TYPE_LONG,
                                context.getString(R.string.identifier_tercerafundacion),
-                               "https://tercerafundacion.net",
-                               "https://tercerafundacion.net/biblioteca/ver/libro/%s",
-                               "https://tercerafundacion.net/biblioteca/ver/persona/%s"),
+                               TerceraFundacion.SITE_URL,
+                               TerceraFundacion.BOOK_URL,
+                               TerceraFundacion.AUTHOR_URL),
                 // the bookUrl/authorUrl IS the sid
                 new Identifier(SID_URI, TYPE_STRING,
                                context.getString(R.string.identifier_uri),
                                null,
                                "%s",
                                "%s"),
-                // 2025-01-29
+                new Identifier(SID_VIAF, TYPE_LONG,
+                               context.getString(R.string.identifier_viaf),
+                               VIAF.SITE_URL,
+                               null,
+                               VIAF.AUTHOR_URL),
                 new Identifier(SID_WIKIDATA, TYPE_STRING,
                                context.getString(R.string.identifier_wikidata),
-                               "https://www.wikidata.org",
-                               "https://www.wikidata.org/wiki/%s",
-                               "https://www.wikidata.org/wiki/%s")
+                               WikiData.SITE_URL,
+                               WikiData.BOOK_URL,
+                               WikiData.AUTHOR_URL)
         );
     }
 

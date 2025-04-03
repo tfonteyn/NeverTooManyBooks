@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -36,6 +35,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
@@ -56,6 +57,26 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.NooSFere;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Porbase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WikiData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -608,79 +629,68 @@ public class DBHelper
                         + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
                     // see Identifier#createInitialList
                     // we don't check success, the row may have been deleted which is fine
-                    stmt.bindString(1, "https://www.bedetheque.com/auteur-%s-BD-x.html");
+                    stmt.bindString(1, BedethequeSearchEngine.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_BEDETHEQUE);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://catalogue.bnf.fr/ark:/12148/%s");
+                    stmt.bindString(1, BNF.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_BNF);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://d-nb.info/gnd/%s");
+                    stmt.bindString(1, DnbSearchEngine.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_DNB);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://www.douban.com/personage/%s");
+                    stmt.bindString(1, DoubanSearchEngine.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_DOUBAN);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://fantlab.ru/autor%s");
+                    stmt.bindString(1, FantLab.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_FANTLAB);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://www.goodreads.com/author/show/%s");
+                    stmt.bindString(1, GoodreadsSearchEngine.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_GOODREADS);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://www.isfdb.org/cgi-bin/ea.cgi?%s");
+                    stmt.bindString(1, IsfdbSearchEngine.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_ISFDB);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s");
+                    stmt.bindString(1, KbNlSearchEngine.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_KBNL);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://www.lastdodo.nl/nl/areas/%s");
+                    stmt.bindString(1, LastDodoSearchEngine.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_LAST_DODO_NL);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://www.fantascienza.com/catalogo/autori/NILF%s");
+                    stmt.bindString(1, FantaScienza.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_NILF);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://www.noosfere.org/livres/auteur.asp?NumAuteur=%s");
+                    stmt.bindString(1, NooSFere.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_NOOSFERE);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://id.oclc.org/worldcat/entity/%s");
+                    stmt.bindString(1, WorldCat.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_OCLC);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://openlibrary.org/authors/%s");
+                    stmt.bindString(1, OpenLibrarySearchEngine.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_OPEN_LIBRARY);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://stripinfo.be/auteur/index/%s");
+                    stmt.bindString(1, StripInfoSearchEngine.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_STRIP_INFO);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://tercerafundacion.net/biblioteca/ver/persona/%s");
+                    stmt.bindString(1, TerceraFundacion.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_TERCERA_FUNDACION);
                     stmt.executeUpdateDelete();
                     stmt.bindString(1, "%s");
                     stmt.bindString(2, Identifier.SID_URI);
                     stmt.executeUpdateDelete();
-                    stmt.bindString(1, "https://www.wikidata.org/wiki/%s");
+                    stmt.bindString(1, WikiData.AUTHOR_URL);
                     stmt.bindString(2, Identifier.SID_WIKIDATA);
                     stmt.executeUpdateDelete();
                 }
             }
 
             // likewise, the SID_DATABAZE_KNIH may already exist
-            final boolean exists;
-            try (Cursor cursor = db.rawQuery("SELECT 1 FROM " + TBL_IDENTIFIERS.getName()
-                                             + " WHERE " + DBKey.IDENTIFIERS.KEY + "='"
-                                             + Identifier.SID_DATABAZE_KNIH + "'", null)) {
-                exists = cursor.moveToFirst();
-            }
-            if (!exists) {
-                final ContentValues cv = new ContentValues();
-                cv.put(DBKey.IDENTIFIERS.KEY, Identifier.SID_DATABAZE_KNIH);
-                cv.put(DBKey.IDENTIFIERS.TYPE, String.valueOf(Identifier.TYPE_LONG));
-                cv.put(DBKey.IDENTIFIERS.NAME,
-                       context.getString(R.string.identifier_databaze_knih));
-                cv.put(DBKey.IDENTIFIERS.SITE_URL, "https://www.databazeknih.cz");
-                cv.put(DBKey.IDENTIFIERS.BOOK_URI,
-                       "https://www.databazeknih.cz/prehled-knihy/x-%s");
-                cv.put(DBKey.IDENTIFIERS.AUTHOR_URI, "https://www.databazeknih.cz/autori/x-%s");
-                db.insert(TBL_IDENTIFIERS.getName(), null, cv);
-            }
+            addIdentifier(context, db, new Identifier(
+                    Identifier.SID_DATABAZE_KNIH,
+                    Identifier.TYPE_LONG,
+                    context.getString(R.string.identifier_databaze_knih),
+                    DatabazeKnihSearchEngine.SITE_URL,
+                    DatabazeKnihSearchEngine.BOOK_URL,
+                    DatabazeKnihSearchEngine.AUTHOR_URL));
 
             // this is new for this release
             TBL_AUTHOR_IDENTIFIER.create(db, true);
@@ -691,10 +701,10 @@ public class DBHelper
                     "UPDATE " + TBL_IDENTIFIERS
                     + " SET " + DBKey.IDENTIFIERS.BOOK_URI + "=?"
                     + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
-                stmt.bindString(1, "https://catalogue.bnf.fr/ark:/12148/%s");
+                stmt.bindString(1, BNF.BOOK_URL);
                 stmt.bindString(2, Identifier.SID_BNF);
                 stmt.executeUpdateDelete();
-                stmt.bindString(1, "https://id.bnportugal.gov.pt/bib/porbase/%s");
+                stmt.bindString(1, Porbase.BOOK_URL);
                 stmt.bindString(2, Identifier.SID_PORBASE);
                 stmt.executeUpdateDelete();
             }
@@ -707,6 +717,28 @@ public class DBHelper
                 stmt.bindString(2, Identifier.SID_DNB);
                 stmt.executeUpdateDelete();
             }
+            // add new identifiers
+            addIdentifier(context, db, new Identifier(
+                    Identifier.SID_ISNI,
+                    Identifier.TYPE_STRING,
+                    context.getString(R.string.identifier_isni),
+                    ISNI.SITE_URL,
+                    null,
+                    ISNI.AUTHOR_URL));
+            addIdentifier(context, db, new Identifier(
+                    Identifier.SID_STORYGRAPH,
+                    Identifier.TYPE_STRING,
+                    context.getString(R.string.identifier_storygraph),
+                    StoryGraph.SITE_URL,
+                    StoryGraph.BOOK_URL,
+                    StoryGraph.AUTHOR_URL));
+            addIdentifier(context, db, new Identifier(
+                    Identifier.SID_VIAF,
+                    Identifier.TYPE_LONG,
+                    context.getString(R.string.identifier_viaf),
+                    VIAF.SITE_URL,
+                    null,
+                    VIAF.AUTHOR_URL));
         }
 
         // We have to do this here due to some users skipping updates (see github #30)
@@ -723,6 +755,29 @@ public class DBHelper
 
         // Rebuild all triggers
         Triggers.create(db);
+    }
+
+    private void addIdentifier(@NonNull final Context context,
+                               @NonNull final SQLiteDatabase db,
+                               @NonNull final Identifier identifier) {
+
+        try (SQLiteStatement stmt = db.compileStatement(
+                "INSERT OR IGNORE INTO " + TBL_IDENTIFIERS.getName()
+                + '(' + DBKey.IDENTIFIERS.KEY
+                + ',' + DBKey.IDENTIFIERS.TYPE
+                + ',' + DBKey.IDENTIFIERS.NAME
+                + ',' + DBKey.IDENTIFIERS.SITE_URL
+                + ',' + DBKey.IDENTIFIERS.BOOK_URI
+                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
+                + ") VALUES(?,?,?,?,?,?)")) {
+            stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
+            stmt.bindString(2, String.valueOf(identifier.getType()));
+            stmt.bindString(3, identifier.getName());
+            stmt.bindString(4, identifier.getSiteUrl(context));
+            stmt.bindString(5, identifier.getBookUri(context).orElse(null));
+            stmt.bindString(6, identifier.getAuthorUri(context).orElse(null));
+            stmt.executeInsert();
+        }
     }
 
     @Override

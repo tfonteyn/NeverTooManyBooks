@@ -82,6 +82,11 @@ public class StripWebSearchEngine
                    SearchEngine.ByBarcode,
                    SearchEngine.SearchOnSite {
 
+    public static final String SITE_URL = "https://www.stripweb.be";
+    // A permalink to the product nr is not possible
+    public static final String BOOK_URL = null;
+    public static final String AUTHOR_URL = null;
+
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
 

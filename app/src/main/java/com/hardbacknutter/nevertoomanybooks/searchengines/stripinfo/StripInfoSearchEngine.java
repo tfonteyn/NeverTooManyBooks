@@ -101,11 +101,13 @@ public class StripInfoSearchEngine
                    SearchEngine.ByBarcode,
                    SearchEngine.Login {
 
+    public static final String SITE_URL = "https://stripinfo.be";
+    public static final String BOOK_URL = "https://stripinfo.be/reeks/strip/%s";
+    public static final String AUTHOR_URL = "https://stripinfo.be/auteur/index/%s";
+
     public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
     static final String PK_LOGIN_TO_SEARCH = EngineId.StripInfoBe.getPreferenceKey()
                                              + ".login.to.search";
-    public static final String BOOK_URL = "https://stripinfo.be/reeks/strip/%s";
-    public static final String AUTHOR_URL = "https://stripinfo.be/auteur/index/%s";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
     /** Color string values as used on the site. Complete 2019-10-29. */
