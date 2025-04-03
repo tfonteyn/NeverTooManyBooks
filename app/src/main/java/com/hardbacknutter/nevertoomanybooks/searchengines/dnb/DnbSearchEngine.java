@@ -727,6 +727,8 @@ public class DnbSearchEngine
         if (!url.startsWith("https")) {
             url = getHostUrl(context) + url;
         }
-        return saveImage(context, url, bookId, cIdx, null);
+        return saveImage(context, url,
+                         Map.of(HttpConstants.REFERER, document.location()),
+                         bookId, cIdx, null);
     }
 }
