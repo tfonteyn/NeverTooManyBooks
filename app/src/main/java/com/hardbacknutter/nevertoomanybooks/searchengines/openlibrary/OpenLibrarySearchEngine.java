@@ -88,8 +88,9 @@ public class OpenLibrarySearchEngine
                    SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
 
-    static final String PK_LOGIN_TO_SEARCH = EngineId.OpenLibrary.getPreferenceKey()
-                                             + ".login.to.search";
+    public static final String BOOK_URL = "https://openlibrary.org/books/%s";
+    public static final String AUTHOR_URL = "https://openlibrary.org/authors/%s";
+
     private static final String BASE_BOOK_URL = "/search.json?"
                                                 + "q=%1$s"
                                                 + "&fields=key,editions";

@@ -78,6 +78,8 @@ public class GoodreadsSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId {
 
+    public static final String BOOK_URL = "https://www.goodreads.com/book/show/%s";
+    public static final String AUTHOR_URL = "https://www.goodreads.com/author/show/%s";
     private static final Pattern PARAMS_BOOK_ID_PATTERN = Pattern.compile("(\\d+).*");
 
     private static final String BY_TEXT = "/search?search_type=books&search[query]=%s";

@@ -79,6 +79,8 @@ public class BedethequeSearchEngine
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId {
 
+    public static final String BOOK_URL = "https://www.bedetheque.com/BD-x-%s.html";
+    public static final String AUTHOR_URL = "https://www.bedetheque.com/auteur-%s-BD-x.html";
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
     private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES = "bedetheque.resolve.formats";
 

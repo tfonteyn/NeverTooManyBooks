@@ -93,6 +93,7 @@ public class GoogleBooksSearchEngine
                    SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByEdition {
 
+    public static final String BOOK_URL = "https://books.google.co.uk/books?id=%s";
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
     private static final String SEARCH = "/books/v1/volumes?q=";
     private final RatingParser ratingParser;

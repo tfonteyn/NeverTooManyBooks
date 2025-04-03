@@ -36,6 +36,18 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 
 /**
  * External website id's (site-id, sid).
@@ -247,8 +259,8 @@ public class Identifier
                 new Identifier(SID_BEDETHEQUE, TYPE_LONG,
                                context.getString(R.string.identifier_bedetheque),
                                "https://www.bedetheque.com",
-                               "https://www.bedetheque.com/BD-x-%s.html",
-                               "https://www.bedetheque.com/auteur-%s-BD-x.html"),
+                               BedethequeSearchEngine.BOOK_URL,
+                               BedethequeSearchEngine.AUTHOR_URL),
                 // 2025-01-29
                 new Identifier(SID_BNF, TYPE_STRING,
                                context.getString(R.string.identifier_bnf),
@@ -265,14 +277,14 @@ public class Identifier
                 new Identifier(SID_DATABAZE_KNIH, TYPE_LONG,
                                context.getString(R.string.identifier_databaze_knih),
                                "https://www.databazeknih.cz",
-                               "https://www.databazeknih.cz/prehled-knihy/x-%s",
-                               "https://www.databazeknih.cz/autori/x-%s"),
+                               DatabazeKnihSearchEngine.BOOK_URL,
+                               DatabazeKnihSearchEngine.AUTHOR_URL),
                 // 2025-01-29
                 new Identifier(SID_DNB, TYPE_STRING,
                                context.getString(R.string.identifier_dnb),
                                "https://www.dnb.de",
-                               "https://d-nb.info/%s",
-                               "https://d-nb.info/gnd/%s"),
+                               DnbSearchEngine.BOOK_URL,
+                               DnbSearchEngine.AUTHOR_URL),
                 // FIXME: openlibrary  https://www.doi.org/%s
                 // but none of the openlibrary provided doi numbers
                 // we tried are resolving, so leaving bookUrl/authorUrl empty on purpose.
@@ -285,8 +297,8 @@ public class Identifier
                 new Identifier(SID_DOUBAN, TYPE_LONG,
                                context.getString(R.string.identifier_douban),
                                "https://book.douban.com",
-                               "https://book.douban.com/subject/%s",
-                               "https://www.douban.com/personage/%s"),
+                               DoubanSearchEngine.BOOK_URL,
+                               DoubanSearchEngine.AUTHOR_URL),
                 // 2025-01-29
                 new Identifier(SID_FANTLAB, TYPE_LONG,
                                context.getString(R.string.identifier_fantlab),
@@ -297,26 +309,26 @@ public class Identifier
                 new Identifier(SID_GOODREADS, TYPE_LONG,
                                context.getString(R.string.identifier_goodreads),
                                "https://www.goodreads.com",
-                               "https://www.goodreads.com/book/show/%s",
-                               "https://www.goodreads.com/author/show/%s"),
+                               GoodreadsSearchEngine.BOOK_URL,
+                               GoodreadsSearchEngine.AUTHOR_URL),
                 // 2025-01-29
                 new Identifier(SID_GOOGLE, TYPE_STRING,
                                context.getString(R.string.identifier_google_books),
                                "https://books.google.com",
-                               "https://books.google.co.uk/books?id=%s",
+                               GoogleBooksSearchEngine.BOOK_URL,
                                null),
                 // 2025-01-29
                 new Identifier(SID_ISFDB, TYPE_LONG,
                                context.getString(R.string.identifier_isfdb),
                                "https://www.isfdb.org",
-                               "https://www.isfdb.org/cgi-bin/pl.cgi?%s",
-                               "https://www.isfdb.org/cgi-bin/ea.cgi?%s"),
+                               IsfdbSearchEngine.BOOK_URL,
+                               IsfdbSearchEngine.AUTHOR_URL),
                 // 2025-01-29
                 new Identifier(SID_KBNL, TYPE_LONG,
                                context.getString(R.string.identifier_kb_nl),
                                "https://www.kb.nl",
-                               "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s",
-                               "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s"),
+                               KbNlSearchEngine.BOOK_URL,
+                               KbNlSearchEngine.AUTHOR_URL),
                 // 2025-01-29
                 new Identifier(SID_KBR, TYPE_LONG,
                                context.getString(R.string.identifier_kbr),
@@ -327,8 +339,8 @@ public class Identifier
                 new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
                                context.getString(R.string.identifier_lastdodo_nl),
                                "https://www.lastdodo.nl",
-                               "https://www.lastdodo.nl/nl/items/%s",
-                               "https://www.lastdodo.nl/nl/areas/%s"),
+                               LastDodoSearchEngine.BOOK_URL,
+                               LastDodoSearchEngine.AUTHOR_URL),
                 // 2025-01-29
                 new Identifier(SID_LCCN, TYPE_STRING,
                                context.getString(R.string.identifier_lccn),
@@ -339,7 +351,7 @@ public class Identifier
                 new Identifier(SID_LIBRARY_THING, TYPE_LONG,
                                context.getString(R.string.identifier_library_thing),
                                "https://www.librarything.com",
-                               "https://www.librarything.com/work/%s",
+                               LibraryThingSearchEngine.BOOK_URL,
                                null),
                 // 2025-01-29
                 new Identifier(SID_LIBRIS, TYPE_LONG,
@@ -375,8 +387,8 @@ public class Identifier
                 new Identifier(SID_OPEN_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_open_library),
                                "https://openlibrary.org",
-                               "https://openlibrary.org/books/%s",
-                               "https://openlibrary.org/authors/%s"),
+                               OpenLibrarySearchEngine.BOOK_URL,
+                               OpenLibrarySearchEngine.AUTHOR_URL),
                 // 2025-01-29
                 new Identifier(SID_PORBASE, TYPE_LONG,
                                context.getString(R.string.identifier_porbase),
@@ -387,8 +399,8 @@ public class Identifier
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
                                context.getString(R.string.identifier_stripinfo_be),
                                "https://stripinfo.be",
-                               "https://stripinfo.be/reeks/strip/%s",
-                               "https://stripinfo.be/auteur/index/%s"),
+                               StripInfoSearchEngine.BOOK_URL,
+                               StripInfoSearchEngine.AUTHOR_URL),
                 // 2025-01-29  a permalink to the product nr is not possible
                 new Identifier(SID_STRIPWEB, TYPE_LONG,
                                context.getString(R.string.identifier_stripweb_be),

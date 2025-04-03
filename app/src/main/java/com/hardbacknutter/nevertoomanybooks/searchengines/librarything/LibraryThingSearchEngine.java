@@ -44,6 +44,8 @@ public class LibraryThingSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ViewBookByExternalId {
 
+    public static final String BOOK_URL = "https://www.librarything.com/work/%s";
+
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *

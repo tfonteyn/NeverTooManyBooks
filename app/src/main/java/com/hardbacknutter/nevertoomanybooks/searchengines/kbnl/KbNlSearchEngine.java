@@ -65,6 +65,8 @@ public class KbNlSearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.ViewBookByExternalId {
 
+    public static final String BOOK_URL = "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s";
+    public static final String AUTHOR_URL = "https://webggc.oclc.org/cbs/DB=2.37/REL?PPN=%s";
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
      * We have no indication that this site has an image we want, we just try it.
@@ -98,7 +100,7 @@ public class KbNlSearchEngine
      * param 2: the set number (part of the site session params).
      * Param 3: the SHW part of the url as found in a multi-result.
      */
-    private static final String BOOK_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
+    private static final String MULTI_RESULT_BOOK_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
 
     /** Fallback only, we should always extract it from the url. */
     private static final String DEFAULT_DB_VERSION = "2.37";
@@ -242,7 +244,7 @@ public class KbNlSearchEngine
             if (show != null && !show.isEmpty()) {
                 book.clearData();
                 final String url2 = getHostUrl(context)
-                                    + String.format(BOOK_URL, dbVersion, setNr, show);
+                                    + String.format(MULTI_RESULT_BOOK_URL, dbVersion, setNr, show);
                 futureHttpGet.get(url2, (con, is) -> handleResponse(is, parser, handler, book));
             }
         } catch (@NonNull final IOException e) {
