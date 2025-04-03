@@ -718,7 +718,7 @@ public class StripInfoSearchEngine
         // in place to guard against website changes.
         if (!url.isEmpty() && !url.endsWith("i=0") && !url.endsWith("mature.png")) {
 
-            final Optional<String> oFileSpec = saveImage(context, url, bookId, cIdx, null);
+            final Optional<String> oFileSpec = saveImage(context, url, null, bookId, cIdx, null);
             if (oFileSpec.isPresent()) {
                 // Some back covers will return the "no cover available" image regardless.
                 // Sadly, we need to check explicitly after the download.

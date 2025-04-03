@@ -1394,7 +1394,7 @@ public class OpenLibrarySearchEngine
             getEngineId().getConfig().getThrottler().waitUntilRequestAllowed(
                     COVER_BY_ISBN_REQUEST_DELAY);
         }
-        return saveImage(context, url, id, cIdx, size);
+        return saveImage(context, url, null, id, cIdx, size);
     }
 
     @NonNull

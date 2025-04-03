@@ -673,7 +673,8 @@ public class BolSearchEngine
         for (final String key : FRONT_COVER_KEYS) {
             final String coverUrl = currentItem.optString(key);
             if (!coverUrl.isEmpty()) {
-                final Optional<String> oFileSpec = saveImage(context, coverUrl, bookId, 0, null);
+                final Optional<String> oFileSpec = saveImage(context, coverUrl, null, bookId, 0,
+                                                             null);
                 if (oFileSpec.isPresent()) {
                     CoverFileSpecArray.setFileSpec(book, 0, oFileSpec.get());
                     // only attempt to get the back-cover if we got a front-cover
@@ -681,7 +682,7 @@ public class BolSearchEngine
                     if (fetchCovers.length > 1 && fetchCovers[1]) {
                         final String url = currentItem.optString("backImageUrl");
                         if (!url.isEmpty()) {
-                            saveImage(context, url, bookId, 1, null).ifPresent(
+                            saveImage(context, url, null, bookId, 1, null).ifPresent(
                                     fs -> CoverFileSpecArray.setFileSpec(book, 1, fs));
                         }
                     }

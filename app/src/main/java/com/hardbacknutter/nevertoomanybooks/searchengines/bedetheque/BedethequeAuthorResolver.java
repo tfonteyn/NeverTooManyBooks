@@ -448,7 +448,7 @@ public class BedethequeAuthorResolver
         if (a != null) {
             final String url = a.attr("href");
             if (!"https://www.bdgest.com/skin/nophoto.png".equals(url)) {
-                return searchEngine.saveImage(context, url, bdtId, 0, null);
+                return searchEngine.saveImage(context, url, null, bdtId, 0, null);
             }
         }
         return Optional.empty();

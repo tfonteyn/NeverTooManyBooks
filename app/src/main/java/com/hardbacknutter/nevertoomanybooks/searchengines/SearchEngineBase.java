@@ -39,6 +39,7 @@ import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -418,11 +419,12 @@ public abstract class SearchEngineBase
     /**
      * Convenience method to save an image using the engines specific network configuration.
      *
-     * @param context Current context
-     * @param url     Image file URL
-     * @param bookId  more or less unique id; e.g. isbn or website native id, etc...
-     * @param cIdx    0..n image index
-     * @param size    (optional) size parameter for engines/sites which support one
+     * @param context           Current context
+     * @param url               Image file URL
+     * @param requestProperties optional map
+     * @param bookId            more or less unique id; e.g. isbn or website native id, etc...
+     * @param cIdx              0..n image index
+     * @param size              (optional) size parameter for engines/sites which support one
      *
      * @return File fileSpec, or {@code Optional.empty()} on failure
      *
@@ -432,6 +434,7 @@ public abstract class SearchEngineBase
     @NonNull
     public Optional<String> saveImage(@NonNull final Context context,
                                       @NonNull final String url,
+                                      @Nullable final Map<String, String> requestProperties,
                                       @Nullable final String bookId,
                                       @IntRange(from = 0, to = 1) final int cIdx,
                                       @Nullable final Size size)
@@ -439,7 +442,11 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                imageDownloader = new ImageDownloader(createGetImageRequest(context));
+                final FutureHttpGet<File> httpGet = createGetImageRequest(context);
+                if (requestProperties != null) {
+                    requestProperties.forEach(httpGet::setRequestProperty);
+                }
+                imageDownloader = new ImageDownloader(httpGet);
             }
         }
         final String tempFilename = ImageDownloader.getTempFilename(

@@ -340,7 +340,7 @@ public class KbNlSearchEngine
             }
 
             final String url = String.format(BASE_URL_COVERS, isbn, sizeParam);
-            return saveImage(context, url, isbn, cIdx, size);
+            return saveImage(context, url, null, isbn, cIdx, size);
         }
         return Optional.empty();
     }

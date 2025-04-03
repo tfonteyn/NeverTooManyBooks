@@ -700,7 +700,7 @@ public class DoubanSearchEngine
         if (src.isEmpty()) {
             return Optional.empty();
         }
-        return saveImage(context, src, bookId, cIdx, null);
+        return saveImage(context, src, null, bookId, cIdx, null);
     }
 
     @NonNull

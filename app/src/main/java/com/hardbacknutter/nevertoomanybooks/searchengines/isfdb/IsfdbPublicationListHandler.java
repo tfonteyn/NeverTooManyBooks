@@ -400,7 +400,7 @@ class IsfdbPublicationListHandler
                         }
                         try {
                             final String isbn = book.getString(DBKey.ISBN);
-                            searchEngine.saveImage(context, imageUrl, isbn, 0, null)
+                            searchEngine.saveImage(context, imageUrl, null, isbn, 0, null)
                                         .ifPresent(fileSpec -> CoverFileSpecArray
                                                 .setFileSpec(book, 0, fileSpec));
 

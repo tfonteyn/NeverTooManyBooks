@@ -720,7 +720,7 @@ public class AmazonSearchEngine
             url = srcUrl;
         }
 
-        return saveImage(context, url, bookId, cIdx, null);
+        return saveImage(context, url, null, bookId, cIdx, null);
     }
 
     @NonNull

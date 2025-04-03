@@ -580,7 +580,7 @@ public class GoogleBooksSearchEngine
         }
 
         if (oUrl.isPresent()) {
-            return saveImage(context, oUrl.get(), isbn, 0, size);
+            return saveImage(context, oUrl.get(), null, isbn, 0, size);
         }
         return Optional.empty();
     }

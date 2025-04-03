@@ -367,7 +367,7 @@ public class LastDodoSearchEngine
                                          .replace("/ld_thumb1/", "/ld_medium/");
                 // use for lambda
                 final int tmpIdx = cIdx;
-                saveImage(context, url, isbn, cIdx, null).ifPresent(
+                saveImage(context, url, null, isbn, cIdx, null).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, tmpIdx, fileSpec));
             }
         }
