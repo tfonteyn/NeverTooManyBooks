@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,6 +101,7 @@ public abstract class JsoupSearchEngineBase
             if (jsoupLoader == null) {
                 jsoupLoader = new JsoupLoader(createGetDocumentRequest(context));
                 jsoupLoader.setCharSetName(charSetName);
+                jsoupLoader.setSslContext(getSslContext());
             }
             return jsoupLoader.loadDocument(context, url, requestProperties);
 

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.Map;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLProtocolException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -63,6 +64,8 @@ public class JsoupLoader {
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
     private String charSetName;
+    @Nullable
+    private SSLContext sslContext;
 
     /**
      * Constructor.
@@ -81,6 +84,10 @@ public class JsoupLoader {
      */
     public void setCharSetName(@Nullable final String charSetName) {
         this.charSetName = charSetName;
+    }
+
+    public void setSslContext(@Nullable final SSLContext sslContext) {
+        this.sslContext = sslContext;
     }
 
     /**
@@ -140,6 +147,7 @@ public class JsoupLoader {
             try {
                 // Don't retry if the initial connection fails...
                 futureHttpGet.setRetryCount(0);
+                futureHttpGet.setSSLContext(sslContext);
 
                 if (requestProperties != null) {
                     requestProperties.forEach(futureHttpGet::setRequestProperty);

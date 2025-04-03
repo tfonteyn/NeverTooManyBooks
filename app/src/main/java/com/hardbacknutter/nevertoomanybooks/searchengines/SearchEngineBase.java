@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -72,6 +73,8 @@ public abstract class SearchEngineBase
 
     @NonNull
     private final SearchEngineConfig config;
+    @Nullable
+    private SSLContext sslContext;
 
     /**
      * Set by a client or from within the task.
@@ -229,6 +232,15 @@ public abstract class SearchEngineBase
         return cancelRequested.get() || caller == null || caller.isCancelled();
     }
 
+    protected void setSslContext(@Nullable final SSLContext sslContext) {
+        this.sslContext = sslContext;
+    }
+
+    @Nullable
+    protected SSLContext getSslContext() {
+        return sslContext;
+    }
+
     /**
      * Convenience method which uses the engines specific network configuration
      * to create a suitable {@link FutureHttpHead}.
@@ -246,6 +258,7 @@ public abstract class SearchEngineBase
         httpHead.setConnectTimeout(config.getConnectTimeoutInMs(context))
                 .setReadTimeout(config.getReadTimeoutInMs(context))
                 .setThrottler(config.getThrottler())
+                .setSSLContext(sslContext)
                 .enableLogging(config.isLogHttpGetRequests(context));
         return httpHead;
     }
@@ -348,6 +361,7 @@ public abstract class SearchEngineBase
         httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
                .setReadTimeout(config.getReadTimeoutInMs(context))
                .setThrottler(config.getThrottler())
+               .setSSLContext(sslContext)
                .enableLogging(config.isLogHttpGetRequests(context));
         return httpGet;
     }
