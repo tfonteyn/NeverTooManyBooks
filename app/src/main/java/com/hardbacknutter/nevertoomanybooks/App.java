@@ -168,7 +168,9 @@ public class App
                 .withApplicationLogFile(LOG_DIR + File.separatorChar + LOG_FILE)
                 .withApplicationLogFileLines(ACRA_LOGFILE_LINES)
                 // regex's
-                .withExcludeMatchingSharedPreferencesKeys(".*password.*", ".*host\\.user.*")
+                .withExcludeMatchingSharedPreferencesKeys(".*password.*",
+                                                          ".*host\\.user.*",
+                                                          ".*api\\.token.*")
                 .withReportContent(
                         // Device display,
                         // while not essential for crashes, we still like to get
