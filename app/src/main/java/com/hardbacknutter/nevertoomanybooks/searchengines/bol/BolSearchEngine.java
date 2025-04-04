@@ -36,6 +36,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -45,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -200,7 +203,9 @@ public class BolSearchEngine
 
         final String url = getHostUrl(context) + String.format(BY_ISBN, getCountry(context),
                                                                validIsbn);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadDocument(context, url, Map.of(
+                HttpConstants.REFERER,
+                "https://www.bol.com/" + getCountry(context) + "/nl/"));
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -238,7 +243,9 @@ public class BolSearchEngine
         }
 
         final String url = getHostUrl(context) + String.format(BY_TEXT, getCountry(context), words);
-        final Document document = loadDocument(context, url, null);
+        final Document document = loadDocument(context, url, Map.of(
+                HttpConstants.REFERER,
+                "https://www.bol.com/" + getCountry(context) + "/nl/"));
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, book);
@@ -279,9 +286,22 @@ public class BolSearchEngine
                 if (url.startsWith("/")) {
                     url = getHostUrl(context) + url;
                 }
-                final Document redirected = loadDocument(context, url, null);
+                final Document redirected = loadDocument(context, url,
+                                                         Map.of(HttpConstants.REFERER,
+                                                                document.location()));
                 if (!isCancelled()) {
                     parse(context, redirected, fetchCovers, book);
+                }
+            }
+        } else {
+            final Element script = document.selectFirst("script");
+            if (script != null) {
+                final String url = script.attr("src");
+                if (url.startsWith("/.well-known")) {
+                    throw new SearchException(getEngineId(),
+                                              new HttpForbiddenException(
+                                                      getEngineId().getLabelResId(),
+                                                      "well-known", null, document.location()));
                 }
             }
         }
