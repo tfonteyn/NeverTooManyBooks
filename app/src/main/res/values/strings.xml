@@ -2082,4 +2082,11 @@
     <string name="lbl_book_uri">Book URL</string>
     <string name="lbl_author_uri">Author URL</string>
 
+    <!-- NOT FINAL, DO NOT TRANSLATE YET
+        Param 1: name of the website with a url to the registration page
+        Param 2: will be set to "Learn more" with a url to the documentation;
+    -->
+    <string name="info_registration_benefits"
+            translatable="false">This feature benefits from registration at %1$s.\nThis is <b>optional</b>. %2$s</string>
+
 </resources>

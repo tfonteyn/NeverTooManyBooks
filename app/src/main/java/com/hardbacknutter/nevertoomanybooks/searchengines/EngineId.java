@@ -274,10 +274,6 @@ public enum EngineId
                LastDodoSearchEngine.class,
                true),
 
-    /**
-     * LibraryThing has completely disabled their API's and we do NOT search on their site.
-     * Only used for {@link SearchEngine.ViewBookByExternalId}.
-     */
     LibraryThing("librarything",
                  R.string.site_library_thing,
                  List.of(R.string.site_description_english_and_more,
@@ -285,7 +281,7 @@ public enum EngineId
                  "https://www.librarything.com",
                  Locale.US,
                  LibraryThingSearchEngine.class,
-                 true),
+                 BuildConfig.ENABLE_LIBRARYTHING),
 
     /** All genres. */
     OpenLibrary("openlibrary",
@@ -636,8 +632,12 @@ public enum EngineId
                 }
 
                 // All sites unless added above
+                if (BuildConfig.ENABLE_LIBRARYTHING) {
+                    type.addSite(LibraryThing, true);
+                }
                 type.addSite(OpenLibrary, true);
                 type.addSite(Isfdb, true);
+
                 if (!isChinese) {
                     type.addSite(Douban, false);
                 }
