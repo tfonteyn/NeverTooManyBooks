@@ -368,7 +368,7 @@ public class OpenLibrarySearchEngine
 
             // "/books/OL22853304M.json"
             final String editionUrl = getHostUrl(context) + key + ".json";
-            response = futureHttpGet.getAsString(url, (con, s) -> s);
+            response = futureHttpGet.getAsString(editionUrl, (con, s) -> s);
 
             parse(context, new JSONObject(response), fetchCovers, book);
 
