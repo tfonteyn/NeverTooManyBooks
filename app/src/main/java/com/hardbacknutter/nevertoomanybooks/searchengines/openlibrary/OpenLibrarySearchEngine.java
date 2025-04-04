@@ -93,7 +93,8 @@ public class OpenLibrarySearchEngine
     public static final String SITE_URL = "https://openlibrary.org";
     public static final String BOOK_URL = "https://openlibrary.org/books/%s";
     public static final String AUTHOR_URL = "https://openlibrary.org/authors/%s";
-
+    static final String PK_LOGIN_TO_SEARCH = EngineId.OpenLibrary.getPreferenceKey()
+                                             + ".login.to.search";
     private static final String BASE_BOOK_URL = "/search.json?"
                                                 + "q=%1$s"
                                                 + "&fields=key,editions";
@@ -149,8 +150,6 @@ public class OpenLibrarySearchEngine
             Map.entry("amazon.co.uk_asin", Identifier.SID_ASIN),
             Map.entry("oclc_numbers", Identifier.SID_OCLC)
     );
-    static final String PK_LOGIN_TO_SEARCH = EngineId.OpenLibrary.getPreferenceKey()
-                                      + ".login.to.search";
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @NonNull
     private final CookieManager cookieManager;
@@ -238,17 +237,12 @@ public class OpenLibrarySearchEngine
         final Book book = new Book();
 
         final String url = getHostUrl(context) + String.format(SEARCH_BY_EXTERNAL_ID, externalId);
-
-        futureHttpGet = createGetDocumentRequest(context);
         try {
-            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
-
+            final String response = loadDocument(context, url);
             parse(context, new JSONObject(response), fetchCovers, book);
 
         } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
-        } finally {
-            futureHttpGet = null;
         }
 
         Series.checkForSeriesNameInTitle(book);
@@ -298,6 +292,20 @@ public class OpenLibrarySearchEngine
         return book;
     }
 
+    @NonNull
+    private String loadDocument(@NonNull final Context context,
+                                @NonNull final String url)
+            throws StorageException, SearchException {
+        futureHttpGet = createGetDocumentRequest(context);
+        try {
+            return futureHttpGet.getAsString(url, (con, s) -> s);
+        } catch (@NonNull final IOException e) {
+            throw new SearchException(getEngineId(), e);
+        } finally {
+            futureHttpGet = null;
+        }
+    }
+
     /**
      * Fetch and parse.
      *
@@ -317,13 +325,9 @@ public class OpenLibrarySearchEngine
                            @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        futureHttpGet = createGetDocumentRequest(context);
+        String response = loadDocument(context, url);
 
         try {
-            // get and store the result into a string.
-            String response = futureHttpGet.getAsString(url, (con, s) -> s);
-
-
             final JSONObject jsonObject = new JSONObject(response);
             int numFound = jsonObject.optInt("numFound");
             if (numFound < 1) {
@@ -368,14 +372,12 @@ public class OpenLibrarySearchEngine
 
             // "/books/OL22853304M.json"
             final String editionUrl = getHostUrl(context) + key + ".json";
-            response = futureHttpGet.getAsString(editionUrl, (con, s) -> s);
+            response = loadDocument(context, editionUrl);
 
             parse(context, new JSONObject(response), fetchCovers, book);
 
-        } catch (@NonNull final IOException | JSONException e) {
+        } catch (@NonNull final JSONException | IOException e) {
             throw new SearchException(getEngineId(), e);
-        } finally {
-            futureHttpGet = null;
         }
 
         Series.checkForSeriesNameInTitle(book);
@@ -735,19 +737,13 @@ public class OpenLibrarySearchEngine
      * @param authorResolvers to use
      * @param book            destination
      *
-     * @throws IOException      when fetching the Author details fails
      * @throws StorageException on storage related failures
      */
     private void parseAuthors(@NonNull final Context context,
                               @NonNull final JSONArray a,
                               @NonNull final List<AuthorResolver> authorResolvers,
                               @NonNull final Book book)
-            throws StorageException, IOException, SearchException, CredentialsException {
-
-        // depending how we got here, we might not have GET build
-        if (futureHttpGet == null) {
-            futureHttpGet = createGetDocumentRequest(context);
-        }
+            throws StorageException, SearchException, CredentialsException {
 
         JSONObject element;
         for (int ai = 0; ai < a.length(); ai++) {
@@ -756,7 +752,7 @@ public class OpenLibrarySearchEngine
                 final String key = element.optString("key", null);
                 if (key != null && !key.isEmpty()) {
                     final String authorUrl = getHostUrl(context) + key + ".json";
-                    final String response = futureHttpGet.getAsString(authorUrl, (con, s) -> s);
+                    final String response = loadDocument(context, authorUrl);
                     final JSONObject jsonObject = new JSONObject(response);
                     final String name = jsonObject.optString("name", null);
                     if (name != null && !name.isEmpty()) {
@@ -1063,27 +1059,20 @@ public class OpenLibrarySearchEngine
                                                                  @NonNull final String validIsbn)
             throws SearchException {
 
-        futureHttpGet = createGetDocumentRequest(context);
-
         String url = getHostUrl(context) + "/isbn/" + validIsbn + ".json";
-
-        String response;
         try {
-            // get and store the result into a string.
-            response = futureHttpGet.getAsString(url, (con, s) -> s);
+            String response = loadDocument(context, url);
 
             final JSONObject jsonObject = new JSONObject(response);
             final JSONArray works = jsonObject.optJSONArray("works");
             if (works != null && !works.isEmpty()) {
                 final String worksKey = works.getJSONObject(0).optString("key");
                 url = getHostUrl(context) + worksKey + "/editions.json";
-                response = futureHttpGet.getAsString(url, (con, s) -> s);
+                response = loadDocument(context, url);
                 return parseEditions(new JSONObject(response));
             }
-        } catch (@NonNull final StorageException | IOException | JSONException e) {
+        } catch (@NonNull final StorageException | JSONException e) {
             throw new SearchException(getEngineId(), e);
-        } finally {
-            futureHttpGet = null;
         }
 
         return List.of();
