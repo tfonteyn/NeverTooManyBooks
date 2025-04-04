@@ -50,19 +50,38 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
+import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.NooSFere;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WikiData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
@@ -95,10 +114,20 @@ public final class LegacyUpgrades {
     /** Genre string migration splitter characters. */
     private static final Pattern GENRE_SPLITTER_PATTERN = Pattern.compile("[/,;>]");
 
+    private static final String DELETE_FROM_ = "DELETE FROM ";
+    private static final String INSERT_INTO_ = "INSERT INTO ";
+    private static final String SELECT_ = "SELECT ";
+    private static final String UPDATE_ = "UPDATE ";
+    private static final String _AND_ = " AND ";
+    private static final String _FROM_ = " FROM ";
+    private static final String _GROUP_BY_ = " GROUP BY ";
+    private static final String _SET_ = " SET ";
+    private static final String _WHERE_ = " WHERE ";
+
     private LegacyUpgrades() {
     }
 
-    static void migrateV19Styles(@NonNull final Context context,
+    static void v19migrateStyles(@NonNull final Context context,
                                  @NonNull final SQLiteDatabase db) {
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -137,14 +166,14 @@ public final class LegacyUpgrades {
         final List<String> uuids = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
                 "SELECT uuid FROM " + TBL_BOOKLIST_STYLES.getName()
-                + " WHERE " + DBKey.STYLE.TYPE + "=" + Style.Type.User.getId(), null)) {
+                + _WHERE_ + DBKey.STYLE.TYPE + "=" + Style.Type.User.getId(), null)) {
             while (cursor.moveToNext()) {
                 uuids.add(cursor.getString(0));
             }
         }
 
         try (SQLiteStatement stmt = db.compileStatement(
-                "UPDATE " + TBL_BOOKLIST_STYLES.getName() + " SET "
+                UPDATE_ + TBL_BOOKLIST_STYLES.getName() + _SET_
                 + DBKey.STYLE.NAME + "=?, "
 
                 + DBKey.STYLE.GROUPS + "=?,"
@@ -164,7 +193,7 @@ public final class LegacyUpgrades {
                 + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY + "=?,"
                 + DBKey.STYLE.BOOK_LIST_FIELD_VISIBILITY + "=?"
 
-                + " WHERE " + DBKey.STYLE.UUID + "=?")) {
+                + _WHERE_ + DBKey.STYLE.UUID + "=?")) {
 
             // Preference keys are hardcoded, as this is for backwards compatibility.
             uuids.forEach(uuid -> {
@@ -255,7 +284,7 @@ public final class LegacyUpgrades {
         }
     }
 
-    static void migrateV21SearchEnginePrefs(final Context context) {
+    static void v21migrateSearchEnginePrefs(final Context context) {
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
 
@@ -297,14 +326,14 @@ public final class LegacyUpgrades {
               });
     }
 
-    static void removeDuplicateAuthorsV23(@NonNull final SQLiteDatabase db) {
+    static void v23removeDuplicateAuthors(@NonNull final SQLiteDatabase db) {
 
         // find the names for duplicate author; i.e. identical family and given names.
         final List<Pair<String, String>> authors = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
-                "SELECT " + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
-                + " FROM " + TBL_AUTHORS.getName()
-                + " GROUP BY " + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
+                SELECT_ + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
+                + _FROM_ + TBL_AUTHORS.getName()
+                + _GROUP_BY_ + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
                 + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
             while (cursor.moveToNext()) {
                 authors.add(new Pair<>(cursor.getString(0), cursor.getString(1)));
@@ -318,9 +347,9 @@ public final class LegacyUpgrades {
         final List<List<Long>> authorDuplicates = new ArrayList<>();
         for (final Pair<String, String> a : authors) {
             try (Cursor cursor = db.rawQuery(
-                    "SELECT " + DBKey.PK_ID + " FROM " + TBL_AUTHORS.getName()
-                    + " WHERE " + DBKey.AUTHOR.FAMILY_NAME + "=?"
-                    + " AND " + DBKey.AUTHOR.GIVEN_NAMES + "=?",
+                    SELECT_ + DBKey.PK_ID + _FROM_ + TBL_AUTHORS.getName()
+                    + _WHERE_ + DBKey.AUTHOR.FAMILY_NAME + "=?"
+                    + _AND_ + DBKey.AUTHOR.GIVEN_NAMES + "=?",
                     new String[]{a.first, a.second})) {
                 final List<Long> ids = new ArrayList<>();
                 while (cursor.moveToNext()) {
@@ -348,9 +377,9 @@ public final class LegacyUpgrades {
 
             String sql;
 
-            sql = "UPDATE " + DBDefinitions.TBL_BOOK_AUTHOR.getName()
-                  + " SET " + DBKey.FK_AUTHOR + "=" + keep
-                  + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+            sql = UPDATE_ + DBDefinitions.TBL_BOOK_AUTHOR.getName()
+                  + _SET_ + DBKey.FK_AUTHOR + "=" + keep
+                  + _WHERE_ + DBKey.FK_AUTHOR + " IN (" + ids + ')';
             //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
@@ -359,8 +388,8 @@ public final class LegacyUpgrades {
                 throw e;
             }
 
-            sql = "UPDATE " + TBL_TOC_ENTRIES.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
-                  + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+            sql = UPDATE_ + TBL_TOC_ENTRIES.getName() + _SET_ + DBKey.FK_AUTHOR + "=" + keep
+                  + _WHERE_ + DBKey.FK_AUTHOR + " IN (" + ids + ')';
             //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
@@ -369,8 +398,8 @@ public final class LegacyUpgrades {
                 throw e;
             }
 
-            sql = "DELETE FROM " + TBL_AUTHORS.getName()
-                  + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
+            sql = DELETE_FROM_ + TBL_AUTHORS.getName()
+                  + _WHERE_ + DBKey.PK_ID + " IN (" + ids + ')';
             //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
@@ -381,13 +410,13 @@ public final class LegacyUpgrades {
         }
     }
 
-    static void removeDuplicateTocEntriesV23(@NonNull final SQLiteDatabase db) {
+    static void v23removeDuplicateTocEntries(@NonNull final SQLiteDatabase db) {
         // find the duplicate tocs; i.e. identical author and title.
         final List<Pair<Long, String>> entries = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
-                "SELECT " + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
-                + " FROM " + TBL_TOC_ENTRIES
-                + " GROUP BY " + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
+                SELECT_ + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
+                + _FROM_ + TBL_TOC_ENTRIES
+                + _GROUP_BY_ + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
                 + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
             while (cursor.moveToNext()) {
                 entries.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
@@ -401,9 +430,9 @@ public final class LegacyUpgrades {
         final List<List<Long>> entryDuplicates = new ArrayList<>();
         for (final Pair<Long, String> toc : entries) {
             try (Cursor cursor = db.rawQuery(
-                    "SELECT " + DBKey.PK_ID + " FROM " + TBL_TOC_ENTRIES
-                    + " WHERE " + DBKey.FK_AUTHOR + "=?"
-                    + " AND " + DBKey.TITLE + "=?",
+                    SELECT_ + DBKey.PK_ID + _FROM_ + TBL_TOC_ENTRIES
+                    + _WHERE_ + DBKey.FK_AUTHOR + "=?"
+                    + _AND_ + DBKey.TITLE + "=?",
                     new String[]{String.valueOf(toc.first), toc.second})) {
                 final List<Long> ids = new ArrayList<>();
                 while (cursor.moveToNext()) {
@@ -431,9 +460,9 @@ public final class LegacyUpgrades {
 
             String sql;
 
-            sql = "UPDATE " + DBDefinitions.TBL_BOOK_TOC_ENTRIES
-                  + " SET " + DBKey.FK_TOC_ENTRY + "=" + keep
-                  + " WHERE " + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
+            sql = UPDATE_ + DBDefinitions.TBL_BOOK_TOC_ENTRIES
+                  + _SET_ + DBKey.FK_TOC_ENTRY + "=" + keep
+                  + _WHERE_ + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
             //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
@@ -443,8 +472,8 @@ public final class LegacyUpgrades {
                 throw e;
             }
 
-            sql = "DELETE FROM " + TBL_TOC_ENTRIES
-                  + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
+            sql = DELETE_FROM_ + TBL_TOC_ENTRIES
+                  + _WHERE_ + DBKey.PK_ID + " IN (" + ids + ')';
             //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
@@ -460,7 +489,7 @@ public final class LegacyUpgrades {
      *
      * @param prefs to migrate
      */
-    private static void migrateV24GlobalFieldVisibility(@NonNull final SharedPreferences prefs) {
+    private static void v24migrateGlobalFieldVisibility(@NonNull final SharedPreferences prefs) {
         final Pattern dot = Pattern.compile("\\.");
         final List<String> oldVisKeys = prefs.getAll()
                                              .keySet()
@@ -481,7 +510,7 @@ public final class LegacyUpgrades {
         }
     }
 
-    static void migrateV28ReorderPref(@NonNull final Context context,
+    static void v28migrateReorderPref(@NonNull final Context context,
                                       @NonNull final SQLiteDatabase db) {
         final int value =
                 PreferenceManager.getDefaultSharedPreferences(context)
@@ -491,20 +520,48 @@ public final class LegacyUpgrades {
         // We apply the setting to ALL styles as it was the default for all.
         // (including the built-in which is pointless but easier)
         try (SQLiteStatement stmt = db.compileStatement(
-                "UPDATE " + TBL_BOOKLIST_STYLES.getName() + " SET "
+                UPDATE_ + TBL_BOOKLIST_STYLES.getName() + _SET_
                 + DBKey.STYLE.TITLE_SHOW_REORDERED + "=?")) {
             stmt.bindLong(1, value);
             stmt.executeUpdateDelete();
         }
     }
 
-    static void migrateV35Sids(@NonNull final SQLiteDatabase db) {
+    /**
+     * AS USED FOR THE UPGRADE FROM V33 TO V34 ONLY.
+     * This creates/expects all columns to be identical except for the sqlite datatype.
+     *
+     * @param db Database Access
+     * @param td table
+     */
+    static void v34RecreateTable(@NonNull final SQLiteDatabase db,
+                                 @NonNull final TableDefinition td) {
+        final String dstTableName = "copyOf" + td.getName();
+        db.execSQL(td.getCreateStatement(dstTableName, true));
+
+        final List<String> srcColumns = td.getTableInfo(db)
+                                          .getColumns()
+                                          .stream()
+                                          .map(ColumnInfo::getName)
+                                          .collect(Collectors.toList());
+
+        final List<String> dstColumns = new ArrayList<>(srcColumns);
+
+        db.execSQL(
+                "INSERT INTO " + dstTableName + " (" + String.join(",", dstColumns) + ")"
+                + " SELECT " + String.join(",", srcColumns) + " FROM " + td.getName());
+
+        db.execSQL("DROP TABLE " + td.getName());
+        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + td.getName());
+    }
+
+    static void v35migrateSids(@NonNull final SQLiteDatabase db) {
         final Set<String> legacyKeys = IDENTIFIERS.keySet();
         final Collection<String> legacyValues = IDENTIFIERS.values();
 
         final Map<String, Integer> predef = new HashMap<>();
-        final String predefSql = "SELECT " + DBKey.PK_ID + ',' + DBKey.IDENTIFIERS.KEY
-                                 + " FROM " + DBDefinitions.TBL_IDENTIFIERS.getName();
+        final String predefSql = SELECT_ + DBKey.PK_ID + ',' + DBKey.IDENTIFIERS.KEY
+                                 + _FROM_ + DBDefinitions.TBL_IDENTIFIERS.getName();
         try (Cursor cursor = db.rawQuery(predefSql, null)) {
             while (cursor.moveToNext()) {
                 final int id = cursor.getInt(0);
@@ -513,15 +570,15 @@ public final class LegacyUpgrades {
             }
         }
 
-        final String sqlSelect = "SELECT " + DBKey.PK_ID
+        final String sqlSelect = SELECT_ + DBKey.PK_ID
                                  + ',' + String.join(",", legacyKeys)
-                                 + " FROM " + TBL_BOOKS.getName()
-                                 + " WHERE "
+                                 + _FROM_ + TBL_BOOKS.getName()
+                                 + _WHERE_
                                  + legacyKeys.stream()
                                              .map(c -> "(" + c + " IS NOT NULL)")
                                              .collect(Collectors.joining(" OR "));
 
-        final String sqlInsert = "INSERT INTO " + DBDefinitions.TBL_BOOK_IDENTIFIER.getName()
+        final String sqlInsert = INSERT_INTO_ + DBDefinitions.TBL_BOOK_IDENTIFIER.getName()
                                  + '(' + DBKey.FK_BOOK
                                  + ',' + DBKey.FK_IDENTIFIER
                                  + ',' + DBKey.IDENTIFIERS.SID
@@ -548,24 +605,24 @@ public final class LegacyUpgrades {
         }
 
         // null old columns, we'll delete them in a future version
-        db.execSQL("UPDATE " + TBL_BOOKS + " SET "
+        db.execSQL(UPDATE_ + TBL_BOOKS + _SET_
                    + legacyKeys.stream().map(domain -> domain + "=NULL")
                                .collect(Collectors.joining(",")));
     }
 
-    static void migrateV35Genre(@NonNull final SQLiteDatabase db) {
+    static void v35migrateGenres(@NonNull final SQLiteDatabase db) {
 
         // all books with a genre set
-        final String sqlSelect = "SELECT " + DBKey.PK_ID + ',' + DBKEY_GENRE
-                                 + " FROM " + TBL_BOOKS.getName()
-                                 + " WHERE " + DBKEY_GENRE + "<>''";
+        final String sqlSelect = SELECT_ + DBKey.PK_ID + ',' + DBKEY_GENRE
+                                 + _FROM_ + TBL_BOOKS.getName()
+                                 + _WHERE_ + DBKEY_GENRE + "<>''";
 
         final String sqlInsertTag =
-                "INSERT INTO " + DBDefinitions.TBL_TAGS.getName()
+                INSERT_INTO_ + DBDefinitions.TBL_TAGS.getName()
                 + '(' + DBKey.TAGS.TAG + ") VALUES (?)";
 
         final String sqlLinkBook =
-                "INSERT INTO " + DBDefinitions.TBL_BOOK_TAG.getName()
+                INSERT_INTO_ + DBDefinitions.TBL_BOOK_TAG.getName()
                 + '(' + DBKey.FK_BOOK
                 + ',' + DBKey.FK_TAG
                 + ") VALUES(?,?)";
@@ -607,12 +664,103 @@ public final class LegacyUpgrades {
         }
 
         // empty old column, we'll delete it in a future version
-        db.execSQL("UPDATE " + TBL_BOOKS.getName() + " SET " + DBKEY_GENRE + "=''");
+        db.execSQL(UPDATE_ + TBL_BOOKS.getName() + _SET_ + DBKEY_GENRE + "=''");
 
         // Remove any genre based filters, they cannot be converted to a tag filter
-        db.execSQL("DELETE FROM " + DBDefinitions.TBL_BOOKSHELF_FILTERS.getName()
-                   + " WHERE " + DBKey.BOOKSHELF.FILTER_NAME + "='" + DBKEY_GENRE + "'");
+        db.execSQL(DELETE_FROM_ + DBDefinitions.TBL_BOOKSHELF_FILTERS.getName()
+                   + _WHERE_ + DBKey.BOOKSHELF.FILTER_NAME + "='" + DBKEY_GENRE + "'");
 
+    }
+
+    static void v39AddIdentifierAuthorUrl(@NonNull final SQLiteDatabase db) {
+        // depending on the install/upgrade path, we might already have
+        // added the AUTHOR_URI column and the identifier updates.
+        final ColumnInfo authorUri = TBL_IDENTIFIERS
+                .getTableInfo(db).getColumn(DBKey.IDENTIFIERS.AUTHOR_URI);
+        if (authorUri == null) {
+            TBL_IDENTIFIERS.alterTableAddColumns(db, DBDefinitions.DOM_IDENTIFIER_AUTHOR_URI);
+
+            // update the Identifiers adding the AuthorUri
+            // We don't check success, the row may have been deleted which is fine
+            try (SQLiteStatement stmt = db.compileStatement(
+                    UPDATE_ + TBL_IDENTIFIERS
+                    + _SET_ + DBKey.IDENTIFIERS.AUTHOR_URI + "=?"
+                    + _WHERE_ + DBKey.IDENTIFIERS.KEY + "=?")) {
+                // see Identifier#createInitialList
+                stmt.bindString(1, BedethequeSearchEngine.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_BEDETHEQUE);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, BNF.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_BNF);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, DnbSearchEngine.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_DNB);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, DoubanSearchEngine.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_DOUBAN);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, FantLab.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_FANTLAB);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, GoodreadsSearchEngine.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_GOODREADS);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, IsfdbSearchEngine.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_ISFDB);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, KbNlSearchEngine.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_KBNL);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, LastDodoSearchEngine.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_LAST_DODO_NL);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, FantaScienza.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_NILF);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, NooSFere.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_NOOSFERE);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, WorldCat.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_OCLC);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, OpenLibrarySearchEngine.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_OPEN_LIBRARY);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, StripInfoSearchEngine.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_STRIP_INFO);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, TerceraFundacion.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_TERCERA_FUNDACION);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, "%s");
+                stmt.bindString(2, Identifier.SID_URI);
+                stmt.executeUpdateDelete();
+                stmt.bindString(1, WikiData.AUTHOR_URL);
+                stmt.bindString(2, Identifier.SID_WIKIDATA);
+                stmt.executeUpdateDelete();
+            }
+        }
+    }
+
+    static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
+                                              @NonNull final SQLiteDatabase db) {
+        final boolean install;
+        try (SQLiteStatement stmt = db.compileStatement(
+                "SELECT COUNT(" + DBKey.STYLE.TYPE + ") FROM " + TBL_BOOKLIST_STYLES
+                + _WHERE_ + DBKey.STYLE.TYPE + "=2")) {
+            install = 0 == stmt.simpleQueryForLong();
+        }
+
+        if (install) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final GlobalStyle style = GlobalStyle.createDefault();
+            style.setSortAuthorByGivenName(
+                    prefs.getBoolean(PK_SORT_AUTHOR_NAME_GIVEN_FIRST, false));
+            style.setShowAuthorByGivenName(
+                    prefs.getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false));
+
+            StyleDaoImpl.insertGlobalDefaults(db, style);
+        }
     }
 
     /**
@@ -649,7 +797,7 @@ public final class LegacyUpgrades {
 
         // This will take care of old keys in general, but will
         // ALSO copy the FieldVisibility.PK_LOANS which is still in use.
-        migrateV24GlobalFieldVisibility(prefs);
+        v24migrateGlobalFieldVisibility(prefs);
 
         // Now remove all obsolete keys.
         final SharedPreferences.Editor editor = prefs.edit();
@@ -712,25 +860,4 @@ public final class LegacyUpgrades {
         context.deleteSharedPreferences("language2iso3");
     }
 
-    static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
-                                              @NonNull final SQLiteDatabase db) {
-
-        final boolean install;
-        try (SQLiteStatement stmt = db.compileStatement(
-                "SELECT COUNT(" + DBKey.STYLE.TYPE + ") FROM " + TBL_BOOKLIST_STYLES
-                + " WHERE " + DBKey.STYLE.TYPE + "=2")) {
-            install = 0 == stmt.simpleQueryForLong();
-        }
-
-        if (install) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            final GlobalStyle style = GlobalStyle.createDefault();
-            style.setSortAuthorByGivenName(
-                    prefs.getBoolean(PK_SORT_AUTHOR_NAME_GIVEN_FIRST, false));
-            style.setShowAuthorByGivenName(
-                    prefs.getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false));
-
-            StyleDaoImpl.insertGlobalDefaults(db, style);
-        }
-    }
 }

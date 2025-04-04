@@ -718,32 +718,6 @@ public class TableDefinition {
     }
 
     /**
-     * AS USED FOR THE UPGRADE FROM V33 TO V34 ONLY.
-     * This creates/expects all columns to be identical except for the sqlite datatype.
-     *
-     * @param db Database Access
-     */
-    public void recreateV34(@NonNull final SQLiteDatabase db) {
-        final String dstTableName = "copyOf" + name;
-        db.execSQL(getCreateStatement(dstTableName, true));
-
-        final List<String> srcColumns = getTableInfo(db)
-                .getColumns()
-                .stream()
-                .map(ColumnInfo::getName)
-                .collect(Collectors.toList());
-
-        final List<String> dstColumns = new ArrayList<>(srcColumns);
-
-        db.execSQL(
-                "INSERT INTO " + dstTableName + " (" + String.join(",", dstColumns) + ")"
-                + " SELECT " + String.join(",", srcColumns) + " FROM " + name);
-
-        db.execSQL("DROP TABLE " + name);
-        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + name);
-    }
-
-    /**
      * Supported/used table types.
      *
      * @see <a href=https://sqlite.org/fts3.html">https://sqlite.org/fts3.html</a>

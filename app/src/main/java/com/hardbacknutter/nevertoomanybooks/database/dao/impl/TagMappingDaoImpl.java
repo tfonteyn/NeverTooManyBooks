@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -83,8 +82,14 @@ public class TagMappingDaoImpl
         );
     }
 
-    public static void onPostCreate(@NonNull final Context context,
-                                    @NonNull final SQLiteDatabase db) {
+    /**
+     * Run at <strong>installation</strong> time to add the predefined mappings to the database.
+     *
+     * @param db Database Access
+     *
+     * @throws SQLException on failure
+     */
+    public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Pair<String, Set<String>> pair : createInitialList()) {
                 doInsert(pair.first, pair.second, stmt);

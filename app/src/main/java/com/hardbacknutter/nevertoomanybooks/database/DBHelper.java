@@ -57,26 +57,11 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.NooSFere;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Porbase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WikiData;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -366,7 +351,7 @@ public class DBHelper
 
         BookshelfDaoImpl.onPostCreate(context, db);
         IdentifierDaoImpl.onPostCreate(context, db);
-        TagMappingDaoImpl.onPostCreate(context, db);
+        TagMappingDaoImpl.onPostCreate(db);
 
         //IMPORTANT: withDomainConstraints MUST BE false (FTS columns don't use a type/constraints)
         TBL_FTS_BOOKS.create(db, false);
@@ -448,13 +433,13 @@ public class DBHelper
             TBL_BOOKSHELF_FILTERS.create(db, true);
         }
         if (oldVersion < 19) {
-            LegacyUpgrades.migrateV19Styles(context, db);
+            LegacyUpgrades.v19migrateStyles(context, db);
         }
         if (oldVersion < 20) {
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_AUTO_UPDATE);
         }
         if (oldVersion < 21) {
-            LegacyUpgrades.migrateV21SearchEnginePrefs(context);
+            LegacyUpgrades.v21migrateSearchEnginePrefs(context);
         }
         if (oldVersion < 22) {
             // remove built-in style ID_DEPRECATED_1
@@ -463,10 +448,10 @@ public class DBHelper
         if (oldVersion < 23) {
             // Up to version 22 we had a bug in how we'd store TOC entries which could create
             // duplicate authors. Fixed in 23 but we need to do a clean up during upgrade.
-            LegacyUpgrades.removeDuplicateAuthorsV23(db);
+            LegacyUpgrades.v23removeDuplicateAuthors(db);
             // as a result of the author cleanup, we now might have duplicate toc entries,
             // same algorithm to clean those up
-            LegacyUpgrades.removeDuplicateTocEntriesV23(db);
+            LegacyUpgrades.v23removeDuplicateTocEntries(db);
 
             // Add pen-name support
             TBL_PSEUDONYM_AUTHOR.create(db, true);
@@ -492,7 +477,7 @@ public class DBHelper
                     db,
                     DBDefinitions.DOM_STYLE_TITLE_SHOW_REORDERED);
 
-            LegacyUpgrades.migrateV28ReorderPref(context, db);
+            LegacyUpgrades.v28migrateReorderPref(context, db);
         }
         if (oldVersion < 29) {
             TBL_STRIPINFO_COLLECTION.alterTableAddColumns(
@@ -518,22 +503,22 @@ public class DBHelper
             db.beginTransaction();
 
             // DBDefinitions.DOM_STYLE_NAME
-            TBL_BOOKLIST_STYLES.recreateV34(db);
+            LegacyUpgrades.v34RecreateTable(db, TBL_BOOKLIST_STYLES);
 
             // DBDefinitions.DOM_BOOKSHELF_NAME
-            TBL_BOOKSHELF.recreateV34(db);
+            LegacyUpgrades.v34RecreateTable(db, TBL_BOOKSHELF);
 
             // DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB, DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB
-            TBL_AUTHORS.recreateV34(db);
+            LegacyUpgrades.v34RecreateTable(db, TBL_AUTHORS);
 
             // DBDefinitions.DOM_SERIES_TITLE_OB
-            TBL_SERIES.recreateV34(db);
+            LegacyUpgrades.v34RecreateTable(db, TBL_SERIES);
 
             // DBDefinitions.DOM_PUBLISHER_NAME_OB
-            TBL_PUBLISHERS.recreateV34(db);
+            LegacyUpgrades.v34RecreateTable(db, TBL_PUBLISHERS);
 
             // DBDefinitions.DOM_TITLE_OB
-            TBL_BOOKS.recreateV34(db);
+            LegacyUpgrades.v34RecreateTable(db, TBL_BOOKS);
 
             db.setTransactionSuccessful();
             db.endTransaction();
@@ -555,14 +540,14 @@ public class DBHelper
             TBL_IDENTIFIERS.create(db, true);
             TBL_BOOK_IDENTIFIER.create(db, true);
             IdentifierDaoImpl.onPostCreate(context, db);
-            LegacyUpgrades.migrateV35Sids(db);
+            LegacyUpgrades.v35migrateSids(db);
 
             TBL_TAG_MAPPINGS.create(db, true);
-            TagMappingDaoImpl.onPostCreate(context, db);
+            TagMappingDaoImpl.onPostCreate(db);
 
             TBL_TAGS.create(db, true);
             TBL_BOOK_TAG.create(db, true);
-            LegacyUpgrades.migrateV35Genre(db);
+            LegacyUpgrades.v35migrateGenres(db);
 
             // Override the user should they have hidden the 'genre' field
             final FieldVisibility globalFieldVisibility = serviceLocator.getGlobalFieldVisibility();
@@ -617,73 +602,9 @@ public class DBHelper
         if (oldVersion < 39) {
             // depending on the install/upgrade path, we might already have
             // added the AUTHOR_URI column and the identifier updates.
-            final ColumnInfo authorUri = TBL_IDENTIFIERS
-                    .getTableInfo(db).getColumn(DBKey.IDENTIFIERS.AUTHOR_URI);
-            if (authorUri == null) {
-                TBL_IDENTIFIERS.alterTableAddColumns(db, DBDefinitions.DOM_IDENTIFIER_AUTHOR_URI);
+            LegacyUpgrades.v39AddIdentifierAuthorUrl(db);
 
-                // update the Identifiers adding the AuthorUri
-                try (SQLiteStatement stmt = db.compileStatement(
-                        "UPDATE " + TBL_IDENTIFIERS
-                        + " SET " + DBKey.IDENTIFIERS.AUTHOR_URI + "=?"
-                        + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
-                    // see Identifier#createInitialList
-                    // we don't check success, the row may have been deleted which is fine
-                    stmt.bindString(1, BedethequeSearchEngine.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_BEDETHEQUE);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, BNF.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_BNF);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, DnbSearchEngine.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_DNB);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, DoubanSearchEngine.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_DOUBAN);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, FantLab.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_FANTLAB);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, GoodreadsSearchEngine.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_GOODREADS);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, IsfdbSearchEngine.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_ISFDB);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, KbNlSearchEngine.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_KBNL);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, LastDodoSearchEngine.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_LAST_DODO_NL);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, FantaScienza.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_NILF);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, NooSFere.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_NOOSFERE);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, WorldCat.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_OCLC);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, OpenLibrarySearchEngine.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_OPEN_LIBRARY);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, StripInfoSearchEngine.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_STRIP_INFO);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, TerceraFundacion.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_TERCERA_FUNDACION);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, "%s");
-                    stmt.bindString(2, Identifier.SID_URI);
-                    stmt.executeUpdateDelete();
-                    stmt.bindString(1, WikiData.AUTHOR_URL);
-                    stmt.bindString(2, Identifier.SID_WIKIDATA);
-                    stmt.executeUpdateDelete();
-                }
-            }
-
-            // likewise, the SID_DATABAZE_KNIH may already exist
+            // add new identifiers
             addIdentifier(context, db, new Identifier(
                     Identifier.SID_DATABAZE_KNIH,
                     Identifier.TYPE_LONG,
@@ -744,7 +665,6 @@ public class DBHelper
         // We have to do this here due to some users skipping updates (see github #30)
         // The issue is that this only works ok if the TBL_BOOKLIST_STYLES contains
         // ALL columns at the time we're executing it.
-        // We do: StyleDaoImpl.insertGlobalDefaults(db, style)
         LegacyUpgrades.insertGlobalStyleIfNotYetDone(context, db);
 
         // Migrate any FieldVisibility keys + remove all obsolete keys
