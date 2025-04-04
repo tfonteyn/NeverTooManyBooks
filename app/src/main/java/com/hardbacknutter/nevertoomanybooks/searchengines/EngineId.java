@@ -566,11 +566,20 @@ public enum EngineId
                 // {@link SearchEngine.ByText}
 
                 // Try to optimize by putting the most-likely-wanted at the top
-                if (isChinese) {
-                    type.addSite(Douban, true);
+                if (isPortuguese) {
+                    type.addSite(BertrandPt, true);
                 }
                 if (isCzech || isSlovak) {
                     type.addSite(DatabazeKnih, true);
+                }
+                if (isGerman) {
+                    type.addSite(Dnb, true);
+                }
+                if (isChinese) {
+                    type.addSite(Douban, true);
+                }
+                if (isDutch) {
+                    type.addSite(KbNl, true);
                 }
 
                 // All sites unless added above
@@ -586,16 +595,22 @@ public enum EngineId
                 type.addSite(StripWebBe, isDutch || isFrench);
                 type.addSite(Bedetheque, isFrench);
 
-                type.addSite(KbNl, isDutch);
                 type.addSite(Bol, isDutch || isFrench);
-                type.addSite(Dnb, isGerman);
-                type.addSite(BertrandPt, isPortuguese);
 
-                if (!isChinese) {
-                    type.addSite(Douban, false);
+                if (!isPortuguese) {
+                    type.addSite(BertrandPt, false);
                 }
                 if (!isCzech && !isSlovak) {
                     type.addSite(DatabazeKnih, false);
+                }
+                if (!isGerman) {
+                    type.addSite(Dnb, false);
+                }
+                if (!isChinese) {
+                    type.addSite(Douban, false);
+                }
+                if (!isDutch) {
+                    type.addSite(KbNl, false);
                 }
                 break;
             }
@@ -615,6 +630,7 @@ public enum EngineId
                 type.addSite(Isfdb, true);
                 type.addSite(OpenLibrary, true);
                 type.addSite(GoogleBooks, true);
+
                 if (!isDutch) {
                     type.addSite(KbNl, false);
                 }
