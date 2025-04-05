@@ -36,7 +36,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -49,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExte
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class SearchBookByExternalIdFragment
@@ -196,9 +194,7 @@ public class SearchBookByExternalIdFragment
             throw new IllegalStateException("Bug: View has no Engine defined");
         }
 
-        //noinspection DataFlowIssue
-        EngineId.promptToRegister(getContext(), List.of(Site.Type.Data.getSite(engineId)),
-                                  "searchByExternalId", () -> updateUI(engineId));
+        updateUI(engineId);
     }
 
     private void updateUI(@NonNull final EngineId engineId) {

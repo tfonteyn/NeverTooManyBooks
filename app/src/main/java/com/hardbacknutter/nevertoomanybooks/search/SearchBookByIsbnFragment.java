@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbn
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -222,16 +221,6 @@ public class SearchBookByIsbnFragment
                 new ISBN.ValidationTextWatcher(vb.lblIsbn, vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
 
-        if (savedInstanceState == null) {
-            //noinspection DataFlowIssue
-            EngineId.promptToRegister(getContext(), coordinator.getSiteList(),
-                                      "searchByIsbn", this::afterOnViewCreated);
-        } else {
-            afterOnViewCreated();
-        }
-    }
-
-    private void afterOnViewCreated() {
         if (vm.isAutoStart()) {
             startScanner();
         }
