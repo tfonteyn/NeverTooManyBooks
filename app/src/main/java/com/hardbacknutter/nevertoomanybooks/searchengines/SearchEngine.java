@@ -26,6 +26,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.Fragment;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -239,8 +240,8 @@ public interface SearchEngine
          * {@link SearchEngine.Login} will NOT be called upon.
          * <p>
          * ViewBookByExternalId functionality should be moved to the EngineId class
-         *  This will eliminate having to create a SearchEngine instance just to open
-         *  a browser link. See {@link ViewBookOnSiteMenuHandler#onMenuItemSelected}.
+         * This will eliminate having to create a SearchEngine instance just to open
+         * a browser link. See {@link ViewBookOnSiteMenuHandler#onMenuItemSelected}.
          *
          * @param context    Current context
          * @param externalId to open
@@ -522,5 +523,45 @@ public interface SearchEngine
                 throws StorageException,
                        SearchException,
                        CredentialsException;
+    }
+
+    /** Optional. */
+    interface UserRegistration
+            extends SearchEngine {
+
+        /**
+         * Check if registration is required, or optional.
+         *
+         * @return {@code true} if required, {@code false} if beneficial/optional
+         */
+        boolean isRegistrationRequired();
+
+        /**
+         * Is the user already registered / do they have the needed credentials/token set.
+         *
+         * @param context Current context
+         *
+         * @return flag
+         */
+        boolean hasRegistrationData(@NonNull Context context);
+
+        /**
+         * Message to show the user informing them about registration with the site.
+         * May contain url's.
+         *
+         * @param context Current context
+         *
+         * @return text
+         */
+        @NonNull
+        String getRegistrationInfo(@NonNull Context context);
+
+        /**
+         * The preference fragment where the user can add credentials/tokens.
+         *
+         * @return class
+         */
+        @NonNull
+        Class<? extends Fragment> getPreferenceFragmentClass();
     }
 }
