@@ -157,6 +157,7 @@ public class DebugReport {
                          .stream()
                          .sorted()
                          .map(k -> {
+                             // NEWTHINGS: passwords must be excluded
                              if (k.contains("password")
                                  || k.contains("host.user")
                                  || k.contains("api.token")) {

@@ -168,6 +168,7 @@ public class App
                 .withApplicationLogFile(LOG_DIR + File.separatorChar + LOG_FILE)
                 .withApplicationLogFileLines(ACRA_LOGFILE_LINES)
                 // regex's
+                // NEWTHINGS: passwords must be excluded
                 .withExcludeMatchingSharedPreferencesKeys(".*password.*",
                                                           ".*host\\.user.*",
                                                           ".*api\\.token.*")
