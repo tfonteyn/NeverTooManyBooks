@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,27 +29,11 @@ import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 
-import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
-
 public final class PreferenceDialogFactory {
 
-    private PreferenceDialogFactory() {
-    }
+    private static final String ERROR_UNKNOWN_PREFERENCE_TYPE = "Unsupported Preference type: ";
 
-    /**
-     * Create a new instance.
-     *
-     * @param preference to provide the dialog for
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static DialogFragment create(@NonNull final Preference preference) {
-        // URGENT: hardcoded to use v1 dialog classes only for now.
-        //  we need to decide on Ext2MultiSelectListPreferenceDialogFragment
-        //  using bottom-sheets WITH or WITHOUT 'save' buttons.
-        //  We use 'save' buttons everywhere else, but it's not really standard android UI....
-        return createV1(preference);
+    private PreferenceDialogFactory() {
     }
 
     /**
@@ -59,9 +43,11 @@ public final class PreferenceDialogFactory {
      * @param preference to provide the dialog for
      *
      * @return new instance
+     *
+     * @throws IllegalArgumentException (debug) unsupported Preference class
      */
     @NonNull
-    public static DialogFragment createV1(@NonNull final Preference preference) {
+    public static DialogFragment create(@NonNull final Preference preference) {
         final DialogFragment fragment;
         if (preference instanceof EditTextPreference) {
             fragment = new ExtEditTextPreferenceDialogFragment();
@@ -71,64 +57,13 @@ public final class PreferenceDialogFactory {
             fragment = new ExtMultiSelectListPreferenceDialogFragment();
         } else {
             throw new IllegalArgumentException(
-                    "Unknown Preference type: " + preference.getClass().getSimpleName());
+                    ERROR_UNKNOWN_PREFERENCE_TYPE + preference.getClass().getSimpleName());
         }
 
         final String key = preference.getKey();
         final Bundle b = new Bundle(1);
-        b.putString(Ext2PreferenceViewModel.ARG_KEY, key);
-        fragment.setArguments(b);
-        return fragment;
-    }
-
-    /**
-     * Create a new instance. The classes <strong>replace</strong> the androidx.preference
-     * dialog classes, giving us M3 (floating) dialogs and full support for BottomSheets.
-     * <p>
-     * Fullscreen dialogs (for devices with small screens) are NOT implemented.
-     *
-     * @param preference to provide the dialog for
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static DialogFragment createV2(@NonNull final Preference preference) {
-        final DialogFragment fragment;
-        final DialogMode dialogMode = DialogMode.getMode(preference.getContext());
-        switch (dialogMode) {
-            case Dialog:
-                if (preference instanceof EditTextPreference) {
-                    fragment = new Ext2EditTextPreferenceDialogFragment();
-                } else if (preference instanceof ListPreference) {
-                    fragment = new Ext2ListPreferenceDialogFragment();
-                } else if (preference instanceof MultiSelectListPreference) {
-                    fragment = new Ext2MultiSelectListPreferenceDialogFragment();
-                } else {
-                    throw new IllegalArgumentException(
-                            "Unknown Preference type: " + preference.getClass().getSimpleName());
-                }
-                break;
-
-            case BottomSheet:
-                if (preference instanceof EditTextPreference) {
-                    fragment = new Ext2EditTextPreferenceBottomSheet();
-                } else if (preference instanceof ListPreference) {
-                    fragment = new Ext2ListPreferenceBottomSheet();
-                } else if (preference instanceof MultiSelectListPreference) {
-                    fragment = new Ext2MultiSelectListPreferenceBottomSheet();
-                } else {
-                    throw new IllegalArgumentException(
-                            "Unknown Preference type: " + preference.getClass().getSimpleName());
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("preference=" + preference.getKey()
-                                                   + ", type=" + dialogMode);
-        }
-
-        final String key = preference.getKey();
-        final Bundle b = new Bundle(1);
-        b.putString(Ext2PreferenceViewModel.ARG_KEY, key);
+        // required argument of PreferenceDialogFragmentCompat
+        b.putString("key", key);
         fragment.setArguments(b);
         return fragment;
     }

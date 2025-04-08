@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -191,6 +191,10 @@ public abstract class BasePreferenceFragment
             return;
         }
 
+        // URGENT: hardcoded to use v1 dialog classes only for now.
+        //  we need to decide on Ext2MultiSelectListPreferenceDialogFragment
+        //  using bottom-sheets WITH or WITHOUT 'save' buttons.
+        //  We use 'save' buttons everywhere else, but it's not really standard android UI....
         final DialogFragment f = PreferenceDialogFactory.create(preference);
         // Don't blame me... this is the androidx.preference requirement
         f.setTargetFragment(this, 0);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,8 @@
  * instead of the system {@link androidx.appcompat.app.AlertDialog}.
  * <p>
  * See {@link com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment#onDisplayPreferenceDialog(androidx.preference.Preference)}
- * and {@link com.hardbacknutter.nevertoomanybooks.settings.dialogs.PreferenceDialogFactory}
+ * , {@link com.hardbacknutter.nevertoomanybooks.settings.dialogs.PreferenceDialogFactory}
+ * and {@link com.hardbacknutter.nevertoomanybooks.settings.dialogs.Ext2PreferenceDialogFactory}
  * how they are used instead of the defaults.
  */
 package com.hardbacknutter.nevertoomanybooks.settings.dialogs;
