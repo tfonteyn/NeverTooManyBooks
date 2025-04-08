@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,14 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!--suppress LongLine -->
-<!-- Quotes 「…」 - Regex to find wrong ones: (“|”|'|„|‘|’|«|») -->
-<resources>
+<!--suppress LongLine --><!-- Quotes 「…」 - Regex to find wrong ones: (“|”|'|„|‘|’|«|») --><resources>
     <plurals name="n_books_found">
         <item quantity="other">找到 %1$d 本書</item>
     </plurals>
@@ -446,7 +441,7 @@
     <string name="lbl_select_website">選擇一個網站：</string>
     <string name="lbl_series">系列</string>
     <string name="lbl_series_multiple">系列</string>
-    <string name="lbl_series_num">不</string>
+    <string name="lbl_series_num">#</string>
     <string name="lbl_settings">設定</string>
     <string name="lbl_tag">標籤</string>
     <string name="lbl_tags">標籤</string>
