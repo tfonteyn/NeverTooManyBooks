@@ -442,7 +442,7 @@
     <string name="lbl_select_website">选择一个网站：</string>
     <string name="lbl_series">系列</string>
     <string name="lbl_series_multiple">系列</string>
-    <string name="lbl_series_num">不</string>
+    <string name="lbl_series_num">#</string>
     <string name="lbl_settings">设置</string>
     <string name="lbl_tag">标签</string>
     <string name="lbl_tags">标签</string>
