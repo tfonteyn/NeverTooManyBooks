@@ -4,12 +4,16 @@ Draft notes for next version:
 
 NEW:
 
-- Identifier editor (for Advanced users)
 - Rating field uses a new component for cleaner displays
 - Bookshelves/Styles list editor improvement
-- Databazeknih option to enable/disable author pen-name resolution
+- dnb.de, OpenLibrary, Databazeknih: added support for resolving author pseudonyms.
+  Can be disabled in their settings.
+- Identifier editor (for Advanced users)
 
 FIXES:
+
+- dnb.de workaround added to solve an ongoing security issue on their site.
+- github #137: dnb.de blocked requests without a 'referer'.
 - github #135: creating duplicate style names caused a crash
 - fixes for Android 8..10 devices where merging Authors (etc) would sometimes fail.
 
