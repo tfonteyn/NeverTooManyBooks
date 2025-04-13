@@ -20,24 +20,19 @@
   -->
 
 <resources>
-    <dimen name="container_margin">8dp</dimen>
+    <!-- Margin applied around all TIL fields. -->
+    <dimen name="til_margin">2dp</dimen>
 
-    <dimen name="container_above_bottom_appbar_margin_bottom">88dp</dimen>
+    <dimen name="til_fixed_width_currency">140dp</dimen>
+    <dimen name="til_fixed_width_external_id">156dp</dimen>
+    <dimen name="til_fixed_width_external_id_text_size">12sp</dimen>
+    <dimen name="til_fixed_width_fts_input">160dp</dimen>
+    <dimen name="til_fixed_width_language">160dp</dimen>
+    <!-- personal_name: author, publisher  -->
+    <dimen name="til_fixed_width_personal_name">260dp</dimen>
+    <dimen name="til_fixed_width_price">160dp</dimen>
+    <dimen name="til_fixed_width_series_num">200dp</dimen>
+    <!-- 4 digit year -->
+    <dimen name="til_fixed_width_year">120dp</dimen>
 
-    <dimen name="camera_preview_width">480dp</dimen>
-    <dimen name="camera_preview_height">240dp</dimen>
-    <dimen name="camera_preview_button_margin">8dp</dimen>
-
-    <dimen name="column_margin_end">64dp</dimen>
-
-    <dimen name="toolbar_button_margin">8dp</dimen>
-
-    <dimen name="popup_menu_divider_width">540dp</dimen>
-
-    <item name="context_menu_button_scale"
-          format="float"
-          type="dimen">0.85
-    </item>
-
-    <bool name="combine_book_edit_tabs">true</bool>
 </resources>

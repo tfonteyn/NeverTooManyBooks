@@ -20,7 +20,7 @@
   -->
 
 <!--
-    Edit fields;
+    Text based Edit fields;
     'TIL' == com.google.android.material.textfield.TextInputLayout
     'TIE' == com.google.android.material.textfield.TextInputEditText
     'TIA' == com.google.android.material.textfield.MaterialAutoCompleteTextView
