@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -183,8 +183,8 @@ public class FabMenu {
         final Resources res = fabButton.getResources();
 
         // try-with-res requires Android 13
-        final TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX_all);
-        final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all);
+        final TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX);
+        final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY);
         try {
             for (int i = 0; i < fabMenuItems.length; i++) {
                 final ExtendedFloatingActionButton fab = fabMenuItems[i];
