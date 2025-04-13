@@ -88,7 +88,7 @@ public final class AuthorResolverFactory {
 
         if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
             && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(key, false)) {
+                                .getBoolean(key, true)) {
 
             switch (searchEngine.getEngineId()) {
                 case DatabazeKnih: {
