@@ -75,6 +75,7 @@
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <item name="android:textIsSelectable">true</item>
     </style>
+
     <!-- A header message which MIMICS the PreferenceCategory style.
          This is for use on screen which themselves MIMIC a preference screen.
     -->
@@ -83,7 +84,6 @@
         <!-- NOT textColorSecondary! -->
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
-
 
     <!-- *************************************************************************************** -->
     <!-- Activity navigation drawer/view -->
@@ -136,6 +136,36 @@
         <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
 
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+
+    <!-- Container (ConstraintLayout) for the buttons at the bottom of a dialog. -->
+    <style name="Dialog.ButtonPanel"
+           parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingTop">@dimen/app_m3_alert_dialog_action_top_padding</item>
+        <item name="android:paddingBottom">@dimen/app_m3_alert_dialog_action_bottom_padding</item>
+    </style>
+
+    <!-- Root window (ConstraintLayout) for a floating progress dialog. -->
+    <style name="ProgressDialog">
+        <item name="android:layout_width">@dimen/progress_width</item>
+        <item name="android:layout_height">wrap_content</item>
+
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:elevation">@dimen/progress_z</item>
+        <item name="android:layout_marginTop">@dimen/progress_margin_top</item>
+
+        <item name="android:background">@drawable/bg_progress_dialog</item>
+        <item name="android:backgroundTint">?attr/colorSurface</item>
+
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -250,17 +280,6 @@
         <item name="android:contentDescription">@string/action_show_options</item>
     </style>
 
-    <style name="ButtonPanel.Container"
-           parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-
-        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingTop">@dimen/app_m3_alert_dialog_action_top_padding</item>
-        <item name="android:paddingBottom">@dimen/app_m3_alert_dialog_action_bottom_padding</item>
-    </style>
-
     <!-- *************************************************************************************** -->
 
     <!-- A button which will take the user to an external website. -->
@@ -287,24 +306,6 @@
     </style>
 
     <!-- *************************************************************************************** -->
-
-    <!-- ConstraintLayout -->
-    <style name="ProgressDialog">
-        <item name="android:layout_width">@dimen/progress_width</item>
-        <item name="android:layout_height">wrap_content</item>
-
-        <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:elevation">@dimen/progress_z</item>
-        <item name="android:layout_marginTop">@dimen/progress_margin_top</item>
-
-        <item name="android:background">@drawable/bg_progress_dialog</item>
-        <item name="android:backgroundTint">?attr/colorSurface</item>
-
-        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
-        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
-    </style>
 
     <!-- NestedScrollView -->
     <style name="FragmentRoot.NestedScroller"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -70,7 +70,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_panel_layout"
-        style="@style/ButtonPanel.Container"
+        style="@style/Dialog.ButtonPanel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/note">

@@ -139,7 +139,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_panel_layout"
-        style="@style/ButtonPanel.Container"
+        style="@style/Dialog.ButtonPanel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/flow_days">
