@@ -125,7 +125,7 @@ public final class OpenLibraryAuthorResolver
             return false;
         }
 
-        final String url = String.format(authorUri, oIv.get());
+        final String url = String.format(authorUri, oIv.get()) + ".json";
 
         final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
         try {
