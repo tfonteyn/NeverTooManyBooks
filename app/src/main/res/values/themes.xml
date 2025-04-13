@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,7 +20,7 @@
   -->
 
 <!--
-    These are the standard attributes that make up a complete theme.
+    The standard attributes that make up a complete theme.
     https://developer.android.com/reference/android/R.styleable.html#Theme
 
     Material styles etc.
@@ -30,8 +30,8 @@
     https://m3.material.io/libraries/mdc-android/color-theming
 
 
-    Note that the "buttonBar*Style" attributes must be added at several places, as they don't seem
-    to be inherited from the main Theme.
+    Note that the "buttonBar*Style" attributes must be added at several places,
+     as they don't seem to be inherited from the main Theme.
 -->
 <!--suppress LongLine -->
 <resources>
@@ -143,7 +143,7 @@
     <style name="ThemeOverlay.App.Toolbar"
            parent="ThemeOverlay.Material3.Toolbar.Surface">
         <!-- Force the icons to be visible... as by default Android seems to
-             give them such a [bleeping] bad contrast you can barely see them. -->
+             give them such a bad contrast you can barely see them. -->
         <item name="colorControlNormal">?attr/colorOnSurface</item>
     </style>
 
@@ -198,11 +198,11 @@
 
         <!-- FIXME: The intention was to style the 'save' button' as an icon-only button.
               but it seems impossible to remove the button text from the fullscreen style
-              without also removing it from the dialog style where is MUST be shown.
+              without also removing it from the dialog style where it MUST be shown.
         -->
-        <!--        <item name="materialCalendarHeaderConfirmButton">-->
-        <!--            @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderConfirmButton-->
-        <!--        </item>-->
+        <!--  <item name="materialCalendarHeaderConfirmButton">-->
+        <!--      @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderConfirmButton-->
+        <!--  </item>-->
     </style>
 
     <!-- The "Save" button in the header (toolbar).-->
