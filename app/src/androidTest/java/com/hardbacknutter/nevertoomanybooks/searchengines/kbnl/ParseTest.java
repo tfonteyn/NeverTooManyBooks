@@ -248,4 +248,25 @@ public class ParseTest
 
         verify9020612476(book);
     }
+
+    @Test
+    public void parseIsni() {
+        final String s = "Isaak Judovič Ozimov (1920-1992) (ISNI 0000 0001 2259 0564)";
+        final Book book = new Book();
+        final KbNlBookHandler kbNlBookHandler = new KbNlBookHandler(searchEngine, book);
+
+        final List<CurrentData> currentData = List.of(new CurrentData(s, null));
+        kbNlBookHandler.parseAuthor(currentData, 0);
+
+        final List<Author> authors = book.getAuthors();
+        assertEquals(1, authors.size());
+        final Author author = authors.get(0);
+
+        assertEquals("Ozimov", author.getFamilyName());
+        assertEquals("Isaak Judovič", author.getGivenNames());
+
+        final Optional<String> isni = author.getIdentifierValue(Identifier.SID_ISNI);
+        assertTrue(isni.isPresent());
+        assertEquals("0000000122590564", isni.get());
+    }
 }

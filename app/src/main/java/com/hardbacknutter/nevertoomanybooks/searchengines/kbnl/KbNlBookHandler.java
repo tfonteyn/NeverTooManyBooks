@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 import java.util.Locale;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -53,6 +55,7 @@ class KbNlBookHandler
 
     /** Example: {@code REL?PPN=068561504}. */
     private static final Pattern AUTHOR_ID = Pattern.compile("REL\\?PPN=(\\d+)");
+    private static final Pattern AUTHOR_BRACKETED_SUFFIX = Pattern.compile("\\((.*?)\\)");
 
     @NonNull
     private final KbNlSearchEngine searchEngine;
@@ -389,24 +392,45 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      * @param type        the author type
      */
-    private void parseAuthor(@NonNull final Iterable<CurrentData> currentData,
+    @VisibleForTesting
+    void parseAuthor(@NonNull final Iterable<CurrentData> currentData,
                              @Author.Type final int type) {
         for (final CurrentData cd : currentData) {
             final String text = cd.data;
-            // remove any "(..)" parts in the name
-            final String cleanedString = text.split("\\(")[0].strip();
+            // this and below is not efficient... but we'll optimize when
+            // implementing author birth/dead date parsing
+            final String[] parts = text.split("\\(", 2);
+
+            final String name = parts[0].strip();
             // reject separators as for example: <psi:text>;</psi:text>
-            if (cleanedString.length() == 1) {
+            if (name.length() == 1) {
                 return;
             }
 
-            final Author author = Author.from(cleanedString);
+            final Author author = Author.from(name);
             if (cd.url != null) {
                 final Matcher matcher = AUTHOR_ID.matcher(cd.url);
                 if (matcher.find()) {
                     final String siId = matcher.group(1);
                     if (siId != null) {
                         author.setIdentifierValue(Identifier.SID_KBNL, siId);
+                    }
+                }
+            }
+            if (parts.length > 1) {
+                // "Isaak Judovič Ozimov (1920-1992) (ISNI 0000 0001 2259 0564)"
+                // parts[1] == "(1920-1992) (ISNI 0000 0001 2259 0564)";
+                // Instead of doing a regexp for "(ISNI...), we loop manually
+                // with the intention at a later time to parse the other ()'s we find
+                final Matcher matcher = AUTHOR_BRACKETED_SUFFIX.matcher(parts[1]);
+                while (matcher.find()) {
+                    String s = matcher.group(1);
+                    if (s != null && s.startsWith("ISNI")) {
+                        s = s.substring(4);
+                        final ISNI isni = new ISNI(s);
+                        if (isni.isValid()) {
+                            author.setIdentifierValue(Identifier.SID_ISNI, isni.getIsni());
+                        }
                     }
                 }
             }
