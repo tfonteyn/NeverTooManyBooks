@@ -129,6 +129,10 @@ public class IsfdbSearchEngine
                                              + ".search.toc.series";
     static final String PK_LOGIN_TO_SEARCH = EngineId.Isfdb.getPreferenceKey()
                                              + ".login.to.search";
+    // added due to https://github.com/square/okhttp/issues/1517
+    // it's a server issue, this is a workaround.
+    static final Map<String, String> REQUEST_PROPERTIES = Map.of(HttpConstants.CONNECTION,
+                                                                 HttpConstants.CONNECTION_CLOSE);
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
 
@@ -443,11 +447,6 @@ public class IsfdbSearchEngine
                                       Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE),
                       "cobiss.sr")
     );
-
-    // added due to https://github.com/square/okhttp/issues/1517
-    // it's a server issue, this is a workaround.
-    static final Map<String, String> REQUEST_PROPERTIES = Map.of(HttpConstants.CONNECTION,
-                                                                 HttpConstants.CONNECTION_CLOSE);
 
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
@@ -1408,8 +1407,20 @@ public class IsfdbSearchEngine
                 author.setIdentifierValue(Identifier.SID_ISFDB, siId);
             }
         }
-        for (final AuthorResolver resolver : authorResolvers) {
-            resolver.resolve(context, author);
+        // 2025-03-25
+        // Read error: ssl=0x7a6b6d87b598: Failure in SSL library, usually a protocol error
+        // error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT
+        // (external/boringssl/src/crypto/cipher_extra/e_chacha20poly1305.c:259
+        // 0x7a69b00547fb:0x00000000)
+        // error:1000008b:SSL routines:OPENSSL_internal:DECRYPTION_FAILED_OR_BAD_RECORD_MAC
+        // (external/boringssl/src/ssl/tls_record.cc:294 0x7a69b00547fb:0x00000000)
+        // |docRequestUrl="https://www.isfdb.org/cgi-bin/ea.cgi?5"
+        try {
+            for (final AuthorResolver resolver : authorResolvers) {
+                resolver.resolve(context, author);
+            }
+        } catch (@NonNull final SearchException e) {
+            LoggerFactory.getLogger().e(TAG, e, "AuthorResolver");
         }
         return author;
     }
