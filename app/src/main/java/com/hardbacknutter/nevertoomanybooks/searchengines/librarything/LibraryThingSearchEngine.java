@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
@@ -37,6 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
@@ -160,6 +162,9 @@ public class LibraryThingSearchEngine
                                                  .getString(PK_API_TOKEN, null);
         // not set, quit silently
         if (apiToken == null || apiToken.isEmpty()) {
+            if (BuildConfig.DEBUG /*always */) {
+                Log.d(TAG, "API TOKEN NOT SET");
+            }
             return List.of();
         }
 
