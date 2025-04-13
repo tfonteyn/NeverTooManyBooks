@@ -90,7 +90,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Případ levoruké dámy", book.getString(DBKey.TITLE, null));
