@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -24,41 +24,47 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- ImageView - Generic Flag. 24dp: standard icon. -->
-    <style name="Flag">
+    <style name="Base.Flag"
+           parent="">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
     </style>
 
     <!-- A book has been read. -->
-    <style name="Flag.Read">
+    <style name="Flag.Read"
+           parent="Base.Flag">
         <item name="android:contentDescription">@string/lbl_read</item>
         <item name="android:src">@drawable/download_done_24px</item>
         <item name="android:tint">?attr/colorSecondary</item>
     </style>
 
     <!-- A book is a first edition. -->
-    <style name="Flag.FirstEdition">
+    <style name="Flag.FirstEdition"
+           parent="Base.Flag">
         <item name="android:contentDescription">@string/lbl_edition_first_edition</item>
         <item name="android:src">@drawable/filter_1_24px</item>
         <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 
     <!-- A book is signed. -->
-    <style name="Flag.Signed">
+    <style name="Flag.Signed"
+           parent="Base.Flag">
         <item name="android:contentDescription">@string/lbl_signed</item>
         <item name="android:src">@drawable/signed</item>
         <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 
     <!-- A book has been lend out. -->
-    <style name="Flag.LendOut">
+    <style name="Flag.LendOut"
+           parent="Base.Flag">
         <item name="android:contentDescription">@string/lbl_lend_out</item>
         <item name="android:src">@drawable/do_not_touch_24px</item>
         <item name="android:tint">?attr/colorError</item>
     </style>
 
     <!-- A series/author/... is complete. -->
-    <style name="Flag.Complete">
+    <style name="Flag.Complete"
+           parent="Base.Flag">
         <item name="android:contentDescription">@string/lbl_is_complete</item>
         <item name="android:src">@drawable/done_all_24px</item>
         <item name="android:tint">?attr/colorSecondary</item>
