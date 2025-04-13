@@ -21,7 +21,9 @@
 package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -37,12 +39,11 @@ import java.util.regex.Pattern;
  */
 public class ISNI {
 
-    /** Remove '-' and space chars. */
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ -]");
-
     public static final String SITE_URL = "https://isni.org/";
     /** Leading {@code 0}'s <strong>MUST</strong> be present. */
     public static final String AUTHOR_URL = "https://isni.org/isni/%s";
+    /** Remove '-' and space chars. */
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ -]");
     /** 16 zeros for normalizing shorter strings. */
     private static final String ZEROS = "0000000000000000";
 
@@ -62,16 +63,11 @@ public class ISNI {
         final String checksum = str.substring(str.length() - 1);
 
         valid = generateCheckDigit(digits).equals(checksum);
-        this.isni = (ZEROS + str).substring(str.length());
-    }
-
-    @NonNull
-    public String getIsni() {
-        return isni;
-    }
-
-    public boolean isValid() {
-        return valid;
+        if (valid) {
+            this.isni = (ZEROS + str).substring(str.length());
+        } else {
+            this.isni = str;
+        }
     }
 
     /**
@@ -94,5 +90,38 @@ public class ISNI {
         final int remainder = total % 11;
         final int result = (12 - remainder) % 11;
         return result == 10 ? "X" : String.valueOf(result);
+    }
+
+    @NonNull
+    public String getIsni() {
+        return isni;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ISNI isni1 = (ISNI) o;
+        return valid == isni1.valid
+               && Objects.equals(isni, isni1.isni);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isni, valid);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ISNI{"
+               + "valid=" + valid
+               + ", isni='" + isni + '\''
+               + '}';
     }
 }
