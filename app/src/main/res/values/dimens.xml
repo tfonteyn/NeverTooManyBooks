@@ -166,16 +166,6 @@
     <!-- see sw360dp/dimens.xml -->
     <dimen name="scrollbar_padding">2dp</dimen>
 
-    <!-- The width of the BoB on the list/detail embedded screen.-->
-    <dimen name="bob_embedded_list_width">400dp</dimen>
-
-    <!-- the margin around the CardView. -->
-    <dimen name="bob_book_card_margin">4dp</dimen>
-    <!-- The content padding used for the CardView content displaying a Book. -->
-    <dimen name="bob_book_card_content_padding">4dp</dimen>
-    <!-- margin between regular book fields and the date added/updated/acquired fields -->
-    <dimen name="bob_book_date_field_top_margin">4dp</dimen>
-
     <!-- the margin around the CardView. -->
     <dimen name="authorwork_card_margin">4dp</dimen>
     <!-- The content padding used for the CardView content displaying an AuthorWork. -->
@@ -188,41 +178,6 @@
           type="dimen">0.6f
     </item>
 
-    <!-- The text size (in sp units, but in float notation) for all text in a book list row. -->
-    <array name="bob_text_size_in_sp">
-        <item>12.0</item>
-        <!-- <dimen name="text_size_small_material">14sp</dimen> -->
-        <item>14.0</item>
-        <!-- DEFAULT - <dimen name="text_size_medium_material">18sp</dimen> -->
-        <item>18.0</item>
-        <!-- <dimen name="text_size_large_material">22sp</dimen> -->
-        <item>22.0</item>
-        <item>32.0</item>
-    </array>
-    <!-- Padding multiplier for the actual padding settings to go with "bob_text_size_in_sp". -->
-    <array name="bob_text_padding_in_percent">
-        <item>0.77</item>
-        <item>0.88</item>
-        <!-- DEFAULT -->
-        <item>1</item>
-        <item>1.11</item>
-        <item>1.22</item>
-    </array>
-
-
-    <!-- top margin for the top-level rows (groups); also known as "fat_finger_spacer" -->
-    <dimen name="bob_group_level_1_margin_top">4dp</dimen>
-    <!-- multipliers for the levels in the booklist:
-         paddingStart = (level-1) * bob_group_level_padding_start. -->
-    <dimen name="bob_group_level_padding_start">8dp</dimen>
-    <!-- padding between the compound drawable and the text on the group levels. -->
-    <dimen name="bob_group_level_bullet_padding">4dp</dimen>
-    <!-- size (width == height) to use for the bullet drawable on the group levels. -->
-    <array name="bob_group_level_bullet_size">
-        <item>0dp</item>
-        <item>10dp</item>
-        <item>6dp</item>
-    </array>
 
     <!-- The width for "@style/FragmentRoot.*" -->
     <dimen name="centered_max_width">600dp</dimen>
