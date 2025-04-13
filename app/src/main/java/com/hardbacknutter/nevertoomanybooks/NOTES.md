@@ -4,7 +4,6 @@ Draft notes for next version:
 
 NEW:
 
-- Rating field uses a new component for cleaner displays
 - Bookshelves/Styles list editor improvement
 - dnb.de, OpenLibrary, Databazeknih: added support for resolving author pseudonyms.
   Can be disabled in their settings.
