@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+    <style name="Base.About.AppIcon"
+           parent="">
+        <item name="android:layout_marginStart">@dimen/app_icon_margin</item>
+        <item name="android:layout_marginTop">@dimen/app_icon_margin</item>
+        <item name="android:scaleX">2</item>
+        <item name="android:scaleY">2</item>
+        <item name="android:contentDescription">@string/app_name</item>
+        <item name="android:src">@drawable/launcher_foreground</item>
+    </style>
+
+    <style name="About.AppIcon"
+           parent="Base.About.AppIcon">
+        <item name="android:layout_width">@dimen/app_icon_size</item>
+        <item name="android:layout_height">@dimen/app_icon_size</item>
+    </style>
+
+    <style name="About.AppIcon.Large"
+           parent="Base.About.AppIcon">
+        <item name="android:layout_width">@dimen/app_icon_size_large</item>
+        <item name="android:layout_height">@dimen/app_icon_size_large</item>
+    </style>
+
+    <style name="About.AppName"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:text">@string/app_name</item>
+        <item name="android:fontFamily">cursive</item>
+        <item name="android:textAppearance">?attr/textAppearanceHeadlineMedium</item>
+    </style>
+
+    <style name="About.Version"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+    </style>
+
+    <style name="About.Label"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+    </style>
+
+    <style name="About.Statistic"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
+        <item name="android:gravity">end</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+    </style>
+
+    <style name="About.DebugVersion"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:layout_marginBottom">@dimen/section_margin_top</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+    </style>
+
+</resources>
