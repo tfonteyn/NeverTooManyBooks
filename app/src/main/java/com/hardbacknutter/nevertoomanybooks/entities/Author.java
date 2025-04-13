@@ -879,7 +879,7 @@ public class Author
 
             final SpannableString span = new SpannableString(fullName);
             final float relSize = ResourcesCompat
-                    .getFloat(context.getResources(), R.dimen.bob_author_pseudonym_size);
+                    .getFloat(context.getResources(), R.dimen.author_pseudonym_size);
             span.setSpan(new RelativeSizeSpan(relSize),
                          filteredPenName.length(), span.length(), 0);
             span.setSpan(new StyleSpan(Typeface.ITALIC),

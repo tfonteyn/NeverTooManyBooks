@@ -360,12 +360,4 @@
         <item name="android:background">@null</item>
     </style>
 
-
-    <!-- *************************************************************************************** -->
-
-    <style name="AuthorStyleCheckBox"
-           parent="Widget.App.CheckBox">
-        <item name="android:layout_width">@dimen/cbx_fixed_width_author_type</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
 </resources>

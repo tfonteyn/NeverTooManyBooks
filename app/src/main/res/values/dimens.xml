@@ -173,7 +173,7 @@
 
 
     <!-- The relative size for the 'real-author' name of a pseudonym. -->
-    <item name="bob_author_pseudonym_size"
+    <item name="author_pseudonym_size"
           format="float"
           type="dimen">0.6f
     </item>

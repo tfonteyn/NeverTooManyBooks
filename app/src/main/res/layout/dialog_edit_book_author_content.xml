@@ -170,85 +170,85 @@
 
         <CheckBox
             android:id="@+id/cbx_author_type_writer"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_writer"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_intro"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_intro"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_contributor"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_contributor"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_translator"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_translator"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_editor"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_editor"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_narrator"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_narrator"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_artist"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_artist"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_inking"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_inking"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_colorist"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_colorist"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_cover_artist"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_cover_artist"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_cover_inking"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_cover_inking"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_cover_colorist"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_cover_colorist"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_storyboard"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_storyboard"
             />
 
         <CheckBox
             android:id="@+id/cbx_author_type_lettering"
-            style="@style/AuthorStyleCheckBox"
+            style="@style/AuthorTypeCheckBox"
             android:text="@string/lbl_author_type_lettering"
             />
 
