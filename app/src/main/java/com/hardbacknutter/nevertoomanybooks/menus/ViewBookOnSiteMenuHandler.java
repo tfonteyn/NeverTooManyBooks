@@ -41,6 +41,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 public class ViewBookOnSiteMenuHandler
         extends ViewOnSiteMenuHandler<DataHolder> {
 
+    /**
+     * Constructor.
+     */
     public ViewBookOnSiteMenuHandler() {
         super(R.id.SUBMENU_VIEW_BOOK_ON_SITE,
               R.id.MENU_GROUP_BOOK,

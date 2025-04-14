@@ -36,10 +36,17 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
  * and builds/displays a menu suitable for the given {@link Author}.
  * <p>
  * We hide the entire submenu if there are none.
+ * <p>
+ * Used by {@code BoB}.
+ *
+ * @see AuthorViewAuthorOnSiteMenuHandler
  */
 public class ViewAuthorOnSiteMenuHandler
         extends ViewOnSiteMenuHandler<DataHolder> {
 
+    /**
+     * Constructor.
+     */
     public ViewAuthorOnSiteMenuHandler() {
         super(R.id.SUBMENU_VIEW_AUTHOR_ON_SITE,
               0,
