@@ -110,8 +110,8 @@ public class FutureHttpGetBase<T>
             String requestUrlStr = initialRequest.getURL().toString();
 
             if (isLoggingEnabled()) {
-                LoggerFactory.getLogger().d(TAG, "Connect",
-                                            "attempt=" + attempt,
+                LoggerFactory.getLogger().d(TAG, "connect",
+                                            "new attempt=" + attempt,
                                             "url=" + requestUrlStr);
             }
 
@@ -133,8 +133,8 @@ public class FutureHttpGetBase<T>
                     final String responseUrlStr = responseUrl.toString();
 
                     if (isLoggingEnabled()) {
-                        LoggerFactory.getLogger().d(TAG, "Response",
-                                                    "attempt=" + attempt,
+                        LoggerFactory.getLogger().d(TAG, "connect|response",
+                                                    "was attempt=" + attempt,
                                                     "redirectCount=" + redirectCount,
                                                     "responseCode=" + req.getResponseCode(),
                                                     "responseUrlStr=" + responseUrlStr);
@@ -153,10 +153,12 @@ public class FutureHttpGetBase<T>
                         requestUrlStr = responseUrlStr;
 
                         if (isLoggingEnabled()) {
-                            LoggerFactory.getLogger().d(TAG, "Connect",
-                                                        "attempt=" + attempt,
-                                                        "redirectCount=" + redirectCount,
-                                                        "requestUrlStr=" + requestUrlStr);
+                            LoggerFactory.getLogger()
+                                         .d(TAG, "connect|disconnect"
+                                                 + "|redirect|createRequest|connect",
+                                            " same attempt=" + attempt,
+                                            "redirectCount=" + redirectCount,
+                                            "requestUrlStr=" + requestUrlStr);
                         }
                         // Note we are NOT using the throttler here,
                         // Android was SUPPOSED to redirect immediately.
