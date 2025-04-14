@@ -192,7 +192,7 @@ public class FutureHttpGetBase<T>
                 // ==> IMMEDIATELY a 403....
                 // but using that last url in a browser or with wget will return a 302
                 if (isLoggingEnabled()) {
-                    LoggerFactory.getLogger().e(TAG, e, "fetch",
+                    LoggerFactory.getLogger().e(TAG, e, "fetch|disconnect",
                                                 "url=" + e.getUrl(),
                                                 "Location=" + e.getLocation());
                 }
@@ -217,6 +217,9 @@ public class FutureHttpGetBase<T>
 
                 attempt--;
                 if (attempt == 0) {
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger().d(TAG, "connect|all attempts failed|disconnect");
+                    }
                     initialRequest.disconnect();
                     throw e;
                 }
