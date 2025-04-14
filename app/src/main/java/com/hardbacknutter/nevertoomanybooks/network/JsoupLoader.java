@@ -259,7 +259,7 @@ public class JsoupLoader {
         final Document parsedDocument = Jsoup.parse(is, charSetName, locationHeader);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
             LoggerFactory.getLogger()
-                         .d(TAG, "loadDocument",
+                         .d(TAG, "loadDocument|disconnect",
                             "AFTER parsing|document.location()="
                             + parsedDocument.location());
         }
