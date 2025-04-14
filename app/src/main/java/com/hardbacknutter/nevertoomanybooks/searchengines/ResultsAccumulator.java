@@ -283,7 +283,7 @@ class ResultsAccumulator {
      * After a search, the final resulting Book (data) is send to the child
      * classes of {@code EditBookBaseFragment},
      * where in the {@code onPopulateViews} method the lists are pruned.
-     * We do it there because each list might/does not some specific
+     * We do it there because each list might/does need some specific
      * handling. Similar pruning is done when an "Update from .." is run during
      * the database save.
      *
