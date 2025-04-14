@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
@@ -681,8 +682,22 @@ public class DBHelper
                                @NonNull final SQLiteDatabase db,
                                @NonNull final Identifier identifier) {
 
+        // key must be unique
+        boolean found = false;
         try (SQLiteStatement stmt = db.compileStatement(
-                "INSERT OR IGNORE INTO " + TBL_IDENTIFIERS.getName()
+                "SELECT 1 FROM " + TBL_IDENTIFIERS.getName()
+                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+            stmt.bindString(1, identifier.getKey());
+            found = 1 == stmt.simpleQueryForLong();
+        } catch (@NonNull final SQLiteDoneException ignore) {
+            // ignore
+        }
+        if (found) {
+            return;
+        }
+
+        try (SQLiteStatement stmt = db.compileStatement(
+                "INSERT INTO " + TBL_IDENTIFIERS.getName()
                 + '(' + DBKey.IDENTIFIERS.KEY
                 + ',' + DBKey.IDENTIFIERS.TYPE
                 + ',' + DBKey.IDENTIFIERS.NAME
@@ -693,9 +708,25 @@ public class DBHelper
             stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
             stmt.bindString(2, String.valueOf(identifier.getType()));
             stmt.bindString(3, identifier.getName());
-            stmt.bindString(4, identifier.getSiteUrl(context));
-            stmt.bindString(5, identifier.getBookUri(context).orElse(null));
-            stmt.bindString(6, identifier.getAuthorUri(context).orElse(null));
+
+            final String siteUrl = identifier.getSiteUrl(context);
+            if (siteUrl == null) {
+                stmt.bindNull(4);
+            } else {
+                stmt.bindString(4, siteUrl);
+            }
+            final String bookUrl = identifier.getBookUri(context).orElse(null);
+            if (bookUrl == null) {
+                stmt.bindNull(5);
+            } else {
+                stmt.bindString(5, bookUrl);
+            }
+            final String authorUrl = identifier.getAuthorUri(context).orElse(null);
+            if (authorUrl == null) {
+                stmt.bindNull(6);
+            } else {
+                stmt.bindString(6, authorUrl);
+            }
             stmt.executeInsert();
         }
     }
