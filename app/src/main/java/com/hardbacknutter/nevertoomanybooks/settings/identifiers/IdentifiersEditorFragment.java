@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -81,11 +82,6 @@ public class IdentifiersEditorFragment
     private static final int POS_NEW_ENTRY = -1;
 
     private IdentifiersEditorViewModel vm;
-    /** View Binding. */
-    private FragmentEditIdentifiersBinding vb;
-    private IdentifierAdapter adapter;
-    private ExtMenuLauncher menuLauncher;
-    private EditParcelableLauncher<Identifier> editLauncher;
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -100,6 +96,12 @@ public class IdentifiersEditorFragment
                     getActivity().finish();
                 }
             };
+
+    /** View Binding. */
+    private FragmentEditIdentifiersBinding vb;
+    private IdentifierAdapter adapter;
+    private ExtMenuLauncher menuLauncher;
+    private EditParcelableLauncher<Identifier> editLauncher;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -148,6 +150,11 @@ public class IdentifiersEditorFragment
                                 Lifecycle.State.RESUMED);
 
         final Context context = getContext();
+
+        final String info = getString(R.string.info_identifier_editor,
+                                      getString(R.string.github_help_url));
+        vb.info.setText(HtmlFormatter.linkify(info));
+        vb.info.setMovementMethod(LinkMovementMethod.getInstance());
 
         //noinspection DataFlowIssue
         vb.list.addItemDecoration(

@@ -2089,4 +2089,9 @@
     <string name="info_registration_benefits"
             translatable="false">This feature benefits from registration at %1$s.\nThis is <b>optional</b>. %2$s</string>
 
+    <!-- Param 1: url to the documentation.
+             HTML string, must be inside a CDATA section;
+            -->
+    <string name="info_identifier_editor"><![CDATA[Please read the <a href="%1$s">documentation</a> on Identifiers before editing.]]></string>
+
 </resources>
