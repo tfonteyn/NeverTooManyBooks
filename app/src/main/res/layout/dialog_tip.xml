@@ -42,9 +42,10 @@
         <TextView
             android:id="@+id/message"
             style="@style/Text.Info"
+            android:layout_width="match_parent"
             android:maxLines="20"
-            android:scrollbars="vertical"
             android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbars="vertical"
             tools:ignore="UseCompatTextViewDrawableXml"
             tools:text="@tools:sample/lorem/random" />
     </FrameLayout>

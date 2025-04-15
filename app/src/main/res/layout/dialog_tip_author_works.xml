@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -31,7 +31,6 @@
     <TextView
         android:id="@+id/message"
         style="@style/Text.Info"
-        android:maxLines="20"
         android:text="@string/tip_authors_works"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

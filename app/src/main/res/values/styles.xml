@@ -51,7 +51,7 @@
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <!-- A generic header; at the top of a screen, section, ... -->
+    <!-- A single-line text header; at the top of a screen, section, ... -->
     <style name="Text.Header"
            parent="Base.Text">
         <item name="android:layout_marginTop">@dimen/section_margin_top</item>
@@ -67,8 +67,12 @@
         <item name="android:textColor">?attr/colorError</item>
     </style>
 
+    <!-- multi-line informational text, usually at the top of a screen -->
     <style name="Text.Info"
-           parent="Base.Text">
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">4dp</item>
         <item name="android:drawableStart">@drawable/info_24px</item>
         <item name="android:drawablePadding">@dimen/field_margin_inline</item>
         <item name="android:drawableTint">?attr/colorSecondary</item>
