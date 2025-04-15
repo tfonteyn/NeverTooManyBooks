@@ -857,4 +857,5 @@
     <string name="vldt_blank_or_valid_url_required">É necessário um valor vazio ou um URL válido</string>
     <string name="lbl_book_uri">URL do livro</string>
     <string name="lbl_author_uri">URL do autor</string>
+    <string name="info_identifier_editor"><![CDATA[Leia a <a href="%1$s">documentação</a> sobre Identificadores antes de editar.]]></string>
 </resources>

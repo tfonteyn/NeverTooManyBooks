@@ -864,4 +864,5 @@
     <string name="vldt_blank_or_valid_url_required">Boş değer veya geçerli URL gerekli</string>
     <string name="lbl_book_uri">Kitap URL\'si</string>
     <string name="lbl_author_uri">Yazar URL\'si</string>
+    <string name="info_identifier_editor"><![CDATA[Düzenlemeden önce Tanımlayıcılar hakkındaki <a href="%1$s">dokümantasyonu</a> okuyun.]]></string>
 </resources>

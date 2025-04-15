@@ -853,4 +853,5 @@
     <string name="vldt_blank_or_valid_url_required">Lege waarde of geldige URL vereist</string>
     <string name="lbl_book_uri">Boek URL</string>
     <string name="lbl_author_uri">Auteur URL</string>
+    <string name="info_identifier_editor"><![CDATA[Lees de <a href="%1$s">documentatie</a> over Identifiers voor het bewerken.]]></string>
 </resources>

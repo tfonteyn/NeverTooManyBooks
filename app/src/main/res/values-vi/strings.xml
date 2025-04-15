@@ -850,4 +850,5 @@
     <string name="vldt_blank_or_valid_url_required">Giá trị trống hoặc URL hợp lệ là bắt buộc</string>
     <string name="lbl_book_uri">URL sách</string>
     <string name="lbl_author_uri">URL tác giả</string>
+    <string name="info_identifier_editor"><![CDATA[Đọc <a href="%1$s">tài liệu</a> về Mã định danh trước khi chỉnh sửa.]]></string>
 </resources>
