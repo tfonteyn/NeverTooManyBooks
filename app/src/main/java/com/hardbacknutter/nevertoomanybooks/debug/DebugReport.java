@@ -91,22 +91,26 @@ public class DebugReport {
         final PackageInfoWrapper info = PackageInfoWrapper.createWithSignatures(context);
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-        message = "App: " + info.getPackageName() + '\n'
-                  + "Version: " + info.getVersionName() + " (" + info.getVersionCode() + ")\n"
-                  + "SDK: " + Build.VERSION.RELEASE
-                  + " (" + Build.VERSION.SDK_INT + ' ' + Build.TAGS + ")\n"
-                  + "Model: " + Build.MODEL + '\n'
-                  + "Manufacturer: " + Build.MANUFACTURER + '\n'
-                  + "Device: " + Build.DEVICE + '\n'
-                  + "Product: " + Build.PRODUCT + '\n'
-                  + "Brand: " + Build.BRAND + '\n'
-                  + "Build: " + Build.ID + '\n'
+        message =
+                // app info
+                "App: " + info.getPackageName() + '\n'
+                + "Version: " + info.getVersionName() + " (" + info.getVersionCode() + ")\n"
+                // device OS
+                + "SDK: " + Build.VERSION.RELEASE
+                + " (" + Build.VERSION.SDK_INT + ' ' + Build.TAGS + ")\n"
+                + "Build: " + Build.ID + '\n'
 
-                  + "User country: " + locale.getCountry() + '\n'
-                  + "User language: " + locale.getLanguage() + '\n'
-                  + "All Locales: " + LocaleListUtils.asList(context) + '\n'
+                // device model... not really essential, but nice to know.
+                + "Brand: " + Build.BRAND + '\n'
+                + "Model: " + Build.MODEL + '\n'
 
-                  + "Signed-By: " + info.getSignedBy().orElse("Not signed") + '\n';
+                // the Locales
+                + "User country: " + locale.getCountry() + '\n'
+                + "User language: " + locale.getLanguage() + '\n'
+                + "All Locales: " + LocaleListUtils.asList(context) + '\n'
+
+                // app info
+                + "Signed-By: " + info.getSignedBy().orElse("Not signed") + '\n';
         return this;
     }
 
@@ -244,17 +248,17 @@ public class DebugReport {
         final DisplayMetrics metrics = res.getDisplayMetrics();
 
         final String sb =
-                "logScreenParams|\n\n"
-                + "configuration:\n"
-                + "  screenWidthDp=" + configuration.screenWidthDp + '\n'
-                + "  screenHeightDp=" + configuration.screenHeightDp + '\n'
-                + "  orientation=" + (configuration.orientation == 2 ? "LANDSCAPE" : "PORTRAIT")
+                "Screen:\n\n"
+                + "  configuration:\n"
+                + "    screenWidthDp=" + configuration.screenWidthDp + '\n'
+                + "    screenHeightDp=" + configuration.screenHeightDp + '\n'
+                + "    orientation=" + (configuration.orientation == 2 ? "LANDSCAPE" : "PORTRAIT")
                 + '\n'
-                + "  densityDpi=" + configuration.densityDpi + '\n'
-                + "metrics:\n"
-                + "  widthPixels=" + metrics.widthPixels + '\n'
-                + "  heightPixels=" + metrics.heightPixels + '\n'
-                + "  density=" + metrics.density + '\n';
+                + "    densityDpi=" + configuration.densityDpi + '\n'
+                + "  metrics:\n"
+                + "    widthPixels=" + metrics.widthPixels + '\n'
+                + "    heightPixels=" + metrics.heightPixels + '\n'
+                + "    density=" + metrics.density + '\n';
 
         if (message != null) {
             message += "\n" + sb;
