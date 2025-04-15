@@ -19,8 +19,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 <!DOCTYPE resources [
-<!ENTITY APP_NAME "NeverTooManyBooks">
-]>
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
 --><!--suppress LongLine -->
 <resources>
@@ -40,7 +40,6 @@
     <string name="notification_channel_warn">Figyelmeztetés</string>
     <string name="notification_channel_info">Infó</string>
     <string name="X_httpErrorIO">Nem sikerült kommunikálni a szerverrel. Próbálja újra később.</string>
-    <string name="httpErrorTimeout">A szerverkapcsolat időtúllépés miatt megszakadt.</string>
     <string name="httpErrorFailedSslHandshake">Nem sikerült biztonságos kapcsolatot létrehozni.</string>
     <string name="httpErrorAuth">Nem sikerült hitelesíteni.</string>
     <string name="httpError">Hálózati hiba történt.</string>
@@ -48,7 +47,6 @@
     <string name="error_upgrade_not_supported">%1$s verziónál régebbiről való frissítés nem támogatott.</string>
     <string name="error_updates_aborted">Frissítés megszakítva</string>
     <string name="error_network_please_connect">Kérjük, csatlakozzon az internethez.</string>
-    <string name="error_certificate_invalid">A tanúsítvány érvénytelen vagy nem elérhető.</string>
     <string name="error_network_site_access_failed">%1$s elérése közben hálózati probléma lépett fel. Kérjük, ellenőrizze, hogy a webhely működik-e, ha a probléma továbbra is fennáll, forduljon az ügyfélszolgálathoz.</string>
     <string name="error_storage_not_writable">Kérjük, ellenőrizze, hogy a tárhely elegendő és írható.</string>
     <string name="error_insufficient_storage">Nincs elég tárhely.</string>
@@ -88,4 +86,106 @@
     <string name="error_http_403_forbidden">A webhely letiltotta a hozzáférést.</string>
     <string name="error_http_401_site_authorization_failed">%1$s engedélyezése hibát eredményezett.</string>
     <string name="error_http_403_site_forbidden">%1$s letiltotta a hozzáférést.</string>
+
+    <string name="X_action_clear_credentials">Hitelesítési adatok törlése</string>
+    <string name="X_action_execute">Végrehajtás</string>
+    <string name="X_action_go">Ugrás</string>
+    <string name="X_action_move">Áthelyezés</string>
+    <string name="X_action_next">Tovább</string>
+    <string name="X_action_previous">Előző</string>
+    <string name="X_action_reset">Alaphelyzet</string>
+    <string name="X_action_send">Küldés</string>
+    <string name="X_action_try_again">Újrapróbálkozás</string>
+    <string name="X_action_update">Frissítés</string>
+    <string name="X_lbl_folder">Mappa</string>
+    <string name="X_lbl_general">Általános</string>
+    <string name="X_lbl_image">Kép</string>
+    <string name="X_lbl_system">(Rendszer)</string>
+    <string name="X_whichImageCaptureApplication">Kép készítése a következővel:</string>
+    <string name="X_whichSendToApplication">Küldés a következővel:</string>
+    <string name="action_add">Hozzáadás</string>
+    <string name="action_apply">Alkalmaz</string>
+    <string name="action_clear">Törlés</string>
+    <string name="action_create">Létrehozás</string>
+    <string name="action_crop">Körbevágás</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_discard">Elvetés</string>
+    <string name="action_done">Kész</string>
+    <string name="action_edit">Szerkesztés</string>
+    <string name="action_email">E-mail</string>
+    <string name="action_export">Exportálás</string>
+    <string name="action_help">Súgó</string>
+    <string name="action_import">Importálás</string>
+    <string name="action_learn_more">További információ</string>
+    <string name="action_not_now">Most nem</string>
+    <string name="action_report">Jelentés</string>
+    <string name="action_reset_to_default">Visszaállítás alaphelyzetbe</string>
+    <string name="action_retry">Újra</string>
+    <string name="action_save">Mentés</string>
+    <string name="action_search">Keresés</string>
+    <string name="action_select">Kiválasztás</string>
+    <string name="action_show_all">Összes mutatása</string>
+    <string name="action_show_options">Opciók</string>
+    <string name="action_skip">Kihagyás</string>
+    <string name="action_undo">Visszavonás</string>
+    <string name="book_format_other">Egyéb</string>
+    <string name="cancel">Mégse</string>
+    <string name="cancelled">Törölve</string>
+    <string name="dialog_alert_title">Figyelem</string>
+    <string name="disabled">Kikapcsolva</string>
+    <string name="error_certificate_invalid">A tanúsítvány érvénytelen vagy elérhetetlen.</string>
+    <string name="error_import_failed">Sikertelen importálás</string>
+    <string name="httpErrorTimeout">Időtúllépés miatt megszakadt a kapcsolat a szerverrel.</string>
+    <string name="info_import_complete">Importálás befejezve</string>
+    <string name="lbl_about">Névjegy</string>
+    <string name="lbl_archive_format">Formázás</string>
+    <string name="lbl_available">Rendelkezésre áll</string>
+    <string name="lbl_backup">Biztonsági mentés</string>
+    <string name="lbl_color">Szín</string>
+    <string name="lbl_condition_dust_cover_none">Nincs</string>
+    <string name="lbl_country">Ország</string>
+    <string name="lbl_credentials">Felhasználó hitelesítési adatai</string>
+    <string name="lbl_defaults">Alapbeállítások</string>
+    <string name="lbl_description">Leírás</string>
+    <string name="lbl_filter">Szűrő</string>
+    <string name="lbl_format">Formázás</string>
+    <string name="lbl_import">Importálás</string>
+    <string name="lbl_language">Nyelv</string>
+    <string name="lbl_location">Hely</string>
+    <string name="lbl_moving_data">Az áthelyezés folyamatban van</string>
+    <string name="lbl_name">Név</string>
+    <string name="lbl_settings">Beállítások</string>
+    <string name="lbl_storage_settings">Tárhely</string>
+    <string name="lbl_system_default">(Alapértelmezett)</string>
+    <string name="lbl_tab_details">Részletek</string>
+    <string name="lbl_tab_notes">Jegyzetek</string>
+    <string name="lbl_tags">Címkék</string>
+    <string name="lbl_title">Beosztás</string>
+    <string name="lbl_unread">Olvasatlan</string>
+    <string name="no">Nem</string>
+    <string name="none">Nincs</string>
+    <string name="ok">OK</string>
+    <string name="option_barcode_scan_mode_manual">Útmutató</string>
+    <string name="option_bug_report">Programhiba bejelentése</string>
+    <string name="option_cover_rotate_automatic">Automatikus</string>
+    <string name="option_import">Importálás</string>
+    <string name="option_select_all">Az összes kijelölése</string>
+    <string name="option_select_none">Az összes kijelölés törlése</string>
+    <string name="password">Jelszó</string>
+    <string name="pc_advanced_options">Speciális</string>
+    <string name="pc_camera">Kamera</string>
+    <string name="pe_camera_other">Egyéb</string>
+    <string name="pe_ui_theme_from_device">Eszköztéma</string>
+    <string name="pt_bob_font_size">Betűméret</string>
+    <string name="pt_layout">Elrendezés</string>
+    <string name="pt_ui_language">Nyelv</string>
+    <string name="pt_ui_system_locale">Alapértelmezett nyelv</string>
+    <string name="size_medium">Közepes</string>
+    <string name="unknown">Ismeretlen</string>
+    <string name="username">Felhasználónév</string>
+    <string name="whichEditApplication">Szerkesztés a következővel:</string>
+    <string name="whichSendApplication">Megosztás</string>
+    <string name="whichViewApplication">Megnyitás a következővel:</string>
+    <string name="yes">Igen</string>
+
 </resources>
