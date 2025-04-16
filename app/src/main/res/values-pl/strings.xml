@@ -861,4 +861,5 @@
     <string name="lbl_author_uri">Adres URL autora</string>
     <string name="vldt_blank_or_valid_url_required">Wymagana pusta wartość lub prawidłowy adres URL</string>
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Wymagana pusta wartość lub prawidłowy adres URL \"https\" z pojedynczym identyfikatorem \"%s\"</string>
+    <string name="info_identifier_editor"><![CDATA[Przed edycją zapoznaj się z <a href="%1$s">dokumentacją</a> dotyczącą identyfikatorów]]></string>
 </resources>
