@@ -35,6 +35,9 @@ see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBook
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
 <img src="metadata/en-US/images/IzzyOnDroid.png" alt="Get it on IzzySoft" style="width:150px;"/></a>
 
+Signer "DN: CN=ca"; SHA-256 digest:
+df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
+
 ## User Interface languages:
 
 - Chinese Simplified(CN), Chinese Traditional(TW),
