@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -119,10 +119,7 @@ public class SearchEngineConfig {
 
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
-    /**
-     * This is a reference to the <strong>static</strong> object created in the SearchEngine
-     * implementation class.
-     */
+
     @Nullable
     private final Throttler throttler;
 
@@ -150,7 +147,7 @@ public class SearchEngineConfig {
     }
 
     /**
-     * Called by {@link ServiceLocator#create(Context)}.
+     * Called by {@link App#onCreate()}.
      *
      * @param context   <strong>Application</strong> or <strong>test</strong> context.
      * @param languages the language cache container
@@ -280,8 +277,6 @@ public class SearchEngineConfig {
 
     /**
      * Get the throttler for regulating network access.
-     * <p>
-     * The <strong>static</strong> Throttler is created in the SearchEngine implementation class.
      *
      * @return throttler to use, or {@code null} for none.
      */

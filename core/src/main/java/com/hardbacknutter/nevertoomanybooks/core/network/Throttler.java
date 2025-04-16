@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,14 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.core.network;
 import androidx.annotation.NonNull;
 
 /**
- * Define as a static.
- * <pre>
- * {@code
- *     @NonNull
- *     private static final Throttler THROTTLER = new Throttler();
- * }
- * </pre>
- * Use where needed: {@code THROTTLER.waitUntilRequestAllowed(); }
+ * A Throttler is created once in each {@code EngineId/SearchEngineConfig}.
+ * The actual {@code SearchEngine} which can be multi-instance/multi-thread
+ * will always refer to that single Throttler instance.
  */
 public class Throttler {
 
@@ -41,15 +36,12 @@ public class Throttler {
 
     /**
      * Constructor.
-     * <p>
-     * IMPORTANT: Must be a static member variable to be meaningful.
      *
      * @param delayInMillis the delay time between requests.
      */
     public Throttler(final int delayInMillis) {
         this.delayInMillis = delayInMillis;
     }
-
 
     /**
      * The default wait as used by the network code.
@@ -94,6 +86,7 @@ public class Throttler {
             try {
                 Thread.sleep(wait);
             } catch (@NonNull final InterruptedException ignore) {
+                // ignore
             }
         }
     }
