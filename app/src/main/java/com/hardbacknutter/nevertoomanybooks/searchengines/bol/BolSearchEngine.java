@@ -126,6 +126,7 @@ public class BolSearchEngine
     private static final String BY_ISBN = "/%1$s/nl/s/?searchtext=+%2$s+";
     /** Front-covers can be given using either of these keys. We must try both. */
     private static final List<String> FRONT_COVER_KEYS = List.of("coverImageUrl", "imageUrl");
+    private static final String SITE_LANG = "/nl/";
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -201,11 +202,11 @@ public class BolSearchEngine
                              @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getHostUrl(context) + String.format(BY_ISBN, getCountry(context),
-                                                               validIsbn);
+        final String hostUrl = getHostUrl(context);
+        final String country = getCountry(context);
+        final String url = hostUrl + String.format(BY_ISBN, country, validIsbn);
         final Document document = loadDocument(context, url, Map.of(
-                HttpConstants.REFERER,
-                "https://www.bol.com/" + getCountry(context) + "/nl/"));
+                HttpConstants.REFERER, hostUrl + '/' + country + SITE_LANG));
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -242,10 +243,11 @@ public class BolSearchEngine
             return book;
         }
 
-        final String url = getHostUrl(context) + String.format(BY_TEXT, getCountry(context), words);
+        final String hostUrl = getHostUrl(context);
+        final String country = getCountry(context);
+        final String url = hostUrl + String.format(BY_TEXT, country, words);
         final Document document = loadDocument(context, url, Map.of(
-                HttpConstants.REFERER,
-                "https://www.bol.com/" + getCountry(context) + "/nl/"));
+                HttpConstants.REFERER, hostUrl + '/' + country + SITE_LANG));
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, book);
@@ -286,9 +288,8 @@ public class BolSearchEngine
                 if (url.startsWith("/")) {
                     url = getHostUrl(context) + url;
                 }
-                final Document redirected = loadDocument(context, url,
-                                                         Map.of(HttpConstants.REFERER,
-                                                                document.location()));
+                final Document redirected = loadDocument(context, url, Map.of(
+                        HttpConstants.REFERER, document.location()));
                 if (!isCancelled()) {
                     parse(context, redirected, fetchCovers, book);
                 }
