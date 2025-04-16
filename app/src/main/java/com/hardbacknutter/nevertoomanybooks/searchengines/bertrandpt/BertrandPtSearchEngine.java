@@ -100,8 +100,9 @@ public class BertrandPtSearchEngine
                                   @NonNull final SearchEngineConfig config) {
         super(appContext, config);
         // based on wget experimentation
-        extraRequestProperties = Map.of(HttpConstants.REFERER, getHostUrl(appContext),
-                                        HttpConstants.SEC_FETCH_SITE, "same-origin");
+        extraRequestProperties = Map.of(
+                HttpConstants.REFERER, getHostUrl(appContext),
+                HttpConstants.SEC_FETCH_SITE, HttpConstants.SEC_FETCH_MODE_SAME_ORIGIN);
     }
 
     @NonNull
