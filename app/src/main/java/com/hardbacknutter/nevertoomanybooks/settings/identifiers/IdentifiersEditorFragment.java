@@ -163,7 +163,7 @@ public class IdentifiersEditorFragment
 
         adapter = new IdentifierAdapter(context, vm.getIdentifiers());
 
-        adapter.setOnRowClickListener((v, position) -> editEntry(position));
+        // reminder: do not allow single-click.... we need to be able to tap the site-url
         adapter.setOnRowShowMenuListener(
                 ExtMenuButton.getPreferredMode(context),
                 (v, position) -> {
