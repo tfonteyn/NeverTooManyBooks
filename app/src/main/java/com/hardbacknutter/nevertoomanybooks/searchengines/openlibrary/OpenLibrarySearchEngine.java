@@ -936,6 +936,12 @@ public class OpenLibrarySearchEngine
      *     ]
      *   }
      * </pre>
+     * <p>
+     * The majority of the openlibrary provided doi numbers
+     * have a prefix "10.1604" and will NOT resolve.
+     * Example: 10.1604/9780910663519
+     * See <a href="https://doi.org/10.1604">https://doi.org/10.1604</a>
+     * --> Took away permissions 3/21/13.. do not think this is really a bowker prefix.
      *
      * @param document to parse
      * @param book     to update
@@ -950,22 +956,27 @@ public class OpenLibrarySearchEngine
         final JSONObject element = document.optJSONObject("identifiers");
         if (element != null) {
             element.keySet().stream()
-                   .map(olKey -> extracted(element, olKey))
+                   .map(olKey -> parseIdentifier(element, olKey))
                    .flatMap(Optional::stream)
+                   // HACK: the site has a lot of DOI values with prefix "10.1604"
+                   // which is invalid/revoked. Filter/drop those
+                   .filter(iv -> !(Identifier.SID_DOI.equals(iv.getKey())
+                                   && iv.getSid().startsWith("10.1604")))
                    .forEach(ivs::add);
         }
 
         // lccn and oclc can also be found at the top-level...
-        extracted(document, "lccn").ifPresent(ivs::add);
-        extracted(document, "oclc_numbers").ifPresent(ivs::add);
+        parseIdentifier(document, "lccn").ifPresent(ivs::add);
+        parseIdentifier(document, "oclc_numbers").ifPresent(ivs::add);
 
         if (!ivs.isEmpty()) {
             book.setIdentifiers(ivs);
         }
     }
 
-    private Optional<Identifier.Value> extracted(@NonNull final JSONObject element,
-                                                 @NonNull final String olKey) {
+    @NonNull
+    private Optional<Identifier.Value> parseIdentifier(@NonNull final JSONObject element,
+                                                       @NonNull final String olKey) {
         final JSONArray data = element.optJSONArray(olKey);
         if (data != null && !data.isEmpty()) {
             // MUST be converted to lc before we try and map
@@ -1330,7 +1341,7 @@ public class OpenLibrarySearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException     on storage related failures
+     * @throws StorageException on storage related failures
      */
     @NonNull
     private Optional<String> searchCoverByKey(@NonNull final Context context,
