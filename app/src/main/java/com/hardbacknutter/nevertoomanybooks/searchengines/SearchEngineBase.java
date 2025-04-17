@@ -237,7 +237,7 @@ public abstract class SearchEngineBase
     }
 
     @Nullable
-    protected SSLContext getSslContext() {
+    SSLContext getSslContext() {
         return sslContext;
     }
 
@@ -355,7 +355,7 @@ public abstract class SearchEngineBase
     }
 
     @NonNull
-    protected <T> FutureHttpGet<T> createRawGetRequest(@NonNull final Context context) {
+    private <T> FutureHttpGet<T> createRawGetRequest(@NonNull final Context context) {
         final FutureHttpGet<T> httpGet = new FutureHttpGet<>(
                 config.getEngineId().getLabelResId());
         httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
@@ -587,10 +587,10 @@ public abstract class SearchEngineBase
      * @param dateStr the date field as retrieved
      * @param book    Bundle to update
      */
-    public void addFirstPublicationDate(@NonNull final Context context,
-                                        @NonNull final Locale locale,
-                                        @Nullable final String dateStr,
-                                        @NonNull final Book book) {
+    protected void addFirstPublicationDate(@NonNull final Context context,
+                                           @NonNull final Locale locale,
+                                           @Nullable final String dateStr,
+                                           @NonNull final Book book) {
 
         if (dateStr == null || dateStr.isBlank()) {
             return;
