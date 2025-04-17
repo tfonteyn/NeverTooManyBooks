@@ -330,6 +330,7 @@ public class DnbSearchEngine
                             }
                             case "Umfang":
                             case "Extent": {
+                                // can also contain color and format
                                 parsePageNumber(context, td, book);
                                 break;
                             }
@@ -365,7 +366,8 @@ public class DnbSearchEngine
                             }
                             case "Werk":
                             case "Work": {
-                                // This looks like it's the original title for a translated book
+                                // The original title for a translated book
+                                // Can have Series/nr prefixed.
                                 book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, td.text());
                                 break;
                             }
@@ -684,9 +686,13 @@ public class DnbSearchEngine
                                  @NonNull final Book book) {
 
         final String text = td.text();
-        // No idea if there are other such text snippets we can check for.
+        // there may be more text snippets we can check for.
         if (text.contains("Online-Ressource")) {
             book.putString(DBKey.FORMAT, context.getString(R.string.book_format_ebook));
+        }
+        if (text.contains("Farbig illustriert")
+            || text.contains("Mit farbigen Zeichnungen")) {
+            book.putString(DBKey.COLOR, context.getString(R.string.book_color_full_color));
         }
 
         final Matcher matcher = PATTERN_PAGE_NUMBER.matcher(text);
