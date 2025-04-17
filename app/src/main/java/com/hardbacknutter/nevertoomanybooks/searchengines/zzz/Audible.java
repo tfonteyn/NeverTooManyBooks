@@ -20,11 +20,13 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
+// the site redirects to the local country... loosing the
+// book/author part... the user will need to update the url's manually
 public final class Audible {
 
     public static final String SITE_URL = "https://www.audible.com";
     public static final String BOOK_URL = "https://www.audible.com/pd/%s";
-    public static final String AUTHOR_URL = null;
+    public static final String AUTHOR_URL = "https://www.audible.com/author/%s";
 
     private Audible() {
     }
