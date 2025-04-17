@@ -547,7 +547,6 @@ public class OpenLibrarySearchEngine
         final List<AuthorResolver> authorResolvers = AuthorResolverFactory
                 .getResolvers(context, this);
 
-        JSONObject element;
         JSONArray a;
         String s;
         final int i;
@@ -729,7 +728,9 @@ public class OpenLibrarySearchEngine
      * @param authorResolvers to use
      * @param book            destination
      *
-     * @throws StorageException on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     private void parseAuthors(@NonNull final Context context,
                               @NonNull final JSONArray a,
@@ -1329,9 +1330,7 @@ public class OpenLibrarySearchEngine
      *
      * @return fileSpec
      *
-     * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
      */
     @NonNull
     private Optional<String> searchCoverByKey(@NonNull final Context context,
@@ -1339,7 +1338,7 @@ public class OpenLibrarySearchEngine
                                               @NonNull final String id,
                                               @IntRange(from = 0, to = 1) final int cIdx,
                                               @Nullable final Size size)
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException {
 
         final String sizeParam;
         if (size == null) {
