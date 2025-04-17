@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -850,4 +853,6 @@
     <string name="vldt_blank_or_valid_url_required">Leerer Wert oder gültige URL erforderlich</string>
     <string name="lbl_book_uri">Buch-URL</string>
     <string name="lbl_author_uri">Autor-URL</string>
+    <string name="info_identifier_editor"><![CDATA[Lese vor der Bearbeitung die <a href="%1$s">Dokumentation</a> zu Bezeichnern.]]></string>
+
 </resources>
