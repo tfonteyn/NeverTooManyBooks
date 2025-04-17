@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
@@ -165,9 +164,15 @@ public class IsfdbSearchEngine
                                                         + "&TYPE=Publication"
                                                         + "&C=AND";
 
-    /** Param 1: external book ID. */
+    /**
+     * Search by SID.
+     * Param 1: external book ID.
+     */
     private static final String CGI_BY_EXTERNAL_ID = CGI_BIN + CGI_PL + "?%1$s";
-    /** Search URL template. */
+    /**
+     * SSearch alternative editions.
+     * Param 1: isbn
+     */
     private static final String CGI_EDITIONS = CGI_BIN + CGI_SE + "?arg=%s&type=ISBN";
 
     private static final String REST_BIN = CGI_BIN + "/rest";
@@ -179,7 +184,6 @@ public class IsfdbSearchEngine
      */
     private static final String DOT = "(&#x2022;|&#8226;|•)";
     /** Character used by the site as string divider/splitter. */
-    // private static final Pattern DOT_PATTERN = Pattern.compile(DOT);
     private static final Pattern YEAR_PATTERN = Pattern.compile(DOT + " \\(([1|2]\\d\\d\\d)\\)");
     /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
     private static final Pattern UNKNOWN_M_D_LITERAL = Pattern.compile("-00", Pattern.LITERAL);
@@ -267,7 +271,9 @@ public class IsfdbSearchEngine
      *     28                  34  COBISS.SR             Co-operative Online Bibliographic Systems and Services - Serbia
      * </pre>
      * The patterns can have TWO groups which will be concatenated.
-     * Can be generalized when needed in {@link #parseSid(String)}.
+     * Can be generalized when needed in {@link #parseSid(CharSequence)}.
+     *
+     * @noinspection LongLine
      */
     private static final Map<Pattern, String> IDENTIFIER_MAPPING = Map.ofEntries(
             // 1,2,3,4,5,6,22,23,24,25,26,27,28,29,37,38
@@ -1126,9 +1132,7 @@ public class IsfdbSearchEngine
         }
         final Elements lis = ul.children();
 
-        String tmpString;
-        Node nextSibling;
-
+        @NonNull
         final List<AuthorResolver> authorResolvers = AuthorResolverFactory
                 .getResolvers(context, this);
 
@@ -1159,7 +1163,7 @@ public class IsfdbSearchEngine
                 if (fieldName != null) {
                     switch (fieldName) {
                         case "Publication:": {
-                            nextSibling = labelElement.nextSibling();
+                            final Node nextSibling = labelElement.nextSibling();
                             if (nextSibling != null) {
                                 bookTitle = SearchEngineUtils.cleanText(nextSibling.toString());
                                 book.putString(DBKey.TITLE, bookTitle);
@@ -1168,133 +1172,52 @@ public class IsfdbSearchEngine
                         }
                         case "Author:":
                         case "Authors:": {
-                            for (final Element a : li.select("a")) {
-                                addAuthor(parseAuthor(context, a, authorResolvers),
-                                          Author.TYPE_UNKNOWN, book);
-                            }
+                            parseAuthors(context, li, Author.TYPE_UNKNOWN, authorResolvers, book);
                             break;
                         }
                         case "Date:": {
-                            nextSibling = labelElement.nextSibling();
-                            if (nextSibling != null) {
-                                // dates are in fact displayed as YYYY-MM-DD which is very nice.
-                                tmpString = nextSibling.toString().trim();
-                                // except that ISFDB uses 00 for the day/month when unknown ...
-                                // e.g. "1975-04-00" or "1974-00-00"
-                                // Cut those parts off. Ignore the locale.
-                                tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
-                                partialDateParser.parse(tmpString)
-                                                 .ifPresent(book::setPublicationDate);
-                            }
+                            parseDate(labelElement, book);
                             break;
                         }
                         case "ISBN:": {
-                            nextSibling = labelElement.nextSibling();
-                            if (nextSibling != null) {
-                                // we use them in the order found here.
-                                // <b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
-                                tmpString = nextSibling.toString().trim();
-                                tmpString = ISBN.cleanText(tmpString);
-                                if (!tmpString.isEmpty()) {
-                                    book.putString(DBKey.ISBN, tmpString);
-                                }
-
-                                final Element nextElementSibling =
-                                        labelElement.nextElementSibling();
-                                if (nextElementSibling != null) {
-                                    tmpString = nextElementSibling.text();
-                                    tmpString = ISBN.cleanText(tmpString);
-                                    if (!tmpString.isEmpty()) {
-                                        book.putString(SiteField.ISBN_2, tmpString);
-                                    }
-                                }
-                            }
+                            parseIsbn(labelElement, book);
                             break;
                         }
                         case "Catalog ID:": {
-                            nextSibling = labelElement.nextSibling();
-                            if (nextSibling != null) {
-                                // <li><b>Catalog ID:</b> catalogID
-                                tmpString = nextSibling.toString().trim();
-                                book.putString(SiteField.CATALOG_ID, tmpString);
-                            }
+                            parseCatalogId(labelElement, book);
                             break;
                         }
                         case "Publisher:": {
-                            for (final Element a : li.select("a")) {
-                                final Publisher publisher = Publisher.from(a.text());
-                                book.add(publisher);
-                            }
+                            parsePublisher(li, book);
                             break;
                         }
                         case "Pub. Series:": {
-                            for (final Element a : li.select("a")) {
-                                final Series series = Series.from(a.text());
-                                book.add(series);
-                            }
+                            parsePublicationSeries(li, book);
                             break;
                         }
                         case "Pub. Series #:": {
-                            nextSibling = labelElement.nextSibling();
-                            if (nextSibling != null) {
-                                tmpString = nextSibling.toString().trim();
-                                // assume that if we get here,
-                                // then we added a "Pub. Series:" as last one.
-                                final List<Series> seriesList = book.getSeries();
-                                seriesList.get(seriesList.size() - 1).setNumber(tmpString);
-                            }
+                            parsePublicationSeriesNumber(labelElement, book);
                             break;
                         }
                         case "Price:": {
-                            final Element nextElementSibling = labelElement.nextElementSibling();
-                            if (nextElementSibling != null) {
-                                tmpString = nextElementSibling.ownText();
-                                if (!tmpString.isEmpty()) {
-                                    addPriceListed(context, siteLocale, tmpString, null, book);
-                                }
-                            }
+                            parsePrice(context, labelElement, siteLocale, book);
                             break;
                         }
                         case "Pages:": {
-                            nextSibling = labelElement.nextSibling();
-                            if (nextSibling != null) {
-                                tmpString = nextSibling.toString().trim();
-                                book.putString(DBKey.PAGES, tmpString);
-                            }
+                            parsePages(labelElement, book);
                             break;
                         }
                         case "Format:": {
-                            // <li><b>Format:</b> <div ...>tp<sup ...>?</sup>
-                            // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
-                            // need to extract the "tp".
-                            final Element nextElementSibling = labelElement.nextElementSibling();
-                            if (nextElementSibling != null) {
-                                tmpString = nextElementSibling.ownText();
-                                book.putString(DBKey.FORMAT, tmpString);
-                            }
-
+                            parseFormat(labelElement, book);
                             break;
                         }
                         case "Type:": {
-                            nextSibling = labelElement.nextSibling();
-                            if (nextSibling != null) {
-                                // <li><b>Type:</b> COLLECTION
-                                tmpString = nextSibling.toString().trim();
-                                book.putString(SiteField.BOOK_TYPE, tmpString);
-                                final Book.ContentType type = TYPE_MAP.get(tmpString);
-                                if (type != null) {
-                                    book.setContentType(type);
-                                }
-                            }
+                            parseType(labelElement, book);
                             break;
                         }
                         case "Cover:": {
-                            final Elements as = li.select("a");
-                            if (as.size() > 1) {
-                                final Element a = as.get(1);
-                                addAuthor(parseAuthor(context, a, authorResolvers),
-                                          Author.TYPE_COVER_ARTIST, book);
-                            }
+                            parseAuthors(context, li, Author.TYPE_COVER_ARTIST,
+                                         authorResolvers, book);
                             break;
                         }
                         case "External IDs:": {
@@ -1304,10 +1227,7 @@ public class IsfdbSearchEngine
                         }
                         case "Editor:":
                         case "Editors:": {
-                            for (final Element a : li.select("a")) {
-                                addAuthor(parseAuthor(context, a, authorResolvers),
-                                          Author.TYPE_EDITOR, book);
-                            }
+                            parseAuthors(context, li, Author.TYPE_EDITOR, authorResolvers, book);
                             break;
                         }
 
@@ -1333,15 +1253,13 @@ public class IsfdbSearchEngine
         // and if there are none, then fall back to the notes on this page.
         final Elements notesDiv = contentBox.select("div.notes");
         if (!notesDiv.isEmpty()) {
-            tmpString = notesDiv.html();
+            String tmpString = notesDiv.html();
             // it should always have this at the start, but paranoia...
             if (tmpString.startsWith("<b>Notes:</b>")) {
                 tmpString = tmpString.substring(13).trim();
             }
             book.putString(DBKey.DESCRIPTION, tmpString);
         }
-
-        // post-process all found data.
 
         final List<TocEntry> toc = parseToc(context, document, book);
         if (!toc.isEmpty()) {
@@ -1356,6 +1274,8 @@ public class IsfdbSearchEngine
                 }
             }
         }
+
+        // post-process all found data.
 
         Series.checkForSeriesNameInTitle(book);
 
@@ -1380,6 +1300,136 @@ public class IsfdbSearchEngine
             final String isbn = book.getString(DBKey.ISBN);
             parseCover(context, document, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        }
+    }
+
+    private void parsePages(@NonNull final Element labelElement,
+                            @NonNull final Book book) {
+        final Node data = labelElement.nextSibling();
+        if (data != null) {
+            book.putString(DBKey.PAGES, data.toString().trim());
+        }
+    }
+
+    private void parseCatalogId(@NonNull final Element labelElement,
+                                @NonNull final Book book) {
+        final Node data = labelElement.nextSibling();
+        if (data != null) {
+            // <li><b>Catalog ID:</b> catalogID
+            book.putString(SiteField.CATALOG_ID, data.toString().trim());
+        }
+    }
+
+    private void parsePublisher(@NonNull final Element li,
+                                @NonNull final Book book) {
+        for (final Element a : li.select("a")) {
+            addPublisher(a.text(), book);
+        }
+    }
+
+    private void parsePrice(@NonNull final Context context,
+                            @NonNull final Element labelElement,
+                            @NonNull final Locale siteLocale,
+                            @NonNull final Book book) {
+        final Element data = labelElement.nextElementSibling();
+        if (data != null) {
+            final String tmp = data.ownText();
+            if (!tmp.isEmpty()) {
+                addPriceListed(context, siteLocale, tmp, null, book);
+            }
+        }
+    }
+
+    private void parsePublicationSeries(@NonNull final Element li,
+                                        @NonNull final Book book) {
+        for (final Element a : li.select("a")) {
+            final Series series = Series.from(a.text());
+            book.add(series);
+        }
+    }
+
+    private void parsePublicationSeriesNumber(@NonNull final Element labelElement,
+                                              @NonNull final Book book) {
+        final Node data = labelElement.nextSibling();
+        if (data != null) {
+            final String tmp = data.toString().trim();
+            // assume that if we get here,
+            // then we added a "Pub. Series:" as last one.
+            final List<Series> seriesList = book.getSeries();
+            seriesList.get(seriesList.size() - 1).setNumber(tmp);
+        }
+    }
+
+    private void parseFormat(@NonNull final Element labelElement,
+                             @NonNull final Book book) {
+        // <li><b>Format:</b> <div ...>tp<sup ...>?</sup>
+        // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
+        // need to extract the "tp".
+        final Element data = labelElement.nextElementSibling();
+        if (data != null) {
+            book.putString(DBKey.FORMAT, data.ownText());
+        }
+    }
+
+    private void parseType(@NonNull final Element labelElement,
+                           @NonNull final Book book) {
+        final Node data = labelElement.nextSibling();
+        if (data != null) {
+            // <li><b>Type:</b> COLLECTION
+            final String tmp = data.toString().trim();
+            book.putString(SiteField.BOOK_TYPE, tmp);
+            final Book.ContentType type = TYPE_MAP.get(tmp);
+            if (type != null) {
+                book.setContentType(type);
+            }
+        }
+    }
+
+    private void parseDate(@NonNull final Element labelElement,
+                           @NonNull final Book book) {
+        final Node data = labelElement.nextSibling();
+        if (data != null) {
+            // dates are in fact displayed as YYYY-MM-DD which is very nice.
+            String tmp = data.toString().trim();
+            // except that ISFDB uses 00 for the day/month when unknown ...
+            // e.g. "1975-04-00" or "1974-00-00"
+            // Cut those parts off. Ignore the locale.
+            tmp = UNKNOWN_M_D_LITERAL.matcher(tmp).replaceAll("");
+            partialDateParser.parse(tmp)
+                             .ifPresent(book::setPublicationDate);
+        }
+    }
+
+    private void parseIsbn(@NonNull final Element labelElement,
+                           @NonNull final Book book) {
+        final Node data = labelElement.nextSibling();
+        if (data != null) {
+            // we use them in the order found here.
+            // <b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
+            String tmp = ISBN.cleanText(data.toString().trim());
+            if (!tmp.isEmpty()) {
+                book.putString(DBKey.ISBN, tmp);
+            }
+
+            final Element nextElementSibling = labelElement.nextElementSibling();
+            if (nextElementSibling != null) {
+                tmp = ISBN.cleanText(nextElementSibling.text());
+                if (!tmp.isEmpty()) {
+                    book.putString(SiteField.ISBN_2, tmp);
+                }
+            }
+        }
+    }
+
+    private void parseAuthors(@NonNull final Context context,
+                              @NonNull final Element li,
+                              @Author.Type final int type,
+                              @NonNull final List<AuthorResolver> authorResolvers,
+                              @NonNull final Book book)
+            throws CredentialsException {
+        for (final Element a : li.select("a")) {
+            final Author author = parseAuthor(context, a, authorResolvers);
+            addAuthor(author, type, book);
         }
     }
 
@@ -1753,7 +1803,7 @@ public class IsfdbSearchEngine
      */
     @VisibleForTesting
     @NonNull
-    public Optional<Identifier.Value> parseSid(@NonNull final String url) {
+    public Optional<Identifier.Value> parseSid(@NonNull final CharSequence url) {
         for (final Map.Entry<Pattern, String> entry : IDENTIFIER_MAPPING.entrySet()) {
             final Matcher matcher = entry.getKey().matcher(url);
             if (matcher.find()) {
