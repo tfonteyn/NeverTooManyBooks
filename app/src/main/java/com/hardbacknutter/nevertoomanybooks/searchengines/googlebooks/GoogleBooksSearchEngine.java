@@ -42,6 +42,7 @@ import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
@@ -347,7 +348,7 @@ public class GoogleBooksSearchEngine
 
         final JSONObject saleInfo = edition.optJSONObject("saleInfo");
         if (saleInfo != null) {
-            parseSaleInfo(saleInfo, book);
+            parseSaleInfo(context, saleInfo, book);
         }
 
         if (isCancelled()) {
@@ -407,7 +408,7 @@ public class GoogleBooksSearchEngine
             book.putString(DBKey.PAGES, String.valueOf(i));
         }
 
-        // Google documents this as a "double" with values 0..5,
+        // Google documents this is a "double" with values 0..5,
         // so we rely on decimal separator "." ... flw...
         f = volumeInfo.optFloat("averageRating");
         if (!Float.isNaN(f) && f > 0) {
@@ -438,12 +439,12 @@ public class GoogleBooksSearchEngine
         //s = volumeInfo.optString("printType", null);
     }
 
-    private void parseSaleInfo(@NonNull final JSONObject saleInfo,
+    private void parseSaleInfo(@NonNull final Context context,
+                               @NonNull final JSONObject saleInfo,
                                @NonNull final Book book) {
         final boolean isEbook = saleInfo.optBoolean("isEbook");
         if (isEbook) {
-            // FormatMapper will take care of the translation
-            book.putString(DBKey.FORMAT, "ebook");
+            book.putString(DBKey.FORMAT, context.getString(R.string.book_format_ebook));
         }
 
         final JSONObject listPrice = saleInfo.optJSONObject("listPrice");

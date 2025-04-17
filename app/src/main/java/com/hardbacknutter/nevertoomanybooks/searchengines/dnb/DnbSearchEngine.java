@@ -42,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -329,7 +330,7 @@ public class DnbSearchEngine
                             }
                             case "Umfang":
                             case "Extent": {
-                                parsePageNumber(td, book);
+                                parsePageNumber(context, td, book);
                                 break;
                             }
                             case "ISBN": {
@@ -674,16 +675,18 @@ public class DnbSearchEngine
      * </pre>
      * We grab the first set of digit's we find.
      *
-     * @param td   to parse
-     * @param book to update
+     * @param context Current context
+     * @param td      to parse
+     * @param book    to update
      */
-    private void parsePageNumber(@NonNull final Element td,
+    private void parsePageNumber(@NonNull final Context context,
+                                 @NonNull final Element td,
                                  @NonNull final Book book) {
 
         final String text = td.text();
         // No idea if there are other such text snippets we can check for.
         if (text.contains("Online-Ressource")) {
-            book.putString(DBKey.FORMAT, "ebook");
+            book.putString(DBKey.FORMAT, context.getString(R.string.book_format_ebook));
         }
 
         final Matcher matcher = PATTERN_PAGE_NUMBER.matcher(text);
