@@ -67,14 +67,14 @@ public final class ASIN {
         }
 
         boolean foundAlpha = false;
-        final String ucAsin = asin.trim().toUpperCase(Locale.ENGLISH);
+        final String ucAsin = asin.trim().toLowerCase(Locale.ENGLISH);
         for (int i = 0; i < ucAsin.length(); i++) {
-            final int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(ucAsin.charAt(i));
+            final int pos = "1234567890abcdefghijklmnopqrstuvwxyz".indexOf(ucAsin.charAt(i));
             // Make sure it's a valid char
             if (pos == -1) {
                 return false;
             }
-            // See if we got a non-numeric
+            // Must have at least one non-numeric character
             if (pos >= ASIN_LEN) {
                 foundAlpha = true;
             }
