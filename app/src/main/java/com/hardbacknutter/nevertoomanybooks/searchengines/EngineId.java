@@ -29,6 +29,7 @@ import androidx.annotation.StringRes;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -402,6 +403,29 @@ public enum EngineId
         this.defaultLocale = defaultLocale;
         this.clazz = clazz;
         this.enabled = enabled;
+    }
+
+    EngineId(@NonNull final Class<? extends SearchEngine> clazz,
+             final boolean enabled) {
+        this.clazz = clazz;
+        this.enabled = enabled;
+
+        final EngineData engineData;
+        try {
+            final Method method = clazz.getMethod("getEngineData");
+            engineData = Objects.requireNonNull(
+                    (EngineData) method.invoke(null));
+
+        } catch (@NonNull final NoSuchMethodException
+                                | InvocationTargetException
+                                | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        this.key = engineData.key;
+        this.labelResId = engineData.labelResId;
+        this.infoResIdList = engineData.infoResIdList;
+        this.defaultUrl = engineData.defaultUrl;
+        this.defaultLocale = engineData.defaultLocale;
     }
 
     /**

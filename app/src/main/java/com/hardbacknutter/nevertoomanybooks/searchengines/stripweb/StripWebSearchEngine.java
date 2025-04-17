@@ -42,6 +42,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -56,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -125,6 +127,18 @@ public class StripWebSearchEngine
     public StripWebSearchEngine(@NonNull final Context appContext,
                                 @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("stripweb",
+                              R.string.site_stripweb_be,
+                              List.of(R.string.site_description_dutch_and_more,
+                                      R.string.site_description_shop,
+                                      R.string.site_description_eu_comics),
+                              "https://www.stripweb.be",
+                              new Locale("nl", "BE"));
     }
 
     @NonNull
