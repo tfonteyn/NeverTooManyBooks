@@ -399,7 +399,10 @@ public class DnbSearchEngine
                             }
                             case "Land":
                             case "Country":
+                            case "DDC-Notation":
+                            case "DDC notation":
                                 // ignored for now as we don't have a field for it.
+                                // ddc: Dewey-Decimal
                                 break;
                         }
                     }
