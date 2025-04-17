@@ -76,8 +76,7 @@ import org.jsoup.select.Elements;
 public class BedethequeSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByExternalId,
-                   SearchEngine.ViewBookByExternalId {
+                   SearchEngine.ByExternalId {
 
     public static final String SITE_URL = "https://www.bedetheque.com";
     public static final String BOOK_URL = "https://www.bedetheque.com/BD-x-%s.html";
@@ -184,13 +183,6 @@ public class BedethequeSearchEngine
         }
 
         return csrfCookie.getName() + '=' + Objects.requireNonNull(csrfCookie.getValue());
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
     }
 
     @NonNull

@@ -80,8 +80,7 @@ import org.jsoup.select.Elements;
 public class DnbSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByText,
-                   SearchEngine.ViewBookByExternalId {
+                   SearchEngine.ByText {
 
     public static final String SITE_URL = "https://www.dnb.de";
     public static final String BOOK_URL = "https://d-nb.info/%s";
@@ -151,13 +150,6 @@ public class DnbSearchEngine
         } catch (@NonNull final CertificateException e) {
             LoggerFactory.getLogger().e(TAG, e);
         }
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return "https://d-nb.info/" + externalId;
     }
 
     @NonNull

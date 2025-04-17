@@ -109,12 +109,11 @@ public class AmazonSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByBarcode,
                    SearchEngine.CoverByEdition,
-                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.SearchOnSite {
 
     /** Preferences - Type: {@code String}. */
     static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
-                                             + '.' + SearchEngineConfig.PK_HOST_URL;
+                                      + '.' + SearchEngineConfig.PK_HOST_URL;
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
     /** Log tag. */
@@ -272,13 +271,6 @@ public class AmazonSearchEngine
     public AmazonSearchEngine(@NonNull final Context appContext,
                               @NonNull final SearchEngineConfig config) {
         super(appContext, config);
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return getHostUrl(context) + String.format(BY_PRODUCT_ID, externalId);
     }
 
     @NonNull

@@ -85,7 +85,6 @@ public class OpenLibrarySearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText,
                    SearchEngine.ByExternalId,
-                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByEdition,
                    SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionOpenLibrary> {
@@ -181,13 +180,6 @@ public class OpenLibrarySearchEngine
         } else {
             return false;
         }
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return getHostUrl(context) + "/books/" + externalId;
     }
 
     @Override

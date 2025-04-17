@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.menus.ViewBookOnSiteMenuHandler;
 
 /**
  * The interface a search engine for an {@link EngineId} needs to implement.
@@ -227,32 +226,6 @@ public interface SearchEngine
                 throws StorageException,
                        SearchException,
                        CredentialsException;
-    }
-
-    /** Optional. */
-    @Deprecated(forRemoval = true)
-    interface ViewBookByExternalId
-            extends SearchEngine {
-
-        /**
-         * Create a url to open a book on the website with the external id.
-         * <p>
-         * {@link SearchEngine.Login} will NOT be called upon.
-         * <p>
-         * ViewBookByExternalId functionality should be moved to the EngineId class
-         * This will eliminate having to create a SearchEngine instance just to open
-         * a browser link. See {@link ViewBookOnSiteMenuHandler#onMenuItemSelected}.
-         *
-         * @param context    Current context
-         * @param externalId to open
-         *
-         * @return url
-         */
-        @Deprecated
-        @AnyThread
-        @NonNull
-        String createViewOnSiteUrl(@NonNull Context context,
-                                   @NonNull String externalId);
     }
 
     /** Optional. */

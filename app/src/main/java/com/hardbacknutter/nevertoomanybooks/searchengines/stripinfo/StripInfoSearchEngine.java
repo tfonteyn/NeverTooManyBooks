@@ -97,7 +97,6 @@ import org.jsoup.select.Elements;
 public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByExternalId,
-                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.ByBarcode,
                    SearchEngine.Login {
 
@@ -182,13 +181,6 @@ public class StripInfoSearchEngine
     @NonNull
     private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
         return AuthorResolverFactory.getEuroComicResolvers(context, this);
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
     }
 
     @Override

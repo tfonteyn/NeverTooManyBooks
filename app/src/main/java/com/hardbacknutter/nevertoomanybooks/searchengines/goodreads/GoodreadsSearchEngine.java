@@ -75,8 +75,7 @@ public class GoodreadsSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText,
-                   SearchEngine.ByExternalId,
-                   SearchEngine.ViewBookByExternalId {
+                   SearchEngine.ByExternalId {
 
     public static final String SITE_URL = "https://www.goodreads.com";
     public static final String BOOK_URL = "https://www.goodreads.com/book/show/%s";
@@ -115,13 +114,6 @@ public class GoodreadsSearchEngine
 
         ratingParser = new RatingParser(5);
         authorTypeMapper = new AuthorTypeMapper();
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return getHostUrl(context) + String.format(BY_GOODREADS_ID, externalId);
     }
 
     @NonNull

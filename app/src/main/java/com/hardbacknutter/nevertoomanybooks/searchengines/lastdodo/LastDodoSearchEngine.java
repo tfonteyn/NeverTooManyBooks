@@ -76,8 +76,7 @@ public class LastDodoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByBarcode,
                    SearchEngine.ByText,
-                   SearchEngine.ByExternalId,
-                   SearchEngine.ViewBookByExternalId {
+                   SearchEngine.ByExternalId {
 
     public static final String SITE_URL = "https://www.lastdodo.nl";
     public static final String BOOK_URL = "https://www.lastdodo.nl/nl/items/%s";
@@ -216,13 +215,6 @@ public class LastDodoSearchEngine
     @NonNull
     private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
         return AuthorResolverFactory.getEuroComicResolvers(context, this);
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
     }
 
     @NonNull

@@ -99,7 +99,6 @@ public class IsfdbSearchEngine
         implements SearchEngine.ByText,
                    SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
-                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByEdition,
                    SearchEngine.Login,
                    SearchEngine.AlternativeEditions<AltEditionIsfdb> {
@@ -170,8 +169,6 @@ public class IsfdbSearchEngine
     private static final String CGI_BY_EXTERNAL_ID = CGI_BIN + CGI_PL + "?%1$s";
     /** Search URL template. */
     private static final String CGI_EDITIONS = CGI_BIN + CGI_SE + "?arg=%s&type=ISBN";
-    /** View in browser. */
-    private static final String CGI_BROWSER = CGI_BIN + CGI_PL + "?";
 
     private static final String REST_BIN = CGI_BIN + "/rest";
     private static final String REST_BY_EXTERNAL_ID = REST_BIN + "/getpub_by_internal_ID.cgi?%1$s";
@@ -555,13 +552,6 @@ public class IsfdbSearchEngine
                 throw new SearchException(getEngineId(), e);
             }
         }
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return getHostUrl(context) + CGI_BROWSER + externalId;
     }
 
     @NonNull
@@ -1397,7 +1387,7 @@ public class IsfdbSearchEngine
     private Author parseAuthor(@NonNull final Context context,
                                @NonNull final Element a,
                                @NonNull final List<AuthorResolver> authorResolvers)
-            throws CredentialsException, SearchException {
+            throws CredentialsException {
         final Author author = Author.from(a.text());
         final String url = a.attr("href");
         final Matcher matcher = AUTHOR_ID.matcher(url);

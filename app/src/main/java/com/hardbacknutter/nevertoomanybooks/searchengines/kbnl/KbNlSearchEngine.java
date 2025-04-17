@@ -62,8 +62,7 @@ public class KbNlSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
-                   SearchEngine.CoverByEdition,
-                   SearchEngine.ViewBookByExternalId {
+                   SearchEngine.CoverByEdition {
 
     public static final String SITE_URL = "https://www.kb.nl";
     public static final String BOOK_URL = "https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=%s";
@@ -159,13 +158,6 @@ public class KbNlSearchEngine
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return getHostUrl(context) + String.format(PERMALINK_URL, dbVersion, externalId);
     }
 
     @NonNull

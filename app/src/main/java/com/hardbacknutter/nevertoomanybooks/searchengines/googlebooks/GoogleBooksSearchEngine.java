@@ -90,10 +90,11 @@ public class GoogleBooksSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText,
-                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByEdition {
 
     public static final String SITE_URL = "https://books.google.com";
+    // TODO: 2024-12-30: google has a new link as beta:
+    //  "https://www.google.com/books/edition/_/" + externalId;
     public static final String BOOK_URL = "https://books.google.co.uk/books?id=%s";
     public static final String AUTHOR_URL = null;
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
@@ -114,15 +115,6 @@ public class GoogleBooksSearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(5);
-    }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        // TODO: 2024-12-30: google has a new link as beta:
-        // return "https://www.google.com/books/edition/_/" + externalId;
-        return "https://books.google.co.uk/books?id=" + externalId;
     }
 
     @NonNull

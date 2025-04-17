@@ -61,8 +61,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class LibraryThingSearchEngine
         extends SearchEngineBase
-        implements SearchEngine.ViewBookByExternalId,
-                   SearchEngine.AlternativeEditions<AltEditionIsbn>,
+        implements SearchEngine.AlternativeEditions<AltEditionIsbn>,
                    SearchEngine.UserRegistration {
 
     public static final String SITE_URL = "https://www.librarything.com";
@@ -122,14 +121,6 @@ public class LibraryThingSearchEngine
                                                  .getString(PK_API_TOKEN, null);
         return apiToken != null && apiToken.length() == TOKEN_LEN;
     }
-
-    @NonNull
-    @Override
-    public String createViewOnSiteUrl(@NonNull final Context context,
-                                      @NonNull final String externalId) {
-        return getHostUrl(context) + String.format("/work/%1$s", externalId);
-    }
-
 
     @Override
     public void cancel() {
