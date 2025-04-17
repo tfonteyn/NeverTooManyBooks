@@ -655,6 +655,13 @@ public class DBHelper
                     StoryGraph.BOOK_URL,
                     StoryGraph.AUTHOR_URL));
             addIdentifier(context, db, new Identifier(
+                    Identifier.SID_URN,
+                    Identifier.TYPE_STRING,
+                    context.getString(R.string.identifier_urn),
+                    null,
+                    null,
+                    null));
+            addIdentifier(context, db, new Identifier(
                     Identifier.SID_VIAF,
                     Identifier.TYPE_LONG,
                     context.getString(R.string.identifier_viaf),

@@ -125,6 +125,7 @@ public class Identifier
     public static final String SID_STRIP_INFO = "stripinfo";
     public static final String SID_TERCERA_FUNDACION = "ltf";
     public static final String SID_URI = "uri";
+    public static final String SID_URN = "urn";
     public static final String SID_WIKIDATA = "wikidata";
 
     /** {@link com.hardbacknutter.nevertoomanybooks.core.utils.ISNI}. */
@@ -424,6 +425,12 @@ public class Identifier
                                null,
                                "%s",
                                "%s"),
+                //https://en.wikipedia.org/wiki/Uniform_Resource_Name
+                new Identifier(SID_URN, TYPE_STRING,
+                               context.getString(R.string.identifier_urn),
+                               null,
+                               null,
+                               null),
                 new Identifier(SID_VIAF, TYPE_LONG,
                                context.getString(R.string.identifier_viaf),
                                VIAF.SITE_URL,

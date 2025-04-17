@@ -135,6 +135,8 @@
             translatable="false">La Tercera Fundación</string>
     <string name="identifier_uri"
             translatable="false">URI</string>
+    <string name="identifier_urn"
+            translatable="false">URN</string>
     <string name="identifier_url"
             translatable="false">URL</string>
     <string name="identifier_viaf"
