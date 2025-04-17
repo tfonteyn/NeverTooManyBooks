@@ -20,13 +20,14 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
 
-// FIXME: openlibrary  https://www.doi.org/%s
-// but none of the openlibrary provided doi numbers
-// we tried are resolving, so leaving bookUrl/authorUrl empty on purpose.
+/**
+ * @see <a href="https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation">
+ *         doi-resolution-documentation</a>
+ */
 public final class DOI {
 
     public static final String SITE_URL = "https://www.doi.org";
-    public static final String BOOK_URL = null;
+    public static final String BOOK_URL = "https://doi.org/%s";
     public static final String AUTHOR_URL = null;
 
     private DOI() {
