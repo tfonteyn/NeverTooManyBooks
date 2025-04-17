@@ -381,6 +381,10 @@ public class DnbSearchEngine
                                 parseSeries(td, book);
                                 break;
                             }
+                            case "Persistent Identifier": {
+                                parseIdentifiers(td, book);
+                                break;
+                            }
                             case "Datensatz-ID":
                             case "Record ID": {
                                 book.setIdentifierValue(Identifier.SID_DNB, td.text());
@@ -699,6 +703,26 @@ public class DnbSearchEngine
         if (matcher.find()) {
             book.putString(DBKey.PAGES, matcher.group());
         }
+    }
+
+    private void parseIdentifiers(@NonNull final Element td,
+                                  @NonNull final Book book) {
+        // we grab these from the url, so we get both the type and the value in one go.
+        td.select("a")
+          .stream()
+          .map(a -> a.attr("href"))
+          .forEach(url -> {
+              if (url.startsWith("https://nbn-resolving.org/")) {
+                  // "https://nbn-resolving.org/urn:nbn:de:101:1-2023102516403481026473"
+                  book.setIdentifierValue(Identifier.SID_URN,
+                                          url.substring(26));
+
+              } else if (url.startsWith("https://dx.doi.org/")) {
+                  // "https://dx.doi.org/10.1007/s40278-023-43601-1"
+                  book.setIdentifierValue(Identifier.SID_DOI,
+                                          url.substring(19));
+              }
+          });
     }
 
     /**
