@@ -113,7 +113,7 @@ public class AmazonSearchEngine
                    SearchEngine.SearchOnSite {
 
     /** Preferences - Type: {@code String}. */
-    public static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
+    static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
                                              + '.' + SearchEngineConfig.PK_HOST_URL;
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
@@ -252,6 +252,10 @@ public class AmazonSearchEngine
             "vanaf ",
             // Spanish/Portuguese
             "desde "};
+
+    private static final String SPANISH = "es";
+    private static final String GERMAN = "de";
+    private static final String DUTCH = "nl";
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     /** Parse the "x pages" string. */
@@ -614,7 +618,7 @@ public class AmazonSearchEngine
         final List<Locale> locales;
 
         // Hack to support the Portuguese site which does a redirect to the Spanish one
-        if ("es".equals(locale.getLanguage())) {
+        if (SPANISH.equals(locale.getLanguage())) {
             locales = new ArrayList<>(LocaleListUtils.asList(context, locale));
             // Not verified but let's hope "pt_BR" uses the same spelling for month names
             locales.add(1, new Locale("pt"));
@@ -733,15 +737,15 @@ public class AmazonSearchEngine
             final String pagesStr;
             // These are string from the actual website; hence not from resources
             switch (root) {
-                case "de":
+                case GERMAN:
                     pagesStr = "Seiten";
                     break;
 
-                case "nl":
+                case DUTCH:
                     pagesStr = "pagina's";
                     break;
 
-                case "es":
+                case SPANISH:
                     pagesStr = "páginas";
                     break;
 
