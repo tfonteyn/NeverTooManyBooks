@@ -136,7 +136,7 @@ public class AuthorTypeMapper {
      * Map the given type-name to an Author type code.
      *
      * @param locale   to use for case manipulation
-     * @param typeName to map
+     * @param typeName to map; can be a CSV list
      *
      * @return mapped author type, or {@link Author#TYPE_UNKNOWN}.
      */
