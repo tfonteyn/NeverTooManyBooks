@@ -60,6 +60,7 @@ public class AuthorTypeMapper {
         MAPPINGS.put("illustrations", Author.TYPE_ARTIST);
 
         MAPPINGS.put("coverart", Author.TYPE_COVER_ARTIST);
+        MAPPINGS.put("cover art", Author.TYPE_COVER_ARTIST);
         MAPPINGS.put("cover artist", Author.TYPE_COVER_ARTIST);
         MAPPINGS.put("cover illustrator", Author.TYPE_COVER_ARTIST);
         MAPPINGS.put("cover photographs", Author.TYPE_COVER_ARTIST);
