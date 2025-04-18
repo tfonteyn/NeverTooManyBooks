@@ -72,8 +72,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * TODO: further cleanup of the {@link #getStyledName} and {@link #getStyledName} methods
  * <p>
  * ENHANCE: The Author Locale should be based on the main language the author writes in.
- * <p>
- * ENHANCE: add support for https://en.wikipedia.org/wiki/International_Standard_Name_Identifier
  */
 public class Author
         implements Parcelable, Entity, Mergeable, IdentifierOwner {
