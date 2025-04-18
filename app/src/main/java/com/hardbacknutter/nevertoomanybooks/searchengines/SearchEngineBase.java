@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public abstract class SearchEngineBase
@@ -73,9 +72,6 @@ public abstract class SearchEngineBase
 
     @NonNull
     private final SearchEngineConfig config;
-    @Nullable
-    private SSLContext sslContext;
-
     /**
      * Set by a client or from within the task.
      * It's a <strong>request</strong> to cancel while running.
@@ -84,6 +80,8 @@ public abstract class SearchEngineBase
     /** Helper to randomize some urls to avoid fingerprinting by the servers. */
     @NonNull
     private final Random random;
+    @Nullable
+    private SSLContext sslContext;
     @Nullable
     private ImageDownloader imageDownloader;
     @Nullable
@@ -232,13 +230,13 @@ public abstract class SearchEngineBase
         return cancelRequested.get() || caller == null || caller.isCancelled();
     }
 
-    protected void setSslContext(@Nullable final SSLContext sslContext) {
-        this.sslContext = sslContext;
-    }
-
     @Nullable
     SSLContext getSslContext() {
         return sslContext;
+    }
+
+    protected void setSslContext(@Nullable final SSLContext sslContext) {
+        this.sslContext = sslContext;
     }
 
     /**
@@ -508,25 +506,6 @@ public abstract class SearchEngineBase
         if (add) {
             currentAuthor.setType(currentAuthorType);
             book.add(currentAuthor);
-        }
-    }
-
-    /**
-     * Process the given name and add as {@link Publisher} if appropriate.
-     *
-     * @param name of a publisher
-     * @param book Bundle to update
-     */
-    public void addPublisher(@Nullable final String name,
-                             @NonNull final Book book) {
-        if (name == null || name.isBlank()) {
-            return;
-        }
-
-        final Publisher currentPublisher = Publisher.from(name);
-        // add if not already present
-        if (book.getPublishers().stream().noneMatch(pub -> pub.equals(currentPublisher))) {
-            book.add(currentPublisher);
         }
     }
 

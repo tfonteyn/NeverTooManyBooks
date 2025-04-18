@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -639,13 +640,16 @@ public class StripWebSearchEngine
             // but some are plain text separated by commas
             final String[] names = SearchEngineUtils.cleanText(td.text()).split(",");
             for (final String name : names) {
-                addPublisher(name, book);
+                if (name != null && !name.isBlank()) {
+                    book.add(Publisher.from(name));
+                }
             }
         } else {
-            for (final Element a : aas) {
-                final String name = SearchEngineUtils.cleanText(a.text());
-                addPublisher(name, book);
-            }
+            aas.stream()
+               .map(a -> SearchEngineUtils.cleanText(a.text()))
+               .filter(name -> !name.isBlank())
+               .map(Publisher::from)
+               .forEach(book::add);
         }
     }
 

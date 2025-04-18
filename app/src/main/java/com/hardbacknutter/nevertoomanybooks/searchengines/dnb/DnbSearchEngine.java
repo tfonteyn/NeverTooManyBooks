@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -657,23 +658,21 @@ public class DnbSearchEngine
                                 @NonNull final Book book) {
         final Element p = td.selectFirst("p");
         if (p != null) {
-            final String html = p.html();
-
-            final String publisherName;
             // The part before '<br>' is a city/region name followed by ':' and the pub. name
             // The part after '<br>' is the publishing date
-            final String[] brSplit = PATTERN_BR.split(html);
+            final String[] brSplit = PATTERN_BR.split(p.html());
 
             if (brSplit.length > 0 && !brSplit[0].isBlank()) {
+                final String name;
                 if (brSplit[0].contains(":")) {
                     final String[] parts = brSplit[0].split(":", 2);
-                    publisherName = parts[parts.length - 1];
+                    name = parts[parts.length - 1];
                 } else {
-                    publisherName = brSplit[0];
+                    name = brSplit[0];
                 }
 
-                if (publisherName != null && !publisherName.isBlank()) {
-                    addPublisher(publisherName, book);
+                if (name != null && !name.isBlank()) {
+                    book.add(Publisher.from(name));
                 }
 
                 if (brSplit.length > 1) {

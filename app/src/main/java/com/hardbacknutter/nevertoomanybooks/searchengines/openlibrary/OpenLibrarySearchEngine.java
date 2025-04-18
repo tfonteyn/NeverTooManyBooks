@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
@@ -830,7 +831,10 @@ public class OpenLibrarySearchEngine
     private void parsePublishers(@NonNull final JSONArray a,
                                  @NonNull final Book book) {
         for (int ai = 0; ai < a.length(); ai++) {
-            addPublisher(a.optString(ai), book);
+            final String name = a.optString(ai);
+            if (!name.isBlank()) {
+                book.add(Publisher.from(name));
+            }
         }
     }
 

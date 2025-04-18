@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 
@@ -394,7 +395,7 @@ class KbNlBookHandler
      */
     @VisibleForTesting
     void parseAuthor(@NonNull final Iterable<CurrentData> currentData,
-                             @Author.Type final int type) {
+                     @Author.Type final int type) {
         for (final CurrentData cd : currentData) {
             final String text = cd.data;
             // this and below is not efficient... but we'll optimize when
@@ -581,15 +582,17 @@ class KbNlBookHandler
      * @param currentData content of {@code labelledData}
      */
     private void parsePublisher(@NonNull final List<CurrentData> currentData) {
-        String publisherName = currentData.stream()
-                                          .map(cd -> cd.data)
-                                          .filter(name -> !name.isEmpty())
-                                          .collect(Collectors.joining(" "));
-        // the part before the ":" is (usually?) the city. 2nd part is the publisher
-        if (publisherName.contains(":")) {
-            publisherName = publisherName.split(":")[1].strip();
+        String text = currentData.stream()
+                                 .map(cd -> cd.data)
+                                 .filter(name -> !name.isEmpty())
+                                 .collect(Collectors.joining(" "));
+        // the part before the ":" is (usually?) the city. 2nd part is the name
+        if (text.contains(":")) {
+            text = text.split(":")[1].strip();
         }
-        searchEngine.addPublisher(publisherName, book);
+        if (!text.isBlank()) {
+            book.add(Publisher.from(text));
+        }
     }
 
     /**

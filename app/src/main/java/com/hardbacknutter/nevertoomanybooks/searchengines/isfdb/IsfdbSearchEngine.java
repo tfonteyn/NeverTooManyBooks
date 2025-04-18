@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
@@ -1322,9 +1323,12 @@ public class IsfdbSearchEngine
 
     private void parsePublisher(@NonNull final Element li,
                                 @NonNull final Book book) {
-        for (final Element a : li.select("a")) {
-            addPublisher(a.text(), book);
-        }
+        li.select("a")
+          .stream()
+          .map(Element::text)
+          .filter(name -> !name.isBlank())
+          .map(Publisher::from)
+          .forEach(book::add);
     }
 
     private void parsePrice(@NonNull final Context context,

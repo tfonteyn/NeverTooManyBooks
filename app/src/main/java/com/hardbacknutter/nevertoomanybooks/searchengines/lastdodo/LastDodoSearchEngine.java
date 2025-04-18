@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -750,9 +751,12 @@ public class LastDodoSearchEngine
      */
     private void parsePublisher(@NonNull final Element td,
                                 @NonNull final Book book) {
-        for (final Element a : td.select("a")) {
-            addPublisher(SearchEngineUtils.cleanText(a.text()), book);
-        }
+        td.select("a")
+          .stream()
+          .map(a -> SearchEngineUtils.cleanText(a.text()))
+          .filter(name -> !name.isBlank())
+          .map(Publisher::from)
+          .forEach(book::add);
     }
 
     private void processType(@NonNull final Element td,

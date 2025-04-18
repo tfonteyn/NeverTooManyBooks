@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -998,12 +999,14 @@ public class StripInfoSearchEngine
      */
     private int parsePublisher(@NonNull final Element td,
                                @NonNull final Book book) {
-        final Element dataElement = td.nextElementSibling();
-        if (dataElement != null) {
-            final Elements aas = dataElement.select("a");
-            for (int i = 0; i < aas.size(); i++) {
-                addPublisher(SearchEngineUtils.cleanText(aas.get(i).text()), book);
-            }
+        final Element data = td.nextElementSibling();
+        if (data != null) {
+            data.select("a")
+                .stream()
+                .map(element -> SearchEngineUtils.cleanText(element.text()))
+                .filter(text -> !text.isBlank())
+                .map(Publisher::from)
+                .forEach(book::add);
             return 1;
         }
         return 0;

@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
@@ -454,14 +455,16 @@ public class KbNlHtmlSearchEngine
                                 @NonNull final Book book) {
         final Elements spans = td.select("span");
         if (!spans.isEmpty()) {
-            String publisherName = spans.stream()
-                                        .map(Element::text)
-                                        .filter(text -> !text.isEmpty())
-                                        .collect(Collectors.joining(" "));
-            if (publisherName.contains(":")) {
-                publisherName = publisherName.split(":")[1].trim();
+            String text = spans.stream()
+                               .map(Element::text)
+                               .filter(name -> !name.isEmpty())
+                               .collect(Collectors.joining(" "));
+            if (text.contains(":")) {
+                text = text.split(":")[1].trim();
             }
-            addPublisher(publisherName, book);
+            if (!text.isBlank()) {
+                book.add(Publisher.from(text));
+            }
         }
     }
 
