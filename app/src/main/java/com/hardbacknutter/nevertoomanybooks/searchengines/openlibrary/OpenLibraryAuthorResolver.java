@@ -46,10 +46,31 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * It's a little unreliable... see comments inside {@link #parse(Context, JSONObject)}.
+ * It's a little unreliable... see comments inside {@link #parse}.
  */
 public final class OpenLibraryAuthorResolver
         implements AuthorResolver {
+
+    // There can be MANY different keys... sigh.
+    //  "remote_ids": {
+    //    "viaf": "97113511",
+    //    "goodreads": "3389",
+    //    "storygraph": "c4c684e1-3f2b-48e4-b9cc-e819f61e0177",
+    //    "isni": "0000000121446296",
+    //    "librarything": "kingstephen-1",
+    //    "amazon": "B000AQ0842",
+    //    "wikidata": "Q39829",
+    //    "inventaire": "wd:Q39829",
+    //    "gnd": "118813250",
+    //    "lc_naf": "n79063767",
+    //    "bookbrainz": "128d9490-ee19-4270-a070-32e0a36847f5",
+    //    "imdb": "nm0000175",
+    //    "musicbrainz": "a4ac255f-9775-4c16-8642-7f51502e45dd"
+    //  },
+    // as far as I can tell most common/reliable ones are "viaf" and "wikidata"
+    // Arbitrary decision: we're limiting us to the ISNI and these:
+    private static final String AUTHOR_SIDS =
+            "viaf|wikidata|goodreads|librarything|amazon|storygraph";
 
     @NonNull
     private final OpenLibrarySearchEngine searchEngine;
@@ -65,11 +86,11 @@ public final class OpenLibraryAuthorResolver
     private OpenLibraryAuthorResolver(@NonNull final Context context,
                                       @NonNull final OpenLibrarySearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        authorUri = searchEngine.getEngineId()
-                                .getIdentifier()
-                                .flatMap(identifier -> identifier
-                                        .getAuthorUri(context))
-                                .orElse(OpenLibrarySearchEngine.AUTHOR_URL);
+        authorUri = searchEngine
+                .getEngineId()
+                .getIdentifier()
+                .flatMap(identifier -> identifier.getAuthorUri(context))
+                .orElse(OpenLibrarySearchEngine.AUTHOR_URL);
     }
 
     /**
@@ -132,7 +153,7 @@ public final class OpenLibraryAuthorResolver
             final String response = futureHttpGet.getAsString(url, (con, s) -> s);
             final JSONObject jsonObject = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
-                final Author found = parse(context, jsonObject);
+                final Author found = parse(jsonObject);
                 if (found != null) {
                     author.setName(found.getFamilyName(), found.getGivenNames());
                     author.setRealAuthor(found.getRealAuthor());
@@ -150,12 +171,10 @@ public final class OpenLibraryAuthorResolver
 
     @VisibleForTesting
     @Nullable
-    Author parse(@NonNull final Context context,
-                 @NonNull final JSONObject document) {
-        Author author = null;
+    Author parse(@NonNull final JSONObject document) {
         // As so often with OpenLibrary, the confusion starts at the very start...
 
-        // This seemingly the name as it would appear on a book
+        // This is seemingly the name as it would appear on a book
         // 1. "James Tiptree, Jr."
         // 2. "Kurt Vonnegut"
         // 3. "Stephen King"
@@ -186,15 +205,12 @@ public final class OpenLibraryAuthorResolver
         final String entityType = document.optString("entity_type");
 
         // ok... best guess/attempt here
+        final Author author;
         if (!name.isEmpty()) {
             author = Author.from(name);
+        } else if (!personalName.isEmpty()) {
+            author = Author.from(personalName);
         } else {
-            if (!personalName.isEmpty()) {
-                author = Author.from(personalName);
-            }
-        }
-
-        if (author == null) {
             return null;
         }
 
@@ -220,30 +236,10 @@ public final class OpenLibraryAuthorResolver
                             author.setIdentifierValue(Identifier.SID_ISNI, isni.getIsni());
                         }
                     }
-                } else {
-                    // There can be MANY different keys... sigh.
-                    //  "remote_ids": {
-                    //    "viaf": "97113511",
-                    //    "goodreads": "3389",
-                    //    "storygraph": "c4c684e1-3f2b-48e4-b9cc-e819f61e0177",
-                    //    "isni": "0000000121446296",
-                    //    "librarything": "kingstephen-1",
-                    //    "amazon": "B000AQ0842",
-                    //    "wikidata": "Q39829",
-                    //    "inventaire": "wd:Q39829",
-                    //    "gnd": "118813250",
-                    //    "lc_naf": "n79063767",
-                    //    "bookbrainz": "128d9490-ee19-4270-a070-32e0a36847f5",
-                    //    "imdb": "nm0000175",
-                    //    "musicbrainz": "a4ac255f-9775-4c16-8642-7f51502e45dd"
-                    //  },
-                    // as far as I can tell most common/reliable ones are "viaf" and "wikidata"
-                    // Arbitrary decision: we're limiting us to these:
-                    if ("viaf,wikidata,goodreads,librarything,amazon,storygraph".contains(key)) {
-                        final String s = remoteIds.optString(key);
-                        if (!s.isEmpty()) {
-                            author.setIdentifierValue(key, s);
-                        }
+                } else if (AUTHOR_SIDS.contains(key)) {
+                    final String s = remoteIds.optString(key);
+                    if (!s.isEmpty()) {
+                        author.setIdentifierValue(key, s);
                     }
                 }
             }

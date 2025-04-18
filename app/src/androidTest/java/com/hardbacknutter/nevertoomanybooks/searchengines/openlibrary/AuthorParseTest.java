@@ -28,12 +28,10 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -68,12 +66,12 @@ public class AuthorParseTest
 
     @Test
     public void parse_ol20187a()
-            throws SearchException, CredentialsException, IOException {
+            throws IOException {
 
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.openlibrary_author_ol20187a);
 
-        final Author author = resolver.parse(context, document);
+        final Author author = resolver.parse(document);
         assertNotNull(author);
         Log.d(TAG, author.toString());
 
@@ -98,12 +96,12 @@ public class AuthorParseTest
 
     @Test
     public void parse_ps_ol2677446a()
-            throws SearchException, CredentialsException, IOException {
+            throws IOException {
 
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.openlibrary_author_ps_ol2677446a);
 
-        Author author = resolver.parse(context, document);
+        Author author = resolver.parse(document);
         assertNotNull(author);
         Log.d(TAG, author.toString());
 
