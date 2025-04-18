@@ -275,7 +275,7 @@ public class ParseTest
         assertEquals("deu", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2023", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("528", book.getString(DBKey.PAGES, null));
-        assertEquals("ebook", book.getString(DBKey.FORMAT, null));
+        assertEquals("eBook", book.getString(DBKey.FORMAT, null));
 
         // We parsed correctly, "Werk: NN", presumably bad-data on the site?
         assertEquals("NN", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));

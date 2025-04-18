@@ -463,11 +463,28 @@ public class DnbSearchEngine
         book.putString(DBKey.TITLE, text);
     }
 
+    /**
+     * <pre>
+     *     {@code
+     *     <td class="c-catalog-table__content"><p>978-3-89908-675-1</p></td>
+     *     }
+     * </pre>
+     * <pre>
+     *     {@code
+     *     <td class="c-catalog-table__content"><p>978-3-96804-070-7<br>978-3-96804-071-4</p></td>
+     *     }
+     * </pre>
+     *
+     * @param td   to parse
+     * @param book to update
+     */
     private void parseIsbn(@NonNull final Element td,
                            @NonNull final Book book) {
         // Only add if not already there
         if (!book.contains(DBKey.ISBN)) {
-            final String isbnText = ISBN.cleanText(td.text());
+            // grab first ISBN only
+            final String text = PATTERN_BR.split(td.text())[0];
+            final String isbnText = ISBN.cleanText(text);
             // (don't do a full ISBN test here, no need)
             if (isbnText.length() == 10 || isbnText.length() == 13) {
                 book.putString(DBKey.ISBN, isbnText);
@@ -609,21 +626,21 @@ public class DnbSearchEngine
     /**
      * Publisher and publication-date. Prefixed by the city/region.
      *
-     * <pre>
-     *     {@code
+     * <pre>{@code
      *     <td class="c-catalog-table__content"><p>München: Wilhelm Heyne Verlag<br>01/2023</p></td>
-     *     }
-     * </pre>
-     * <pre>
-     *     {@code
+     * }</pre>
+     * <pre>{@code
      *     <td class="c-catalog-table__content"><p>München: Knaur<br>Juni 2024</p></td>
-     *     }
-     * </pre>
-     * <pre>
-     *     {@code
+     * }</pre>
+     * <pre>{@code
+     *     <td class="c-catalog-table__content"><p>Wattenheim: Salleck Publ.<br>2014</p></td>
+     * }</pre>
+     * <pre>{@code
      *     <td class="c-catalog-table__content"><p>München: Blanvalet<br>[2023]</p></td>
-     *     }
-     * </pre>
+     * }</pre>
+     * <pre>{@code
+     *     <td class="c-catalog-table__content"><p>Wattenheim: Salleck Publications<br>[2017]-</p></td>
+     * }</pre>
      *
      * <pre>
      *     "Bamberg: Karl-May-Verlag
