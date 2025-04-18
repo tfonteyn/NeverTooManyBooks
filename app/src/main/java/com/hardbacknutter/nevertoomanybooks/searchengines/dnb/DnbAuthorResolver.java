@@ -47,11 +47,8 @@ import org.jsoup.select.Elements;
 /**
  * FIXME: we're a bit [bleeped] here due to using the beta website.
  * The author permalink takes us to the old site which we don't parse
- * because we mistakenly believed that DNB would actually finish the work on the beta...
- * And we cannot follow the author to the beta site, as that requires
- * a referer to be set or we get a 403 Forbidden.
- * BUT... there is a workaround: setting referer to "https://katalog.dnb.de"
- * seems to work.
+ * because we mistakenly believed that DNB would actually finish
+ * the work on the beta in a reasonable timeframe...
  */
 public final class DnbAuthorResolver
         implements AuthorResolver {
@@ -71,7 +68,7 @@ public final class DnbAuthorResolver
                               @NonNull final DnbSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
         // hardcode the beta website
-        authorUri = "https://katalog.dnb.de/DE/resource.html?id=%s";
+        authorUri = DnbSearchEngine.KATALOG_DNB_DE + "/DE/resource.html?id=%s";
         //        authorUri = searchEngine.getEngineId()
         //                                .getIdentifier()
         //                                .flatMap(identifier -> identifier
@@ -134,11 +131,10 @@ public final class DnbAuthorResolver
 
         final String url = String.format(authorUri, oIv.get());
 
-        final Document document = searchEngine.loadDocument(context, url,
-                                                            Map.of(HttpConstants.REFERER,
-                                                                   "https://katalog.dnb.de"));
-        if (!searchEngine.isCancelled()) {
+        final Document document = searchEngine.loadDocument(context, url, Map.of(
+                HttpConstants.REFERER, DnbSearchEngine.KATALOG_DNB_DE));
 
+        if (!searchEngine.isCancelled()) {
             final Author found = parse(context, document);
             if (found != null) {
                 author.setName(found.getFamilyName(), found.getGivenNames());
@@ -227,10 +223,8 @@ public final class DnbAuthorResolver
 
         if (author != null && isPseudonym && realAuthorUrl != null) {
             final String url = searchEngine.getHostUrl(context) + '/' + realAuthorUrl;
-            // referer must be set or we get a 403 Forbidden
-            final Document raDoc = searchEngine.loadDocument(context, url,
-                                                             Map.of(HttpConstants.REFERER,
-                                                                    document.location()));
+            final Document raDoc = searchEngine.loadDocument(context, url, Map.of(
+                    HttpConstants.REFERER, document.location()));
             if (!searchEngine.isCancelled()) {
                 final Author realAuthor = parse(context, raDoc);
                 if (realAuthor != null) {

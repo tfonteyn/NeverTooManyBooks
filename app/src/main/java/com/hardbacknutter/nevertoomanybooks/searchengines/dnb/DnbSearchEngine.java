@@ -86,6 +86,8 @@ public class DnbSearchEngine
     public static final String SITE_URL = "https://www.dnb.de";
     public static final String BOOK_URL = "https://d-nb.info/%s";
     public static final String AUTHOR_URL = "https://d-nb.info/gnd/%s";
+    static final String KATALOG_DNB_DE = "https://katalog.dnb.de";
+
     private static final String SELECT_SINGLE_RESULT = "div.l-catalog-single-content";
     private static final String SELECT_MULTI_RESULT = "div.l-catalog-results__entry";
 
@@ -127,10 +129,10 @@ public class DnbSearchEngine
     /** Example: {@code DE/resource.html?id=118646109&pr=0&sortA=bez&sortD=-dat&v=plist}. */
     private static final Pattern AUTHOR_ID = Pattern.compile(
             "DE/resource\\.html\\?id=(\\d+)&.*");
-    // we could probable just the "https://katalog.dnb.de"...
-    private static final Map<String, String> ROOT_REFERER =
-            Map.of(HttpConstants.REFERER,
-                   "https://katalog.dnb.de/DE/home.html?pr=0&sortA=bez&sortD=-dat&v=plist");
+    // we could probable just use the bare "https://katalog.dnb.de"...
+    private static final Map<String, String> ROOT_REFERER = Map.of(
+            HttpConstants.REFERER,
+            KATALOG_DNB_DE + "/DE/home.html?pr=0&sortA=bez&sortD=-dat&v=plist");
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
