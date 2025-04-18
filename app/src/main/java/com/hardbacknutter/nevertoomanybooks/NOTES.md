@@ -4,14 +4,14 @@ Draft notes for next version:
 
 NEW:
 
-- Bookshelves/Styles list editor improvement
 - dnb.de, OpenLibrary, Databazeknih: added support for resolving author pseudonyms.
   Can be disabled in their settings.
+- Bookshelves/Styles list editor improvement
 - Identifier editor (for Advanced users)
 
 FIXES:
 
-- dnb.de workaround added to solve an ongoing security issue on their site.
+- dnb.de workaround added for an ongoing certificate/security issue on the site.
 - github #137: dnb.de blocked requests without a 'referer'.
 - github #135: creating duplicate style names caused a crash
 - fixes for Android 8..10 devices where merging Authors (etc) would sometimes fail.
@@ -26,21 +26,19 @@ Supported Android versions:
 
 https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
 
-https://apilevels.com/
-
-2025-02-31:
+2025-03-31:
 
 | version | %     |     
 |---------|-------|
-| 15.0    | 4.58  |
-| 14.0    | 40.09 |
-| 13.0    | 58.1  |
-| 12.0    | 70.98 |
-| 11.0    | 82.41 |
-| 10.0    | 88.45 |
-| 9.0     | 91.99 |
-| 8.1     | 93.07 |
-| 8.0     | 95.14 |
+| 15.0    | 7.56  |
+| 14.0    | 42.15 |
+| 13.0    | 59.54 |
+| 12.0    | 71.97 |
+| 11.0    | 82.82 |
+| 10.0    | 88.57 |
+| 9.0     | 91.85 |
+| 8.1     | 92.84 |
+| 8.0     | 94.90 |
 
 <hr style="border:1px solid blue;">
 
