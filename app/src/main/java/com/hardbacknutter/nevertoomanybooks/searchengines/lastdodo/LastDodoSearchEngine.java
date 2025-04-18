@@ -733,14 +733,11 @@ public class LastDodoSearchEngine
      */
     private void processSeries(@NonNull final Element td,
                                @NonNull final Book book) {
-        for (final Element a : td.select("a")) {
-            final String name = a.text();
-            final Series currentSeries = Series.from(name);
-            // add if not already present
-            if (book.getSeries().stream().noneMatch(series -> series.equals(currentSeries))) {
-                book.add(currentSeries);
-            }
-        }
+        td.select("a")
+          .stream()
+          .map(Element::text)
+          .map(Series::from)
+          .forEach(book::add);
     }
 
     /**

@@ -1346,10 +1346,11 @@ public class IsfdbSearchEngine
 
     private void parsePublicationSeries(@NonNull final Element li,
                                         @NonNull final Book book) {
-        for (final Element a : li.select("a")) {
-            final Series series = Series.from(a.text());
-            book.add(series);
-        }
+        li.select("a")
+          .stream().map(Element::text)
+          .filter(name -> !name.isBlank())
+          .map(Series::from)
+          .forEach(book::add);
     }
 
     private void parsePublicationSeriesNumber(@NonNull final Element labelElement,
