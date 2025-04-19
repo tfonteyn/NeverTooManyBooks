@@ -146,8 +146,7 @@ public final class IsfdbAuthorResolver
             throws SearchException, CredentialsException {
 
         final String url = String.format(authorSearchUrl, names);
-        final Document document = searchEngine.loadDocument(
-                context, url, IsfdbSearchEngine.REQUEST_PROPERTIES);
+        final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             return parse(context, document);
         }
@@ -163,8 +162,7 @@ public final class IsfdbAuthorResolver
             return null;
         }
         final String url = String.format(authorUri, sid);
-        final Document document = searchEngine.loadDocument(
-                context, url, IsfdbSearchEngine.REQUEST_PROPERTIES);
+        final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             return parse(context, document);
         }

@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbAuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuthorResolver;
 
 /**
@@ -98,21 +99,7 @@ public final class AuthorResolverFactory {
                     return List.of(DnbAuthorResolver.create(context, searchEngine));
                 }
                 case Isfdb: {
-                    // URGENT: 2025-04-14. ongoing site issues SSLProtocolException
-                    // Read error: ssl=0x7a6b6d87b598: Failure in SSL library, usually a protocol error
-                    // error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT
-                    // (external/boringssl/src/crypto/cipher_extra/e_chacha20poly1305.c:259
-                    // 0x7a69b00547fb:0x00000000)
-                    // error:1000008b:SSL routines:OPENSSL_internal:DECRYPTION_FAILED_OR_BAD_RECORD_MAC
-                    // (external/boringssl/src/ssl/tls_record.cc:294 0x7a69b00547fb:0x00000000)
-                    // |docRequestUrl="https://www.isfdb.org/cgi-bin/ea.cgi?5"
-                    //
-                    // we tried a clean disconnect, create new request, connect,
-                    // but the problem persists despite req param "connection=close"
-                    // so the issue seems entirely on the server side.
-
-//                    return List.of(IsfdbAuthorResolver.create(context, searchEngine));
-                    return List.of();
+                    return List.of(IsfdbAuthorResolver.create(context, searchEngine));
                 }
                 case OpenLibrary: {
                     return List.of(OpenLibraryAuthorResolver.create(context, searchEngine));

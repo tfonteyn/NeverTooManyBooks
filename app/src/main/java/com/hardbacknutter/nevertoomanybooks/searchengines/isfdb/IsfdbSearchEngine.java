@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -126,10 +125,6 @@ public class IsfdbSearchEngine
                                              + ".search.toc.series";
     static final String PK_LOGIN_TO_SEARCH = EngineId.Isfdb.getPreferenceKey()
                                              + ".login.to.search";
-    // added due to https://github.com/square/okhttp/issues/1517
-    // it's a server issue, this is a workaround.
-    static final Map<String, String> REQUEST_PROPERTIES = Map.of(HttpConstants.CONNECTION,
-                                                                 HttpConstants.CONNECTION_CLOSE);
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
 
@@ -570,7 +565,7 @@ public class IsfdbSearchEngine
 
         final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID, externalId);
 
-        final Document document = loadDocument(context, url, REQUEST_PROPERTIES);
+        final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, book);
             // ISFDB only shows the books language on the publications page.
@@ -1709,7 +1704,7 @@ public class IsfdbSearchEngine
                                                 @NonNull final String url)
             throws SearchException, CredentialsException {
 
-        final Document document = loadDocument(context, url, REQUEST_PROPERTIES);
+        final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
             return parseEditions(context, document);
@@ -1731,7 +1726,7 @@ public class IsfdbSearchEngine
         // go get it.
         final String url = getHostUrl(context) + String.format(CGI_BY_EXTERNAL_ID,
                                                                edition.getIsfdbId());
-        return loadDocument(context, url, REQUEST_PROPERTIES);
+        return loadDocument(context, url, null);
     }
 
     /**

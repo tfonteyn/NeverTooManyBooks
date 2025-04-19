@@ -20,7 +20,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:title="@string/site_isfdb">
@@ -33,14 +33,13 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
 
-        <!-- URGENT: 2025-04-14. ongoing site issues SSLProtocolException -->
-        <!--        <SwitchPreference-->
-        <!--            android:defaultValue="true"-->
-        <!--            android:icon="@drawable/cloud_download_24px"-->
-        <!--            android:key="isfdb.resolve.authors.isfdb"-->
-        <!--            android:summaryOff="@string/no"-->
-        <!--            android:summaryOn="@string/yes"-->
-        <!--            android:title="@string/pt_search_resolve_authors" />-->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/cloud_download_24px"
+            android:key="isfdb.resolve.authors.isfdb"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_resolve_authors" />
 
         <SwitchPreference
             android:defaultValue="false"
@@ -105,8 +104,8 @@
     </PreferenceCategory>
 
     <com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory
-        android:title="@string/lbl_troubleshooting"
-        android:summary="@string/lbl_troubleshooting_warning">
+        android:summary="@string/lbl_troubleshooting_warning"
+        android:title="@string/lbl_troubleshooting">
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/troubleshoot_24px"
