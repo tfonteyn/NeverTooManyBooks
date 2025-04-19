@@ -36,11 +36,16 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RatingBar;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/**
+ * "@Keep" is REQUIRED!
+ */
 // AppCompatRatingBar will add undesired measuring behavior.
 @SuppressLint("AppCompatCustomView")
+@Keep
 @SuppressWarnings("WeakerAccess")
 public class MaterialRatingBar
         extends RatingBar {
