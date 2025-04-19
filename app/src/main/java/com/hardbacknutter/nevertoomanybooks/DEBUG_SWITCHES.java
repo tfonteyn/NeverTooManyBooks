@@ -75,9 +75,6 @@ public final class DEBUG_SWITCHES {
     /** all things related to cover image handling. */
     public static final boolean COVERS = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.network.JsoupLoader}. */
-    public static final boolean JSOUP = false;
-
     /** {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator}. */
     public static final boolean SEARCH_COORDINATOR = false;
     /** enable timers for rough performance measurements. */
