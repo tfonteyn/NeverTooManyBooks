@@ -1,3 +1,22 @@
+### 7.3.0
+
+NEW:
+
+- isfdb.org, dnb.de, OpenLibrary, Databazeknih:
+  Added support for resolving author pseudonyms.
+  Can be disabled in their settings.
+- Bookshelves/Styles list editor improvement
+- Identifier editor (for Advanced users)
+
+FIXES:
+
+- dnb.de workaround added for an ongoing certificate/security issue on the site.
+- github #137: dnb.de blocked requests without a 'referer'.
+- github #135: creating duplicate style names caused a crash
+- fixes for Android 8..10 devices where merging Authors (etc) would sometimes fail.
+
+---
+
 ### 7.2.1
 
 FIXES:
@@ -6,6 +25,8 @@ FIXES:
 - editing/searching by website book id:
   - "Database Knih" with phone in landscape mode was missing
   - Goodreads was missing
+
+---
 
 ### 7.2.0
 

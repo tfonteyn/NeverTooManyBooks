@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,9 +27,9 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 If you're migrating from the app "Book Catalogue", please
 see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
 
-### Download the latest release: 7.2.1
+### Download the latest release: 7.3.0
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.2.1/NeverTooManyBooks-7.2.1.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.3.0/NeverTooManyBooks-7.3.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
