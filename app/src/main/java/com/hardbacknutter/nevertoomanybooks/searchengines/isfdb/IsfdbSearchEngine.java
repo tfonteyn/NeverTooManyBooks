@@ -50,7 +50,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
@@ -82,7 +81,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.jsoup.nodes.Document;
@@ -1150,15 +1148,6 @@ public class IsfdbSearchEngine
                 final Element labelElement = li.selectFirst("b");
                 if (labelElement != null) {
                     fieldName = labelElement.text();
-                }
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-                    final Logger logger = LoggerFactory.getLogger();
-                    if (fieldName == null) {
-                        logger.d(TAG, "fetch", "li=" + li);
-                    } else {
-                        logger.d(TAG, "fetch", "fieldName=" + fieldName);
-                    }
                 }
 
                 if (fieldName != null) {

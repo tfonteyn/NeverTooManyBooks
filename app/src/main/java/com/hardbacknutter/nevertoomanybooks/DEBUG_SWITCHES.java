@@ -80,15 +80,11 @@ public final class DEBUG_SWITCHES {
     /** enable timers for rough performance measurements. */
     public static final boolean SEARCH_COORDINATOR_TIMERS = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.searchengines.isfdb}. */
-    public static final boolean ISFDB = false;
-
     public static final boolean IMPORT_CSV_BOOKS = false;
     public static final boolean IMPORT_CSV_BOOKS_EXT = false;
 
     public static final boolean IMPORT_CALIBRE_BOOKS = false;
     public static final boolean IMPORT_STRIP_INFO_BOOKS = false;
-
 
 
     /** Enable strict mode reporting on network,disc,... */
