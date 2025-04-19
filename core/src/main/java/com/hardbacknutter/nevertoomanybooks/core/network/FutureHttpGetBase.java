@@ -97,29 +97,23 @@ public class FutureHttpGetBase<T>
     protected HttpURLConnection connect(@NonNull final HttpURLConnection initialRequest)
             throws IOException {
 
-        int attempt;
         // sanity check
-        if (nrOfTries > 0) {
-            attempt = nrOfTries;
-        } else {
-            attempt = NR_OF_TRIES;
-        }
+        int attemptsLeft = nrOfTries > 0 ? nrOfTries : NR_OF_TRIES;
 
-        while (attempt > 0) {
-            // Preserve for a potential manual redirect
-            String requestUrlStr = initialRequest.getURL().toString();
+        // Preserve for a potential manual redirect
+        String requestUrlStr = initialRequest.getURL().toString();
 
+        HttpURLConnection req = initialRequest;
+
+        while (attemptsLeft > 0) {
             if (isLoggingEnabled()) {
                 LoggerFactory.getLogger().d(TAG, "connect",
-                                            "new attempt=" + attempt,
-                                            "url=" + requestUrlStr);
+                                            "attemptsLeft=" + attemptsLeft,
+                                            "requestUrlStr=" + requestUrlStr);
             }
-
-            HttpURLConnection req = initialRequest;
 
             //noinspection OverlyBroadCatchBlock
             try {
-                // Initial try
                 if (throttler != null) {
                     throttler.waitUntilRequestAllowed();
                 }
@@ -133,20 +127,23 @@ public class FutureHttpGetBase<T>
                     final String responseUrlStr = responseUrl.toString();
 
                     if (isLoggingEnabled()) {
-                        LoggerFactory.getLogger().d(TAG, "connect|response",
-                                                    "was attempt=" + attempt,
-                                                    "redirectCount=" + redirectCount,
-                                                    "responseCode=" + req.getResponseCode(),
-                                                    "responseUrlStr=" + responseUrlStr);
+                        LoggerFactory.getLogger()
+                                     .d(TAG, "connect|response",
+                                        "attemptsLeft=" + attemptsLeft,
+                                        "requestUrlStr=" + requestUrlStr,
+                                        "redirectCount=" + redirectCount,
+                                        "responseCode=" + req.getResponseCode(),
+                                        "responseUrlStr=" + responseUrlStr);
                     }
 
                     if (requestUrlStr.equals(responseUrlStr)) {
-                        // request and response URL are the same, it's a genuine 404
-                        this.enable404Redirect = false;
+                        // Request and response URL are the same, it's a genuine 404
+                        // Force-quit the loop.
+                        redirectCount = MAX_REDIRECTS;
                     } else {
                         // follow the redirect
                         redirectCount++;
-
+                        req.disconnect();
                         req = createRequest(responseUrl, req.getRequestMethod(),
                                             req.getDoOutput());
                         // Preserve for potential retry
@@ -154,11 +151,10 @@ public class FutureHttpGetBase<T>
 
                         if (isLoggingEnabled()) {
                             LoggerFactory.getLogger()
-                                         .d(TAG, "connect|disconnect"
-                                                 + "|redirect|createRequest|connect",
-                                            " same attempt=" + attempt,
+                                         .d(TAG, "connect|redirect",
+                                            "attemptsLeft=" + attemptsLeft,
                                             "redirectCount=" + redirectCount,
-                                            "requestUrlStr=" + requestUrlStr);
+                                            "new requestUrlStr=" + requestUrlStr);
                         }
                         // Note we are NOT using the throttler here,
                         // Android was SUPPOSED to redirect immediately.
@@ -194,12 +190,12 @@ public class FutureHttpGetBase<T>
                 // ==> IMMEDIATELY a 403....
                 // but using that last url in a browser or with wget will return a 302
                 if (isLoggingEnabled()) {
-                    LoggerFactory.getLogger().e(TAG, e, "fetch|disconnect",
-                                                "url=" + e.getUrl(),
-                                                "Location=" + e.getLocation());
+                    LoggerFactory.getLogger().e(TAG, e, "connect|disconnecting",
+                                                "e.url=" + e.getUrl(),
+                                                "e.location=" + e.getLocation());
                 }
 
-                initialRequest.disconnect();
+                req.disconnect();
                 // Cannot recover from this, just quit
                 throw e;
 
@@ -211,18 +207,19 @@ public class FutureHttpGetBase<T>
                 // UnknownHostException: DNS or other low-level network issue
                 // FileNotFoundException: seen on some sites. A retry and the site was ok.
                 if (isLoggingEnabled()) {
-                    LoggerFactory.getLogger().e(TAG, e,
-                                                "Recoverable error",
-                                                "attempt=" + attempt,
-                                                "url=`" + initialRequest.getURL() + '`');
+                    LoggerFactory.getLogger()
+                                 .e(TAG, e, "connect|recoverable error",
+                                    "attemptsLeft=" + attemptsLeft,
+                                    "requestUrlStr=`" + requestUrlStr + '`');
                 }
 
-                attempt--;
-                if (attempt == 0) {
+                attemptsLeft--;
+                if (attemptsLeft == 0) {
                     if (isLoggingEnabled()) {
-                        LoggerFactory.getLogger().d(TAG, "connect|all attempts failed|disconnect");
+                        LoggerFactory.getLogger()
+                                     .d(TAG, "connect|all attempts failed|disconnecting");
                     }
-                    initialRequest.disconnect();
+                    req.disconnect();
                     throw e;
                 }
             }
@@ -234,7 +231,7 @@ public class FutureHttpGetBase<T>
             }
         }
 
-        final String message = "Giving up|url=`" + initialRequest.getURL() + '`';
+        final String message = "Giving up|initialRequestUrl=`" + initialRequest.getURL() + '`';
         if (isLoggingEnabled()) {
             LoggerFactory.getLogger().d(TAG, message);
         }
