@@ -4,7 +4,8 @@ Draft notes for next version:
 
 NEW:
 
-- dnb.de, OpenLibrary, Databazeknih: added support for resolving author pseudonyms.
+- isfdb.org, dnb.de, OpenLibrary, Databazeknih:
+  Added support for resolving author pseudonyms.
   Can be disabled in their settings.
 - Bookshelves/Styles list editor improvement
 - Identifier editor (for Advanced users)
