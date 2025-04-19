@@ -37,7 +37,6 @@ import java.util.concurrent.CancellationException;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.core.parsers.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 
