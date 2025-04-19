@@ -323,6 +323,96 @@ public class ParseTest
     public void parse04()
             throws SearchException, IOException, CredentialsException, StorageException {
 
+        final String locationHeader = "https://www.isfdb.org/cgi-bin/pl.cgi?373190";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.isfdb_pr373190;
+
+        final RealNumberParser realNumberParser =
+                new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                               locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Lucky Starr på Merkurius", book.getString(DBKey.TITLE, null));
+
+        assertEquals("1958", book.getString(DBKey.PUBLICATION_DATE, null));
+
+        assertEquals("hc", book.getString(DBKey.FORMAT, null));
+        assertEquals("180", book.getString(DBKey.PAGES, null));
+        assertEquals(7.5d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
+        assertEquals("SKR", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("NOVEL", book.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
+        assertEquals("340", book.getString(IsfdbSearchEngine.SiteField.CATALOG_ID, null));
+
+        assertEquals("1537432", book.requireIdentifierValue(Identifier.SID_LIBRIS));
+        assertEquals("dwpb8nzq3vmv5h1", book.requireIdentifierValue(Identifier.SID_LIBRIS_XL));
+        assertEquals("58029067", book.requireIdentifierValue(Identifier.SID_OCLC));
+        assertEquals("373190", book.requireIdentifierValue(Identifier.SID_ISFDB));
+
+        assertEquals(
+                "• Translated by Saga Gripenberg and Claës Gripenberg • Year from Libris and <a href=\"https://barnboksinstitutet.bibkat.se/cgi-bin/koha/opac-detail.pl?biblionumber=35850\">The Swedish Institute for Children's Books</a> (Tuck claims year as 1959 and series number as 327) • Cover artist mentioned on copyright page",
+                book.getString(DBKey.DESCRIPTION, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Svensk Läraretidnings", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+        Author author;
+        author = authors.get(0);
+        assertEquals("French", author.getFamilyName());
+        assertEquals("Paul", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals("3358", author.requireIdentifierValue(Identifier.SID_ISFDB));
+        author = author.getRealAuthor();
+        assertNotNull(author);
+        assertEquals("Asimov", author.getFamilyName());
+        assertEquals("Isaac", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals("5", author.requireIdentifierValue(Identifier.SID_ISFDB));
+        author = authors.get(1);
+        assertEquals("Andersson", author.getFamilyName());
+        assertEquals("Bosse", author.getGivenNames());
+        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+        assertEquals("359246", author.requireIdentifierValue(Identifier.SID_ISFDB));
+
+
+        final List<Series> series = book.getSeries();
+        assertNotNull(series);
+        assertEquals(2, series.size());
+        assertEquals("Saga", series.get(0).getTitle());
+        assertEquals("340", series.get(0).getNumber());
+        assertEquals("Lucky Starr", series.get(1).getTitle());
+        assertEquals("4", series.get(1).getNumber());
+
+        final List<TocEntry> toc = book.getToc();
+        assertNotNull(toc);
+        assertEquals(1, toc.size());
+
+        Optional<Integer> fpd;
+
+        TocEntry tocEntry = toc.get(0);
+        assertEquals("Lucky Starr på Merkurius", tocEntry.getTitle());
+        fpd = tocEntry.getFirstPublicationDate().getYear();
+        assertTrue(fpd.isEmpty());
+        author = tocEntry.getPrimaryAuthor();
+        assertEquals("Asimov", author.getFamilyName());
+        assertEquals("Isaac", author.getGivenNames());
+        assertEquals("5", author.requireIdentifierValue(Identifier.SID_ISFDB));
+
+    }
+
+    @Test
+    public void parse10()
+            throws SearchException, IOException, CredentialsException, StorageException {
+
         final String locationHeader = "https://www.isfdb.org/cgi-bin/pl.cgi?808391";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_808391;

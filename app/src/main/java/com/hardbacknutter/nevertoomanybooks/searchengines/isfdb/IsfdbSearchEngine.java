@@ -1416,7 +1416,7 @@ public class IsfdbSearchEngine
                               @NonNull final List<AuthorResolver> authorResolvers,
                               @NonNull final Book book)
             throws CredentialsException {
-        for (final Element a : li.select("a")) {
+        for (final Element a : li.select("a[href*=/ea.cgi]")) {
             final Author author = parseAuthor(context, a, authorResolvers);
             addAuthor(author, type, book);
         }
