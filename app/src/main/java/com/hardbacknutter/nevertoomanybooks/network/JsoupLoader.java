@@ -33,8 +33,6 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLProtocolException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -60,7 +58,7 @@ public class JsoupLoader {
     private Document document;
     /** The <strong>request</strong> url for the web page. */
     @Nullable
-    private String docRequestUrl;
+    private String requestUrl;
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
     private String charSetName;
@@ -86,6 +84,11 @@ public class JsoupLoader {
         this.charSetName = charSetName;
     }
 
+    /**
+     * Set a custom SSLContext.
+     *
+     * @param sslContext to use
+     */
     public void setSslContext(@Nullable final SSLContext sslContext) {
         this.sslContext = sslContext;
     }
@@ -120,14 +123,14 @@ public class JsoupLoader {
             throws IOException {
 
         // are we requesting the same url again ?
-        if (document != null && url.equals(docRequestUrl)) {
+        if (document != null && url.equals(requestUrl)) {
             // return the previously parsed doc
             return document;
         }
 
         // new download
         document = null;
-        docRequestUrl = url;
+        requestUrl = url;
 
         // If the site drops connection, we retry once.
         // Note this is NOT the same as the retry mechanism of FutureHttpBase.
@@ -138,22 +141,20 @@ public class JsoupLoader {
         int attemptsLeft = 2;
 
         while (attemptsLeft > 0) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "loadDocument",
-                                "REQUESTED|docRequestUrl=\"" + docRequestUrl + '\"');
+            if (futureHttpGet.isLoggingEnabled()) {
+                LoggerFactory.getLogger().d(TAG, "loadDocument|get",
+                                            "attemptsLeft=" + attemptsLeft,
+                                            "requestUrl=`" + requestUrl + '`');
             }
 
             try {
-                // Don't retry if the initial connection fails...
-                futureHttpGet.setRetryCount(0);
                 futureHttpGet.setSSLContext(sslContext);
 
                 if (requestProperties != null) {
                     requestProperties.forEach(futureHttpGet::setRequestProperty);
                 }
 
-                document = futureHttpGet.get(docRequestUrl, this::processResponse);
+                document = futureHttpGet.get(requestUrl, this::processResponse);
                 return document;
 
             } catch (@NonNull final SSLProtocolException | EOFException e) {
@@ -175,10 +176,11 @@ public class JsoupLoader {
                 // at com.android.org.conscrypt.NativeCrypto.SSL_read(Native Method)
                 // 2025-04-13: not seen for quite some time now.
                 // ...
-                // Log it as WARN, so at least we can get to know the frequency of these issues.
-                LoggerFactory.getLogger()
-                             .w(TAG, "loadDocument", "e=" + e.getMessage(),
-                                "docRequestUrl=\"" + docRequestUrl + '\"');
+                if (futureHttpGet.isLoggingEnabled()) {
+                    LoggerFactory.getLogger().w(TAG, "loadDocument",
+                                                "e=" + e.getMessage(),
+                                                "requestUrl=\"" + requestUrl + '\"');
+                }
                 // we'll retry.
                 attemptsLeft--;
                 if (attemptsLeft == 0) {
@@ -201,40 +203,37 @@ public class JsoupLoader {
             } catch (@NonNull final IOException e) {
                 document = null;
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    LoggerFactory.getLogger()
-                                 .e(TAG, e, "docRequestUrl=" + docRequestUrl);
+                if (futureHttpGet.isLoggingEnabled()) {
+                    LoggerFactory.getLogger().e(TAG, e, "loadDocument",
+                                                "requestUrl=" + requestUrl);
                 }
                 throw e;
             }
         }
 
         // Shouldn't get here ... flw
-        throw new IOException("Failed to get: " + docRequestUrl);
+        throw new IOException("Failed to get: " + requestUrl);
     }
 
     @NonNull
     private Document processResponse(@NonNull final HttpURLConnection response,
                                      @NonNull final InputStream is)
             throws IOException {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-            LoggerFactory.getLogger()
-                         .d(TAG, "loadDocument",
-                            "AFTER open"
-                            + "\nresponse.getURL()=" + response.getURL()
-                            + "\nlocation  =" + response.getHeaderField(
-                                    HttpConstants.RESPONSE_HEADER_LOCATION));
-        }
-
         // the original url will change after a redirect.
         // We need the actual url for further processing.
         String locationHeader = response.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
+
+        if (futureHttpGet.isLoggingEnabled()) {
+            LoggerFactory.getLogger().d(TAG, "processResponse",
+                                        "response.getURL()=" + response.getURL()
+                                        + "\nlocation  =" + locationHeader);
+        }
+
         if (locationHeader == null || locationHeader.isEmpty()) {
             locationHeader = response.getURL().toString();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                LoggerFactory.getLogger()
-                             .d(TAG, "loadDocument",
-                                "location header not set, using url");
+            if (futureHttpGet.isLoggingEnabled()) {
+                LoggerFactory.getLogger().d(TAG, "processResponse",
+                                            "location header not set, using url");
             }
         }
 
@@ -257,9 +256,9 @@ public class JsoupLoader {
         It will NOT resolve the redirect itself and 'location' == 'baseUri'
         */
         final Document parsedDocument = Jsoup.parse(is, charSetName, locationHeader);
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+        if (futureHttpGet.isLoggingEnabled()) {
             LoggerFactory.getLogger()
-                         .d(TAG, "loadDocument|disconnect",
+                         .d(TAG, "processResponse|disconnect",
                             "AFTER parsing|document.location()="
                             + parsedDocument.location());
         }
