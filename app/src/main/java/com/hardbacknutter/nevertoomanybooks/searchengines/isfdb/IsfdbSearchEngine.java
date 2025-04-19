@@ -1436,14 +1436,7 @@ public class IsfdbSearchEngine
                 author.setIdentifierValue(Identifier.SID_ISFDB, siId);
             }
         }
-        // 2025-03-25
-        // Read error: ssl=0x7a6b6d87b598: Failure in SSL library, usually a protocol error
-        // error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT
-        // (external/boringssl/src/crypto/cipher_extra/e_chacha20poly1305.c:259
-        // 0x7a69b00547fb:0x00000000)
-        // error:1000008b:SSL routines:OPENSSL_internal:DECRYPTION_FAILED_OR_BAD_RECORD_MAC
-        // (external/boringssl/src/ssl/tls_record.cc:294 0x7a69b00547fb:0x00000000)
-        // |docRequestUrl="https://www.isfdb.org/cgi-bin/ea.cgi?5"
+
         try {
             for (final AuthorResolver resolver : authorResolvers) {
                 resolver.resolve(context, author);
