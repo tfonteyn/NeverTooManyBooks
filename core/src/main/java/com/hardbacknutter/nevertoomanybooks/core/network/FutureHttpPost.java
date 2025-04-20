@@ -29,20 +29,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CancellationException;
-import java.util.function.Function;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.zip.GZIPInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
-public class FutureHttpPost<T>
-        extends FutureHttpBase<T> {
+public class FutureHttpPost<R>
+        extends FutureHttpBase<R> {
 
-    private static final String POST = "POST";
+    private static final String TAG = "FutureHttpPost";
 
     /**
      * Constructor.
@@ -56,7 +62,7 @@ public class FutureHttpPost<T>
     /**
      * Send the POST.
      *
-     * @param url               to use
+     * @param urlStr            to use
      * @param postBody          to send
      * @param responseProcessor which will receive the response InputStream
      *
@@ -69,48 +75,76 @@ public class FutureHttpPost<T>
      * @throws StorageException       The covers directory is not available
      */
     @Nullable
-    public T post(@NonNull final String url,
+    public R post(@NonNull final String urlStr,
                   @NonNull final String postBody,
-                  @Nullable final Function<InputStream, T> responseProcessor)
+                  @Nullable final ActionFunction<InputStream, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
                    IOException {
 
-        return execute(url, POST, true, request -> {
+        try {
+            futureHttp = ASyncExecutor.SERVICE.submit(() -> {
+                HttpURLConnection request = null;
+                //noinspection CheckStyle
+                try {
+                    final URL url = new URL(urlStr);
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger().d(TAG, "post|createRequest");
+                    }
+                    request = createRequest(url, POST);
 
-            if (throttler != null) {
-                throttler.waitUntilRequestAllowed();
-            }
+                    waitUntilRequestAllowed();
+                    try (OutputStream os = request.getOutputStream();
+                         Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+                         Writer writer = new BufferedWriter(osw)) {
+                        writer.write(postBody);
+                        writer.flush();
+                    }
 
-            try {
-                try (OutputStream os = request.getOutputStream();
-                     Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-                     Writer writer = new BufferedWriter(osw)) {
-                    writer.write(postBody);
-                    writer.flush();
-                }
+                    checkResponseCode(request);
 
-                checkResponseCode(request);
-
-                if (responseProcessor != null) {
-                    try (InputStream is = request.getInputStream();
-                         BufferedInputStream bis = new BufferedInputStream(is)) {
-                        if (HttpConstants.isZipped(request)) {
-                            try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                                return responseProcessor.apply(gzs);
+                    if (responseProcessor != null) {
+                        try (InputStream is = request.getInputStream();
+                             BufferedInputStream bis = new BufferedInputStream(is)) {
+                            if (HttpConstants.isZipped(request)) {
+                                try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                                    return responseProcessor.apply(gzs);
+                                }
+                            } else {
+                                return responseProcessor.apply(bis);
                             }
-                        } else {
-                            return responseProcessor.apply(bis);
                         }
                     }
+                    //noinspection ReturnOfNull
+                    return null;
+                } finally {
+                    if (request != null) {
+                        if (isLoggingEnabled()) {
+                            LoggerFactory.getLogger().d(TAG, "post|disconnect");
+                        }
+                        request.disconnect();
+                    }
                 }
-                //noinspection ReturnOfNull
-                return null;
+            });
+            return futureHttp.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
 
-            } catch (@NonNull final IOException e) {
-                throw new UncheckedIOException(e);
+        } catch (@NonNull final ExecutionException e) {
+            if (isLoggingEnabled()) {
+                LoggerFactory.getLogger().d(TAG, "post: " + e);
             }
-        });
+            unpackExecutionException(e);
+            return null;
+
+        } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
+            throw new IOException(e);
+
+        } catch (@NonNull final TimeoutException e) {
+            // re-throw as if it's coming from the network call.
+            throw new SocketTimeoutException(e.getMessage());
+
+        } finally {
+            futureHttp = null;
+        }
     }
 }

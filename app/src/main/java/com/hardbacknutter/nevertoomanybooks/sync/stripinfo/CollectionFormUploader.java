@@ -28,7 +28,6 @@ import androidx.annotation.WorkerThread;
 import androidx.core.math.MathUtils;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -443,13 +442,8 @@ class CollectionFormUploader {
     private Document doPost(@NonNull final String postBody)
             throws IOException, StorageException {
 
-        return Objects.requireNonNull(futureHttpPost.post(postUrl, postBody, bis -> {
-            try {
-                return Jsoup.parse(bis, null, postUrl);
-            } catch (@NonNull final IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }));
+        return Objects.requireNonNull(futureHttpPost.post(postUrl, postBody, bis ->
+                Jsoup.parse(bis, null, postUrl)));
     }
 
     /**

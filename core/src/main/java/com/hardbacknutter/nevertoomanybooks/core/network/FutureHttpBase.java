@@ -33,25 +33,23 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.Function;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.xml.sax.SAXException;
 
-public abstract class FutureHttpBase<T> {
+public abstract class FutureHttpBase<R> {
+
+    static final String HEAD = "HEAD";
+    static final String GET = "GET";
+    static final String POST = "POST";
 
     /** The default number of times we try to connect; i.e. one RETRY. */
     static final int NR_OF_TRIES = 2;
@@ -73,15 +71,11 @@ public abstract class FutureHttpBase<T> {
 
     /** LinkedHashMap so the order we use is preserved. */
     private final Map<String, String> requestProperties = new LinkedHashMap<>();
-
-    /** see {@link #setRetryCount(int)}. */
-    int nrOfTries = NR_OF_TRIES;
-
     @Nullable
-    Throttler throttler;
-
+    Future<R> futureHttp;
+    private int nrOfTries = NR_OF_TRIES;
     @Nullable
-    private Future<T> futureHttp;
+    private Throttler throttler;
     @Nullable
     private SSLContext sslContext;
     @Nullable
@@ -179,7 +173,7 @@ public abstract class FutureHttpBase<T> {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public FutureHttpBase<T> setConnectTimeout(@IntRange(from = 0) final int timeoutInMs) {
+    public FutureHttpBase<R> setConnectTimeout(@IntRange(from = 0) final int timeoutInMs) {
         connectTimeoutInMs = timeoutInMs;
         return this;
     }
@@ -192,7 +186,7 @@ public abstract class FutureHttpBase<T> {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public FutureHttpBase<T> setReadTimeout(@IntRange(from = 0) final int timeoutInMs) {
+    public FutureHttpBase<R> setReadTimeout(@IntRange(from = 0) final int timeoutInMs) {
         readTimeoutInMs = timeoutInMs;
         return this;
     }
@@ -205,15 +199,30 @@ public abstract class FutureHttpBase<T> {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public FutureHttpBase<T> setThrottler(@Nullable final Throttler throttler) {
+    public FutureHttpBase<R> setThrottler(@Nullable final Throttler throttler) {
         this.throttler = throttler;
         return this;
     }
 
+    /**
+     * Set whether redirects should be followed.
+     * <p>
+     * The default is unset, i.e. use the OS default.
+     *
+     * @param followRedirects flag
+     *
+     * @return {@code this} (for chaining)
+     */
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public FutureHttpBase<T> setInstanceFollowRedirects(final boolean followRedirects) {
+    public FutureHttpBase<R> setInstanceFollowRedirects(final boolean followRedirects) {
         this.followRedirects = followRedirects;
         return this;
+    }
+
+    public int getRetryCount() {
+        // sanity check
+        return nrOfTries > 0 ? nrOfTries : NR_OF_TRIES;
     }
 
     /**
@@ -223,8 +232,9 @@ public abstract class FutureHttpBase<T> {
      *
      * @return {@code this} (for chaining)
      */
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public FutureHttpBase<T> setRetryCount(@IntRange(from = 0) final int retryCount) {
+    public FutureHttpBase<R> setRetryCount(@IntRange(from = 0) final int retryCount) {
         nrOfTries = retryCount + 1;
         return this;
     }
@@ -238,7 +248,7 @@ public abstract class FutureHttpBase<T> {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public FutureHttpBase<T> setSSLContext(@Nullable final SSLContext sslContext) {
+    public FutureHttpBase<R> setSSLContext(@Nullable final SSLContext sslContext) {
         this.sslContext = sslContext;
         return this;
     }
@@ -252,14 +262,16 @@ public abstract class FutureHttpBase<T> {
      *
      * @return {@code this} (for chaining)
      */
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public FutureHttpBase<T> setHostnameVerifier(@Nullable final HostnameVerifier verifier) {
+    public FutureHttpBase<R> setHostnameVerifier(@Nullable final HostnameVerifier verifier) {
         this.hostnameVerifier = verifier;
         return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public FutureHttpBase<T> enableLogging(final boolean enable) {
+    public FutureHttpBase<R> enableLogging(final boolean enable) {
         this.logHttpGetRequests = enable;
         return this;
     }
@@ -277,7 +289,7 @@ public abstract class FutureHttpBase<T> {
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public FutureHttpBase<T> setRequestProperty(@NonNull final String key,
+    public FutureHttpBase<R> setRequestProperty(@NonNull final String key,
                                                 @Nullable final String value) {
         if (value != null) {
             requestProperties.put(key, value);
@@ -287,20 +299,35 @@ public abstract class FutureHttpBase<T> {
         return this;
     }
 
-    private int getFutureTimeout() {
+    int getFutureTimeout() {
         return connectTimeoutInMs + readTimeoutInMs + 10;
     }
 
+    void waitUntilRequestAllowed() {
+        if (throttler != null) {
+            throttler.waitUntilRequestAllowed();
+        }
+    }
+
+    /**
+     * Create a new unconnected {@link HttpURLConnection}.
+     *
+     * @param url    to connect to
+     * @param method one of {@link #GET} or {@link #HEAD}.
+     *
+     * @return request
+     *
+     * @throws IOException on generic/other IO failures
+     */
     @NonNull
-    protected HttpURLConnection createRequest(@NonNull final URL url,
-                                              @NonNull final String method,
-                                              final boolean doOutput)
+    HttpURLConnection createRequest(@NonNull final URL url,
+                                    @NonNull final String method)
             throws IOException {
 
         final HttpURLConnection request = (HttpURLConnection) url.openConnection();
 
         request.setRequestMethod(method);
-        request.setDoOutput(doOutput);
+        request.setDoOutput(POST.equals(method));
 
         // Don't trust the caches; they have proven to be cumbersome.
         request.setUseCaches(false);
@@ -332,6 +359,7 @@ public abstract class FutureHttpBase<T> {
         if (sslContext != null) {
             final HttpsURLConnection con = (HttpsURLConnection) request;
             con.setSSLSocketFactory(sslContext.getSocketFactory());
+            // the hostnameVerifier is normally only set from tests
             if (hostnameVerifier != null) {
                 con.setHostnameVerifier(hostnameVerifier);
             }
@@ -340,112 +368,45 @@ public abstract class FutureHttpBase<T> {
         return request;
     }
 
-    /**
-     * Create a request and execute it using a {@link Future} so we can use a timeout.
-     *
-     * @param urlStr   to connect to
-     * @param method   {@code GET}, {@code POST}, {@code HEAD}
-     * @param doOutput flag
-     * @param action   callback to give the request to
-     *
-     * @return result of the callback method
-     *
-     * @throws CancellationException  if the user cancelled us
-     * @throws SocketTimeoutException if the timeout expires before
-     *                                the connection can be established
-     * @throws IOException            on generic/other IO failures
-     * @throws StorageException       The covers directory is not available
-     */
-    @Nullable
-    T execute(@NonNull final String urlStr,
-              @NonNull final String method,
-              final boolean doOutput,
-              @NonNull final Function<HttpURLConnection, T> action)
-            throws StorageException,
-                   CancellationException,
-                   SocketTimeoutException,
-                   IOException {
-        try {
-            futureHttp = ASyncExecutor.SERVICE.submit(() -> {
-                HttpURLConnection request = null;
-                try {
-                    final URL url = new URL(urlStr);
-                    if (isLoggingEnabled()) {
-                        LoggerFactory.getLogger().d(TAG, "execute|createRequest");
-                    }
-                    request = createRequest(url, method, doOutput);
+    void unpackExecutionException(@NonNull final ExecutionException e)
+            throws StorageException, IOException {
+        // TODO: maybe move away from this early interception? and let the ExecutionException
+        //  go all the way up and decode it in ExMsg ?
 
-                    // The request is now ready to be connected/used,
-                    // pass control to the specific method
-                    return action.apply(request);
+        // TODO: in theory we no longer receive the Unchecked variants
+        //  due to using ActionFunction
 
-                } catch (@NonNull final IOException e) {
-                    if (isLoggingEnabled()) {
-                        LoggerFactory.getLogger().d(TAG, "execute|IOException: " + e);
-                    }
-                    throw e;
-                } catch (@NonNull final RuntimeException e) {
-                    if (isLoggingEnabled()) {
-                        LoggerFactory.getLogger().d(TAG, "execute|RuntimeException: " + e);
-                    }
-                    throw e;
-                } finally {
-                    if (request != null) {
-                        if (isLoggingEnabled()) {
-                            LoggerFactory.getLogger().d(TAG, "execute|disconnect");
-                        }
-                        request.disconnect();
-                    }
-                }
-            });
-            return futureHttp.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
+        final Throwable cause = e.getCause();
 
-        } catch (@NonNull final ExecutionException e) {
-            // TODO: maybe move away from this early interception? and let the ExecutionException
-            //  go all the way up and decode it in ExMsg ?
+        if (cause instanceof UncheckedStorageException) {
+            //noinspection DataFlowIssue
+            throw (StorageException) cause.getCause();
 
-            final Throwable cause = e.getCause();
+        } else if (cause instanceof StorageException) {
+            throw (StorageException) cause;
 
-            if (cause instanceof UncheckedStorageException) {
-                //noinspection DataFlowIssue
-                throw (StorageException) cause.getCause();
+        } else if (cause instanceof UncheckedIOException) {
+            //noinspection DataFlowIssue
+            throw (IOException) cause.getCause();
 
-            } else if (cause instanceof StorageException) {
-                throw (StorageException) cause;
+        } else if (cause instanceof IOException) {
+            throw (IOException) cause;
 
-            } else if (cause instanceof UncheckedIOException) {
-                //noinspection DataFlowIssue
-                throw (IOException) cause.getCause();
+        } else if (cause instanceof UncheckedSAXException) {
+            final SAXException saxException = Objects.requireNonNull(
+                    ((UncheckedSAXException) cause).getCause());
+            unpackSAXException(saxException);
 
-            } else if (cause instanceof IOException) {
-                throw (IOException) cause;
-
-            } else if (cause instanceof UncheckedSAXException) {
-                final SAXException saxException = Objects.requireNonNull(
-                        ((UncheckedSAXException) cause).getCause());
-                rethrowSAXException(saxException);
-
-            } else if (cause instanceof SAXException) {
-                final SAXException saxException = (SAXException) cause;
-                rethrowSAXException(saxException);
-            }
-
-            // An unexpected exception, let the caller deal with it.
-            throw new IOException(cause);
-
-        } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
-            throw new IOException(e);
-
-        } catch (@NonNull final TimeoutException e) {
-            // re-throw as if it's coming from the network call.
-            throw new SocketTimeoutException(e.getMessage());
-
-        } finally {
-            futureHttp = null;
+        } else if (cause instanceof SAXException) {
+            final SAXException saxException = (SAXException) cause;
+            unpackSAXException(saxException);
         }
+
+        // An unexpected exception, let the caller deal with it.
+        throw new IOException(cause);
     }
 
-    private void rethrowSAXException(@NonNull final SAXException saxException)
+    private void unpackSAXException(@NonNull final SAXException saxException)
             throws IOException, StorageException {
         // First try unwrapping with SAXException#getException() !
         Throwable saxCause = saxException.getException();
@@ -480,5 +441,33 @@ public abstract class FutureHttpBase<T> {
                 futureHttp.cancel(true);
             }
         }
+    }
+
+    /**
+     * Same as {@code java.util.function.Function} but with checked exceptions
+     * thus avoiding packing/unpacking.
+     *
+     * @param <T> input
+     *            Typically the actual {@link HttpURLConnection}
+     *            or a preprocessed {@link java.io.InputStream} from that connection
+     * @param <R> output
+     */
+    @FunctionalInterface
+    public interface ActionFunction<T, R> {
+        /**
+         * Applies this function to the given argument.
+         *
+         * @param t the function argument
+         *
+         * @return the function result
+         *
+         * @throws IOException      on generic/other IO failures
+         * @throws StorageException The covers directory is not available
+         * @throws SAXException     on parser problems if a SAX parser was used
+         */
+        R apply(T t)
+                throws IOException,
+                       StorageException,
+                       SAXException;
     }
 }

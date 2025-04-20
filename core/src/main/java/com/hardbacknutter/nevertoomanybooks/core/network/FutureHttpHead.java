@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,20 +23,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
-import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 /**
- * @param <T> the type of the return value for the request
+ * @param <R> the type of the return value for the request
  */
-public final class FutureHttpHead<T>
-        extends FutureHttpGetBase<T> {
+public final class FutureHttpHead<R>
+        extends FutureHttpGetBase<R> {
 
     /**
      * Private constructor.
@@ -62,21 +60,13 @@ public final class FutureHttpHead<T>
      * @throws StorageException       The covers directory is not available
      */
     @NonNull
-    public T send(@NonNull final String url,
-                  @NonNull final Function<HttpURLConnection, T> responseProcessor)
+    public R head(@NonNull final String url,
+                  @NonNull final ActionFunction<HttpURLConnection, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
                    IOException {
 
-        return Objects.requireNonNull(execute(url, "HEAD", false, request -> {
-            try {
-                final HttpURLConnection connection = connect(request);
-                return responseProcessor.apply(connection);
-
-            } catch (@NonNull final IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }));
+        return Objects.requireNonNull(execute(url, HEAD, responseProcessor));
     }
 }

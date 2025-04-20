@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -143,13 +142,8 @@ public class CollectionFormParser {
 
         //noinspection DataFlowIssue
         final Document response = Objects.requireNonNull(
-                futureHttpPost.post(postUrl, postBody, bis -> {
-                    try {
-                        return Jsoup.parse(bis, null, postUrl);
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                }));
+                futureHttpPost.post(postUrl, postBody, bis ->
+                        Jsoup.parse(bis, null, postUrl)));
 
         final StripInfoCollectionData collectionData =
                 book.getStripInfoCollectionData().orElseGet(StripInfoCollectionData::new);

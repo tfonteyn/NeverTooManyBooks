@@ -154,7 +154,7 @@ public class KbNlSearchEngine
             throws SearchException {
         final FutureHttpHead<Boolean> futureHttpHead = createFutureHeadRequest(context);
         try {
-            futureHttpHead.send(getHostUrl(context) + "/cbs/", con -> true);
+            futureHttpHead.head(getHostUrl(context) + "/cbs/", con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }

@@ -28,8 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UncheckedIOException;
-import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -38,15 +36,11 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 
-import org.xml.sax.SAXException;
-
-public final class FutureHttpGet<T>
-        extends FutureHttpGetBase<T> {
+public final class FutureHttpGet<R>
+        extends FutureHttpGetBase<R> {
 
     private static final int DEFAULT_BUFFER_SIZE = 8192;
-    private static final String GET = "GET";
 
     /**
      * Constructor.
@@ -74,8 +68,8 @@ public final class FutureHttpGet<T>
      * @throws StorageException       The covers directory is not available
      */
     @NonNull
-    public T get(@NonNull final String url,
-                 @NonNull final ResponseProcessor<T, InputStream> responseProcessor)
+    public R get(@NonNull final String url,
+                 @NonNull final ResponseProcessor<InputStream, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
@@ -101,40 +95,26 @@ public final class FutureHttpGet<T>
      * @throws StorageException       The covers directory is not available
      */
     @NonNull
-    public T get(@NonNull final String url,
+    public R get(@NonNull final String url,
                  final int bufferSize,
-                 @NonNull final ResponseProcessor<T, InputStream> responseProcessor)
+                 @NonNull final ResponseProcessor<InputStream, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
                    IOException {
 
-        return Objects.requireNonNull(execute(url, GET, false, request -> {
-            try {
-                final HttpURLConnection connection = connect(request);
-
-                try (BufferedInputStream bis = new BufferedInputStream(
-                        connection.getInputStream(), bufferSize)) {
-                    if (HttpConstants.isZipped(connection)) {
-                        try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
-                            return responseProcessor.parse(connection, gzs);
-                        }
-                    } else {
-                        return responseProcessor.parse(connection, bis);
+        return Objects.requireNonNull(execute(url, GET, connection -> {
+            try (BufferedInputStream bis = new BufferedInputStream(
+                    connection.getInputStream(), bufferSize)) {
+                if (HttpConstants.isZipped(connection)) {
+                    try (GZIPInputStream gzs = new GZIPInputStream(bis)) {
+                        return responseProcessor.apply(connection, gzs);
                     }
+                } else {
+                    return responseProcessor.apply(connection, bis);
                 }
-            } catch (@NonNull final IOException e) {
-                throw new UncheckedIOException(e);
-            } catch (@NonNull final StorageException e) {
-                throw new UncheckedStorageException(e);
-            } catch (@NonNull final SAXException e) {
-                throw new UncheckedSAXException(e);
             }
         }));
-
-        // Note that we just let all Unchecked..Exceptions
-        // ripple upwards until they hit the task where the request came from.
-        // We always intercept and dissect unchecked exceptions in the task, so all is well.
     }
 
     /**
@@ -154,8 +134,8 @@ public final class FutureHttpGet<T>
      * @throws StorageException       The covers directory is not available
      */
     @NonNull
-    public T getAsString(@NonNull final String url,
-                         @NonNull final ResponseProcessor<T, String> responseProcessor)
+    public R getAsString(@NonNull final String url,
+                         @NonNull final ResponseProcessor<String, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
@@ -181,51 +161,36 @@ public final class FutureHttpGet<T>
      * @throws StorageException       The covers directory is not available
      */
     @NonNull
-    public T getAsString(@NonNull final String url,
+    public R getAsString(@NonNull final String url,
                          final int bufferSize,
-                         @NonNull final ResponseProcessor<T, String> responseProcessor)
+                         @NonNull final ResponseProcessor<String, R> responseProcessor)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
                    IOException {
 
-        return Objects.requireNonNull(execute(url, GET, false, request -> {
-            try {
-                final HttpURLConnection connection = connect(request);
+        return Objects.requireNonNull(execute(url, GET, connection -> {
 
+            try (InputStream is = connection.getInputStream()) {
                 final String page;
-
-                try (InputStream is = connection.getInputStream()) {
-                    if (HttpConstants.isZipped(connection)) {
-                        try (GZIPInputStream gzs = new GZIPInputStream(is)) {
-                            try (Reader isr = new InputStreamReader(gzs, StandardCharsets.UTF_8)) {
-                                try (BufferedReader reader = new BufferedReader(isr, bufferSize)) {
-                                    page = reader.lines().collect(Collectors.joining());
-                                }
-                            }
-                            return responseProcessor.parse(connection, page);
-                        }
-                    } else {
-                        try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                if (HttpConstants.isZipped(connection)) {
+                    try (GZIPInputStream gzs = new GZIPInputStream(is)) {
+                        try (Reader isr = new InputStreamReader(gzs, StandardCharsets.UTF_8)) {
                             try (BufferedReader reader = new BufferedReader(isr, bufferSize)) {
                                 page = reader.lines().collect(Collectors.joining());
                             }
                         }
-                        return responseProcessor.parse(connection, page);
+                        return responseProcessor.apply(connection, page);
                     }
+                } else {
+                    try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                        try (BufferedReader reader = new BufferedReader(isr, bufferSize)) {
+                            page = reader.lines().collect(Collectors.joining());
+                        }
+                    }
+                    return responseProcessor.apply(connection, page);
                 }
-
-            } catch (@NonNull final IOException e) {
-                throw new UncheckedIOException(e);
-            } catch (@NonNull final StorageException e) {
-                throw new UncheckedStorageException(e);
-            } catch (@NonNull final SAXException e) {
-                throw new UncheckedSAXException(e);
             }
         }));
-
-        // Note that we just let all Unchecked..Exceptions
-        // ripple upwards until they hit the task where the request came from.
-        // We always intercept and dissect unchecked exceptions in the task, so all is well.
     }
 }

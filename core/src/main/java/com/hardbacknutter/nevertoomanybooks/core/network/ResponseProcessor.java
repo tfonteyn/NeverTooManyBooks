@@ -29,25 +29,34 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 
 import org.xml.sax.SAXException;
 
+/**
+ * Process the response to a GET method.
+ *
+ * @param <T> the response from the remote server
+ *            Typically passed in as a {@code String} or {@code InputStream}.
+ * @param <R> the resulting/parsed vale
+ */
 @FunctionalInterface
-public interface ResponseProcessor<T, INPUT> {
+public interface ResponseProcessor<T, R> {
 
     /**
-     * Parse the given {@code INPUT}.
+     * Applies this function to the given arguments.
      *
-     * @param con   for getting headers, url,..
-     *              Do <strong>NOT</strong> call {@link HttpURLConnection#getInputStream()}!
-     * @param input to read and parse
+     * @param con for getting headers, url,..
+     *            Do <strong>NOT</strong> call {@link HttpURLConnection#getInputStream()}!
+     *            This is (2025-04-20) only really needed by JSoup as
+     *            we need to access the final url and response headers.
+     * @param t   to read and parse
      *
-     * @return the resulting {@code T}
+     * @return the resulting {@code R}
      *
      * @throws IOException      on generic/other IO failures
-     * @throws SAXException     on parser problems if a SAX parser was used
      * @throws StorageException The covers directory is not available
+     * @throws SAXException     on parser problems if a SAX parser was used
      */
-    T parse(@NonNull HttpURLConnection con,
-            @NonNull INPUT input)
+    R apply(@NonNull HttpURLConnection con,
+            @NonNull T t)
             throws IOException,
-                   SAXException,
-                   StorageException;
+                   StorageException,
+                   SAXException;
 }

@@ -20,24 +20,34 @@
 package com.hardbacknutter.nevertoomanybooks.core.network;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * The base class for a {@code HEAD} and {@code GET} request.
  *
- * @param <T> the type of the return value for the request
+ * @param <R> the type of the return value for the request
  */
-public class FutureHttpGetBase<T>
-        extends FutureHttpBase<T> {
+public class FutureHttpGetBase<R>
+        extends FutureHttpBase<R> {
 
     private static final String TAG = "FutureHttpGetBase";
 
@@ -75,6 +85,70 @@ public class FutureHttpGetBase<T>
     }
 
     /**
+     * Create a request and execute it using a {@link Future} so we can use a timeout.
+     *
+     * @param urlStr to connect to
+     * @param method {@code GET}, {@code POST}, {@code HEAD}
+     * @param action callback to give the request to
+     *
+     * @return result of the callback method
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on generic/other IO failures
+     * @throws StorageException       The covers directory is not available
+     */
+    @Nullable
+    R execute(@NonNull final String urlStr,
+              @NonNull final String method,
+              @NonNull final ActionFunction<HttpURLConnection, R> action)
+            throws StorageException,
+                   CancellationException,
+                   SocketTimeoutException,
+                   IOException {
+        try {
+            futureHttp = ASyncExecutor.SERVICE.submit(() -> {
+                HttpURLConnection request = null;
+                //noinspection CheckStyle
+                try {
+                    final URL url = new URL(urlStr);
+                    if (isLoggingEnabled()) {
+                        LoggerFactory.getLogger().d(TAG, "execute|createRequest");
+                    }
+                    request = connect(url, method);
+                    return action.apply(request);
+                } finally {
+                    if (request != null) {
+                        if (isLoggingEnabled()) {
+                            LoggerFactory.getLogger().d(TAG, "execute|disconnect");
+                        }
+                        request.disconnect();
+                    }
+                }
+            });
+            return futureHttp.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
+
+        } catch (@NonNull final ExecutionException e) {
+            if (isLoggingEnabled()) {
+                LoggerFactory.getLogger().d(TAG, "execute: " + e);
+            }
+            unpackExecutionException(e);
+            return null;
+
+        } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
+            throw new IOException(e);
+
+        } catch (@NonNull final TimeoutException e) {
+            // re-throw as if it's coming from the network call.
+            throw new SocketTimeoutException(e.getMessage());
+
+        } finally {
+            futureHttp = null;
+        }
+    }
+
+    /**
      * Perform the actual opening of the connection.
      * <p>
      * If the site fails to connect, we will attempt up to {@link #NR_OF_TRIES}.
@@ -85,8 +159,8 @@ public class FutureHttpGetBase<T>
      * To enable this, set {@link #setEnable404Redirect(boolean)} to {@code true}.
      * The default is {@code false}.
      *
-     * @param initialRequest to connect; <strong>MUST</strong>> be discarded after
-     *                       this method returns. Use the returned request instead.
+     * @param url    to connect to
+     * @param method one of {@link #GET} or {@link #HEAD}.
      *
      * @return the request which was successful
      *
@@ -94,12 +168,13 @@ public class FutureHttpGetBase<T>
      * @throws NetworkException on fatal error / giving up
      */
     @NonNull
-    protected HttpURLConnection connect(@NonNull final HttpURLConnection initialRequest)
+    private HttpURLConnection connect(@NonNull final URL url,
+                                      @NonNull final String method)
             throws IOException {
 
-        // sanity check
-        int attemptsLeft = nrOfTries > 0 ? nrOfTries : NR_OF_TRIES;
+        int attemptsLeft = getRetryCount();
 
+        final HttpURLConnection initialRequest = createRequest(url, method);
         // Preserve for a potential manual redirect
         String requestUrlStr = initialRequest.getURL().toString();
 
@@ -114,9 +189,7 @@ public class FutureHttpGetBase<T>
 
             //noinspection OverlyBroadCatchBlock
             try {
-                if (throttler != null) {
-                    throttler.waitUntilRequestAllowed();
-                }
+                waitUntilRequestAllowed();
                 req.connect();
 
                 redirectCount = 0;
@@ -144,8 +217,7 @@ public class FutureHttpGetBase<T>
                         // follow the redirect
                         redirectCount++;
                         req.disconnect();
-                        req = createRequest(responseUrl, req.getRequestMethod(),
-                                            req.getDoOutput());
+                        req = createRequest(responseUrl, req.getRequestMethod());
                         // Preserve for potential retry
                         requestUrlStr = responseUrlStr;
 

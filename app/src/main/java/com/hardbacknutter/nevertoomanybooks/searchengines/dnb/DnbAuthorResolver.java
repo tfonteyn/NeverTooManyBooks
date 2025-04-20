@@ -29,7 +29,6 @@ import androidx.annotation.VisibleForTesting;
 import java.util.Map;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
@@ -137,11 +136,7 @@ public final class DnbAuthorResolver
         if (!searchEngine.isCancelled()) {
             final Author found = parse(context, document);
             if (found != null) {
-                author.setName(found.getFamilyName(), found.getGivenNames());
-                author.setRealAuthor(found.getRealAuthor());
-                author.addIdentifiers(found.getIdentifiers());
-                ServiceLocator.getInstance().getIdentifierDao()
-                              .pruneList(author.getIdentifiers());
+                author.setRealAuthor(found);
                 return true;
             }
         }

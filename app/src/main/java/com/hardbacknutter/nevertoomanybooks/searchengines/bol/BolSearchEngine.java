@@ -189,7 +189,7 @@ public class BolSearchEngine
             throws SearchException {
         final FutureHttpHead<Boolean> futureHttpHead = createFutureHeadRequest(context);
         try {
-            futureHttpHead.send(getHostUrl(context), con -> true);
+            futureHttpHead.head(getHostUrl(context), con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
