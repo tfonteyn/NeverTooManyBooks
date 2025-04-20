@@ -144,6 +144,16 @@ public final class CalibreContentServer
     static final String PK_HOST_URL = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
     static final String PK_HOST_USER = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_USER;
     static final String PK_HOST_PASS = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
+    /**
+     * Calibre treats the ISBN as just another identifier.
+     * "isbn_10", "isbn_13" are also used, in particular by the ISFDB plugin for Calibre
+     * We're ignoring them as the "isbn" should take precedence really
+     */
+    static final String IDENTIFIER_ISBN = "isbn";
+    /** Response root tag: Total number of items found in a query. */
+    static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
+    /** Response root tag: The array of book ids returned in 'this' call. */
+    static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
     private static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
 
     private static final String AMAZON = "amazon";
@@ -176,14 +186,6 @@ public final class CalibreContentServer
             // but heck, just convert it.
             Map.entry(Identifier.SID_ASIN, AMAZON)
     );
-
-    /**
-     * Calibre treats the ISBN as just another identifier.
-     * "isbn_10", "isbn_13" are also used, in particular by the ISFDB plugin for Calibre
-     * We're ignoring them as the "isbn" should take precedence really
-     */
-    static final String IDENTIFIER_ISBN = "isbn";
-
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
 
@@ -260,7 +262,7 @@ public final class CalibreContentServer
      * Fetch all book.
      * <p>
      * {@code "616c6c626f6f6b73" == "allbooks"}
-     *
+     * <p>
      * Param 1: serverUri
      * Param 2: libraryStringId
      * Param 3: number of books
@@ -289,10 +291,6 @@ public final class CalibreContentServer
      */
     private static final String GET_BOOK_BY_ID = "%1$s/ajax/book/%2$d/%3$s";
 
-    /** Response root tag: Total number of items found in a query. */
-    static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
-    /** Response root tag: The array of book ids returned in 'this' call. */
-    static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
     /** Response root tag. */
     private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
     /**
@@ -1681,6 +1679,14 @@ public final class CalibreContentServer
             return this;
         }
 
+        /**
+         * Use for testing only, to bypass the host name verification.
+         *
+         * @param hostnameVerifier to use
+         *
+         * @return {@code this} (for chaining)
+         */
+        @VisibleForTesting
         @NonNull
         public Builder setHostnameVerifier(@NonNull final HostnameVerifier hostnameVerifier) {
             this.hostnameVerifier = hostnameVerifier;
