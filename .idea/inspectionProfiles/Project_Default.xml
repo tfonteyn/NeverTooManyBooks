@@ -266,6 +266,7 @@
           <option value="ReturnOfNull" />
           <option value="RegExpUnnecessaryNonCapturingGroup" />
           <option value="Annotator" />
+          <option value="UnusedReturnValue" />
         </list>
       </option>
     </inspection_tool>
