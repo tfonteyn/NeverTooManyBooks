@@ -30,7 +30,6 @@ import androidx.annotation.VisibleForTesting;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -129,11 +128,7 @@ public final class IsfdbAuthorResolver
         }
 
         if (found != null) {
-            author.setName(found.getFamilyName(), found.getGivenNames());
-            author.setRealAuthor(found.getRealAuthor());
-            author.addIdentifiers(found.getIdentifiers());
-            ServiceLocator.getInstance().getIdentifierDao()
-                          .pruneList(author.getIdentifiers());
+            author.setRealAuthor(found);
             return true;
         }
 

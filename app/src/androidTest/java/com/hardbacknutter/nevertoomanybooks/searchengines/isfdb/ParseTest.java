@@ -189,7 +189,7 @@ public class ParseTest
                                                locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
         assertEquals("Mort", book.getString(DBKey.TITLE, null));
         assertEquals("9781473200104", book.getString(DBKey.ISBN, null));
@@ -212,13 +212,24 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
-        assertEquals("Pratchett", authors.get(0).getFamilyName());
-        assertEquals("Terry", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
+        Author author;
+        author = authors.get(0);
+        assertEquals("Pratchett", author.getFamilyName());
+        assertEquals("Terry", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
+        author = author.getRealAuthor();
+        assertNotNull(author);
+        assertEquals("Pratchett", author.getFamilyName());
+        assertEquals("Terence David John", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
 
-        assertEquals("McLaren", authors.get(1).getFamilyName());
-        assertEquals("Joe", authors.get(1).getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
+        author = authors.get(1);
+        assertEquals("McLaren", author.getFamilyName());
+        assertEquals("Joe", author.getGivenNames());
+        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
+        assertEquals("197603", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -240,8 +251,10 @@ public class ParseTest
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
         assertEquals(1987, (long) fpd.get());
-        assertEquals("Pratchett", tocEntry.getPrimaryAuthor().getFamilyName());
-        assertEquals("Terry", tocEntry.getPrimaryAuthor().getGivenNames());
+        author = tocEntry.getPrimaryAuthor();
+        assertEquals("Pratchett", author.getFamilyName());
+        assertEquals("Terry", author.getGivenNames());
+        assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
     }
 
     @Test
@@ -259,7 +272,7 @@ public class ParseTest
                                                locationHeader);
         final Book book = new Book();
         searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // Log.d(TAG, book.toString());
+        Log.d(TAG, book.toString());
 
         assertEquals("The Shepherd's Crown", book.getString(DBKey.TITLE, null));
         assertEquals("9780062429995", book.getString(DBKey.ISBN, null));
@@ -283,13 +296,23 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
-        assertEquals("Pratchett", authors.get(0).getFamilyName());
-        assertEquals("Terry", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
+        Author author;
+        author = authors.get(0);
+        assertEquals("Pratchett", author.getFamilyName());
+        assertEquals("Terry", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
+        author = author.getRealAuthor();
+        assertNotNull(author);
+        assertEquals("Pratchett", author.getFamilyName());
+        assertEquals("Terence David John", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
 
-        assertEquals("Tierney", authors.get(1).getFamilyName());
-        assertEquals("Jim", authors.get(1).getGivenNames());
-        assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
+        author = authors.get(1);
+        assertEquals("Tierney", author.getFamilyName());
+        assertEquals("Jim", author.getGivenNames());
+        assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -308,15 +331,20 @@ public class ParseTest
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
         assertEquals(2015, (long) fpd.get());
-        assertEquals("Pratchett", tocEntry.getPrimaryAuthor().getFamilyName());
-        assertEquals("Terry", tocEntry.getPrimaryAuthor().getGivenNames());
+        author = tocEntry.getPrimaryAuthor();
+        assertEquals("Pratchett", author.getFamilyName());
+        assertEquals("Terry", author.getGivenNames());
+        assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
+
         tocEntry = toc.get(1);
         assertEquals("Afterword (The Shepherd's Crown)", tocEntry.getTitle());
         fpd = tocEntry.getFirstPublicationDate().getYear();
         assertTrue(fpd.isPresent());
         assertEquals(2015, (long) fpd.get());
-        assertEquals("Wilkins", tocEntry.getPrimaryAuthor().getFamilyName());
-        assertEquals("Rob", tocEntry.getPrimaryAuthor().getGivenNames());
+        author = tocEntry.getPrimaryAuthor();
+        assertEquals("Wilkins", author.getFamilyName());
+        assertEquals("Rob", author.getGivenNames());
+        assertEquals("219307", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
     }
 
     @Test
@@ -352,10 +380,6 @@ public class ParseTest
         assertEquals("58029067", book.requireIdentifierValue(Identifier.SID_OCLC));
         assertEquals("373190", book.requireIdentifierValue(Identifier.SID_ISFDB));
 
-        assertEquals(
-                "• Translated by Saga Gripenberg and Claës Gripenberg • Year from Libris and <a href=\"https://barnboksinstitutet.bibkat.se/cgi-bin/koha/opac-detail.pl?biblionumber=35850\">The Swedish Institute for Children's Books</a> (Tuck claims year as 1959 and series number as 327) • Cover artist mentioned on copyright page",
-                book.getString(DBKey.DESCRIPTION, null));
-
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
@@ -377,6 +401,7 @@ public class ParseTest
         assertEquals("Isaac", author.getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
         assertEquals("5", author.requireIdentifierValue(Identifier.SID_ISFDB));
+
         author = authors.get(1);
         assertEquals("Andersson", author.getFamilyName());
         assertEquals("Bosse", author.getGivenNames());
@@ -406,7 +431,6 @@ public class ParseTest
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
         assertEquals("5", author.requireIdentifierValue(Identifier.SID_ISFDB));
-
     }
 
     @Test

@@ -29,7 +29,6 @@ import androidx.annotation.VisibleForTesting;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -155,11 +154,7 @@ public final class OpenLibraryAuthorResolver
             if (!searchEngine.isCancelled()) {
                 final Author found = parse(jsonObject);
                 if (found != null) {
-                    author.setName(found.getFamilyName(), found.getGivenNames());
-                    author.setRealAuthor(found.getRealAuthor());
-                    author.addIdentifiers(found.getIdentifiers());
-                    ServiceLocator.getInstance().getIdentifierDao()
-                                  .pruneList(author.getIdentifiers());
+                    author.setRealAuthor(found);
                     return true;
                 }
             }
