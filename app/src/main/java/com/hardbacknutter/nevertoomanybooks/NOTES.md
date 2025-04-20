@@ -6,6 +6,8 @@ NEW:
 
 FIXES:
 
+- OpenLibrary + ISFDB author pseudonym lookups overwriting instead of enhancing
+
 REMOVED:
 
 <hr style="border:1px solid blue;">
