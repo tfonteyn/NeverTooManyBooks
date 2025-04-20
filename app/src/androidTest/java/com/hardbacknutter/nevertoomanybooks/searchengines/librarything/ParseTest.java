@@ -72,7 +72,6 @@ public class ParseTest
 
         Log.d(TAG, isbns.toString());
 
-        assertTrue(isbns.size() > 200);
-
+        assertTrue("did you add the api token?", isbns.size() > 200);
     }
 }

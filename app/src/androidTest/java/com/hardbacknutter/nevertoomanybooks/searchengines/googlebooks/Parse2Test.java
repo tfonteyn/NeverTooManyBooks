@@ -160,7 +160,7 @@ public class Parse2Test
         assertEquals("en", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2012-11-22", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("441", book.getString(DBKey.PAGES, null));
-        assertEquals("ebook", book.getString(DBKey.FORMAT, null));
+        assertEquals("eBook", book.getString(DBKey.FORMAT, null));
 
         assertEquals("2020. Fueled by an insatiable curiosity, Reid Malenfant ventures"
                      + " to the far edge of the solar system, where he discovers a strange artifact"
