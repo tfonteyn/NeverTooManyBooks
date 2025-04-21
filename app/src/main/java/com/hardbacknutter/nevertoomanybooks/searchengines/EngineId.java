@@ -173,14 +173,7 @@ public enum EngineId
           true),
 
     /** Dutch language books & comics. */
-    KbNl("kbnl",
-         R.string.site_kb_nl,
-         List.of(R.string.site_description_dutch_and_more,
-                 R.string.site_description_catalog),
-         "https://webggc.oclc.org",
-         new Locale("nl", "NL"),
-         KbNlSearchEngine.class,
-         true),
+    KbNl(KbNlSearchEngine.class, true),
 
     LastDodoNl(LastDodoSearchEngine.class, true),
 

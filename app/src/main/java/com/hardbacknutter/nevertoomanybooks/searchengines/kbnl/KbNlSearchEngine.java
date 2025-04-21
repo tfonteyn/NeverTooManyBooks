@@ -29,11 +29,14 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
@@ -46,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -131,6 +135,17 @@ public class KbNlSearchEngine
         // We MUST bootstrap it here to ensure it's active before the first http request send
         // No further interaction with it is needed.
         ServiceLocator.getInstance().getCookieManager();
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("kbnl",
+                              R.string.site_kb_nl,
+                              List.of(R.string.site_description_dutch_and_more,
+                                      R.string.site_description_catalog),
+                              "https://webggc.oclc.org",
+                              new Locale("nl", "NL"));
     }
 
     @Override
