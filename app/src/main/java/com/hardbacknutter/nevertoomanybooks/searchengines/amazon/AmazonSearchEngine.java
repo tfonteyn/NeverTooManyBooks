@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -113,9 +112,6 @@ public class AmazonSearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.SearchOnSite {
 
-    /** Preferences - Type: {@code String}. */
-    static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
-                                      + '.' + SearchEngineConfig.PK_HOST_URL;
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
     /** Log tag. */

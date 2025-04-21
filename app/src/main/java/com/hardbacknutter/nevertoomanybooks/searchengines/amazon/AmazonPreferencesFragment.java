@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 
@@ -41,6 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.widgets.HostUrlValidator;
 public class AmazonPreferencesFragment
         extends BasePreferenceFragment {
 
+    /** Preferences - Type: {@code String}. */
+    private static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
+                                              + '.' + SearchEngineConfig.PK_HOST_URL;
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
@@ -64,7 +69,7 @@ public class AmazonPreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_amazon, rootKey);
 
         //noinspection DataFlowIssue
-        pHostUrl = findPreference(AmazonSearchEngine.PK_HOST_URL);
+        pHostUrl = findPreference(PK_HOST_URL);
         //noinspection DataFlowIssue
         hostUrlValidator = initHostUrlPreference(pHostUrl);
     }
