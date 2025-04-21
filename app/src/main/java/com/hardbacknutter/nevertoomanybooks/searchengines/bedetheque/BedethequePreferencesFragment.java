@@ -31,13 +31,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep
 public class BedethequePreferencesFragment
         extends BasePreferenceFragment {
 
-    private static final String PSK_CLEAR_AUTHOR_CACHE = "bedetheque.cache.authors.clear";
+    private static final String PSK_CLEAR_AUTHOR_CACHE =
+            EngineId.Bedetheque.getPreferenceKey() + ".cache.authors.clear";
     private int authorCacheCount = -1;
 
     @Override

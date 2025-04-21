@@ -135,15 +135,7 @@ public enum EngineId
            true),
 
     /** French language (and to some extend other languages) comics. */
-    Bedetheque("bedetheque",
-               R.string.site_bedetheque,
-               List.of(R.string.site_description_french,
-                       R.string.site_description_catalog,
-                       R.string.site_description_eu_comics),
-               "https://www.bedetheque.com",
-               Locale.FRANCE,
-               BedethequeSearchEngine.class,
-               true),
+    Bedetheque(BedethequeSearchEngine.class, true),
 
     /** All genres; portuguese and some other languages. */
     BertrandPt(BertrandPtSearchEngine.class, true),
