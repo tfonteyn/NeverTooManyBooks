@@ -234,14 +234,7 @@ public enum EngineId
               true),
 
     /** All genres. */
-    GoogleBooks("googlebooks",
-                R.string.site_google_books,
-                List.of(R.string.site_description_english_and_more,
-                        R.string.site_description_catalog),
-                "https://www.googleapis.com",
-                Locale.US,
-                GoogleBooksSearchEngine.class,
-                true),
+    GoogleBooks(GoogleBooksSearchEngine.class, true),
 
     /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
     Isfdb("isfdb",

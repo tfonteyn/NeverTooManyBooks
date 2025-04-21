@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -116,6 +117,17 @@ public class GoogleBooksSearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(5);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("googlebooks",
+                              R.string.site_google_books,
+                              List.of(R.string.site_description_english_and_more,
+                                      R.string.site_description_catalog),
+                              "https://www.googleapis.com",
+                              Locale.US);
     }
 
     @NonNull
