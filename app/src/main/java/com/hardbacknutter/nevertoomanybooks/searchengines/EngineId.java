@@ -71,26 +71,34 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * To add a new site to search, follow these steps:
  * <ol>
  *     <li>Add a string resource with the name of the site engine in:
- *         "src/main/res/values/strings-donottranslate.xml"
- *         (look for existing entries named 'site_*')
+ *         {@code "src/main/res/values/strings-donottranslate.xml"}
+ *         Look for existing entries named {@code site_*}.
  *     </li>
  *
  *     <li>Implement {@link SearchEngine} to create the new engine class
  *         extending {@link SearchEngineBase} or {@link JsoupSearchEngineBase}
- *         or a similar setup.<br>
- *         There MUST be a public constructor annotated with "@Keep" and with arguments
- *         ({@link Context},{@link SearchEngineConfig})
- *         The context received is the <strong>application</strong> context;
- *         i.e. a NON-localized context which cannot be used to lookup string resources but is
- *         only meant to be used for preference-value lookups.
+ *         or a similar setup.
+ *         <ul>
+ *             <li>There MUST be a public constructor annotated with {@code @Keep}
+ *                 and with arguments ({@link Context},{@link SearchEngineConfig})
+ *                 The context received is the <strong>application</strong> context;
+ *                 i.e. a NON-localized context which cannot be used to lookup
+ *                 string resources but can be used for preference-value lookups.
+ *             </li>
+ *             <li>Add a public static method {@code
+ *                     @Keep
+ *                     @NonNull
+ *                     public static EngineData getEngineData()
+ *                 }
+ *                 Create the {@link EngineData} using it a unique string-id:
+ *                 must be all lowercase, no-spaces; this becomes the {@link #key} field.
+ *                 This key will be used in preferences, database settings,...
+ *                 See existing engines for examples on the other parameters.
+ *              </li>
+ *          </ul>
  *      </li>
  *
- *     <li>Add an enum identifier in this class and give it a unique string-id,
- *         the string resource id for the name as displayed to the user and
- *         the implementation class. The string-id must be all lowercase, no-spaces.
- *         It will be used in preferences, database settings,...
- *         This is the {@link #key} field.
- *     </li>
+ *     <li>Add an enum identifier in this class and add the implementation class.</li>
  *
  *     <li>Configure the engine in the method {@link #createEngineConfigurations(Context)},
  *         using {@link SearchEngineConfig.Builder} methods.
@@ -100,18 +108,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *      </li>
  *
  *      <li>Add a preference fragment for the user to configure the engine.
- *          The class MUST be annotated with "@Keep".
- *          See the OpenLibrary engine for an simple example:
- *          a class, an xml file, and an entry in "src/main/res/xml/preferences_site_searches.xml"
- *          Look at the other engines for more complex examples.
+ *          The class MUST be annotated with {@code @Keep}.
+ *          See existing engines for examples: add a class, an xml file, and an entry in
+ *          {@code "src/main/res/xml/preferences_site_searches.xml"}
  *      </li>
- *      <li>Optional: if the engine/site will store a external book id (or any other specific
- *          fields) in the local database, extra steps will need to be taken.
- *          TODO: document steps for adding a SID to a new engine
- *      </li>
- *
  * </ol>
- * <p>
  *
  * <strong>Note: NEVER change the {@link #key} of the sites</strong>.
  *
@@ -184,24 +185,25 @@ public enum EngineId
     /** Set at compile time from the gradle script. */
     private final boolean enabled;
 
-    // Don't add config... toPrint will recurse
+    /** {@link SearchEngine.CoverByEdition} only. */
+    private final boolean supportsMultipleCoverSizes;
+
+    @Nullable
+    private final String identifierKey;
+
+    // Don't add to toPrint(), it would recurse
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private SearchEngineConfig config;
-
-
-    /** {@link SearchEngine.CoverByEdition} only. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private boolean supportsMultipleCoverSizes;
-
-    @Nullable
-    private String identifierKey;
 
     /**
      * Constructor.
      *
      * @param clazz   implementation class for this engine.
      * @param enabled {@code true} or a BuildConfig.ENABLE_ variable - see app/build.gradle
+     *
+     * @throws IllegalStateException (debug) if the implementation class does not
+     *                               have a correct {@code getEngineData()} method.
      */
     EngineId(@NonNull final Class<? extends SearchEngine> clazz,
              final boolean enabled) {
@@ -217,7 +219,7 @@ public enum EngineId
         } catch (@NonNull final NoSuchMethodException
                                 | InvocationTargetException
                                 | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
         this.key = engineData.key;
         this.labelResId = engineData.labelResId;
@@ -318,7 +320,7 @@ public enum EngineId
                       .build(SearchEngineConfig::new);
         }
 
-        // NEWTHINGS: adding a new search engine: add the search engine configuration
+        // NEWTHINGS: adding a new search engine: add the search engine default configuration
     }
 
     /**
@@ -462,6 +464,7 @@ public enum EngineId
      *
      * @return list
      */
+    @NonNull
     public static List<EngineId> getSearchOnSite() {
         return Arrays.stream(values())
                      .filter(EngineId::isEnabled)
@@ -666,7 +669,7 @@ public enum EngineId
                + ", locale=" + defaultLocale
                + ", clazz=" + clazz.getName()
                + ", enabled=" + enabled
-
+               + ", supportsMultipleCoverSizes=" + supportsMultipleCoverSizes
                + ", identifierKey=" + identifierKey
                + '}';
     }
