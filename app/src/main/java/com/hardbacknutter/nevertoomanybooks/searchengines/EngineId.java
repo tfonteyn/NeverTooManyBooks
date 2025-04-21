@@ -196,14 +196,7 @@ public enum EngineId
     LibraryThing(LibraryThingSearchEngine.class, BuildConfig.ENABLE_LIBRARYTHING),
 
     /** All genres. */
-    OpenLibrary("openlibrary",
-                R.string.site_open_library,
-                List.of(R.string.site_description_english_and_more,
-                        R.string.site_description_catalog),
-                "https://openlibrary.org",
-                Locale.US,
-                OpenLibrarySearchEngine.class,
-                true),
+    OpenLibrary(OpenLibrarySearchEngine.class, true),
 
     /** Dutch language (and to some extend other languages) comics. */
     StripInfoBe("stripinfo",

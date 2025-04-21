@@ -39,6 +39,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
@@ -56,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -171,6 +173,17 @@ public class OpenLibrarySearchEngine
 
         // We MUST bootstrap it here to ensure it's active before the first http request send
         cookieManager = ServiceLocator.getInstance().getCookieManager();
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("openlibrary",
+                              R.string.site_open_library,
+                              List.of(R.string.site_description_english_and_more,
+                                      R.string.site_description_catalog),
+                              "https://openlibrary.org",
+                              Locale.US);
     }
 
     @Override
