@@ -123,16 +123,7 @@ public enum EngineId
         implements Parcelable {
 
     /** All genres. */
-    Amazon("amazon",
-           R.string.site_amazon,
-           List.of(R.string.site_description_various_languages,
-                   R.string.site_description_shop),
-           // amazon.com, amazon.ca : blocked by captcha
-           "https://www.amazon.co.uk",
-           // The Locale will be dynamically set depending on the country site
-           Locale.US,
-           AmazonSearchEngine.class,
-           true),
+    Amazon(AmazonSearchEngine.class, true),
 
     /** French language (and to some extend other languages) comics. */
     Bedetheque(BedethequeSearchEngine.class, true),

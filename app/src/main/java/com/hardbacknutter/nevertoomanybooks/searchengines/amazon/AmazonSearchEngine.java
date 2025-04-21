@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -271,6 +272,19 @@ public class AmazonSearchEngine
     public AmazonSearchEngine(@NonNull final Context appContext,
                               @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("amazon",
+                              R.string.site_amazon,
+                              List.of(R.string.site_description_various_languages,
+                                      R.string.site_description_shop),
+                              // amazon.com, amazon.ca : blocked by captcha
+                              "https://www.amazon.co.uk",
+                              // The Locale will be dynamically set depending on the country site
+                              Locale.US);
     }
 
     @NonNull
