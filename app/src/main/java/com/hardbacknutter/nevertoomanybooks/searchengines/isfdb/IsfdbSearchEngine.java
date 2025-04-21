@@ -50,6 +50,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
@@ -71,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -89,6 +91,8 @@ import org.jsoup.select.Elements;
 import org.xml.sax.SAXException;
 
 /**
+ * Speculative Fiction only. e.g. Science-Fiction/Fantasy etc.
+ * <p>
  * See notes in the package-info.java file.
  */
 public class IsfdbSearchEngine
@@ -518,6 +522,18 @@ public class IsfdbSearchEngine
     public IsfdbSearchEngine(@NonNull final Context appContext,
                              @NonNull final SearchEngineConfig config) {
         super(appContext, config, CHARSET_DECODE_PAGE);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("isfdb",
+                              R.string.site_isfdb,
+                              List.of(R.string.site_description_english_and_more,
+                                      R.string.site_description_catalog,
+                                      R.string.site_description_fsf),
+                              "https://www.isfdb.org",
+                              Locale.US);
     }
 
     @Override

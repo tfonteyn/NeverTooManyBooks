@@ -161,16 +161,7 @@ public enum EngineId
     /** All genres. */
     GoogleBooks(GoogleBooksSearchEngine.class, true),
 
-    /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
-    Isfdb("isfdb",
-          R.string.site_isfdb,
-          List.of(R.string.site_description_english_and_more,
-                  R.string.site_description_catalog,
-                  R.string.site_description_fsf),
-          "https://www.isfdb.org",
-          Locale.US,
-          IsfdbSearchEngine.class,
-          true),
+    Isfdb(IsfdbSearchEngine.class, true),
 
     /** Dutch language books & comics. */
     KbNl(KbNlSearchEngine.class, true),
