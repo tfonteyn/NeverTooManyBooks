@@ -39,11 +39,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -58,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -167,6 +170,18 @@ public class StripInfoSearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(10);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("stripinfo",
+                              R.string.site_stripinfo_be,
+                              List.of(R.string.site_description_dutch_and_more,
+                                      R.string.site_description_catalog,
+                                      R.string.site_description_eu_comics),
+                              "https://www.stripinfo.be",
+                              new Locale("nl", "BE"));
     }
 
     @Override

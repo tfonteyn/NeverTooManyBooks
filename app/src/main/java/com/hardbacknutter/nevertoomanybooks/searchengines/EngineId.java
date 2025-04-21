@@ -199,15 +199,7 @@ public enum EngineId
     OpenLibrary(OpenLibrarySearchEngine.class, true),
 
     /** Dutch language (and to some extend other languages) comics. */
-    StripInfoBe("stripinfo",
-                R.string.site_stripinfo_be,
-                List.of(R.string.site_description_dutch_and_more,
-                        R.string.site_description_catalog,
-                        R.string.site_description_eu_comics),
-                "https://www.stripinfo.be",
-                new Locale("nl", "BE"),
-                StripInfoSearchEngine.class,
-                true),
+    StripInfoBe(StripInfoSearchEngine.class, true),
 
     /**
      * Dutch language (and to some extend other languages) comics.
