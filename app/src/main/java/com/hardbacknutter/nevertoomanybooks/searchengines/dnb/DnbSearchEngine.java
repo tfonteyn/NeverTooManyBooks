@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -173,17 +173,17 @@ public class DnbSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData("dnb",
-                              R.string.site_dnb_de,
-                              List.of(R.string.site_description_german,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder("dnb",
+                                    R.string.site_dnb_de,
+                                    List.of(R.string.site_description_german,
                                       R.string.site_description_catalog),
-                              "https://katalog.dnb.de",
-                              new Locale("de", "DE"))
+                                    "https://katalog.dnb.de",
+                                    new Locale("de", "DE"))
                 .setIdentifierKey(Identifier.SID_DNB);
     }
 

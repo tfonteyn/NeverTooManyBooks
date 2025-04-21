@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -282,19 +282,19 @@ public class AmazonSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData(PREFERENCE_KEY,
-                              R.string.site_amazon,
-                              List.of(R.string.site_description_various_languages,
-                                      R.string.site_description_shop),
-                              // amazon.com, amazon.ca : blocked by captcha
-                              "https://www.amazon.co.uk",
-                              // The Locale will be dynamically set depending on the country site
-                              Locale.US)
+    public static EngineId.Builder init() {
+        return new EngineId.Builder(PREFERENCE_KEY,
+                                    R.string.site_amazon,
+                                    List.of(R.string.site_description_various_languages,
+                                            R.string.site_description_shop),
+                                    // amazon.com, amazon.ca : blocked by captcha
+                                    "https://www.amazon.co.uk",
+                                    // The Locale will be dynamically set depending on the country
+                                    Locale.US)
                 .setIdentifierKey(Identifier.SID_ASIN);
     }
 

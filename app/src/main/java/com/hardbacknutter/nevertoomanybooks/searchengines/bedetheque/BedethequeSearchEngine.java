@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -165,18 +165,18 @@ public class BedethequeSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData("bedetheque",
-                              R.string.site_bedetheque,
-                              List.of(R.string.site_description_french,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder("bedetheque",
+                                    R.string.site_bedetheque,
+                                    List.of(R.string.site_description_french,
                                       R.string.site_description_catalog,
                                       R.string.site_description_eu_comics),
-                              "https://www.bedetheque.com",
-                              Locale.FRANCE)
+                                    "https://www.bedetheque.com",
+                                    Locale.FRANCE)
                 .setIdentifierKey(Identifier.SID_BEDETHEQUE);
     }
 

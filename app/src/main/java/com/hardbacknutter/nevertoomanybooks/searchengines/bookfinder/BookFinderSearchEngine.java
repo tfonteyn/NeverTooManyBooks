@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -113,17 +113,17 @@ public class BookFinderSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData("bookfinder",
-                              R.string.site_bookfinder,
-                              List.of(R.string.site_description_various_languages,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder("bookfinder",
+                                    R.string.site_bookfinder,
+                                    List.of(R.string.site_description_various_languages,
                                       R.string.site_description_shop),
-                              "https://www.bookfinder.com",
-                              Locale.US);
+                                    "https://www.bookfinder.com",
+                                    Locale.US);
     }
 
     @NonNull

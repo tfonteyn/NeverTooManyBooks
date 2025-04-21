@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -149,18 +149,18 @@ public class StripWebSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData(PREFERENCE_KEY,
-                              R.string.site_stripweb_be,
-                              List.of(R.string.site_description_dutch_and_more,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder(PREFERENCE_KEY,
+                                    R.string.site_stripweb_be,
+                                    List.of(R.string.site_description_dutch_and_more,
                                       R.string.site_description_shop,
                                       R.string.site_description_eu_comics),
-                              "https://www.stripweb.be",
-                              new Locale("nl", "BE"));
+                                    "https://www.stripweb.be",
+                                    new Locale("nl", "BE"));
     }
 
     @NonNull

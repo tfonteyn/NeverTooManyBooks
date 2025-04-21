@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -167,17 +167,17 @@ public class BolSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData(PREFERENCE_KEY,
-                              R.string.site_bol_com,
-                              List.of(R.string.site_description_dutch_and_more,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder(PREFERENCE_KEY,
+                                    R.string.site_bol_com,
+                                    List.of(R.string.site_description_dutch_and_more,
                                       R.string.site_description_shop),
-                              "https://www.bol.com",
-                              new Locale("nl", "NL"));
+                                    "https://www.bol.com",
+                                    new Locale("nl", "NL"));
     }
 
     /**

@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -142,17 +142,17 @@ public class DoubanSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData(PREFERENCE_KEY,
-                              R.string.site_douban,
-                              List.of(R.string.site_description_chinese,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder(PREFERENCE_KEY,
+                                    R.string.site_douban,
+                                    List.of(R.string.site_description_chinese,
                                       R.string.site_description_catalog),
-                              "https://search.douban.com",
-                              Locale.CHINA)
+                                    "https://search.douban.com",
+                                    Locale.CHINA)
                 .setIdentifierKey(Identifier.SID_DOUBAN);
     }
 

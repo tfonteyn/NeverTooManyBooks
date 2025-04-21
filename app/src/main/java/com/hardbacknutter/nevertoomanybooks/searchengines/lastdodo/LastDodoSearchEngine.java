@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -125,18 +125,18 @@ public class LastDodoSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData("lastdodo",
-                              R.string.site_lastdodo_nl,
-                              List.of(R.string.site_description_dutch_and_more,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder("lastdodo",
+                                    R.string.site_lastdodo_nl,
+                                    List.of(R.string.site_description_dutch_and_more,
                                       R.string.site_description_catalog,
                                       R.string.site_description_eu_comics),
-                              "https://www.lastdodo.nl",
-                              new Locale("nl", "NL"))
+                                    "https://www.lastdodo.nl",
+                                    new Locale("nl", "NL"))
                 .setIdentifierKey(Identifier.SID_LAST_DODO_NL);
     }
 

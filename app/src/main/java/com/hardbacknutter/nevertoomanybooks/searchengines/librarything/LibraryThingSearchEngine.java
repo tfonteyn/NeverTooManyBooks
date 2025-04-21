@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -100,17 +100,17 @@ public class LibraryThingSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData(PREFERENCE_KEY,
-                              R.string.site_library_thing,
-                              List.of(R.string.site_description_english_and_more,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder(PREFERENCE_KEY,
+                                    R.string.site_library_thing,
+                                    List.of(R.string.site_description_english_and_more,
                                       R.string.site_description_catalog),
-                              "https://www.librarything.com",
-                              Locale.US)
+                                    "https://www.librarything.com",
+                                    Locale.US)
                 .setIdentifierKey(Identifier.SID_LIBRARY_THING);
     }
 

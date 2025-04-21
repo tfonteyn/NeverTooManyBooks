@@ -88,9 +88,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *             <li>Add a public static method {@code
  *                     @Keep
  *                     @NonNull
- *                     public static EngineData getEngineData()
+ *                     public static Builder init()
  *                 }
- *                 Create the {@link EngineData} using it a unique string-id:
+ *                 Create the {@link Builder} using it a unique string-id:
  *                 must be all lowercase, no-spaces; this becomes the {@link #key} field.
  *                 This key will be used in preferences, database settings,...
  *                 See existing engines for examples on the other parameters.
@@ -247,32 +247,32 @@ public enum EngineId
      * @param enabled {@code true} or a BuildConfig.ENABLE_ variable - see app/build.gradle
      *
      * @throws IllegalStateException (debug) if the implementation class does not
-     *                               have a correct {@code getEngineData()} method.
+     *                               have a correct {@code init()} method.
      */
     EngineId(@NonNull final Class<? extends SearchEngine> clazz,
              final boolean enabled) {
         this.clazz = clazz;
         this.enabled = enabled;
 
-        final EngineData engineData;
+        final Builder builder;
         try {
-            final Method method = clazz.getMethod("getEngineData");
-            engineData = Objects.requireNonNull(
-                    (EngineData) method.invoke(null));
+            final Method method = clazz.getMethod("init");
+            builder = Objects.requireNonNull(
+                    (Builder) method.invoke(null));
 
         } catch (@NonNull final NoSuchMethodException
                                 | InvocationTargetException
                                 | IllegalAccessException e) {
             throw new IllegalStateException(e);
         }
-        this.key = engineData.key;
-        this.labelResId = engineData.labelResId;
-        this.infoResIdList = engineData.infoResIdList;
-        this.defaultUrl = engineData.defaultSearchUrl;
-        this.defaultLocale = engineData.defaultLocale;
+        this.key = builder.key;
+        this.labelResId = builder.labelResId;
+        this.infoResIdList = builder.infoResIdList;
+        this.defaultUrl = builder.defaultSearchUrl;
+        this.defaultLocale = builder.defaultLocale;
 
-        this.multipleCoverSizes = engineData.hasMultipleCoverSizes();
-        this.identifierKey = engineData.getIdentifierKey();
+        this.multipleCoverSizes = builder.hasMultipleCoverSizes();
+        this.identifierKey = builder.getIdentifierKey();
     }
 
     /**
@@ -625,5 +625,82 @@ public enum EngineId
                + ", multipleCoverSizes=" + multipleCoverSizes
                + ", identifierKey=" + identifierKey
                + '}';
+    }
+
+    public static class Builder {
+
+        /** The preference key / generic string identifier for this engine. */
+        @NonNull
+        final String key;
+
+        /** The user displayable name for this engine. */
+        @SuppressWarnings("FieldNotUsedInToString")
+        @StringRes
+        final int labelResId;
+
+        @SuppressWarnings("FieldNotUsedInToString")
+        @NonNull
+        final List<Integer> infoResIdList;
+
+        /** Default url. */
+        @NonNull
+        final String defaultSearchUrl;
+
+        @NonNull
+        final Locale defaultLocale;
+
+        private boolean multipleCoverSizes;
+
+        @Nullable
+        private String identifierKey;
+
+        /**
+         * Constructor.
+         *
+         * @param key              The preference key / generic string identifier for this engine.
+         * @param labelResId       The user displayable name for this engine.
+         * @param infoResIdList    A list of informational string resources about this site
+         * @param defaultSearchUrl for the site
+         * @param defaultLocale    for the site
+         */
+        public Builder(@NonNull final String key,
+                       @StringRes final int labelResId,
+                       @NonNull final List<Integer> infoResIdList,
+                       @NonNull final String defaultSearchUrl,
+                       @NonNull final Locale defaultLocale) {
+            this.key = key;
+            this.labelResId = labelResId;
+            this.infoResIdList = infoResIdList;
+            this.defaultSearchUrl = defaultSearchUrl;
+            this.defaultLocale = defaultLocale;
+        }
+
+        @Nullable
+        String getIdentifierKey() {
+            return identifierKey;
+        }
+
+        /**
+         * Set the {@link Identifier} for the website specific identifier for a book.
+         *
+         * @param identifierKey key
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setIdentifierKey(@NonNull final String identifierKey) {
+            this.identifierKey = identifierKey;
+            return this;
+        }
+
+        boolean hasMultipleCoverSizes() {
+            return multipleCoverSizes;
+        }
+
+        @NonNull
+        public Builder setMultipleCoverSizes(final boolean supports) {
+            this.multipleCoverSizes = supports;
+            return this;
+        }
     }
 }

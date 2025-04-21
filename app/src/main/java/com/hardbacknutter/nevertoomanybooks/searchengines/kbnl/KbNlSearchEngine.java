@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -149,17 +149,17 @@ public class KbNlSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData("kbnl",
-                              R.string.site_kb_nl,
-                              List.of(R.string.site_description_dutch_and_more,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder("kbnl",
+                                    R.string.site_kb_nl,
+                                    List.of(R.string.site_description_dutch_and_more,
                                       R.string.site_description_catalog),
-                              "https://webggc.oclc.org",
-                              new Locale("nl", "NL"))
+                                    "https://webggc.oclc.org",
+                                    new Locale("nl", "NL"))
                 .setIdentifierKey(Identifier.SID_KBNL)
                 .setMultipleCoverSizes(true);
     }

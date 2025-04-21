@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -161,17 +161,17 @@ public class DatabazeKnihSearchEngine
      * Called by reflection; <strong>MUST</strong> be {@code public}
      * and annotated with {@code @Keep}
      *
-     * @return {@link EngineData}
+     * @return {@link EngineId.Builder}
      */
     @Keep
     @NonNull
-    public static EngineData getEngineData() {
-        return new EngineData("databazeknih",
-                              R.string.site_databazeknih_cz,
-                              List.of(R.string.site_description_czech,
+    public static EngineId.Builder init() {
+        return new EngineId.Builder("databazeknih",
+                                    R.string.site_databazeknih_cz,
+                                    List.of(R.string.site_description_czech,
                                       R.string.site_description_catalog),
-                              "https://www.databazeknih.cz",
-                              new Locale("cs", "CZ"))
+                                    "https://www.databazeknih.cz",
+                                    new Locale("cs", "CZ"))
                 .setIdentifierKey(Identifier.SID_DATABAZE_KNIH);
     }
 
