@@ -147,7 +147,8 @@ public class GoodreadsSearchEngine
                               List.of(R.string.site_description_english_and_more,
                                       R.string.site_description_catalog),
                               "https://www.goodreads.com",
-                              Locale.US);
+                              Locale.US)
+                .setIdentifierKey(Identifier.SID_GOODREADS);
     }
 
     @NonNull

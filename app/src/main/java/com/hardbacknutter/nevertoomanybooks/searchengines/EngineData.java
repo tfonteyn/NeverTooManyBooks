@@ -21,10 +21,13 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.util.List;
 import java.util.Locale;
+
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 @SuppressWarnings("CheckStyle")
 public class EngineData {
@@ -49,6 +52,11 @@ public class EngineData {
     @NonNull
     final Locale defaultLocale;
 
+    private boolean supportsMultipleCoverSizes;
+
+    @Nullable
+    private String identifierKey;
+
     /**
      * Constructor.
      *
@@ -68,5 +76,33 @@ public class EngineData {
         this.infoResIdList = infoResIdList;
         this.defaultUrl = defaultUrl;
         this.defaultLocale = defaultLocale;
+    }
+
+    /**
+     * Set the {@link Identifier} for the website specific identifier for a book.
+     *
+     * @param identifierKey key
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public EngineData setIdentifierKey(@NonNull final String identifierKey) {
+        this.identifierKey = identifierKey;
+        return this;
+    }
+
+    @Nullable
+    String getIdentifierKey() {
+        return identifierKey;
+    }
+
+    @NonNull
+    public EngineData setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
+        this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
+        return this;
+    }
+
+    boolean supportsMultipleCoverSizes() {
+        return supportsMultipleCoverSizes;
     }
 }

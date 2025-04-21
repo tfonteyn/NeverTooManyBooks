@@ -172,7 +172,8 @@ public class DnbSearchEngine
                               List.of(R.string.site_description_german,
                                       R.string.site_description_catalog),
                               "https://katalog.dnb.de",
-                              new Locale("de", "DE"));
+                              new Locale("de", "DE"))
+                .setIdentifierKey(Identifier.SID_DNB);
     }
 
     @NonNull

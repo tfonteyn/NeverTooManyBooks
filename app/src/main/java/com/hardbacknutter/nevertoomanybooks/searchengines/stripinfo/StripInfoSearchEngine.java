@@ -181,7 +181,8 @@ public class StripInfoSearchEngine
                                       R.string.site_description_catalog,
                                       R.string.site_description_eu_comics),
                               "https://www.stripinfo.be",
-                              new Locale("nl", "BE"));
+                              new Locale("nl", "BE"))
+                .setIdentifierKey(Identifier.SID_STRIP_INFO);
     }
 
     @Override

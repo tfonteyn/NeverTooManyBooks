@@ -160,7 +160,8 @@ public class DatabazeKnihSearchEngine
                               List.of(R.string.site_description_czech,
                                       R.string.site_description_catalog),
                               "https://www.databazeknih.cz",
-                              new Locale("cs", "CZ"));
+                              new Locale("cs", "CZ"))
+                .setIdentifierKey(Identifier.SID_DATABAZE_KNIH);
     }
 
     @NonNull

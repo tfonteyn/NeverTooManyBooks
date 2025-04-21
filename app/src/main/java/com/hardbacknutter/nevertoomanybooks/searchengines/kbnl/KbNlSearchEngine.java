@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
@@ -147,7 +148,9 @@ public class KbNlSearchEngine
                               List.of(R.string.site_description_dutch_and_more,
                                       R.string.site_description_catalog),
                               "https://webggc.oclc.org",
-                              new Locale("nl", "NL"));
+                              new Locale("nl", "NL"))
+                .setIdentifierKey(Identifier.SID_KBNL)
+                .setSupportsMultipleCoverSizes(true);
     }
 
     @Override

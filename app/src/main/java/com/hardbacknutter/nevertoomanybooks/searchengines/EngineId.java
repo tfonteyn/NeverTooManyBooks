@@ -224,6 +224,9 @@ public enum EngineId
         this.infoResIdList = engineData.infoResIdList;
         this.defaultUrl = engineData.defaultUrl;
         this.defaultLocale = engineData.defaultLocale;
+
+        this.supportsMultipleCoverSizes = engineData.supportsMultipleCoverSizes();
+        this.identifierKey = engineData.getIdentifierKey();
     }
 
     /**
@@ -234,16 +237,12 @@ public enum EngineId
     static void createEngineConfigurations(@NonNull final Context context) {
         // The engine order here is not important; just keep them alphabetical
 
-        //FIXME: cleanup the mix of the config builder and the post create config
-
         if (Amazon.isEnabled()) {
-            Amazon.setIdentifierKey(Identifier.SID_ASIN)
-                  .createConfig()
+            Amazon.createConfig()
                   .build(SearchEngineConfig::new);
         }
         if (Bedetheque.isEnabled()) {
-            Bedetheque.setIdentifierKey(Identifier.SID_BEDETHEQUE)
-                      .createConfig()
+            Bedetheque.createConfig()
                       // default timeouts based on limited testing
                       .setConnectTimeoutMs(15_000)
                       .setReadTimeoutMs(60_000)
@@ -264,65 +263,51 @@ public enum EngineId
                       .build(SearchEngineConfig::new);
         }
         if (DatabazeKnih.isEnabled()) {
-            DatabazeKnih.setIdentifierKey(Identifier.SID_DATABAZE_KNIH)
-                        .createConfig()
+            DatabazeKnih.createConfig()
                         .build(SearchEngineConfig::new);
         }
         if (Dnb.isEnabled()) {
-            Dnb.setIdentifierKey(Identifier.SID_DNB)
-               .createConfig()
+            Dnb.createConfig()
                .build(SearchEngineConfig::new);
         }
         if (Douban.isEnabled()) {
-            Douban.setIdentifierKey(Identifier.SID_DOUBAN)
-                  .createConfig()
+            Douban.createConfig()
                   .build(SearchEngineConfig::new);
         }
         if (Goodreads.isEnabled()) {
-            Goodreads.setIdentifierKey(Identifier.SID_GOODREADS)
-                     .createConfig()
+            Goodreads.createConfig()
                      .build(SearchEngineConfig::new);
         }
         if (GoogleBooks.isEnabled()) {
-            GoogleBooks.setSupportsMultipleCoverSizes(true)
-                       .setIdentifierKey(Identifier.SID_GOOGLE)
-                       .createConfig()
+            GoogleBooks.createConfig()
                        .build(SearchEngineConfig::new);
         }
         if (Isfdb.isEnabled()) {
-            Isfdb.setIdentifierKey(Identifier.SID_ISFDB)
-                 .createConfig()
+            Isfdb.createConfig()
                  // default timeouts based on limited testing
                  .setConnectTimeoutMs(20_000)
                  .setReadTimeoutMs(60_000)
                  .build(SearchEngineConfig::new);
         }
         if (KbNl.isEnabled()) {
-            KbNl.setSupportsMultipleCoverSizes(true)
-                .setIdentifierKey(Identifier.SID_KBNL)
-                .createConfig()
+            KbNl.createConfig()
                 .build(SearchEngineConfig::new);
         }
         if (LastDodoNl.isEnabled()) {
-            LastDodoNl.setIdentifierKey(Identifier.SID_LAST_DODO_NL)
-                      .createConfig()
+            LastDodoNl.createConfig()
                       .setPrefersIsbn10(true)
                       .build(SearchEngineConfig::new);
         }
         if (LibraryThing.isEnabled()) {
-            LibraryThing.setIdentifierKey(Identifier.SID_LIBRARY_THING)
-                        .createConfig()
+            LibraryThing.createConfig()
                         .build(SearchEngineConfig::new);
         }
         if (OpenLibrary.isEnabled()) {
-            OpenLibrary.setIdentifierKey(Identifier.SID_OPEN_LIBRARY)
-                       .setSupportsMultipleCoverSizes(true)
-                       .createConfig()
+            OpenLibrary.createConfig()
                        .build(SearchEngineConfig::new);
         }
         if (StripInfoBe.isEnabled()) {
-            StripInfoBe.setIdentifierKey(Identifier.SID_STRIP_INFO)
-                       .createConfig()
+            StripInfoBe.createConfig()
                        // default timeouts based on limited testing
                        .setConnectTimeoutMs(7_000)
                        .setReadTimeoutMs(60_000)
@@ -486,12 +471,6 @@ public enum EngineId
                      .collect(Collectors.toList());
     }
 
-    @NonNull
-    private EngineId setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
-        this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
-        return this;
-    }
-
     /**
      * Is this engine enabled <strong>AT ALL</strong>.
      * <p>
@@ -569,19 +548,6 @@ public enum EngineId
     @Nullable
     public String getIdentifierKey() {
         return identifierKey;
-    }
-
-    /**
-     * Set the {@link Identifier} for the website specific identifier for a book.
-     *
-     * @param identifierKey key
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    private EngineId setIdentifierKey(@NonNull final String identifierKey) {
-        this.identifierKey = identifierKey;
-        return this;
     }
 
     @NonNull

@@ -140,7 +140,8 @@ public class DoubanSearchEngine
                               List.of(R.string.site_description_chinese,
                                       R.string.site_description_catalog),
                               "https://search.douban.com",
-                              Locale.CHINA);
+                              Locale.CHINA)
+                .setIdentifierKey(Identifier.SID_DOUBAN);
     }
 
     @NonNull

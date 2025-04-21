@@ -165,7 +165,8 @@ public class BedethequeSearchEngine
                                       R.string.site_description_catalog,
                                       R.string.site_description_eu_comics),
                               "https://www.bedetheque.com",
-                              Locale.FRANCE);
+                              Locale.FRANCE)
+                .setIdentifierKey(Identifier.SID_BEDETHEQUE);
     }
 
     @NonNull

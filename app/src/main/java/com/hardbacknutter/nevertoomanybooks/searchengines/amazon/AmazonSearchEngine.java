@@ -285,7 +285,8 @@ public class AmazonSearchEngine
                               // amazon.com, amazon.ca : blocked by captcha
                               "https://www.amazon.co.uk",
                               // The Locale will be dynamically set depending on the country site
-                              Locale.US);
+                              Locale.US)
+                .setIdentifierKey(Identifier.SID_ASIN);
     }
 
     @NonNull

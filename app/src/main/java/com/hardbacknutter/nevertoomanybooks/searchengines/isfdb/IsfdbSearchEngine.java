@@ -533,7 +533,8 @@ public class IsfdbSearchEngine
                                       R.string.site_description_catalog,
                                       R.string.site_description_fsf),
                               "https://www.isfdb.org",
-                              Locale.US);
+                              Locale.US)
+                .setIdentifierKey(Identifier.SID_ISFDB);
     }
 
     @Override

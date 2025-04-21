@@ -183,7 +183,9 @@ public class OpenLibrarySearchEngine
                               List.of(R.string.site_description_english_and_more,
                                       R.string.site_description_catalog),
                               "https://openlibrary.org",
-                              Locale.US);
+                              Locale.US)
+                .setIdentifierKey(Identifier.SID_OPEN_LIBRARY)
+                .setSupportsMultipleCoverSizes(true);
     }
 
     @Override

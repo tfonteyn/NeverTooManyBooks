@@ -125,7 +125,8 @@ public class LastDodoSearchEngine
                                       R.string.site_description_catalog,
                                       R.string.site_description_eu_comics),
                               "https://www.lastdodo.nl",
-                              new Locale("nl", "NL"));
+                              new Locale("nl", "NL"))
+                .setIdentifierKey(Identifier.SID_LAST_DODO_NL);
     }
 
     /**

@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -98,7 +99,8 @@ public class LibraryThingSearchEngine
                               List.of(R.string.site_description_english_and_more,
                                       R.string.site_description_catalog),
                               "https://www.librarything.com",
-                              Locale.US);
+                              Locale.US)
+                .setIdentifierKey(Identifier.SID_LIBRARY_THING);
     }
 
     @Override
