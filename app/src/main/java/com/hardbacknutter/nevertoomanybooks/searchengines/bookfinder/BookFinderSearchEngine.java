@@ -29,8 +29,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -39,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -51,6 +55,10 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 /**
+ * This is a portal site to other shopping sites.
+ * Can find books which are harder to find on other sites,
+ * but will only show minimal information.
+ * <p>
  * This is an experiment... the site is NOT exposed in release builds.
  * <p>
  * Searching by ISBN seems always to return a single book, but we have not done
@@ -91,6 +99,17 @@ public class BookFinderSearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(5);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("bookfinder",
+                              R.string.site_bookfinder,
+                              List.of(R.string.site_description_various_languages,
+                                      R.string.site_description_shop),
+                              "https://www.bookfinder.com",
+                              Locale.US);
     }
 
     @NonNull

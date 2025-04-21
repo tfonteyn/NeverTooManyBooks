@@ -177,19 +177,8 @@ public enum EngineId
         // https://airvpn.org/routes/?q=https%3A%2F%2Fwww.bol.com%2F
         true),
 
-    /**
-     * All genres. This is a portal site to other shopping sites.
-     * Can find books which are harder to find on other sites,
-     * but will only show minimal information.
-     */
-    BookFinder("bookfinder",
-               R.string.site_bookfinder,
-               List.of(R.string.site_description_various_languages,
-                       R.string.site_description_shop),
-               "https://www.bookfinder.com",
-               Locale.US,
-               BookFinderSearchEngine.class,
-               BuildConfig.ENABLE_BOOKFINDER),
+    /** All genres. English only? */
+    BookFinder(BookFinderSearchEngine.class, BuildConfig.ENABLE_BOOKFINDER),
 
     /**
      * Czech.
