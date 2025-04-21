@@ -19,11 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.searchsites;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -36,20 +39,26 @@ public class SiteConfigPreferenceFragment
     /** Fragment/Log tag. */
     public static final String TAG = "SiteConfigPrefFrag";
 
-    /** Preference key prefix for individual sites. */
-    private static final String PSK_SEARCH_SITE = "psk_search_site_";
-
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
 
+        final Context context = getContext();
+
+        final PreferenceCategory root = findPreference("psk_root_cat");
+
         for (final EngineId engineId : EngineId.values()) {
-            final Preference preference = findPreference(
-                    PSK_SEARCH_SITE + engineId.getPreferenceKey());
-            if (preference != null) {
-                preference.setVisible(engineId.isEnabled());
+            final Class<? extends Fragment> clazz = engineId.getPreferenceFragmentClazz();
+            if (clazz != null && engineId.isEnabled()) {
+                //noinspection DataFlowIssue
+                final Preference preference = new Preference(context);
+                preference.setTitle(engineId.getLabelResId());
+                preference.setFragment(clazz.getName());
+                preference.setKey(engineId.getPreferenceKey());
+                //noinspection DataFlowIssue
+                root.addPreference(preference);
             }
         }
     }

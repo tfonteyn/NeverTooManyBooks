@@ -96,20 +96,19 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *                 This key will be used in preferences, database settings,...
  *                 See existing engines for examples on the other parameters.
  *              </li>
+ *              <li>If needed, add a preference fragment for the user to configure the engine.
+ *                  The class MUST be annotated with {@code @Keep}.
+ *                  See existing engines for examples: add a class, an xml file,
+ *                  and add it in the above {@code init()}.
+ *              </li>
  *          </ul>
  *      </li>
  *
  *     <li>Add an enum identifier in this class and add the implementation class
- *         and if needed, configure the engine by implementing {@link #config}.
+ *         and if needed, configure the engine by implementing {@link #config()}.
  *     </li>
  *
  *      <li>Add a new {@link Site} instance to the one or more list(s) in {@link #registerSites}
- *      </li>
- *
- *      <li>Add a preference fragment for the user to configure the engine.
- *          The class MUST be annotated with {@code @Keep}.
- *          See existing engines for examples: add a class, an xml file, and an entry in
- *          {@code "src/main/res/xml/preferences_site_searches.xml"}
  *      </li>
  * </ol>
  *
@@ -226,19 +225,14 @@ public enum EngineId
     /** The implementation class for this engine. */
     @NonNull
     private final Class<? extends SearchEngine> clazz;
-
-    @Nullable
-    private Class<? extends Fragment> preferenceFragmentClazz;
-
     /** Set at compile time from the gradle script. */
     private final boolean enabled;
-
     /** {@link SearchEngine.CoverByEdition} only. */
     private final boolean multipleCoverSizes;
-
     @Nullable
     private final String identifierKey;
-
+    @Nullable
+    private Class<? extends Fragment> preferenceFragmentClazz;
     // Don't add to toPrint(), it would recurse
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
