@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -37,6 +38,7 @@ import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
@@ -50,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -80,22 +83,42 @@ public class GoodreadsSearchEngine
     public static final String SITE_URL = "https://www.goodreads.com";
     public static final String BOOK_URL = "https://www.goodreads.com/book/show/%s";
     public static final String AUTHOR_URL = "https://www.goodreads.com/author/show/%s";
-    private static final Pattern PARAMS_BOOK_ID_PATTERN = Pattern.compile("(\\d+).*");
 
+    /**
+     * Fetch the Goodreads id.
+     * Param 1: isbn
+     */
+    private static final String GET_GOODREADS_ID = "/book/auto_complete?format=json&q=%s";
+
+    /**
+     * Search by text.
+     * <p>
+     * Param 1: url encoded keywords
+     */
     private static final String BY_TEXT = "/search?search_type=books&search[query]=%s";
+    /**
+     * Search by Goodreads id.
+     * <p>
+     * Param 1: sid
+     */
     private static final String BY_GOODREADS_ID = "/book/show/%s";
+
     /**
      * The site uses milliseconds from the epoch for timestamps.
      * We use this made-up default of 123 milliseconds to try and distinguish "not set".
      * (presuming rightly or wrongly that {@code 0} might be used by the site as their default).
      */
     private static final int EPOCH_NULL_VALUE = 123;
-    private static final Pattern LANG_SPLITTER = Pattern.compile("[,;]");
     /** divider to convert milliseconds TO SECONDS. */
     private static final int MILLI_TO_SECONDS = 1000;
+
+    private static final Pattern PARAMS_BOOK_ID_PATTERN = Pattern.compile("(\\d+).*");
+
+    private static final Pattern LANG_SPLITTER = Pattern.compile("[,;]");
     /** Example: {@code "https://www.goodreads.com/author/show/40652983.Nuanxed"}. */
     private static final Pattern AUTHOR_WEB_URL_ID = Pattern.compile(
             "https://www.goodreads.com/author/show/(\\d+)\\..*");
+
     private final RatingParser ratingParser;
     private final AuthorTypeMapper authorTypeMapper;
     @Nullable
@@ -114,6 +137,17 @@ public class GoodreadsSearchEngine
 
         ratingParser = new RatingParser(5);
         authorTypeMapper = new AuthorTypeMapper();
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("goodreads",
+                              R.string.site_goodreads,
+                              List.of(R.string.site_description_english_and_more,
+                                      R.string.site_description_catalog),
+                              "https://www.goodreads.com",
+                              Locale.US);
     }
 
     @NonNull
@@ -216,7 +250,7 @@ public class GoodreadsSearchEngine
                                 @NonNull final String validIsbn)
             throws StorageException, SearchException {
 
-        final String url = getHostUrl(context) + "/book/auto_complete?format=json&q=" + validIsbn;
+        final String url = getHostUrl(context) + String.format(GET_GOODREADS_ID, validIsbn);
         futureHttpGet = createGetDocumentRequest(context);
 
         try {

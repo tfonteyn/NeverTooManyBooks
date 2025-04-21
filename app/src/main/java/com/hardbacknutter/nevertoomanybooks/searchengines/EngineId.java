@@ -185,14 +185,7 @@ public enum EngineId
     Douban(DoubanSearchEngine.class, true),
 
     /** All genres. */
-    Goodreads("goodreads",
-              R.string.site_goodreads,
-              List.of(R.string.site_description_english_and_more,
-                      R.string.site_description_catalog),
-              "https://www.goodreads.com",
-              Locale.US,
-              GoodreadsSearchEngine.class,
-              true),
+    Goodreads(GoodreadsSearchEngine.class, true),
 
     /** All genres. */
     GoogleBooks(GoogleBooksSearchEngine.class, true),
