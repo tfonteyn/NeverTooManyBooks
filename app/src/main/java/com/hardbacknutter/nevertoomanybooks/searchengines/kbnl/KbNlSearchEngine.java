@@ -157,11 +157,12 @@ public class KbNlSearchEngine
         return new EngineId.Builder("kbnl",
                                     R.string.site_kb_nl,
                                     List.of(R.string.site_description_dutch_and_more,
-                                      R.string.site_description_catalog),
+                                            R.string.site_description_catalog),
                                     "https://webggc.oclc.org",
                                     new Locale("nl", "NL"))
                 .setIdentifierKey(Identifier.SID_KBNL)
-                .setMultipleCoverSizes(true);
+                .setMultipleCoverSizes(true)
+                .setPreferenceFragmentClazz(KbNlPreferencesFragment.class);
     }
 
     @Override

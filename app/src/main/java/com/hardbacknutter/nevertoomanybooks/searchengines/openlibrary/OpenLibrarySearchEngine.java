@@ -193,11 +193,12 @@ public class OpenLibrarySearchEngine
         return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_open_library,
                                     List.of(R.string.site_description_english_and_more,
-                                      R.string.site_description_catalog),
+                                            R.string.site_description_catalog),
                                     "https://openlibrary.org",
                                     Locale.US)
                 .setIdentifierKey(Identifier.SID_OPEN_LIBRARY)
-                .setMultipleCoverSizes(true);
+                .setMultipleCoverSizes(true)
+                .setPreferenceFragmentClazz(OpenLibraryPreferencesFragment.class);
     }
 
     @Override

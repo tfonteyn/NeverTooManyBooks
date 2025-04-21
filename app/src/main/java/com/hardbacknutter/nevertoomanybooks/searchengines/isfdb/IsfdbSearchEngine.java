@@ -540,11 +540,12 @@ public class IsfdbSearchEngine
         return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_isfdb,
                                     List.of(R.string.site_description_english_and_more,
-                                      R.string.site_description_catalog,
-                                      R.string.site_description_fsf),
+                                            R.string.site_description_catalog,
+                                            R.string.site_description_fsf),
                                     "https://www.isfdb.org",
                                     Locale.US)
-                .setIdentifierKey(Identifier.SID_ISFDB);
+                .setIdentifierKey(Identifier.SID_ISFDB)
+                .setPreferenceFragmentClazz(IsfdbPreferencesFragment.class);
     }
 
     @Override

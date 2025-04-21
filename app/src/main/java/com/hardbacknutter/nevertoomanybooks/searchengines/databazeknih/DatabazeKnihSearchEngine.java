@@ -169,10 +169,11 @@ public class DatabazeKnihSearchEngine
         return new EngineId.Builder("databazeknih",
                                     R.string.site_databazeknih_cz,
                                     List.of(R.string.site_description_czech,
-                                      R.string.site_description_catalog),
+                                            R.string.site_description_catalog),
                                     "https://www.databazeknih.cz",
                                     new Locale("cs", "CZ"))
-                .setIdentifierKey(Identifier.SID_DATABAZE_KNIH);
+                .setIdentifierKey(Identifier.SID_DATABAZE_KNIH)
+                .setPreferenceFragmentClazz(DatabazeKnihPreferencesFragment.class);
     }
 
     @NonNull

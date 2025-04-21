@@ -136,11 +136,12 @@ public class GoogleBooksSearchEngine
         return new EngineId.Builder("googlebooks",
                                     R.string.site_google_books,
                                     List.of(R.string.site_description_english_and_more,
-                                      R.string.site_description_catalog),
+                                            R.string.site_description_catalog),
                                     "https://www.googleapis.com",
                                     Locale.US)
                 .setIdentifierKey(Identifier.SID_GOOGLE)
-                .setMultipleCoverSizes(true);
+                .setMultipleCoverSizes(true)
+                .setPreferenceFragmentClazz(GoogleBooksPreferencesFragment.class);
     }
 
     @NonNull

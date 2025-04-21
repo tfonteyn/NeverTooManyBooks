@@ -26,6 +26,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -226,6 +227,9 @@ public enum EngineId
     @NonNull
     private final Class<? extends SearchEngine> clazz;
 
+    @Nullable
+    private Class<? extends Fragment> preferenceFragmentClazz;
+
     /** Set at compile time from the gradle script. */
     private final boolean enabled;
 
@@ -270,6 +274,8 @@ public enum EngineId
         this.infoResIdList = builder.infoResIdList;
         this.defaultUrl = builder.defaultSearchUrl;
         this.defaultLocale = builder.defaultLocale;
+
+        this.preferenceFragmentClazz = builder.getPreferenceFragmentClazz();
 
         this.multipleCoverSizes = builder.hasMultipleCoverSizes();
         this.identifierKey = builder.getIdentifierKey();
@@ -451,6 +457,11 @@ public enum EngineId
     @NonNull
     public String getPreferenceKey() {
         return key;
+    }
+
+    @Nullable
+    public Class<? extends Fragment> getPreferenceFragmentClazz() {
+        return preferenceFragmentClazz;
     }
 
     /**
@@ -653,6 +664,8 @@ public enum EngineId
 
         @Nullable
         private String identifierKey;
+        @Nullable
+        private Class<? extends Fragment> preferenceFragmentClazz;
 
         /**
          * Constructor.
@@ -673,6 +686,16 @@ public enum EngineId
             this.infoResIdList = infoResIdList;
             this.defaultSearchUrl = defaultSearchUrl;
             this.defaultLocale = defaultLocale;
+        }
+
+        @Nullable
+        Class<? extends Fragment> getPreferenceFragmentClazz() {
+            return preferenceFragmentClazz;
+        }
+
+        public Builder setPreferenceFragmentClazz(@NonNull final Class<? extends Fragment> clazz) {
+            preferenceFragmentClazz = clazz;
+            return this;
         }
 
         @Nullable

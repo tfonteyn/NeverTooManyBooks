@@ -150,10 +150,11 @@ public class DoubanSearchEngine
         return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_douban,
                                     List.of(R.string.site_description_chinese,
-                                      R.string.site_description_catalog),
+                                            R.string.site_description_catalog),
                                     "https://search.douban.com",
                                     Locale.CHINA)
-                .setIdentifierKey(Identifier.SID_DOUBAN);
+                .setIdentifierKey(Identifier.SID_DOUBAN)
+                .setPreferenceFragmentClazz(DoubanPreferencesFragment.class);
     }
 
     @NonNull

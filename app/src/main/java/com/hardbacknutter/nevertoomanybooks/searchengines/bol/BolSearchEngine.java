@@ -175,9 +175,10 @@ public class BolSearchEngine
         return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_bol_com,
                                     List.of(R.string.site_description_dutch_and_more,
-                                      R.string.site_description_shop),
+                                            R.string.site_description_shop),
                                     "https://www.bol.com",
-                                    new Locale("nl", "NL"));
+                                    new Locale("nl", "NL"))
+                .setPreferenceFragmentClazz(BolPreferencesFragment.class);
     }
 
     /**

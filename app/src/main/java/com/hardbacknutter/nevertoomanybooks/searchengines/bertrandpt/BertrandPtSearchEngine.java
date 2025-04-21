@@ -129,9 +129,10 @@ public class BertrandPtSearchEngine
         return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_bertrand_pt,
                                     List.of(R.string.site_description_portuguese_and_more,
-                                      R.string.site_description_shop),
+                                            R.string.site_description_shop),
                                     "https://www.bertrand.pt",
-                                    new Locale("pt", "PT"));
+                                    new Locale("pt", "PT"))
+                .setPreferenceFragmentClazz(BertrandPtPreferencesFragment.class);
     }
 
     @NonNull

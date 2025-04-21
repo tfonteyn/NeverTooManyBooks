@@ -79,7 +79,7 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.dnb.de">Deutsche Nationalbibliothek (DNB)</a>
  * <a href="https://www.dnb.de">Germany's National Library (DNB)</a>
- *
+ * <p>
  * German language books & comics.
  */
 public class DnbSearchEngine
@@ -181,10 +181,11 @@ public class DnbSearchEngine
         return new EngineId.Builder("dnb",
                                     R.string.site_dnb_de,
                                     List.of(R.string.site_description_german,
-                                      R.string.site_description_catalog),
+                                            R.string.site_description_catalog),
                                     "https://katalog.dnb.de",
                                     new Locale("de", "DE"))
-                .setIdentifierKey(Identifier.SID_DNB);
+                .setIdentifierKey(Identifier.SID_DNB)
+                .setPreferenceFragmentClazz(DnbPreferencesFragment.class);
     }
 
     @NonNull

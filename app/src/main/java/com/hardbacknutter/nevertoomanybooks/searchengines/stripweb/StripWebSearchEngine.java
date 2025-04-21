@@ -74,14 +74,14 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.stripweb.be">StripWeb</a>
  * <p>
- *
  * Dutch language (and to some extend other languages) comics.
+ * <p>
  * The site can be accessed in Dutch,French,English. We use the Dutch site for access.
  * The main reason for this one is having access to current list-prices;
  * otherwise the recommendation is to use
  * {@link com.hardbacknutter.nevertoomanybooks.searchengines.EngineId#StripInfoBe}
  * and {@link com.hardbacknutter.nevertoomanybooks.searchengines.EngineId#LastDodoNl}.
- *
+ * <p>
  * {@link SearchEngine.ByBarcode}: for barcodes and invalid ISBN numbers
  * The site also sells comic related merchandise, which has a site-specific code
  * and can be searched as a generic code.
@@ -157,10 +157,11 @@ public class StripWebSearchEngine
         return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_stripweb_be,
                                     List.of(R.string.site_description_dutch_and_more,
-                                      R.string.site_description_shop,
-                                      R.string.site_description_eu_comics),
+                                            R.string.site_description_shop,
+                                            R.string.site_description_eu_comics),
                                     "https://www.stripweb.be",
-                                    new Locale("nl", "BE"));
+                                    new Locale("nl", "BE"))
+                .setPreferenceFragmentClazz(StripWebPreferencesFragment.class);
     }
 
     @NonNull

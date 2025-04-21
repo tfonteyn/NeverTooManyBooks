@@ -133,11 +133,12 @@ public class LastDodoSearchEngine
         return new EngineId.Builder("lastdodo",
                                     R.string.site_lastdodo_nl,
                                     List.of(R.string.site_description_dutch_and_more,
-                                      R.string.site_description_catalog,
-                                      R.string.site_description_eu_comics),
+                                            R.string.site_description_catalog,
+                                            R.string.site_description_eu_comics),
                                     "https://www.lastdodo.nl",
                                     new Locale("nl", "NL"))
-                .setIdentifierKey(Identifier.SID_LAST_DODO_NL);
+                .setIdentifierKey(Identifier.SID_LAST_DODO_NL)
+                .setPreferenceFragmentClazz(LastDodoPreferencesFragment.class);
     }
 
     /**

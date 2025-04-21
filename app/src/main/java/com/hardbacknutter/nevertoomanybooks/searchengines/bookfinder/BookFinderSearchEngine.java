@@ -121,9 +121,10 @@ public class BookFinderSearchEngine
         return new EngineId.Builder("bookfinder",
                                     R.string.site_bookfinder,
                                     List.of(R.string.site_description_various_languages,
-                                      R.string.site_description_shop),
+                                            R.string.site_description_shop),
                                     "https://www.bookfinder.com",
-                                    Locale.US);
+                                    Locale.US)
+                .setPreferenceFragmentClazz(BookFinderPreferencesFragment.class);
     }
 
     @NonNull

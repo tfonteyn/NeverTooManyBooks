@@ -156,10 +156,11 @@ public class GoodreadsSearchEngine
         return new EngineId.Builder("goodreads",
                                     R.string.site_goodreads,
                                     List.of(R.string.site_description_english_and_more,
-                                      R.string.site_description_catalog),
+                                            R.string.site_description_catalog),
                                     "https://www.goodreads.com",
                                     Locale.US)
-                .setIdentifierKey(Identifier.SID_GOODREADS);
+                .setIdentifierKey(Identifier.SID_GOODREADS)
+                .setPreferenceFragmentClazz(GoodreadsPreferencesFragment.class);
     }
 
     @NonNull

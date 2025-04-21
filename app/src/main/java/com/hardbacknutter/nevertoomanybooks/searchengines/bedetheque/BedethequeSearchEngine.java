@@ -173,11 +173,12 @@ public class BedethequeSearchEngine
         return new EngineId.Builder("bedetheque",
                                     R.string.site_bedetheque,
                                     List.of(R.string.site_description_french,
-                                      R.string.site_description_catalog,
-                                      R.string.site_description_eu_comics),
+                                            R.string.site_description_catalog,
+                                            R.string.site_description_eu_comics),
                                     "https://www.bedetheque.com",
                                     Locale.FRANCE)
-                .setIdentifierKey(Identifier.SID_BEDETHEQUE);
+                .setIdentifierKey(Identifier.SID_BEDETHEQUE)
+                .setPreferenceFragmentClazz(BedethequePreferencesFragment.class);
     }
 
     @NonNull

@@ -108,10 +108,11 @@ public class LibraryThingSearchEngine
         return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_library_thing,
                                     List.of(R.string.site_description_english_and_more,
-                                      R.string.site_description_catalog),
+                                            R.string.site_description_catalog),
                                     "https://www.librarything.com",
                                     Locale.US)
-                .setIdentifierKey(Identifier.SID_LIBRARY_THING);
+                .setIdentifierKey(Identifier.SID_LIBRARY_THING)
+                .setPreferenceFragmentClazz(LibraryThingPreferencesFragment.class);
     }
 
     @Override
