@@ -98,10 +98,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *          </ul>
  *      </li>
  *
- *     <li>Add an enum identifier in this class and add the implementation class.</li>
- *
- *     <li>Configure the engine in the method {@link #createEngineConfigurations(Context)},
- *         using {@link SearchEngineConfig.Builder} methods.
+ *     <li>Add an enum identifier in this class and add the implementation class
+ *         and if needed, configure the engine by implementing {@link #config}.
  *     </li>
  *
  *      <li>Add a new {@link Site} instance to the one or more list(s) in {@link #registerSites}
@@ -123,25 +121,71 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 public enum EngineId
         implements Parcelable {
 
+    // NEWTHINGS: adding a new search engine: add an engine class
+
     Amazon(AmazonSearchEngine.class, true),
-    Bedetheque(BedethequeSearchEngine.class, true),
-    BertrandPt(BertrandPtSearchEngine.class, true),
-    Bol(BolSearchEngine.class, true),
+
+    Bedetheque(BedethequeSearchEngine.class, true) {
+        void config() {
+            new SearchEngineConfig.Builder(this)
+                    // default timeouts based on limited testing
+                    .setConnectTimeoutMs(15_000)
+                    .setReadTimeoutMs(60_000)
+                    .build(SearchEngineConfig::new);
+        }
+    },
+    BertrandPt(BertrandPtSearchEngine.class, true) {
+        void config() {
+            new SearchEngineConfig.Builder(this)
+                    .setTagsToIgnore(Set.of("Livros", "Livros em Português"))
+                    .build(SearchEngineConfig::new);
+        }
+    },
+    Bol(BolSearchEngine.class, true) {
+        void config() {
+            new SearchEngineConfig.Builder(this)
+                    .setTagsToIgnore(Set.of("Boeken", "Livres"))
+                    .build(SearchEngineConfig::new);
+        }
+    },
     BookFinder(BookFinderSearchEngine.class, BuildConfig.ENABLE_BOOKFINDER),
     DatabazeKnih(DatabazeKnihSearchEngine.class, true),
     Dnb(DnbSearchEngine.class, true),
     Douban(DoubanSearchEngine.class, true),
     Goodreads(GoodreadsSearchEngine.class, true),
     GoogleBooks(GoogleBooksSearchEngine.class, true),
-    Isfdb(IsfdbSearchEngine.class, true),
+
+    Isfdb(IsfdbSearchEngine.class, true) {
+        void config() {
+            new SearchEngineConfig.Builder(this)
+                    // default timeouts based on limited testing
+                    .setConnectTimeoutMs(20_000)
+                    .setReadTimeoutMs(60_000)
+                    .build(SearchEngineConfig::new);
+        }
+    },
     KbNl(KbNlSearchEngine.class, true),
-    LastDodoNl(LastDodoSearchEngine.class, true),
+
+    LastDodoNl(LastDodoSearchEngine.class, true) {
+        void config() {
+            new SearchEngineConfig.Builder(this)
+                    .setPrefersIsbn10(true)
+                    .build(SearchEngineConfig::new);
+        }
+    },
     LibraryThing(LibraryThingSearchEngine.class, BuildConfig.ENABLE_LIBRARYTHING),
     OpenLibrary(OpenLibrarySearchEngine.class, true),
-    StripInfoBe(StripInfoSearchEngine.class, true),
-    StripWebBe(StripWebSearchEngine.class, true);
 
-    // NEWTHINGS: adding a new search engine: add an engine class
+    StripInfoBe(StripInfoSearchEngine.class, true) {
+        void config() {
+            new SearchEngineConfig.Builder(this)
+                    // default timeouts based on limited testing
+                    .setConnectTimeoutMs(7_000)
+                    .setReadTimeoutMs(60_000)
+                    .build(SearchEngineConfig::new);
+        }
+    },
+    StripWebBe(StripWebSearchEngine.class, true);
 
     /** {@link Parcelable}. */
     public static final Creator<EngineId> CREATOR = new Creator<>() {
@@ -229,98 +273,6 @@ public enum EngineId
 
         this.supportsMultipleCoverSizes = engineData.supportsMultipleCoverSizes();
         this.identifierKey = engineData.getIdentifierKey();
-    }
-
-    /**
-     * Create all {@link SearchEngine} configurations; called during startup.
-     *
-     * @param context <strong>Application</strong> or <strong>test</strong> context.
-     */
-    static void createEngineConfigurations(@NonNull final Context context) {
-        // The engine order here is not important; just keep them alphabetical
-
-        if (Amazon.isEnabled()) {
-            Amazon.createConfig()
-                  .build(SearchEngineConfig::new);
-        }
-        if (Bedetheque.isEnabled()) {
-            Bedetheque.createConfig()
-                      // default timeouts based on limited testing
-                      .setConnectTimeoutMs(15_000)
-                      .setReadTimeoutMs(60_000)
-                      .build(SearchEngineConfig::new);
-        }
-        if (Bol.isEnabled()) {
-            Bol.createConfig()
-               .setTagsToIgnore(Set.of("Boeken", "Livres"))
-               .build(SearchEngineConfig::new);
-        }
-        if (BertrandPt.isEnabled()) {
-            BertrandPt.createConfig()
-                      .setTagsToIgnore(Set.of("Livros", "Livros em Português"))
-                      .build(SearchEngineConfig::new);
-        }
-        if (BookFinder.isEnabled()) {
-            BookFinder.createConfig()
-                      .build(SearchEngineConfig::new);
-        }
-        if (DatabazeKnih.isEnabled()) {
-            DatabazeKnih.createConfig()
-                        .build(SearchEngineConfig::new);
-        }
-        if (Dnb.isEnabled()) {
-            Dnb.createConfig()
-               .build(SearchEngineConfig::new);
-        }
-        if (Douban.isEnabled()) {
-            Douban.createConfig()
-                  .build(SearchEngineConfig::new);
-        }
-        if (Goodreads.isEnabled()) {
-            Goodreads.createConfig()
-                     .build(SearchEngineConfig::new);
-        }
-        if (GoogleBooks.isEnabled()) {
-            GoogleBooks.createConfig()
-                       .build(SearchEngineConfig::new);
-        }
-        if (Isfdb.isEnabled()) {
-            Isfdb.createConfig()
-                 // default timeouts based on limited testing
-                 .setConnectTimeoutMs(20_000)
-                 .setReadTimeoutMs(60_000)
-                 .build(SearchEngineConfig::new);
-        }
-        if (KbNl.isEnabled()) {
-            KbNl.createConfig()
-                .build(SearchEngineConfig::new);
-        }
-        if (LastDodoNl.isEnabled()) {
-            LastDodoNl.createConfig()
-                      .setPrefersIsbn10(true)
-                      .build(SearchEngineConfig::new);
-        }
-        if (LibraryThing.isEnabled()) {
-            LibraryThing.createConfig()
-                        .build(SearchEngineConfig::new);
-        }
-        if (OpenLibrary.isEnabled()) {
-            OpenLibrary.createConfig()
-                       .build(SearchEngineConfig::new);
-        }
-        if (StripInfoBe.isEnabled()) {
-            StripInfoBe.createConfig()
-                       // default timeouts based on limited testing
-                       .setConnectTimeoutMs(7_000)
-                       .setReadTimeoutMs(60_000)
-                       .build(SearchEngineConfig::new);
-        }
-        if (StripWebBe.isEnabled()) {
-            StripWebBe.createConfig()
-                      .build(SearchEngineConfig::new);
-        }
-
-        // NEWTHINGS: adding a new search engine: add the search engine default configuration
     }
 
     /**
@@ -474,6 +426,12 @@ public enum EngineId
                      .collect(Collectors.toList());
     }
 
+    // Override as needed
+    void config() {
+        new SearchEngineConfig.Builder(this)
+                .build(SearchEngineConfig::new);
+    }
+
     /**
      * Is this engine enabled <strong>AT ALL</strong>.
      * <p>
@@ -585,11 +543,6 @@ public enum EngineId
 
     void setConfig(@NonNull final SearchEngineConfig config) {
         this.config = config;
-    }
-
-    @NonNull
-    private SearchEngineConfig.Builder createConfig() {
-        return new SearchEngineConfig.Builder(this);
     }
 
     /**

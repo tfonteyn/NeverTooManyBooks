@@ -97,7 +97,7 @@ public class SearchEngineConfig {
      *
      * @see #getTagsToIgnore(Context)
      */
-    public static final String PK_TAGS_IGNORE = "tags.ignore";
+    private static final String PK_TAGS_IGNORE = "tags.ignore";
     /**
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * Whether to search by using the ISBN10 value or the original {@link DBKey#ISBN}.
@@ -155,7 +155,10 @@ public class SearchEngineConfig {
     public static void createRegistry(@NonNull final Context context,
                                       @NonNull final Languages languages) {
         synchronized (SearchEngineConfig.class) {
-            EngineId.createEngineConfigurations(context);
+            Arrays.stream(EngineId.values())
+                  .filter(EngineId::isEnabled)
+                  .forEach(EngineId::config);
+
             Arrays.stream(Site.Type.values())
                   .forEach(type -> type.createList(context, languages));
         }
@@ -184,8 +187,7 @@ public class SearchEngineConfig {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public boolean isLogHttpGetRequests(@NonNull final Context context) {
+    boolean isLogHttpGetRequests(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
                 engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING,
                 false);
