@@ -262,7 +262,10 @@ public class AmazonSearchEngine
     private Pattern pagesPattern;
 
     /**
-     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
+     * Constructor.
+     * <p>
+     * Called by reflection; <strong>MUST</strong> be {@code public}
+     * and annotated with {@code @Keep}
      *
      * @param appContext The <strong>application</strong> context
      * @param config     the search engine configuration
@@ -273,6 +276,14 @@ public class AmazonSearchEngine
         super(appContext, config);
     }
 
+    /**
+     * Called during startup to initialise the immutable/default engine configuration.
+     * <p>
+     * Called by reflection; <strong>MUST</strong> be {@code public}
+     * and annotated with {@code @Keep}
+     *
+     * @return {@link EngineData}
+     */
     @Keep
     @NonNull
     public static EngineData getEngineData() {
