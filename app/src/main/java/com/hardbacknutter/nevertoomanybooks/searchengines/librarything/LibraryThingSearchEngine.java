@@ -34,6 +34,7 @@ import androidx.preference.PreferenceManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -44,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -86,6 +88,17 @@ public class LibraryThingSearchEngine
     public LibraryThingSearchEngine(@NonNull final Context appContext,
                                     @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("librarything",
+                              R.string.site_library_thing,
+                              List.of(R.string.site_description_english_and_more,
+                                      R.string.site_description_catalog),
+                              "https://www.librarything.com",
+                              Locale.US);
     }
 
     @Override

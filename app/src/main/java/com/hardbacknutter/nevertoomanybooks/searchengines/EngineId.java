@@ -275,14 +275,7 @@ public enum EngineId
                LastDodoSearchEngine.class,
                true),
 
-    LibraryThing("librarything",
-                 R.string.site_library_thing,
-                 List.of(R.string.site_description_english_and_more,
-                         R.string.site_description_catalog),
-                 "https://www.librarything.com",
-                 Locale.US,
-                 LibraryThingSearchEngine.class,
-                 BuildConfig.ENABLE_LIBRARYTHING),
+    LibraryThing(LibraryThingSearchEngine.class, BuildConfig.ENABLE_LIBRARYTHING),
 
     /** All genres. */
     OpenLibrary("openlibrary",
