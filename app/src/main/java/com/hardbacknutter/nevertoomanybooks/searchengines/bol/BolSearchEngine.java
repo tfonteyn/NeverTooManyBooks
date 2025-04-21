@@ -43,6 +43,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
@@ -60,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -98,6 +100,11 @@ import org.jsoup.select.Elements;
  * to accommodate price differences between the two countries.
  * We <strong>only</strong> access the site via the dutch language suffix as it makes
  * no difference at all in getting results.
+ * <p>
+ * 2025-02-15: bol.com blocks all requests coming from outside the country (EU?)
+ * and from vpn's.
+ * https://www.mobileread.com/forums/showthread.php?t=139472&page=35
+ * https://airvpn.org/routes/?q=https%3A%2F%2Fwww.bol.com%2F
  */
 public class BolSearchEngine
         extends JsoupSearchEngineBase
@@ -110,6 +117,7 @@ public class BolSearchEngine
 
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
+
     /**
      * Search using a text-string.
      * <p>
@@ -124,9 +132,16 @@ public class BolSearchEngine
      * param 2: the isbn
      */
     private static final String BY_ISBN = "/%1$s/nl/s/?searchtext=+%2$s+";
+
+    /**
+     * The referer for an initial connect.
+     * <p>
+     * Param 1: the country "be" or "nl"
+     */
+    private static final String ROOT_REFERER = "/%s/nl/";
+
     /** Front-covers can be given using either of these keys. We must try both. */
     private static final List<String> FRONT_COVER_KEYS = List.of("coverImageUrl", "imageUrl");
-    private static final String SITE_LANG = "/nl/";
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -138,6 +153,17 @@ public class BolSearchEngine
     public BolSearchEngine(@NonNull final Context appContext,
                            @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("bol",
+                              R.string.site_bol_com,
+                              List.of(R.string.site_description_dutch_and_more,
+                                      R.string.site_description_shop),
+                              "https://www.bol.com",
+                              new Locale("nl", "NL"));
     }
 
     /**
@@ -206,7 +232,7 @@ public class BolSearchEngine
         final String country = getCountry(context);
         final String url = hostUrl + String.format(BY_ISBN, country, validIsbn);
         final Document document = loadDocument(context, url, Map.of(
-                HttpConstants.REFERER, hostUrl + '/' + country + SITE_LANG));
+                HttpConstants.REFERER, hostUrl + String.format(ROOT_REFERER, country)));
 
         final Book book = new Book();
         if (!isCancelled()) {
@@ -247,7 +273,7 @@ public class BolSearchEngine
         final String country = getCountry(context);
         final String url = hostUrl + String.format(BY_TEXT, country, words);
         final Document document = loadDocument(context, url, Map.of(
-                HttpConstants.REFERER, hostUrl + '/' + country + SITE_LANG));
+                HttpConstants.REFERER, hostUrl + String.format(ROOT_REFERER, country)));
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, book);

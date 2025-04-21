@@ -148,22 +148,8 @@ public enum EngineId
     /** All genres; portuguese and some other languages. */
     BertrandPt(BertrandPtSearchEngine.class, true),
 
-    /**
-     * All genres; dutch and many other languages.
-     * Shopping site from The Netherlands / Belgium.
-     */
-    Bol("bol",
-        R.string.site_bol_com,
-        List.of(R.string.site_description_dutch_and_more,
-                R.string.site_description_shop),
-        "https://www.bol.com",
-        new Locale("nl", "NL"),
-        BolSearchEngine.class,
-        // 2025-02-15: bol.com block all requests coming from outside the country (EU?)
-        // and from vpn's.
-        // https://www.mobileread.com/forums/showthread.php?t=139472&page=35
-        // https://airvpn.org/routes/?q=https%3A%2F%2Fwww.bol.com%2F
-        true),
+    /** All genres; dutch and many other languages. */
+    Bol(BolSearchEngine.class, true),
 
     /** All genres. English only? */
     BookFinder(BookFinderSearchEngine.class, BuildConfig.ENABLE_BOOKFINDER),
