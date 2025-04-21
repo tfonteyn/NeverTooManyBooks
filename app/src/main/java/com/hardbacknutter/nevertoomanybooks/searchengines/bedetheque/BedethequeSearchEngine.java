@@ -69,6 +69,8 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.bedetheque.com/">bedetheque</a>
  * <p>
+ * French language (and to some extend other languages) comics.
+ * <p>
  * Implementing {@link SearchEngine.ByText} is not possible.
  * The form on the site seems to insist on doing lookups for each field individually
  * e.g. when entering a series name, it wil do a lookup immediately and retrieve the internal

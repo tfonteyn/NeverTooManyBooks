@@ -82,6 +82,8 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.bol.com">www.bol.com</a>
  * <p>
+ * All genres; dutch and many other languages.
+ * <p>
  * This site is a company based in The Netherlands and is <strong>NOT</strong>> related to
  * the german website <a href="https://www.bol.de">www.bol.de</a>.
  * The latter is a brand name of <a href="https://www.thalia.de">www.thalia.de</a>.

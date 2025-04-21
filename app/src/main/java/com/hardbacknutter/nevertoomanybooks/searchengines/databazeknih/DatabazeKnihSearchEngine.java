@@ -72,6 +72,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+/**
+ * Catalog site serving Czech and Slovak mainly.
+ */
 public class DatabazeKnihSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByText,

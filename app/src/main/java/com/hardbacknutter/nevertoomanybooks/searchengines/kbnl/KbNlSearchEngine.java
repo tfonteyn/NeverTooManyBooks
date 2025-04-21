@@ -61,6 +61,8 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
  * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>
+ * <p>
+ * Dutch language books & comics.
  */
 public class KbNlSearchEngine
         extends SearchEngineBase

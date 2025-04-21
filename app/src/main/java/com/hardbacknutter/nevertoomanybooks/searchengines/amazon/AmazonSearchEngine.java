@@ -87,7 +87,8 @@ import org.jsoup.nodes.Element;
  * www.amazon.es
  * <p>
  * Anything failing there is a bug.
- * Other Amazon sites should work for basic info (e.g. title) only.
+ * Other Amazon sites should work for basic info (e.g. title) only;
+ * no guarantee other info will be parsed correctly.
  * <p>
  * TODO: We're ignoring the rating(stars) for now.
  * Note we don't support Kindle or Audiobook entries very well for now

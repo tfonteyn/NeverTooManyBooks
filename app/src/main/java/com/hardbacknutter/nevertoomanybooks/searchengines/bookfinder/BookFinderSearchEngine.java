@@ -56,6 +56,9 @@ import org.jsoup.select.Elements;
 
 /**
  * This is a portal site to other shopping sites.
+ * <p>
+ * All genres. English only?
+ * <p>
  * Can find books which are harder to find on other sites,
  * but will only show minimal information.
  * <p>

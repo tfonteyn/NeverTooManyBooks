@@ -72,6 +72,8 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 /**
+ * Chinese language books & comics.
+ * <p>
  * It seems that Chinese publishers reuse ISBN numbers for different editions of the same book.
  * This sort-of violates the intention of an ISBN:
  * - reuse for different print-runs is ok

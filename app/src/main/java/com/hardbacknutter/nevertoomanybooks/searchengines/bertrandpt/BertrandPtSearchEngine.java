@@ -72,7 +72,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
+ * <a href="https://www.bertrand.pt">https://www.bertrand.pt</a>
  * Shopping site from Portugal.
+ * <p>
+ * All genres; portuguese and some other languages.
+ * <p>
  * Added upon recommendation from our portuguese translator maverick74
  * who stated this site is much better than amazon in portugal.
  */

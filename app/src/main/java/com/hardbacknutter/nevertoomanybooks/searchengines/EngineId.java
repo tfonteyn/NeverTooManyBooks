@@ -122,54 +122,25 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 public enum EngineId
         implements Parcelable {
 
-    /** All genres. */
     Amazon(AmazonSearchEngine.class, true),
-
-    /** French language (and to some extend other languages) comics. */
     Bedetheque(BedethequeSearchEngine.class, true),
-
-    /** All genres; portuguese and some other languages. */
     BertrandPt(BertrandPtSearchEngine.class, true),
-
-    /** All genres; dutch and many other languages. */
     Bol(BolSearchEngine.class, true),
-
-    /** All genres. English only? */
     BookFinder(BookFinderSearchEngine.class, BuildConfig.ENABLE_BOOKFINDER),
-
-    /** Czech language books. */
     DatabazeKnih(DatabazeKnihSearchEngine.class, true),
-
-    /** German language books & comics. */
     Dnb(DnbSearchEngine.class, true),
-
-    /** Chinese language books & comics. */
     Douban(DoubanSearchEngine.class, true),
-
-    /** All genres. */
     Goodreads(GoodreadsSearchEngine.class, true),
-
-    /** All genres. */
     GoogleBooks(GoogleBooksSearchEngine.class, true),
-
     Isfdb(IsfdbSearchEngine.class, true),
-
-    /** Dutch language books & comics. */
     KbNl(KbNlSearchEngine.class, true),
-
     LastDodoNl(LastDodoSearchEngine.class, true),
-
     LibraryThing(LibraryThingSearchEngine.class, BuildConfig.ENABLE_LIBRARYTHING),
-
-    /** All genres. */
     OpenLibrary(OpenLibrarySearchEngine.class, true),
-
-    /** Dutch language (and to some extend other languages) comics. */
     StripInfoBe(StripInfoSearchEngine.class, true),
-
     StripWebBe(StripWebSearchEngine.class, true);
 
-    // NEWTHINGS: adding a new search engine: add an engine id definition
+    // NEWTHINGS: adding a new search engine: add an engine class
 
     /** {@link Parcelable}. */
     public static final Creator<EngineId> CREATOR = new Creator<>() {
@@ -229,30 +200,9 @@ public enum EngineId
     /**
      * Constructor.
      *
-     * @param key           The preference key / generic string identifier for this engine.
-     * @param labelResId    The user displayable name for this engine.
-     * @param infoResIdList A list of informational string resources about this site
-     * @param defaultUrl    for the site
-     * @param defaultLocale for the site
-     * @param clazz         implementation class for this engine.
-     * @param enabled       {@code true} or a BuildConfig.ENABLE_ variable - see app/build.gradle
+     * @param clazz   implementation class for this engine.
+     * @param enabled {@code true} or a BuildConfig.ENABLE_ variable - see app/build.gradle
      */
-    EngineId(@NonNull final String key,
-             @StringRes final int labelResId,
-             @NonNull final List<Integer> infoResIdList,
-             @NonNull final String defaultUrl,
-             @NonNull final Locale defaultLocale,
-             @NonNull final Class<? extends SearchEngine> clazz,
-             final boolean enabled) {
-        this.key = key;
-        this.labelResId = labelResId;
-        this.infoResIdList = infoResIdList;
-        this.defaultUrl = defaultUrl;
-        this.defaultLocale = defaultLocale;
-        this.clazz = clazz;
-        this.enabled = enabled;
-    }
-
     EngineId(@NonNull final Class<? extends SearchEngine> clazz,
              final boolean enabled) {
         this.clazz = clazz;

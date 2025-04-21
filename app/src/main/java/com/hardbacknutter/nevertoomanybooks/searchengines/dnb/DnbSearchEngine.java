@@ -79,6 +79,8 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.dnb.de">Deutsche Nationalbibliothek (DNB)</a>
  * <a href="https://www.dnb.de">Germany's National Library (DNB)</a>
+ *
+ * German language books & comics.
  */
 public class DnbSearchEngine
         extends JsoupSearchEngineBase
