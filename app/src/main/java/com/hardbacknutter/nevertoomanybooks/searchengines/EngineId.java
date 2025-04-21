@@ -201,21 +201,7 @@ public enum EngineId
     /** Dutch language (and to some extend other languages) comics. */
     StripInfoBe(StripInfoSearchEngine.class, true),
 
-    /**
-     * Dutch language (and to some extend other languages) comics.
-     * The site can be accessed in Dutch,French,English. We use the Dutch site for access.
-     * The main reason for this one is having access to current list-prices;
-     * otherwise the recommendation is to use {@link #StripInfoBe} and {@link #LastDodoNl}.
-     */
-    StripWebBe("stripweb",
-               R.string.site_stripweb_be,
-               List.of(R.string.site_description_dutch_and_more,
-                       R.string.site_description_shop,
-                       R.string.site_description_eu_comics),
-               "https://www.stripweb.be",
-               new Locale("nl", "BE"),
-               StripWebSearchEngine.class,
-               true);
+    StripWebBe(StripWebSearchEngine.class, true);
 
     // NEWTHINGS: adding a new search engine: add an engine id definition
 

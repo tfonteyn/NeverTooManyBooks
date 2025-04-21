@@ -74,6 +74,14 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.stripweb.be">StripWeb</a>
  * <p>
+ *
+ * Dutch language (and to some extend other languages) comics.
+ * The site can be accessed in Dutch,French,English. We use the Dutch site for access.
+ * The main reason for this one is having access to current list-prices;
+ * otherwise the recommendation is to use
+ * {@link com.hardbacknutter.nevertoomanybooks.searchengines.EngineId#StripInfoBe}
+ * and {@link com.hardbacknutter.nevertoomanybooks.searchengines.EngineId#LastDodoNl}.
+ *
  * {@link SearchEngine.ByBarcode}: for barcodes and invalid ISBN numbers
  * The site also sells comic related merchandise, which has a site-specific code
  * and can be searched as a generic code.
