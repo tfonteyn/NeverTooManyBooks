@@ -150,7 +150,7 @@ public class KbNlSearchEngine
                               "https://webggc.oclc.org",
                               new Locale("nl", "NL"))
                 .setIdentifierKey(Identifier.SID_KBNL)
-                .setSupportsMultipleCoverSizes(true);
+                .setMultipleCoverSizes(true);
     }
 
     @Override

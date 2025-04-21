@@ -186,7 +186,7 @@ public class OpenLibrarySearchEngine
                               "https://openlibrary.org",
                               Locale.US)
                 .setIdentifierKey(Identifier.SID_OPEN_LIBRARY)
-                .setSupportsMultipleCoverSizes(true);
+                .setMultipleCoverSizes(true);
     }
 
     @Override

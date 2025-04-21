@@ -230,7 +230,7 @@ public enum EngineId
     private final boolean enabled;
 
     /** {@link SearchEngine.CoverByEdition} only. */
-    private final boolean supportsMultipleCoverSizes;
+    private final boolean multipleCoverSizes;
 
     @Nullable
     private final String identifierKey;
@@ -268,10 +268,10 @@ public enum EngineId
         this.key = engineData.key;
         this.labelResId = engineData.labelResId;
         this.infoResIdList = engineData.infoResIdList;
-        this.defaultUrl = engineData.defaultUrl;
+        this.defaultUrl = engineData.defaultSearchUrl;
         this.defaultLocale = engineData.defaultLocale;
 
-        this.supportsMultipleCoverSizes = engineData.supportsMultipleCoverSizes();
+        this.multipleCoverSizes = engineData.hasMultipleCoverSizes();
         this.identifierKey = engineData.getIdentifierKey();
     }
 
@@ -527,8 +527,8 @@ public enum EngineId
      *
      * @return {@code true} if multiple sizes are supported.
      */
-    public boolean supportsMultipleCoverSizes() {
-        return supportsMultipleCoverSizes;
+    public boolean hasMultipleCoverSizes() {
+        return multipleCoverSizes;
     }
 
     /**
@@ -622,7 +622,7 @@ public enum EngineId
                + ", locale=" + defaultLocale
                + ", clazz=" + clazz.getName()
                + ", enabled=" + enabled
-               + ", supportsMultipleCoverSizes=" + supportsMultipleCoverSizes
+               + ", multipleCoverSizes=" + multipleCoverSizes
                + ", identifierKey=" + identifierKey
                + '}';
     }

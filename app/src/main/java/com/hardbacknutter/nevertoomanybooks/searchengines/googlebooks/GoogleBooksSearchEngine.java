@@ -129,7 +129,7 @@ public class GoogleBooksSearchEngine
                               "https://www.googleapis.com",
                               Locale.US)
                 .setIdentifierKey(Identifier.SID_GOOGLE)
-                .setSupportsMultipleCoverSizes(true);
+                .setMultipleCoverSizes(true);
     }
 
     @NonNull

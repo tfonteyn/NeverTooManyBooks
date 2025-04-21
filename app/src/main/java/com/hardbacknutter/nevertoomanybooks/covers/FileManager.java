@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -226,7 +226,7 @@ class FileManager {
 
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
-                        if (!se.getEngineId().supportsMultipleCoverSizes()) {
+                        if (!se.getEngineId().hasMultipleCoverSizes()) {
                             currentSearch.remove(engineId);
                         }
                     } else {
