@@ -145,20 +145,8 @@ public enum EngineId
                BedethequeSearchEngine.class,
                true),
 
-    /**
-     * All genres; portuguese and some other languages.
-     * Shopping site from Portugal.
-     * Added upon recommendation from our portuguese translator maverick74
-     * who stated this site is much better than amazon in portugal.
-     */
-    BertrandPt("bertrandpt",
-               R.string.site_bertrand_pt,
-               List.of(R.string.site_description_portuguese_and_more,
-                       R.string.site_description_shop),
-               "https://www.bertrand.pt",
-               new Locale("pt", "PT"),
-               BertrandPtSearchEngine.class,
-               true),
+    /** All genres; portuguese and some other languages. */
+    BertrandPt(BertrandPtSearchEngine.class, true),
 
     /**
      * All genres; dutch and many other languages.

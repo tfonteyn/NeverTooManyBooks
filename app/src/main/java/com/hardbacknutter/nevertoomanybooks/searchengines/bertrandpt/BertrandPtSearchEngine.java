@@ -42,6 +42,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -70,11 +72,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * Initially written around 2023-06-23  more or less exactly when the site started
- * using cloudflare. This gave 403's all the time... so this engine was put on ice.
- * <p>
- * 2024-11-30: imported and updated the old code, and it seems the cloudflare issues
- * have gone away. We're presuming "they" tuned the cloudflare settings to behave...
+ * Shopping site from Portugal.
+ * Added upon recommendation from our portuguese translator maverick74
+ * who stated this site is much better than amazon in portugal.
  */
 public class BertrandPtSearchEngine
         extends JsoupSearchEngineBase
@@ -84,6 +84,7 @@ public class BertrandPtSearchEngine
 
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
+
     /** Search url. Just concat whatever 'words' (or isbn) we're searching for. */
     private static final String SEARCH = "/pesquisa/";
     private static final String TAG = "BertrandPtSearchEngine";
@@ -103,6 +104,17 @@ public class BertrandPtSearchEngine
         extraRequestProperties = Map.of(
                 HttpConstants.REFERER, getHostUrl(appContext),
                 HttpConstants.SEC_FETCH_SITE, HttpConstants.SEC_FETCH_MODE_SAME_ORIGIN);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("bertrandpt",
+                              R.string.site_bertrand_pt,
+                              List.of(R.string.site_description_portuguese_and_more,
+                                      R.string.site_description_shop),
+                              "https://www.bertrand.pt",
+                              new Locale("pt", "PT"));
     }
 
     @NonNull
