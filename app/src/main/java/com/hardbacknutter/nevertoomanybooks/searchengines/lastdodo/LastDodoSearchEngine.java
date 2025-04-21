@@ -35,6 +35,7 @@ import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -62,6 +64,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
+ * Dutch language (and to some extend other languages) comics.
+ * <p>
  * Current hardcoded to only search comics; could be extended to also search generic books.
  * <p>
  * {@link SearchEngine.ByBarcode}: for barcodes (explicitly supported by the site
@@ -110,6 +114,18 @@ public class LastDodoSearchEngine
     public LastDodoSearchEngine(@NonNull final Context appContext,
                                 @NonNull final SearchEngineConfig config) {
         super(appContext, config);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("lastdodo",
+                              R.string.site_lastdodo_nl,
+                              List.of(R.string.site_description_dutch_and_more,
+                                      R.string.site_description_catalog,
+                                      R.string.site_description_eu_comics),
+                              "https://www.lastdodo.nl",
+                              new Locale("nl", "NL"));
     }
 
     /**

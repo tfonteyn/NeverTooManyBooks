@@ -182,16 +182,7 @@ public enum EngineId
          KbNlSearchEngine.class,
          true),
 
-    /** Dutch language (and to some extend other languages) comics. */
-    LastDodoNl("lastdodo",
-               R.string.site_lastdodo_nl,
-               List.of(R.string.site_description_dutch_and_more,
-                       R.string.site_description_catalog,
-                       R.string.site_description_eu_comics),
-               "https://www.lastdodo.nl",
-               new Locale("nl", "NL"),
-               LastDodoSearchEngine.class,
-               true),
+    LastDodoNl(LastDodoSearchEngine.class, true),
 
     LibraryThing(LibraryThingSearchEngine.class, BuildConfig.ENABLE_LIBRARYTHING),
 
