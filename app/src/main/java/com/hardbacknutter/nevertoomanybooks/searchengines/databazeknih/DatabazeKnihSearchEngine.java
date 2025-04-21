@@ -32,12 +32,14 @@ import androidx.annotation.WorkerThread;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
@@ -56,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -78,11 +81,24 @@ public class DatabazeKnihSearchEngine
     public static final String SITE_URL = "https://www.databazeknih.cz";
     public static final String BOOK_URL = "https://www.databazeknih.cz/prehled-knihy/x-%s";
     public static final String AUTHOR_URL = "https://www.databazeknih.cz/autori/x-%s";
+
     private static final String TAG = "DatabazeKnihSearchEngin";
 
-    /** Used for isbn, or any other set of keywords. */
+    /**
+     * Search by isbn, or any other set of keywords.
+     * Param 1: url encoded isbn/keywords
+     */
     private static final String SEARCH = "/search?in=books&q=%1$s";
-    private static final String BY_SID = "/prehled-knihy/x-%s";
+    /**
+     * Search by sid.
+     * Param 1: sid
+     */
+    private static final String BY_SID = "/prehled-knihy/x-%1$s";
+    /**
+     * Fetch a lazy-loading subsection of the book page.
+     * Param 1: sid
+     */
+    private static final String MORE_DETAILS_URL = "/book-detail-more-info/%1$s";
 
     /** The html title attribute starts with this if we get a list back. */
     private static final String MULTI_RESULT_PAGE_TITLE = "Vyhledávání";
@@ -111,7 +127,7 @@ public class DatabazeKnihSearchEngine
             "francouzský", "fre",
             "španělský", "spa",
             "italský", "ita",
-            // other, remove it
+            // literally "other", we remove it
             "jiný", ""
     );
 
@@ -131,6 +147,17 @@ public class DatabazeKnihSearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(5);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("databazeknih",
+                              R.string.site_databazeknih_cz,
+                              List.of(R.string.site_description_czech,
+                                      R.string.site_description_catalog),
+                              "https://www.databazeknih.cz",
+                              new Locale("cs", "CZ"));
     }
 
     @NonNull
@@ -213,6 +240,7 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 String url = element.attr("href");
                 if (!url.isEmpty()) {
+                    // url is relative, add the host
                     url = getHostUrl(context) + url;
                     final Document redirected = loadDocument(context, url, null);
                     // sanity check
@@ -382,8 +410,8 @@ public class DatabazeKnihSearchEngine
         // Sanity check
         if (sid != null && !sid.isEmpty()) {
             // fetch the "more details" and parse
-            final Document d2 = loadDocument(
-                    context, getHostUrl(context) + "/book-detail-more-info/" + sid, null);
+            final String url = getHostUrl(context) + String.format(MORE_DETAILS_URL, sid);
+            final Document d2 = loadDocument(context, url, null);
             parseAdditional(context, d2, authorResolvers, book);
         }
 
@@ -392,10 +420,11 @@ public class DatabazeKnihSearchEngine
         if (linksElement != null) {
             final Element a = linksElement.selectFirst("a[href^=/povidky-z-knihy/]");
             if (a != null) {
-                final String url = a.attr("href");
+                String url = a.attr("href");
                 if (!url.isEmpty()) {
-                    final Document d2 = loadDocument(
-                            context, getHostUrl(context) + url, null);
+                    // url is relative, add the host
+                    url = getHostUrl(context) + url;
+                    final Document d2 = loadDocument(context, url, null);
                     parseToc(context, d2, book);
                 }
             }

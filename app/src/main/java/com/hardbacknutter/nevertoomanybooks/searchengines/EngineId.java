@@ -180,17 +180,8 @@ public enum EngineId
     /** All genres. English only? */
     BookFinder(BookFinderSearchEngine.class, BuildConfig.ENABLE_BOOKFINDER),
 
-    /**
-     * Czech.
-     */
-    DatabazeKnih("databazeknih",
-                 R.string.site_databazeknih_cz,
-                 List.of(R.string.site_description_czech,
-                         R.string.site_description_catalog),
-                 "https://www.databazeknih.cz",
-                 new Locale("cs", "CZ"),
-                 DatabazeKnihSearchEngine.class,
-                 true),
+    /** Czech language books. */
+    DatabazeKnih(DatabazeKnihSearchEngine.class, true),
 
     /** German language books & comics. */
     Dnb("dnb",
