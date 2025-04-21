@@ -253,7 +253,7 @@ public class Money
     /**
      * DEBUG.
      *
-     * @return traditional toPrint() formatting
+     * @return traditional toString() formatting
      */
     @SuppressWarnings("unused")
     @NonNull
