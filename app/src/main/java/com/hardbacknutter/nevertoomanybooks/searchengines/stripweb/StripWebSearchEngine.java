@@ -98,6 +98,8 @@ public class StripWebSearchEngine
     public static final String BOOK_URL = null;
     public static final String AUTHOR_URL = null;
 
+    private static final String PREFERENCE_KEY = "stripweb";
+
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
 
@@ -141,7 +143,7 @@ public class StripWebSearchEngine
     @Keep
     @NonNull
     public static EngineData getEngineData() {
-        return new EngineData("stripweb",
+        return new EngineData(PREFERENCE_KEY,
                               R.string.site_stripweb_be,
                               List.of(R.string.site_description_dutch_and_more,
                                       R.string.site_description_shop,
@@ -697,8 +699,7 @@ public class StripWebSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = getEngineId().getPreferenceKey()
-                           + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+        final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {

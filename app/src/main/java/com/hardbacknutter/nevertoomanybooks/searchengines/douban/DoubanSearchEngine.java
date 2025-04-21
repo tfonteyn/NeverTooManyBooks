@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -92,6 +91,8 @@ public class DoubanSearchEngine
     public static final String BOOK_URL = "https://book.douban.com/subject/%s";
     public static final String AUTHOR_URL = "https://www.douban.com/personage/%s";
 
+    private static final String PREFERENCE_KEY = "douban";
+
     /**
      * Preference key: whether to select the most-recent book {@code true}
      * or the first one found {@code false} from the multi-result list.
@@ -99,8 +100,8 @@ public class DoubanSearchEngine
      * Type: {@code boolean}
      */
     @VisibleForTesting
-    public static final String PK_FETCH_MOST_RECENT = EngineId.Douban.getPreferenceKey()
-                                                      + ".search.result.order.by.date";
+    public static final String PK_FETCH_MOST_RECENT =
+            PREFERENCE_KEY + ".search.result.order.by.date";
 
     /**
      * param 1: the ISBN.
@@ -135,7 +136,7 @@ public class DoubanSearchEngine
     @Keep
     @NonNull
     public static EngineData getEngineData() {
-        return new EngineData("douban",
+        return new EngineData(PREFERENCE_KEY,
                               R.string.site_douban,
                               List.of(R.string.site_description_chinese,
                                       R.string.site_description_catalog),

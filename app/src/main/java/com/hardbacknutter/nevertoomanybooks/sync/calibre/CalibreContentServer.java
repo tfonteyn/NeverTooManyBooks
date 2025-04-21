@@ -138,12 +138,12 @@ public final class CalibreContentServer
     public static final String SERVER_CA = "CalibreContentServer.ca";
 
     /** Preferences prefix. */
-    public static final String PREF_KEY = "calibre";
+    public static final String PREFERENCE_KEY = "calibre";
 
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
-    static final String PK_HOST_URL = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
-    static final String PK_HOST_USER = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_USER;
-    static final String PK_HOST_PASS = PREF_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
+    static final String PK_HOST_URL = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_URL;
+    static final String PK_HOST_USER = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_USER;
+    static final String PK_HOST_PASS = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_HOST_PASSWORD;
     /**
      * Calibre treats the ISBN as just another identifier.
      * "isbn_10", "isbn_13" are also used, in particular by the ISFDB plugin for Calibre
@@ -154,7 +154,7 @@ public final class CalibreContentServer
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: The array of book ids returned in 'this' call. */
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
-    private static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
+    private static final String PK_LOCAL_FOLDER_URI = PREFERENCE_KEY + ".folder";
 
     private static final String AMAZON = "amazon";
     /**
@@ -371,10 +371,10 @@ public final class CalibreContentServer
         }
 
         connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREF_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
+                context, PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
                 CONNECT_TIMEOUT_IN_MS);
         readTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREF_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
+                context, PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
 
         calibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()

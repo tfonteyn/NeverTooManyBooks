@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,11 +31,11 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 public class StripInfoHandler {
 
     /** Preferences prefix. */
-    private static final String PREF_KEY = EngineId.StripInfoBe.getPreferenceKey();
+    private static final String PREFERENCE_KEY = EngineId.StripInfoBe.getPreferenceKey();
 
     /** Whether to show any sync menus at all. */
-    public static final String PK_ENABLED = PREF_KEY + ".enabled";
-    static final String PK_LAST_SYNC = PREF_KEY + ".last.sync.date";
+    public static final String PK_ENABLED = PREFERENCE_KEY + ".enabled";
+    static final String PK_LAST_SYNC = PREFERENCE_KEY + ".last.sync.date";
 
     /**
      * Check if SYNC menus should be shown at all. This does not affect searching.

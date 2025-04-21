@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,15 +36,13 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
  */
 public class BookshelfMapper {
 
+    private static final String PREFERENCE_KEY = EngineId.StripInfoBe.getPreferenceKey();
     /** The {@link Bookshelf} to which the wishlist is mapped. */
-    static final String PK_BOOKSHELF_WISHLIST =
-            EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.wishlist";
+    static final String PK_BOOKSHELF_WISHLIST = PREFERENCE_KEY + ".bookshelf.wishlist";
     /** The {@link Bookshelf} to which the owned-books list is mapped. */
-    static final String PK_BOOKSHELF_OWNED =
-            EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.owned";
+    static final String PK_BOOKSHELF_OWNED = PREFERENCE_KEY + ".bookshelf.owned";
     /** The {@link Bookshelf} to which the digital-books list is mapped. */
-    static final String PK_BOOKSHELF_DIGITAL =
-            EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.digital";
+    static final String PK_BOOKSHELF_DIGITAL = PREFERENCE_KEY + ".bookshelf.digital";
 
     @NonNull
     private static Optional<Bookshelf> getBookshelf(@NonNull final Context context,

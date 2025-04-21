@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -108,17 +107,21 @@ public class StripInfoSearchEngine
     public static final String BOOK_URL = "https://stripinfo.be/reeks/strip/%s";
     public static final String AUTHOR_URL = "https://stripinfo.be/auteur/index/%s";
 
-    public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
-    static final String PK_LOGIN_TO_SEARCH = EngineId.StripInfoBe.getPreferenceKey()
-                                             + ".login.to.search";
+    private static final String PREFERENCE_KEY = "stripinfo";
+
+    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY + ".login.to.search";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
+
     /** Param 1: external book ID; really a 'long'. */
     private static final String BY_EXTERNAL_ID = "/reeks/strip/%1$s";
     /** Param 1: ISBN. */
     private static final String BY_ISBN = "/zoek/zoek?zoekstring=%1$s";
+
+    public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
+
     /** The description contains h4 tags which we remove to make the text shorter. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>\\s*");
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("\\s*</h4>");
@@ -175,7 +178,7 @@ public class StripInfoSearchEngine
     @Keep
     @NonNull
     public static EngineData getEngineData() {
-        return new EngineData("stripinfo",
+        return new EngineData(PREFERENCE_KEY,
                               R.string.site_stripinfo_be,
                               List.of(R.string.site_description_dutch_and_more,
                                       R.string.site_description_catalog,

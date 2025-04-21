@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -114,8 +113,10 @@ public class BolSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.SearchOnSite {
 
+    private static final String PREFERENCE_KEY = "bol";
+
     /** one of {"","be","nl"}. */
-    static final String PK_BOL_COUNTRY = EngineId.Bol.getPreferenceKey() + ".country";
+    static final String PK_BOL_COUNTRY = PREFERENCE_KEY + ".country";
 
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
@@ -160,7 +161,7 @@ public class BolSearchEngine
     @Keep
     @NonNull
     public static EngineData getEngineData() {
-        return new EngineData("bol",
+        return new EngineData(PREFERENCE_KEY,
                               R.string.site_bol_com,
                               List.of(R.string.site_description_dutch_and_more,
                                       R.string.site_description_shop),
@@ -179,7 +180,7 @@ public class BolSearchEngine
      * @return "be" or "nl"
      */
     @NonNull
-    private static String getCountry(@NonNull final Context context) {
+    private String getCountry(@NonNull final Context context) {
         String country = PreferenceManager.getDefaultSharedPreferences(context)
                                           .getString(PK_BOL_COUNTRY, null);
         if (country != null && !country.isEmpty()) {
@@ -744,8 +745,7 @@ public class BolSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = getEngineId().getPreferenceKey()
-                           + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+        final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {

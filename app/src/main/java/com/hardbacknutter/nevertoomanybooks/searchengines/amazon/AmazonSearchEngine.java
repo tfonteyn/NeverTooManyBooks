@@ -112,6 +112,8 @@ public class AmazonSearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.SearchOnSite {
 
+    private static final String PREFERENCE_KEY = "amazon";
+
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
     /** Log tag. */
@@ -274,7 +276,7 @@ public class AmazonSearchEngine
     @Keep
     @NonNull
     public static EngineData getEngineData() {
-        return new EngineData("amazon",
+        return new EngineData(PREFERENCE_KEY,
                               R.string.site_amazon,
                               List.of(R.string.site_description_various_languages,
                                       R.string.site_description_shop),
@@ -766,10 +768,8 @@ public class AmazonSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(getEngineId().getPreferenceKey()
-                                            + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU,
-                                            true);
+        final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, true);
     }
 
     @NonNull

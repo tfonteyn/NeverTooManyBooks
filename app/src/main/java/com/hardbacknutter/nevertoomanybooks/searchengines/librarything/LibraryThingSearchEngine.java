@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -71,9 +70,10 @@ public class LibraryThingSearchEngine
     public static final String BOOK_URL = "https://www.librarything.com/work/%s";
     public static final String AUTHOR_URL = null;
 
+    private static final String PREFERENCE_KEY = "librarything";
+
     @VisibleForTesting
-    static final String PK_API_TOKEN = EngineId.LibraryThing.getPreferenceKey()
-                                       + ".api.token";
+    static final String PK_API_TOKEN = PREFERENCE_KEY + ".api.token";
     private static final int TOKEN_LEN = 32;
 
     @Nullable
@@ -94,7 +94,7 @@ public class LibraryThingSearchEngine
     @Keep
     @NonNull
     public static EngineData getEngineData() {
-        return new EngineData("librarything",
+        return new EngineData(PREFERENCE_KEY,
                               R.string.site_library_thing,
                               List.of(R.string.site_description_english_and_more,
                                       R.string.site_description_catalog),

@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -95,8 +94,10 @@ public class OpenLibrarySearchEngine
     public static final String SITE_URL = "https://openlibrary.org";
     public static final String BOOK_URL = "https://openlibrary.org/books/%s";
     public static final String AUTHOR_URL = "https://openlibrary.org/authors/%s";
-    static final String PK_LOGIN_TO_SEARCH = EngineId.OpenLibrary.getPreferenceKey()
-                                             + ".login.to.search";
+
+    private static final String PREFERENCE_KEY = "openlibrary";
+
+    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY + ".login.to.search";
     private static final String BASE_BOOK_URL = "/search.json?"
                                                 + "q=%1$s"
                                                 + "&fields=key,editions";
@@ -178,7 +179,7 @@ public class OpenLibrarySearchEngine
     @Keep
     @NonNull
     public static EngineData getEngineData() {
-        return new EngineData("openlibrary",
+        return new EngineData(PREFERENCE_KEY,
                               R.string.site_open_library,
                               List.of(R.string.site_description_english_and_more,
                                       R.string.site_description_catalog),

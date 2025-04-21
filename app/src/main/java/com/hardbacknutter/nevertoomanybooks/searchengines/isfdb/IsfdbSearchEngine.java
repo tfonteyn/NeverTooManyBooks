@@ -73,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -108,6 +107,8 @@ public class IsfdbSearchEngine
     public static final String BOOK_URL = "https://www.isfdb.org/cgi-bin/pl.cgi?%s";
     public static final String AUTHOR_URL = "https://www.isfdb.org/cgi-bin/ea.cgi?%s";
 
+    private static final String PREFERENCE_KEY = "isfdb";
+
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -125,10 +126,8 @@ public class IsfdbSearchEngine
     /** Map ISFDB book types to {@link Book.ContentType}. */
     static final Map<String, Book.ContentType> TYPE_MAP = new HashMap<>();
     /** Preferences - Type: {@code boolean}. */
-    static final String PK_SERIES_FROM_TOC = EngineId.Isfdb.getPreferenceKey()
-                                             + ".search.toc.series";
-    static final String PK_LOGIN_TO_SEARCH = EngineId.Isfdb.getPreferenceKey()
-                                             + ".login.to.search";
+    static final String PK_SERIES_FROM_TOC = PREFERENCE_KEY + ".search.toc.series";
+    static final String PK_LOGIN_TO_SEARCH = PREFERENCE_KEY + ".login.to.search";
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
 
@@ -527,7 +526,7 @@ public class IsfdbSearchEngine
     @Keep
     @NonNull
     public static EngineData getEngineData() {
-        return new EngineData("isfdb",
+        return new EngineData(PREFERENCE_KEY,
                               R.string.site_isfdb,
                               List.of(R.string.site_description_english_and_more,
                                       R.string.site_description_catalog,

@@ -86,6 +86,8 @@ public class BertrandPtSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.SearchOnSite {
 
+    private static final String PREFERENCE_KEY = "bertrandpt";
+
     /** Website character encoding. */
     private static final String CHARSET = "UTF-8";
 
@@ -113,7 +115,7 @@ public class BertrandPtSearchEngine
     @Keep
     @NonNull
     public static EngineData getEngineData() {
-        return new EngineData("bertrandpt",
+        return new EngineData(PREFERENCE_KEY,
                               R.string.site_bertrand_pt,
                               List.of(R.string.site_description_portuguese_and_more,
                                       R.string.site_description_shop),
@@ -464,8 +466,7 @@ public class BertrandPtSearchEngine
 
     @Override
     public boolean isShowSearchOnSiteMenu(@NonNull final Context context) {
-        final String key = getEngineId().getPreferenceKey()
-                           + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
+        final String key = PREFERENCE_KEY + '.' + SearchEngineConfig.PK_SEARCH_WEBSITE_MENU;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.contains(key)) {

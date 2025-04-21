@@ -128,7 +128,7 @@ public enum SyncServer
             final RealNumberParser realNumberParser = new RealNumberParser(locales);
             final SyncReaderProcessor.Builder builder =
                     new SyncReaderProcessor.Builder(context,
-                                                    CalibreContentServer.PREF_KEY
+                                                    CalibreContentServer.PREFERENCE_KEY
                                                     + ".fields.update.",
                                                     realNumberParser);
 
