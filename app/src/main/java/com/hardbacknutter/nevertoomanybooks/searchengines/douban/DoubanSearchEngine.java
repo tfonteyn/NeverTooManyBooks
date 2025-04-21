@@ -38,6 +38,7 @@ import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
@@ -55,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -83,6 +85,11 @@ public class DoubanSearchEngine
                    SearchEngine.CoverByEdition,
                    SearchEngine.AlternativeEditions<AltEditionDouban> {
 
+    /** Main site, but NOT the search site. */
+    public static final String SITE_URL = "https://book.douban.com";
+    public static final String BOOK_URL = "https://book.douban.com/subject/%s";
+    public static final String AUTHOR_URL = "https://www.douban.com/personage/%s";
+
     /**
      * Preference key: whether to select the most-recent book {@code true}
      * or the first one found {@code false} from the multi-result list.
@@ -92,9 +99,7 @@ public class DoubanSearchEngine
     @VisibleForTesting
     public static final String PK_FETCH_MOST_RECENT = EngineId.Douban.getPreferenceKey()
                                                       + ".search.result.order.by.date";
-    public static final String SITE_URL = "https://book.douban.com";
-    public static final String BOOK_URL = "https://book.douban.com/subject/%s";
-    public static final String AUTHOR_URL = "https://www.douban.com/personage/%s";
+
     /**
      * param 1: the ISBN.
      */
@@ -105,6 +110,7 @@ public class DoubanSearchEngine
      * Format: [法] 保罗·霍尔特   ==>  [France] Paul Holt
      */
     private static final Pattern PATTERN_FOREIGN_AUTHOR = Pattern.compile("\\[(.+)] (.+)");
+
     @NonNull
     private final RatingParser ratingParser;
 
@@ -122,6 +128,17 @@ public class DoubanSearchEngine
         super(appContext, config);
 
         ratingParser = new RatingParser(10);
+    }
+
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("douban",
+                              R.string.site_douban,
+                              List.of(R.string.site_description_chinese,
+                                      R.string.site_description_catalog),
+                              "https://search.douban.com",
+                              Locale.CHINA);
     }
 
     @NonNull

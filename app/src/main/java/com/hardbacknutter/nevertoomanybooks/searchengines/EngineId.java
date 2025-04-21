@@ -203,14 +203,7 @@ public enum EngineId
         true),
 
     /** Chinese language books & comics. */
-    Douban("douban",
-           R.string.site_douban,
-           List.of(R.string.site_description_chinese,
-                   R.string.site_description_catalog),
-           "https://search.douban.com",
-           Locale.CHINA,
-           DoubanSearchEngine.class,
-           true),
+    Douban(DoubanSearchEngine.class, true),
 
     /** All genres. */
     Goodreads("goodreads",
