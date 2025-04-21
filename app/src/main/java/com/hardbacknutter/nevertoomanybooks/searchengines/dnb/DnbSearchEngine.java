@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -84,10 +85,17 @@ public class DnbSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText {
 
+    /** Main site, but NOT the search site. */
     public static final String SITE_URL = "https://www.dnb.de";
     public static final String BOOK_URL = "https://d-nb.info/%s";
     public static final String AUTHOR_URL = "https://d-nb.info/gnd/%s";
+
     static final String KATALOG_DNB_DE = "https://katalog.dnb.de";
+
+    // we could probable just use the bare "https://katalog.dnb.de"...
+    private static final Map<String, String> ROOT_REFERER = Map.of(
+            HttpConstants.REFERER,
+            KATALOG_DNB_DE + "/DE/home.html?pr=0&sortA=bez&sortD=-dat&v=plist");
 
     private static final String SELECT_SINGLE_RESULT = "div.l-catalog-single-content";
     private static final String SELECT_MULTI_RESULT = "div.l-catalog-results__entry";
@@ -106,6 +114,8 @@ public class DnbSearchEngine
                                              + "&sortA=bez"
                                              + "&pr=0"
                                              + "&v=plist";
+    private static final String SEARCH_TYPE_ISBN = "num";
+    private static final String SEARCH_TYPE_TEXT = "all";
 
     /**
      * Suffixes we try to detect and remove from the title field.
@@ -130,10 +140,6 @@ public class DnbSearchEngine
     /** Example: {@code DE/resource.html?id=118646109&pr=0&sortA=bez&sortD=-dat&v=plist}. */
     private static final Pattern AUTHOR_ID = Pattern.compile(
             "DE/resource\\.html\\?id=(\\d+)&.*");
-    // we could probable just use the bare "https://katalog.dnb.de"...
-    private static final Map<String, String> ROOT_REFERER = Map.of(
-            HttpConstants.REFERER,
-            KATALOG_DNB_DE + "/DE/home.html?pr=0&sortA=bez&sortD=-dat&v=plist");
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
@@ -156,6 +162,17 @@ public class DnbSearchEngine
         }
     }
 
+    @Keep
+    @NonNull
+    public static EngineData getEngineData() {
+        return new EngineData("dnb",
+                              R.string.site_dnb_de,
+                              List.of(R.string.site_description_german,
+                                      R.string.site_description_catalog),
+                              "https://katalog.dnb.de",
+                              new Locale("de", "DE"));
+    }
+
     @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
@@ -165,7 +182,8 @@ public class DnbSearchEngine
 
         final Book book = new Book();
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, "num", validIsbn);
+        final String url = getHostUrl(context) + String.format(SEARCH_URL, SEARCH_TYPE_ISBN,
+                                                               validIsbn);
         final Document document = loadDocument(context, url, ROOT_REFERER);
         if (!isCancelled()) {
             // Check single result first
@@ -204,7 +222,7 @@ public class DnbSearchEngine
             return book;
         }
 
-        final String url = getHostUrl(context) + String.format(SEARCH_URL, "all", words);
+        final String url = getHostUrl(context) + String.format(SEARCH_URL, SEARCH_TYPE_TEXT, words);
         final Document document = loadDocument(context, url, ROOT_REFERER);
         if (!isCancelled()) {
             // Check multi result first

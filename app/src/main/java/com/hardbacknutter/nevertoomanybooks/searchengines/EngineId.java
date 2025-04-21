@@ -158,14 +158,7 @@ public enum EngineId
     DatabazeKnih(DatabazeKnihSearchEngine.class, true),
 
     /** German language books & comics. */
-    Dnb("dnb",
-        R.string.site_dnb_de,
-        List.of(R.string.site_description_german,
-                R.string.site_description_catalog),
-        "https://katalog.dnb.de",
-        new Locale("de", "DE"),
-        DnbSearchEngine.class,
-        true),
+    Dnb(DnbSearchEngine.class, true),
 
     /** Chinese language books & comics. */
     Douban(DoubanSearchEngine.class, true),
