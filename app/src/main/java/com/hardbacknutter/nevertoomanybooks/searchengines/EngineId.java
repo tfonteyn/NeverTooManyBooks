@@ -233,7 +233,7 @@ public enum EngineId
     private final String identifierKey;
     @Nullable
     private Class<? extends Fragment> preferenceFragmentClazz;
-    // Don't add to toPrint(), it would recurse
+    // Don't add to toString(), it would recurse
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private SearchEngineConfig config;
@@ -623,12 +623,13 @@ public enum EngineId
     public String toString() {
         return "EngineId{"
                + "key=`" + key + '`'
+               + ", enabled=" + enabled
                + ", defaultUrl=`" + defaultUrl + '`'
                + ", locale=" + defaultLocale
-               + ", clazz=" + clazz.getName()
-               + ", enabled=" + enabled
                + ", multipleCoverSizes=" + multipleCoverSizes
                + ", identifierKey=" + identifierKey
+               + ", clazz=" + clazz.getName()
+               + ", preferenceFragmentClazz=" + preferenceFragmentClazz
                + '}';
     }
 
