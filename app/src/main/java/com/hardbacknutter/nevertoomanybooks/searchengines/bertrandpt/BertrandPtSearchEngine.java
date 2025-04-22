@@ -132,7 +132,10 @@ public class BertrandPtSearchEngine
                                             R.string.site_description_shop),
                                     "https://www.bertrand.pt",
                                     new Locale("pt", "PT"))
-                .setPreferenceFragmentClazz(BertrandPtPreferencesFragment.class);
+                .setPreferenceFragmentClazz(BertrandPtPreferencesFragment.class)
+                .setConfig(cb -> cb
+                        .setTagsToIgnore(Set.of("Livros", "Livros em Português"))
+                        .build(SearchEngineConfig::new));
     }
 
     @NonNull

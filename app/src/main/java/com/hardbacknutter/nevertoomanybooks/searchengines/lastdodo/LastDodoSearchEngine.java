@@ -138,7 +138,10 @@ public class LastDodoSearchEngine
                                     "https://www.lastdodo.nl",
                                     new Locale("nl", "NL"))
                 .setIdentifierKey(Identifier.SID_LAST_DODO_NL)
-                .setPreferenceFragmentClazz(LastDodoPreferencesFragment.class);
+                .setPreferenceFragmentClazz(LastDodoPreferencesFragment.class)
+                .setConfig(cb -> cb
+                        .setPrefersIsbn10(true)
+                        .build(SearchEngineConfig::new));
     }
 
     /**

@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -104,8 +104,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *          </ul>
  *      </li>
  *
- *     <li>Add an enum identifier in this class and add the implementation class
- *         and if needed, configure the engine by implementing {@link #config()}.
+ *     <li>Add an enum identifier in this class and add the implementation class.
  *     </li>
  *
  *      <li>Add a new {@link Site} instance to the one or more list(s) in {@link #registerSites}
@@ -124,67 +123,21 @@ public enum EngineId
     // NEWTHINGS: adding a new search engine: add an engine class
 
     Amazon(AmazonSearchEngine.class, true),
-
-    Bedetheque(BedethequeSearchEngine.class, true) {
-        void config() {
-            new SearchEngineConfig.Builder(this)
-                    // default timeouts based on limited testing
-                    .setConnectTimeoutMs(15_000)
-                    .setReadTimeoutMs(60_000)
-                    .build(SearchEngineConfig::new);
-        }
-    },
-    BertrandPt(BertrandPtSearchEngine.class, true) {
-        void config() {
-            new SearchEngineConfig.Builder(this)
-                    .setTagsToIgnore(Set.of("Livros", "Livros em Português"))
-                    .build(SearchEngineConfig::new);
-        }
-    },
-    Bol(BolSearchEngine.class, true) {
-        void config() {
-            new SearchEngineConfig.Builder(this)
-                    .setTagsToIgnore(Set.of("Boeken", "Livres"))
-                    .build(SearchEngineConfig::new);
-        }
-    },
+    Bedetheque(BedethequeSearchEngine.class, true),
+    BertrandPt(BertrandPtSearchEngine.class, true),
+    Bol(BolSearchEngine.class, true),
     BookFinder(BookFinderSearchEngine.class, BuildConfig.ENABLE_BOOKFINDER),
     DatabazeKnih(DatabazeKnihSearchEngine.class, true),
     Dnb(DnbSearchEngine.class, true),
     Douban(DoubanSearchEngine.class, true),
     Goodreads(GoodreadsSearchEngine.class, true),
     GoogleBooks(GoogleBooksSearchEngine.class, true),
-
-    Isfdb(IsfdbSearchEngine.class, true) {
-        void config() {
-            new SearchEngineConfig.Builder(this)
-                    // default timeouts based on limited testing
-                    .setConnectTimeoutMs(20_000)
-                    .setReadTimeoutMs(60_000)
-                    .build(SearchEngineConfig::new);
-        }
-    },
+    Isfdb(IsfdbSearchEngine.class, true),
     KbNl(KbNlSearchEngine.class, true),
-
-    LastDodoNl(LastDodoSearchEngine.class, true) {
-        void config() {
-            new SearchEngineConfig.Builder(this)
-                    .setPrefersIsbn10(true)
-                    .build(SearchEngineConfig::new);
-        }
-    },
+    LastDodoNl(LastDodoSearchEngine.class, true),
     LibraryThing(LibraryThingSearchEngine.class, BuildConfig.ENABLE_LIBRARYTHING),
     OpenLibrary(OpenLibrarySearchEngine.class, true),
-
-    StripInfoBe(StripInfoSearchEngine.class, true) {
-        void config() {
-            new SearchEngineConfig.Builder(this)
-                    // default timeouts based on limited testing
-                    .setConnectTimeoutMs(7_000)
-                    .setReadTimeoutMs(60_000)
-                    .build(SearchEngineConfig::new);
-        }
-    },
+    StripInfoBe(StripInfoSearchEngine.class, true),
     StripWebBe(StripWebSearchEngine.class, true);
 
     /** {@link Parcelable}. */
@@ -231,8 +184,11 @@ public enum EngineId
     private final boolean multipleCoverSizes;
     @Nullable
     private final String identifierKey;
+    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private Class<? extends Fragment> preferenceFragmentClazz;
+    private final Function<SearchEngineConfig.Builder, SearchEngineConfig> configSupplier;
+    @Nullable
+    private final Class<? extends Fragment> preferenceFragmentClazz;
     // Don't add to toString(), it would recurse
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
@@ -269,10 +225,11 @@ public enum EngineId
         this.defaultUrl = builder.defaultSearchUrl;
         this.defaultLocale = builder.defaultLocale;
 
-        this.preferenceFragmentClazz = builder.getPreferenceFragmentClazz();
+        this.identifierKey = builder.identifierKey;
+        this.multipleCoverSizes = builder.multipleCoverSizes;
 
-        this.multipleCoverSizes = builder.hasMultipleCoverSizes();
-        this.identifierKey = builder.getIdentifierKey();
+        this.configSupplier = builder.configConsumer;
+        this.preferenceFragmentClazz = builder.preferenceFragmentClazz;
     }
 
     /**
@@ -426,12 +383,6 @@ public enum EngineId
                      .collect(Collectors.toList());
     }
 
-    // Override as needed
-    void config() {
-        new SearchEngineConfig.Builder(this)
-                .build(SearchEngineConfig::new);
-    }
-
     /**
      * Is this engine enabled <strong>AT ALL</strong>.
      * <p>
@@ -441,6 +392,19 @@ public enum EngineId
      */
     public boolean isEnabled() {
         return enabled;
+    }
+
+    /**
+     * Build the configuration.
+     */
+    void config() {
+        final SearchEngineConfig.Builder configBuilder =
+                new SearchEngineConfig.Builder(this);
+        if (configSupplier != null) {
+            config = configSupplier.apply(configBuilder);
+        } else {
+            config = configBuilder.build(SearchEngineConfig::new);
+        }
     }
 
     /**
@@ -546,10 +510,6 @@ public enum EngineId
         return config;
     }
 
-    void setConfig(@NonNull final SearchEngineConfig config) {
-        this.config = config;
-    }
-
     /**
      * Get the configuration.
      *
@@ -637,23 +597,23 @@ public enum EngineId
 
         /** The preference key / generic string identifier for this engine. */
         @NonNull
-        final String key;
+        private final String key;
 
         /** The user displayable name for this engine. */
         @SuppressWarnings("FieldNotUsedInToString")
         @StringRes
-        final int labelResId;
+        private final int labelResId;
 
         @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
-        final List<Integer> infoResIdList;
+        private final List<Integer> infoResIdList;
 
         /** Default url. */
         @NonNull
-        final String defaultSearchUrl;
+        private final String defaultSearchUrl;
 
         @NonNull
-        final Locale defaultLocale;
+        private final Locale defaultLocale;
 
         private boolean multipleCoverSizes;
 
@@ -661,6 +621,8 @@ public enum EngineId
         private String identifierKey;
         @Nullable
         private Class<? extends Fragment> preferenceFragmentClazz;
+        @Nullable
+        private Function<SearchEngineConfig.Builder, SearchEngineConfig> configConsumer;
 
         /**
          * Constructor.
@@ -683,19 +645,9 @@ public enum EngineId
             this.defaultLocale = defaultLocale;
         }
 
-        @Nullable
-        Class<? extends Fragment> getPreferenceFragmentClazz() {
-            return preferenceFragmentClazz;
-        }
-
         public Builder setPreferenceFragmentClazz(@NonNull final Class<? extends Fragment> clazz) {
             preferenceFragmentClazz = clazz;
             return this;
-        }
-
-        @Nullable
-        String getIdentifierKey() {
-            return identifierKey;
         }
 
         /**
@@ -711,13 +663,17 @@ public enum EngineId
             return this;
         }
 
-        boolean hasMultipleCoverSizes() {
-            return multipleCoverSizes;
-        }
-
         @NonNull
         public Builder setMultipleCoverSizes(final boolean supports) {
             this.multipleCoverSizes = supports;
+            return this;
+        }
+
+        @NonNull
+        public Builder setConfig(
+                @NonNull final Function<SearchEngineConfig.Builder, SearchEngineConfig>
+                        configConsumer) {
+            this.configConsumer = configConsumer;
             return this;
         }
     }

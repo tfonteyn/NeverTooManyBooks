@@ -178,7 +178,10 @@ public class BolSearchEngine
                                             R.string.site_description_shop),
                                     "https://www.bol.com",
                                     new Locale("nl", "NL"))
-                .setPreferenceFragmentClazz(BolPreferencesFragment.class);
+                .setPreferenceFragmentClazz(BolPreferencesFragment.class)
+                .setConfig(cb -> cb
+                        .setTagsToIgnore(Set.of("Boeken", "Livres"))
+                        .build(SearchEngineConfig::new));
     }
 
     /**

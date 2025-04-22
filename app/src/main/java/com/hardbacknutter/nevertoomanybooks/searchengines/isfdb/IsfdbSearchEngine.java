@@ -545,7 +545,12 @@ public class IsfdbSearchEngine
                                     "https://www.isfdb.org",
                                     Locale.US)
                 .setIdentifierKey(Identifier.SID_ISFDB)
-                .setPreferenceFragmentClazz(IsfdbPreferencesFragment.class);
+                .setPreferenceFragmentClazz(IsfdbPreferencesFragment.class)
+                .setConfig(cb -> cb
+                        // default timeouts based on limited testing
+                        .setConnectTimeoutMs(20_000)
+                        .setReadTimeoutMs(60_000)
+                        .build(SearchEngineConfig::new));
     }
 
     @Override

@@ -178,7 +178,12 @@ public class BedethequeSearchEngine
                                     "https://www.bedetheque.com",
                                     Locale.FRANCE)
                 .setIdentifierKey(Identifier.SID_BEDETHEQUE)
-                .setPreferenceFragmentClazz(BedethequePreferencesFragment.class);
+                .setPreferenceFragmentClazz(BedethequePreferencesFragment.class)
+                .setConfig(cb -> cb
+                        // default timeouts based on limited testing
+                        .setConnectTimeoutMs(15_000)
+                        .setReadTimeoutMs(60_000)
+                        .build(SearchEngineConfig::new));
     }
 
     @NonNull

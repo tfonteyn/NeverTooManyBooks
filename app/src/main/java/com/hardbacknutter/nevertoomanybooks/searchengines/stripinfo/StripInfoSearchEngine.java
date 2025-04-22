@@ -197,7 +197,12 @@ public class StripInfoSearchEngine
                                     "https://www.stripinfo.be",
                                     new Locale("nl", "BE"))
                 .setIdentifierKey(Identifier.SID_STRIP_INFO)
-                .setPreferenceFragmentClazz(StripInfoBePreferencesFragment.class);
+                .setPreferenceFragmentClazz(StripInfoBePreferencesFragment.class)
+                .setConfig(cb -> cb
+                        // default timeouts based on limited testing
+                        .setConnectTimeoutMs(7_000)
+                        .setReadTimeoutMs(60_000)
+                        .build(SearchEngineConfig::new));
     }
 
     @Override

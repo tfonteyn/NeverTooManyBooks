@@ -244,6 +244,13 @@ public class SearchEngineConfig {
 
     }
 
+    /**
+     * Get the set of tags we need to ignore.
+     *
+     * @param context Current context
+     *
+     * @return set
+     */
     @NonNull
     public Set<String> getTagsToIgnore(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getStringSet(
@@ -344,10 +351,13 @@ public class SearchEngineConfig {
          * Finish the build. Initialise the engine with the configuration.
          *
          * @param configSupplier the base or superclass for the configuration.
+         *
+         * @return the config
          */
-        public void build(@NonNull final Function<Builder, SearchEngineConfig> configSupplier) {
-            final SearchEngineConfig config = configSupplier.apply(this);
-            engineId.setConfig(config);
+        @NonNull
+        public SearchEngineConfig build(@NonNull final Function<Builder, SearchEngineConfig>
+                                                configSupplier) {
+            return configSupplier.apply(this);
         }
 
         @NonNull
@@ -356,26 +366,54 @@ public class SearchEngineConfig {
             return this;
         }
 
+        /**
+         * Default for this timeout.
+         *
+         * @param timeoutInMillis millis
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
-        Builder setConnectTimeoutMs(final int timeoutInMillis) {
+        public Builder setConnectTimeoutMs(final int timeoutInMillis) {
             connectTimeoutMs = timeoutInMillis;
             return this;
         }
 
+        /**
+         * Default for this timeout.
+         *
+         * @param timeoutInMillis millis
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
-        Builder setReadTimeoutMs(final int timeoutInMillis) {
+        public Builder setReadTimeoutMs(final int timeoutInMillis) {
             readTimeoutMs = timeoutInMillis;
             return this;
         }
 
+        /**
+         * Default for the flag.
+         *
+         * @param prefersIsbn10 flag
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
-        Builder setPrefersIsbn10(final boolean prefersIsbn10) {
+        public Builder setPrefersIsbn10(final boolean prefersIsbn10) {
             this.prefersIsbn10 = prefersIsbn10;
             return this;
         }
 
+        /**
+         * Default set of tags to ignore. Some sites provide fairly useless tags, e.g. "books".
+         *
+         * @param tagsToIgnore set
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
-        Builder setTagsToIgnore(@NonNull final Set<String> tagsToIgnore) {
+        public Builder setTagsToIgnore(@NonNull final Set<String> tagsToIgnore) {
             this.tagsToIgnore = tagsToIgnore;
             return this;
         }
