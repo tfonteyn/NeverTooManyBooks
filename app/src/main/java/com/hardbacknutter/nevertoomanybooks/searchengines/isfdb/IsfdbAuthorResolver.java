@@ -68,11 +68,11 @@ public final class IsfdbAuthorResolver
         this.searchEngine = searchEngine;
         // The engine is hardcoded/defined with the identifier,
         // but the author-uri can be absent
-        authorUri = this.searchEngine.getEngineId()
-                                     .getIdentifier()
-                                     .flatMap(identifier -> identifier
-                                             .getAuthorUri(context))
-                                     .orElse(null);
+        authorUri = this.searchEngine
+                .getEngineId()
+                .getIdentifier()
+                .flatMap(identifier -> identifier.getAuthorUri(context))
+                .orElse(null);
 
         authorSearchUrl = this.searchEngine.getHostUrl(context)
                           + "/cgi-bin/se.cgi?arg=%s&type=Name";

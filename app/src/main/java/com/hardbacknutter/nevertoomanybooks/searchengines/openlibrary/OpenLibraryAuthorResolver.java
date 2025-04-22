@@ -85,7 +85,9 @@ public final class OpenLibraryAuthorResolver
     private OpenLibraryAuthorResolver(@NonNull final Context context,
                                       @NonNull final OpenLibrarySearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        authorUri = searchEngine
+        // The engine is hardcoded/defined with the identifier,
+        // but the author-uri can be absent
+        authorUri = this.searchEngine
                 .getEngineId()
                 .getIdentifier()
                 .flatMap(identifier -> identifier.getAuthorUri(context))
