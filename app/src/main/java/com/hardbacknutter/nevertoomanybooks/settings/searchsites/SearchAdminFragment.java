@@ -121,12 +121,12 @@ public class SearchAdminFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Effectively disable edge-to-edge for the pager and include system gestures.
+        // Effectively disable edge-to-edge for the pager
+        // Do NOT include systemGestures as this will cause the content to be squeezed.
         InsetsListenerBuilder.create(view)
                              .padding(Side.Start, Side.End, Side.Bottom)
                              .systemBars()
                              .displayCutout()
-                             .systemGestures()
                              .apply();
 
         //noinspection DataFlowIssue
@@ -234,31 +234,13 @@ public class SearchAdminFragment
             menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
                 .setIcon(R.drawable.undo_24px)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-            menu.add(Menu.NONE, R.id.MENU_SETTINGS, 0, R.string.lbl_settings)
-                .setIcon(R.drawable.settings_24px)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
 
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             final int menuItemId = menuItem.getItemId();
-            if (menuItemId == R.id.MENU_SETTINGS) {
-                final SiteConfigPreferenceFragment fragment =
-                        new SiteConfigPreferenceFragment();
-
-                tabPanel.setVisibility(View.GONE);
-
-                getParentFragmentManager()
-                        .beginTransaction()
-                        .setReorderingAllowed(true)
-                        .addToBackStack(SiteConfigPreferenceFragment.TAG)
-                        .replace(R.id.content_frame, fragment, SiteConfigPreferenceFragment.TAG)
-                        .commit();
-                return true;
-
-            } else if (menuItemId == R.id.MENU_ACTION_CLEAR) {
+            if (menuItemId == R.id.MENU_ACTION_CLEAR) {
                 // See TabAdapter: the position will always match the index of the type
                 final int position = viewPager.getCurrentItem();
                 vm.clear(vm.getTypes().get(position));

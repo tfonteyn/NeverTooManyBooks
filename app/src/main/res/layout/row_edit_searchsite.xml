@@ -75,10 +75,19 @@
         android:id="@id/ROW_DRAG_HANDLE"
         style="@style/RowEditor.Button.DragHandle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
         app:layout_constraintStart_toEndOf="@id/ROW_CLICK_TARGET"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
         />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@id/ROW_MENU_BTN"
+        style="@style/Button.MenuPopup.More"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
