@@ -360,7 +360,7 @@ public class BooksOnBookshelf
         handleStandardSearchIntent(getIntent());
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(this, Tip.BOOK_LIST, () -> {
+            TipManager.getInstance().show(this, Tip.BOOK_LIST, () -> {
                 if (vm.isProposeBackup()) {
                     new MaterialAlertDialogBuilder(this)
                             .setIcon(R.drawable.warning_24px)

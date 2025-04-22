@@ -159,7 +159,7 @@ public class SearchAdminFragment
 
         if (savedInstanceState == null) {
             //noinspection DataFlowIssue
-            TipManager.getInstance().display(getContext(), Tip.CONFIGURE_SITES);
+            TipManager.getInstance().show(getContext(), Tip.CONFIGURE_SITES);
         }
     }
 

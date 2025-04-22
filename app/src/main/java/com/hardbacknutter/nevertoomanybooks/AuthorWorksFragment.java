@@ -192,7 +192,7 @@ public class AuthorWorksFragment
         vb.authorWorks.setAdapter(adapter);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(context, Tip.AUTHORS_WORKS);
+            TipManager.getInstance().show(context, Tip.AUTHORS_WORKS);
         }
     }
 

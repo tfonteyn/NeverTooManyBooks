@@ -99,7 +99,7 @@ public class StyleDefaultsFragment
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(getContext(), Tip.STYLE_DEFAULTS);
+            TipManager.getInstance().show(getContext(), Tip.STYLE_DEFAULTS);
         }
     }
 }

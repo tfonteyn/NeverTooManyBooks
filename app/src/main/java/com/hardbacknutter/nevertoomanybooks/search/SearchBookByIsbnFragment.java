@@ -622,8 +622,8 @@ public class SearchBookByIsbnFragment
             } else if (menuItemId == R.id.MENU_BARCODE_IMPORT) {
                 // Using "*/*": see remarks in
                 // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
-                TipManager.getInstance().display(requireContext(), Tip.IMPORT_ISBN_LIST,
-                                                 () -> openUriLauncher.launch(ANY_URI));
+                TipManager.getInstance().show(requireContext(), Tip.IMPORT_ISBN_LIST,
+                                              () -> openUriLauncher.launch(ANY_URI));
                 return true;
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {

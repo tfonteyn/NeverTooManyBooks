@@ -108,7 +108,7 @@ public class ShowBookPagerFragment
 
         if (savedInstanceState == null) {
             //noinspection DataFlowIssue
-            TipManager.getInstance().display(getContext(), Tip.BOOK_DETAILS);
+            TipManager.getInstance().show(getContext(), Tip.BOOK_DETAILS);
         }
     }
 

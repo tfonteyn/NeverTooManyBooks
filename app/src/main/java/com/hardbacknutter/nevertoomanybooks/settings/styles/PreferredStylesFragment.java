@@ -240,7 +240,7 @@ public class PreferredStylesFragment
         itemTouchHelper.attachToRecyclerView(vb.list);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(getContext(), Tip.STYLES_EDITOR);
+            TipManager.getInstance().show(getContext(), Tip.STYLES_EDITOR);
         }
     }
 

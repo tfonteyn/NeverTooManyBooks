@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -90,9 +90,9 @@ public final class TipManager {
      * @param context Current context
      * @param tip     the tip
      */
-    public void display(@NonNull final Context context,
-                        @NonNull final Tip tip) {
-        display(context, tip, null, (Object[]) null);
+    public void show(@NonNull final Context context,
+                     @NonNull final Tip tip) {
+        show(context, tip, null, (Object[]) null);
     }
 
     /**
@@ -106,10 +106,10 @@ public final class TipManager {
      *                 the postRun <strong>is executed immediately</strong>
      * @param textArgs Optional arguments for the tip string
      */
-    public void display(@NonNull final Context context,
-                        @NonNull final Tip tip,
-                        @Nullable final Runnable postRun,
-                        @Nullable final Object... textArgs) {
+    public void show(@NonNull final Context context,
+                     @NonNull final Tip tip,
+                     @Nullable final Runnable postRun,
+                     @Nullable final Object... textArgs) {
         if (shouldBeDisplayed(context, tip)) {
             tip.create(context, postRun, textArgs)
                .show();

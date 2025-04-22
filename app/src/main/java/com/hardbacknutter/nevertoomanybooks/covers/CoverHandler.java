@@ -314,18 +314,18 @@ public final class CoverHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
-            TipManager.getInstance().display(context, Tip.CAMERA_AUTOROTATE_IMAGES,
-                                             () -> startRotation(90));
+            TipManager.getInstance().show(context, Tip.CAMERA_AUTOROTATE_IMAGES,
+                                          () -> startRotation(90));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CCW) {
-            TipManager.getInstance().display(context, Tip.CAMERA_AUTOROTATE_IMAGES,
-                                             () -> startRotation(-90));
+            TipManager.getInstance().show(context, Tip.CAMERA_AUTOROTATE_IMAGES,
+                                          () -> startRotation(-90));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_180) {
-            TipManager.getInstance().display(context, Tip.CAMERA_AUTOROTATE_IMAGES,
-                                             () -> startRotation(180));
+            TipManager.getInstance().show(context, Tip.CAMERA_AUTOROTATE_IMAGES,
+                                          () -> startRotation(180));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_CROP) {

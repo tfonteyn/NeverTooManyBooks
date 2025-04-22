@@ -98,7 +98,7 @@ public class StyleFragment
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(getContext(), Tip.STYLE_PROPERTIES);
+            TipManager.getInstance().show(getContext(), Tip.STYLE_PROPERTIES);
         }
     }
 

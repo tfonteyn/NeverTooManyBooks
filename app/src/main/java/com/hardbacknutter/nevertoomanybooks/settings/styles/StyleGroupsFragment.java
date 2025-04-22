@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -160,7 +160,7 @@ public class StyleGroupsFragment
         itemTouchHelper.attachToRecyclerView(vb.groupList);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(context, Tip.STYLE_GROUPS);
+            TipManager.getInstance().show(context, Tip.STYLE_GROUPS);
         }
     }
 
