@@ -475,11 +475,21 @@ public enum EngineId
         return defaultLocale;
     }
 
+    /**
+     * Get the {@link Identifier} key.
+     *
+     * @return key, or {@code null} if there is none
+     */
     @Nullable
     public String getIdentifierKey() {
         return identifierKey;
     }
 
+    /**
+     * Get the {@link Identifier}.
+     *
+     * @return Identifier
+     */
     @NonNull
     public Optional<Identifier> getIdentifier() {
         if (identifierKey != null) {
@@ -508,18 +518,6 @@ public enum EngineId
     @Nullable
     public SearchEngineConfig getConfig() {
         return config;
-    }
-
-    /**
-     * Get the configuration.
-     *
-     * @return {@link SearchEngineConfig}
-     *
-     * @throws NullPointerException if there is none (which would be a bug)
-     */
-    @NonNull
-    public SearchEngineConfig requireConfig() {
-        return Objects.requireNonNull(config);
     }
 
     /**

@@ -100,8 +100,10 @@ class CollectionFormUploader {
      */
     @AnyThread
     CollectionFormUploader(@NonNull final Context context) {
-        final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
 
+        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
+
+        //noinspection DataFlowIssue
         postUrl = config.getHostUrl(context) + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);

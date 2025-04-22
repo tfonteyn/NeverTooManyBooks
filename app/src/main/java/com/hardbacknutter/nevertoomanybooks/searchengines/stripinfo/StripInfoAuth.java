@@ -203,8 +203,9 @@ public class StripInfoAuth
             return userId;
         }
 
-        final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
+        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
 
+        //noinspection DataFlowIssue
         final String url = config.getHostUrl(context) + USER_LOGIN_URL;
         final String postBody = new StringJoiner("&")
                 .add("userName=" + URLEncoder.encode(username, StandardCharsets.UTF_8))

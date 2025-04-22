@@ -99,8 +99,9 @@ public class CollectionFormParser {
     public CollectionFormParser(@NonNull final Context context,
                                 @NonNull final BookshelfMapper bookshelfMapper) {
 
-        final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
+        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
 
+        //noinspection DataFlowIssue
         postUrl = config.getHostUrl(context) + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
