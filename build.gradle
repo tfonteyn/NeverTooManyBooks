@@ -29,6 +29,15 @@ tasks.register("clean", Delete) {
     delete(rootProject.layout.buildDirectory)
 }
 
+// for occasional checking
+//allprojects {
+//    tasks.withType(JavaCompile).tap {
+//        configureEach {
+//            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+//        }
+//    }
+//}
+
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
     applicationVersionCode = 101
