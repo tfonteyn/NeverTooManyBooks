@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -89,10 +89,42 @@ public class CheckableDragDropViewHolder
         return dragHandleView != null;
     }
 
+    /**
+     * Show or hide the drag-handle.
+     *
+     * @param show flag
+     */
+    @SuppressWarnings("SameParameterValue")
+    protected void showDragHandle(final boolean show) {
+        //noinspection DataFlowIssue
+        dragHandleView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     void setOnDragListener(@NonNull final View.OnTouchListener listener) {
         //noinspection DataFlowIssue
         dragHandleView.setOnTouchListener(listener);
+    }
+
+    /**
+     * Show or hide the checkable-button.
+     *
+     * @param show flag
+     */
+    @SuppressWarnings("SameParameterValue")
+    protected void showCheckableButton(final boolean show) {
+        //noinspection DataFlowIssue
+        checkableButton.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    /**
+     * Set the status of the checkable-button.
+     *
+     * @param checked flag
+     */
+    public void setChecked(final boolean checked) {
+        //noinspection DataFlowIssue
+        checkableButton.setChecked(checked);
     }
 
     /**
@@ -105,36 +137,6 @@ public class CheckableDragDropViewHolder
         //noinspection DataFlowIssue
         checkableButton.setOnClickListener(
                 v -> setChecked(listener.apply(getBindingAdapterPosition())));
-    }
-
-    /**
-     * Show or hide the drag-handle.
-     *
-     * @param show flag
-     */
-    protected void showDragHandle(final boolean show) {
-        //noinspection DataFlowIssue
-        dragHandleView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    /**
-     * Enable/disable, but leave visible, the checkable-button.
-     *
-     * @param enable flag
-     */
-    protected void enableCheck(final boolean enable) {
-        //noinspection DataFlowIssue
-        checkableButton.setEnabled(enable);
-    }
-
-    /**
-     * Set the status of the checkable-button.
-     *
-     * @param checked flag
-     */
-    public void setChecked(final boolean checked) {
-        //noinspection DataFlowIssue
-        checkableButton.setChecked(checked);
     }
 
     @Override

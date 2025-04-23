@@ -243,8 +243,8 @@ public class StyleBooklistBookLevelSortingFragment
             super(vb.getRoot());
             this.vb = vb;
 
-            vb.ROWMENUBTN.setEnabled(false);
-            vb.ROWGRABBERICON.setVisibility(View.INVISIBLE);
+            showCheckableButton(false);
+            showDragHandle(false);
         }
 
         void onBind(@NonNull final StyleViewModel.WrappedBookLevelColumn wrappedColumn) {
