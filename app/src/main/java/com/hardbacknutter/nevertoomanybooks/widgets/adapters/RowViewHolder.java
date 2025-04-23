@@ -69,7 +69,7 @@ public class RowViewHolder
     protected RowViewHolder(@NonNull final View itemView) {
         super(itemView);
 
-        btnRowMenu = itemView.findViewById(R.id.btn_row_menu);
+        btnRowMenu = itemView.findViewById(R.id.ROW_MENU_BTN);
 
         onClickTargetView = Objects.requireNonNullElse(
                 itemView.findViewById(R.id.ROW_ONCLICK_TARGET), itemView);

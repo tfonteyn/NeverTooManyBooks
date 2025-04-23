@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@
         style="@style/RowEditor.TextSection"
         android:layout_marginStart="@dimen/preference_header_margin_start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
+        app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -46,7 +46,7 @@
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_row_menu"
+        android:id="@id/ROW_MENU_BTN"
         style="@style/RowEditor.Button.Sorting"
         android:layout_marginEnd="@dimen/field_margin_end"
         app:layout_constraintBottom_toBottomOf="parent"

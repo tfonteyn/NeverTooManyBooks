@@ -56,13 +56,13 @@
         style="@style/Flag.Complete"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/rating"
-        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
+        app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
         tools:ignore="ContentDescription"
         tools:visibility="visible"
         />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_row_menu"
+        android:id="@id/ROW_MENU_BTN"
         style="@style/Button.MenuPopup.More"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

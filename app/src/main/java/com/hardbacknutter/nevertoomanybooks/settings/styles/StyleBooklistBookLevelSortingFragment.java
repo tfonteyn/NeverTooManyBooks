@@ -243,7 +243,7 @@ public class StyleBooklistBookLevelSortingFragment
             super(vb.getRoot());
             this.vb = vb;
 
-            vb.btnRowMenu.setEnabled(false);
+            vb.ROWMENUBTN.setEnabled(false);
             vb.ROWGRABBERICON.setVisibility(View.INVISIBLE);
         }
 

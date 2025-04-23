@@ -88,7 +88,7 @@
         />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_row_menu"
+        android:id="@id/ROW_MENU_BTN"
         style="@style/Button.Grid.More"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

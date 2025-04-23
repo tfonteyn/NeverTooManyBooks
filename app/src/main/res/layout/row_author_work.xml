@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@
         android:id="@+id/card"
         style="@style/AuthorWorkCard"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
+        app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -96,7 +96,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_row_menu"
+        android:id="@id/ROW_MENU_BTN"
         style="@style/Button.MenuPopup.More"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
