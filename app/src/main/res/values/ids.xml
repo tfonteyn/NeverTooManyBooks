@@ -26,13 +26,13 @@
     <!-- If present, indicates the part of the row which should have the onclick listeners set.
          If not present, the listeners are set on the entire row.
     -->
-    <item name="ROW_ONCLICK_TARGET"
+    <item name="ROW_CLICK_TARGET"
           type="id" />
     <!-- optional checkable button, should live outside of the onclick target -->
     <item name="ROW_CHECKABLE_BTN"
           type="id" />
     <!-- optional grabber handle, should live outside of the onclick target -->
-    <item name="ROW_GRABBER_ICON"
+    <item name="ROW_DRAG_HANDLE"
           type="id" />
     <!-- optional row popup menu button -->
     <item name="ROW_MENU_BTN"

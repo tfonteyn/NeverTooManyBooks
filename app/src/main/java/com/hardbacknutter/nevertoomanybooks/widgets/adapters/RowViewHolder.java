@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
  * <p>
  * Uses pre-defined ID's:
  * <ul>
- *      <li>R.id.ROW_ONCLICK_TARGET</li>
+ *      <li>R.id.ROW_CLICK_TARGET</li>
  *      <li>R.id.ROW_MENU_BTN</li>
  * </ul>
  */
@@ -57,7 +57,7 @@ public class RowViewHolder
      * as it is this View that will be passed to the onClick handlers.
      */
     @NonNull
-    private final View onClickTargetView;
+    private final View clickTargetView;
 
     @Nullable
     private final MaterialButton btnRowMenu;
@@ -72,8 +72,8 @@ public class RowViewHolder
 
         btnRowMenu = itemView.findViewById(R.id.ROW_MENU_BTN);
 
-        onClickTargetView = Objects.requireNonNullElse(
-                itemView.findViewById(R.id.ROW_ONCLICK_TARGET), itemView);
+        clickTargetView = Objects.requireNonNullElse(
+                itemView.findViewById(R.id.ROW_CLICK_TARGET), itemView);
     }
 
     /**
@@ -85,7 +85,7 @@ public class RowViewHolder
      * @param focusable If true, this view can receive the focus.
      */
     public void setClickTargetViewFocusable(final boolean focusable) {
-        onClickTargetView.setFocusable(focusable);
+        clickTargetView.setFocusable(focusable);
     }
 
     /**
@@ -105,10 +105,10 @@ public class RowViewHolder
      */
     public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
         if (listener != null) {
-            onClickTargetView.setOnClickListener(v -> listener
+            clickTargetView.setOnClickListener(v -> listener
                     .onClick(v, getBindingAdapterPosition()));
         } else {
-            onClickTargetView.setOnClickListener(null);
+            clickTargetView.setOnClickListener(null);
         }
     }
 
@@ -124,7 +124,7 @@ public class RowViewHolder
                                           @Nullable final OnRowClickListener listener) {
         if (listener != null && contextMenuMode != null) {
             // long-click on the background
-            onClickTargetView.setOnLongClickListener(v -> {
+            clickTargetView.setOnLongClickListener(v -> {
                 listener.onClick(v, getBindingAdapterPosition());
                 return true;
             });
@@ -138,7 +138,7 @@ public class RowViewHolder
                 btnRowMenu.setVisibility(visibility);
             }
         } else {
-            onClickTargetView.setOnLongClickListener(null);
+            clickTargetView.setOnLongClickListener(null);
             if (btnRowMenu != null) {
                 btnRowMenu.setOnClickListener(null);
                 btnRowMenu.setVisibility(View.GONE);

@@ -62,7 +62,7 @@ public class BitmaskHolder
 
         // same predefined id, but not extending "RowViewHolder"
         // so we must set the listener directly.
-        vb.ROWONCLICKTARGET.setOnClickListener(v -> {
+        vb.ROWCLICKTARGET.setOnClickListener(v -> {
             final Map<Integer, String> bitsAndLabels = filter.getBitsAndLabels(context);
             final List<Integer> ids = new ArrayList<>(bitsAndLabels.keySet());
             final List<String> labels = new ArrayList<>(bitsAndLabels.values());

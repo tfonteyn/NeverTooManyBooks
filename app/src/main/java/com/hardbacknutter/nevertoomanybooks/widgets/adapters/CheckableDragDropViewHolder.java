@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * Uses pre-defined ID's:
  * <ul>
  *      <li>R.id.ROW_CHECKABLE_BTN</li>
- *      <li>R.id.ROW_GRABBER_ICON</li>
+ *      <li>R.id.ROW_DRAG_HANDLE</li>
  * </ul>
  */
 public class CheckableDragDropViewHolder
@@ -76,7 +76,7 @@ public class CheckableDragDropViewHolder
                 itemView.getContext(), com.google.android.material.R.attr.colorPrimary);
 
         // optional
-        dragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
+        dragHandleView = itemView.findViewById(R.id.ROW_DRAG_HANDLE);
         checkableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
     }
 

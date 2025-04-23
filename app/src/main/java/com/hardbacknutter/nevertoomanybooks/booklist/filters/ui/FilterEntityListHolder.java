@@ -60,7 +60,7 @@ public class FilterEntityListHolder<T extends Entity>
 
         // same predefined id, but not extending "RowViewHolder"
         // so we must set the listener directly.
-        vb.ROWONCLICKTARGET.setOnClickListener(v -> {
+        vb.ROWCLICKTARGET.setOnClickListener(v -> {
             final List<T> entities = filter.getEntities();
             final List<Long> ids = entities.stream()
                                            .map(Entity::getId)

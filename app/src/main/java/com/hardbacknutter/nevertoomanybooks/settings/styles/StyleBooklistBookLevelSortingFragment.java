@@ -230,9 +230,6 @@ public class StyleBooklistBookLevelSortingFragment
         itemTouchHelper.attachToRecyclerView(vb.columnList);
     }
 
-    /**
-     * Holder for each row.
-     */
     private static class HeaderRowHolder
             extends CheckableDragDropViewHolder {
 

@@ -27,10 +27,10 @@
     tools:viewBindingIgnore="true">
 
     <LinearLayout
-        android:id="@id/ROW_ONCLICK_TARGET"
+        android:id="@id/ROW_CLICK_TARGET"
         style="@style/RowEditor.TextSection"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
+        app:layout_constraintEnd_toStartOf="@id/ROW_DRAG_HANDLE"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -48,11 +48,11 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@id/ROW_GRABBER_ICON"
+        android:id="@id/ROW_DRAG_HANDLE"
         style="@style/RowEditor.Button.DragHandle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
-        app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
+        app:layout_constraintStart_toEndOf="@id/ROW_CLICK_TARGET"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
         />

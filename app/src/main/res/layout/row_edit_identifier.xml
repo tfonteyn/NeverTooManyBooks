@@ -26,7 +26,7 @@
     style="@style/RowEditor.Container">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@id/ROW_ONCLICK_TARGET"
+        android:id="@id/ROW_CLICK_TARGET"
         style="@style/RowEditor.TextSection"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_MENU_BTN"
