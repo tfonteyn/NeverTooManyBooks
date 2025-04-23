@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceAlertDia
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 
-public class EntityListHolder<T extends Entity>
+public class FilterEntityListHolder<T extends Entity>
         extends PFilterViewHolder
         implements BindableViewHolder<PEntityListFilter<T>> {
 
@@ -47,8 +47,8 @@ public class EntityListHolder<T extends Entity>
      * @param vb       view-binding
      * @param listener for update events
      */
-    EntityListHolder(@NonNull final RowEditBookshelfFilterEntityListBinding vb,
-                     @NonNull final ModificationListener listener) {
+    FilterEntityListHolder(@NonNull final RowEditBookshelfFilterEntityListBinding vb,
+                           @NonNull final ModificationListener listener) {
         super(vb.getRoot(), listener);
         this.vb = vb;
     }

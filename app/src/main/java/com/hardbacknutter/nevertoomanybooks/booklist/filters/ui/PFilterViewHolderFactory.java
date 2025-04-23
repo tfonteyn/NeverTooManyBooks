@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@ public final class PFilterViewHolderFactory {
         } else if (filterType == R.layout.row_edit_bookshelf_filter_entity_list) {
             final RowEditBookshelfFilterEntityListBinding vb =
                     RowEditBookshelfFilterEntityListBinding.inflate(inflater, parent, false);
-            return new EntityListHolder<>(vb, listener);
+            return new FilterEntityListHolder<>(vb, listener);
 
         } else if (filterType == R.layout.row_edit_bookshelf_filter_string_equality) {
             final RowEditBookshelfFilterStringEqualityBinding vb =
