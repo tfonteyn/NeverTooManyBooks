@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
  * Uses pre-defined ID's:
  * <ul>
  *      <li>R.id.ROW_ONCLICK_TARGET</li>
+ *      <li>R.id.ROW_MENU_BTN</li>
  * </ul>
  */
 @SuppressWarnings("WeakerAccess")
@@ -77,6 +78,9 @@ public class RowViewHolder
 
     /**
      * Set whether the ClickTargetView/ItemView can receive the focus.
+     * <p>
+     * Set to {@code false} if there is another widget which must be able to
+     * get the focus. e.g. a drag-handle needs to capture focus.
      *
      * @param focusable If true, this view can receive the focus.
      */
@@ -149,7 +153,7 @@ public class RowViewHolder
      *
      * @return visibility
      */
-    protected int getButtonVisibility(@NonNull final ExtMenuButton contextMenuMode) {
+    private int getButtonVisibility(@NonNull final ExtMenuButton contextMenuMode) {
         final int visibility;
         switch (contextMenuMode) {
             case Always: {
