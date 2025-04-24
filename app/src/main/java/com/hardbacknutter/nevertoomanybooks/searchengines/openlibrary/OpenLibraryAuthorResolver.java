@@ -46,6 +46,13 @@ import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * It's a little unreliable... see comments inside {@link #parse}.
+ * <p>
+ * Available:
+ * - birth date
+ * - death date
+ * - photo
+ * - bio: text, or type/value(text)
+ * - links to external sites
  */
 public final class OpenLibraryAuthorResolver
         implements AuthorResolver {

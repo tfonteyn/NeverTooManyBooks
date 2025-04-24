@@ -45,6 +45,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+/**
+ * Available:
+ * - Birthdate
+ * - Deathdate
+ * - photo
+ * - Birthplace
+ * - Language
+ * - Webpages
+ */
 public final class IsfdbAuthorResolver
         implements AuthorResolver {
 

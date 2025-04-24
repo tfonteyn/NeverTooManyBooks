@@ -48,6 +48,12 @@ import org.jsoup.nodes.Element;
  * <ul>
  *     <li>add the {@link Author#setRealAuthor(Author)} if applicable</li>
  * </ul>
+ *
+ * Available:
+ * - Birthdate
+ * - Deathdate
+ * - country
+ *
  */
 public final class DatabazeKnihAuthorResolver
         implements AuthorResolver {

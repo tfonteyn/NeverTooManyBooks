@@ -48,6 +48,15 @@ import org.jsoup.select.Elements;
  * The author permalink takes us to the old site which we don't parse
  * because we mistakenly believed that DNB would actually finish
  * the work on the beta in a reasonable timeframe...
+ *
+ * Available:
+ * - Birthdate
+ * - Deathdate
+ * - Birthplace
+ * - gender
+ * - Akademischer Grad bzw. Titel
+ * - Profession
+ * - info
  */
 public final class DnbAuthorResolver
         implements AuthorResolver {
@@ -193,6 +202,14 @@ public final class DnbAuthorResolver
                             case "Gender": {
                                 // männlich
                                 // weiblich
+                                break;
+                            }
+                            case "Akademischer Grad bzw. Titel":
+                            case "Academic degree": {
+                                break;
+                            }
+                            case "Weitere Angaben":
+                            case "Further information": {
                                 break;
                             }
                             case "Datensatztyp":
