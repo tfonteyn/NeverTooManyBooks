@@ -17,13 +17,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
---><!--suppress LongLine -->
-<resources>
+--><!--suppress LongLine --><resources>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -86,7 +84,6 @@
     <string name="error_http_403_forbidden">A webhely letiltotta a hozzáférést.</string>
     <string name="error_http_401_site_authorization_failed">%1$s engedélyezése hibát eredményezett.</string>
     <string name="error_http_403_site_forbidden">%1$s letiltotta a hozzáférést.</string>
-
     <string name="X_action_clear_credentials">Hitelesítési adatok törlése</string>
     <string name="X_action_execute">Végrehajtás</string>
     <string name="X_action_go">Ugrás</string>
@@ -187,5 +184,71 @@
     <string name="whichSendApplication">Megosztás</string>
     <string name="whichViewApplication">Megnyitás a következővel:</string>
     <string name="yes">Igen</string>
-
+    <string name="error_search_failed_network">Nyissa meg a Beállításokat, és ellenőrizze a hálózat és a keresőoldal beállításait.\nEllenőrizze az eszköz hálózati beállításait is.</string>
+    <string name="error_unknown_host">Kapcsolódási probléma a szolgáltatással a következő helyen: \"%1$s”.</string>
+    <string name="error_auto_toc_population_failed">A címek automatikus feltöltése sikertelen.</string>
+    <string name="error_no_image_editor">Nem található képszerkesztő.</string>
+    <string name="error_email_failed">Nem sikerült elküldeni az e-mailt.</string>
+    <string name="error_file_not_found">A fájl nem található: %1$s</string>
+    <string name="error_file_not_recognized">A kiválasztott fájl nem ismert.</string>
+    <string name="error_import_file_not_supported">A kiválasztott fájl nem importálható.</string>
+    <string name="error_unsupported_version_v">Nem támogatott verzió: %1$d</string>
+    <string name="error_import_archive_invalid">Az archív fájl sérült vagy érvénytelen.</string>
+    <string name="error_import_failed_for_record">Sikertelen importálás (%1$s)</string>
+    <string name="error_import_csv_missing_columns_x">A fájlnak tartalmaznia kell egy oszlopot a következő nevek egyikével: %1$s</string>
+    <string name="error_import_csv_line">Ismeretlen hiba a következő sorban: %1$d</string>
+    <string name="error_import_csv_line_to_long">A sor túl hosszú (sor=%1$d, hossz=%2$d)</string>
+    <string name="error_import_csv_column_count_mismatch">Nem egyezik az oszlopok száma a következő sorban: %1$d</string>
+    <string name="error_record_must_contain_column">A bejegyzésnek tartalmaznia kell egy \"%1$s” nevű mezőt.</string>
+    <string name="error_export_failed">Exportálás sikertelen.</string>
+    <string name="error_backup_failed">Biztonsági mentés sikertelen.</string>
+    <string name="error_type_not_supported">Nem támogatott típus: %1$s…</string>
+    <string name="warning_import_csv">FIGYELMEZTETÉS: Az adatok importálása frissítheti a meglévő könyvbejegyzéseket új információkkal, ha az UUID oszlop nincs jelen és az importált fájl azonosítója megegyezik egy meglévő azonosítóval. Ez általában rendben van, ha egy exportált fájl mezőjét módosította. Ha új könyvbejegyzést hozott létre vagy valaki más könyveit importálja, győződjön meg arról, hogy az UUID mező jelen van vagy az azonosító mezője üres.</string>
+    <string name="warning_import_csv_unescaped_quote">Nem tiszta idézet a következő helyen: %1$d. sor %2$d. pozíció</string>
+    <string name="warning_import_failed_for_these_books">A következő könyvek/sorok importálása sikertelen:</string>
+    <string name="warning_import_failed_for_these_books_and_more">és még %1$d.</string>
+    <string name="warning_export_contains_no_data">Nem volt mit exportálni.</string>
+    <string name="warning_book_not_found">A megadott könyv nem található.</string>
+    <string name="warning_book_not_always_found">Nem minden oldal adott vissza érvényes adatokat.</string>
+    <string name="warning_no_search_data_for_active_sites">Nincsenek érvényes keresési adatok az aktív oldalakhoz.</string>
+    <string name="warning_immediate_global_changes">FIGYELMEZTETÉS: A mentett módosítások azonnal érvényesülnek az összes könyvre.</string>
+    <string name="warning_x_already_exists">%1$s már létezik.</string>
+    <string name="warning_enable_at_least_1_website">Engedélyezzen legalább egy weboldalt minden kategóriához.</string>
+    <string name="warning_nothing_selected">Semmi nincs kiválasztva</string>
+    <string name="warning_requires_at_least_1_field">Legalább egy mező nem lehet üres.</string>
+    <string name="warning_select_at_least_1_group">Válasszon ki legalább egy csoportot.</string>
+    <string name="warning_select_at_least_1_field">Válasszon ki legalább egy frissítendő mezőt.</string>
+    <string name="warning_missing_title_or_author">Meg kell adni a címet és/vagy a szerzőt.</string>
+    <string name="warning_requires_isbn">Ez a művelet érvényes ISBN-t igényel.</string>
+    <string name="warning_requires_site_and_id">Válasszon ki egy oldalt és adjon meg egy azonosítót.</string>
+    <string name="warning_cannot_delete_1st_bs">Az első könyvespolc nem törölhető.</string>
+    <string name="warning_already_in_list">Már szerepel a listán!</string>
+    <string name="warning_no_matching_book_found">Nem található egyező könyv</string>
+    <string name="warning_x_is_not_a_valid_code">\"%1$s\" érvénytelen kód</string>
+    <string name="warning_image_not_found">A kép nem található.</string>
+    <string name="warning_image_copy_failed">A kép nem másolható.</string>
+    <string name="warning_no_editions">NIncs információ további kiadásról.</string>
+    <string name="warning_if_day_set_month_and_year_must_be">Ha a nap meg van adva, akkor a hónapot és az évet is meg kell adni.</string>
+    <string name="warning_if_month_set_year_must_be">Ha a hónap meg van adva, akkor az évet is meg kell adni.</string>
+    <string name="warning_toc_confirm">Kérjük, erősítse meg, hogy ezek a címek (többnyire) helyesek.</string>
+    <string name="warning_backup_request">Szeretne biztonsági másolatot készíteni az adatbázisáról az SD-kártyára?</string>
+    <string name="warning_no_site_supports_this_method">FIGYELMEZTETÉS: a jelenleg kiválasztott oldalak egyike sem támogatja a(z) %1$s szerinti keresést. Kérjük, használja az oldalak menüt az alternatív oldalak engedélyezéséhez vagy használjon másik keresési módot.</string>
+    <string name="warning_restart_required">Az alkalmazás újraindítása szükséges</string>
+    <string name="warning_requires_android_x">Android %1$d vagy újabb szükséges</string>
+    <string name="vldt_failure">Érvényesítési hiba</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
+    <string name="vldt_date_expected_for_x">Az elvárt érték egy dátum a következőhöz: \"%1$s”</string>
+    <string name="vldt_real_expected_for_x">Az elvárt érték egy valós szám a következőhöz: \"%1$s”</string>
+    <string name="vldt_integer_expected_for_x">Az elvárt érték egy egész szám a következőhöz: \"%1$s”</string>
+    <string name="vldt_boolean_expected_for_x">Az elvárt érték egy logikai érték(0,1,t,f,true,false) a következőhöz: \"%1$s”</string>
+    <string name="vldt_non_blank_required">Nem üres érték szükséges</string>
+    <string name="vldt_non_blank_required_for_x">Nem üres érték szükséges a következőhöz: \"%1$s\"</string>
+    <string name="vldt_blank_required_for_x">Üres érték szükséges a következőhöz: \"%1$s\"</string>
+    <string name="vldt_blank_or_valid_url_required">Üres érték vagy érvényes URL szükséges</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Üres érték vagy érvényes \"https” URL egyetlen \"%s” azonosító helyőrzővel szükséges</string>
+    <string name="vldt_read_start_after_end">Az olvasás kezdés dátuma a befejezés dátum után van</string>
+    <string name="vldt_real_author_must_be_valid">Üresnek vagy létező szerzőnek kell lennie</string>
+    <string name="progress_msg_please_wait">Kérjük, várjon…</string>
+    <string name="progress_msg_loading">Betöltés…</string>
+    <string name="progress_msg_loading_page">%1$d oldal betöltése…</string>
 </resources>
