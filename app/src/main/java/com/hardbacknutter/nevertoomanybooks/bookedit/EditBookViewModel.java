@@ -34,7 +34,10 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -373,6 +376,54 @@ public class EditBookViewModel
     @Override
     public void updateReadStatus(final boolean statusModified) {
         onReadStatusUpdateUI.setValue(statusModified);
+    }
+
+    /**
+     * Called when a picker returns a newly selected date.
+     *
+     * @param fieldIds   to update
+     * @param selections date(s) to set
+     */
+    void onDateSet(@NonNull final int[] fieldIds,
+                   @NonNull final Long[] selections) {
+        for (int i = 0; i < fieldIds.length; i++) {
+            if (selections[i] == null) {
+                onDateSet(fieldIds[i], "");
+            } else {
+                onDateSet(fieldIds[i], Instant.ofEpochMilli(selections[i])
+                                              .atZone(ZoneId.systemDefault())
+                                              .format(DateTimeFormatter.ISO_LOCAL_DATE));
+            }
+        }
+    }
+
+    /**
+     * Called when a picker returns a newly selected date.
+     *
+     * @param fieldId to update
+     * @param dateStr to set
+     */
+    void onDateSet(@IdRes final int fieldId,
+                   @NonNull final String dateStr) {
+
+        final Field<String, TextView> field = requireField(fieldId);
+        final String previous = field.getValue();
+
+        // Update BOTH the book and the field
+        book.putString(field.getFieldKey(), dateStr);
+        field.setValue(dateStr);
+        field.notifyIfChanged(previous);
+
+        // If we are setting the read-end date,
+        // then we must set the read-flag/progress accordingly
+        if (fieldId == R.id.read_end && !dateStr.isEmpty()) {
+            book.putBoolean(DBKey.READ__BOOL, true);
+            book.putString(DBKey.READ_PROGRESS, "");
+            // Update *this* fragment + the ReadStatusFragment
+            updateReadStatus(false);
+        }
+        // Note we're NOT calling updateReadStatus() when the R.id.read_start field
+        // is updated; there is no need
     }
 
     @NonNull
@@ -1284,42 +1335,42 @@ public class EditBookViewModel
 
         fields.add(new IdentifierField<>(fragmentId, R.id.site_goodreads,
                                          Identifier.SID_GOODREADS,
-                                       sidLongFormatter, true)
+                                         sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_goodreads)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new IdentifierField<>(fragmentId, R.id.site_isfdb,
-                                       Identifier.SID_ISFDB,
-                                       sidLongFormatter, true)
+                                         Identifier.SID_ISFDB,
+                                         sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_isfdb)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new IdentifierField<>(fragmentId, R.id.site_kbnl,
-                                       Identifier.SID_KBNL,
-                                       sidLongFormatter, true)
+                                         Identifier.SID_KBNL,
+                                         sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_kbnl)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new IdentifierField<>(fragmentId, R.id.site_last_dodo_nl,
-                                       Identifier.SID_LAST_DODO_NL,
-                                       sidLongFormatter, true)
+                                         Identifier.SID_LAST_DODO_NL,
+                                         sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_last_dodo_nl)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new IdentifierField<>(fragmentId, R.id.site_library_thing,
-                                       Identifier.SID_LIBRARY_THING,
-                                       sidLongFormatter, true)
+                                         Identifier.SID_LIBRARY_THING,
+                                         sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_library_thing)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new IdentifierField<>(fragmentId, R.id.site_open_library,
-                                       Identifier.SID_OPEN_LIBRARY)
+                                         Identifier.SID_OPEN_LIBRARY)
                            .setTextInputLayoutId(R.id.lbl_site_open_library)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new IdentifierField<>(fragmentId, R.id.site_strip_info_be,
-                                       Identifier.SID_STRIP_INFO,
-                                       sidLongFormatter, true)
+                                         Identifier.SID_STRIP_INFO,
+                                         sidLongFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_strip_info_be)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 

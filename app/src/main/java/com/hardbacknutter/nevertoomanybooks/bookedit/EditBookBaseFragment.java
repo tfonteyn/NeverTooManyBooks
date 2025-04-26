@@ -38,10 +38,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
@@ -78,7 +75,8 @@ public abstract class EditBookBaseFragment
     EditBookViewModel vm;
 
     /** MUST keep a strong reference. */
-    private final DatePickerListener datePickerListener = this::onDateSet;
+    private final DatePickerListener datePickerListener = (fieldIds, selections)
+            -> vm.onDateSet(fieldIds, selections);
     /** Listener for all field changes. MUST keep strong reference. */
     private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
     private PartialDatePickerLauncher partialDatePickerLauncher;
@@ -121,7 +119,7 @@ public abstract class EditBookBaseFragment
                     if (fieldId == -1) {
                         throw new IllegalArgumentException("No fieldId?");
                     }
-                    onDateSet(fieldId, currentSelection.getIsoString());
+                    vm.onDateSet(fieldId, currentSelection.getIsoString());
                 });
         partialDatePickerLauncher.registerForFragmentResult(fm, this);
     }
@@ -375,44 +373,6 @@ public abstract class EditBookBaseFragment
                         extras);
             });
         }
-    }
-
-    private void onDateSet(@NonNull final int[] fieldIds,
-                           @NonNull final Long[] selections) {
-        for (int i = 0; i < fieldIds.length; i++) {
-            if (selections[i] == null) {
-                onDateSet(fieldIds[i], "");
-            } else {
-                onDateSet(fieldIds[i], Instant.ofEpochMilli(selections[i])
-                                              .atZone(ZoneId.systemDefault())
-                                              .format(DateTimeFormatter.ISO_LOCAL_DATE));
-            }
-        }
-    }
-
-    private void onDateSet(@IdRes final int fieldId,
-                           @NonNull final String dateStr) {
-
-        final Book book = vm.getBook();
-
-        final Field<String, TextView> field = vm.requireField(fieldId);
-        final String previous = field.getValue();
-
-        // Update BOTH the book and the field
-        book.putString(field.getFieldKey(), dateStr);
-        field.setValue(dateStr);
-        field.notifyIfChanged(previous);
-
-        // If we are setting the read-end date,
-        // then we must set the read-flag/progress accordingly
-        if (fieldId == R.id.read_end && !dateStr.isEmpty()) {
-            book.putBoolean(DBKey.READ__BOOL, true);
-            book.putString(DBKey.READ_PROGRESS, "");
-            // Update *this* fragment + the ReadStatusFragment
-            vm.updateReadStatus(false);
-        }
-        // Note we're NOT calling vm.updateReadStatus() when the R.id.read_start field
-        // is updated; there is no need
     }
 
     void onReadStatusUpdate(@NonNull final Boolean modified) {
