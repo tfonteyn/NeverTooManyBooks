@@ -265,6 +265,11 @@ public class EditBookViewModel
     }
 
     @NonNull
+    RealNumberParser getRealNumberParser() {
+        return realNumberParser;
+    }
+
+    @NonNull
     List<MenuHandler<DataHolder>> getMenuHandlers() {
         return menuHandlers;
     }

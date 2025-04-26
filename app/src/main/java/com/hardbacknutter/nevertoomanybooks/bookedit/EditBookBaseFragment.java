@@ -81,7 +81,6 @@ public abstract class EditBookBaseFragment
     private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
     private PartialDatePickerLauncher partialDatePickerLauncher;
     private DateParser<LocalDateTime> dateParser;
-    private RealNumberParser realNumberParser;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -105,7 +104,6 @@ public abstract class EditBookBaseFragment
         // We need a FullDateParser to cope with international Locale formats
         // as the fields will contain user-locale specific representations.
         dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
-        realNumberParser = new RealNumberParser(locales);
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -209,12 +207,15 @@ public abstract class EditBookBaseFragment
     @CallSuper
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
+
+        final Context context = getContext();
+        final RealNumberParser realNumberParser = vm.getRealNumberParser();
         // Bulk load the data into the Views.
         // do NOT call notifyIfChanged, as this is the initial load
         //noinspection DataFlowIssue
         fields.stream()
               .filter(Field::isAutoPopulated)
-              .forEach(field -> field.load(getContext(), book, realNumberParser));
+              .forEach(field -> field.load(context, book, realNumberParser));
     }
 
     /**
