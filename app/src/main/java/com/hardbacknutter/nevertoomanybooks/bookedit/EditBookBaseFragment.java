@@ -38,19 +38,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DatePickerListener;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.datepicker.DateRangePicker;
@@ -71,14 +64,29 @@ public abstract class EditBookBaseFragment
     private static final String TAG = "EditBookBaseFragment";
     private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
     private static final String BKEY_DATE_PICKER_FIELD_ID = TAG + ":pd:fieldId";
+
     /** The view model. */
     EditBookViewModel vm;
 
     /** MUST keep a strong reference. */
     private final DatePickerListener datePickerListener = (fieldIds, selections)
             -> vm.onDateSet(fieldIds, selections);
+
     /** Listener for all field changes. MUST keep strong reference. */
     private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
+
+    private final PartialDatePickerLauncher.ResultListener partialDatePickerListener =
+            (previousSelection, currentSelection, extras) -> {
+                if (extras == null) {
+                    throw new IllegalArgumentException("No extras?");
+                }
+                final int fieldId = extras.getInt(BKEY_DATE_PICKER_FIELD_ID, -1);
+                if (fieldId == -1) {
+                    throw new IllegalArgumentException("No fieldId?");
+                }
+                vm.onDateSet(fieldId, currentSelection.getIsoString());
+            };
+
     private PartialDatePickerLauncher partialDatePickerLauncher;
 
     @Override
@@ -100,17 +108,7 @@ public abstract class EditBookBaseFragment
         final FragmentManager fm = getChildFragmentManager();
 
         partialDatePickerLauncher = new PartialDatePickerLauncher(RK_DATE_PICKER_PARTIAL);
-        partialDatePickerLauncher.setResultListener(
-                (previousSelection, currentSelection, extras) -> {
-                    if (extras == null) {
-                        throw new IllegalArgumentException("No extras?");
-                    }
-                    final int fieldId = extras.getInt(BKEY_DATE_PICKER_FIELD_ID, -1);
-                    if (fieldId == -1) {
-                        throw new IllegalArgumentException("No fieldId?");
-                    }
-                    vm.onDateSet(fieldId, currentSelection.getIsoString());
-                });
+        partialDatePickerLauncher.setResultListener(partialDatePickerListener);
         partialDatePickerLauncher.registerForFragmentResult(fm, this);
     }
 
