@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -92,6 +93,12 @@ public class EditBookPublicationFragment
         EditBookPublisherListDialogFragment.launch(getChildFragmentManager());
     }
 
+    @CallSuper
+    @Override
+    public void onResume() {
+        super.onResume();
+        getFab().setVisibility(View.INVISIBLE);
+    }
 
     @Override
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
@@ -100,8 +107,6 @@ public class EditBookPublicationFragment
         vm.getBook().prunePublishers(getContext());
 
         super.onPopulateViews(fields, book);
-
-        getFab().setVisibility(View.INVISIBLE);
 
         //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, false));

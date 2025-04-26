@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
@@ -77,12 +78,17 @@ public class EditBookExternalIdFragment
         vm.initFields(getContext(), FragmentId.ExternalId, FieldGroup.ExternalId);
     }
 
+    @CallSuper
+    @Override
+    public void onResume() {
+        super.onResume();
+        getFab().setVisibility(View.INVISIBLE);
+    }
+
     @Override
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
-
-        getFab().setVisibility(View.INVISIBLE);
 
         // Force hidden fields to stay hidden; this will allow us to temporarily remove
         // some sites without removing the data.

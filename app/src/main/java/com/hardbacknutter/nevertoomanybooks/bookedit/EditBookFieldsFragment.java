@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -192,6 +193,13 @@ public class EditBookFieldsFragment
         }
     }
 
+    @CallSuper
+    @Override
+    public void onResume() {
+        super.onResume();
+        getFab().setVisibility(View.INVISIBLE);
+    }
+
     @Override
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
@@ -210,8 +218,6 @@ public class EditBookFieldsFragment
             coverHandler[1].onBindView(vb.coverImage1);
             coverHandler[1].attachOnClickListeners(getChildFragmentManager(), vb.coverImage1);
         }
-
-        getFab().setVisibility(View.INVISIBLE);
 
         //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, false));

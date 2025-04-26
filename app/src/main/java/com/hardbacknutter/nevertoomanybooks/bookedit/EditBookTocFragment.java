@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -313,12 +314,17 @@ public class EditBookTocFragment
         }
     }
 
+    @CallSuper
+    @Override
+    public void onResume() {
+        super.onResume();
+        getFab().setVisibility(View.VISIBLE);
+    }
+
     @Override
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
-
-        getFab().setVisibility(View.VISIBLE);
 
         //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, false));

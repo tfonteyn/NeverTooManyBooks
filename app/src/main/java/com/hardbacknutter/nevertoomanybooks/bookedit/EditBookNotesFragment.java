@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -69,13 +70,18 @@ public class EditBookNotesFragment
         vm.updateReadStatus(false);
     }
 
+    @CallSuper
+    @Override
+    public void onResume() {
+        super.onResume();
+        getFab().setVisibility(View.INVISIBLE);
+    }
+
     @Override
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
 
         super.onPopulateViews(fields, book);
-
-        getFab().setVisibility(View.INVISIBLE);
 
         //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, false));
