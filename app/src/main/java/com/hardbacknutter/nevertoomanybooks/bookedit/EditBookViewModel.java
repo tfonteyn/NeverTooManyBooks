@@ -56,6 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.BookReadStatusViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -175,6 +178,7 @@ public class EditBookViewModel
     private boolean modified;
     private String errStrNonBlankRequired;
     private String errStrReadStartAfterEnd;
+    private DateParser<LocalDateTime> dateParser;
     private RealNumberParser realNumberParser;
     private Style style;
 
@@ -209,10 +213,16 @@ public class EditBookViewModel
             final StylesHelper stylesHelper = serviceLocator.getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
 
-            final Languages languages = serviceLocator.getLanguages();
+            final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            final List<Locale> locales = LocaleListUtils.asList(context);
 
-            realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
+            realNumberParser = new RealNumberParser(locales);
+            // We need a FullDateParser to cope with international Locale formats
+            // as the fields will contain user-locale specific representations.
+            dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
+
+            final Languages languages = serviceLocator.getLanguages();
 
             dateFormatter = new DateFieldFormatter(userLocale, false);
             languageFormatter = new LanguageFormatter(userLocale, languages);
@@ -267,6 +277,11 @@ public class EditBookViewModel
     @NonNull
     RealNumberParser getRealNumberParser() {
         return realNumberParser;
+    }
+
+    @NonNull
+    DateParser<LocalDateTime> getDateParser() {
+        return dateParser;
     }
 
     @NonNull

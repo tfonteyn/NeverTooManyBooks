@@ -80,7 +80,6 @@ public abstract class EditBookBaseFragment
     /** Listener for all field changes. MUST keep strong reference. */
     private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
     private PartialDatePickerLauncher partialDatePickerLauncher;
-    private DateParser<LocalDateTime> dateParser;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -97,13 +96,6 @@ public abstract class EditBookBaseFragment
 
         getToolbar().addMenuProvider(new MenuHandlersMenuProvider(), getViewLifecycleOwner(),
                                      Lifecycle.State.RESUMED);
-
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        //noinspection DataFlowIssue
-        final List<Locale> locales = LocaleListUtils.asList(getContext());
-        // We need a FullDateParser to cope with international Locale formats
-        // as the fields will contain user-locale specific representations.
-        dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -318,7 +310,7 @@ public abstract class EditBookBaseFragment
             if (startFieldIsUsed) {
                 final DateRangePicker dp = new DateRangePicker(getChildFragmentManager(),
                                                                titleId, startFieldId, endFieldId);
-                dp.setDateParser(dateParser, true);
+                dp.setDateParser(vm.getDateParser(), true);
                 dp.onResume(datePickerListener);
 
                 endField.requireView().setOnClickListener(v -> dp
@@ -343,7 +335,7 @@ public abstract class EditBookBaseFragment
         if (field.isUsed()) {
             final SingleDatePicker dp = new SingleDatePicker(getChildFragmentManager(),
                                                              pickerTitleId, fieldId);
-            dp.setDateParser(dateParser, true);
+            dp.setDateParser(vm.getDateParser(), true);
             dp.onResume(datePickerListener);
 
             field.requireView().setOnClickListener(v -> dp
