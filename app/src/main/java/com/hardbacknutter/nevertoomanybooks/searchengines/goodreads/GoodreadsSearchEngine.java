@@ -544,6 +544,45 @@ public class GoodreadsSearchEngine
         }
     }
 
+    /**
+     * A typical entry contains a single name.
+     * <pre>{@code
+     *     "Contributor:kca://author/amzn1.gr.author.v1.7-e8JQXbSdWm6r59JBewuw": {
+     *        "__typename": "Contributor",
+     *        "id": "kca://author/amzn1.gr.author.v1.7-e8JQXbSdWm6r59JBewuw",
+     *        "name": "Anja Kootz",
+     *        "webUrl": "https://www.goodreads.com/author/show/6552762.Anja_Kootz",
+     *        "isGrAuthor": false
+     *  },
+     * }</pre>
+     * <p>
+     * A broken entry, this one has two names squashed into one record.
+     * We're not going to attempt/parse this in any special way.
+     * Github #139.
+     *
+     * <pre>{@code
+     *     "Contributor:kca://author/amzn1.gr.author.v1.SSat0nVoXAkYHijbhiK5WA": {
+     *         "__typename": "Contributor",
+     *         "id": "kca://author/amzn1.gr.author.v1.SSat0nVoXAkYHijbhiK5WA",
+     *         "legacyId": 13687877,
+     *         "name": "Corinne Maier, Anne Simon",
+     *         "description": "",
+     *         "isGrAuthor": false,
+     *         "works": {
+     *             "__typename": "ContributorWorksConnection",
+     *             "totalCount": 0
+     *         },
+     *         "profileImageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/nophoto/user/u_700x933.png",
+     *         "webUrl": "https://www.goodreads.com/author/show/13687877.Corinne_Maier_Anne_Simon",
+     *         "viewerIsFollowing": null,
+     *         "followers": {
+     *             "__typename": "ContributorFollowersConnection",
+     *             "totalCount": 0
+     *         },
+     *         "user": null
+     *     },
+     * }</pre>
+     */
     private void parseContributors(@NonNull final JSONObject apolloState,
                                    @Nullable final JSONObject contributor,
                                    @NonNull final Locale locale,
