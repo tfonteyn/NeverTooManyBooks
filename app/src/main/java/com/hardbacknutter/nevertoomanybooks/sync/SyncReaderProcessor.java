@@ -388,8 +388,10 @@ public class SyncReaderProcessor {
     }
 
     /**
-     * Combines two ParcelableArrayList's. The result in 'dataToMerge' MAY contain duplicates.
-     * These will be
+     * Combines two ParcelableArrayList's. The result in 'remoteBook' MAY contain duplicates.
+     * These will be pruned during the save to the database.
+     * <p>
+     * Handles all keys as listed in {@link #LIST_KEYS}.
      *
      * @param context    Current context
      * @param localeBook to check; will NOT be modified.
@@ -405,20 +407,21 @@ public class SyncReaderProcessor {
                              @NonNull final Book remoteBook,
                              @NonNull final String key) {
         // Add the localBook data to the remoteBook list!
-        // and not the other way around! We want to collect a delta!
-        // must cover same keys as in {@link LIST_KEYS}
+        // and not the other way around! We want to collect a delta in remoteBook.
+        // Note the local list must be inserted before the remote list,
+        // so we properly 'append' the new data.
         switch (key) {
             case Book.BKEY_AUTHOR_LIST: {
                 final List<Author> list = remoteBook.getAuthors();
                 if (!list.isEmpty()) {
-                    list.addAll(localeBook.getAuthors());
+                    list.addAll(0, localeBook.getAuthors());
                 }
                 break;
             }
             case Book.BKEY_BOOKSHELF_LIST: {
                 final List<Bookshelf> list = remoteBook.getBookshelves();
                 if (!list.isEmpty()) {
-                    list.addAll(localeBook.getBookshelves());
+                    list.addAll(0, localeBook.getBookshelves());
                     ServiceLocator.getInstance().getBookshelfDao().pruneList(context, list);
                 }
                 break;
@@ -426,35 +429,35 @@ public class SyncReaderProcessor {
             case Book.BKEY_IDENTIFIER_LIST: {
                 final List<Identifier.Value> list = remoteBook.getIdentifiers();
                 if (!list.isEmpty()) {
-                    list.addAll(localeBook.getIdentifiers());
+                    list.addAll(0, localeBook.getIdentifiers());
                 }
                 break;
             }
             case Book.BKEY_PUBLISHER_LIST: {
                 final List<Publisher> list = remoteBook.getPublishers();
                 if (!list.isEmpty()) {
-                    list.addAll(localeBook.getPublishers());
+                    list.addAll(0, localeBook.getPublishers());
                 }
                 break;
             }
             case Book.BKEY_SERIES_LIST: {
                 final List<Series> list = remoteBook.getSeries();
                 if (!list.isEmpty()) {
-                    list.addAll(localeBook.getSeries());
+                    list.addAll(0, localeBook.getSeries());
                 }
                 break;
             }
             case Book.BKEY_TAG_LIST: {
                 final List<Tag> list = remoteBook.getTags();
                 if (!list.isEmpty()) {
-                    list.addAll(localeBook.getTags());
+                    list.addAll(0, localeBook.getTags());
                 }
                 break;
             }
             case Book.BKEY_TOC_LIST: {
                 final List<TocEntry> list = remoteBook.getToc();
                 if (!list.isEmpty()) {
-                    list.addAll(localeBook.getToc());
+                    list.addAll(0, localeBook.getToc());
                 }
                 break;
             }

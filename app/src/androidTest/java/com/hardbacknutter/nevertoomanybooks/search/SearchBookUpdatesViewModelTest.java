@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -67,16 +65,13 @@ public class SearchBookUpdatesViewModelTest
 
         final Collection<SyncField> syncFields = vm.getSyncFields();
 
-        final SyncField pub = syncFields
-                .stream().filter(syncField -> Book.BKEY_PUBLISHER_LIST.equals(syncField.getKey()))
-                .findFirst().orElseThrow();
-        pub.setAction(SyncAction.Append);
-        final SyncField aut = syncFields
-                .stream().filter(syncField -> Book.BKEY_AUTHOR_LIST.equals(syncField.getKey()))
-                .findFirst().orElseThrow();
-        aut.setAction(SyncAction.Overwrite);
+        syncFields.stream()
+                  .filter(syncField -> Book.BKEY_AUTHOR_LIST.equals(syncField.getKey()))
+                  .forEach(f -> f.setAction(SyncAction.Append));
 
-        @NonNull
+        syncFields.stream()
+                  .filter(syncField -> Book.BKEY_PUBLISHER_LIST.equals(syncField.getKey()))
+                  .forEach(f -> f.setAction(SyncAction.Overwrite));
 
         final Book localBook = new Book();
         localBook.setTitle("blah");
@@ -103,16 +98,21 @@ public class SearchBookUpdatesViewModelTest
         // publisher_list=[Publisher{id=0, name=`Real Pub`}, Publisher{id=0, name=`MySelf`}]}]}
         assertEquals(123, delta.getId());
 
-        // Overwrite
+        // Append
         final List<Author> authors = delta.getAuthors();
-        assertEquals(1, authors.size());
-        assertEquals("Real", authors.get(0).getGivenNames());
+        assertEquals(2, authors.size());
+        Author author;
+        author = authors.get(0);
+        assertEquals("Myself", author.getFamilyName());
+        assertEquals("Me", author.getGivenNames());
+        author = authors.get(1);
+        assertEquals("Author", author.getFamilyName());
+        assertEquals("Real", author.getGivenNames());
 
-        //Append
+        // Overwrite
         final List<Publisher> publishers = delta.getPublishers();
-        assertEquals(2, publishers.size());
+        assertEquals(1, publishers.size());
         assertEquals("Real Pub", publishers.get(0).getName());
-        assertEquals("MySelf", publishers.get(1).getName());
 
         assertEquals("Black & white", delta.getString(DBKey.COLOR));
     }
