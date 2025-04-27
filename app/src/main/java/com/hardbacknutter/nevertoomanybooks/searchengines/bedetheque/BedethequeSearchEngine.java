@@ -730,20 +730,25 @@ public class BedethequeSearchEngine
         // Used for books; The authors for "dessin" and "couleurs"; ignore
         // "<Texte non illustré>"
         switch (names) {
-            case "Indéterminé":
-            case "Anonyme":
+            case "Indéterminé": {
                 addAuthor(Author.createUnknownAuthor(context), type, book);
                 break;
-
+            }
+            case "Anonyme": {
+                addAuthor(new Author(context.getString(R.string.anonymous_author), ""),
+                          type, book);
+                break;
+            }
             case "Art Book":
-            case "Texte non illustré":
+            case "Texte non illustré": {
                 // ignore these
                 return;
-
+            }
             case "Collectif":
-            default:
+            default: {
                 addAuthor(Author.from(names), type, book);
                 break;
+            }
         }
     }
 }
