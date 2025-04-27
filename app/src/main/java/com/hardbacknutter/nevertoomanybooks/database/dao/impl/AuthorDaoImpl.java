@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
@@ -357,10 +358,32 @@ public class AuthorDaoImpl
             return false;
         }
 
+        boolean modified = false;
+
+        // Remove 'unknown' authors if there are other 'known' authors.
+        if (list.size() > 1) {
+            final String unknown = context.getString(R.string.unknown_author);
+            // remove ALL unknown author entries.
+            // Note we check on exact equality as the incoming name
+            // would have come from the same resource string
+            modified = list.removeIf(author -> author.getFamilyName().equals(unknown));
+            if (list.isEmpty()) {
+                // All authors were unknown and hence removed,
+                // re-add a single unknown author.
+                final Author unknownAuthor = Author.createUnknownAuthor(context);
+                // shortcut: no need to drop through and engage the AuthorMergeHelper,
+                // just fix the id manually here
+                fixId(context, unknownAuthor, localeSupplier.apply(unknownAuthor));
+                list.add(unknownAuthor);
+                return true;
+            }
+        }
+
         final EntityMergeHelper<Author> mergeHelper = new AuthorMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
-                                 (current, locale) -> fixId(context, current, locale));
+                                 (current, locale) -> fixId(context, current, locale))
+               || modified;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -61,10 +62,14 @@ public class AuthorTest
     private static final long FAKE_ID_2 = 2_000_300;
     private static final long FAKE_ID_3 = 2_000_400;
 
+    private AuthorDao authorDao;
+    
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        authorDao = serviceLocator.getAuthorDao();
     }
 
     /**
@@ -95,7 +100,6 @@ public class AuthorTest
     public void pruneAuthorList01()
             throws DaoWriteException {
         final Locale bookLocale = Locale.getDefault();
-        final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         final List<Author> list = new ArrayList<>();
         Author author;
@@ -218,7 +222,6 @@ public class AuthorTest
     @Test
     public void pruneAuthorList02() {
         final Locale bookLocale = Locale.getDefault();
-        final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         final List<Author> authorList = new ArrayList<>();
         Author author;
@@ -258,12 +261,60 @@ public class AuthorTest
         assertEquals(Author.TYPE_WRITER | Author.TYPE_AFTERWORD, author.getType());
     }
 
+
+    @Test
+    public void pruneAuthorList03() {
+        final Locale bookLocale = Locale.getDefault();
+
+        final List<Author> authorList = new ArrayList<>();
+        Author author;
+
+        // to be removed
+        authorList.add(Author.createUnknownAuthor(context));
+
+        // keep, position 0
+        author = Author.from(PHILIP_JOSE_FARMER_VARIANT);
+        authorDao.fixId(context, author, bookLocale);
+        final long id0 = author.getId();
+        author.setId(FAKE_ID_1);
+        authorList.add(author);
+
+        // to be removed
+        authorList.add(Author.createUnknownAuthor(context));
+
+        final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
+
+        assertTrue(modified);
+        assertEquals(1, authorList.size());
+
+        author = authorList.get(0);
+        assertEquals(id0, author.getId());
+        assertEquals("Farmer", author.getFamilyName());
+        assertEquals("Philip José", author.getGivenNames());
+    }
+
+    @Test
+    public void pruneAuthorList04() {
+        final Locale bookLocale = Locale.getDefault();
+
+        final List<Author> authorList = new ArrayList<>();
+        authorList.add(Author.createUnknownAuthor(context));
+        authorList.add(Author.createUnknownAuthor(context));
+        authorList.add(Author.createUnknownAuthor(context));
+
+        final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
+        assertTrue(modified);
+        assertEquals(1, authorList.size());
+
+        final String unknown = context.getString(R.string.unknown_author);
+        final Author author = authorList.get(0);
+        assertEquals(unknown, author.getFamilyName());
+    }
+
     @Test
     public void pruneGeorgianNames01() {
         // Georgian / Georgia
         final Locale bookLocale = new Locale("ka", "GE");
-
-        final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         final List<Author> authorList = new ArrayList<>();
         Author author;
