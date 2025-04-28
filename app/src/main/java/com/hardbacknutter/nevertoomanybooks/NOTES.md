@@ -7,6 +7,8 @@ NEW:
 FIXES:
 
 - OpenLibrary + ISFDB author pseudonym lookups overwriting instead of enhancing
+- #139 "Update books", fields in "append" mode, will now properly append instead of prep-pend
+- "Update books", the format and other mappers are now enabled as per user settings
 
 REMOVED:
 
