@@ -39,6 +39,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 
 /**
  * Launcher to edit a Parcelable object.
+ * <p>
+ * Normally the {@link EditAction#Add} and {@link EditAction#Edit}
+ * actions are implemented together, while the {@link EditAction#EditInPlace} is separate.
+ * <p>
+ * This class might be better replaced by dedicated launcher classes
  *
  * @param <T> type of editable object
  */
