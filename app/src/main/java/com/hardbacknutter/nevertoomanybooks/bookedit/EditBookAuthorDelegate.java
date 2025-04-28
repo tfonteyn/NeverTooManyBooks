@@ -73,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
  * <li>Returns the original + a new instance/copy with the modifications</li>
  * </ul>
  * <p>
- * In either of the above cases, the 'real' Author <strong>IS STORED</strong>
+ * In both of the above cases, the 'real' Author <strong>IS STORED</strong>
  * when applicable and explicitly allowed by the user.
  */
 class EditBookAuthorDelegate
