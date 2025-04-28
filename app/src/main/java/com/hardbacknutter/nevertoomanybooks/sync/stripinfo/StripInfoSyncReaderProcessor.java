@@ -31,8 +31,9 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 public class StripInfoSyncReaderProcessor
         extends SyncReaderProcessor {
 
-    public StripInfoSyncReaderProcessor(@NonNull final Builder builder) {
-        super(builder);
+    public StripInfoSyncReaderProcessor(@NonNull final Context context,
+                                        @NonNull final Builder builder) {
+        super(context, builder);
     }
 
     @NonNull

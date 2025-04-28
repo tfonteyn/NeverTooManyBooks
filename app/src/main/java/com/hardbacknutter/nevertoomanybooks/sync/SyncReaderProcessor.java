@@ -54,6 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -78,10 +80,16 @@ public class SyncReaderProcessor {
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final RealNumberParser realNumberParser;
+    /** Mappers to apply. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private final Collection<Mapper> mappers;
 
-    protected SyncReaderProcessor(@NonNull final Builder builder) {
+    protected SyncReaderProcessor(@NonNull final Context context,
+                                  @NonNull final Builder builder) {
         this.fields = builder.fields;
         this.realNumberParser = builder.realNumberParser;
+
+        mappers = MapperFactory.create(context);
     }
 
     /**
@@ -239,6 +247,9 @@ public class SyncReaderProcessor {
             //noinspection DataFlowIssue
             throw e.getCause();
         }
+
+        // run the mappers
+        mappers.forEach(mapper -> mapper.map(context, remoteBook));
 
         // Commit the new data
         if (!remoteBook.isEmpty()) {
@@ -674,11 +685,13 @@ public class SyncReaderProcessor {
         /**
          * Build the processor.
          *
+         * @param context Current context
+         *
          * @return new instance
          */
         @NonNull
-        public SyncReaderProcessor build() {
-            return build(SyncReaderProcessor::new);
+        public SyncReaderProcessor build(@NonNull final Context context) {
+            return build(builder -> new SyncReaderProcessor(context, builder));
         }
 
         /**

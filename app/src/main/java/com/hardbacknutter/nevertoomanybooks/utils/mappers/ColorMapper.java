@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,8 +85,15 @@ public final class ColorMapper
         super(DBKey.COLOR, MAPPINGS);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     *
+     * @return instance
+     */
     @NonNull
-    public static Optional<Mapper> create(@NonNull final Context context) {
+    static Optional<Mapper> create(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(Prefs.PK_SEARCH_REFORMAT_COLOR, true)) {
             return Optional.of(new ColorMapper());
