@@ -32,6 +32,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -87,8 +88,9 @@ public class SearchBookUpdatesViewModelTest
         remoteBook.setTitle("Actual");
         remoteBook.add(Author.from("Real Author"));
         remoteBook.add(Publisher.from("Real Pub"));
+        remoteBook.putString(DBKey.COLOR, "monochromie");
 
-        final SyncReaderProcessor processor = vm.getSyncProcessorBuilder().build();
+        final SyncReaderProcessor processor = vm.getSyncProcessorBuilder().build(context);
 
         final Map<String, SyncField> fieldsWanted = processor.filter(localBook);
         Log.d(TAG, fieldsWanted.toString());
@@ -112,5 +114,6 @@ public class SearchBookUpdatesViewModelTest
         assertEquals("Real Pub", publishers.get(0).getName());
         assertEquals("MySelf", publishers.get(1).getName());
 
+        assertEquals("Black & white", delta.getString(DBKey.COLOR));
     }
 }

@@ -110,7 +110,7 @@ public enum SyncServer
                     Objects.requireNonNullElseGet(
                                    syncProcessorBuilder,
                                    () -> createSyncProcessorBuilder(context))
-                           .build();
+                           .build(context);
 
             final DataReader<SyncReaderMetaData, ReaderResults> reader =
                     new CalibreContentServerReader(context, recordTypes,
@@ -229,7 +229,7 @@ public enum SyncServer
                     Objects.requireNonNullElseGet(
                                    syncProcessorBuilder,
                                    () -> createSyncProcessorBuilder(context))
-                           .build(StripInfoSyncReaderProcessor::new);
+                           .build(builder -> new StripInfoSyncReaderProcessor(context, builder));
 
             final DataReader<SyncReaderMetaData, ReaderResults> reader =
                     new StripInfoReader(context, recordTypes, syncProcessor, updateOption);

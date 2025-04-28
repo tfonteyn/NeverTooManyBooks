@@ -146,8 +146,15 @@ public final class FormatMapper
         super(DBKey.FORMAT, MAPPINGS);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     *
+     * @return instance
+     */
     @NonNull
-    public static Optional<Mapper> create(@NonNull final Context context) {
+    static Optional<Mapper> create(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(Prefs.PK_SEARCH_REFORMAT_FORMAT, true)) {
             return Optional.of(new FormatMapper());

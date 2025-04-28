@@ -29,7 +29,6 @@ import androidx.core.util.Pair;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -49,10 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.Mapper;
-import com.hardbacknutter.nevertoomanybooks.utils.mappers.TagMapper;
+import com.hardbacknutter.nevertoomanybooks.utils.mappers.MapperFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 class ResultsAccumulator {
@@ -71,7 +68,7 @@ class ResultsAccumulator {
             CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[1]);
 
     /** Mappers to apply. */
-    private final Collection<Mapper> mappers = new ArrayList<>();
+    private final Collection<Mapper> mappers;
     @NonNull
     private final ISODateParser isoDateParser;
     @NonNull
@@ -91,9 +88,7 @@ class ResultsAccumulator {
                                                         .getSystemLocaleList()
                                                         .get(0));
 
-        ColorMapper.create(context).ifPresent(mappers::add);
-        FormatMapper.create(context).ifPresent(mappers::add);
-        mappers.add(new TagMapper(context));
+        mappers = MapperFactory.create(context);
     }
 
     private static void dbgLogValueCopied(@NonNull final String method,

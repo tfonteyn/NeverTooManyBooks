@@ -333,7 +333,7 @@ public class SearchBookUpdatesViewModel
      * @return {@code true} if a search was started.
      */
     boolean startSearch(@NonNull final Context context) {
-        syncProcessor = syncProcessorBuilder.build();
+        syncProcessor = syncProcessorBuilder.build(context);
 
         currentProgressCounter = 0;
 
