@@ -55,12 +55,16 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * This is the editor for the {@link IdentifiersEditorFragment}.
  * Can also be used for a BoB row-menu of a Identifier grouping if needed/implemented.
- * <p>
- * This allows editing the {@link Identifier}.
- * Merging with another {@link Identifier} is NOT supported.
+ *
+ * <ul>
+ * <li>Direct/in-place editing.</li>
+ * <li>Modifications <strong>ARE STORED</strong> in the database</li>
+ * <li>Returns the modified item.</li>
+ * <li>Merging is NOT supported.</li>
+ * </ul>
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-public class EditIdentifierDelegate
+class EditIdentifierDelegate
         implements FlexDialogDelegate {
 
     private static final String TAG = "EditIdentifierDelegate";

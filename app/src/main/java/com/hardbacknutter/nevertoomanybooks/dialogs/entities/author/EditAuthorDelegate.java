@@ -51,12 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.publisher.EditPublisherDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesBottomSheet;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -69,16 +63,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <li>Direct/in-place editing.</li>
  * <li>Modifications <strong>ARE STORED</strong> in the database</li>
  * <li>Returns the modified item.</li>
+ * <li>Supports merging.</li>
  * </ul>
- *
- * @see EditAuthorDialogFragment
- * @see EditSeriesDialogFragment
- * @see EditPublisherDialogFragment
- * @see EditBookshelfDialogFragment
- * @see EditAuthorBottomSheet
- * @see EditSeriesBottomSheet
- * @see EditPublisherBottomSheet
- * @see EditBookshelfBottomSheet
  */
 class EditAuthorDelegate
         implements FlexDialogDelegate {
@@ -122,14 +108,14 @@ class EditAuthorDelegate
         return view;
     }
 
-    @Override
-    public void setToolbar(@Nullable final Toolbar toolbar) {
-        this.toolbar = toolbar;
-    }
-
     @NonNull
     public Toolbar getToolbar() {
         return Objects.requireNonNull(toolbar, "No toolbar set");
+    }
+
+    @Override
+    public void setToolbar(@Nullable final Toolbar toolbar) {
+        this.toolbar = toolbar;
     }
 
     @Override
