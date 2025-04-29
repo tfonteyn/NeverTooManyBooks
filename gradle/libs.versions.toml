@@ -3,7 +3,7 @@ androidGradlePlugin = "8.10.0-rc03"
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
 androidKotlinPlugin = "2.1.20"
 # https://github.com/mannodermaus/android-junit5
-mannodermausPlugin = "1.11.2.0"
+mannodermausPlugin = "1.12.0.0"
 
 mannodermaus = "1.7.0"
 
@@ -20,10 +20,10 @@ androidxConstraintlayout = "2.2.1"
 androidxCoordinatorlayout = "1.3.0"
 androidxCoreSplashscreen = '1.0.1'
 androidxCore = "1.16.0"
-androidxCustomview = "1.2.0-rc01"
-androidxDocumentfile = "1.1.0-beta01"
+androidxCustomview = "1.2.0"
+androidxDocumentfile = "1.1.0-rc01"
 androidxDrawerlayout = "1.2.0"
-androidxExifinterface = "1.4.0"
+androidxExifinterface = "1.4.1"
 androidxFragment = "1.8.6"
 androidxInterpolator = "1.0.0"
 androidxLifecycle = '2.8.7'
@@ -39,7 +39,7 @@ desugar = "2.1.5"
 material = '1.12.0'
 
 # jsoup HTML parser library @ https://jsoup.org/
-jsoup = "1.19.1"
+jsoup = "1.20.1"
 
 # https://github.com/zxing/zxing
 zxingCore = '3.5.3'
