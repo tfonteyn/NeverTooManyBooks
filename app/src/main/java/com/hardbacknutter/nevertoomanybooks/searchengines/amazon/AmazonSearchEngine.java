@@ -174,8 +174,9 @@ public class AmazonSearchEngine
             + ",relié,broché"
             // German
             + ",taschenbuch,gebundene ausgabe"
-            // Spanish
-            + ",tapa dura,tapa blanda"
+            // Spanish; bolsillo==paperback... but more correctly a "boxset"
+            // leave the latter to the user, don't add it to the format mapper
+            + ",tapa dura,tapa blanda,libro de bolsillo"
             // Portuguese
             + ",capa dura,capa blanda";
 
@@ -225,6 +226,7 @@ public class AmazonSearchEngine
             + ",abmessungen"
             + ",kundenrezensionen"
             + ",amazon bestseller-rang"
+            + ",lesealter"
             + ",vom hersteller empfohlenes alter"
             + ",originaltitel"
             // Dutch
@@ -232,7 +234,11 @@ public class AmazonSearchEngine
             + ",brutogewicht (incl. verpakking)"
             + ",klantenrecensies"
             + ",plaats op amazon-bestsellerlijst"
-            // Spanish/Portuguese
+            // Spanish
+            + ",peso del producto"
+            + ",clasificación en los más vendidos de amazon"
+            + ",dimensiones"
+            // Portuguese
             + ",peso do produto"
             + ",classificação dos produtos mais vendidos"
             + ",dimensões";
