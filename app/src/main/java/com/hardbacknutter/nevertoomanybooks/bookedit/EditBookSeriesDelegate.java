@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesCont
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.series.EditSeriesViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
