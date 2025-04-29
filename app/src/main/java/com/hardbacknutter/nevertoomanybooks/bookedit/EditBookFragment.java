@@ -38,6 +38,7 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -67,6 +68,15 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class EditBookFragment
         extends BaseFragment {
+
+    /**
+     * Whether to show the fragment that allows the user to edit the external id's.
+     * <p>
+     * {@code boolean}
+     *
+     * @see EditBookExternalIdFragment
+     */
+    public static final String PK_EDIT_BOOK_TABS_EXTERNAL_ID = "edit.book.tab.externalId";
 
     /** Log tag. */
     private static final String TAG = "EditBookActivity";
@@ -99,6 +109,19 @@ public class EditBookFragment
                     hideKeyboard(vb.pager);
                 }
             };
+
+    /**
+     * Check if the {@code external id} edit tab should be shown.
+     * This is an 'advanced' user preference.
+     *
+     * @param context Current context
+     *
+     * @return flag
+     */
+    public static boolean isShowExternalIdTab(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_EDIT_BOOK_TABS_EXTERNAL_ID, false);
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -334,7 +357,7 @@ public class EditBookFragment
                                         R.string.lbl_tab_table_of_content,
                                         R.string.lbl_table_of_content));
             }
-            if (EditBookExternalIdFragment.isShowTab(container)) {
+            if (isShowExternalIdTab(container)) {
                 tabList.add(new TabInfo(EditBookExternalIdFragment.class,
                                         R.string.lbl_tab_lbl_ext_id,
                                         R.string.lbl_tab_lbl_ext_id));

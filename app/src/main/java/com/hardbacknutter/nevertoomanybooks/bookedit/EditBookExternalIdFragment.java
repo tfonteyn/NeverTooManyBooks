@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +27,6 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.List;
 
@@ -37,23 +35,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public class EditBookExternalIdFragment
         extends EditBookBaseFragment {
-
-    /**
-     * Check if the {@code external id} edit tab should be shown.
-     * This is an 'advanced' user preference.
-     *
-     * @param context Current context
-     *
-     * @return flag
-     */
-    public static boolean isShowTab(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false);
-    }
 
     @NonNull
     @Override

@@ -85,7 +85,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingle
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -705,7 +705,7 @@ public class BooksOnBookshelf
 
         fabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         fabMenu.getItem(vb.fab4SearchExternalId.getId())
-               .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab(this)));
+               .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab(this)));
     }
 
     /**
@@ -976,7 +976,7 @@ public class BooksOnBookshelf
 
         // update the fab menu visibility depending on current user settings
         fabMenu.getItem(vb.fab4SearchExternalId.getId())
-               .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab(this)));
+               .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab(this)));
 
         // Update the list of bookshelves
         vm.reloadBookshelfList(this);

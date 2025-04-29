@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -83,7 +84,7 @@ public abstract class BaseDBTest {
                          .putString(Prefs.PK_UI_LOCALE, localeCode)
                          .putString(CoverVolume.PK_VOLUME_INDEX, "0")
 
-                         .putBoolean(Prefs.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
+                         .putBoolean(EditBookFragment.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)
                          .putBoolean(NetworkCheckerImpl.PK_NETWORK_ALLOW_METERED, true)
                          .putBoolean(Prefs.PK_SEARCH_REFORMAT_COLOR, true)
                          .putBoolean(Prefs.PK_SEARCH_REFORMAT_FORMAT, true)

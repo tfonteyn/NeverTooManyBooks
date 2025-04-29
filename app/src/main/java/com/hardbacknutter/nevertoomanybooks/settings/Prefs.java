@@ -91,15 +91,6 @@ public final class Prefs {
      */
     public static final String PK_BOOKLIST_FASTSCROLLER_OVERLAY = "booklist.fastscroller.overlay";
 
-    /**
-     * Whether to show the fragment that allows the user to edit the external id's.
-     * <p>
-     * {@code boolean}
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment
-     */
-    public static final String PK_EDIT_BOOK_TABS_EXTERNAL_ID = "edit.book.tab.externalId";
-
     /** The prefix of all "acra" settings which need to be excluded during import/export. */
     public static final String ACRA_EXCLUDE_PREFIX = "^acra\\..*";
 
