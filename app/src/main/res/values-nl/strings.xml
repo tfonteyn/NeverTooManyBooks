@@ -725,7 +725,7 @@
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">en nog %1$d anderen.</string>
     <string name="warning_import_failed_for_these_books">Importeren is mislukt voor deze boeken/rijen:</string>
-    <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar.</string>
+    <string name="warning_no_editions">Geen verdere uitgave informatie beschikbaar.</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="warning_no_search_data_for_active_sites">Geen geldige zoekgegevens voor actieve sites.</string>
     <string name="warning_no_site_supports_this_method">WAARSCHUWING: geen van de momenteel geselecteerde sites ondersteunt zoeken op %1$s. Gebruik het sitemenu om alternatieve sites in te schakelen, of gebruik een andere zoekmethode.</string>
