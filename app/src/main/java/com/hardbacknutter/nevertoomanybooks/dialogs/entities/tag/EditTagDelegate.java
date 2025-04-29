@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
@@ -59,7 +60,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * functionality which should kept in sync.
  *
  * <ul>
- * <li>Direct/in-place editing.</li>
+ * <li>{@link EditAction#EditInPlace}</li>
  * <li>Modifications <strong>ARE STORED</strong> in the database</li>
  * <li>Returns the modified item.</li>
  * <li>Supports merging.</li>

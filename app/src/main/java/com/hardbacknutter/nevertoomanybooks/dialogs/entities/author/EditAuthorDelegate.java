@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogType;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
@@ -60,7 +61,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * For now this class is not in fact called to create a new entry.
  * We do however keep the code flexible enough to allow it for future usage.
  * <ul>
- * <li>Direct/in-place editing.</li>
+ * <li>{@link EditAction#EditInPlace}</li>
  * <li>Modifications <strong>ARE STORED</strong> in the database</li>
  * <li>Returns the modified item.</li>
  * <li>Supports merging.</li>
