@@ -69,7 +69,7 @@ import org.jsoup.select.Elements;
  * </ul>
  * <p>
  * Aside of Bedetheque itself, this class is also used by StripInfo and LastDodo.
- *
+ * <p>
  * Available:
  * - birth date (and country)
  * - death date

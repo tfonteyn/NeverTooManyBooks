@@ -48,7 +48,7 @@ import org.jsoup.select.Elements;
  * The author permalink takes us to the old site which we don't parse
  * because we mistakenly believed that DNB would actually finish
  * the work on the beta in a reasonable timeframe...
- *
+ * <p>
  * Available:
  * - Birthdate
  * - Deathdate

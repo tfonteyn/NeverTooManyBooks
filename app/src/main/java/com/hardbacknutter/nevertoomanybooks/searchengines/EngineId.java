@@ -598,11 +598,9 @@ public enum EngineId
         private final String key;
 
         /** The user displayable name for this engine. */
-        @SuppressWarnings("FieldNotUsedInToString")
         @StringRes
         private final int labelResId;
 
-        @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
         private final List<Integer> infoResIdList;
 

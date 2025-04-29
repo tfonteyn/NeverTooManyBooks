@@ -80,6 +80,7 @@ public final class PackageInfoWrapper {
      *
      * @return instance with signing certificates loaded
      */
+    @SuppressWarnings("deprecation")
     @NonNull
     public static PackageInfoWrapper createWithSignatures(@NonNull final Context context) {
         final PackageInfoWrapper info;
