@@ -518,13 +518,10 @@ public class DatabazeKnihSearchEngine
         }
 
         // there can be more than one isbn. First one "wins"
-        if (book.getIsbn().isEmpty()) {
+        if (!book.hasIsbn()) {
             element = root.selectFirst("[itemprop='isbn']");
             if (element != null) {
-                final String text = ISBN.cleanText(element.text());
-                if (!text.isEmpty()) {
-                    book.setIsbn(text);
-                }
+                book.setIsbn(ISBN.cleanText(element.text()));
             }
         }
 
