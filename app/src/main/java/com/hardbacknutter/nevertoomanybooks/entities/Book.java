@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Discouraged;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -432,9 +433,9 @@ public class Book
         duplicate.setTranslatedFromLanguage(getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, null));
 
         // publication data
-        duplicate.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));
+        duplicate.setPrintRun(getString(DBKey.PRINT_RUN, null));
         duplicate.setContentType(getContentType());
-        duplicate.putString(DBKey.PUBLICATION_DATE, getString(DBKey.PUBLICATION_DATE));
+        duplicate.setPublicationDate(getString(DBKey.PUBLICATION_DATE, null));
         duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED, realNumberParser));
         duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
         duplicate.putString(DBKey.FIRST_PUBLICATION_DATE,
@@ -558,8 +559,7 @@ public class Book
      */
     public void setPublicationDate(@Nullable final LocalDateTime date) {
         if (date != null) {
-            putString(DBKey.PUBLICATION_DATE,
-                      date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+            putString(DBKey.PUBLICATION_DATE, date.format(DateTimeFormatter.ISO_LOCAL_DATE));
         } else {
             remove(DBKey.PUBLICATION_DATE);
         }
@@ -586,6 +586,27 @@ public class Book
     public void setPublicationDate(@IntRange(from = 0) final int year) {
         if (year > 0) {
             putString(DBKey.PUBLICATION_DATE, String.valueOf(year));
+        } else {
+            remove(DBKey.PUBLICATION_DATE);
+        }
+    }
+
+    /**
+     * Set or remove the publication-date for this book.
+     * <p>
+     * <strong>IMPORTANT:</strong> the format <strong>MUST</strong>
+     * be a full or partial ISO date string. <strong>NO CHECKS ARE DONE</strong>.
+     *
+     * @param dateStr to set; {@code 0} to remove
+     *
+     * @see #setPublicationDate(int)
+     * @see #setPublicationDate(PartialDate)
+     * @see #setPublicationDate(LocalDateTime)
+     */
+    @Discouraged(message = "Whenever possible, use one of the other setPublicationDate(...)")
+    public void setPublicationDate(@Nullable final String dateStr) {
+        if (dateStr != null && !dateStr.isBlank()) {
+            putString(DBKey.PUBLICATION_DATE, dateStr);
         } else {
             remove(DBKey.PUBLICATION_DATE);
         }
@@ -1243,7 +1264,7 @@ public class Book
      */
     @Edition.Bitmask
     public long getEdition() {
-        return getLong(DBKey.EDITION) & Book.Edition.BITMASK_ALL_BITS;
+        return getLong(DBKey.EDITION) & Edition.BITMASK_ALL_BITS;
     }
 
     /**
@@ -1254,7 +1275,7 @@ public class Book
      * @see Edition
      */
     public void setEdition(@Edition.Bitmask final long bitmask) {
-        putLong(DBKey.EDITION, bitmask & Book.Edition.BITMASK_ALL_BITS);
+        putLong(DBKey.EDITION, bitmask & Edition.BITMASK_ALL_BITS);
     }
 
     /**

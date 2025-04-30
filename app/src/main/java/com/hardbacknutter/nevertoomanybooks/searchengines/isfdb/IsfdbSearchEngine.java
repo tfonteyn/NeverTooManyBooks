@@ -1416,8 +1416,7 @@ public class IsfdbSearchEngine
             // e.g. "1975-04-00" or "1974-00-00"
             // Cut those parts off. Ignore the locale.
             tmp = UNKNOWN_M_D_LITERAL.matcher(tmp).replaceAll("");
-            partialDateParser.parse(tmp)
-                             .ifPresent(book::setPublicationDate);
+            partialDateParser.parse(tmp).ifPresent(book::setPublicationDate);
         }
     }
 

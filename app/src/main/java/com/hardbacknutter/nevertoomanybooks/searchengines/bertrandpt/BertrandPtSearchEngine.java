@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -301,11 +300,11 @@ public class BertrandPtSearchEngine
             if (!s.isBlank()) {
                 final String[] split = s.split("-");
                 if (split.length == 1) {
-                    // not seen during testing, but assume year only;
-                    book.putString(DBKey.PUBLICATION_DATE, s);
+                    // not seen during testing, but assumed to be year only;
+                    book.setPublicationDate(s);
                 } else if (split.length == 2) {
                     // as seen in testing: MM-YYYY, convert to YYYY-MM
-                    book.putString(DBKey.PUBLICATION_DATE, split[1] + "-" + split[0]);
+                    book.setPublicationDate(split[1] + "-" + split[0]);
                 }
             }
         }

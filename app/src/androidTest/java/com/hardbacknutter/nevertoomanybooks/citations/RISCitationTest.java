@@ -25,7 +25,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -52,7 +51,7 @@ public class RISCitationTest
         final Book book = new Book();
         book.setTitle("The Deeper Meaning of Liff");
         book.setIsbn("1234567890123");
-        book.putString(DBKey.PUBLICATION_DATE, "1990");
+        book.setPublicationDate(1990);
 
         book.setAuthors(List.of(Author.from("Douglas Adams"),
                                 Author.from(" John Lloyd")));

@@ -60,7 +60,7 @@ public class BookDaoHelperTest
         book.setPages(516);
         book.setLanguage("eng");
         book.putString(DBKey.FIRST_PUBLICATION_DATE, "2008-04-17");
-        book.putString(DBKey.PUBLICATION_DATE, "2009-06-02");
+        book.setPublicationDate("2009-06-02");
 
         final Author author0 = Author.from("Alastair Reynolds");
         author0.setType(Author.TYPE_WRITER);
