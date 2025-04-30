@@ -385,7 +385,7 @@ public class BolSearchEngine
             // The site simply does not list the title... anywhere! ... ouch...
             return;
         }
-        processText(titleElement, DBKey.TITLE, book);
+        book.setTitle(SearchEngineUtils.cleanText(titleElement.text()));
 
         final Elements specs = document.select("div.specs > dl.specs__list");
         if (specs.isEmpty()) {
@@ -405,12 +405,16 @@ public class BolSearchEngine
                     case "Taal":
                     case "Langue": {
                         // the first occurrence uses the iso abbreviation
-                        processText(value, DBKey.LANGUAGE, book);
+                        if (!book.contains(DBKey.LANGUAGE)) {
+                            book.setLanguage(SearchEngineUtils.cleanText(value.text()));
+                        }
                         break;
                     }
                     case "Bindwijze":
                     case "Binding": {
-                        processText(value, DBKey.FORMAT, book);
+                        if (!book.contains(DBKey.FORMAT)) {
+                            book.setFormat(SearchEngineUtils.cleanText(value.text()));
+                        }
                         break;
                     }
                     case "Oorspronkelijke releasedatum":
@@ -423,7 +427,9 @@ public class BolSearchEngine
                     }
                     case "Aantal pagina's":
                     case "Nombre de pages": {
-                        processText(value, DBKey.PAGES, book);
+                        if (!book.contains(DBKey.PAGES)) {
+                            book.setPages(SearchEngineUtils.cleanText(value.text()));
+                        }
                         break;
                     }
                     case "Hoofdauteur":
@@ -489,7 +495,10 @@ public class BolSearchEngine
                         break;
                     }
                     case "EAN": {
-                        processText(value, DBKey.ISBN, book);
+                        // useful for audiobooks
+                        if (!book.contains(DBKey.ISBN)) {
+                            book.setIsbn(SearchEngineUtils.cleanText(value.text()));
+                        }
                         break;
                     }
                     case "Categorieën":
@@ -580,27 +589,6 @@ public class BolSearchEngine
                                     .map(Tag::new)
                                     .collect(Collectors.toList());
         book.setTags(tags);
-    }
-
-    /**
-     * Process a value which is pure text.
-     *
-     * @param value value element
-     * @param key   for this field
-     * @param book  Bundle to update
-     */
-    private void processText(@Nullable final Element value,
-                             @NonNull final String key,
-                             @NonNull final Book book) {
-        // some 'specs' can appear more than once (e.g. "Taal")
-        if (!book.contains(key)) {
-            if (value != null) {
-                final String text = SearchEngineUtils.cleanText(value.text());
-                if (!text.isEmpty()) {
-                    book.putString(key, text);
-                }
-            }
-        }
     }
 
     /**
