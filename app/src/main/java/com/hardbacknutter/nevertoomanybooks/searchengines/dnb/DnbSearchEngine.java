@@ -514,7 +514,7 @@ public class DnbSearchEngine
     private void parseIsbn(@NonNull final Element td,
                            @NonNull final Book book) {
         // Only add if not already there
-        if (!book.contains(DBKey.ISBN)) {
+        if (!book.hasIsbn()) {
             // grab first ISBN only
             final String text = PATTERN_BR.split(td.text())[0];
             final String isbnText = ISBN.cleanText(text);

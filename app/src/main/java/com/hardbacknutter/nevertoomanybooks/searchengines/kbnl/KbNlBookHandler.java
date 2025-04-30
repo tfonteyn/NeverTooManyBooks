@@ -534,7 +534,7 @@ class KbNlBookHandler
         for (final CurrentData cd : currentData) {
             final String text = cd.data;
             if (Character.isDigit(text.charAt(0))) {
-                if (!book.contains(DBKey.ISBN)) {
+                if (!book.hasIsbn()) {
                     final String isbnText = ISBN.cleanText(text.split(":")[0]);
                     // Do a crude test on the length and hope for the best
                     // (don't do a full ISBN test here, no need)

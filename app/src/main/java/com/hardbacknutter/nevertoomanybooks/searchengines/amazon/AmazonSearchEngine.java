@@ -588,7 +588,7 @@ public class AmazonSearchEngine
                     if (LABEL_ISBN_13.equals(lcLabel)) {
                         book.setIsbn(data);
 
-                    } else if (LABEL_ISBN_10.equals(lcLabel) && !book.contains(DBKey.ISBN)) {
+                    } else if (LABEL_ISBN_10.equals(lcLabel) && !book.hasIsbn()) {
                         book.setIsbn(data);
 
                     } else if (LABEL_FORMAT.contains(lcLabel)) {

@@ -443,7 +443,7 @@ public class KbNlHtmlSearchEngine
 
     private void parseIsbn(@NonNull final Element td,
                            @NonNull final Book book) {
-        if (!book.contains(DBKey.ISBN)) {
+        if (!book.hasIsbn()) {
             final Elements spans = td.select("span");
             if (!spans.isEmpty()) {
                 // oh boy... aside of actual/valid ISBN numbers we've also seen things like

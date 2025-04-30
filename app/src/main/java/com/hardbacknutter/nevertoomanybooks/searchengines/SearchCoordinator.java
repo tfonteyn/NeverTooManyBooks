@@ -497,7 +497,7 @@ public class SearchCoordinator
                         // so we SHOULD be pretty sure about the data...
                         sitesInOrder.add(engineId);
 
-                    } else if (result.contains(DBKey.ISBN)) {
+                    } else if (result.hasIsbn()) {
                         // We did a general search with an ISBN; check if it matches
                         final String isbnFound = result.getIsbn();
                         if (!isbnFound.isEmpty() && isbn.equals(new ISBN(isbnFound, strictIsbn))) {

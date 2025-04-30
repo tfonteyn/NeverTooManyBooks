@@ -218,7 +218,7 @@ public class BookCoder {
      * @param book to process
      */
     private void processIsbn(@NonNull final Book book) {
-        if (!book.contains(DBKey.ISBN) && book.contains(Goodreads.ISBN10)) {
+        if (!book.hasIsbn() && book.contains(Goodreads.ISBN10)) {
             book.setIsbn(book.getString(Goodreads.ISBN10));
             book.remove(Goodreads.ISBN10);
         }
