@@ -65,6 +65,10 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class SynchronizedDb
         implements AutoCloseable {
 
+    private static final String TABLE_EXISTS_SQL_STANDARD =
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?";
+    private static final String TABLE_EXISTS_SQL_TEMP =
+            "SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?";
     private static final int DEFAULT_STMT_CACHE_SIZE = 25;
     /** Log tag. */
     private static final String TAG = "SynchronizedDb";
@@ -235,7 +239,7 @@ public class SynchronizedDb
 
         try {
             // Drop the table in case there is an orphaned instance with the same name.
-            if (table.exists(sqLiteDatabase)) {
+            if (tableExists(table)) {
                 sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS_ + table.getName());
             }
             table.create(sqLiteDatabase, withDomainConstraints);
@@ -244,6 +248,32 @@ public class SynchronizedDb
             if (txLock != null) {
                 txLock.unlock();
             }
+        }
+    }
+
+    /**
+     * Check if the given table exists.
+     * <p>
+     * Both name and type are used for this check.
+     *
+     * @param tableDefinition to check
+     *
+     * @return flag
+     *
+     * @see #tableExists(String)
+     */
+    @SuppressWarnings("WeakerAccess")
+    public boolean tableExists(@NonNull final TableDefinition tableDefinition) {
+        final String sql;
+        if (tableDefinition.getType() == TableDefinition.TableType.Standard) {
+            sql = TABLE_EXISTS_SQL_STANDARD;
+        } else {
+            sql = TABLE_EXISTS_SQL_TEMP;
+        }
+
+        try (SynchronizedStatement stmt = compileStatement(sql)) {
+            stmt.bindString(1, tableDefinition.getName());
+            return stmt.simpleQueryForLongOrZero() > 0;
         }
     }
 
