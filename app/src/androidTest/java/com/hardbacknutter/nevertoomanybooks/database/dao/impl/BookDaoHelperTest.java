@@ -59,7 +59,7 @@ public class BookDaoHelperTest
         book.setDescription("Six million years ago");
         book.setPages(516);
         book.setLanguage("eng");
-        book.putString(DBKey.FIRST_PUBLICATION_DATE, "2008-04-17");
+        book.setFirstPublicationDate("2008-04-17");
         book.setPublicationDate("2009-06-02");
 
         final Author author0 = Author.from("Alastair Reynolds");

@@ -660,6 +660,27 @@ public class Book
     }
 
     /**
+     * Set or remove the first-publication-date for this book.
+     * <p>
+     * <strong>IMPORTANT:</strong> the format <strong>MUST</strong>
+     * be a full or partial ISO date string. <strong>NO CHECKS ARE DONE</strong>.
+     *
+     * @param dateStr to set; {@code 0} to remove
+     *
+     * @see #setFirstPublicationDate(int)
+     * @see #setFirstPublicationDate(PartialDate)
+     * @see #setFirstPublicationDate(LocalDateTime)
+     */
+    @Discouraged(message = "Whenever possible, use one of the other setFirstPublicationDate(...)")
+    public void setFirstPublicationDate(@Nullable final String dateStr) {
+        if (dateStr != null && !dateStr.isBlank()) {
+            putString(DBKey.FIRST_PUBLICATION_DATE, dateStr);
+        } else {
+            remove(DBKey.FIRST_PUBLICATION_DATE);
+        }
+    }
+
+    /**
      * Check if this Book contains a non-blank ISBN string. Does not check if the ISBN is valid.
      *
      * @return {@code true} if present

@@ -120,7 +120,7 @@ public class ResultsAccumulatorTest
                              new PartialDate(2015, 1, 1))));
 
         book.setFormat("tp");
-        book.putString(DBKey.FIRST_PUBLICATION_DATE, "2015");
+        book.setFirstPublicationDate(2015);
         book.setPublicationDate("2016-06-02");
 
 //        final ArrayList<String> fileSpecs = new ArrayList<>();
@@ -364,7 +364,7 @@ public class ResultsAccumulatorTest
 
         book.setFormat("Trade Paperback");
         book.setRating(4.8f);
-        book.putString(DBKey.FIRST_PUBLICATION_DATE, "2015");
+        book.setFirstPublicationDate(2015);
         book.setPublicationDate("2016-06-02");
 
 //        final ArrayList<String> fileSpecs = new ArrayList<>();
