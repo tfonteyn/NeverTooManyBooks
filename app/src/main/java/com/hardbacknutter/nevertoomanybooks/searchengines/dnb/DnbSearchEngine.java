@@ -376,9 +376,10 @@ public class DnbSearchEngine
                             }
                             case "Sprache":
                             case "Language": {
-                                final String lang = languages
-                                        .getISO3FromDisplayLanguage(context, locale, td.text());
-                                book.putString(DBKey.LANGUAGE, lang);
+                                book.setLanguage(languages
+                                                         .getISO3FromDisplayLanguage(context,
+                                                                                     locale,
+                                                                                     td.text()));
                                 break;
                             }
                             case "Genre": {

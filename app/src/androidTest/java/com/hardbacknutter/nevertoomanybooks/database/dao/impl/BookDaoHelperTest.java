@@ -58,7 +58,7 @@ public class BookDaoHelperTest
         book.putLong(DBKey.PK_ID, 1);
         book.setDescription("Six million years ago");
         book.setPages(516);
-        book.putString(DBKey.LANGUAGE, "eng");
+        book.setLanguage("eng");
         book.putString(DBKey.FIRST_PUBLICATION_DATE, "2008-04-17");
         book.putString(DBKey.PUBLICATION_DATE, "2009-06-02");
 

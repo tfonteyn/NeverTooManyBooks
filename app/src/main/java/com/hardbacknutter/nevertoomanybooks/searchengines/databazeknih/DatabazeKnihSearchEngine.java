@@ -511,10 +511,7 @@ public class DatabazeKnihSearchEngine
 
         element = root.selectFirst("[itemprop='language']");
         if (element != null) {
-            final String text = element.text();
-            if (!text.isEmpty()) {
-                book.putString(DBKey.LANGUAGE, mapLanguage(text));
-            }
+            book.setLanguage(mapLanguage(element.text()));
         }
 
         // there can be more than one isbn. First one "wins"

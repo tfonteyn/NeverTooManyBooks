@@ -444,7 +444,7 @@ public class Book
 
         duplicate.setFormat(getString(DBKey.FORMAT, null));
         duplicate.putString(DBKey.COLOR, getString(DBKey.COLOR));
-        duplicate.putString(DBKey.LANGUAGE, getString(DBKey.LANGUAGE));
+        duplicate.setLanguage(getString(DBKey.LANGUAGE, null));
         duplicate.setPages(getString(DBKey.PAGES, null));
         // common blurb
         duplicate.setDescription(getString(DBKey.DESCRIPTION, null));
@@ -728,6 +728,21 @@ public class Book
             putString(DBKey.PAGES, pages);
         } else {
             remove(DBKey.PAGES);
+        }
+    }
+
+    /**
+     * Set the language.
+     * Ideally an iso3 code, but iso2, "display" names,
+     * or unofficial languages are accepted.
+     *
+     * @param language to set; a {@code null} or an empty string will remove the field
+     */
+    public void setLanguage(@Nullable final String language) {
+        if (language != null && !language.isBlank()) {
+            putString(DBKey.LANGUAGE, language);
+        } else {
+            remove(DBKey.LANGUAGE);
         }
     }
 

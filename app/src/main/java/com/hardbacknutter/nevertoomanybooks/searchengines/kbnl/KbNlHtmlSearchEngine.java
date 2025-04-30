@@ -385,7 +385,7 @@ public class KbNlHtmlSearchEngine
         // There is no language field; e.g. french books data is the same as dutch ones.
         // just add Dutch and hope for the best.
         if (!book.contains(DBKey.LANGUAGE)) {
-            book.putString(DBKey.LANGUAGE, "nld");
+            book.setLanguage("nld");
         }
     }
 

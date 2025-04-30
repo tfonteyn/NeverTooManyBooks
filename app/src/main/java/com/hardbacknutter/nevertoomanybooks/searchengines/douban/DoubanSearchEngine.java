@@ -605,7 +605,7 @@ public class DoubanSearchEngine
 
         // There is no language listed, we're assuming Simplified Chinese
         if (!book.contains(DBKey.LANGUAGE)) {
-            book.putString(DBKey.LANGUAGE, "zho");
+            book.setLanguage("zho");
         }
 
         if (fetchCovers[0]) {

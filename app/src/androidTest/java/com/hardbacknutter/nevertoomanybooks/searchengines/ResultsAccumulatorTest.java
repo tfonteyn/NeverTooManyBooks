@@ -111,7 +111,7 @@ public class ResultsAccumulatorTest
 
         final Book book = new Book();
         book.setDescription("Data from Amazon UK as of 2016-09-07");
-        book.putString(DBKey.LANGUAGE, "eng");
+        book.setLanguage("eng");
 
         book.setToc(List.of(
                 new TocEntry(new Author("Pratchett", "Terry"),
@@ -176,7 +176,7 @@ public class ResultsAccumulatorTest
 
         final Book book = new Book();
         book.setSeries(List.of(new Series("Discworld Novels")));
-        book.putString(DBKey.LANGUAGE, "English");
+        book.setLanguage("English");
         book.setFormat("Paperback");
         book.setIsbn("978-0552574471");
         book.setPages(336);
@@ -241,7 +241,7 @@ public class ResultsAccumulatorTest
                        + " shifting of power. Now Tiffany stands between the light and the dark,"
                        + " the good and the bad. As the fairy horde prepares for invasion,"
                        + " Tiffany must summon all the witches to stand with her.");
-        book.putString(DBKey.LANGUAGE, "en");
+        book.setLanguage("en");
         book.setFormat("Paperback");
         book.putFloat(DBKey.RATING, 4.8f);
         book.putString(DBKey.PUBLICATION_DATE, "2016-06-02");
@@ -355,7 +355,7 @@ public class ResultsAccumulatorTest
                 new Series("Discworld Novels"),
                 new Series("Discworld Novels")));
         book.setDescription("Data from Amazon UK as of 2016-09-07");
-        book.putString(DBKey.LANGUAGE, "eng");
+        book.setLanguage("eng");
         book.setToc(List.of(
                 new TocEntry(new Author("Pratchett", "Terry"),
                              "The Shepherd's Crown",

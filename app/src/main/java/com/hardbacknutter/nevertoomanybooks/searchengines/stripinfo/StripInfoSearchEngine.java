@@ -512,7 +512,7 @@ public class StripInfoSearchEngine
                                 case "Taal": {
                                     final String text = extractText(td);
                                     if (text != null) {
-                                        book.putString(DBKey.LANGUAGE, text);
+                                        book.setLanguage(text);
                                         i++;
                                     }
                                     break;
@@ -622,7 +622,7 @@ public class StripInfoSearchEngine
 
         // It's extremely unlikely, but should the language be missing, add dutch.
         if (!book.contains(DBKey.LANGUAGE)) {
-            book.putString(DBKey.LANGUAGE, "nld");
+            book.setLanguage("nld");
         }
 
         if (isCancelled()) {

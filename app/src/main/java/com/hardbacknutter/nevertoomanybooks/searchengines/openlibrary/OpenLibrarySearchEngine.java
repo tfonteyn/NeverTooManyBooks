@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -924,7 +923,7 @@ public class OpenLibrarySearchEngine
         if (element != null) {
             final String s = element.optString("key", null);
             if (s != null && s.startsWith("/languages/")) {
-                book.putString(DBKey.LANGUAGE, s.substring("/languages/".length()));
+                book.setLanguage(s.substring("/languages/".length()));
             }
         }
     }

@@ -666,9 +666,8 @@ public class LastDodoSearchEngine
 
         // It's extremely unlikely, but should the language be missing, add dutch.
         if (!book.contains(DBKey.LANGUAGE)) {
-            book.putString(DBKey.LANGUAGE, "nld");
+            book.setLanguage("nld");
         }
-
 
         if (isCancelled()) {
             return;

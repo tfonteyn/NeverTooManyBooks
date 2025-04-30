@@ -597,10 +597,7 @@ public class CalibreContentServerReader
         final JSONArray languages = calibreBook.optJSONArray(CalibreBookJsonKey.LANGUAGES_ARRAY);
         if (languages != null && !languages.isEmpty()) {
             // We only support one language, so grab the first one
-            final String lang = languages.optString(0);
-            if (!lang.isEmpty()) {
-                book.putString(DBKey.LANGUAGE, lang);
-            }
+            book.setLanguage(languages.optString(0));
         }
     }
 

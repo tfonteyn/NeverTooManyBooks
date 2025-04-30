@@ -281,8 +281,9 @@ class IsfdbPublicationListHandler
 
         } else if (XML_PUBLICATION.equals(qName)) {
             // ISFDB does not provide the books language in xml
-            //ENHANCE: the site is adding language to the data. For now, default to English
-            book.putString(DBKey.LANGUAGE, "eng");
+            //ENHANCE: the "title" page has the language, but that's an extra GET call.
+            // For now, default to English
+            book.setLanguage("eng");
 
             inPublication = false;
             bookList.add(book);

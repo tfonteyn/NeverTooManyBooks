@@ -524,7 +524,7 @@ public class BedethequeSearchEngine
 
             // Unless present, add the default language
             if (!book.contains(DBKey.LANGUAGE)) {
-                book.putString(DBKey.LANGUAGE, "fra");
+                book.setLanguage("fra");
             }
 
             if (isCancelled()) {
@@ -643,7 +643,7 @@ public class BedethequeSearchEngine
                         seriesName = n;
                     }
                 }
-                book.putString(DBKey.LANGUAGE, maybeLanguage);
+                book.setLanguage(maybeLanguage);
             }
         }
 

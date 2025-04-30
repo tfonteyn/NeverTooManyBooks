@@ -493,7 +493,7 @@ public class GoodreadsSearchEngine
         if (lang != null) {
             s = lang.optString("name", null);
             if (s != null && !s.isEmpty()) {
-                book.putString(DBKey.LANGUAGE, mapLanguage(s));
+                book.setLanguage(mapLanguage(s));
             }
         }
     }

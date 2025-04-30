@@ -257,7 +257,7 @@ public class SyncReaderProcessor {
                 // Otherwise add the original one.
                 bookLang = localBook.getString(DBKey.LANGUAGE, null);
                 if (bookLang != null && !bookLang.isEmpty()) {
-                    remoteBook.putString(DBKey.LANGUAGE, bookLang);
+                    remoteBook.setLanguage(bookLang);
                 }
             }
 

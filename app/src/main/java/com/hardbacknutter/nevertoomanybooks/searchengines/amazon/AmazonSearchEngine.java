@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -593,7 +592,7 @@ public class AmazonSearchEngine
                         book.setPages(extractPages(context, data));
 
                     } else if (LABEL_LANGUAGE.contains(lcLabel)) {
-                        book.putString(DBKey.LANGUAGE, data);
+                        book.setLanguage(data);
 
                     } else if (LABEL_PUBLISHER.contains(lcLabel)) {
                         boolean publisherWasAdded = false;

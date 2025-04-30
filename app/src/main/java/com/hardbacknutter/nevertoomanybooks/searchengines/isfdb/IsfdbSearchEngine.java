@@ -606,7 +606,7 @@ public class IsfdbSearchEngine
             // However when searching by their native id, we're not visiting that page.
             // Default to English...
             if (!book.contains(DBKey.LANGUAGE)) {
-                book.putString(DBKey.LANGUAGE, LANGUAGE_DEFAULT);
+                book.setLanguage(LANGUAGE_DEFAULT);
             }
         }
         return book;
@@ -1918,10 +1918,10 @@ public class IsfdbSearchEngine
             if (!book.contains(DBKey.LANGUAGE)) {
                 final String lang = edition.getLangIso3();
                 if (lang != null && !lang.isEmpty()) {
-                    book.putString(DBKey.LANGUAGE, lang);
+                    book.setLanguage(lang);
                 } else {
                     // ... just set English as the language and let the user manually correct it.
-                    book.putString(DBKey.LANGUAGE, LANGUAGE_DEFAULT);
+                    book.setLanguage(LANGUAGE_DEFAULT);
                 }
             }
         }

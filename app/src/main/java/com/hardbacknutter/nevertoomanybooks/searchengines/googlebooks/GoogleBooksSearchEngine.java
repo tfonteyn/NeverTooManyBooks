@@ -443,7 +443,7 @@ public class GoogleBooksSearchEngine
 
         s = volumeInfo.optString("language", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.LANGUAGE, s);
+            book.setLanguage(s);
         }
 
         a = volumeInfo.optJSONArray("categories");

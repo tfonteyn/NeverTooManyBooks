@@ -486,16 +486,16 @@ public class StripWebSearchEngine
             // Seen in use: NL,FR,EN,Fr
             switch (langCode.toLowerCase(Locale.ROOT)) {
                 case "nl":
-                    book.putString(DBKey.LANGUAGE, "nld");
+                    book.setLanguage("nld");
                     break;
                 case "fr":
-                    book.putString(DBKey.LANGUAGE, "fra");
+                    book.setLanguage("fra");
                     break;
                 case "en":
-                    book.putString(DBKey.LANGUAGE, "eng");
+                    book.setLanguage("eng");
                     break;
                 default:
-                    book.putString(DBKey.LANGUAGE, langCode);
+                    book.setLanguage(langCode);
                     break;
             }
         }

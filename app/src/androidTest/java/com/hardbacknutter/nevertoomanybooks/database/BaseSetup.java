@@ -134,7 +134,7 @@ public abstract class BaseSetup
         bookArray[bookIdx].setStage(EntityStage.Stage.WriteAble);
         bookArray[bookIdx].setTitle(TestConstants.BOOK_TITLE[bookIdx]);
         bookArray[bookIdx].setStage(EntityStage.Stage.Dirty);
-        bookArray[bookIdx].putString(DBKey.LANGUAGE, TestConstants.lang[bookIdx]);
+        bookArray[bookIdx].setLanguage(TestConstants.lang[bookIdx]);
     }
 
     void setBookBookshelves(final int bookIdx,

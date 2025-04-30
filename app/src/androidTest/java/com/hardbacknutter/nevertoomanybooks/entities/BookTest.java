@@ -70,7 +70,7 @@ public class BookTest
     public void preprocessPrices01() {
         final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
 
-        book.putString(DBKey.LANGUAGE, "eng");
+        book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(1.23d), MoneyParser.USD);
         assertNotNull(money);
         book.putMoney(DBKey.PRICE_LISTED, money);
@@ -91,7 +91,7 @@ public class BookTest
     public void preprocessPrices02() {
         final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
 
-        book.putString(DBKey.LANGUAGE, "eng");
+        book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(0d), "");
         assertNotNull(money);
         book.putMoney(DBKey.PRICE_LISTED, money);
@@ -119,7 +119,7 @@ public class BookTest
     public void preprocessPrices03() {
         final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
 
-        book.putString(DBKey.LANGUAGE, "fra");
+        book.setLanguage("fra");
         // as a valid string
         book.putString(DBKey.PRICE_LISTED, "");
         book.putString(DBKey.PRICE_LISTED_CURRENCY, MoneyParser.EUR);
@@ -149,7 +149,7 @@ public class BookTest
         final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
         final MoneyParser moneyParser = new MoneyParser(Locale.FRANCE, realNumberParser);
 
-        book.putString(DBKey.LANGUAGE, "eng");
+        book.setLanguage("eng");
         final Optional<Money> money = moneyParser.parse("EUR 45");
         assertTrue(money.isPresent());
         book.putMoney(DBKey.PRICE_LISTED, money.get());

@@ -328,10 +328,7 @@ public class BertrandPtSearchEngine
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-language > div.info");
         if (element != null) {
-            s = element.text().strip();
-            if (!s.isBlank()) {
-                book.putString(DBKey.LANGUAGE, s);
-            }
+            book.setLanguage(element.text().strip());
         }
 
         // Encadernação.

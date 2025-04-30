@@ -226,7 +226,7 @@ public class BookFinderSearchEngine
                             break;
                         }
                         case "Language:": {
-                            book.putString(DBKey.LANGUAGE, value);
+                            book.setLanguage(value);
                             break;
                         }
                     }
