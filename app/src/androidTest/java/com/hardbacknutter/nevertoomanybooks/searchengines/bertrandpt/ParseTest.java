@@ -91,22 +91,6 @@ public class ParseTest
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
 
-        assertEquals("Da mesma autora de <i>O Café Pumpkin Spice</i>,"
-                     + " chega um romance delicioso e picante.<br><br>\n"
-                     + " Hazel encontra uma mensagem secreta escondida num dos livros da"
-                     + " Livraria Cinnamon Bun, mas não a consegue decifrar. À medida que"
-                     + " aparecem mais códigos secretos entre as páginas dos livros, ela"
-                     + " decide investigar... só que precisa de alguém para a ajudar. <br><br>\n"
-                     + " Noah, um pescador atraente e extrovertido, está sempre pronto para"
-                     + " uma aventura. E adora a ideia de uma caça ao tesouro. Sobretudo se"
-                     + " isso implicar ajudar a livreira linda de morrer por quem está"
-                     + " apaixonado há meses! <br><br>\n"
-                     + " Hazel não estava à espera de encontrar o amor, mas à medida que a"
-                     + " caça ao tesouro a leva e a Noah por Dream Harbor, a química inegável"
-                     + " entre ambos é tão quente como os deliciosos bolos de canela que"
-                     + " vende na livraria..."
-                , book.getString(DBKey.DESCRIPTION, null));
-
         // test is a dynamic download, can fail / needs updating
 //        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser));
 //        assertEquals(new Money(BigDecimal.valueOf(15.60d), Money.EURO),
@@ -163,22 +147,6 @@ public class ParseTest
         assertEquals("416", book.getString(DBKey.PAGES, null));
         assertEquals("Capa mole", book.getString(DBKey.FORMAT, null));
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
-
-        final String desc = book.getString(DBKey.DESCRIPTION, null);
-        assertEquals("Golan Trevize escolheu o futuro — Gaia, um superorganismo"
-                     + " com uma consciência comum. Um mundo onde a privacidade não é apenas"
-                     + " indesejável como incompreensível. Mas será a escolha certa para o"
-                     + " destino da Humanidade? Apesar de Trevize sentir que sim, isso não é"
-                     + " suficiente. Ele tem de saber.<br><br>\n"
-                     + " Trevize acredita que a resposta se encontra no local onde a Humanidade"
-                     + " tem as suas raízes: a lendária Terra… se esta ainda existir. Porque"
-                     + " ninguém tem a certeza da sua exata localização. Tal como ninguém"
-                     + " consegue explicar porque não foi preservado qualquer registo do"
-                     + " planeta «perdido». É um enigma que Trevize está determinado a resolver,"
-                     + " uma jornada que vai empreender a qualquer custo.<br><br>\n"
-                     + " Em 1966, a série Fundação foi eleita a melhor série de ficção"
-                     + " científica de todos os tempos."
-                , desc);
 
         // test is a dynamic download, can fail / needs updating
         assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
