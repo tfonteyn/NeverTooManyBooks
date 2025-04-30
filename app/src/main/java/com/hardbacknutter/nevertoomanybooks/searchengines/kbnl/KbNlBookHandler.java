@@ -676,8 +676,7 @@ class KbNlBookHandler
                 try {
                     final String group = matcher.group(1);
                     if (group != null && !group.isEmpty()) {
-                        final int pages = Integer.parseInt(group);
-                        book.putString(DBKey.PAGES, String.valueOf(pages));
+                        book.setPages(Integer.parseInt(group));
                         return;
                     }
                 } catch (@NonNull final NumberFormatException ignore) {
@@ -685,16 +684,14 @@ class KbNlBookHandler
                 }
             }
             try {
-                final String cleanedString = data.split(" ")[0];
-                final int pages = Integer.parseInt(cleanedString);
-                book.putString(DBKey.PAGES, String.valueOf(pages));
+                book.setPages(Integer.parseInt(data.split(" ")[0]));
                 return;
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
             }
 
             // use source
-            book.putString(DBKey.PAGES, data);
+            book.setPages(data);
         }
     }
 

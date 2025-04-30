@@ -430,7 +430,7 @@ public class GoogleBooksSearchEngine
 
         i = volumeInfo.optInt("pageCount");
         if (i > 0) {
-            book.putString(DBKey.PAGES, String.valueOf(i));
+            book.setPages(i);
         }
 
         // Google documents this is a "double" with values 0..5,

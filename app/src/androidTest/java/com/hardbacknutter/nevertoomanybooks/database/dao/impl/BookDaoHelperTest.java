@@ -57,7 +57,7 @@ public class BookDaoHelperTest
         final Book book = new Book();
         book.putLong(DBKey.PK_ID, 1);
         book.setDescription("Six million years ago");
-        book.putString(DBKey.PAGES, "516");
+        book.setPages(516);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putString(DBKey.FIRST_PUBLICATION_DATE, "2008-04-17");
         book.putString(DBKey.PUBLICATION_DATE, "2009-06-02");

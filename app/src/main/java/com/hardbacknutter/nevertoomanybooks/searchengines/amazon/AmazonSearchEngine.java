@@ -594,7 +594,7 @@ public class AmazonSearchEngine
                     } else if (LABEL_FORMAT.contains(lcLabel)) {
                         // we might already have the format, but we'll overwrite it - that's ok.
                         book.putString(DBKey.FORMAT, label);
-                        book.putString(DBKey.PAGES, extractPages(context, data));
+                        book.setPages(extractPages(context, data));
 
                     } else if (LABEL_LANGUAGE.contains(lcLabel)) {
                         book.putString(DBKey.LANGUAGE, data);

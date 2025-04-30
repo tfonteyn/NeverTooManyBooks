@@ -506,10 +506,7 @@ public class DatabazeKnihSearchEngine
 
         element = root.selectFirst("[itemprop='numberOfPages']");
         if (element != null) {
-            final String text = element.text();
-            if (!text.isEmpty()) {
-                book.putString(DBKey.PAGES, text);
-            }
+            book.setPages(element.text());
         }
 
         element = root.selectFirst("[itemprop='language']");
@@ -550,10 +547,7 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 final Node textNode = element.nextSibling();
                 if (textNode != null) {
-                    final String text = textNode.toString().trim();
-                    if (!text.isEmpty()) {
-                        book.putString(DBKey.PAGES, text);
-                    }
+                    book.setPages(textNode.toString().trim());
                 }
             }
         }

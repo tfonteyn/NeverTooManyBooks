@@ -514,11 +514,10 @@ public class KbNlHtmlSearchEngine
             if (span != null) {
                 final String pagesStr = span.text().split(" ")[0];
                 try {
-                    final int pages = Integer.parseInt(pagesStr);
-                    book.putString(DBKey.PAGES, String.valueOf(pages));
+                    book.setPages(Integer.parseInt(pagesStr));
                 } catch (@NonNull final NumberFormatException e) {
                     // use source
-                    book.putString(DBKey.PAGES, pagesStr);
+                    book.setPages(pagesStr);
                 }
             }
         }

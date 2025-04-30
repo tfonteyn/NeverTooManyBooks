@@ -468,7 +468,7 @@ public class GoodreadsSearchEngine
         }
         s = details.optString("numPages", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.PAGES, s);
+            book.setPages(s);
         }
         final long epochMillis = details.optLong("publicationTime", EPOCH_NULL_VALUE);
         if (epochMillis != EPOCH_NULL_VALUE) {

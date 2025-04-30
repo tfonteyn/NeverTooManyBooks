@@ -492,7 +492,7 @@ public class BedethequeSearchEngine
                     case "Planches :": {
                         final Element span = label.nextElementSibling();
                         if (span != null) {
-                            book.putString(DBKey.PAGES, span.text());
+                            book.setPages(span.text());
                         }
                         break;
                     }

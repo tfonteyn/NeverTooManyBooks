@@ -445,7 +445,7 @@ public class Book
         duplicate.putString(DBKey.FORMAT, getString(DBKey.FORMAT));
         duplicate.putString(DBKey.COLOR, getString(DBKey.COLOR));
         duplicate.putString(DBKey.LANGUAGE, getString(DBKey.LANGUAGE));
-        duplicate.putString(DBKey.PAGES, getString(DBKey.PAGES));
+        duplicate.setPages(getString(DBKey.PAGES, null));
         // common blurb
         duplicate.setDescription(getString(DBKey.DESCRIPTION, null));
 
@@ -547,6 +547,12 @@ public class Book
         }
     }
 
+    @NonNull
+    public PartialDate getPublicationDate() {
+        return partialDateParser.parse(getString(DBKey.PUBLICATION_DATE))
+                                .orElse(PartialDate.NOT_SET);
+    }
+
     /**
      * Set or remove the publication-date for this book.
      *
@@ -585,12 +591,6 @@ public class Book
         } else {
             remove(DBKey.PUBLICATION_DATE);
         }
-    }
-
-    @NonNull
-    public PartialDate getPublicationDate() {
-        return partialDateParser.parse(getString(DBKey.PUBLICATION_DATE))
-                                .orElse(PartialDate.NOT_SET);
     }
 
     @Override
@@ -693,6 +693,28 @@ public class Book
             putString(DBKey.DESCRIPTION, description);
         } else {
             remove(DBKey.DESCRIPTION);
+        }
+    }
+
+    /**
+     * Set the number of pages.
+     *
+     * @param pages to set; a {@code 0} or negative number will remove the field
+     */
+    public void setPages(final int pages) {
+        setPages(pages > 0 ? String.valueOf(pages) : null);
+    }
+
+    /**
+     * Set the number of pages / pages description.
+     *
+     * @param pages to set; a {@code null} or an empty string will remove the field
+     */
+    public void setPages(@Nullable final String pages) {
+        if (pages != null && !pages.isBlank()) {
+            putString(DBKey.PAGES, pages);
+        } else {
+            remove(DBKey.PAGES);
         }
     }
 

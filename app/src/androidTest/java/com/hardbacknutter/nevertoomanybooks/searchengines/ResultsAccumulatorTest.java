@@ -129,7 +129,7 @@ public class ResultsAccumulatorTest
 
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
         book.setIsbn("9780552574471");
-        book.putString(DBKey.PAGES, "332");
+        book.setPages(332);
         book.setTitle("The Shepherd's Crown");
         book.putString(DBKey.PRICE_LISTED, "7.99");
 
@@ -179,7 +179,7 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.LANGUAGE, "English");
         book.putString(DBKey.FORMAT, "Paperback");
         book.setIsbn("978-0552574471");
-        book.putString(DBKey.PAGES, "336");
+        book.setPages(336);
         book.setTitle("The Shepherd's Crown: A Discworld Novel, Volume 41");
         book.putString(DBKey.PRICE_LISTED, "7.29");
         book.setAuthors(List.of(
@@ -252,7 +252,7 @@ public class ResultsAccumulatorTest
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
         book.setIsbn("9780552574471");
-        book.putString(DBKey.PAGES, "335");
+        book.setPages(335);
         book.setTitle("Shepherds Crown");
         book.putString(DBKey.PRICE_LISTED, "8.87");
 
@@ -373,7 +373,7 @@ public class ResultsAccumulatorTest
 
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
         book.setIsbn("9780552574471");
-        book.putString(DBKey.PAGES, "332");
+        book.setPages(332);
         book.setTitle("The Shepherd's Crown");
         book.putDouble(DBKey.PRICE_LISTED, 7.99);
 

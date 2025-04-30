@@ -488,7 +488,7 @@ public class StripInfoSearchEngine
                                 case "Pagina's": {
                                     final String text = extractText(td);
                                     if (text != null) {
-                                        book.putString(DBKey.PAGES, text);
+                                        book.setPages(text);
                                         i++;
                                     }
                                     break;

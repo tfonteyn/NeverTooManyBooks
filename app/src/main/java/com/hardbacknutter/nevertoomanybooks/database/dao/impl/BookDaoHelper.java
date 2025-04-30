@@ -186,7 +186,7 @@ public class BookDaoHelper {
         final ReadingProgress readingProgress = book.getReadingProgress();
         // KEEP THIS LOGIC IN SYNC with {@link BookDaoImpl#setReadProgress()} !
         if (!readingProgress.asPercentage() && book.getString(DBKey.PAGES).isEmpty()) {
-            book.putString(DBKey.PAGES, String.valueOf(readingProgress.getTotalPages()));
+            book.setPages(readingProgress.getTotalPages());
         }
     }
 

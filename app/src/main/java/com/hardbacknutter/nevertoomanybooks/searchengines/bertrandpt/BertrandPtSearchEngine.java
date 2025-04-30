@@ -358,10 +358,7 @@ public class BertrandPtSearchEngine
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-nrPages > div.info");
         if (element != null) {
-            s = element.text().strip();
-            if (!s.isBlank()) {
-                book.putString(DBKey.PAGES, s);
-            }
+            book.setPages(element.text().strip());
         }
 
         // Coleção -> can be Series or Collection. Just use it as Series and leave it to the user.

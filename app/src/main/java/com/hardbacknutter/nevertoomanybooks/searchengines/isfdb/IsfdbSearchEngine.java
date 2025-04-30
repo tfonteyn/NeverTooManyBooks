@@ -1324,7 +1324,7 @@ public class IsfdbSearchEngine
                             @NonNull final Book book) {
         final Node data = labelElement.nextSibling();
         if (data != null) {
-            book.putString(DBKey.PAGES, data.toString().trim());
+            book.setPages(data.toString().trim());
         }
     }
 
