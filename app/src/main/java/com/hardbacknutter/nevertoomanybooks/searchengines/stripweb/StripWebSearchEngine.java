@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -326,7 +325,7 @@ public class StripWebSearchEngine
                         break;
                     }
                     case "Pagina's":
-                        processText(td, DBKey.PAGES, book);
+                        book.setPages(SearchEngineUtils.cleanText(td.text()));
                         break;
                     case "Reeks":
                         processSeries(td, book);
@@ -338,7 +337,7 @@ public class StripWebSearchEngine
                         parseLanguage(book, td);
                         break;
                     case "Cover":
-                        processText(td, DBKey.FORMAT, book);
+                        book.setFormat(SearchEngineUtils.cleanText(td.text()));
                         break;
                     case "Verschijningsdatum": {
                         final String text = SearchEngineUtils.cleanText(td.text());
@@ -363,10 +362,13 @@ public class StripWebSearchEngine
                         parsePublisher(td, book);
                         break;
 
-                    case "Afmetingen":
-                        processText(td, SiteField.SIZE, book);
+                    case "Afmetingen": {
+                        final String text = SearchEngineUtils.cleanText(td.text());
+                        if (!text.isEmpty()) {
+                            book.putString(SiteField.SIZE, text);
+                        }
                         break;
-
+                    }
                     case "Genre": {
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty() && !tagsToIgnore.contains(text)) {
@@ -538,24 +540,6 @@ public class StripWebSearchEngine
             if (sidElement != null) {
                 final String sid = sidElement.attr("value");
                 book.setIdentifierValue(Identifier.SID_STRIPWEB, sid);
-            }
-        }
-    }
-
-    /**
-     * Process a td which is pure text.
-     *
-     * @param td   data td
-     * @param key  for this field
-     * @param book Bundle to update
-     */
-    private void processText(@Nullable final Element td,
-                             @NonNull final String key,
-                             @NonNull final Book book) {
-        if (td != null) {
-            final String text = SearchEngineUtils.cleanText(td.text());
-            if (!text.isEmpty()) {
-                book.putString(key, text);
             }
         }
     }
