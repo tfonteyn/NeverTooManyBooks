@@ -52,6 +52,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -290,8 +291,8 @@ public class ParseTest
         assertEquals("8072210041", book.getString(DBKey.ISBN, null));
         assertEquals("694", book.requireIdentifierValue(Identifier.SID_DATABAZE_KNIH));
         assertEquals("1997", book.getString(DBKey.PUBLICATION_DATE, null));
-        // language=jiný -> "other", replaced with ""
-        assertEquals("", book.getString(DBKey.LANGUAGE, null));
+        // language=jiný -> "other", not stored
+        assertNull(book.getString(DBKey.LANGUAGE, null));
         assertEquals("352", book.getString(DBKey.PAGES, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
         assertEquals("pevná / vázaná s přebalem", book.getString(DBKey.FORMAT, null));
