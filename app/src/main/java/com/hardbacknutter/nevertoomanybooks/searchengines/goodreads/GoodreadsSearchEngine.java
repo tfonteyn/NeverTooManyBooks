@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -521,16 +520,10 @@ public class GoodreadsSearchEngine
             }
 
             final String originalTitle = o.optString("originalTitle", null);
-            // it's often empty for translated books, but let's be optimistic...
             if (originalTitle != null && !originalTitle.isEmpty()
-                // sometimes it's just a copy... ignore those
+                // sometimes it's a copy... ignore those
                 && !originalTitle.equals(book.getTitle())) {
-                book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, originalTitle);
-                // another wild attempt...
-                final String lc = originalTitle.toLowerCase(Locale.ENGLISH);
-                if (lc.startsWith("the ") || lc.contains(" the ")) {
-                    book.putString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, "eng");
-                }
+                book.setTranslatedFromTitle(originalTitle);
             }
         }
 

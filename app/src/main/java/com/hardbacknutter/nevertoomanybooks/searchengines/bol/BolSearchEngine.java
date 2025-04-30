@@ -461,7 +461,7 @@ public class BolSearchEngine
                     }
                     case "Originele titel":
                     case "Titre original": {
-                        processText(value, DBKey.TRANSLATION_ORIGINAL_TITLE, book);
+                        book.setTranslatedFromTitle(SearchEngineUtils.cleanText(value.text()));
                         break;
                     }
                     case "Serie": {

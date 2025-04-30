@@ -390,9 +390,7 @@ public class DatabazeKnihSearchEngine
                     if (element.childNodeSize() > 0) {
                         final String text = SearchEngineUtils.cleanName(
                                 element.childNode(0).toString());
-                        if (!text.isEmpty()) {
-                            book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, text);
-                        }
+                        book.setTranslatedFromTitle(text);
                     }
                     if (element.childNodeSize() > 2) {
                         final String text = SearchEngineUtils.cleanText(

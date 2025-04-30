@@ -428,10 +428,8 @@ public class Book
             duplicate.setTags(getTags());
         }
 
-        duplicate.putString(DBKey.TRANSLATION_ORIGINAL_TITLE,
-                            getString(DBKey.TRANSLATION_ORIGINAL_TITLE));
-        duplicate.putString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
-                            getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE));
+        duplicate.setTranslatedFromTitle(getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+        duplicate.setTranslatedFromLanguage(getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, null));
 
         // publication data
         duplicate.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));
@@ -1467,6 +1465,46 @@ public class Book
         }
     }
 
+    /**
+     * For a translated book, set the original title.
+     * <p>
+     * An attempt to guess the language will be made.
+     * A subsequent call to {@link #setTranslatedFromLanguage(String)} will
+     * override this guess.
+     *
+     * @param originalTitle to set; a {@code null} or an empty string will remove the field
+     */
+    public void setTranslatedFromTitle(@Nullable final String originalTitle) {
+        if (originalTitle != null && !originalTitle.isBlank()) {
+            putString(DBKey.TRANSLATION_ORIGINAL_TITLE, originalTitle);
+
+            if (!contains(DBKey.TRANSLATION_ORIGINAL_LANGUAGE)) {
+                // a wild attempt at guessing the language...
+                final String lc = originalTitle.toLowerCase(Locale.ENGLISH);
+                if (lc.startsWith("the ") || lc.contains(" the ")) {
+                    putString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, "eng");
+                }
+            }
+
+        } else {
+            remove(DBKey.TRANSLATION_ORIGINAL_TITLE);
+        }
+    }
+
+    /**
+     * For a translated book, set the original language.
+     *
+     * @param originalLanguage to set; a {@code null} or an empty string will remove the field
+     *
+     * @see #setLanguage(String)
+     */
+    public void setTranslatedFromLanguage(@Nullable final String originalLanguage) {
+        if (originalLanguage != null && !originalLanguage.isBlank()) {
+            putString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, originalLanguage);
+        } else {
+            remove(DBKey.TRANSLATION_ORIGINAL_LANGUAGE);
+        }
+    }
 
     /**
      * FIXME: 27/09/2024 unify 'isRead' with 'getReadingProgress()'

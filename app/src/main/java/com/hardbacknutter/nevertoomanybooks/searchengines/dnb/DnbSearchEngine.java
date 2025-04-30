@@ -404,8 +404,8 @@ public class DnbSearchEngine
                             case "Werk":
                             case "Work": {
                                 // The original title for a translated book
-                                // Can have Series/nr prefixed.
-                                book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, td.text());
+                                // Can have Series/nr prefixed; let the user clean that up.
+                                book.setTranslatedFromTitle(td.text());
                                 break;
                             }
                             case "Teil von":
@@ -431,7 +431,7 @@ public class DnbSearchEngine
                             case "Original language": {
                                 final String lang = languages
                                         .getISO3FromDisplayLanguage(context, locale, td.text());
-                                book.putString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, lang);
+                                book.setTranslatedFromLanguage(lang);
                                 break;
                             }
                             case "Land":

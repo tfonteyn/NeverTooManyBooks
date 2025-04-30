@@ -24,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -306,15 +305,7 @@ class KbNlBookHandler
 
         final Matcher matcher = TRANSLATION_PATTERN.matcher(data);
         if (matcher.find()) {
-            final String originalTitle = matcher.group(1);
-            if (originalTitle != null && !originalTitle.isEmpty()) {
-                book.putString(DBKey.TRANSLATION_ORIGINAL_TITLE, originalTitle);
-                // another wild attempt...
-                final String lc = originalTitle.toLowerCase(Locale.ENGLISH);
-                if (lc.startsWith("the ") || lc.contains(" the ")) {
-                    book.putString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, "eng");
-                }
-            }
+            book.setTranslatedFromTitle(matcher.group(1));
         }
     }
 
