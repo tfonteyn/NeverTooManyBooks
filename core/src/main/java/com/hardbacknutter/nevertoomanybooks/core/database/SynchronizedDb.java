@@ -560,6 +560,13 @@ public class SynchronizedDb
         }
     }
 
+    /**
+     * Get a description/info structure for the given table.
+     *
+     * @param tableDefinition to get
+     *
+     * @return info object
+     */
     @NonNull
     public TableInfo getTableInfo(@NonNull final TableDefinition tableDefinition) {
         Synchronizer.SyncLock txLock = null;
