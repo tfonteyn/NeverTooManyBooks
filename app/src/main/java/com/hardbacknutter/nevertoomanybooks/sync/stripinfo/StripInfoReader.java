@@ -353,7 +353,7 @@ public class StripInfoReader
                                         "preImport=" + preImportId, preImportUuid,
                                         "postImport=" + book.getId(),
                                         book.getString(DBKey.BOOK_UUID, null),
-                                        book.getTitle());
+                                        book.getString(DBKey.TITLE, null));
         }
     }
 
@@ -370,7 +370,7 @@ public class StripInfoReader
             LoggerFactory.getLogger().d(TAG, "updateBook", updateOption,
                                         "externalId=" + externalId,
                                         "book=" + book.getId(),
-                                        book.getTitle());
+                                        book.getString(DBKey.TITLE, null));
         }
     }
 

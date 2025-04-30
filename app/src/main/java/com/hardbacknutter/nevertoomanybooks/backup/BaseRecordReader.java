@@ -175,7 +175,7 @@ public abstract class BaseRecordReader
                                         "preImport=" + preImportId, preImportUuid,
                                         "postImport=" + book.getId(),
                                         book.getString(DBKey.BOOK_UUID, null),
-                                        book.getTitle());
+                                        book.getString(DBKey.TITLE, null));
         }
     }
 
@@ -227,9 +227,9 @@ public abstract class BaseRecordReader
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "skipBook",
                                         updateOption,
-                                        "UUID=" + book.getUuid(),
+                                        "UUID=" + book.getString(DBKey.BOOK_UUID, null),
                                         "id=" + book.getId(),
-                                        book.getTitle());
+                                        book.getString(DBKey.TITLE, null));
         }
     }
 
@@ -244,9 +244,9 @@ public abstract class BaseRecordReader
             LoggerFactory.getLogger()
                          .d(TAG, "updateBook",
                             updateOption,
-                            "UUID=" + book.getUuid(),
+                            "UUID=" + book.getString(DBKey.BOOK_UUID, null),
                             "id=" + book.getId(),
-                            book.getTitle());
+                            book.getString(DBKey.TITLE, null));
         }
     }
 }

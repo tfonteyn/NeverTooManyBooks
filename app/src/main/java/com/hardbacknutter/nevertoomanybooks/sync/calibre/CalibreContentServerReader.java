@@ -399,8 +399,9 @@ public class CalibreContentServerReader
                                 LoggerFactory.getLogger().d(
                                         TAG, "importBook", updateOption, "Skip",
                                         "calibreUuid="
-                                        + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID),
-                                        "book=" + book.getId(), book.getTitle());
+                                        + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID, null),
+                                        "book=" + book.getId(),
+                                        book.getString(DBKey.TITLE, null));
                             }
                         }
                         break;
@@ -411,8 +412,8 @@ public class CalibreContentServerReader
                             LoggerFactory.getLogger().d(
                                     TAG, "importBook", updateOption, "Skip",
                                     "calibreUuid="
-                                    + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID),
-                                    calibreBook.getString(CalibreBookJsonKey.TITLE));
+                                    + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID, null),
+                                    calibreBook.getString(CalibreBookJsonKey.TITLE, null));
                         }
                         break;
                     }
@@ -449,8 +450,9 @@ public class CalibreContentServerReader
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                 LoggerFactory.getLogger().d(
                         TAG, "updateBook", updateOption,
-                        "calibreUuid=" + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID),
-                        "book=" + book.getId(), book.getTitle());
+                        "calibreUuid=" + calibreBook.getString(DBKey.CALIBRE.BOOK_UUID, null),
+                        "book=" + book.getId(),
+                        book.getString(DBKey.TITLE, null));
             }
         }
     }
@@ -472,8 +474,9 @@ public class CalibreContentServerReader
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
             LoggerFactory.getLogger().d(
                     TAG, "insertBook", updateOption,
-                    "calibreUuid=" + book.getString(DBKey.CALIBRE.BOOK_UUID),
-                    "book=" + book.getId(), book.getTitle());
+                    "calibreUuid=" + book.getString(DBKey.CALIBRE.BOOK_UUID, null),
+                    "book=" + book.getId(),
+                    book.getString(DBKey.TITLE, null));
         }
     }
 
