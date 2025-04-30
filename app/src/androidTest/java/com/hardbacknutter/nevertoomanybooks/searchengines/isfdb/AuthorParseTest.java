@@ -109,7 +109,7 @@ public class AuthorParseTest
     public void liveParse49()
             throws SearchException, CredentialsException {
 
-        final Author author = new Author("", "");
+        final Author author = new Author("Robinson", "Kim Stanley");
         author.setIdentifierValue(Identifier.SID_ISFDB, 49);
         final boolean modified = resolver.resolve(context, author);
         assertTrue(modified);
@@ -148,6 +148,8 @@ public class AuthorParseTest
             throws SearchException, CredentialsException {
 
         final Author author = new Author("French", "Paul");
+        author.setIdentifierValue(Identifier.SID_ISFDB, "3358");
+
         final boolean modified = resolver.resolve(context, author);
         assertTrue(modified);
 
