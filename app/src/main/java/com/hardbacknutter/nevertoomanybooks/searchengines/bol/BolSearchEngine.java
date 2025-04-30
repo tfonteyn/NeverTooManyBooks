@@ -525,10 +525,7 @@ public class BolSearchEngine
                                   @NonNull final Book book) {
         final Element descrElement = document.selectFirst("div.product-description");
         if (descrElement != null) {
-            final String description = descrElement.text();
-            if (!description.isEmpty()) {
-                book.putString(DBKey.DESCRIPTION, description);
-            }
+            book.setDescription(descrElement.text());
         }
     }
 

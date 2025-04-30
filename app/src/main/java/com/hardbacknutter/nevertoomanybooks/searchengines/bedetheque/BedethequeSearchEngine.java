@@ -513,7 +513,7 @@ public class BedethequeSearchEngine
 
             final Element description = document.selectFirst("span[itemprop='description']");
             if (description != null) {
-                book.putString(DBKey.DESCRIPTION, description.text());
+                book.setDescription(description.text());
             }
 
             for (final AuthorResolver resolver : authorResolvers) {

@@ -421,7 +421,7 @@ public class GoogleBooksSearchEngine
 
         s = volumeInfo.optString("description", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.DESCRIPTION, s);
+            book.setDescription(s);
         }
 
         a = volumeInfo.optJSONArray("industryIdentifiers");

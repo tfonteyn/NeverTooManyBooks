@@ -1276,7 +1276,7 @@ public class IsfdbSearchEngine
             if (tmpString.startsWith("<b>Notes:</b>")) {
                 tmpString = tmpString.substring(13).trim();
             }
-            book.putString(DBKey.DESCRIPTION, tmpString);
+            book.setDescription(tmpString);
         }
 
         final List<TocEntry> toc = parseToc(context, document, book);

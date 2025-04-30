@@ -515,8 +515,7 @@ public class CalibreContentServerReader
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.DESCRIPTION)) {
-            book.putString(DBKey.DESCRIPTION,
-                           calibreBook.getString(CalibreBookJsonKey.DESCRIPTION));
+            book.setDescription(calibreBook.getString(CalibreBookJsonKey.DESCRIPTION));
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.RATING)) {

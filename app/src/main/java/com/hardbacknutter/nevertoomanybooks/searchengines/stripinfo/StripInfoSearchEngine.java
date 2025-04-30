@@ -1084,7 +1084,7 @@ public class StripInfoSearchEngine
                 }
             }
             if (content.length() > 0) {
-                book.putString(DBKey.DESCRIPTION, content.toString());
+                book.setDescription(content.toString());
             }
         }
     }

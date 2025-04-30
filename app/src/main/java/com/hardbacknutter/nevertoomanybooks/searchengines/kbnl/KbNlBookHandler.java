@@ -732,12 +732,12 @@ class KbNlBookHandler
                 .collect(Collectors.joining(" "));
         if (!desc.isBlank()) {
             // append... the site has (at least) two fields we want to collect
-            final String previous = book.getString(DBKey.DESCRIPTION);
+            final String previous = book.getDescription();
             if (!previous.isEmpty()) {
                 desc = previous + (previous.endsWith("\n") ? "" : "\n")
                        + '\n' + desc;
             }
-            book.putString(DBKey.DESCRIPTION, desc);
+            book.setDescription(desc);
         }
     }
 }

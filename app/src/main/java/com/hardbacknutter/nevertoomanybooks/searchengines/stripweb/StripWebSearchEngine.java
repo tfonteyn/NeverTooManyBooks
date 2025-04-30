@@ -519,7 +519,7 @@ public class StripWebSearchEngine
                 }
             }
 
-            book.putString(DBKey.DESCRIPTION, html);
+            book.setDescription(html);
         }
     }
 

@@ -906,14 +906,14 @@ public class OpenLibrarySearchEngine
             if ("/type/text".equals(element.optString("type"))) {
                 final String s = element.optString("value", null);
                 if (s != null && !s.isEmpty()) {
-                    book.putString(DBKey.DESCRIPTION, s);
+                    book.setDescription(s);
                 }
             }
         } else {
             // Try the plain string format
             final String s = document.optString("notes", null);
             if (s != null && !s.isEmpty()) {
-                book.putString(DBKey.DESCRIPTION, s);
+                book.setDescription(s);
             }
         }
     }

@@ -656,7 +656,7 @@ public class DoubanSearchEngine
                     // The description in the meta element is shortened.
                     // We copy it while we have it, but will overwrite when we
                     // can (should) get the full description later on.
-                    book.putString(DBKey.DESCRIPTION, content);
+                    book.setDescription(content);
                     break;
 
                 case "og:url": {
@@ -695,7 +695,7 @@ public class DoubanSearchEngine
                     && introElements.size() > 1) {
                     intro = introElements.get(1);
                 }
-                book.putString(DBKey.DESCRIPTION, intro.html().strip());
+                book.setDescription(intro.html().strip());
             }
         }
     }

@@ -430,10 +430,7 @@ public class BertrandPtSearchEngine
         final Element description = document.selectFirst(
                 "div#productPageSectionAboutBook-sinopse > p");
         if (description != null) {
-            final String text = description.html();
-            if (!text.isBlank()) {
-                book.putString(DBKey.DESCRIPTION, text.strip());
-            }
+            book.setDescription(description.html().strip());
         }
 
         if (isCancelled()) {

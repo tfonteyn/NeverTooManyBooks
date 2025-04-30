@@ -410,7 +410,7 @@ public class GoodreadsSearchEngine
 
         final String description = o.optString("description", null);
         if (description != null) {
-            book.putString(DBKey.DESCRIPTION, description);
+            book.setDescription(description);
         }
 
         final Locale locale = getLocale(context);

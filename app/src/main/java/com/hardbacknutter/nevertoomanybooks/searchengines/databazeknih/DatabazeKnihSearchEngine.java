@@ -477,7 +477,7 @@ public class DatabazeKnihSearchEngine
                 if (text.endsWith(CELY_TEXT)) {
                     text = text.substring(0, text.length() - 13);
                 }
-                book.putString(DBKey.DESCRIPTION, text);
+                book.setDescription(text);
             }
         }
     }
