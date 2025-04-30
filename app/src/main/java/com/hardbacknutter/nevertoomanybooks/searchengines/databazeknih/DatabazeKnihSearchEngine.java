@@ -572,10 +572,7 @@ public class DatabazeKnihSearchEngine
         if (element != null) {
             final Node textNode = element.nextSibling();
             if (textNode != null) {
-                final String text = textNode.toString().trim();
-                if (!text.isEmpty()) {
-                    book.putString(DBKey.PRINT_RUN, text);
-                }
+                book.setPrintRun(textNode.toString().trim());
             }
         }
 

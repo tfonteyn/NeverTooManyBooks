@@ -595,7 +595,7 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Oplage": {
-                        processText(td, DBKey.PRINT_RUN, book);
+                        book.setPrintRun(SearchEngineUtils.cleanText(td.text()));
                         break;
                     }
                     case "Aantal bladzijden": {

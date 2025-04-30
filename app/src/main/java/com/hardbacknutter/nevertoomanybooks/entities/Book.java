@@ -743,6 +743,19 @@ public class Book
     }
 
     /**
+     * Set the print-run description.
+     *
+     * @param printRun to set; a {@code null} or an empty string will remove the field
+     */
+    public void setPrintRun(@Nullable final String printRun) {
+        if (printRun != null && !printRun.isBlank()) {
+            putString(DBKey.PRINT_RUN, printRun);
+        } else {
+            remove(DBKey.PRINT_RUN);
+        }
+    }
+
+    /**
      * Set the language.
      * Ideally an iso3 code, but iso2, "display" names,
      * or unofficial languages are accepted.

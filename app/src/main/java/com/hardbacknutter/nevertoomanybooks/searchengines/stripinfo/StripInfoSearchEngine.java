@@ -524,7 +524,7 @@ public class StripInfoSearchEngine
                                 case "Oplage": {
                                     final String text = extractText(td);
                                     if (text != null) {
-                                        book.putString(DBKey.PRINT_RUN, text);
+                                        book.setPrintRun(text);
                                         i++;
                                     }
                                     break;
