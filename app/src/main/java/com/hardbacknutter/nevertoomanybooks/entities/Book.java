@@ -664,6 +664,29 @@ public class Book
     }
 
     /**
+     * Get the description.
+     *
+     * @return the description; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getDescription() {
+        return getString(DBKey.DESCRIPTION);
+    }
+
+    /**
+     * Set the description.
+     *
+     * @param description to set; a {@code null} or an empty string will remove the field
+     */
+    public void setDescription(@Nullable final String description) {
+        if (description != null && !description.isBlank()) {
+            putString(DBKey.DESCRIPTION, description);
+        } else {
+            remove(DBKey.DESCRIPTION);
+        }
+    }
+
+    /**
      * Get the Book's Locale (based on its language).
      *
      * @param context Current context
