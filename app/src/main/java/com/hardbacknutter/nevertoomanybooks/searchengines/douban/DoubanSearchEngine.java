@@ -586,8 +586,7 @@ public class DoubanSearchEngine
 
         final Element ratingElement = document.selectFirst("div.rating_self > strong.rating_num ");
         if (ratingElement != null) {
-            ratingParser.parse(ratingElement.text()).ifPresent(
-                    rating -> book.putFloat(DBKey.RATING, rating));
+            ratingParser.parse(ratingElement.text()).ifPresent(book::setRating);
         }
 
         parseDescription(document, book);

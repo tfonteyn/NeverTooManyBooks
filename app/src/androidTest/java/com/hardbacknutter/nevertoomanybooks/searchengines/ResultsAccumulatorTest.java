@@ -243,7 +243,7 @@ public class ResultsAccumulatorTest
                        + " Tiffany must summon all the witches to stand with her.");
         book.setLanguage("en");
         book.setFormat("Paperback");
-        book.putFloat(DBKey.RATING, 4.8f);
+        book.setRating(4.8f);
         book.putString(DBKey.PUBLICATION_DATE, "2016-06-02");
 
 //        final ArrayList<String> fileSpecs = new ArrayList<>();
@@ -362,7 +362,7 @@ public class ResultsAccumulatorTest
                              new PartialDate(2015, 1, 1))));
 
         book.setFormat("Trade Paperback");
-        book.putFloat(DBKey.RATING, 4.8f);
+        book.setRating(4.8f);
         book.putString(DBKey.FIRST_PUBLICATION_DATE, "2015");
         book.putString(DBKey.PUBLICATION_DATE, "2016-06-02");
 

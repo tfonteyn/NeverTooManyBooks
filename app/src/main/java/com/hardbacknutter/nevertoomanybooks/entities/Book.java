@@ -457,7 +457,7 @@ public class Book
         // put/getBoolean is 'right', but as a copy, might as well just use long
         duplicate.putLong(DBKey.SIGNED__BOOL, getLong(DBKey.SIGNED__BOOL));
 
-        duplicate.putFloat(DBKey.RATING, getFloat(DBKey.RATING, realNumberParser));
+        duplicate.setRating(getFloat(DBKey.RATING, realNumberParser));
         duplicate.putString(DBKey.PERSONAL_NOTES, getString(DBKey.PERSONAL_NOTES));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
@@ -1096,6 +1096,19 @@ public class Book
      */
     public void setBookshelves(@NonNull final Collection<Bookshelf> bookShelves) {
         putParcelableCollection(BKEY_BOOKSHELF_LIST, bookShelves);
+    }
+
+    /**
+     * Set the rating.
+     *
+     * @param rating to set; a {@code 0} or negative number will remove the field
+     */
+    public void setRating(final float rating) {
+        if (rating > 0) {
+            putFloat(DBKey.RATING, rating);
+        } else {
+            remove(DBKey.RATING);
+        }
     }
 
     /**

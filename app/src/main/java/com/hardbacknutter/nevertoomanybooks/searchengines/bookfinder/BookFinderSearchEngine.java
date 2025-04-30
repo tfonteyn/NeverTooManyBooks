@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -190,8 +189,7 @@ public class BookFinderSearchEngine
                                                            + " > span.book-rating-average");
         if (ratingElement != null) {
             final String[] s = ratingElement.text().split(" ", 2);
-            ratingParser.parse(s[0]).ifPresent(
-                    rating -> book.putFloat(DBKey.RATING, rating));
+            ratingParser.parse(s[0]).ifPresent(book::setRating);
         }
 
         final Elements details = bookInfo.select("div > strong");

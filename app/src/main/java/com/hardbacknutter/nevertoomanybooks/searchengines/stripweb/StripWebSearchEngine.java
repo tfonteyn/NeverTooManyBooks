@@ -472,7 +472,7 @@ public class StripWebSearchEngine
             // Only add if at least 1 star (and max 5 as sanity check)
             final int rating = nr.size();
             if (rating > 0 && rating < 6) {
-                book.putFloat(DBKey.RATING, rating);
+                book.setRating(rating);
             }
         }
     }

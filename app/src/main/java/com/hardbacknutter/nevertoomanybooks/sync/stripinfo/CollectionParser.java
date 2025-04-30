@@ -178,8 +178,7 @@ class CollectionParser {
                      @NonNull final Book book) {
         final Element element = root.getElementById(nameAttr);
         if (element != null) {
-            ratingParser.parse(element.val()).ifPresent(
-                    rating -> book.putFloat(DBKey.RATING, rating));
+            ratingParser.parse(element.val()).ifPresent(book::setRating);
         }
     }
 

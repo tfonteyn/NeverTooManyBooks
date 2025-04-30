@@ -315,8 +315,7 @@ public class DatabazeKnihSearchEngine
                     break;
                 }
                 case "ratingValue": {
-                    ratingParser.parse(itemProp.text())
-                                .ifPresent(rating -> book.putFloat(DBKey.RATING, rating));
+                    ratingParser.parse(itemProp.text()).ifPresent(book::setRating);
                     break;
                 }
                 case "genre": {

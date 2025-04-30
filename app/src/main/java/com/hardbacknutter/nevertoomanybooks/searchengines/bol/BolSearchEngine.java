@@ -536,8 +536,7 @@ public class BolSearchEngine
 
         final Element ratingElement = document.selectFirst("div.reviews-summary__avg-score");
         if (ratingElement != null) {
-            ratingParser.parse(ratingElement.text()).ifPresent(
-                    rating -> book.putFloat(DBKey.RATING, rating));
+            ratingParser.parse(ratingElement.text()).ifPresent(book::setRating);
         }
     }
 

@@ -526,7 +526,7 @@ public class CalibreContentServerReader
             final int rating = calibreBook.getInt(CalibreBookJsonKey.RATING);
             // ignore a remote 'not-set' value
             if (rating > 0) {
-                book.putFloat(DBKey.RATING, rating);
+                book.setRating(rating);
             }
         }
 

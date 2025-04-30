@@ -583,8 +583,7 @@ public class StripInfoSearchEngine
         // find and process the rating
         item = document.selectFirst("a#stripsScore");
         if (item != null) {
-            ratingParser.parse(item.text()).ifPresent(
-                    rating -> book.putFloat(DBKey.RATING, rating));
+            ratingParser.parse(item.text()).ifPresent(book::setRating);
         }
 
         // Are we logged in ? Then look for any user data.

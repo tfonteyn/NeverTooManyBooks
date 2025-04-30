@@ -414,7 +414,7 @@ public class BertrandPtSearchEngine
             if (ratingElement != null) {
                 // count the 'active' stars
                 final Elements stars = ratingElement.select("span.active");
-                book.putFloat(DBKey.RATING, stars.size());
+                book.setRating(stars.size());
             }
         }
 

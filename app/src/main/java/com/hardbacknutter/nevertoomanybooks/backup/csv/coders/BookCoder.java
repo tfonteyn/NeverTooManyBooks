@@ -540,16 +540,12 @@ public class BookCoder {
 
     private void processRating(@NonNull final Book book) {
         if (!book.contains(DBKey.RATING) && book.contains(Goodreads.MY_RATING)) {
-            ratingParser.parse(book.getString(Goodreads.MY_RATING)).ifPresent(
-                    rating -> book.putFloat(DBKey.RATING, rating));
-
+            ratingParser.parse(book.getString(Goodreads.MY_RATING)).ifPresent(book::setRating);
             book.remove(Goodreads.MY_RATING);
         }
 
         if (!book.contains(DBKey.RATING) && book.contains(Goodreads.AVERAGE_RATING)) {
-            ratingParser.parse(book.getString(Goodreads.AVERAGE_RATING)).ifPresent(
-                    rating -> book.putFloat(DBKey.RATING, rating));
-
+            ratingParser.parse(book.getString(Goodreads.AVERAGE_RATING)).ifPresent(book::setRating);
             book.remove(Goodreads.AVERAGE_RATING);
         }
     }
