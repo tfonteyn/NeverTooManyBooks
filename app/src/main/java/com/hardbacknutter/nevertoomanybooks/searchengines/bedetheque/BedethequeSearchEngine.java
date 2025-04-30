@@ -351,7 +351,7 @@ public class BedethequeSearchEngine
                     case "Titre :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            book.putString(DBKey.TITLE, textNode.toString().trim());
+                            book.setTitle(textNode.toString().trim());
                         }
                         break;
                     }

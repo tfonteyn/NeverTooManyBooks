@@ -645,7 +645,7 @@ public class DoubanSearchEngine
             // We'll grab the thumbnail instead.
             switch (property) {
                 case "og:title":
-                    book.putString(DBKey.TITLE, content);
+                    book.setTitle(content);
                     break;
 
                 case "book:isbn":

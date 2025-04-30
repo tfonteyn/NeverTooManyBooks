@@ -174,7 +174,7 @@ public class BookTest
          * update the stored book; change the title and add an Author.
          */
         book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE[bookIdx] + "_upd");
+        book.setTitle(TestConstants.BOOK_TITLE[bookIdx] + "_upd");
         book.setStage(EntityStage.Stage.Dirty);
 
         authors = book.getAuthors();
@@ -344,7 +344,7 @@ public class BookTest
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE[bookIdx]);
+        book.setTitle(TestConstants.BOOK_TITLE[bookIdx]);
         book.setStage(EntityStage.Stage.Dirty);
 
         book.setIdentifiers(List.of(

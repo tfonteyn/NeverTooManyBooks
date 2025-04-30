@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -132,7 +132,7 @@ public abstract class BaseSetup
     void initBook(final int bookIdx) {
         bookArray[bookIdx] = new Book();
         bookArray[bookIdx].setStage(EntityStage.Stage.WriteAble);
-        bookArray[bookIdx].putString(DBKey.TITLE, TestConstants.BOOK_TITLE[bookIdx]);
+        bookArray[bookIdx].setTitle(TestConstants.BOOK_TITLE[bookIdx]);
         bookArray[bookIdx].setStage(EntityStage.Stage.Dirty);
         bookArray[bookIdx].putString(DBKey.LANGUAGE, TestConstants.lang[bookIdx]);
     }

@@ -453,8 +453,7 @@ public class AmazonSearchEngine
             return;
         }
 
-        final String title = titleElement.text().strip();
-        book.putString(DBKey.TITLE, title);
+        book.setTitle(titleElement.text());
 
         // Use the site locale for all parsing!
         // Derive it from the actual url, as this might have been a redirect

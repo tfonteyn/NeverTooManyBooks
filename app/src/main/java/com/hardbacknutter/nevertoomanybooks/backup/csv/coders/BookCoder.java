@@ -179,7 +179,7 @@ public class BookCoder {
 
         // we MUST have a title.
         if (book.getTitle().isEmpty()) {
-            book.putString(DBKey.TITLE, context.getString(R.string.unknown_title));
+            book.setTitle(context.getString(R.string.unknown_title));
         }
 
         // check/fix the language

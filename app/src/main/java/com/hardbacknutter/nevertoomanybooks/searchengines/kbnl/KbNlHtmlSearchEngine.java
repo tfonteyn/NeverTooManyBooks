@@ -394,7 +394,7 @@ public class KbNlHtmlSearchEngine
         final Element a = td.selectFirst("a");
         if (a != null) {
             final String[] cleanedData = a.text().split("/");
-            book.putString(DBKey.TITLE, cleanedData[0].trim());
+            book.setTitle(cleanedData[0].trim());
             // It's temping to decode [1,
             // but the data has proven to be very unstructured and mostly unusable.
         }

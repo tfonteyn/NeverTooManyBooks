@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.citations;
 
-import android.os.Bundle;
-
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -52,12 +50,11 @@ public class MLACitationTest
 
     @Test
     public void cite() {
-        final Bundle bundle = new Bundle();
-        bundle.putString(DBKey.TITLE, "The Deeper Meaning of Liff");
-        bundle.putString(DBKey.ISBN, "1234567890123");
-        bundle.putString(DBKey.PUBLICATION_DATE, "1990");
+        final Book book = new Book();
+        book.setTitle("The Deeper Meaning of Liff");
+        book.putString(DBKey.ISBN, "1234567890123");
+        book.putString(DBKey.PUBLICATION_DATE, "1990");
 
-        final Book book = new Book(bundle);
         book.setAuthors(List.of(Author.from("Douglas Adams"),
                                 Author.from(" John Lloyd")));
         book.setPublishers(List.of(Publisher.from("Pan Books")));

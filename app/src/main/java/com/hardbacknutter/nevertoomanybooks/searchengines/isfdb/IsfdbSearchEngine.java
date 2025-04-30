@@ -1184,7 +1184,7 @@ public class IsfdbSearchEngine
                             final Node nextSibling = labelElement.nextSibling();
                             if (nextSibling != null) {
                                 bookTitle = SearchEngineUtils.cleanText(nextSibling.toString());
-                                book.putString(DBKey.TITLE, bookTitle);
+                                book.setTitle(bookTitle);
                             }
                             break;
                         }

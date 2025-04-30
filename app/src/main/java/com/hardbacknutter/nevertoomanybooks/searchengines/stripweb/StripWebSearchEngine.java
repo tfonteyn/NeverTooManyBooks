@@ -462,7 +462,7 @@ public class StripWebSearchEngine
                     .map(suffix -> text.substring(0, text.length() - suffix.length()))
                     .findAny()
                     .orElse(text);
-            book.putString(DBKey.TITLE, title);
+            book.setTitle(title);
         }
     }
 

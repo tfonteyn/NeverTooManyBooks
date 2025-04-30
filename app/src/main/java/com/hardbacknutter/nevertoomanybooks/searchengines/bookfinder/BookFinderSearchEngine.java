@@ -179,8 +179,7 @@ public class BookFinderSearchEngine
             return;
         }
 
-        final String title = titleElement.text();
-        book.putString(DBKey.TITLE, title);
+        book.setTitle(titleElement.text());
 
         final Element authorElement = bookInfo.selectFirst(
                 "div.bf-content-header-book-author > p > strong > a");

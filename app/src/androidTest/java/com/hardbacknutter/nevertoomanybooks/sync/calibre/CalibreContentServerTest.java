@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,6 @@ import javax.net.ssl.TrustManager;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -112,7 +111,7 @@ public class CalibreContentServerTest {
         final Book book = new Book();
         book.setAuthors(authors);
 
-        book.putString(DBKey.TITLE, "Rama");
+        book.setTitle("Rama");
 
         final String dir = server.createAuthorDirectoryName(context, book);
         assertEquals("Clarke, Arthur C", dir);
@@ -120,7 +119,7 @@ public class CalibreContentServerTest {
         String fileName = server.createFilename(context, book);
         assertEquals("Rama", fileName);
 
-        book.putString(DBKey.TITLE, "Rama: the omnibus");
+        book.setTitle("Rama: the omnibus");
 
         // without a series
         fileName = server.createFilename(context, book);

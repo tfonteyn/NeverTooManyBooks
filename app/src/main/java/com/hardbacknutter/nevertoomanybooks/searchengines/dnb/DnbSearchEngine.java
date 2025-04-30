@@ -494,7 +494,7 @@ public class DnbSearchEngine
             }
         }
 
-        book.putString(DBKey.TITLE, text);
+        book.setTitle(text);
     }
 
     /**

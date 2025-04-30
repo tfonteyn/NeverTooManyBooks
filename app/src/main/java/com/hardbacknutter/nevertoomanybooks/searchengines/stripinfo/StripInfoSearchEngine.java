@@ -426,8 +426,7 @@ public class StripInfoSearchEngine
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     if (titleUrlElement != null) {
-                        book.putString(DBKey.TITLE, SearchEngineUtils
-                                .cleanText(titleUrlElement.text()));
+                        book.setTitle(SearchEngineUtils.cleanText(titleUrlElement.text()));
                         externalId = parseExternalId(titleUrlElement, book);
 
                         final Elements tds = row.select("td");

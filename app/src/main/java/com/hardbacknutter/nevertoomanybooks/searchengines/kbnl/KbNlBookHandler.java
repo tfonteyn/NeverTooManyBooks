@@ -346,7 +346,7 @@ class KbNlBookHandler
                                                 .collect(Collectors.joining(" "))
                                                 .split("/");
 
-        book.putString(DBKey.TITLE, cleanedData[0].strip());
+        book.setTitle(cleanedData[0].strip());
         // It's temping to decode [1], as this is the author as it appears on the cover,
         // but the data has proven to be very unstructured and mostly unusable.
     }

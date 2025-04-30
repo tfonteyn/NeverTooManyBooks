@@ -511,7 +511,7 @@ public class Book
      * @param title to set; a {@code null} or an empty string will remove the field
      */
     public void setTitle(@Nullable final String title) {
-        if (title != null && !title.isEmpty()) {
+        if (title != null && !title.isBlank()) {
             putString(DBKey.TITLE, title);
         } else {
             remove(DBKey.TITLE);

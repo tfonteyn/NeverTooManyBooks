@@ -511,8 +511,7 @@ public class CalibreContentServerReader
 
         // paranoia ...
         if (!calibreBook.isNull(CalibreBookJsonKey.TITLE)) {
-            book.putString(DBKey.TITLE,
-                           calibreBook.getString(CalibreBookJsonKey.TITLE));
+            book.setTitle(calibreBook.getString(CalibreBookJsonKey.TITLE));
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.DESCRIPTION)) {

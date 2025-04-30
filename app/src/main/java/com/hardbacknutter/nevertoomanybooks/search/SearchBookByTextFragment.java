@@ -290,7 +290,7 @@ public class SearchBookByTextFragment
         // we add them manually as the template for a new book.
 
         if (!book.contains(DBKey.TITLE)) {
-            book.putString(DBKey.TITLE, coordinator.getTitleSearchText());
+            book.setTitle(coordinator.getTitleSearchText());
         }
 
         final List<Author> authors = book.getAuthors();

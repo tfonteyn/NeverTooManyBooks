@@ -588,7 +588,7 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("title", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.TITLE, s);
+            book.setTitle(s);
         }
 
         // ENHANCE: add a preference switch to optionally fetch the subtitle

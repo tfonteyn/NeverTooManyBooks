@@ -130,7 +130,7 @@ public class ResultsAccumulatorTest
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
         book.putString(DBKey.ISBN, "9780552574471");
         book.putString(DBKey.PAGES, "332");
-        book.putString(DBKey.TITLE, "The Shepherd's Crown");
+        book.setTitle("The Shepherd's Crown");
         book.putString(DBKey.PRICE_LISTED, "7.99");
 
         book.setAuthors(List.of(
@@ -180,7 +180,7 @@ public class ResultsAccumulatorTest
         book.putString(DBKey.FORMAT, "Paperback");
         book.putString(DBKey.ISBN, "978-0552574471");
         book.putString(DBKey.PAGES, "336");
-        book.putString(DBKey.TITLE, "The Shepherd's Crown: A Discworld Novel, Volume 41");
+        book.setTitle("The Shepherd's Crown: A Discworld Novel, Volume 41");
         book.putString(DBKey.PRICE_LISTED, "7.29");
         book.setAuthors(List.of(
                 new Author("Pratchett", "Terry")
@@ -253,7 +253,7 @@ public class ResultsAccumulatorTest
 
         book.putString(DBKey.ISBN, "9780552574471");
         book.putString(DBKey.PAGES, "335");
-        book.putString(DBKey.TITLE, "Shepherds Crown");
+        book.setTitle("Shepherds Crown");
         book.putString(DBKey.PRICE_LISTED, "8.87");
 
         book.setAuthors(List.of(
@@ -374,7 +374,7 @@ public class ResultsAccumulatorTest
         book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
         book.putString(DBKey.ISBN, "9780552574471");
         book.putString(DBKey.PAGES, "332");
-        book.putString(DBKey.TITLE, "The Shepherd's Crown");
+        book.setTitle("The Shepherd's Crown");
         book.putDouble(DBKey.PRICE_LISTED, 7.99);
 
         book.setAuthors(List.of(

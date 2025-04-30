@@ -402,7 +402,7 @@ public class GoogleBooksSearchEngine
 
         s = volumeInfo.optString("title", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.TITLE, s);
+            book.setTitle(s);
         }
 
         a = volumeInfo.optJSONArray("authors");

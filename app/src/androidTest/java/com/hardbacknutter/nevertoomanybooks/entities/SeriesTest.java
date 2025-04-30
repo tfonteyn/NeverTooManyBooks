@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -198,7 +197,7 @@ public class SeriesTest
     @Test
     public void checkForSeriesNameInTitle01() {
         final Book book = new Book();
-        book.putString(DBKey.TITLE, "Isle of the Dead");
+        book.setTitle("Isle of the Dead");
         Series.checkForSeriesNameInTitle(book);
         assertEquals("Isle of the Dead", book.getTitle());
         final List<Series> allSeries = book.getSeries();
@@ -208,7 +207,7 @@ public class SeriesTest
     @Test
     public void checkForSeriesNameInTitle02() {
         final Book book = new Book();
-        book.putString(DBKey.TITLE, "The Last Colony (Old Man's War, #3)");
+        book.setTitle("The Last Colony (Old Man's War, #3)");
         Series.checkForSeriesNameInTitle(book);
         assertEquals("The Last Colony", book.getTitle());
         final List<Series> allSeries = book.getSeries();
@@ -221,7 +220,7 @@ public class SeriesTest
     @Test
     public void checkForSeriesNameInTitle03() {
         final Book book = new Book();
-        book.putString(DBKey.TITLE, "Kip,Koek en Ei (Agent 212, #12)");
+        book.setTitle("Kip,Koek en Ei (Agent 212, #12)");
         Series.checkForSeriesNameInTitle(book);
         assertEquals("Kip,Koek en Ei", book.getTitle());
         final List<Series> allSeries = book.getSeries();
@@ -234,7 +233,7 @@ public class SeriesTest
     @Test
     public void checkForSeriesNameInTitle04() {
         final Book book = new Book();
-        book.putString(DBKey.TITLE, "Behind the Walls of Terra (World of Tiers 4)");
+        book.setTitle("Behind the Walls of Terra (World of Tiers 4)");
         Series.checkForSeriesNameInTitle(book);
         assertEquals("Behind the Walls of Terra", book.getTitle());
         final List<Series> allSeries = book.getSeries();

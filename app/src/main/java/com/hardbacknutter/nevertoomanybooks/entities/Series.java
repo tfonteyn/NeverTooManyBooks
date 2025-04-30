@@ -450,13 +450,11 @@ public class Series
                 if (bookTitle != null) {
                     // the series title/number
                     final String seriesTitleWithNumber = matcher.group(2);
-
                     if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
                         // add to the TOP of the list.
                         book.add(0, from(seriesTitleWithNumber));
-
                         // and store cleansed book title back
-                        book.putString(DBKey.TITLE, bookTitle);
+                        book.setTitle(bookTitle);
                     }
                 }
             }

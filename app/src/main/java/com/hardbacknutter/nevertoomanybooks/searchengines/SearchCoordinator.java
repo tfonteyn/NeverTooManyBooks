@@ -443,7 +443,7 @@ public class SearchCoordinator
         // If we did not get a title, use the one we originally searched for.
         final String title = book.getString(DBKey.TITLE, null);
         if (title == null || title.isEmpty()) {
-            book.putString(DBKey.TITLE, criteria.getTitle());
+            book.setTitle(criteria.getTitle());
         }
 
         return book;

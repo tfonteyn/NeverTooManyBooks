@@ -266,8 +266,7 @@ public class BertrandPtSearchEngine
             return;
         }
 
-        final String title = titleElement.text();
-        book.putString(DBKey.TITLE, title);
+        book.setTitle(titleElement.text());
 
         // sibling to the title:  class="right-title-details subtitle"
         // ==> *can* contain Series with number
