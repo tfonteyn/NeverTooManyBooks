@@ -170,7 +170,7 @@ public abstract class BaseRecordReader
                                                   BookDao.BookFlag.UseIdIfPresent));
         results.bookCreated(id);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "insertBook",
                                         "preImport=" + preImportId, preImportUuid,
                                         "postImport=" + book.getId(),
@@ -224,7 +224,7 @@ public abstract class BaseRecordReader
     private void skipBook(@NonNull final Book book) {
         results.booksSkipped++;
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "skipBook",
                                         updateOption,
                                         "UUID=" + book.getString(DBKey.BOOK_UUID),
@@ -240,7 +240,7 @@ public abstract class BaseRecordReader
                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
         results.bookUpdated(book.getId());
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
             LoggerFactory.getLogger()
                          .d(TAG, "updateBook",
                             updateOption,

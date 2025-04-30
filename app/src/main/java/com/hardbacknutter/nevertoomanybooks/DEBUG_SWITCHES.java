@@ -80,8 +80,10 @@ public final class DEBUG_SWITCHES {
     /** enable timers for rough performance measurements. */
     public static final boolean SEARCH_COORDINATOR_TIMERS = false;
 
-    public static final boolean IMPORT_CSV_BOOKS = false;
-    public static final boolean IMPORT_CSV_BOOKS_EXT = false;
+    public static final boolean IMPORT_BOOKS = false;
+
+    /** Log the full exception instead of the message only. Very heavy ... */
+    public static final boolean IMPORT_BOOKS_FULL_EXCEPTION = false;
 
     public static final boolean IMPORT_CALIBRE_BOOKS = false;
     public static final boolean IMPORT_STRIP_INFO_BOOKS = false;

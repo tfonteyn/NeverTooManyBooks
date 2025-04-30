@@ -312,7 +312,7 @@ public class CsvRecordReader
             }
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "read", "results=" + results);
         }
         return results;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -181,7 +181,7 @@ public class ImportResults
 
         final Logger logger = LoggerFactory.getLogger();
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS_FULL_EXCEPTION) {
             // logging with the full exception is VERY HEAVY
             logger.d(TAG, "handleRowException", e.getClass().getSimpleName(),
                      "row=" + row, e);
