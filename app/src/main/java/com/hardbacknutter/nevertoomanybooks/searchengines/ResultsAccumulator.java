@@ -145,11 +145,11 @@ class ResultsAccumulator {
                 } else if (DBKey.MONEY_KEYS.contains(key)) {
                     processMoney(key, result, book, locale, realNumberParser);
 
+                } else if (DBKey.LANGUAGE_KEYS.contains(key)) {
+                    processLanguage(context, key, result, book, locale);
+
                 } else if (LIST_KEYS.contains(key)) {
                     processList(key, result, book);
-
-                } else if (DBKey.LANGUAGE.equals(key)) {
-                    processLanguage(context, key, result, book, locale);
 
                 } else if (DBKey.RATING.equals(key)) {
                     //ENHANCE: don't take first rating, but calc the average

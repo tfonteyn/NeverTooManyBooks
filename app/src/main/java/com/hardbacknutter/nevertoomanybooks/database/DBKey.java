@@ -166,6 +166,14 @@ public final class DBKey {
             PRICE_PAID);
 
     /**
+     * All money keys.
+     * Used with {@code LANGUAGE_KEYS.contains(key)} to check if a key represents a language.
+     */
+    public static final Set<String> LANGUAGE_KEYS = Set.of(
+            LANGUAGE,
+            TRANSLATION_ORIGINAL_LANGUAGE);
+
+    /**
      * All date keys (i.e. NOT datetime!).
      * Used with {@code DATE_KEYS.contains(key)} to check if a key represents a date.
      */
