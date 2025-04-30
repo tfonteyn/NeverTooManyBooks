@@ -443,7 +443,7 @@ public class Book
                             getString(DBKey.FIRST_PUBLICATION_DATE));
 
         duplicate.setFormat(getString(DBKey.FORMAT, null));
-        duplicate.putString(DBKey.COLOR, getString(DBKey.COLOR));
+        duplicate.setColor(getString(DBKey.COLOR, null));
         duplicate.setLanguage(getString(DBKey.LANGUAGE, null));
         duplicate.setPages(getString(DBKey.PAGES, null));
         // common blurb
@@ -693,6 +693,19 @@ public class Book
             putString(DBKey.DESCRIPTION, description);
         } else {
             remove(DBKey.DESCRIPTION);
+        }
+    }
+
+    /**
+     * Set the color.
+     *
+     * @param color to set; a {@code null} or an empty string will remove the field
+     */
+    public void setColor(@Nullable final String color) {
+        if (color != null && !color.isBlank()) {
+            putString(DBKey.COLOR, color);
+        } else {
+            remove(DBKey.COLOR);
         }
     }
 

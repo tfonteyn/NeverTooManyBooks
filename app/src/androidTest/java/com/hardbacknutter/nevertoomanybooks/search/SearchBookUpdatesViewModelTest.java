@@ -83,7 +83,7 @@ public class SearchBookUpdatesViewModelTest
         remoteBook.setTitle("Actual");
         remoteBook.add(Author.from("Real Author"));
         remoteBook.add(Publisher.from("Real Pub"));
-        remoteBook.putString(DBKey.COLOR, "monochromie");
+        remoteBook.setColor("monochromie");
 
         final SyncReaderProcessor processor = vm.getSyncProcessorBuilder().build(context);
 

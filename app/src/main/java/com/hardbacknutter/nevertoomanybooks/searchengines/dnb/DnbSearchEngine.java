@@ -750,7 +750,7 @@ public class DnbSearchEngine
         }
         if (text.contains("Farbig illustriert")
             || text.contains("Mit farbigen Zeichnungen")) {
-            book.putString(DBKey.COLOR, context.getString(R.string.book_color_full_color));
+            book.setColor(context.getString(R.string.book_color_full_color));
         }
 
         final Matcher matcher = PATTERN_PAGE_NUMBER.matcher(text);

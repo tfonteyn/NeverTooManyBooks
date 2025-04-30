@@ -711,7 +711,7 @@ class KbNlBookHandler
      */
     private void processIllustration(@NonNull final List<CurrentData> currentData) {
         if (!book.contains(DBKey.COLOR)) {
-            book.putString(DBKey.COLOR, currentData.get(0).data);
+            book.setColor(currentData.get(0).data);
         }
     }
 

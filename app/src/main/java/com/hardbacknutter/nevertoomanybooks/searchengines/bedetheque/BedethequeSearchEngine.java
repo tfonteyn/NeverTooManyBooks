@@ -412,8 +412,8 @@ public class BedethequeSearchEngine
                             final String colorOrColorist = a.text();
                             if (AUTHOR_NAME_COLOR.contains(colorOrColorist)) {
                                 // REMOVE the "<>" as we really don't want fake html tags
-                                book.putString(DBKey.COLOR, colorOrColorist
-                                        .substring(1, colorOrColorist.length() - 1));
+                                book.setColor(
+                                        colorOrColorist.substring(1, colorOrColorist.length() - 1));
                             } else {
                                 // it's a real name
                                 parseAuthor(context, colorOrColorist, Author.TYPE_COLORIST,

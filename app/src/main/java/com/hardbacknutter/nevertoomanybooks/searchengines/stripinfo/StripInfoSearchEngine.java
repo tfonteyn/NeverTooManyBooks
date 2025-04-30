@@ -915,7 +915,7 @@ public class StripInfoSearchEngine
 
             // is it a color ?
             if (COLOR_STRINGS.contains(text)) {
-                book.putString(DBKey.COLOR, text);
+                book.setColor(text);
             }
             return 1;
         }
