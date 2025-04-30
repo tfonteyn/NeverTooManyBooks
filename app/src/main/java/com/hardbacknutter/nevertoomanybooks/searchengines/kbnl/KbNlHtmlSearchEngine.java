@@ -460,9 +460,7 @@ public class KbNlHtmlSearchEngine
                         if (format.startsWith("(")) {
                             format = format.substring(1, format.length() - 1);
                         }
-                        if (!format.isEmpty()) {
-                            book.putString(DBKey.FORMAT, format);
-                        }
+                        book.setFormat(format);
                     }
                 }
             }

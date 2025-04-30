@@ -545,10 +545,7 @@ class KbNlBookHandler
             } else if (text.charAt(0) == '(') {
                 if (!book.contains(DBKey.FORMAT)) {
                     // Skip the 1th bracket, and split either on closing or on semicolon
-                    final String value = ISBN_BOUNDARY_PATTERN.split(text.substring(1))[0].strip();
-                    if (!value.isBlank()) {
-                        book.putString(DBKey.FORMAT, value);
-                    }
+                    book.setFormat(ISBN_BOUNDARY_PATTERN.split(text.substring(1))[0].strip());
                 }
             }
         }

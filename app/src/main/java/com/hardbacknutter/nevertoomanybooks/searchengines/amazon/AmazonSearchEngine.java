@@ -537,12 +537,8 @@ public class AmazonSearchEngine
         // The format can/should also be here
         final Element formatElement = swatchElement.selectFirst("a.a-button-text > span");
         if (formatElement != null) {
-            final String format = formatElement.text().strip();
-            if (!format.isEmpty()) {
-                book.putString(DBKey.FORMAT, format);
-            }
+            book.setFormat(formatElement.text().strip());
         }
-
     }
 
     private void parseASIN(@NonNull final Document document,
@@ -593,7 +589,7 @@ public class AmazonSearchEngine
 
                     } else if (LABEL_FORMAT.contains(lcLabel)) {
                         // we might already have the format, but we'll overwrite it - that's ok.
-                        book.putString(DBKey.FORMAT, label);
+                        book.setFormat(label);
                         book.setPages(extractPages(context, data));
 
                     } else if (LABEL_LANGUAGE.contains(lcLabel)) {

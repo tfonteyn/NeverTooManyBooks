@@ -463,7 +463,7 @@ public class CalibreContentServerReader
                    DaoWriteException {
 
         // it's an eBook - duh!
-        book.putString(DBKey.FORMAT, eBookString);
+        book.setFormat(eBookString);
 
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);

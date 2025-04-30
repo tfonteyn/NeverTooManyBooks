@@ -118,7 +118,7 @@ public class ResultsAccumulatorTest
                              "The Shepherd's Crown",
                              new PartialDate(2015, 1, 1))));
 
-        book.putString(DBKey.FORMAT, "tp");
+        book.setFormat("tp");
         book.putString(DBKey.FIRST_PUBLICATION_DATE, "2015");
         book.putString(DBKey.PUBLICATION_DATE, "2016-06-02");
 
@@ -177,7 +177,7 @@ public class ResultsAccumulatorTest
         final Book book = new Book();
         book.setSeries(List.of(new Series("Discworld Novels")));
         book.putString(DBKey.LANGUAGE, "English");
-        book.putString(DBKey.FORMAT, "Paperback");
+        book.setFormat("Paperback");
         book.setIsbn("978-0552574471");
         book.setPages(336);
         book.setTitle("The Shepherd's Crown: A Discworld Novel, Volume 41");
@@ -242,7 +242,7 @@ public class ResultsAccumulatorTest
                        + " the good and the bad. As the fairy horde prepares for invasion,"
                        + " Tiffany must summon all the witches to stand with her.");
         book.putString(DBKey.LANGUAGE, "en");
-        book.putString(DBKey.FORMAT, "Paperback");
+        book.setFormat("Paperback");
         book.putFloat(DBKey.RATING, 4.8f);
         book.putString(DBKey.PUBLICATION_DATE, "2016-06-02");
 
@@ -361,7 +361,7 @@ public class ResultsAccumulatorTest
                              "The Shepherd's Crown",
                              new PartialDate(2015, 1, 1))));
 
-        book.putString(DBKey.FORMAT, "Trade Paperback");
+        book.setFormat("Trade Paperback");
         book.putFloat(DBKey.RATING, 4.8f);
         book.putString(DBKey.FIRST_PUBLICATION_DATE, "2015");
         book.putString(DBKey.PUBLICATION_DATE, "2016-06-02");

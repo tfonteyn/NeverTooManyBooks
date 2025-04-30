@@ -563,8 +563,7 @@ public class BedethequeSearchEngine
                            @NonNull final Book book) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES, false)) {
-            book.putString(DBKey.FORMAT, currentFormat
-                                         + (softcover ? "; Couverture souple" : ""));
+            book.setFormat(currentFormat + (softcover ? "; Couverture souple" : ""));
             return;
         }
 
@@ -606,7 +605,7 @@ public class BedethequeSearchEngine
                 break;
         }
 
-        book.putString(DBKey.FORMAT, format);
+        book.setFormat(format);
     }
 
     /**

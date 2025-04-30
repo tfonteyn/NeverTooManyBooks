@@ -569,7 +569,7 @@ public class DoubanSearchEngine
                     // Format
                     final Node n = label.nextSibling();
                     if (n != null) {
-                        book.putString(DBKey.FORMAT, n.toString().strip());
+                        book.setFormat(n.toString().strip());
                     }
                     break;
                 }

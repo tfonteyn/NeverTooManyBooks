@@ -442,7 +442,7 @@ public class Book
         duplicate.putString(DBKey.FIRST_PUBLICATION_DATE,
                             getString(DBKey.FIRST_PUBLICATION_DATE));
 
-        duplicate.putString(DBKey.FORMAT, getString(DBKey.FORMAT));
+        duplicate.setFormat(getString(DBKey.FORMAT, null));
         duplicate.putString(DBKey.COLOR, getString(DBKey.COLOR));
         duplicate.putString(DBKey.LANGUAGE, getString(DBKey.LANGUAGE));
         duplicate.setPages(getString(DBKey.PAGES, null));
@@ -693,6 +693,19 @@ public class Book
             putString(DBKey.DESCRIPTION, description);
         } else {
             remove(DBKey.DESCRIPTION);
+        }
+    }
+
+    /**
+     * Set the format.
+     *
+     * @param format to set; a {@code null} or an empty string will remove the field
+     */
+    public void setFormat(@Nullable final String format) {
+        if (format != null && !format.isBlank()) {
+            putString(DBKey.FORMAT, format);
+        } else {
+            remove(DBKey.FORMAT);
         }
     }
 

@@ -639,7 +639,7 @@ public class OpenLibrarySearchEngine
         //  Maybe use that if the format is not present?
         s = document.optString("physical_format", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.FORMAT, s);
+            book.setFormat(s);
         }
 
         a = document.optJSONArray("languages");

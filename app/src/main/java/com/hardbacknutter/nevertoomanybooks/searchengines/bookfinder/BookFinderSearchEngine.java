@@ -221,7 +221,8 @@ public class BookFinderSearchEngine
                             break;
                         }
                         case "Edition:": {
-                            book.putString(DBKey.FORMAT, value);
+                            // This field is actually the format
+                            book.setFormat(value);
                             break;
                         }
                         case "Language:": {

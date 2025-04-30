@@ -469,7 +469,7 @@ public class GoogleBooksSearchEngine
                                @NonNull final Book book) {
         final boolean isEbook = saleInfo.optBoolean("isEbook");
         if (isEbook) {
-            book.putString(DBKey.FORMAT, context.getString(R.string.book_format_ebook));
+            book.setFormat(context.getString(R.string.book_format_ebook));
         }
 
         final JSONObject listPrice = saleInfo.optJSONObject("listPrice");

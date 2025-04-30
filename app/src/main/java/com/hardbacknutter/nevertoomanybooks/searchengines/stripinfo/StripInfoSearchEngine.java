@@ -504,7 +504,7 @@ public class StripInfoSearchEngine
                                 case "Kaft": {
                                     final String text = extractText(td);
                                     if (text != null) {
-                                        book.putString(DBKey.FORMAT, text);
+                                        book.setFormat(text);
                                         i++;
                                     }
                                     break;

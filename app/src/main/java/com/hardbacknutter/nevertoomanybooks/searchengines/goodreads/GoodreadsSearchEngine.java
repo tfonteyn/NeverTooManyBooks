@@ -464,7 +464,7 @@ public class GoodreadsSearchEngine
         }
         s = details.optString("format", null);
         if (s != null && !s.isEmpty()) {
-            book.putString(DBKey.FORMAT, s);
+            book.setFormat(s);
         }
         s = details.optString("numPages", null);
         if (s != null && !s.isEmpty()) {

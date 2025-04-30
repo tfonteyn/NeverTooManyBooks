@@ -572,10 +572,7 @@ public class DatabazeKnihSearchEngine
         if (element != null) {
             final Node textNode = element.nextSibling();
             if (textNode != null) {
-                final String text = textNode.toString().trim();
-                if (!text.isEmpty()) {
-                    book.putString(DBKey.FORMAT, text);
-                }
+                book.setFormat(textNode.toString().trim());
             }
         }
 
@@ -604,11 +601,11 @@ public class DatabazeKnihSearchEngine
                 final String text = textNode.toString().trim();
                 if (!text.isEmpty()) {
                     if (EBOOK.equals(text)) {
-                        book.putString(DBKey.FORMAT, EBOOK);
+                        book.setFormat(EBOOK);
                     } else if (AUDIOBOOK.equals(text)) {
-                        book.putString(DBKey.FORMAT, AUDIOBOOK);
+                        book.setFormat(AUDIOBOOK);
                     } else if (!CLASSIC_BOOK.equals(text)) {
-                        LoggerFactory.getLogger().w(TAG, "found Forma: " + text);
+                        LoggerFactory.getLogger().w(TAG, "found Format=" + text);
                     }
                 }
             }

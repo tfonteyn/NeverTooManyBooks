@@ -338,10 +338,7 @@ public class BertrandPtSearchEngine
         element = bookInfo.selectFirst(
                 "div#productPageSectionDetails-collapseDetalhes-content-bookbinding > div.info");
         if (element != null) {
-            s = element.text().strip();
-            if (!s.isBlank()) {
-                book.putString(DBKey.FORMAT, s);
-            }
+            book.setFormat(element.text().strip());
         }
 
         // Tipo de Produto
@@ -351,7 +348,7 @@ public class BertrandPtSearchEngine
             s = element.text().strip();
             if (!"Livro".equals(s)) {
                 // If it's NOT a book, then overwrite the format key (i.e. ebook, audiobook...)
-                book.putString(DBKey.FORMAT, s);
+                book.setFormat(s);
             }
         }
 

@@ -1388,7 +1388,7 @@ public class IsfdbSearchEngine
         // need to extract the "tp".
         final Element data = labelElement.nextElementSibling();
         if (data != null) {
-            book.putString(DBKey.FORMAT, data.ownText());
+            book.setFormat(data.ownText());
         }
     }
 

@@ -745,7 +745,7 @@ public class DnbSearchEngine
         final String text = td.text();
         // there may be more text snippets we can check for.
         if (text.contains("Online-Ressource")) {
-            book.putString(DBKey.FORMAT, context.getString(R.string.book_format_ebook));
+            book.setFormat(context.getString(R.string.book_format_ebook));
         }
         if (text.contains("Farbig illustriert")
             || text.contains("Mit farbigen Zeichnungen")) {
