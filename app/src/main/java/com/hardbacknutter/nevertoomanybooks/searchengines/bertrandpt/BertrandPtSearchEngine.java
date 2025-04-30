@@ -47,10 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -276,9 +273,6 @@ public class BertrandPtSearchEngine
 
         // Use the site locale for all parsing!
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser moneyParser = new MoneyParser(siteLocale, realNumberParser);
 
         // The author is often missing when the book is not a 'standard' portuguese book.
         final Elements authorElements = bookInfo.select(
@@ -386,18 +380,7 @@ public class BertrandPtSearchEngine
                 "div#productPageRightSectionTop-saleAction-price-current");
         if (priceElement != null) {
             final String tmpString = priceElement.text();
-            final Optional<Money> money = moneyParser.parse(tmpString);
-            if (money.isPresent()) {
-                book.putMoney(DBKey.PRICE_LISTED, money.get());
-            } else {
-                // parsing failed, store the string as-is;
-                // no separate currency!
-                book.putString(DBKey.PRICE_LISTED, priceElement.text());
-                // log this as we need to understand WHY it failed
-                LoggerFactory.getLogger().w(TAG, "Failed to parse",
-                                            DBKey.PRICE_LISTED,
-                                            "text=" + tmpString);
-            }
+            addPriceListed(context, siteLocale, tmpString, MoneyParser.EUR, book);
         }
 
         // First try for the readers rating
