@@ -524,7 +524,7 @@ public class BookDaoHelper {
     void persistCovers()
             throws StorageException, IOException {
 
-        final String uuid = book.getString(DBKey.BOOK_UUID);
+        final String uuid = book.getUuid();
 
         for (int cIdx = 0; cIdx < Book.BKEY_TMP_FILE_SPEC.length; cIdx++) {
             if (book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {

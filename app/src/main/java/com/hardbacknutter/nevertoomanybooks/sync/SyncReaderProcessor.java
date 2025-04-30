@@ -162,17 +162,15 @@ public class SyncReaderProcessor {
                     return false;
 
                 } else if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
-                    final String uuid = localBook.getString(DBKey.BOOK_UUID);
                     // check if it's missing or empty.
                     return ServiceLocator.getInstance().getCoverStorage()
-                                         .getPersistedFile(uuid, 0)
+                                         .getPersistedFile(localBook.getUuid(), 0)
                                          .isEmpty();
 
                 } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
-                    final String uuid = localBook.getString(DBKey.BOOK_UUID);
                     // check if it's missing or empty.
                     return ServiceLocator.getInstance().getCoverStorage()
-                                         .getPersistedFile(uuid, 1)
+                                         .getPersistedFile(localBook.getUuid(), 1)
                                          .isEmpty();
                 } else {
                     // If the original was blank/zero, add to list
@@ -366,9 +364,8 @@ public class SyncReaderProcessor {
         if (fileSpec != null && !fileSpec.isEmpty()) {
             //noinspection OverlyBroadCatchBlock
             try {
-                final String uuid = localBook.getString(DBKey.BOOK_UUID);
                 ServiceLocator.getInstance().getCoverStorage()
-                              .persist(new File(fileSpec), uuid, cIdx);
+                              .persist(new File(fileSpec), localBook.getUuid(), cIdx);
 
             } catch (@NonNull final StorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low

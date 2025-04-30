@@ -349,8 +349,8 @@ public class JsonRecordWriter
                         results.addBook(book.getId());
 
                         if (collectCoverFilenames) {
+                            final String uuid = book.getUuid();
                             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                                final String uuid = book.getString(DBKey.BOOK_UUID);
                                 coverStorage.getPersistedFile(uuid, cIdx)
                                             .ifPresent(results::addCover);
                             }

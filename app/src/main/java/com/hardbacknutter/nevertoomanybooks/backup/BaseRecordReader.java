@@ -97,7 +97,7 @@ public abstract class BaseRecordReader
             throws StorageException,
                    DaoWriteException {
 
-        final String importedUuid = book.getString(DBKey.BOOK_UUID);
+        final String importedUuid = book.getUuid();
 
         // ALWAYS let the UUID trump the ID; we may be importing someone else's list
         if (!importedUuid.isEmpty()) {
@@ -227,7 +227,7 @@ public abstract class BaseRecordReader
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_BOOKS) {
             LoggerFactory.getLogger().d(TAG, "skipBook",
                                         updateOption,
-                                        "UUID=" + book.getString(DBKey.BOOK_UUID),
+                                        "UUID=" + book.getUuid(),
                                         "id=" + book.getId(),
                                         book.getTitle());
         }
@@ -244,7 +244,7 @@ public abstract class BaseRecordReader
             LoggerFactory.getLogger()
                          .d(TAG, "updateBook",
                             updateOption,
-                            "UUID=" + book.getString(DBKey.BOOK_UUID),
+                            "UUID=" + book.getUuid(),
                             "id=" + book.getId(),
                             book.getTitle());
         }

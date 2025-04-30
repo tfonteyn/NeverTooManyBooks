@@ -496,6 +496,16 @@ public class Book
     }
 
     /**
+     * Get the {@code UUID}.
+     *
+     * @return the uuid; can be empty but never {@code null}
+     */
+    @NonNull
+    public String getUuid() {
+        return getString(DBKey.BOOK_UUID);
+    }
+
+    /**
      * Get the <strong>unformatted</strong> title.
      *
      * @return the title; can be empty but never {@code null}

@@ -68,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -274,8 +273,7 @@ public final class CoverHandler {
         menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(cIdx == 0);
 
         // Add the potential undo-menu
-        if (ServiceLocator.getInstance().getCoverStorage()
-                          .isUndoEnabled(book.getString(DBKey.BOOK_UUID), cIdx)) {
+        if (ServiceLocator.getInstance().getCoverStorage().isUndoEnabled(book.getUuid(), cIdx)) {
             menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover)
                 .setIcon(R.drawable.undo_24px);
         }
@@ -366,8 +364,7 @@ public final class CoverHandler {
 
         } else if (menuItemId == R.id.MENU_UNDO) {
             try {
-                if (ServiceLocator.getInstance().getCoverStorage()
-                                  .restore(book.getString(DBKey.BOOK_UUID), cIdx)) {
+                if (ServiceLocator.getInstance().getCoverStorage().restore(book.getUuid(), cIdx)) {
                     coverLoader.accept(cIdx);
                 }
             } catch (@NonNull final IOException e) {
