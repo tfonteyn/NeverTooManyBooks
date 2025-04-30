@@ -20,8 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDoneException;
-import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,11 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 public class TableDefinition {
 
     private static final String _AS_ = " AS ";
-
-    private static final String TABLE_EXISTS_SQL_STANDARD =
-            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?";
-    private static final String TABLE_EXISTS_SQL_TEMP =
-            "SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?";
 
     /** List of domains in this table. */
     private final List<Domain> domains = new ArrayList<>();
@@ -163,6 +156,16 @@ public class TableDefinition {
         children.values().stream()
                 .map(FkReference::getForeignKeyTable)
                 .forEach(child -> child.removeReference(this));
+    }
+
+    /**
+     * Get the type of this table.
+     *
+     * @return type
+     */
+    @NonNull
+    public TableType getType() {
+        return type;
     }
 
     /**
@@ -507,29 +510,6 @@ public class TableDefinition {
     }
 
     /**
-     * Check if this table exists.
-     *
-     * @param db Database Access
-     *
-     * @return {@code true} if this table exists
-     */
-    public boolean exists(@NonNull final SQLiteDatabase db) {
-        final String sql;
-        if (type == TableType.Standard) {
-            sql = TABLE_EXISTS_SQL_STANDARD;
-        } else {
-            sql = TABLE_EXISTS_SQL_TEMP;
-        }
-
-        try (SQLiteStatement stmt = db.compileStatement(sql)) {
-            stmt.bindString(1, name);
-            return stmt.simpleQueryForLong() > 0;
-        } catch (@NonNull final SQLiteDoneException ignore) {
-            return false;
-        }
-    }
-
-    /**
      * Get a description/info structure for this table describing the columns etc.
      *
      * @param db Database Access
@@ -664,7 +644,7 @@ public class TableDefinition {
      */
     @NonNull
     public String getCreateStatement(@NonNull final String tableName,
-                                      final boolean withDomainConstraints) {
+                                     final boolean withDomainConstraints) {
 
         final StringBuilder sql;
         switch (type) {
