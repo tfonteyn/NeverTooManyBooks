@@ -515,7 +515,7 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Titel": {
-                        processText(td, DBKey.TITLE, book);
+                        book.setTitle(SearchEngineUtils.cleanText(td.text()));
                         break;
                     }
                     case "Serie / held": {
@@ -523,7 +523,10 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Reeks": {
-                        processText(td.child(0), SiteField.REEKS, book);
+                        final String text = SearchEngineUtils.cleanText(td.child(0).text());
+                        if (!text.isEmpty()) {
+                            book.putString(SiteField.REEKS, text);
+                        }
                         break;
                     }
                     case "Nummer in reeks": {
@@ -576,15 +579,18 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Cover": {
-                        processText(td, DBKey.FORMAT, book);
+                        book.setFormat(SearchEngineUtils.cleanText(td.text()));
                         break;
                     }
                     case "Druk": {
-                        processText(td, SiteField.PRINTING, book);
+                        final String text = SearchEngineUtils.cleanText(td.text());
+                        if (!text.isEmpty()) {
+                            book.putString(SiteField.PRINTING, text);
+                        }
                         break;
                     }
                     case "Inkleuring": {
-                        processText(td, DBKey.COLOR, book);
+                        book.setColor(SearchEngineUtils.cleanText(td.text()));
                         break;
                     }
                     case "ISBN": {
@@ -599,12 +605,15 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Aantal bladzijden": {
-                        processText(td, DBKey.PAGES, book);
+                        book.setPages(SearchEngineUtils.cleanText(td.text()));
                         break;
                     }
                     case "Afmetingen": {
                         if (!"? x ? cm".equals(td.text())) {
-                            processText(td, SiteField.SIZE, book);
+                            final String text = SearchEngineUtils.cleanText(td.text());
+                            if (!text.isEmpty()) {
+                                book.putString(SiteField.SIZE, text);
+                            }
                         }
                         break;
                     }
@@ -613,11 +622,11 @@ public class LastDodoSearchEngine
                         break;
                     }
                     case "Taal / dialect": {
-                        processText(td, DBKey.LANGUAGE, book);
+                        book.setLanguage(SearchEngineUtils.cleanText(td.text()));
                         break;
                     }
                     case "Bijzonderheden": {
-                        processText(td, DBKey.DESCRIPTION, book);
+                        book.setDescription(SearchEngineUtils.cleanText(td.text()));
                         break;
                     }
                     default:
@@ -788,24 +797,6 @@ public class LastDodoSearchEngine
         // there might be more than one; we only grab the first one here
         final Element a = td.child(0);
         book.putString(SiteField.TYPE, a.text());
-    }
-
-    /**
-     * Process a td which is pure text.
-     *
-     * @param td   label td
-     * @param key  for this field
-     * @param book Bundle to update
-     */
-    private void processText(@Nullable final Element td,
-                             @NonNull final String key,
-                             @NonNull final Book book) {
-        if (td != null) {
-            final String text = SearchEngineUtils.cleanText(td.text());
-            if (!text.isEmpty()) {
-                book.putString(key, text);
-            }
-        }
     }
 
     /**
