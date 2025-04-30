@@ -648,7 +648,7 @@ public class DoubanSearchEngine
                     break;
 
                 case "book:isbn":
-                    book.putString(DBKey.ISBN, content);
+                    book.setIsbn(content);
                     break;
 
                 case "og:description":

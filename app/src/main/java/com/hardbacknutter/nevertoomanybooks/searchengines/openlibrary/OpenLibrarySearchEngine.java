@@ -935,13 +935,13 @@ public class OpenLibrarySearchEngine
         JSONArray a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
             // Overwrite
-            book.putString(DBKey.ISBN, a.getString(0));
+            book.setIsbn(a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
             if (a != null && !a.isEmpty()) {
                 // Do NOT overwrite
-                if (!book.contains(DBKey.ISBN)) {
-                    book.putString(DBKey.ISBN, a.getString(0));
+                if (!book.hasIsbn()) {
+                    book.setIsbn(a.getString(0));
                 }
             }
         }

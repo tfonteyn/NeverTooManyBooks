@@ -72,7 +72,7 @@ public class EditBookFieldsFragment
     private final ActivityResultLauncher<ScanOptions> scanLauncher =
             registerForActivityResult(new ScannerContract(), o -> o.ifPresent(
                     barCode -> {
-                        vm.getBook().putString(DBKey.ISBN, barCode);
+                        vm.getBook().setIsbn(barCode);
                         //noinspection DataFlowIssue
                         SoundManager.beepOnBarcodeFound(getContext());
                     }));

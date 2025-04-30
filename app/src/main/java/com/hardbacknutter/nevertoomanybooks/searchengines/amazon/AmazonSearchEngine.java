@@ -586,10 +586,10 @@ public class AmazonSearchEngine
                     final String lcLabel = label.toLowerCase(siteLocale);
 
                     if (LABEL_ISBN_13.equals(lcLabel)) {
-                        book.putString(DBKey.ISBN, data);
+                        book.setIsbn(data);
 
                     } else if (LABEL_ISBN_10.equals(lcLabel) && !book.contains(DBKey.ISBN)) {
-                        book.putString(DBKey.ISBN, data);
+                        book.setIsbn(data);
 
                     } else if (LABEL_FORMAT.contains(lcLabel)) {
                         // we might already have the format, but we'll overwrite it - that's ok.

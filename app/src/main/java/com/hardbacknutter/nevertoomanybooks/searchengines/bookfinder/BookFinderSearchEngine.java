@@ -205,7 +205,7 @@ public class BookFinderSearchEngine
                         case "ISBN:": {
                             final String[] s = value.split("/");
                             if (s.length > 0 && !s[0].isBlank()) {
-                                book.putString(DBKey.ISBN, s[0].strip());
+                                book.setIsbn(s[0].strip());
                             }
                             break;
                         }

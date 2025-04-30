@@ -522,11 +522,10 @@ public class GoogleBooksSearchEngine
         }
 
         // Just grab the "best" one we can get; but ignore "OTHER"
-        //noinspection DataFlowIssue
         Stream.of("ISBN_13", "ISBN_10", "ISSN")
               .filter(all::containsKey)
               .findFirst()
-              .ifPresent(key -> book.putString(DBKey.ISBN, all.get(key)));
+              .ifPresent(key -> book.setIsbn(all.get(key)));
     }
 
     @NonNull

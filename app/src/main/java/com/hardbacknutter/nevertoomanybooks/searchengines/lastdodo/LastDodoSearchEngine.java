@@ -590,10 +590,7 @@ public class LastDodoSearchEngine
                     case "ISBN": {
                         tmpString = td.text();
                         if (!"Geen".equals(tmpString)) {
-                            tmpString = ISBN.cleanText(tmpString);
-                            if (!tmpString.isEmpty()) {
-                                book.putString(DBKey.ISBN, tmpString);
-                            }
+                            book.setIsbn(ISBN.cleanText(tmpString));
                         }
                         break;
                     }

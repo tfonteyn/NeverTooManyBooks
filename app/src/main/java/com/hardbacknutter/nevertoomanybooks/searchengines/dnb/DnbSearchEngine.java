@@ -520,7 +520,7 @@ public class DnbSearchEngine
             final String isbnText = ISBN.cleanText(text);
             // (don't do a full ISBN test here, no need)
             if (isbnText.length() == 10 || isbnText.length() == 13) {
-                book.putString(DBKey.ISBN, isbnText);
+                book.setIsbn(isbnText);
             }
         }
     }

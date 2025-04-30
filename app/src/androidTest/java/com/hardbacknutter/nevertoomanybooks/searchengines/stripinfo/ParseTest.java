@@ -637,7 +637,7 @@ public class ParseTest
         assertTrue(isbn.isType(ISBN.Type.Invalid));
 
         final Book book = new Book();
-        book.putString(DBKey.ISBN, "9069692736");
+        book.setIsbn("9069692736");
         book.putString(StripInfoSearchEngine.SiteField.BARCODE, "9789069692739");
         searchEngine.processBarcode("9789069692739", book);
 

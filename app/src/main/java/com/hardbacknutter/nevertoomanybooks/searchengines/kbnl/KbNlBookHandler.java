@@ -539,7 +539,7 @@ class KbNlBookHandler
                     // Do a crude test on the length and hope for the best
                     // (don't do a full ISBN test here, no need)
                     if (isbnText.length() == 10 || isbnText.length() == 13) {
-                        book.putString(DBKey.ISBN, isbnText);
+                        book.setIsbn(isbnText);
                     }
                 }
             } else if (text.charAt(0) == '(') {

@@ -296,7 +296,7 @@ public class BertrandPtSearchEngine
         if (element != null) {
             s = element.text().strip();
             if (!s.isBlank()) {
-                book.putString(DBKey.ISBN, s);
+                book.setIsbn(s);
             }
         }
 

@@ -52,7 +52,7 @@ public class MLACitationTest
     public void cite() {
         final Book book = new Book();
         book.setTitle("The Deeper Meaning of Liff");
-        book.putString(DBKey.ISBN, "1234567890123");
+        book.setIsbn("1234567890123");
         book.putString(DBKey.PUBLICATION_DATE, "1990");
 
         book.setAuthors(List.of(Author.from("Douglas Adams"),

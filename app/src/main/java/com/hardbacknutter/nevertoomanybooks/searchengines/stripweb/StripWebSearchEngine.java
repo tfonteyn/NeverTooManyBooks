@@ -322,10 +322,7 @@ public class StripWebSearchEngine
             if (th != null && td != null) {
                 switch (th.text()) {
                     case "ISBN nummer": {
-                        final String isbnText = ISBN.cleanText(td.text());
-                        if (!isbnText.isEmpty()) {
-                            book.putString(DBKey.ISBN, isbnText);
-                        }
+                        book.setIsbn(ISBN.cleanText(td.text()));
                         break;
                     }
                     case "Pagina's":

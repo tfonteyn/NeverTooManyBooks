@@ -1427,14 +1427,11 @@ public class IsfdbSearchEngine
         if (data != null) {
             // we use them in the order found here.
             // <b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
-            String tmp = ISBN.cleanText(data.toString().trim());
-            if (!tmp.isEmpty()) {
-                book.putString(DBKey.ISBN, tmp);
-            }
+            book.setIsbn(ISBN.cleanText(data.toString().trim()));
 
             final Element nextElementSibling = labelElement.nextElementSibling();
             if (nextElementSibling != null) {
-                tmp = ISBN.cleanText(nextElementSibling.text());
+                final String tmp = ISBN.cleanText(nextElementSibling.text());
                 if (!tmp.isEmpty()) {
                     book.putString(SiteField.ISBN_2, tmp);
                 }

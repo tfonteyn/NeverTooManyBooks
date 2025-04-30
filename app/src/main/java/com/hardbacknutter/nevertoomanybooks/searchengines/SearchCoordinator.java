@@ -410,7 +410,7 @@ public class SearchCoordinator
             sitesInOrder = determineBestOrder(completedOrder);
             // Add the ISBN we initially searched for.
             // This avoids overwriting with a potentially different isbn from the sites
-            book.putString(DBKey.ISBN, isbnSearchText);
+            book.setIsbn(isbnSearchText);
         } else {
             // We did not have an ISBN as a search criteria; use the default order
             sitesInOrder = new ArrayList<>(completedOrder);
@@ -434,9 +434,9 @@ public class SearchCoordinator
         resultsAccumulator.process(context, results, book);
 
         // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = book.getIsbn();
-        if (isbnStr.isEmpty()) {
-            book.putString(DBKey.ISBN, isbnSearchText);
+        final String isbnStr = book.getString(DBKey.ISBN, null);
+        if (isbnStr == null || isbnStr.isEmpty()) {
+            book.setIsbn(isbnSearchText);
         }
 
         // If we did not get a title, use the one we originally searched for.

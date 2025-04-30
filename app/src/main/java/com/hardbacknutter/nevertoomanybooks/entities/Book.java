@@ -406,8 +406,8 @@ public class Book
         //
         // //NEWTHINGS: new fields
 
-        duplicate.putString(DBKey.TITLE, getTitle());
-        duplicate.putString(DBKey.ISBN, getString(DBKey.ISBN));
+        duplicate.setTitle(getString(DBKey.TITLE, null));
+        duplicate.setIsbn(getString(DBKey.ISBN, null));
 
         if (duplicate.contains(BKEY_BOOKSHELF_LIST)) {
             duplicate.setBookshelves(getBookshelves());
@@ -447,7 +447,7 @@ public class Book
         duplicate.putString(DBKey.LANGUAGE, getString(DBKey.LANGUAGE));
         duplicate.putString(DBKey.PAGES, getString(DBKey.PAGES));
         // common blurb
-        duplicate.putString(DBKey.DESCRIPTION, getString(DBKey.DESCRIPTION));
+        duplicate.setDescription(getString(DBKey.DESCRIPTION, null));
 
         // partially edition info, partially use-owned info.
         duplicate.setEdition(getEdition());

@@ -219,33 +219,27 @@ public class BookCoder {
      */
     private void processIsbn(@NonNull final Book book) {
         if (!book.contains(DBKey.ISBN) && book.contains(Goodreads.ISBN10)) {
-            book.putString(DBKey.ISBN, book.getString(Goodreads.ISBN10));
+            book.setIsbn(book.getString(Goodreads.ISBN10));
             book.remove(Goodreads.ISBN10);
         }
 
-        if (book.contains(DBKey.ISBN)) {
+        if (book.hasIsbn()) {
             // ALWAYS try to clean the ISBN.
             final String raw = book.getIsbn();
 
             // We have seen the string:  "9.78E+12"
             // The original writer must have been writing isbn numbers as floating-point values.
             // We're explicitly discarding these.
-            if ("9.78E+12".equals(raw)) {
+            if ("9.78E+12".equals(raw) || "9.79E+12".equals(raw)) {
                 book.remove(DBKey.ISBN);
                 return;
             }
 
             // We've seen Goodreads csv file with nightmares like this:
             //     "=""9789027409294"""  and "="""""
-
             // Note that we clean the string, but do NOT check on the length here.
-            // We want non-isbn string with simple numerical values to pass through
-            final String isbnText = ISBN.cleanText(raw);
-            if (isbnText.isEmpty()) {
-                book.remove(DBKey.ISBN);
-            } else {
-                book.putString(DBKey.ISBN, isbnText);
-            }
+            // We want non-isbn string with simple values to pass through
+            book.setIsbn(ISBN.cleanText(raw));
         }
     }
 
