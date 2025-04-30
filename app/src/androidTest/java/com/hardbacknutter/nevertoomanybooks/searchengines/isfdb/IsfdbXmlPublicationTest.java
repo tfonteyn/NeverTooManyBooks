@@ -143,7 +143,7 @@ public class IsfdbXmlPublicationTest
         final Book book = result.get(0);
         assertNotNull(book);
 
-        assertEquals("Triplanetary", book.getTitle());
+        assertEquals("Triplanetary", book.getString(DBKey.TITLE, null));
         assertEquals("0491001576", book.getString(DBKey.ISBN, null));
         assertEquals("425189", book.requireIdentifierValue(Identifier.SID_ISFDB));
         assertEquals("16190406", book.requireIdentifierValue(Identifier.SID_OCLC));

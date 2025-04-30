@@ -88,14 +88,14 @@ public class ParseTest
         assertNotNull(book);
         assertFalse(book.isEmpty());
 
-        assertEquals("Ο νόμος ποτέ δε κοιμάται...", book.getTitle());
-        assertEquals("9789604419197", book.getIsbn());
-        assertEquals("Greek", book.getString(DBKey.LANGUAGE));
-        assertEquals("Paperback", book.getString(DBKey.FORMAT));
+        assertEquals("Ο νόμος ποτέ δε κοιμάται...", book.getString(DBKey.TITLE, null));
+        assertEquals("9789604419197", book.getString(DBKey.ISBN, null));
+        assertEquals("Greek", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals("48", book.getString(DBKey.PAGES, null));
         assertEquals("L'Agent 212, Tome 01 : 24 heures sur 24",
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
-        assertEquals("2007-12-01", book.getString(DBKey.PUBLICATION_DATE));
+        assertEquals("2007-12-01", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(new PartialDate(1981, 1, 1), book.getFirstPublicationDate());
         assertEquals(4
                 , book.getFloat(DBKey.RATING, realNumberParser), 0);
@@ -105,7 +105,7 @@ public class ParseTest
 
         assertEquals("Indonesian edition of <i>BD Pirate :"
                      + " Agent 212, tome 1 : 24 heures sur 24</i>",
-                     book.getString(DBKey.DESCRIPTION));
+                     book.getString(DBKey.DESCRIPTION, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(6, bookTags.size());
@@ -167,13 +167,13 @@ public class ParseTest
 
         Log.d(TAG, book.toString());
 
-        assertEquals("De chocoladewinkel van verloren liefdes", book.getTitle());
-        assertEquals("9789028453807", book.getIsbn());
-        assertEquals("Dutch", book.getString(DBKey.LANGUAGE));
-        assertEquals("Kindle Edition", book.getString(DBKey.FORMAT));
+        assertEquals("De chocoladewinkel van verloren liefdes", book.getString(DBKey.TITLE, null));
+        assertEquals("9789028453807", book.getString(DBKey.ISBN, null));
+        assertEquals("Dutch", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Kindle Edition", book.getString(DBKey.FORMAT, null));
         assertNull(book.getString(DBKey.PAGES, null));
         assertNull(book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
-        assertEquals("2024-10-21", book.getString(DBKey.PUBLICATION_DATE));
+        assertEquals("2024-10-21", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(new PartialDate(2022, 10, 28), book.getFirstPublicationDate());
         assertEquals(3, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
@@ -189,7 +189,7 @@ public class ParseTest
                 + " is op een meisje uit zijn klas, tot een oude man die door zijn eigen vrouw"
                 + " niet meer herkend wordt. Maar zou er ook een recept te vinden zijn voor de"
                 + " verloren liefde van Johoo zelf?",
-                book.getString(DBKey.DESCRIPTION));
+                book.getString(DBKey.DESCRIPTION, null));
 
         final List<Tag> tags = book.getTags();
         assertEquals(0, tags.size());
@@ -244,12 +244,12 @@ public class ParseTest
         assertNotNull(book);
         assertFalse(book.isEmpty());
 
-        assertEquals("The Left-Handed Booksellers of London", book.getTitle());
-        assertEquals("9780062683250", book.getIsbn());
-        assertEquals("English", book.getString(DBKey.LANGUAGE));
-        assertEquals("Hardcover", book.getString(DBKey.FORMAT));
-        assertEquals("416", book.getString(DBKey.PAGES));
-        assertEquals("2020-09-22", book.getString(DBKey.PUBLICATION_DATE));
+        assertEquals("The Left-Handed Booksellers of London", book.getString(DBKey.TITLE, null));
+        assertEquals("9780062683250", book.getString(DBKey.ISBN, null));
+        assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("416", book.getString(DBKey.PAGES, null));
+        assertEquals("2020-09-22", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(new PartialDate(2020, 9, 22), book.getFirstPublicationDate());
         assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
@@ -280,7 +280,7 @@ public class ParseTest
                      + " strangely overlaps with Susan’s. Who or what was her father?"
                      + " Susan, Merlin, and Vivien must find out, as the Old World erupts"
                      + " dangerously into the New.",
-                     book.getString(DBKey.DESCRIPTION));
+                     book.getString(DBKey.DESCRIPTION, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(10, bookTags.size());
@@ -335,13 +335,13 @@ public class ParseTest
         assertNotNull(book);
         assertFalse(book.isEmpty());
 
-        assertEquals("Foundation and Empire", book.getTitle());
+        assertEquals("Foundation and Empire", book.getString(DBKey.TITLE, null));
         assertNull(book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
-        assertEquals("9780553803723", book.getIsbn());
-        assertEquals("English", book.getString(DBKey.LANGUAGE));
-        assertEquals("Hardcover", book.getString(DBKey.FORMAT));
-        assertEquals("256", book.getString(DBKey.PAGES));
-        assertEquals("2004-06-01", book.getString(DBKey.PUBLICATION_DATE));
+        assertEquals("9780553803723", book.getString(DBKey.ISBN, null));
+        assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("256", book.getString(DBKey.PAGES, null));
+        assertEquals("2004-06-01", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(new PartialDate(1952, 1, 1), book.getFirstPublicationDate());
         assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
 
@@ -356,7 +356,7 @@ public class ParseTest
                      + " be put aside for the old forces of barbarism. The Foundation novels"
                      + " of Isaac Asimov constitute what is very likely the most famed epic in"
                      + " all of science-fiction",
-                     book.getString(DBKey.DESCRIPTION));
+                     book.getString(DBKey.DESCRIPTION, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(10, bookTags.size());
@@ -423,7 +423,7 @@ public class ParseTest
         assertNotNull(book);
         assertFalse(book.isEmpty());
 
-        assertEquals("The Aenied", book.getTitle());
+        assertEquals("The Aenied", book.getString(DBKey.TITLE, null));
         assertEquals("Aeneis", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertNull(book.getString(DBKey.ISBN, null));
         assertNull(book.getString(DBKey.LANGUAGE, null));
@@ -455,7 +455,7 @@ public class ParseTest
                      + " heroes, and gods of Rome and Troy. The Aeneid is widely regarded as"
                      + " Virgil's masterpiece and one of the greatest works of Latin literature."
                      + " (less)",
-                     book.getString(DBKey.DESCRIPTION));
+                     book.getString(DBKey.DESCRIPTION, null));
 
         final List<Tag> bookTags = book.getTags();
         assertEquals(10, bookTags.size());
@@ -505,7 +505,7 @@ public class ParseTest
 
         assertFalse(book.isEmpty());
 
-        assertEquals("The Left-Handed Booksellers of London", book.getTitle());
+        assertEquals("The Left-Handed Booksellers of London", book.getString(DBKey.TITLE, null));
         // full assert is already tested in parseNextDataJson9780062683250()
     }
 
@@ -522,8 +522,8 @@ public class ParseTest
         assertFalse(book.isEmpty());
 
         // live download, results may be different
-        assertEquals("Foundation and Empire", book.getTitle());
-        assertEquals("9780553803723", book.getIsbn());
+        assertEquals("Foundation and Empire", book.getString(DBKey.TITLE, null));
+        assertEquals("9780553803723", book.getString(DBKey.ISBN, null));
         assertEquals("Spectra", book.getPrimaryPublisher().get().getName());
         // full assert is already tested in parseNextDataJson9780553803723()
     }

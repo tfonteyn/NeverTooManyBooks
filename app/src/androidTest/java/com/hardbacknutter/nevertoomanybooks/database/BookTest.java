@@ -194,7 +194,7 @@ public class BookTest
         assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
 
-        assertEquals(TestConstants.BOOK_TITLE[bookIdx] + "_upd", book.getTitle());
+        assertEquals(TestConstants.BOOK_TITLE[bookIdx] + "_upd", book.getString(DBKey.TITLE, null));
 
         final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
@@ -383,7 +383,7 @@ public class BookTest
         final String uuid = book.getString(DBKey.BOOK_UUID, null);
         assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
-        assertEquals(TestConstants.BOOK_TITLE[bookIdx], book.getTitle());
+        assertEquals(TestConstants.BOOK_TITLE[bookIdx], book.getString(DBKey.TITLE, null));
 
         assertEquals(TestConstants.BOOK_ISFDB[bookIdx],
                      book.requireIdentifierValue(Identifier.SID_ISFDB));

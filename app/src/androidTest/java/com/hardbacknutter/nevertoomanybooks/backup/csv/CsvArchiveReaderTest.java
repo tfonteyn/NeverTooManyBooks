@@ -229,31 +229,31 @@ public class CsvArchiveReaderTest
 
         final Book book = Book.from(666000001);
         assertEquals(666000001, book.getId());
-        assertEquals("Myths and Folk Tales of Ireland", book.getTitle());
+        assertEquals("Myths and Folk Tales of Ireland", book.getString(DBKey.TITLE, null));
         assertEquals("0486224309", book.getString(DBKey.ISBN, null));
         // "1975-06-01" => day will be dropped
-        assertEquals("1975-06", book.getString(DBKey.PUBLICATION_DATE));
+        assertEquals("1975-06", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0);
         assertFalse(book.isRead());
-        assertEquals("272", book.getString(DBKey.PAGES));
+        assertEquals("272", book.getString(DBKey.PAGES, null));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
 
         // URGENT: price was "12,95" ... see BookDaoHelper#filterValues
-        assertEquals("0.0", book.getString(DBKey.PRICE_LISTED));
+        assertEquals("0.0", book.getString(DBKey.PRICE_LISTED, null));
 
         assertEquals(Book.ContentType.Book, book.getContentType());
         assertEquals("", book.getString(DBKey.LOCATION, null));
         assertEquals("", book.getString(DBKey.READ_START__DATE, null));
         assertEquals("", book.getString(DBKey.READ_END__DATE, null));
-        assertEquals("Paperback", book.getString(DBKey.FORMAT));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertFalse(book.getBoolean(DBKey.SIGNED__BOOL));
         assertEquals("", book.getString(DBKey.LOANEE_NAME, null));
-        assertEquals("Fearsome giants, magic spells, ...", book.getString(DBKey.DESCRIPTION));
-        assertEquals("English", book.getString(DBKey.LANGUAGE));
-        assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_ADDED__UTC));
+        assertEquals("Fearsome giants, magic spells, ...", book.getString(DBKey.DESCRIPTION, null));
+        assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_ADDED__UTC, null));
         assertEquals("1294006", book.requireIdentifierValue(Identifier.SID_GOODREADS));
-        assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_LAST_UPDATED__UTC));
-        assertEquals("e9787a594f11549db20f163db56a3ec9", book.getString(DBKey.BOOK_UUID));
+        assertEquals("2017-12-21 16:38:57", book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
+        assertEquals("e9787a594f11549db20f163db56a3ec9", book.getString(DBKey.BOOK_UUID, null));
 
         final List<Tag> bookTags = book.getTags();
         TestCase.assertEquals(3, bookTags.size());
@@ -286,31 +286,31 @@ public class CsvArchiveReaderTest
 
         final Book book = Book.from(666000002);
         assertEquals(666000002, book.getId());
-        assertEquals("Dracula", book.getTitle());
+        assertEquals("Dracula", book.getString(DBKey.TITLE, null));
         assertEquals("9780141439846", book.getString(DBKey.ISBN, null));
-        assertEquals("2003-04-29", book.getString(DBKey.PUBLICATION_DATE));
+        assertEquals("2003-04-29", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0);
         assertFalse(book.isRead());
-        assertEquals("454", book.getString(DBKey.PAGES));
+        assertEquals("454", book.getString(DBKey.PAGES, null));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
 
         // URGENT: price was "11,00" ... see BookDaoHelper#filterValues
-        assertEquals("0.0", book.getString(DBKey.PRICE_LISTED));
+        assertEquals("0.0", book.getString(DBKey.PRICE_LISTED, null));
 
         assertEquals(Book.ContentType.Book, book.getContentType());
         assertEquals("", book.getString(DBKey.LOCATION, null));
         assertEquals("", book.getString(DBKey.READ_START__DATE, null));
         assertEquals("", book.getString(DBKey.READ_END__DATE, null));
-        assertEquals("Paperback", book.getString(DBKey.FORMAT));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertFalse(book.getBoolean(DBKey.SIGNED__BOOL));
         assertEquals("", book.getString(DBKey.LOANEE_NAME, null));
         assertEquals("Jonathan Harker is travelling to Castle Dracula ...",
-                     book.getString(DBKey.DESCRIPTION));
-        assertEquals("English", book.getString(DBKey.LANGUAGE));
-        assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_ADDED__UTC));
+                     book.getString(DBKey.DESCRIPTION, null));
+        assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_ADDED__UTC, null));
         assertTrue(book.getIdentifierValue(Identifier.SID_GOODREADS).isEmpty());
-        assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_LAST_UPDATED__UTC));
-        assertEquals("b483250f6016cbe775ce16bfbc6d64da", book.getString(DBKey.BOOK_UUID));
+        assertEquals("2017-12-21 16:39:24", book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
+        assertEquals("b483250f6016cbe775ce16bfbc6d64da", book.getString(DBKey.BOOK_UUID, null));
 
         final List<Tag> bookTags = book.getTags();
         TestCase.assertEquals(2, bookTags.size());

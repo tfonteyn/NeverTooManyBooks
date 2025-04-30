@@ -114,6 +114,6 @@ public class SearchBookUpdatesViewModelTest
         assertEquals(1, publishers.size());
         assertEquals("Real Pub", publishers.get(0).getName());
 
-        assertEquals("Black & white", delta.getString(DBKey.COLOR));
+        assertEquals("Black & white", delta.getString(DBKey.COLOR, null));
     }
 }

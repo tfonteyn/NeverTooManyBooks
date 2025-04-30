@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
-import android.os.Bundle;
 
 import java.util.List;
 
@@ -55,15 +54,14 @@ public class BookDaoHelperTest
     @Test
     public void quickCv() {
 
-        final Bundle b = new Bundle();
-        b.putLong(DBKey.PK_ID, 1);
-        b.putString(DBKey.DESCRIPTION, "Six million years ago");
-        b.putString(DBKey.PAGES, "516");
-        b.putString(DBKey.LANGUAGE, "eng");
-        b.putString(DBKey.FIRST_PUBLICATION_DATE, "2008-04-17");
-        b.putString(DBKey.PUBLICATION_DATE, "2009-06-02");
+        final Book book = new Book();
+        book.putLong(DBKey.PK_ID, 1);
+        book.setDescription("Six million years ago");
+        book.putString(DBKey.PAGES, "516");
+        book.putString(DBKey.LANGUAGE, "eng");
+        book.putString(DBKey.FIRST_PUBLICATION_DATE, "2008-04-17");
+        book.putString(DBKey.PUBLICATION_DATE, "2009-06-02");
 
-        final Book book = new Book(b);
         final Author author0 = Author.from("Alastair Reynolds");
         author0.setType(Author.TYPE_WRITER);
         final Author author1 = Author.from("Alastair Reynolds");
