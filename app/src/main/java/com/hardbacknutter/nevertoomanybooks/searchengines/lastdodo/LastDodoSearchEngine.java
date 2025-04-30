@@ -678,8 +678,7 @@ public class LastDodoSearchEngine
         }
 
         if (fetchCovers[0] || fetchCovers[1]) {
-            final String isbn = book.getString(DBKey.ISBN);
-            parseCovers(context, document, isbn, fetchCovers, book);
+            parseCovers(context, document, book.getIsbn(), fetchCovers, book);
         }
     }
 

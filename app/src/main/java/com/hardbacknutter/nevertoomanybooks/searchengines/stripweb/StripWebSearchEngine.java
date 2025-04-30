@@ -442,7 +442,7 @@ public class StripWebSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.ISBN);
+            final String isbn = book.getIsbn();
             // start from 'main' !
             parseCover(context, main, isbn, 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));

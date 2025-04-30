@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -102,7 +101,7 @@ class BibTeXCitation
         sj.add(String.format(NAME_VALUE, TITLE, escape(book.getTitle())));
         sj.add(String.format(NAME_VALUE, AUTHOR, formatAuthors(book.getAuthors())));
 
-        final String isbn = book.getString(DBKey.ISBN);
+        final String isbn = book.getIsbn();
         if (!isbn.isEmpty()) {
             sj.add(String.format(NAME_VALUE, ISBN, escape(isbn)));
         }

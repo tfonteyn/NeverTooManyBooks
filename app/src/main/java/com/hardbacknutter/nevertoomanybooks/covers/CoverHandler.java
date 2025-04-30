@@ -432,7 +432,7 @@ public final class CoverHandler {
         if (coverBrowserIsbnSupplier != null) {
             isbnStr = coverBrowserIsbnSupplier.get();
         } else {
-            isbnStr = book.getString(DBKey.ISBN);
+            isbnStr = book.getIsbn();
         }
 
         if (!isbnStr.isEmpty()) {

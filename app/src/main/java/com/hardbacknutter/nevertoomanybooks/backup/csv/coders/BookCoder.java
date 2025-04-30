@@ -225,7 +225,7 @@ public class BookCoder {
 
         if (book.contains(DBKey.ISBN)) {
             // ALWAYS try to clean the ISBN.
-            final String raw = book.getString(DBKey.ISBN);
+            final String raw = book.getIsbn();
 
             // We have seen the string:  "9.78E+12"
             // The original writer must have been writing isbn numbers as floating-point values.

@@ -686,7 +686,7 @@ public class BolSearchEngine
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Book book)
             throws StorageException {
-        final String isbn = book.getString(DBKey.ISBN);
+        final String isbn = book.getIsbn();
 
         final Element imageSlotConfig = document.selectFirst(
                 "section[data-group-name='product-images'] script");

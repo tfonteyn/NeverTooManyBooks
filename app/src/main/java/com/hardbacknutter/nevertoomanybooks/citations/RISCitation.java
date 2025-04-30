@@ -63,7 +63,7 @@ public class RISCitation
         book.getAuthors().forEach(author -> sj
                 .add("A1  - " + author.getFormattedName(false)));
 
-        final String isbn = book.getString(DBKey.ISBN);
+        final String isbn = book.getIsbn();
         if (!isbn.isEmpty()) {
             sj.add("SN  - " + isbn);
         }

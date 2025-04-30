@@ -396,8 +396,8 @@ public class SearchBookUpdatesViewModel
                     clearSearchCriteria();
                     boolean canSearch = false;
 
-                    final String isbnStr = currentBook.getString(DBKey.ISBN, null);
-                    if (isbnStr != null && !isbnStr.isEmpty()) {
+                    final String isbnStr = currentBook.getIsbn();
+                    if (!isbnStr.isEmpty()) {
                         setIsbnSearchText(isbnStr);
                         canSearch = true;
                     }

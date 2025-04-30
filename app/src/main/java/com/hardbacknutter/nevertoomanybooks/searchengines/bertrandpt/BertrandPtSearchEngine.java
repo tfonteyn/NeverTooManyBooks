@@ -438,8 +438,7 @@ public class BertrandPtSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = book.getString(DBKey.ISBN);
-            parseCovers(context, document, isbn, 0).ifPresent(
+            parseCovers(context, document, book.getIsbn(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
         }
     }

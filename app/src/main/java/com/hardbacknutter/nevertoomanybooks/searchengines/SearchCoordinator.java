@@ -219,8 +219,7 @@ public class SearchCoordinator
                     waitingForIsbnOrCode = false;
                     // Replace the search text with the (we hope) exact ISBN/code
                     // Worst case, explicitly use an empty string
-                    //noinspection DataFlowIssue
-                    isbnSearchText = result.getString(DBKey.ISBN, "");
+                    isbnSearchText = result.getIsbn();
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                         LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
@@ -435,8 +434,8 @@ public class SearchCoordinator
         resultsAccumulator.process(context, results, book);
 
         // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = book.getString(DBKey.ISBN, null);
-        if (isbnStr == null || isbnStr.isEmpty()) {
+        final String isbnStr = book.getIsbn();
+        if (isbnStr.isEmpty()) {
             book.putString(DBKey.ISBN, isbnSearchText);
         }
 
@@ -500,9 +499,8 @@ public class SearchCoordinator
 
                     } else if (result.contains(DBKey.ISBN)) {
                         // We did a general search with an ISBN; check if it matches
-                        final String isbnFound = result.getString(DBKey.ISBN, null);
-                        if (isbnFound != null && !isbnFound.isEmpty()
-                            && isbn.equals(new ISBN(isbnFound, strictIsbn))) {
+                        final String isbnFound = result.getIsbn();
+                        if (!isbnFound.isEmpty() && isbn.equals(new ISBN(isbnFound, strictIsbn))) {
                             sitesInOrder.add(engineId);
                         } else {
                             // The ISBN found does not match the ISBN we searched for;

@@ -399,8 +399,7 @@ class IsfdbPublicationListHandler
                             imageUrl = "https:" + imageUrl.substring(5);
                         }
                         try {
-                            final String isbn = book.getString(DBKey.ISBN);
-                            searchEngine.saveImage(context, imageUrl, null, isbn, 0, null)
+                            searchEngine.saveImage(context, imageUrl, null, book.getIsbn(), 0, null)
                                         .ifPresent(fileSpec -> CoverFileSpecArray
                                                 .setFileSpec(book, 0, fileSpec));
 

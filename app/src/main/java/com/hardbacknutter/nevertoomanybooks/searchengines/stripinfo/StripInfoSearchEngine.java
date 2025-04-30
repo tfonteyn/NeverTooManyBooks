@@ -629,7 +629,7 @@ public class StripInfoSearchEngine
             return;
         }
 
-        final String isbn = book.getString(DBKey.ISBN);
+        final String isbn = book.getIsbn();
 
         // front cover
         if (fetchCovers[0]) {

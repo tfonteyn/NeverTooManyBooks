@@ -483,7 +483,7 @@ public class EditBookTocFragment
             return;
         }
 
-        final String isbnStr = book.getString(DBKey.ISBN);
+        final String isbnStr = book.getIsbn();
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = new ISBN(isbnStr, true);
             if (isbn.isValid(true)) {

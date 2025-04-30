@@ -531,7 +531,7 @@ public class BedethequeSearchEngine
                 return;
             }
 
-            final String isbn = book.getString(DBKey.ISBN);
+            final String isbn = book.getIsbn();
 
             if (fetchCovers[0]) {
                 parseCover(context, document, isbn, 0).ifPresent(

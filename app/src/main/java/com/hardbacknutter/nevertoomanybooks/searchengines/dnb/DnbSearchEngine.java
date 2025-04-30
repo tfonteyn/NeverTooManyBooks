@@ -450,8 +450,7 @@ public class DnbSearchEngine
             }
 
             if (fetchCovers[0]) {
-                final String isbn = book.getString(DBKey.ISBN);
-                parseCover(context, document, isbn, 0).ifPresent(
+                parseCover(context, document, book.getIsbn(), 0).ifPresent(
                         fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
             }
         }

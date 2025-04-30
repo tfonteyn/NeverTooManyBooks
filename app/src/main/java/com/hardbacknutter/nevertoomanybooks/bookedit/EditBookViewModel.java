@@ -502,7 +502,7 @@ public class EditBookViewModel
      */
     boolean bookExists() {
         if (book.isNew()) {
-            final String isbnStr = book.getString(DBKey.ISBN);
+            final String isbnStr = book.getIsbn();
             if (!isbnStr.isEmpty()) {
                 return ServiceLocator.getInstance().getBookDao().bookExistsByIsbn(isbnStr);
             }
