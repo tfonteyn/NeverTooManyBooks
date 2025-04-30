@@ -64,6 +64,7 @@ public class AuthorParseTest
         searchEngine = (DnbSearchEngine) EngineId.Dnb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
+        //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
 
         resolver = (DnbAuthorResolver) DnbAuthorResolver.create(context, searchEngine);
@@ -73,7 +74,7 @@ public class AuthorParseTest
     public void liveParse128409142()
             throws SearchException, CredentialsException, IOException {
 
-        final Author author = new Author("", "");
+        final Author author = new Author("Flix", "");
         author.setIdentifierValue(Identifier.SID_DNB, 128409142);
 
         final boolean resolved = resolver.resolve(context, author);
