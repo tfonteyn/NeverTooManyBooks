@@ -2001,9 +2001,9 @@ public class IsfdbSearchEngine
     /**
      * ISFDB specific field names we add to the bundle based on parsed XML data.
      */
-    static final class SiteField {
-        static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
-        static final String ISBN_2 = "__ISFDB_ISBN2";
+    public static final class SiteField {
+        public static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
+        public static final String ISBN_2 = "__ISFDB_ISBN2";
         static final String CATALOG_ID = "__CATALOG_ID";
         static final String BOOK_TAG = "__TAG";
 

@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
@@ -127,7 +128,7 @@ public class ResultsAccumulatorTest
 //                "/storage/emulated/0/Android/data/com.hardbacknutter.nevertoomanybooks.debug/files/Pictures/tmp/1701443226640_isfdb_9780552574471_0_.jpg");
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
-        book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
+        book.putString(IsfdbSearchEngine.SiteField.BOOK_TYPE, "NOVEL");
         book.setIsbn("9780552574471");
         book.setPages(332);
         book.setTitle("The Shepherd's Crown");
@@ -143,7 +144,7 @@ public class ResultsAccumulatorTest
 
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_ISFDB, "568139")));
 
-        book.putString("__ISFDB_ISBN2", "0552574473");
+        book.putString(IsfdbSearchEngine.SiteField.ISBN_2, "0552574473");
         book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         return new Pair<>(Locale.US, book);
@@ -371,7 +372,7 @@ public class ResultsAccumulatorTest
 //                "/storage/emulated/0/Android/data/com.hardbacknutter.nevertoomanybooks.debug/files/Pictures/tmp/1701443472874_bol_9780552574471_0_.jpg");
 //        book.putStringArrayList(CoverFileSpecArray.BKEY_FILE_SPEC_ARRAY[0], fileSpecs);
 
-        book.putString("__ISFDB_BOOK_TYPE", "NOVEL");
+        book.putString(IsfdbSearchEngine.SiteField.BOOK_TYPE, "NOVEL");
         book.setIsbn("9780552574471");
         book.setPages(332);
         book.setTitle("The Shepherd's Crown");
@@ -401,7 +402,7 @@ public class ResultsAccumulatorTest
                 new Identifier.Value(Identifier.SID_ISFDB, "568139")
         ));
 
-        book.putString("__ISFDB_ISBN2", "0552574473");
+        book.putString(IsfdbSearchEngine.SiteField.ISBN_2, "0552574473");
         book.putString(DBKey.PRICE_LISTED_CURRENCY, "GBP");
 
         return book;
