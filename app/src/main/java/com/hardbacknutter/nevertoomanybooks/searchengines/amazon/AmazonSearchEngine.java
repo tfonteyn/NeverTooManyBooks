@@ -196,7 +196,8 @@ public class AmazonSearchEngine
             "publisher"
             // French
             + ",editeur,éditeur"
-            // German
+            // German: note that "Herausgeber" (==editor) is an Amazon translation error.
+            // They use it as a synonym for "Verlag".
             + ",verlag,herausgeber"
             // Dutch
             + ",uitgever"
