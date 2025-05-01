@@ -32,6 +32,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.DEBUG_FLAGS;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -254,7 +256,7 @@ public class SynchronizedDb
     /**
      * Check if the given table exists.
      * <p>
-     * Both name and type are used for this check.
+     * Both the table name and the {@link TableDefinition.TableType} are used for this check.
      *
      * @param tableDefinition to check
      *
@@ -275,6 +277,33 @@ public class SynchronizedDb
             stmt.bindString(1, tableDefinition.getName());
             return stmt.simpleQueryForLongOrZero() > 0;
         }
+    }
+
+    /**
+     * Check if the given table exists.
+     * <p>
+     * The name is checked in both {@link TableDefinition.TableType#Temporary}
+     * and {@link TableDefinition.TableType#Standard} table-spaces.
+     *
+     * @param name to check
+     *
+     * @return flag
+     *
+     * @see #tableExists(TableDefinition)
+     */
+    @SuppressWarnings("WeakerAccess")
+    public boolean tableExists(@NonNull final String name) {
+        for (final String sql : List.of(TABLE_EXISTS_SQL_TEMP,
+                                        TABLE_EXISTS_SQL_STANDARD)) {
+            try (SynchronizedStatement stmt = compileStatement(sql)) {
+                stmt.bindString(1, name);
+                if (stmt.simpleQueryForLongOrZero() > 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
