@@ -45,7 +45,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -89,13 +88,9 @@ public class DebugReport {
     @NonNull
     public DebugReport addDefaultMessage() {
         final PackageInfoWrapper info = PackageInfoWrapper.createWithSignatures(context);
-
-        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         message =
-                // app info
                 "App: " + info.getPackageName() + '\n'
                 + "Version: " + info.getVersionName() + " (" + info.getVersionCode() + ")\n"
-                // device OS
                 + "SDK: " + Build.VERSION.RELEASE
                 + " (" + Build.VERSION.SDK_INT + ' ' + Build.TAGS + ")\n"
                 + "Build: " + Build.ID + '\n'
@@ -104,12 +99,7 @@ public class DebugReport {
                 + "Brand: " + Build.BRAND + '\n'
                 + "Model: " + Build.MODEL + '\n'
 
-                // the Locales
-                + "User country: " + locale.getCountry() + '\n'
-                + "User language: " + locale.getLanguage() + '\n'
-                + "All Locales: " + LocaleListUtils.asList(context) + '\n'
-
-                // app info
+                + "Locales: " + LocaleListUtils.asList(context) + '\n'
                 + "Signed-By: " + info.getSignedBy().orElse("Not signed") + '\n';
         return this;
     }
@@ -140,13 +130,11 @@ public class DebugReport {
 
     }
 
-    public void addDatabaseUpgrades(final int maxFiles)
-            throws IOException {
+    public void addDatabaseUpgrades(final int maxFiles) {
         files.addAll(collectFiles(ServiceLocator.getInstance().getUpgradesDir(), maxFiles));
     }
 
-    public void addLogs(final int maxFiles)
-            throws IOException {
+    public void addLogs(final int maxFiles) {
         final File logDir = ServiceLocator.getInstance().getLogDir();
         if (logDir != null) {
             files.addAll(collectFiles(logDir, maxFiles));
@@ -248,7 +236,7 @@ public class DebugReport {
         final DisplayMetrics metrics = res.getDisplayMetrics();
 
         final String sb =
-                "Screen:\n\n"
+                "Screen:\n"
                 + "  configuration:\n"
                 + "    screenWidthDp=" + configuration.screenWidthDp + '\n'
                 + "    screenHeightDp=" + configuration.screenHeightDp + '\n'
