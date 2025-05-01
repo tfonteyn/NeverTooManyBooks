@@ -523,7 +523,7 @@ public class BooksOnBookshelf
         vm.onCancelled().observe(this, message -> {
             vb.progressCircle.hide();
             message.process(ignored -> {
-                if (vm.isListLoaded()) {
+                if (vm.isListAvailable()) {
                     // we can auto-recover.
                     displayList(null);
                 } else {
@@ -535,7 +535,7 @@ public class BooksOnBookshelf
         vm.onFailure().observe(this, message -> {
             vb.progressCircle.hide();
             message.process(e -> {
-                if (vm.isListLoaded()) {
+                if (vm.isListAvailable()) {
                     // we can auto-recover, log it and redisplay
                     LoggerFactory.getLogger().e(TAG, e);
                     displayList(null);
@@ -984,7 +984,7 @@ public class BooksOnBookshelf
         // and select the current shelf.
         vb.bookshelfSpinner.setSelection(vm.getSelectedBookshelfSpinnerPosition(this));
 
-        if (vm.isForceRebuildInOnResume() || !vm.isListLoaded()) {
+        if (vm.isForceRebuildInOnResume() || !vm.isListAvailable()) {
             // This is only needed if the style was changed to use a different Layout.
             // We must NOT recreate it here otherwise.
             if (vm.hasLayoutChanged(hasEmbeddedDetailsFrame())) {

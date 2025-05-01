@@ -751,6 +751,20 @@ public class Booklist
     }
 
     /**
+     * Check if this list is open/usable.
+     *
+     * @return flag
+     */
+    public boolean isOpen() {
+        // The reason for this call is github #90 + #140.
+        // When the user switches apps, our own app might get "frozen",
+        // which means the database gets closed, and our temp tables are deleted.
+        // But... our 'SaveState' was preserved, so we 'think' we're still alive...
+        // Solution: we check the actual table.
+        return db.tableExists(listTable);
+    }
+
+    /**
      * Cleanup.
      * <p>
      * We cleanup temporary tables to free up no longer needed resources NOW.
@@ -828,5 +842,4 @@ public class Booklist
                + ", navTable=" + navTable.getName()
                + '}';
     }
-
 }
