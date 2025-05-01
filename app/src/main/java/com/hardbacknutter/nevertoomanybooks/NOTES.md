@@ -6,7 +6,10 @@ NEW:
 
 FIXES:
 
-- OpenLibrary + ISFDB author pseudonym lookups overwriting instead of enhancing
+- OpenLibrary + ISFDB author pseudonym lookups were overwriting instead of enhancing.
+- #139 "Update books": fields in "append" mode, will now properly append instead of prepending.
+- #90 / #140: crash after a warm-start (switching between apps)
+- "Update books": the format and other mappers are now enabled as per user settings
 
 REMOVED:
 
@@ -84,13 +87,6 @@ TODO: TEST migrate to JUnit5 for on-device tests as well.
 
 ENHANCE: add rotating functions to the cropper activity. This would allow
 multi-rotate-undo by simply quiting the cropper.
-
-ENHANCE Pseudonyms on ISFDB:
-While reading the book page, we could follow the author url,
-and from there check the header for "Used As Alternate Name By"
-Problem: if it's the real-author anyhow, then loading
-that url can become very slow if the author has many books.
-Alternative: lookup Author names individually.
 
 <hr style="border:1px solid red;">
 Known issues:
