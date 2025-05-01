@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
@@ -61,7 +64,7 @@
         <item quantity="one">%1$d címke</item>
         <item quantity="other">%1$d címke</item>
     </plurals>
-    <string name="quoted">“%1$s”</string>
+    <string name="quoted">„%1$s”</string>
     <string name="and_others">%1$s…</string>
     <string name="brackets">(%1$s)</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
@@ -74,10 +77,10 @@
     <string name="error_search_could_not_be_started">A könyv keresése sikertelen.</string>
     <string name="error_http_401_authorization_failed">Engedélyezés sikertelen</string>
     <string name="error_network_failed_try_again">Ellenőrizze a kapcsolatot és próbálja újra.</string>
-    <string name="acra_dialog_message">Úgy tűnik a(z) &APP_NAME; összeomlott. Jelentést menthet el egy választott helyre, ehhez érintse meg a következőt: \"%1$s”. A jelentéssel új feladatot naplózhat a projekt weboldalán.</string>
+    <string name="acra_dialog_message">Úgy tűnik a(z) &APP_NAME; összeomlott. Jelentést menthet el egy választott helyre, ehhez érintse meg a következőt: „%1$s”. A jelentéssel új feladatot naplózhat a projekt weboldalán.</string>
     <string name="error_site_authentication_failed">%1$s hitelesítés sikertelen</string>
     <string name="error_unexpected">Váratlan hiba történt.</string>
-    <string name="error_unexpected_long">Váratlan hiba történt. Ha a probléma továbbra is fennáll, lépjen kapcsolatba az ügyfélszolgálattal a beállítások oldal alján található \"%1$s” opció segítségével.</string>
+    <string name="error_unexpected_long">Váratlan hiba történt. Ha a probléma továbbra is fennáll, lépjen kapcsolatba az ügyfélszolgálattal a beállítások oldal alján található „%1$s” opció segítségével.</string>
     <string name="error_site_access_blocked">A hozzáférést a webhely letiltotta.</string>
     <string name="acra_report_saved">Meglátogathatja most a projekt Github oldalát és naplózhat egy új feladatot. Kérjük, csatolja a korábban elmentett jelentést a feladathoz. Ha még nincs Github-fiókja, létre kell hoznia egyet.</string>
     <string name="httpErrorFileNotFound">Nem található a kért fájl.</string>
@@ -185,7 +188,7 @@
     <string name="whichViewApplication">Megnyitás a következővel:</string>
     <string name="yes">Igen</string>
     <string name="error_search_failed_network">Nyissa meg a Beállításokat, és ellenőrizze a hálózat és a keresőoldal beállításait.\nEllenőrizze az eszköz hálózati beállításait is.</string>
-    <string name="error_unknown_host">Kapcsolódási probléma a szolgáltatással a következő helyen: \"%1$s”.</string>
+    <string name="error_unknown_host">Kapcsolódási probléma a szolgáltatással a következő helyen: „%1$s”.</string>
     <string name="error_auto_toc_population_failed">A címek automatikus feltöltése sikertelen.</string>
     <string name="error_no_image_editor">Nem található képszerkesztő.</string>
     <string name="error_email_failed">Nem sikerült elküldeni az e-mailt.</string>
@@ -199,7 +202,7 @@
     <string name="error_import_csv_line">Ismeretlen hiba a következő sorban: %1$d</string>
     <string name="error_import_csv_line_to_long">A sor túl hosszú (sor=%1$d, hossz=%2$d)</string>
     <string name="error_import_csv_column_count_mismatch">Nem egyezik az oszlopok száma a következő sorban: %1$d</string>
-    <string name="error_record_must_contain_column">A bejegyzésnek tartalmaznia kell egy \"%1$s” nevű mezőt.</string>
+    <string name="error_record_must_contain_column">A bejegyzésnek tartalmaznia kell egy „%1$s” nevű mezőt.</string>
     <string name="error_export_failed">Exportálás sikertelen.</string>
     <string name="error_backup_failed">Biztonsági mentés sikertelen.</string>
     <string name="error_type_not_supported">Nem támogatott típus: %1$s…</string>
@@ -224,7 +227,7 @@
     <string name="warning_cannot_delete_1st_bs">Az első könyvespolc nem törölhető.</string>
     <string name="warning_already_in_list">Már szerepel a listán!</string>
     <string name="warning_no_matching_book_found">Nem található egyező könyv</string>
-    <string name="warning_x_is_not_a_valid_code">\"%1$s\" érvénytelen kód</string>
+    <string name="warning_x_is_not_a_valid_code">„%1$s” érvénytelen kód</string>
     <string name="warning_image_not_found">A kép nem található.</string>
     <string name="warning_image_copy_failed">A kép nem másolható.</string>
     <string name="warning_no_editions">NIncs információ további kiadásról.</string>
@@ -237,15 +240,15 @@
     <string name="warning_requires_android_x">Android %1$d vagy újabb szükséges</string>
     <string name="vldt_failure">Érvényesítési hiba</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
-    <string name="vldt_date_expected_for_x">Az elvárt érték egy dátum a következőhöz: \"%1$s”</string>
-    <string name="vldt_real_expected_for_x">Az elvárt érték egy valós szám a következőhöz: \"%1$s”</string>
-    <string name="vldt_integer_expected_for_x">Az elvárt érték egy egész szám a következőhöz: \"%1$s”</string>
-    <string name="vldt_boolean_expected_for_x">Az elvárt érték egy logikai érték(0,1,t,f,true,false) a következőhöz: \"%1$s”</string>
+    <string name="vldt_date_expected_for_x">Az elvárt érték egy dátum a következőhöz: „%1$s”</string>
+    <string name="vldt_real_expected_for_x">Az elvárt érték egy valós szám a következőhöz: „%1$s”</string>
+    <string name="vldt_integer_expected_for_x">Az elvárt érték egy egész szám a következőhöz: „%1$s”</string>
+    <string name="vldt_boolean_expected_for_x">Az elvárt érték egy logikai érték(0,1,t,f,true,false) a következőhöz: „%1$s”</string>
     <string name="vldt_non_blank_required">Nem üres érték szükséges</string>
-    <string name="vldt_non_blank_required_for_x">Nem üres érték szükséges a következőhöz: \"%1$s\"</string>
-    <string name="vldt_blank_required_for_x">Üres érték szükséges a következőhöz: \"%1$s\"</string>
+    <string name="vldt_non_blank_required_for_x">Nem üres érték szükséges a következőhöz: „%1$s”</string>
+    <string name="vldt_blank_required_for_x">Üres érték szükséges a következőhöz: „%1$s”</string>
     <string name="vldt_blank_or_valid_url_required">Üres érték vagy érvényes URL szükséges</string>
-    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Üres érték vagy érvényes \"https” URL egyetlen \"%s” azonosító helyőrzővel szükséges</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Üres érték vagy érvényes „https” URL egyetlen „%s” azonosító helyőrzővel szükséges</string>
     <string name="vldt_read_start_after_end">Az olvasás kezdés dátuma a befejezés dátum után van</string>
     <string name="vldt_real_author_must_be_valid">Üresnek vagy létező szerzőnek kell lennie</string>
     <string name="progress_msg_please_wait">Kérjük, várjon…</string>
@@ -261,7 +264,7 @@
     <string name="progress_msg_searching_editions">További kiadások keresése…</string>
     <string name="progress_msg_connecting">Kapcsolódás…</string>
     <string name="progress_msg_downloading">Letöltés…</string>
-    <string name="progress_msg_skip_s">\"%1$s\" kihagyása</string>
+    <string name="progress_msg_skip_s">„%1$s” kihagyása</string>
     <string name="progress_msg_x_created">%1$d létrehozva</string>
     <string name="progress_msg_x_updated">%1$d frissítve</string>
     <string name="progress_msg_x_skipped">%1$d kihagyva</string>
@@ -269,8 +272,8 @@
     <string name="progress_msg_cleaning_up">Tisztítás…</string>
     <string name="info_authorized">Engedélyezve</string>
     <string name="info_nothing_to_do">Nincs tennivaló.</string>
-    <string name="info_story_in_multiple_books">“%1$s” több könyvben is szerepel:\n\n%2$s</string>
-    <string name="info_story_in_single_book">“%1$s” csak egyetlen könyvben szerepel:\n\n%2$s</string>
+    <string name="info_story_in_multiple_books">„%1$s” több könyvben is szerepel:\n\n%2$s</string>
+    <string name="info_story_in_single_book">„%1$s” csak egyetlen könyvben szerepel:\n\n%2$s</string>
     <string name="info_all_books_have_covers">A polcon található összes könyvnek van borítója</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d könyv, %2$d bejegyzésben</string>
     <string name="info_tap_on_thumbnail_to_zoom">Érintse meg a miniatűrt a nagyobb kép megjelenítéséhez.</string>
@@ -395,8 +398,8 @@
     <string name="lbl_author_type_cover_inking">Borító tusrajz</string>
     <string name="lbl_author_type_inking">Tusrajz</string>
     <string name="lbl_author_type_cover_colorist">Borító kolorista</string>
-    <string name="option_moving_covers_from_x_to_y">Összes borító áthelyezése innen: “%1$s” ide: “%2$s”</string>
-    <string name="option_storage_select">\"%1$s\" használata</string>
+    <string name="option_moving_covers_from_x_to_y">Összes borító áthelyezése innen: „%1$s” ide: „%2$s”</string>
+    <string name="option_storage_select">„%1$s” használata</string>
     <string name="option_storage_edit_settings">Beállítások módosítása</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Lépjen ki és helyezze be a megfelelő SD-kártyát</string>
     <string name="option_sort_and_style_ellipsis">Rendezés &amp; Stílusok…</string>
@@ -410,8 +413,8 @@
     <string name="option_lend_out_book">Kölcsönadás…</string>
     <string name="option_lend_return_book">Kölcsönkönyv visszakapva</string>
     <string name="option_goto_next_book_without_cover">Ugrás a következő borító nélküli könyvre</string>
-    <string name="option_set_complete">\"befejezett\" beállítása</string>
-    <string name="option_set_incomplete">\"befejezetlen\" beállítása</string>
+    <string name="option_set_complete">„befejezett” beállítása</string>
+    <string name="option_set_incomplete">„befejezetlen” beállítása</string>
     <string name="option_author_details">A szerző összes műve</string>
     <string name="option_view_book_at">Megtekintés itt…</string>
     <string name="option_search_books_on">Keresés itt…</string>
