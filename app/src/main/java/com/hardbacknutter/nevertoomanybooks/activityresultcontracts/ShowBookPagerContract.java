@@ -100,18 +100,18 @@ public class ShowBookPagerContract
          *
          * @param bookId         the book id
          * @param styleUuid      to use
-         *                       Some style elements are applicable for the details screen
-         * @param navTableName   The name of the current list-navigation table,
+         * @param navTableName   (Optional) The name of the current list-navigation table,
          *                       which will be used by the pager to allow
          *                       the user to swipe to the next/previous book
          * @param listTableRowId The row id in the list table of the given book.
          *                       Keep in mind a book can occur multiple times,
          *                       so we need to pass the specific one.
+         *                       Ignored if navTableName is {@code null}.
          */
         public Input(@IntRange(from = 1) final long bookId,
                      @NonNull final String styleUuid,
                      @Nullable final String navTableName,
-                     final long listTableRowId) {
+                     @IntRange(from = 0) final long listTableRowId) {
             this.bookId = bookId;
             this.styleUuid = styleUuid;
             this.navTableName = navTableName;
