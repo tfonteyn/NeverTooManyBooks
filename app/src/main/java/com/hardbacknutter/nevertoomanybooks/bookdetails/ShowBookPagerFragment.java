@@ -57,7 +57,8 @@ public class ShowBookPagerFragment
                 @Override
                 public void handleOnBackPressed() {
                     // always set the *current* book, so BoB can reposition more accurately.
-                    final long bookId = vm.getBookIdAtPosition(viewPager.getCurrentItem());
+                    final int currentItem = viewPager != null ? viewPager.getCurrentItem() : 0;
+                    final long bookId = vm.getBookIdAtPosition(currentItem);
                     final Intent resultIntent = EditBookOutput
                             .createResultIntent(aVm.isModified(), bookId);
                     //noinspection DataFlowIssue
@@ -77,7 +78,11 @@ public class ShowBookPagerFragment
         aVm.init(args);
 
         vm = new ViewModelProvider(getActivity()).get(ShowBookPagerViewModel.class);
-        vm.init(args);
+        if (!vm.init(args)) {
+            // the nav-table was not there, we must have been frozen/killed ...
+            // ABORT, back to BoB
+            backPressedCallback.handleOnBackPressed();
+        }
     }
 
     @Override
