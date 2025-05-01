@@ -213,15 +213,16 @@ public class BooksOnBookshelfViewModel
     /** Current displayed list. */
     @Nullable
     private Booklist booklist;
+
     /**
      * Flag (potentially) set when coming back from another Activity.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
      */
     private boolean forceRebuildInOnResume;
-    /** Flag to indicate that a list has been successfully loaded. */
-    private boolean listLoaded;
+
     /** Flag to prompt the user to make a backup after startup. */
     private boolean proposeBackup;
+
     /** Currently selected {@link Bookshelf}. */
     @Nullable
     private Bookshelf bookshelf;
@@ -682,10 +683,8 @@ public class BooksOnBookshelfViewModel
      */
     void saveBookshelfTopRowPosition(@NonNull final Context context,
                                      @NonNull final TopRowListPosition topRowPosition) {
-        if (listLoaded) {
-            Objects.requireNonNull(bookshelf, Bookshelf.TAG);
-            bookshelf.saveTopRowPosition(context, topRowPosition);
-        }
+        Objects.requireNonNull(bookshelf, Bookshelf.TAG);
+        bookshelf.saveTopRowPosition(context, topRowPosition);
     }
 
     /**
@@ -710,12 +709,12 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Check if the list has (ever) loaded successfully.
+     * Check if the list table is available.
      *
-     * @return {@code true} if loaded at least once.
+     * @return flag.
      */
-    boolean isListLoaded() {
-        return listLoaded;
+    boolean isListAvailable() {
+        return booklist != null && booklist.isOpen();
     }
 
     @IntRange(from = 0)
@@ -1542,9 +1541,6 @@ public class BooksOnBookshelfViewModel
         }
 
         booklist = outcome.getList();
-
-        // Save a flag to say list was loaded at least once successfully
-        listLoaded = true;
 
         // preserve the new state by default
         rebuildMode = RebuildBooklist.FromSaved;
