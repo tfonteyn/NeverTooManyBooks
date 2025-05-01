@@ -71,38 +71,54 @@ public class ShowBookPagerViewModel
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      *
+     * @return {@code true} on success.
+     *         {@code false} if we should abort, and go back to the previous Activity
+     *         (normally the BoB)
+     *
      * @throws IllegalArgumentException if there are missing mandatory arguments
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void init(@NonNull final Bundle args) {
+    public boolean init(@NonNull final Bundle args) {
         if (initialBookId == 0) {
             initialBookId = args.getLong(DBKey.FK_BOOK, 0);
             if (initialBookId <= 0) {
                 throw new IllegalArgumentException(DBKey.FK_BOOK);
             }
 
-            // the list is optional
+            // the navTable is optional
             // If present, the user can swipe to the next/previous book in the list.
             final String navTableName = args.getString(BKEY_NAV_TABLE_NAME);
             if (navTableName != null && !navTableName.isEmpty()) {
-                final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
-                if (rowId <= 0) {
-                    throw new IllegalArgumentException(BKEY_LIST_TABLE_ROW_ID);
-                }
+                // github #90 + #140
+                // When the app was displaying a book-detail, and the user switched to other apps,
+                // it's possible that Android freezes us (or kills us, but that is of no concern).
+                // In a "warm start", the 'SaveState' was preserved, i.e. the fact that we're
+                // "here" with the arguments being available.
+                // The temporary tables MAY have been deleted due to the db connection
+                // having been closed. This last part is speculation as I can't find
+                // explicit info on WHEN/WHERE the db would be closed.
+                //
+                // We cannot recreate the navTable here as it relies on the BoB list-table.
+                // Solution: return 'false' and let the current Fragment, do a 'back'
+                // to take the user to the BoB screen.
                 final SynchronizedDb db = ServiceLocator.getInstance().getDb();
-                // URGENT: 2025-02-03 github #90
-                //  android.database.sqlite.SQLiteException: no such table: tmp_book_nav_49
-                //  (code 1 SQLITE_ERROR): while compiling: SELECT COUNT(*) FROM tmp_book_nav_49
-                // but we can only get here via ShowBookPagerContract, where
-                // BKEY_NAV_TABLE_NAME is set directly coming from the BoB ???
-                // (also from authorWorks, but there we pass in null for nav-table)
-                // Wait on reproducer.
-                navHelper = new BooklistNavigatorDao(db, navTableName);
-                initialPagerPosition = navHelper.getRowNumber(rowId) - 1;
+                if (db.tableExists(navTableName)) {
+                    // we have a navTable, init and display as normal
+                    navHelper = new BooklistNavigatorDao(db, navTableName);
+                    final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
+                    initialPagerPosition = navHelper.getRowNumber(rowId) - 1;
+                } else {
+                    // navTable expected but not there; we must have done a "warm start".
+                    // ABORT!
+                    return false;
+                }
             } else {
+                // no navTable given, that's ok, just display the single book.
                 initialPagerPosition = 0;
             }
         }
+        // init success
+        return true;
     }
 
     /**
