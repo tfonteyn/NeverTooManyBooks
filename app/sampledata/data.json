@@ -7,13 +7,13 @@
   "author": [
     {"full_name": "Charles Emerson Winchester III"},
     {"full_name": "Isaac Asimov"},
-    {"full_name": "J.K Rowling"},
+    {"full_name": "Kim Stanley Robinson"},
     {"full_name": "Philip J. Farmer"}
   ],
   "book": [
     {"title": "War and Peace & Anna Karenina"},
     {"title": "Foundation and Empire"},
-    {"title": "The prisoner of Azkaban"},
+    {"title": "The Ministry for the Future"},
     {"title": "Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The"}
   ],
   "series": [
@@ -22,12 +22,12 @@
   ],
   "series_list": [
     {"title_nr": "• Foundation (2)\n• Empire (7)\n• Robot (3)"},
-    {"title_nr": "• Harry Potter (3)"}
+    {"title_nr": "• World of Tiers (3)"}
   ],
   "publisher": [
     {"name": "Printed paper Ltd."},
     {"name": "Gnome Press"},
-    {"name": "Bloomsburry"},
+    {"name": "Doubleday"},
     {"name": "Subterranean"}
   ],
   "location": [
