@@ -1,15 +1,10 @@
 Draft notes for next version:
 
-### 7.3.1
+### 7.3.3
 
 NEW:
 
 FIXES:
-
-- OpenLibrary + ISFDB author pseudonym lookups were overwriting instead of enhancing.
-- #139 "Update books": fields in "append" mode, will now properly append instead of prepending.
-- #90 / #140: crash after a warm-start (switching between apps)
-- "Update books": the format and other mappers are now enabled as per user settings
 
 REMOVED:
 
