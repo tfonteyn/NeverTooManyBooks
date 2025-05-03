@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,9 +24,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public enum ExtMenuButton
         implements Parcelable {
@@ -59,6 +59,15 @@ public enum ExtMenuButton
             return new ExtMenuButton[size];
         }
     };
+    /**
+     * How ACCESS to context/row menus is provide.
+     * <p>
+     * {@code int}
+     *
+     * @see ExtMenuButton
+     */
+    @VisibleForTesting
+    public static final String PK_MODE = "booklist.context.menu";
 
     private final int value;
 
@@ -75,8 +84,7 @@ public enum ExtMenuButton
      */
     @NonNull
     public static ExtMenuButton getPreferredMode(@NonNull final Context context) {
-        final int value = IntListPref.getInt(context, Prefs.PK_BOOKLIST_CONTEXT_MENU,
-                                             Always.value);
+        final int value = IntListPref.getInt(context, PK_MODE, Always.value);
         switch (value) {
             case 2:
                 return None;

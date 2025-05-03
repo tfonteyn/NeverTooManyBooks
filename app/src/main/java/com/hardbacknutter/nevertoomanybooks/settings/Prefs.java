@@ -74,14 +74,6 @@ public final class Prefs {
     public static final String PK_SCANNER_MODE_SINGLE = "scan.mode.single";
 
     /**
-     * How ACCESS to context/row menus is provide.
-     * <p>
-     * {@code int}
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton
-     */
-    public static final String PK_BOOKLIST_CONTEXT_MENU = "booklist.context.menu";
-    /**
      * Whether and how a Text Bubble with row information is shown
      * while fast-scrolling through a list.
      * <p>
