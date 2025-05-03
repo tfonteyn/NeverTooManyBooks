@@ -26,8 +26,6 @@ import androidx.preference.PreferenceManager;
 
 import java.util.List;
 
-import com.hardbacknutter.fastscroller.OverlayProviderFactory;
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -73,16 +71,6 @@ public final class Prefs {
 
     public static final String PK_SCANNER_MODE_SINGLE = "scan.mode.single";
 
-    /**
-     * Whether and how a Text Bubble with row information is shown
-     * while fast-scrolling through a list.
-     * <p>
-     * {@code int}
-     *
-     * @see OverlayProviderFactory
-     */
-    public static final String PK_BOOKLIST_FASTSCROLLER_OVERLAY = "booklist.fastscroller.overlay";
-
     /** The prefix of all "acra" settings which need to be excluded during import/export. */
     public static final String ACRA_EXCLUDE_PREFIX = "^acra\\..*";
 
@@ -109,13 +97,6 @@ public final class Prefs {
     );
 
     private Prefs() {
-    }
-
-    @OverlayProviderFactory.OverlayType
-    public static int getFastScrollerOverlayType(@NonNull final Context context) {
-        return IntListPref.getInt(context,
-                                  PK_BOOKLIST_FASTSCROLLER_OVERLAY,
-                                  OverlayProviderFactory.TYPE_MD2);
     }
 
     public static boolean normalizeSeriesTitle(@NonNull final Context context) {

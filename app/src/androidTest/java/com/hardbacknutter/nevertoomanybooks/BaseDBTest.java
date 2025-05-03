@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.NetworkCheckerImpl;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
+import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -108,11 +109,11 @@ public abstract class BaseDBTest {
                          .putBoolean("tips.tip.configure_sites", false)
                          .putBoolean("tips.tip.view_only_help", false)
                          .putInt(ExportHelper.PK_BACKUP_COUNTDOWN, 5)
-                         // Bit pattern with all valid field bits turned on
+                         // Bit pattern with most valid field bits turned on
                          .putLong(FieldVisibility.PK_FIELD_VISIBILITY,
                                   9223372036854775807L)
                          .putString(ExtMenuButton.PK_MODE, "0")
-                         .putString(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY, "3")
+                         .putString(FastScrollerMode.PK_OVERLAY, "3")
                          .putString(RebuildBooklist.PK_BOOKLIST_REBUILD_STATE, "0")
                          .putString(ISBN.PK_EDIT_BOOK_ISBN_CHECKS, "1")
                          .putString("search.siteOrder.data",

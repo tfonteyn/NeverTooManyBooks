@@ -179,7 +179,7 @@ public class SettingsFragment
     }
 
     private void initFastscrollerPreference() {
-        final Preference pFastscroller = findPreference(Prefs.PK_BOOKLIST_FASTSCROLLER_OVERLAY);
+        final Preference pFastscroller = findPreference(FastScrollerMode.PK_OVERLAY);
         //noinspection DataFlowIssue
         pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
             vm.setOnBackRequiresActivityRecreation();

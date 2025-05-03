@@ -65,7 +65,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
@@ -140,8 +139,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchViewHelper;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditPreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -776,8 +775,7 @@ public class BooksOnBookshelf
         // Custom fastscroller which actually works (as opposed to the built-in android one).
         // Provides an optional overlay.
         if (vb.content.list.getLayoutManager() instanceof LinearLayoutManager) {
-            final int overlayType = Prefs.getFastScrollerOverlayType(this);
-            FastScroller.attach(vb.content.list, overlayType);
+            FastScrollerMode.create(this).attach(vb.content.list);
         }
         // attach the FAB scroll-listener which will hide the FAB while scrolling
         fabMenu.attach(vb.content.list);

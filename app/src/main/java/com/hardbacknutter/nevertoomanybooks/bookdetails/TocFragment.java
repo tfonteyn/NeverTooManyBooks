@@ -35,7 +35,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
@@ -44,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 // 2024-05-05: Tried using a SideSheetDialog on phone screens, but they are just that: a "Dialog"
@@ -78,8 +77,8 @@ public class TocFragment
      * Constructor.
      *
      * @param book     to display
-     * @param embedded  {@code true} when we're running embedded in the book-details fragment
-     *                  or {@code false} as standalone.
+     * @param embedded {@code true} when we're running embedded in the book-details fragment
+     *                 or {@code false} as standalone.
      * @param style    to use
      *
      * @return instance
@@ -167,8 +166,7 @@ public class TocFragment
         final Context context = getContext();
 
         //noinspection DataFlowIssue
-        final int overlayType = Prefs.getFastScrollerOverlayType(context);
-        FastScroller.attach(vb.toc, overlayType);
+        FastScrollerMode.create(context).attach(vb.toc);
 
         adapter = new AuthorWorksAdapter(context, aVm.getStyle(), vm.getAuthors(), vm.getWorks());
         adapter.setOnRowClickListener((v, position) -> {

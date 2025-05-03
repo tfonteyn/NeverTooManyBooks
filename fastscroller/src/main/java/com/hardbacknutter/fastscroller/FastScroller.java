@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,9 +23,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,100 +40,206 @@ import androidx.recyclerview.widget.RecyclerView;
  * {@link FastScrollerImpl} and an optional {@link OverlayProvider}.
  * <p>
  * This solves the following Android bugs:
- * <p>
- * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
- * <a href="https://issuetracker.google.com/issues/64729576">64729576</a>
- * <a href="https://github.com/caarmen/RecyclerViewBug/">HackFastScroller.java</a>
- * <p>
- * <a href="https://stackoverflow.com/questions/47846873">
- * recyclerview-fast-scroll-thumb-height-too-small-for-large-data-set</a>
- * <p>
+ * <ul>
+ *    <li>
+ *      Fast scroll drag bar height too short when there are lots of items in the recyclerview.
+ *      <a href="https://issuetracker.google.com/issues/64729576">Google issue 64729576</a>
+ *      See code at <a href="https://github.com/caarmen/RecyclerViewBug/">HackFastScroller.java</a>
+ *    </li>
+ *    <li>
+ *      <a href="https://stackoverflow.com/questions/47846873">
+ *          recyclerview-fast-scroll-thumb-height-too-small-for-large-data-set</a>
+ *    </li>
+ * </ul>
  * <strong>IMPORTANT:</strong>
- *     <ul>
- *     <li>{@code  android:scrollbarSize} is ignored!
- *     Instead the size of the passed {@code Drawable} is used.</li>
- *      <li>{@code android:scrollbarStyle} is ignored!
- *      Instead set {@code padding} sufficiently large to contain the scrollbar</li>
- *     </ul>
- * <p>
- * ENHANCE: move the dimen settings to a declarable style,
- * and read them from the xml definition of a RecyclerView
- * <pre>{@code
- * <!-- NOT IMPLEMENTED YET -->
- * <declare-styleable name="FastScroller">
- * <!-- Drawables come from system attributes:
- *      "android.R.attr.fastScrollTrackDrawable"
- *      "android.R.attr.fastScrollThumbDrawable"
- * -->
- * <!-- RecyclerView/FastScroller: R.dimen.fastscroll_default_thickness -->
- * <attr name="fsThickness" format="dimension" />
- *
- * <!-- RecyclerView/FastScroller: R.dimen.fastscroll_minimum_range -->
- * <attr name="fsMinRange" format="dimension" />
- *
- * <!-- RecyclerView/FastScroller: R.dimen.fastscroll_margin -->
- * <attr name="fsMargin" format="dimension" />
- *
- * <!-- custom: absolute minimum size of the thumb -->
- * <attr name="fsMinThumbSize" format="dimension" />
- *
- * </declare-styleable>
- * }
- * </pre>
+ * <ul>
+ *     <li>
+ *         {@code  android:scrollbarSize} is ignored!
+ *         Instead the size of the passed {@code Drawable} is used.
+ *     </li>
+ *     <li>
+ *         {@code android:scrollbarStyle} is ignored!
+ *         Instead set the RecyclerView {@code padding} sufficiently large to contain
+ *         the scrollbar
+ *     </li>
+ *     <li>
+ *         We are deliberately ignoring these <strong>private</strong> attributes
+ *         which are used by the broken original RecyclerView/FastScroller
+ *         <pre>{@code
+ *              <dimen name="fastscroll_default_thickness">8dp</dimen>
+ *              <dimen name="fastscroll_margin">0dp</dimen>
+ *              <dimen name="fastscroll_minimum_range">50dp</dimen>
+ *         }</pre>
+ *         Our equivalents are:
+ *         <pre>{@code
+ *              <dimen name="fs_thumb_thickness">8dp</dimen>
+ *              <dimen name="fs_margin">0dp</dimen>
+ *              <dimen name="fs_minimum_range">50dp</dimen>
+ *         }</pre>
+ *         and to support the minimum thumb size:
+ *         <pre>{@code
+ *              <dimen name="fs_thumb_min_size">48dp</dimen>
+ *         }</pre>
+ *     </li>
+ * </ul>
  */
-public final class FastScroller {
+public class FastScroller {
 
-    private FastScroller() {
-    }
+    private final DisplayMetrics displayMetrics;
+    @Px
+    private int thumbThickness;
+    @Px
+    private int minimumRange;
+    @Px
+    private int margin;
+    @Px
+    private int thumbMinSize;
+    @NonNull
+    private Drawable track;
+    @NonNull
+    private StateListDrawable thumb;
+
+    @OverlayProviderFactory.OverlayType
+    private int overlayType = OverlayProviderFactory.TYPE_MD2;
 
     /**
      * Constructor.
-     * <p>
-     * The drawables can be overridden by setting these Theme attributes:
-     * <ul>
-     *     <li>{@code android:fastScrollTrackDrawable="@drawable/your_track"}</li>
-     *     <li>{@code android:fastScrollThumbDrawable="@drawable/your_thumb"}</li>
-     * </ul>
      *
-     * @param recyclerView the View to hook up
-     * @param overlayType  Optional overlay
+     * @param context Current context
+     */
+    public FastScroller(@NonNull final Context context) {
+        // These will resolve to the Material style default drawables.
+        track = AttrUtils.getDrawable(context, android.R.attr.fastScrollTrackDrawable);
+        thumb = (StateListDrawable)
+                AttrUtils.getDrawable(context, android.R.attr.fastScrollThumbDrawable);
+
+        final Resources resources = context.getResources();
+        displayMetrics = resources.getDisplayMetrics();
+
+        thumbMinSize = resources.getDimensionPixelSize(R.dimen.fs_thumb_min_size);
+
+        thumbThickness = resources.getDimensionPixelSize(R.dimen.fs_thumb_thickness);
+        minimumRange = resources.getDimensionPixelSize(R.dimen.fs_minimum_range);
+        margin = resources.getDimensionPixelOffset(R.dimen.fs_margin);
+    }
+
+    /**
+     * Set the drawable to be used for the scrollbar track.
+     * The default is {@code ?attr/fastScrollTrackDrawable}.
+     * Alternatively, set the attribute in your theme.
+     *
+     * @param drawable to use
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public FastScroller setTrackDrawable(@NonNull final Drawable drawable) {
+        this.track = drawable;
+        return this;
+    }
+
+    /**
+     * Set the drawable to be used for the scrollbar thumb.
+     * The default is {@code ?attr/fastScrollThumbDrawable}.
+     * Alternatively, set the attribute in your theme.
+     *
+     * @param drawable to use
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public FastScroller setThumbDrawable(@NonNull final StateListDrawable drawable) {
+        this.thumb = drawable;
+        return this;
+    }
+
+    @Px
+    private int dp2px(@Dimension(unit = Dimension.DP) final int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics);
+    }
+
+    /**
+     * Set the overlay type to be used.
+     * The default is {@link OverlayProviderFactory#TYPE_MD2}.
+     *
+     * @param overlayType to use; one of the {@code OverlayProviderFactory#TYPE_*} values.
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public FastScroller setOverlayType(@OverlayProviderFactory.OverlayType final int overlayType) {
+        this.overlayType = overlayType;
+        return this;
+    }
+
+    /**
+     * Set the scrollbar minimum thumb size.
+     * The default is {@link R.dimen#fs_thumb_min_size}.
+     * Alternatively, override {@link R.dimen#fs_thumb_min_size} directly.
+     *
+     * @param minimalSize in dp
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public FastScroller setThumbMinSize(@Dimension(unit = Dimension.DP) final int minimalSize) {
+        this.thumbMinSize = dp2px(minimalSize);
+        return this;
+    }
+
+    /**
+     * Set the scrollbar thumb (and track) thickness.
+     * The default is {@link R.dimen#fs_thumb_thickness}.
+     * Alternatively, override {@link R.dimen#fs_thumb_thickness} directly.
+     *
+     * @param thickness in dp
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public FastScroller setThumbThickness(@Dimension(unit = Dimension.DP) final int thickness) {
+        this.thumbThickness = dp2px(thickness);
+        return this;
+    }
+
+    @NonNull
+    public FastScroller setMinimumRange(@Dimension(unit = Dimension.DP) final int minimumRange) {
+        this.minimumRange = dp2px(minimumRange);
+        return this;
+    }
+
+    @NonNull
+    public FastScroller setMargin(@Dimension(unit = Dimension.DP) final int margin) {
+        this.margin = dp2px(margin);
+        return this;
+    }
+
+    /**
+     * Attach this FastScroller to the given {@link RecyclerView}.
+     *
+     * @param recyclerView the view
      *
      * @throws IllegalArgumentException if the {@link RecyclerView.LayoutManager} is
      *                                  not a {@link LinearLayoutManager}
      */
-    public static void attach(@NonNull final RecyclerView recyclerView,
-                              @OverlayProviderFactory.OverlayType final int overlayType)
+    public void attach(@NonNull final RecyclerView recyclerView)
             throws IllegalArgumentException {
 
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
             throw new IllegalArgumentException("Not a LinearLayoutManager");
         }
 
-        //Note: do not test the adapter here for being a PopupTextProvider,
-        // it can still be null.
+        // Note: do not test the adapter here for being a PopupTextProvider,
+        // it can still be null at this time.
 
-        final Context context = recyclerView.getContext();
-
-        // These will resolve to the Material style default drawables.
-        final Drawable track = AttrUtils
-                .getDrawable(context, android.R.attr.fastScrollTrackDrawable);
-        final Drawable thumb = AttrUtils
-                .getDrawable(context, android.R.attr.fastScrollThumbDrawable);
-
-        final StateListDrawable thumbDrawable = (StateListDrawable) thumb;
-
-        final Resources resources = context.getResources();
         final FastScrollerImpl fastScroller = new FastScrollerImpl(
-                recyclerView, thumbDrawable, track, thumbDrawable, track,
-                resources.getDimensionPixelSize(R.dimen.fs_default_thickness),
-                resources.getDimensionPixelSize(R.dimen.fs_minimum_range),
-                resources.getDimensionPixelOffset(R.dimen.fs_margin),
-                resources.getDimensionPixelSize(R.dimen.fs_minimal_thumb_size)
-        );
+                recyclerView, thumb, track, thumb, track,
+                thumbThickness, minimumRange, margin,
+                thumbMinSize);
 
         @Nullable
         final OverlayProvider overlayProvider = OverlayProviderFactory
-                .create(overlayType, thumbDrawable.getIntrinsicWidth(), recyclerView);
+                .create(overlayType, thumb.getIntrinsicWidth(), recyclerView);
 
         fastScroller.setOverlayProvider(overlayProvider);
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,11 +20,12 @@
   -->
 
 <resources>
-    <!-- fast scroller - Minimal Thumb and Track width/height.
+    <!-- fast scroller - Minimal Thumb and Track width (vertical) / height (horizontal).
          Original Android: R.dimen.fastscroll_default_thickness=8dp -->
-    <dimen name="fs_default_thickness">8dp</dimen>
-    <!-- Minimal Thumb size; i.e. big enough to grab with a finger. -->
-    <dimen name="fs_minimal_thumb_size">40dp</dimen>
+    <dimen name="fs_thumb_thickness">8dp</dimen>
+    <!-- Minimal Thumb height (vertical) / width (horizontal).
+         i.e. big enough to grab with a finger. -->
+    <dimen name="fs_thumb_min_size">48dp</dimen>
 
     <!-- fast scroller - When to show a scrollbar.
          Original Android: R.dimen.fastscroll_minimum_range=50dp-->

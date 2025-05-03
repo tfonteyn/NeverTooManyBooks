@@ -44,7 +44,6 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Collections;
 import java.util.List;
 
-import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -59,8 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
@@ -152,9 +151,7 @@ public class AuthorWorksFragment
 
         vb.authorWorks.setHasFixedSize(true);
 
-        // Optional overlay
-        final int overlayType = Prefs.getFastScrollerOverlayType(context);
-        FastScroller.attach(vb.authorWorks, overlayType);
+        FastScrollerMode.create(context).attach(vb.authorWorks);
 
         adapter = new AuthorWorksAdapter(context, vm.getStyle(), List.of(vm.getAuthor()),
                                          vm.getWorks());
