@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -74,7 +71,7 @@
     <string name="acra_dialog_message">Es sieht so aus, als ob &APP_NAME; abgestürzt ist. Tippe auf „%1$s“, um einen Bericht an einem Ort deiner Wahl zu speichern. Der Bericht kann verwendet werden, um das Problem auf der Projekt-Website rückzumelden.</string>
     <string name="action_add">Hinzufügen</string>
     <string name="action_add_with_details">Mit Details hinzufügen</string>
-    <string name="action_clear">Löschen</string>
+    <string name="action_clear">Leeren</string>
     <string name="action_create">Erstellen</string>
     <string name="action_apply">Anwenden</string>
     <string name="action_delete">Löschen</string>
@@ -90,7 +87,7 @@
     <string name="action_merge">Vereinigen</string>
     <string name="action_not_now">Jetzt nicht</string>
     <string name="action_reset_to_default">Auf Standard zurücksetzen</string>
-    <string name="action_retry">Noch mal\n versuchen</string>
+    <string name="action_retry">Erneut versuchen</string>
     <string name="action_save">Speichern</string>
     <string name="action_search">Suchen</string>
     <string name="action_select">Auswählen</string>
@@ -259,7 +256,7 @@
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Autorentyp</string>
     <string name="lbl_author_type_artist">Illustrator</string>
-    <string name="lbl_author_type_colorist">Colorist</string>
+    <string name="lbl_author_type_colorist">Kolorist</string>
     <string name="lbl_author_type_contributor">Mitwirkender</string>
     <string name="lbl_author_type_cover_artist">Titelbild</string>
     <string name="lbl_author_type_cover_colorist">Colorist des Covers</string>
@@ -306,7 +303,7 @@
     <string name="lbl_connection_timeout">Zeitüberschreitung beim Verbindung (Sekunden)</string>
     <string name="lbl_cover_back">Cover hinten</string>
     <string name="lbl_cover_front">Cover vorne</string>
-    <string name="lbl_covers">Covers</string>
+    <string name="lbl_covers">Cover</string>
     <string name="lbl_covers_long">Cover-Bilder</string>
     <string name="lbl_credentials">Nutzeranmeldedaten</string>
     <string name="lbl_currency">Währung</string>
@@ -353,7 +350,7 @@
     <string name="lbl_import_books">Bücher importieren</string>
     <string name="option_import_books_option_all">Alle Bücher</string>
     <string name="option_import_books_option_new_and_updated">Neue und aktualisierte Bücher</string>
-    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Importiere nur Bücher, die seit \n diesem Datum geändert wurden</string>
+    <string name="option_header_import_books_option_new_and_updated_cutoff_date">Nur Bücher importieren, die geändert wurden seit</string>
     <string name="option_import_books_option_new_only">Nur neue Bücher</string>
     <string name="lbl_import_options">Auswahl der Daten, die importiert werden sollen.</string>
     <string name="lbl_importing">Wird importiert…</string>
@@ -395,11 +392,11 @@
     <string name="option_purge_image_cache">Zwischenspeicher für Bilder löschen</string>
     <string name="lbl_rating">Bewertung</string>
     <string name="lbl_read">Gelesen</string>
-    <string name="lbl_group_read_and_unread">Gelesen und ungelesen</string>
+    <string name="lbl_group_read_and_unread">Gelesen &amp; ungelesen</string>
     <string name="lbl_date_read_day">Tag</string>
-    <string name="lbl_read_end">Datum Lesen beendet</string>
+    <string name="lbl_read_end">Datum Leseende</string>
     <string name="lbl_date_read_month">Monat</string>
-    <string name="lbl_read_start">Datum mit Lesen begonnen</string>
+    <string name="lbl_read_start">Datum Lesebeginn</string>
     <string name="lbl_read_timeout">Zeitüberschreitung beim Lesen (Sekunden)</string>
     <string name="lbl_date_read_year">Jahr</string>
     <string name="lbl_scope_of_change">Umfang der Änderung</string>
@@ -450,7 +447,7 @@
     <string name="lbl_date_last_updated_year">Änderungsjahr</string>
     <string name="lbl_virtual_libraries">Virtuelle Bibliotheken in dieser Bibliothek</string>
     <string name="lbl_website_address">Webadresse (URL)</string>
-    <string name="lbl_websites">Websites</string>
+    <string name="lbl_websites">Webseiten</string>
     <string name="bookshelf_my_wishlist">Wunschzettel</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Jahr</string>
@@ -683,7 +680,7 @@
     <string name="vldt_non_blank_required">Es ist ein Wert erforderlich</string>
     <string name="vldt_non_blank_required_for_x">Es ist ein Wert für „%1$s“ erforderlich</string>
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Leerer Wert oder gültige „https“-URL mit einem einzelnen „%s“-ID-Platzhalter erforderlich</string>
-    <string name="vldt_read_start_after_end">Das Datum Lesen beendet ist vor dem Datum mit Lesen begonnen</string>
+    <string name="vldt_read_start_after_end">Das Leseende-Datum liegt vor dem Lesebeginn-Datum</string>
     <string name="vldt_real_expected_for_x">Es wird ein Gleitkomma-Wert für „%1$s“ erwartet</string>
     <string name="warning_already_in_list">Schon in der Liste!</string>
     <string name="warning_backup_request">Möchtest du die Datenbank auf der SD-Karte sichern?</string>
@@ -792,7 +789,7 @@
     <string name="action_report">Melden</string>
     <string name="error_invalid_url">Ungültige Adresse (URL)</string>
     <string name="lbl_certificate_validity_period">Gültigkeit: %1$s - %2$s</string>
-    <string name="lbl_reading">Am Lesen</string>
+    <string name="lbl_reading">Aktuelle Lektüre</string>
     <string name="action_edit_defaults">Standardeinstellungen bearbeiten</string>
     <string name="ps_sort_author_name_given_first">Sortierung nach den Vornamen zuerst,\nz.B. „Franz  Kafka“</string>
     <string name="ps_sort_author_name_family_first">Sortierung nach dem Familiennamen zuerst,\nz.B. „Kafka, Franz“</string>
@@ -854,5 +851,4 @@
     <string name="lbl_book_uri">Buch-URL</string>
     <string name="lbl_author_uri">Autor-URL</string>
     <string name="info_identifier_editor"><![CDATA[Lese vor der Bearbeitung die <a href="%1$s">Dokumentation</a> zu Bezeichnern.]]></string>
-
 </resources>
