@@ -438,8 +438,7 @@ public class Book
         duplicate.setPublicationDate(getString(DBKey.PUBLICATION_DATE, null));
         duplicate.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED, realNumberParser));
         duplicate.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
-        duplicate.putString(DBKey.FIRST_PUBLICATION_DATE,
-                            getString(DBKey.FIRST_PUBLICATION_DATE));
+        duplicate.setFirstPublicationDate(getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
         duplicate.setFormat(getString(DBKey.FORMAT, null));
         duplicate.setColor(getString(DBKey.COLOR, null));
