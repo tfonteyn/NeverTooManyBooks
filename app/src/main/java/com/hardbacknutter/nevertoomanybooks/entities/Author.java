@@ -217,6 +217,11 @@ public class Author
      * Not covered yet, and seen in the wild:
      * "James jr. Tiptree" -> suffix as a middle name.
      * "Dr. Asimov" -> titles... pre or suffixed
+     * <p>
+     * 2025-05-05: ISFDB registers these as suffixes:
+     *  II, III, IV, V, VI, VII, VIII, IX, X, B.A., B.Sc., D.D., D.Sc., Ed.D., J.D.,
+     *  Jr., Lit.D., Litt.D., M.B.I.F., M.B.I.S., M.A., M.D., M.E., M.S., Ph.D.,
+     *  P.J.F., R.I., Sr., U.S.A.
      */
     private static final Pattern FAMILY_NAME_SUFFIX_PATTERN =
             Pattern.compile("jr\\.|jr|junior|sr\\.|sr|senior|II|III",
