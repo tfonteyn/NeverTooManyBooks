@@ -262,7 +262,7 @@
     <string name="lbl_author_type_colorist">Kolorist</string>
     <string name="lbl_author_type_contributor">Mitwirkender</string>
     <string name="lbl_author_type_cover_artist">Titelbild</string>
-    <string name="lbl_author_type_cover_colorist">Colorist des Cover</string>
+    <string name="lbl_author_type_cover_colorist">Kolorist des Cover</string>
     <string name="lbl_author_type_cover_inking">Inker des Cover</string>
     <string name="lbl_author_type_editor">Herausgeber</string>
     <string name="lbl_author_type_inking">Inker</string>
@@ -450,7 +450,7 @@
     <string name="lbl_date_last_updated_year">Änderungsjahr</string>
     <string name="lbl_virtual_libraries">Virtuelle Bibliotheken in dieser Bibliothek</string>
     <string name="lbl_website_address">Webadresse (URL)</string>
-    <string name="lbl_websites">Webseiten</string>
+    <string name="lbl_websites">Websites</string>
     <string name="bookshelf_my_wishlist">Wunschzettel</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
     <string name="lbl_year">Jahr</string>
@@ -792,7 +792,7 @@
     <string name="action_report">Melden</string>
     <string name="error_invalid_url">Ungültige Adresse (URL)</string>
     <string name="lbl_certificate_validity_period">Gültigkeit: %1$s - %2$s</string>
-    <string name="lbl_reading">Aktuelle Lektüre</string>
+    <string name="lbl_reading">Am Lesen</string>
     <string name="action_edit_defaults">Standardeinstellungen bearbeiten</string>
     <string name="ps_sort_author_name_given_first">Sortierung nach den Vornamen zuerst,\nz.B. „Franz  Kafka“</string>
     <string name="ps_sort_author_name_family_first">Sortierung nach dem Familiennamen zuerst,\nz.B. „Kafka, Franz“</string>
