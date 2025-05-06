@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,10 +41,12 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * FIXME: currently we import covers without checking if we actually have the book.
- * <p>
  * <strong>Warning:</strong> this class will be reused for reading multiple covers.
  * Do not add/use class globals.
+ * <p>
+ * Note we import covers without checking if we actually have the book.
+ * This is on-purpose so we can import cover files without importing books,
+ * as a way to add covers to existing books.
  */
 public class CoverRecordReader
         implements RecordReader {
