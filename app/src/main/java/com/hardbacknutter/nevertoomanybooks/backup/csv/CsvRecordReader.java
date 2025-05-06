@@ -635,7 +635,7 @@ public class CsvRecordReader
         @NonNull
         static Origin guess(@NonNull final String header) {
             // RELEASE: check the latest Goodreads CSV export file header.
-            // A download on 2024-04-22 showed a header starting like this:
+            // A download on 2025-05-06 showed a header starting like this:
             if (header.startsWith(
                     "Book Id,Title,Author,Author l-f,Additional Authors,ISBN,ISBN13,")) {
                 return Origin.Goodreads;
