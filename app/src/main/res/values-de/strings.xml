@@ -164,7 +164,7 @@
     <string name="confirm_merge_bookshelves">Das Bücherregal mit dem neuen Namen existiert bereits. Sollen die Einträge zusammengeführt werden?</string>
     <string name="confirm_merge_publishers">Der Verlag mit dem neuen Namen existiert bereits. Sollen die Einträge zusammengeführt werden?</string>
     <string name="confirm_merge_series">Die Serie mit dem neuen Namen existiert bereits. Sollen die Einträge zusammengeführt werden?</string>
-    <string name="confirm_overwrite_cover">Die ausgewählten Felder werden wie gezeigt aktualisiert. Die Covers können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle bestehenden Covers überschrieben werden? Warnung, die Aktualisierung kann lange dauern.</string>
+    <string name="confirm_overwrite_cover">Die ausgewählten Felder werden wie gezeigt aktualisiert. Die Cover können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle bestehenden Cover überschrieben werden? Warnung, die Aktualisierung kann lange dauern.</string>
     <string name="confirm_rebuild_fts">Die Suchindexdaten werden beim Neustart der App neu erstellt. Bist du dir sicher, dass du weitermachen willst?</string>
     <string name="confirm_rebuild_index">Die Indizes werden beim Neustart der App neu erstellt. Bist du dir sicher, dass du weitermachen willst?</string>
     <string name="confirm_rebuild_orderby_columns">Dadurch werden die Sortierdaten neu erstellt, wenn die App neu gestartet wird. Bist du dir sicher, dass du weitermachen willst?</string>
@@ -227,7 +227,7 @@
     <string name="httpErrorFileNotFound">Die angeforderte Datei wurde nicht gefunden.</string>
     <string name="httpErrorTimeout">Zeitüberschreitung bei Serververbindung.</string>
     <string name="info_authorized">Autorisiert</string>
-    <string name="option_moving_covers_from_x_to_y">Verschiebe alle Covers von „%1$s“ nach „%2$s“</string>
+    <string name="option_moving_covers_from_x_to_y">Verschiebe alle Cover von „%1$s“ nach „%2$s“</string>
     <string name="option_isfdb_menu_populate_toc">Automatisches Ausfüllen der Anthologie-Titel (nur ISFDB)</string>
     <string name="info_isfdb_warning_limited_to">(wird nur von der ISFDB-Website unterstützt)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
@@ -259,8 +259,8 @@
     <string name="lbl_author_type_colorist">Kolorist</string>
     <string name="lbl_author_type_contributor">Mitwirkender</string>
     <string name="lbl_author_type_cover_artist">Titelbild</string>
-    <string name="lbl_author_type_cover_colorist">Colorist des Covers</string>
-    <string name="lbl_author_type_cover_inking">Inker des Covers</string>
+    <string name="lbl_author_type_cover_colorist">Colorist des Cover</string>
+    <string name="lbl_author_type_cover_inking">Inker des Cover</string>
     <string name="lbl_author_type_editor">Herausgeber</string>
     <string name="lbl_author_type_inking">Inker</string>
     <string name="lbl_author_type_intro">Einführung etc.</string>
@@ -519,7 +519,7 @@
     <string name="pe_bob_list_rebuild_state_preserve">Darstellung beibehalten</string>
     <string name="loose">Locker</string>
     <string name="pe_thumbnails_cache_resized_each_time">Größe bei Bedarf ändern (geringerer Speicherverbrauch, langsamerer Bildlauf)</string>
-    <string name="pe_thumbnails_cache_resized_stored">Covers zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Cover zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
     <string name="pe_ui_theme_dark">Dunkel</string>
     <string name="pe_ui_theme_from_device">Gerätedesign</string>
     <string name="pe_ui_theme_light">Hell</string>
@@ -569,8 +569,8 @@
     <string name="pt_bob_cover_long_click">Öffnen des Kontextmenüs des Buches.</string>
     <string name="pe_bob_cover_long_click_ignore">Über eine Schaltfläche.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Über einen langen Klick auf das Cover-Bild.</string>
-    <string name="pt_bob_cover_scale">Größe der Covers</string>
-    <string name="pt_bob_cover_show">Covers anzeigen</string>
+    <string name="pt_bob_cover_scale">Größe der Cover</string>
+    <string name="pt_bob_cover_show">Cover anzeigen</string>
     <string name="pt_bob_font_size">Schriftgröße</string>
     <string name="pt_bob_header">Zusammenfassung in der Kopfzeile</string>
     <string name="pt_bob_list_rebuild_state">Startstatus der Buchliste</string>
@@ -597,10 +597,10 @@
     <string name="error_type_not_supported">Typ nicht unterstützt: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Artikel am Anfang eines Titels ans Ende verschieben,\nz. B. „Herr der Ringe, Der“</string>
     <string name="pt_sort_title_reordered">Titel sortieren nach</string>
-    <string name="pt_cover_undo_enabled">Rückgängigmachen von Operationen auf Covers</string>
-    <string name="ps_cover_undo_disabled">Das Bearbeiten/Ersetzen eines Covers kann nicht rückgängig gemacht werden (verbraucht weniger Speicherplatz)</string>
-    <string name="ps_cover_undo_enabled">Das Bearbeiten/Ersetzen eines Covers kann rückgängig gemacht werden (verbraucht mehr Speicherplatz)</string>
-    <string name="pt_thumbnails_cache_resized">Vergrößerte Covers zwischenspeichern</string>
+    <string name="pt_cover_undo_enabled">Rückgängigmachen von Operationen auf Cover</string>
+    <string name="ps_cover_undo_disabled">Das Bearbeiten/Ersetzen eines Cover kann nicht rückgängig gemacht werden (verbraucht weniger Speicherplatz)</string>
+    <string name="ps_cover_undo_enabled">Das Bearbeiten/Ersetzen eines Cover kann rückgängig gemacht werden (verbraucht mehr Speicherplatz)</string>
+    <string name="pt_thumbnails_cache_resized">Vergrößerte Cover zwischenspeichern</string>
     <string name="pt_thumbnails_rotate_auto">Bilder drehen</string>
     <string name="pt_ui_language">Sprache</string>
     <string name="pt_ui_system_locale">Systemsprache</string>
@@ -641,7 +641,7 @@
     <string name="tip_authors_works_single_book">Der Titel ist in einem einzigen Buch vorhanden.</string>
     <string name="tip_autorotate_camera_images">Wenn man Bilder der Kamera immer in dieselbe Richtung drehen muss, kann man die automatische Drehrichtung in den Einstellungen festlegen.</string>
     <string name="tip_book_list">Tippe auf ein Buch, um Details anzuzeigen. Ein langer Druck auf einen Listeneintrag zeigt weitere Optionen.</string>
-    <string name="tip_book_search_by_text">Das Hinzufügen der Bücher über die ISBN ist genauer als das Hinzufügen über Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachte, dass der korrekte Barcode manchmal auf der Innenseite des Covers zu finden ist.</string>
+    <string name="tip_book_search_by_text">Das Hinzufügen der Bücher über die ISBN ist genauer als das Hinzufügen über Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachte, dass der korrekte Barcode manchmal auf der Innenseite des Cover zu finden ist.</string>
     <string name="tip_booklist_style_groups">Auf diesem Bildschirm kann man die Hierarchie der Gruppen für einen bestimmten Stil ändern. Verwende das Kontrollkästchen, um auszuwählen, welche Gruppen in der Liste angezeigt werden sollen, und ordne die Hierarchie neu an, indem du das Symbol am Ende der Zeile nach oben oder unten ziehst.</string>
     <string name="tip_booklist_style_properties">Auf diesem Bildschirm kann man die Merkmale eines bestimmten Stils festlegen. Man kann den Namen ändern, die Gruppierungen bearbeiten, um die Hierarchie zu ändern, und eine Vielzahl anderer Einstellungen vornehmen, um einen Stil zu erstellen, der nützlich erscheint.</string>
     <string name="tip_booklist_styles_editor">Auf diesem Seite kann man die Liste der Stile, die im Standardmenü angezeigt werden, anpassen. Verwende das Kontrollkästchen, um auszuwählen, welche Stile in der Liste angezeigt werden sollen. Wenn keine Stile ausgewählt sind, werden alle Stile angezeigt. Man kann die Hierarchie neu ordnen, indem man das Symbol am Ende der Zeile nach oben oder unten zieht. Wenn man an einer anderen Stelle in einer Reihe lange drückt, kann man die Details eines bestimmten Stils bearbeiten oder klonen. Wenn man einen Stil klont und die Meinung ändert, muss man ihn selbst löschen.</string>
@@ -734,8 +734,8 @@
     <string name="pt_search_resolve_authors_bedetheque">Pseudonyme von Autoren über die Website der Bedetheque auflösen</string>
     <string name="pt_bedetheque_search_resolve_formats">Benennung im Bedetheque-Format (französisch) beibehalten</string>
     <string name="confirm_toc_list_update_with_books_main_author">Ersetze den Autor in allen Einträgen durch den Hauptautor des Buches „%1$s“ ?</string>
-    <string name="confirm_no_missing_covers_search_from_top">Alle Bücher unterhalb dieser Zeile haben Covers. Nochmals von oben suchen?</string>
-    <string name="info_all_books_have_covers">Alle Bücher in diesem Bücherregal haben Covers</string>
+    <string name="confirm_no_missing_covers_search_from_top">Alle Bücher unterhalb dieser Zeile haben Cover. Nochmals von oben suchen?</string>
+    <string name="info_all_books_have_covers">Alle Bücher in diesem Bücherregal haben Cover</string>
     <string name="book_format_hardcover_oblong">Gebundene Ausgabe - länglich</string>
     <string name="book_format_softcover_oblong">Softcover - länglich</string>
     <string name="lbl_purge_blns">Knotenstatus löschen</string>
