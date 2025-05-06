@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +17,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
---><!--suppress LongLine --><resources>
+--><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <string name="a_b">%1$s%2$s</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -311,7 +308,7 @@
     <string name="tip_booklist_style_groups">Ezen a képernyőn módosíthatja egy adott stílus csoportjainak hierarchiáját. A jelölőnégyzet segítségével kiválaszthatja, hogy mely csoportok jelenjenek meg a listában, a hierarchia sorrendjét az egyes sorok végén található ikon felfelé vagy lefelé húzásával módosíthatja.</string>
     <string name="tip_booklist_style_defaults">Ezen a képernyőn állíthatja be az összes stílus alapértelmezett jellemzőit. Ezeket az összes beépített stílus használja és kiindulópontként szolgálnak minden Ön által létrehozott stílushoz.</string>
     <string name="tip_booklist_style_properties">Ezen a képernyőn állíthatja be egy adott stílus jellemzőit. Módosíthatja a nevet, szerkesztheti a csoportosításokat a hierarchia megváltoztatásához és számos egyéb beállítást is módosíthat, hogy olyan stílust hozzon létre, amelyet hasznosnak talál.</string>
-    <string name="tip_import_isbn_list">Importáljon egy szöveges fájlt ISBN számokkal. A fájl minden sorában egyetlen ISBN szerepeljen. Az eredmények egy sorba kerülnek.</string>
+    <string name="tip_import_isbn_list">Importáljon egy szöveges fájlt ISBN számokkal. A fájl minden sorában egyetlen ISBN szerepeljen. Az eredmények várólistába kerülnek.</string>
     <string name="tip_authors_book_may_appear_more_than_once">Ha minden szerzőjénél megjelenik egy könyv, akkor többször is szerepelhet a listán. Az egyik könyv törlésével az összes példány törlődik a listáról.</string>
     <string name="tip_series_book_may_appear_more_than_once">Ha minden sorozatánál megjelenik egy könyv, akkor többször is szerepelhet a listán. Az egyik könyv törlésével az összes példány törlődik a listáról.</string>
     <string name="tip_autorotate_camera_images">Ha azt tapasztalja, hogy a kamera képeit mindig ugyanarra forgatja, próbálja meg módosítani az alkalmazás beállításait, hogy megadjon egy automatikus forgatást.</string>
@@ -328,7 +325,7 @@
     <string name="bob_empty_publisher">(Nincs kiadó)</string>
     <string name="bob_empty_language">(Nyelv nincs beállítva)</string>
     <string name="bob_empty_read_status">(Olvasás állapota ismeretlen)</string>
-    <string name="bob_empty_rating">(Nincs értékelés)</string>
+    <string name="bob_empty_rating">(Nincs értékelve)</string>
     <string name="bob_empty_year">(Év nincs beállítva)</string>
     <string name="bob_empty_month">(Hónap nincs beállítva)</string>
     <string name="bob_empty_day">(Nap nincs beállítva)</string>
@@ -454,4 +451,104 @@
     <string name="option_download_ebook_format">E-könyv letöltése (%1$s)</string>
     <string name="option_enable_sync_options">Szinkronizálási beállítások engedélyezése</string>
     <string name="option_cover_replace_from_camera">Kamera…</string>
+    <string name="action_clear_queue">Várólista törlése</string>
+    <string name="lbl_publisher">Kiadó</string>
+    <string name="confirm_unsaved_edits">Nem mentett módosításai vannak, ha most kilép, ezek elvesznek.</string>
+    <string name="confirm_remove_toc_entry">Eltávolítja a könyvből a következőt: \"%2$s - %1$s\"?</string>
+    <string name="confirm_scope_for_delete">A következő törlése: \"%2$s - %1$s\"\n\nHogyan kívánja alkalmazni ezt a módosítást?\nMegjegyzés: Az \"%3$s” választás nem vonható vissza!</string>
+    <string name="confirm_delete_book">Ez teljesen törli a következő könyvet: \"%2$s - %1$s\"\n\nBiztosan folytatja?</string>
+    <string name="confirm_delete_toc_entry_from_x_books">Törli a következőt: \"%2$s - %1$s\"?\n\n%3$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve.</string>
+    <string name="confirm_continue">Biztosan folytatja?</string>
+    <string name="confirm_delete_bookshelf_from_x_books">“%1$s” könyvespolc törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve. Továbbra is jelen lesznek bármely más polcon vagy az \"%3$s” polcon.</string>
+    <string name="confirm_delete_series_from_x_books">\"%1$s\" sorozat törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve. Az adatok megőrzése érdekében fontolja meg a sorozat nevének megváltoztatását egy másik sorozat nevére.</string>
+    <string name="X_confirm_delete_tag">\"%1$s\" címke törlése?\n\nAz összes könyvből el lesz távolítva. Maguk a könyvek nem lesznek törölve.</string>
+    <string name="confirm_delete_tag_from_x_books">\"%1$s\" címke törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve.</string>
+    <string name="confirm_delete_identifier_from_x_books">\"%1$s\" azonosító törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve.</string>
+    <string name="confirm_delete_substitutions">\"%1$s\" helyettesítéseinek törlése?</string>
+    <string name="confirm_delete_style">\"%1$s\" stílus törlése?</string>
+    <string name="confirm_merge_bookshelves">A módosítandó könyvespolc már létezik. Szeretné egyesíteni őket?</string>
+    <string name="confirm_merge_authors">A módosítandó szerző már létezik. Szeretné egyesíteni őket?</string>
+    <string name="confirm_merge_series">A módosítandó sorozat már létezik. Szeretné egyesíteni őket?</string>
+    <string name="confirm_merge_publishers">A módosítandó kiadó már létezik. Szeretné egyesíteni őket?</string>
+    <string name="confirm_merge_tags">A módosítandó címke már létezik. Szeretné egyesíteni őket?</string>
+    <string name="confirm_duplicate_book_message">A hozzáadni kívánt könyv már létezik az adatbázisban, biztosan hozzáad egy másik példányt?</string>
+    <string name="confirm_overwrite_cover">A kiválasztott mezőket az itt látható módon frissíti, de a képek minden könyvhöz letölthetőek.\n\nFelülírja az összes meglévő képet? Figyelem, ez hosszabb időt vehet igénybe.</string>
+    <string name="confirm_email_file">Szeretné elküldeni ezt a fájlt e-mailben?</string>
+    <string name="confirm_test_connection">A későbbi problémák elkerülése érdekében érdemes ezt a kapcsolatot tesztelni.</string>
+    <string name="confirm_create_real_author">\"%1$s” még nem létezik. Létrehozza?</string>
+    <string name="confirm_no_missing_covers_search_from_top">A sor alatti összes könyvnek van borítója. Keresés újra felülről?</string>
+    <string name="confirm_apply_substitutions">Alkalmazza a helyettesítési szabályokat? Minden vonatkozó könyv frissülni fog.</string>
+    <string name="confirm_rebuild_orderby_columns">Ez újraépíti a rendezési adatokat az alkalmazás újraindításakor. Biztosan folytatja?</string>
+    <string name="confirm_rebuild_fts">Ez újraépíti a keresési index adatokat az alkalmazás újraindításakor. Biztosan folytatja?</string>
+    <string name="confirm_rebuild_index">Ez újraépíti az indexeket az alkalmazás újraindításakor. Biztosan folytatja?</string>
+    <string name="confirm_registration_required">Ehhez a funkcióhoz regisztráció szükséges a következó oldalon: %1$s. Szeretne több információt látni?</string>
+    <string name="confirm_registration_benefits">Ez a funkció elérhető, ha regisztrál a következő oldalon: %1$s. Szeretne további információkat látni vagy letiltani ezt az üzenetet?\nEzt az információt később a beállítások \"%2$s” részében találja.</string>
+    <string name="action_add_with_details">Részletes hozzáadás</string>
+    <string name="action_edit_ellipsis">Szerkesztés…</string>
+    <string name="action_edit_defaults">Alapértelmezett beállítások szerkesztése</string>
+    <string name="action_more_ellipsis">Több…</string>
+    <string name="action_less_ellipsis">Kevesebb…</string>
+    <string name="action_merge">Egyesítés</string>
+    <string name="action_duplicate">Megkettőzés</string>
+    <string name="action_disable_message">Üzenet letiltása</string>
+    <string name="action_synchronize">Szinkronizálás</string>
+    <string name="lbl_edit_style">Stílus szerkesztése</string>
+    <string name="action_show_toc_long">Tartalomjegyzék megjelenítése</string>
+    <string name="lbl_search_isbn">ISBN Keresés</string>
+    <string name="lbl_add_book">Könyv hozzáadása</string>
+    <string name="lbl_clone_style">Stílus klónozása</string>
+    <string name="lbl_search_for_books">Könyvek keresése</string>
+    <string name="lbl_scope_of_change">Módosítás hatóköre</string>
+    <string name="lbl_duplicate_book">Könyv másolása</string>
+    <string name="lbl_details_have_changed">Részletek megváltoztak</string>
+    <string name="lbl_test_connection">Tesztkapcsolat</string>
+    <string name="lbl_import_books">Könyvek importálása</string>
+    <string name="lbl_importing">Importálás…</string>
+    <string name="lbl_calibre_content_server">Calibre tartalomszerver</string>
+    <string name="lbl_author">Szerző</string>
+    <string name="lbl_authors">Szerzők</string>
+    <string name="lbl_family_name">Családnév</string>
+    <string name="lbl_given_names">Utónevek</string>
+    <string name="lbl_author_is_a_pen_name_of">Álneve a következő írónak:</string>
+    <string name="lbl_author_pseudonym">Szerző álneve</string>
+    <string name="lbl_author_type">Szerzőtípus</string>
+    <string name="lbl_author_pseudonym_of_X">ps. %1$s</string>
+    <string name="lbl_series">Sorozat</string>
+    <string name="lbl_series_multiple">Sorozatok</string>
+    <string name="lbl_series_num">#</string>
+    <string name="lbl_publishers">Kiadók</string>
+    <string name="lbl_bookshelf">Könyvespolc</string>
+    <string name="lbl_bookshelves">Könyvespolcok</string>
+    <string name="lbl_books">Könyvek</string>
+    <string name="lbl_book_type">Könyvtípus</string>
+    <string name="lbl_book_type_anthology">Antológia</string>
+    <string name="lbl_book_type_collection">Gyűjtemény</string>
+    <string name="lbl_cover_front">Borító</string>
+    <string name="lbl_cover_back">Hátlap</string>
+    <string name="lbl_covers">Borítók</string>
+    <string name="lbl_covers_long">Borítóképek</string>
+    <string name="lbl_pages">Oldalszám</string>
+    <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d oldal</string>
+    <string name="lbl_group">Csoport</string>
+    <string name="lbl_currency">Pénznem</string>
+    <string name="lbl_price_listed">Listaár</string>
+    <string name="lbl_price_paid">Fizetett ár</string>
+    <string name="lbl_rating">Értékelés</string>
+    <string name="lbl_ebook_file_type">E-könyv fájltípus</string>
+    <string name="lbl_tag">Címke</string>
+    <string name="lbl_substitutions">Helyettesítések</string>
+    <string name="lbl_signed">Aláírt</string>
+    <string name="lbl_titles">Címek</string>
+    <string name="lbl_original_title">Eredeti cím</string>
+    <string name="lbl_original_title_long">Eredeti cím, ha ez a könyv fordítás</string>
+    <string name="lbl_original_language">Eredeti nyelv</string>
+    <string name="lbl_barcode">Vonalkód</string>
+    <string name="lbl_location_long">A könyv helye</string>
+    <string name="lbl_genre">Műfaj</string>
+    <string name="lbl_book">Könyv</string>
+    <string name="confirm_delete_publisher_from_x_books">\"%1$s\" kiadó törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve. Az adatok megőrzése érdekében fontolja meg a kiadó nevének megváltoztatását egy másik kiadó nevére.</string>
+    <string name="action_stop_scanning">Beolvasás leállítása</string>
+    <string name="confirm_scope_for_change">A következőt módosította:\n\"%1$s”\nerre\n\"%2$s”\n\nHogyan szeretné alkalmazni ezt a módosítást?\nMegjegyzés: Az \"%3$s” lehetőség azonnal alkalmazva lesz. Ha a \"%4$s” lehetőséget választja, akkor egy új %5$s lesz létrehozva.</string>
+    <string name="confirm_toc_list_update_with_books_main_author">Lecseréli az összes bejegyzés szerzőjét a könyv fő szerzőjére: \"%1$s”?</string>
+    <string name="lbl_personal_notes">Személyes jegyzet</string>
 </resources>
