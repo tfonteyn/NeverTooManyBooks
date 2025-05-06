@@ -1984,7 +1984,7 @@
     <string name="lbl_table_of_content">Table Of Content</string>
     <!-- Table Of Content abbreviation. Used for a button. -->
     <string name="lbl_table_of_content_short">Content</string>
-    <!-- An entry in the table-of-content; i.e. a title, chapter, ... ->
+    <!-- An entry in the table-of-content; i.e. a title, chapter, ... -->
     <string name="lbl_table_of_content_entry">Content Entry</string>
     <!-- menu/screen title. List of websites (site settings). -->
     <string name="lbl_websites">Websites</string>
