@@ -1980,10 +1980,13 @@
     <string name="lbl_number">Number</string>
     <!-- "I own this book"; or "the number of books I own" -->
     <string name="lbl_owned">Owned</string>
+    <!-- Label. -->
     <string name="lbl_table_of_content">Table Of Content</string>
     <!-- Table Of Content abbreviation. Used for a button. -->
     <string name="lbl_table_of_content_short">Content</string>
+    <!-- An entry in the table-of-content; i.e. a title, chapter, ... ->
     <string name="lbl_table_of_content_entry">Content Entry</string>
+    <!-- menu/screen title. List of websites (site settings). -->
     <string name="lbl_websites">Websites</string>
     <!-- hint text for an input field -->
     <string name="lbl_site_book_id">Website book ID</string>
