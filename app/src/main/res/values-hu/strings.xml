@@ -454,7 +454,7 @@
     <string name="action_clear_queue">Várólista törlése</string>
     <string name="lbl_publisher">Kiadó</string>
     <string name="confirm_unsaved_edits">Nem mentett módosításai vannak, ha most kilép, ezek elvesznek.</string>
-    <string name="confirm_remove_toc_entry">Eltávolítja a könyvből a következőt: „2$s - %1$s”?</string>
+    <string name="confirm_remove_toc_entry">Eltávolítja a könyvből a következőt: „%2$s - %1$s”?</string>
     <string name="confirm_scope_for_delete">A következő törlése: „%2$s - %1$s”\n\nHogyan kívánja alkalmazni ezt a módosítást?\nMegjegyzés: Az „%3$s” választás nem vonható vissza!</string>
     <string name="confirm_delete_book">Ez teljesen törli a következő könyvet: „%2$s - %1$s”\n\nBiztosan folytatja?</string>
     <string name="confirm_delete_toc_entry_from_x_books">Törli a következőt: „%2$s - %1$s”?\n\n%3$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve.</string>
