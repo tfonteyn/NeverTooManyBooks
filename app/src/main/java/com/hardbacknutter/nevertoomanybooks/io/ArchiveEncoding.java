@@ -61,20 +61,35 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public enum ArchiveEncoding
         implements Parcelable {
-    /** The default full backup/restore support. Text files are compressed, images are not. */
+    /**
+     * The default full backup/restore support.
+     * Will contain all data as json files + all cover images.
+     */
     Zip("zip",
         R.string.option_archive_type_backup_zip,
         R.string.option_info_lbl_archive_type_backup),
 
-    /** Books as a CSV file; legacy support for importing only. */
+    /**
+     * Books as a CSV file.
+     * <p>
+     * Supports importing from:
+     * <ul>
+     *     <li>Legacy BC app</li>
+     *     <li>Legacy NTMB 1.0-1.3</li>
+     *     <li>Goodreads CSV export</li>
+     * </ul>
+     */
     Csv("csv", R.string.option_archive_type_csv,
         R.string.option_info_archive_type_csv),
 
-    /** Books, Styles, Preferences in a JSON file; full support for export/import. */
+    /**
+     * Will contain all data in a single JSON file. No images.
+     * Full support for export/import.
+     */
     Json("json", R.string.option_archive_type_json,
          R.string.option_info_archive_format_json),
 
-    /** Database. */
+    /** Database. Export only. */
     SqLiteDb("db", R.string.option_archive_type_db,
              R.string.option_info_archive_format_db);
 
@@ -290,10 +305,10 @@ public enum ArchiveEncoding
      *
      * @return a new reader
      *
-     * @throws DataReaderException  if the input is not recognized
-     * @throws IOException          on generic/other IO failures
+     * @throws DataReaderException      if the input is not recognized
+     * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if there are no record types set
-     * @throws CredentialsException on authentication/login failures
+     * @throws CredentialsException     on authentication/login failures
      * @see DataReader
      */
     @WorkerThread
