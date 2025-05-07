@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
@@ -62,16 +61,16 @@ public enum CsvFormat
                     return DBKey.AUTHOR.FORMATTED_FULL_NAME;
                 case "additional authors":
                     // Added in addition to the one above
-                    return BookCoder.Goodreads.ADDITIONAL_AUTHORS;
+                    return CsvGoodreads.ADDITIONAL_AUTHORS;
                 case "isbn":
                     // ISBN-10; will be used if the "isbn13" field is empty
-                    return BookCoder.Goodreads.ISBN10;
+                    return CsvGoodreads.ISBN10;
                 case "isbn13":
                     return DBKey.ISBN;
                 case "my rating":
-                    return BookCoder.Goodreads.MY_RATING;
+                    return CsvGoodreads.MY_RATING;
                 case "average rating":
-                    return BookCoder.Goodreads.AVERAGE_RATING;
+                    return CsvGoodreads.AVERAGE_RATING;
                 case "publisher":
                     return DBKey.PUBLISHER.NAME;
                 case "binding":
@@ -87,11 +86,11 @@ public enum CsvFormat
                 case "date added":
                     return DBKey.DATE_ADDED__UTC;
                 case "bookshelves":
-                    return BookCoder.Goodreads.BOOKSHELVES;
+                    return CsvGoodreads.BOOKSHELVES;
                 case "exclusive shelf":
-                    return BookCoder.Goodreads.EXCLUSIVE_SHELF;
+                    return CsvGoodreads.EXCLUSIVE_SHELF;
                 case "my review":
-                    return BookCoder.Goodreads.MY_REVIEW;
+                    return CsvGoodreads.MY_REVIEW;
                 case "private notes":
                     return DBKey.PERSONAL_NOTES;
 
@@ -110,13 +109,13 @@ public enum CsvFormat
                     // (although could be a valid enhancement as we support lending out books)
 
                     // Just use a bogus name which will be ignored
-                    return BookCoder.Goodreads.PREFIX + name;
+                    return CsvGoodreads.PREFIX + name;
 
                 default:
                     // Unknown on 2024-04-22; log them for future support
                     LoggerFactory.getLogger()
                                  .w(TAG, "Unknown Goodreads csv column=" + name);
-                    return BookCoder.Goodreads.PREFIX + name;
+                    return CsvGoodreads.PREFIX + name;
             }
         }
 
@@ -178,6 +177,13 @@ public enum CsvFormat
         this.labelId = labelId;
     }
 
+    /**
+     * Parse the CSV file header line to guess the origin/format.
+     *
+     * @param header to parse
+     *
+     * @return format detected
+     */
     @NonNull
     static CsvFormat guess(@NonNull final String header) {
         // RELEASE: check the latest Goodreads CSV export file header.

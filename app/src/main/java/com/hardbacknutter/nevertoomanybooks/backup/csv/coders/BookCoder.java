@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvFormat;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvGoodreads;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
@@ -113,7 +114,7 @@ public class BookCoder {
     private final RatingParser ratingParser;
     private final TagMapper tagMapper;
     @Nullable
-    private Goodreads goodreads;
+    private CsvGoodreads goodreads;
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
 
@@ -205,9 +206,9 @@ public class BookCoder {
     }
 
     @NonNull
-    private Goodreads getGoodreads() {
+    private CsvGoodreads getGoodreads() {
         if (goodreads == null) {
-            goodreads = new Goodreads(defaultStyle);
+            goodreads = new CsvGoodreads(defaultStyle);
         }
         return goodreads;
     }
@@ -218,9 +219,9 @@ public class BookCoder {
      * @param book to process
      */
     private void processIsbn(@NonNull final Book book) {
-        if (!book.hasIsbn() && book.contains(Goodreads.ISBN10)) {
-            book.setIsbn(book.getString(Goodreads.ISBN10));
-            book.remove(Goodreads.ISBN10);
+        if (!book.hasIsbn() && book.contains(CsvGoodreads.ISBN10)) {
+            book.setIsbn(book.getString(CsvGoodreads.ISBN10));
+            book.remove(CsvGoodreads.ISBN10);
         }
 
         if (book.hasIsbn()) {
@@ -259,7 +260,8 @@ public class BookCoder {
         processAuthor(book, authorCoder, CSV_COLUMN_AUTHORS, list);
         processAuthor(book, authorCoder, DBKey.AUTHOR.FORMATTED_FULL_NAME, list);
         processAuthor(book, authorCoder, LEGACY_AUTHOR_NAME, list);
-        processAuthor(book, getGoodreads().getAuthorCoder(), Goodreads.ADDITIONAL_AUTHORS, list);
+        processAuthor(book, getGoodreads().getAuthorCoder(),
+                      CsvGoodreads.ADDITIONAL_AUTHORS, list);
 
         // check for individual author family/given fields in the input
         if (book.contains(DBKey.AUTHOR.FAMILY_NAME)) {
@@ -469,15 +471,15 @@ public class BookCoder {
         processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_1_1, list);
         processBookshelf(book, bookshelfCoder, LEGACY_BOOKSHELF_TEXT, list);
 
-        if (book.contains(Goodreads.BOOKSHELVES)
-            || book.contains(Goodreads.EXCLUSIVE_SHELF)) {
+        if (book.contains(CsvGoodreads.BOOKSHELVES)
+            || book.contains(CsvGoodreads.EXCLUSIVE_SHELF)) {
             //ENHANCE: provide mapping for the Goodreads "read", "to-read" and "currently-reading"
             // fixed shelves. For now we just create those 3 when not there yet.
             // If 'read' is present, we also set our DBKey.READ__BOOL flag.
             processBookshelf(book, getGoodreads().getBookshelfCoder(),
-                             Goodreads.BOOKSHELVES, list);
+                             CsvGoodreads.BOOKSHELVES, list);
             processBookshelf(book, getGoodreads().getBookshelfCoder(),
-                             Goodreads.EXCLUSIVE_SHELF, list);
+                             CsvGoodreads.EXCLUSIVE_SHELF, list);
 
             if (list.stream().anyMatch(bookshelf -> "read".equals(bookshelf.getName()))) {
                 // DO NOT use book.setRead(true) as that will set related fields
@@ -539,14 +541,16 @@ public class BookCoder {
     }
 
     private void processRating(@NonNull final Book book) {
-        if (!book.contains(DBKey.RATING) && book.contains(Goodreads.MY_RATING)) {
-            ratingParser.parse(book.getString(Goodreads.MY_RATING)).ifPresent(book::setRating);
-            book.remove(Goodreads.MY_RATING);
+        if (!book.contains(DBKey.RATING) && book.contains(CsvGoodreads.MY_RATING)) {
+            ratingParser.parse(book.getString(CsvGoodreads.MY_RATING))
+                        .ifPresent(book::setRating);
+            book.remove(CsvGoodreads.MY_RATING);
         }
 
-        if (!book.contains(DBKey.RATING) && book.contains(Goodreads.AVERAGE_RATING)) {
-            ratingParser.parse(book.getString(Goodreads.AVERAGE_RATING)).ifPresent(book::setRating);
-            book.remove(Goodreads.AVERAGE_RATING);
+        if (!book.contains(DBKey.RATING) && book.contains(CsvGoodreads.AVERAGE_RATING)) {
+            ratingParser.parse(book.getString(CsvGoodreads.AVERAGE_RATING))
+                        .ifPresent(book::setRating);
+            book.remove(CsvGoodreads.AVERAGE_RATING);
         }
     }
 
@@ -556,7 +560,7 @@ public class BookCoder {
         // .
         // We don't want to use the DBKey.DESCRIPTION field!
         // The description is supposed to be a generic description, the back cover text, etc...
-        final String review = book.getString(Goodreads.MY_REVIEW);
+        final String review = book.getString(CsvGoodreads.MY_REVIEW);
         if (!review.isEmpty()) {
             String notes = book.getString(DBKey.PERSONAL_NOTES);
             if (!notes.isEmpty()) {
@@ -564,7 +568,7 @@ public class BookCoder {
             }
             notes += review;
             book.putString(DBKey.PERSONAL_NOTES, notes);
-            book.remove(Goodreads.MY_REVIEW);
+            book.remove(CsvGoodreads.MY_REVIEW);
         }
     }
 
@@ -639,63 +643,4 @@ public class BookCoder {
         });
     }
 
-    public static final class Goodreads {
-
-        public static final String PREFIX = "goodreads_";
-
-        /**
-         * The Goodreads Author field will be mapped to {@link DBKey.AUTHOR#FORMATTED_FULL_NAME}.
-         * Any additional authors come in this key and will need to be added.
-         */
-        public static final String ADDITIONAL_AUTHORS = PREFIX + "additional authors";
-        /**
-         * Data will have the Isbn13 field mapped to {@link DBKey#ISBN}.
-         * If empty, we get the Isbn10 code from this key.
-         */
-        public static final String ISBN10 = PREFIX + "isbn10";
-        /** Goodreads bookshelves need special decoding. */
-        public static final String BOOKSHELVES = PREFIX + "bookshelves";
-        public static final String EXCLUSIVE_SHELF = PREFIX + "exclusive shelf";
-        /**
-         * An {@code int} 1..5; can be missing.
-         * Decoded in combination with {@link #AVERAGE_RATING}.
-         */
-        public static final String MY_RATING = PREFIX + "my rating";
-        /**
-         * A {@code float} 0..5; can be missing.
-         * Decoded in combination with {@link #MY_RATING}.
-         */
-        public static final String AVERAGE_RATING = PREFIX + "average rating";
-        public static final String MY_REVIEW = PREFIX + "my review";
-
-        @NonNull
-        private final Style defaultStyle;
-
-        /** This is a COMMA separated string list. */
-        @Nullable
-        private StringList<Author> authorCoder;
-        /** This is a SPACE separated string list. */
-        @Nullable
-        private StringList<Bookshelf> bookshelfCoder;
-
-        Goodreads(@NonNull final Style defaultStyle) {
-            this.defaultStyle = defaultStyle;
-        }
-
-        @NonNull
-        StringList<Author> getAuthorCoder() {
-            if (authorCoder == null) {
-                authorCoder = new StringList<>(new AuthorCoder(','));
-            }
-            return authorCoder;
-        }
-
-        @NonNull
-        StringList<Bookshelf> getBookshelfCoder() {
-            if (bookshelfCoder == null) {
-                bookshelfCoder = new StringList<>(new BookshelfCoder(',', defaultStyle));
-            }
-            return bookshelfCoder;
-        }
-    }
 }
