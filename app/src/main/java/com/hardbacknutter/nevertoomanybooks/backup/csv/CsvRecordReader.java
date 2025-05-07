@@ -21,13 +21,10 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,13 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -327,14 +321,14 @@ public class CsvRecordReader
         // First line in the import file must be the column names.
         final String columnHeader = books.get(0);
         // Now try and guess where this CSV file might have come from.
-        final Origin origin = Origin.guess(columnHeader);
+        final CsvFormat csvFormat = CsvFormat.guess(columnHeader);
 
         // Parse the column header to use as keys into the book.
         // We swap column names as needed depending on origin.
         final List<String> csvColumnNames = parse(context, 0, columnHeader)
                 .stream()
                 .map(name -> name.toLowerCase(Locale.ENGLISH))
-                .map(origin::mapColumnName)
+                .map(csvFormat::mapColumnName)
                 .collect(Collectors.toList());
 
         // Check for required columns we cannot do without
@@ -360,7 +354,7 @@ public class CsvRecordReader
         Synchronizer.SyncLock txLock = null;
 
         final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault();
-        final BookCoder bookCoder = new BookCoder(context, origin, defaultStyle);
+        final BookCoder bookCoder = new BookCoder(context, csvFormat, defaultStyle);
 
         while (row < books.size() && !progressListener.isCancelled()) {
 
@@ -487,201 +481,5 @@ public class CsvRecordReader
 
         throw new DataReaderException(context.getString(
                 R.string.error_import_csv_missing_columns_x, String.join(",", names)));
-    }
-
-    public enum Origin
-            implements Parcelable {
-        /** A Goodreads export. */
-        Goodreads(R.string.site_goodreads) {
-            @NonNull
-            public String mapColumnName(@NonNull final String name) {
-                // From a test export on 2024-04-22:
-                // Book Id,Title,
-                // Author,Author l-f,Additional Authors,
-                // ISBN,ISBN13,
-                // My Rating,Average Rating,
-                // Publisher,Binding,Number of Pages,
-                // Year Published,Original Publication Year,Date Read,Date Added,
-                // Bookshelves,Bookshelves with positions,Exclusive Shelf,
-                // My Review, Spoiler,
-                // Private Notes,
-                // Read Count,Owned Copies
-                switch (name) {
-                    case "book id":
-                        return Identifier.SID_GOODREADS;
-                    case "title":
-                        return DBKey.TITLE;
-                    case "author l-f":
-                        // Will be decoded during import
-                        return DBKey.AUTHOR.FORMATTED_FULL_NAME;
-                    case "additional authors":
-                        // Added in addition to the one above
-                        return BookCoder.Goodreads.ADDITIONAL_AUTHORS;
-                    case "isbn":
-                        // ISBN-10; will be used if the "isbn13" field is empty
-                        return BookCoder.Goodreads.ISBN10;
-                    case "isbn13":
-                        return DBKey.ISBN;
-                    case "my rating":
-                        return BookCoder.Goodreads.MY_RATING;
-                    case "average rating":
-                        return BookCoder.Goodreads.AVERAGE_RATING;
-                    case "publisher":
-                        return DBKey.PUBLISHER.NAME;
-                    case "binding":
-                        return DBKey.FORMAT;
-                    case "number of pages":
-                        return DBKey.PAGES;
-                    case "year published":
-                        return DBKey.PUBLICATION_DATE;
-                    case "original publication year":
-                        return DBKey.FIRST_PUBLICATION_DATE;
-                    case "date read":
-                        return DBKey.READ_END__DATE;
-                    case "date added":
-                        return DBKey.DATE_ADDED__UTC;
-                    case "bookshelves":
-                        return BookCoder.Goodreads.BOOKSHELVES;
-                    case "exclusive shelf":
-                        return BookCoder.Goodreads.EXCLUSIVE_SHELF;
-                    case "my review":
-                        return BookCoder.Goodreads.MY_REVIEW;
-                    case "private notes":
-                        return DBKey.PERSONAL_NOTES;
-
-                    // The next set are ignored for now
-                    case "author":
-                        // ignored in favour of the "author l-f" field
-                    case "bookshelves with positions":
-                        // we don't support positions for bookshelves
-                    case "spoiler":
-                        // I believe this is a flag set when the "my review" field is
-                        // considered to contain spoilers - not supported.
-                    case "read count":
-                        // We only support read == true/false
-                    case "owned copies":
-                        // We do not have a concept of multiple copies
-                        // (although could be a valid enhancement as we support lending out books)
-
-                        // Just use a bogus name which will be ignored
-                        return BookCoder.Goodreads.PREFIX + name;
-
-                    default:
-                        // Unknown on 2024-04-22; log them for future support
-                        LoggerFactory.getLogger().w(TAG, "Unknown Goodreads csv column=" + name);
-                        return BookCoder.Goodreads.PREFIX + name;
-                }
-            }
-
-            @Override
-            @NonNull
-            public RatingParser createRatingParser() {
-                return new RatingParser(5);
-            }
-        },
-        /** The original BC format, or the extended but obsolete NTMB 1.x .. 3.x format. */
-        BC(R.string.lbl_book_catalogue) {
-            @NonNull
-            public String mapColumnName(@NonNull final String name) {
-                final String mapped = LegacyUpgrades.IDENTIFIERS.get(name);
-                return mapped == null ? name : mapped;
-            }
-
-            @Override
-            @NonNull
-            public RatingParser createRatingParser() {
-                return new RatingParser(5);
-            }
-        },
-        /** Anything not explicitly recognized. */
-        Unknown(R.string.unknown) {
-            @NonNull
-            public String mapColumnName(@NonNull final String name) {
-                return name;
-            }
-
-            @Override
-            @NonNull
-            public RatingParser createRatingParser() {
-                return new RatingParser(5);
-            }
-        };
-
-        /** Bundle key to pass this object around. */
-        public static final String BKEY = "Origin:bk";
-
-        /** {@link Parcelable}. */
-        public static final Creator<Origin> CREATOR = new Creator<>() {
-            @Override
-            @NonNull
-            public Origin createFromParcel(@NonNull final Parcel in) {
-                return values()[in.readInt()];
-            }
-
-            @Override
-            @NonNull
-            public Origin[] newArray(final int size) {
-                return new Origin[size];
-            }
-        };
-
-        @StringRes
-        private final int labelId;
-
-        Origin(@StringRes final int labelId) {
-            this.labelId = labelId;
-        }
-
-        @NonNull
-        static Origin guess(@NonNull final String header) {
-            // RELEASE: check the latest Goodreads CSV export file header.
-            // A download on 2025-05-06 showed a header starting like this:
-            if (header.startsWith(
-                    "Book Id,Title,Author,Author l-f,Additional Authors,ISBN,ISBN13,")) {
-                return Origin.Goodreads;
-
-            } else if (header.startsWith("_id,author_details,title,isbn")
-                       || header.startsWith("\"_id\",\"author_details\",\"title\",\"isbn\"")) {
-                // We have a pretty good match for original BC files
-                return Origin.BC;
-
-            } else if (header.startsWith("\"_id\",")) {
-                // It's likely/hopefully a match for BC or NTMB 1-3 formats
-                return Origin.BC;
-
-            }
-
-            return Origin.Unknown;
-        }
-
-        /**
-         * Map a column name as found in the input file to a {@link DBKey} if possible.
-         * Columns that need more processing <strong>MUST NOT</strong> use a {@link DBKey}.
-         *
-         * @param name to map
-         *
-         * @return mapped name
-         */
-        @NonNull
-        public abstract String mapColumnName(@NonNull String name);
-
-        @NonNull
-        public abstract RatingParser createRatingParser();
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags) {
-            dest.writeInt(ordinal());
-        }
-
-        @NonNull
-        public CharSequence getLabel(@NonNull final Context context) {
-            return context.getString(labelId);
-        }
     }
 }

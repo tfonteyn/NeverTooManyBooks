@@ -116,10 +116,10 @@ public class CsvArchiveReaderTest
         assertTrue(oMetaData.isPresent());
         metaData = oMetaData.get();
         assertNotNull(metaData);
-        assertTrue(metaData.getData().containsKey(CsvRecordReader.Origin.BKEY));
+        assertTrue(metaData.getData().containsKey(CsvFormat.BKEY));
 
-        assertEquals(CsvRecordReader.Origin.BC,
-                     metaData.getData().getParcelable(CsvRecordReader.Origin.BKEY));
+        assertEquals(CsvFormat.BC,
+                     metaData.getData().getParcelable(CsvFormat.BKEY));
 
         // "testdata.csv" does contain such a field
         assertTrue(metaData.getData().getBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));

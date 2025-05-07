@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvFormat;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
@@ -106,7 +106,7 @@ public class BookCoder {
     @NonNull
     private final Author unknownAuthor;
     @NonNull
-    private final CsvRecordReader.Origin origin;
+    private final CsvFormat csvFormat;
     @NonNull
     private final Style defaultStyle;
     private final FullDateParser dateParser;
@@ -121,13 +121,13 @@ public class BookCoder {
      * Constructor.
      *
      * @param context      Current context
-     * @param origin       type/origin of the input data to decode
+     * @param csvFormat       type/origin of the input data to decode
      * @param defaultStyle the default style to use for {@link Bookshelf}s
      */
     public BookCoder(@NonNull final Context context,
-                     @NonNull final CsvRecordReader.Origin origin,
+                     @NonNull final CsvFormat csvFormat,
                      @NonNull final Style defaultStyle) {
-        this.origin = origin;
+        this.csvFormat = csvFormat;
         this.defaultStyle = defaultStyle;
 
         authorCoder = new StringList<>(new AuthorCoder());
@@ -142,7 +142,7 @@ public class BookCoder {
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context);
         dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
-        ratingParser = origin.createRatingParser();
+        ratingParser = csvFormat.createRatingParser();
 
         tagMapper = new TagMapper(context);
     }

@@ -119,8 +119,8 @@ public class GoodreadsCsvImportTest
         assertTrue(oMetaData.isPresent());
         metaData = oMetaData.get();
         assertNotNull(metaData);
-        assertEquals(CsvRecordReader.Origin.Goodreads,
-                     metaData.getData().getParcelable(CsvRecordReader.Origin.BKEY));
+        assertEquals(CsvFormat.Goodreads,
+                     metaData.getData().getParcelable(CsvFormat.BKEY));
         assertTrue(metaData.getData().containsKey(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));
         // "goodreads_library_export.csv" does NOT contain such a field
         assertFalse(metaData.getData().getBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED));

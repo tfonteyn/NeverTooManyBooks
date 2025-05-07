@@ -96,17 +96,17 @@ public class CsvArchiveReader
             columnHeader = reader.readLine();
         }
 
-        final CsvRecordReader.Origin origin = CsvRecordReader.Origin.guess(columnHeader);
+        final CsvFormat csvFormat = CsvFormat.guess(columnHeader);
 
         final boolean supportsUpdates = CsvRecordReader
                 .parse(context, 0, columnHeader)
                 .stream()
                 .map(name -> name.toLowerCase(Locale.ENGLISH))
-                .map(origin::mapColumnName)
+                .map(csvFormat::mapColumnName)
                 .anyMatch(DBKey.DATE_LAST_UPDATED__UTC::equals);
 
         final Bundle bundle = ServiceLocator.getInstance().newBundle();
-        bundle.putParcelable(CsvRecordReader.Origin.BKEY, origin);
+        bundle.putParcelable(CsvFormat.BKEY, csvFormat);
         bundle.putBoolean(BasicMetaData.SUPPORTS_DATE_LAST_UPDATED, supportsUpdates);
         return Optional.of(new ArchiveMetaData(0, bundle));
     }

@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvFormat;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
@@ -335,12 +335,11 @@ public class ImportFragment
                     final Context context = getContext();
 
                     @Nullable
-                    final CsvRecordReader.Origin origin = metaData.getData().getParcelable(
-                            CsvRecordReader.Origin.BKEY);
-                    if (origin != null) {
+                    final CsvFormat csvFormat = metaData.getData().getParcelable(CsvFormat.BKEY);
+                    if (csvFormat != null) {
                         info.add(context.getString(R.string.name_colon_value,
                                                    context.getString(R.string.lbl_archive_format),
-                                                   origin.getLabel(context)));
+                                                   csvFormat.getLabel(context)));
                     }
 
                     metaData.getCreatedLocalDate().ifPresent(date -> info
