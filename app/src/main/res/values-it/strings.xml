@@ -64,7 +64,7 @@
     <string name="X_info_not_authorized">Non autorizzato</string>
     <string name="X_info_site_authorization_successful">Autorizzazione %1$s concessa</string>
     <string name="X_lbl_folder">Cartella</string>
-    <string name="X_lbl_image">Immagine</string>
+    <string name="lbl_image">Immagine</string>
     <string name="X_lbl_thumbnails">Miniature</string>
     <string name="X_neither">Nessuno dei due</string>
     <string name="X_lbl_anthologies">Antologie</string>
@@ -384,6 +384,7 @@
     <string name="option_goto_next_book_without_cover">Passa al prossimo libro senza copertina</string>
     <string name="lbl_number">Numero</string>
     <string name="lbl_owned">Di proprietà</string>
+    <string name="lbl_images">Immagini</string>
     <string name="lbl_pages">Pagine</string>
     <string name="lbl_personal_notes">Note personali</string>
     <string name="lbl_price_listed">Prezzo di listino</string>

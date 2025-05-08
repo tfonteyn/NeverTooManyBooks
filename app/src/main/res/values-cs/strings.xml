@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -65,7 +68,7 @@
     <string name="X_info_not_authorized">Neautorizováno</string>
     <string name="X_info_site_authorization_successful">%1$s autorizace v pořádku</string>
     <string name="X_lbl_folder">Složka</string>
-    <string name="X_lbl_image">Obrázek</string>
+    <string name="lbl_image">Obrázek</string>
     <string name="X_lbl_thumbnails">Náhledy</string>
     <string name="X_neither">Ani</string>
     <string name="X_lbl_anthologies">Anthology</string>
@@ -394,6 +397,7 @@
     <string name="option_goto_next_book_without_cover">Přeskočit na další knihu bez obálky</string>
     <string name="lbl_number">Číslo</string>
     <string name="lbl_owned">Vlastněno</string>
+    <string name="lbl_images">Obrázky</string>
     <string name="lbl_pages">Počet stran</string>
     <string name="lbl_personal_notes">Osobní poznámky</string>
     <string name="lbl_price_listed">Katalogová cena</string>

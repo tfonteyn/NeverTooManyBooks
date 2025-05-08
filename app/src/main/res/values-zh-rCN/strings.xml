@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -61,7 +64,7 @@
     <string name="X_lbl_anthologies">选集</string>
     <string name="X_lbl_folder">文件夹</string>
     <string name="X_lbl_general">常规</string>
-    <string name="X_lbl_image">图片</string>
+    <string name="lbl_image">图片</string>
     <string name="X_lbl_system">（系统）</string>
     <string name="X_lbl_thumbnails">缩略图</string>
     <string name="X_neither">都不是</string>
@@ -417,6 +420,7 @@
     <string name="lbl_original_title">原标题</string>
     <string name="lbl_original_title_long">原标题（此书为翻译）</string>
     <string name="lbl_owned">已拥有</string>
+    <string name="lbl_images">图片</string>
     <string name="lbl_pages">页数</string>
     <string name="lbl_percentage">百分比</string>
     <string name="lbl_percentage_read">% 已读</string>

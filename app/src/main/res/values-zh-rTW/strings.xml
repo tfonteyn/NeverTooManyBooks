@@ -64,7 +64,7 @@
     <string name="X_lbl_anthologies">選集</string>
     <string name="X_lbl_folder">資料夾</string>
     <string name="X_lbl_general">一般</string>
-    <string name="X_lbl_image">圖片</string>
+    <string name="lbl_image">圖片</string>
     <string name="X_lbl_system">（系統）</string>
     <string name="X_lbl_thumbnails">縮圖</string>
     <string name="X_neither">都不是</string>
@@ -420,6 +420,7 @@
     <string name="lbl_original_title">原標題</string>
     <string name="lbl_original_title_long">原標題（如果這本書本是譯本）</string>
     <string name="lbl_owned">已擁有</string>
+    <string name="lbl_images">圖片</string>
     <string name="lbl_pages">頁數</string>
     <string name="lbl_percentage">百分比</string>
     <string name="lbl_personal_notes">個人筆記</string>

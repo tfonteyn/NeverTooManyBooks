@@ -58,7 +58,7 @@
     <string name="X_lbl_anthologies">Tuyển tập</string>
     <string name="X_lbl_folder">Thư mục</string>
     <string name="X_lbl_general">Chung</string>
-    <string name="X_lbl_image">Hình ảnh</string>
+    <string name="lbl_image">Hình ảnh</string>
     <string name="X_lbl_system">(Hệ thống)</string>
     <string name="X_lbl_thumbnails">Hình thu nhỏ</string>
     <string name="X_neither">Không</string>
@@ -428,6 +428,7 @@
     <string name="lbl_original_title">Nhan đề gốc</string>
     <string name="lbl_original_title_long">Nhan đề gốc nếu cuốn sách này là bản dịch</string>
     <string name="lbl_owned">Sở hữu</string>
+    <string name="lbl_images">Ảnh</string>
     <string name="lbl_pages">Trang</string>
     <string name="lbl_percentage">Tỷ lệ phần trăm</string>
     <string name="lbl_percentage_read">% đã đọc</string>

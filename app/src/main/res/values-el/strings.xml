@@ -64,7 +64,7 @@ A question mark is written as the character semicolon: ';'
     <string name="X_info_not_authorized">Χωρίς άδεια</string>
     <string name="X_info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
     <string name="X_lbl_folder">Φάκελος</string>
-    <string name="X_lbl_image">Εικόνα</string>
+    <string name="lbl_image">Εικόνα</string>
     <string name="X_lbl_thumbnails">Μικρογραφίες</string>
     <string name="X_neither">κανενα απο τα δυο</string>
     <string name="X_lbl_anthologies">Ανθολογίες</string>
@@ -385,6 +385,7 @@ A question mark is written as the character semicolon: ';'
     <string name="option_goto_next_book_without_cover">Μετάβαση στο επόμενο βιβλίο χωρίς εξώφυλλο</string>
     <string name="lbl_number">Αριθμός</string>
     <string name="lbl_owned">Ιδιοκτησία</string>
+    <string name="lbl_images">Εικόνες</string>
     <string name="lbl_pages">Σελίδες</string>
     <string name="lbl_personal_notes">Προσωπικές σημειώσεις</string>
     <string name="lbl_price_listed">Τιμοκατάλογος</string>

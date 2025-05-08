@@ -56,7 +56,7 @@
     <string name="X_action_try_again">Tentar novamente</string>
     <string name="X_httpErrorIO">Não foi possível comunicar com o servidor. Tente novamente mais tarde.</string>
     <string name="X_lbl_folder">Pasta</string>
-    <string name="X_lbl_image">Imagem</string>
+    <string name="lbl_image">Imagem</string>
     <string name="X_lbl_system">(Sistema)</string>
     <string name="X_whichImageCaptureApplication">Capturar imagem com</string>
     <string name="X_whichSendToApplication">Compartilhar</string>
@@ -457,6 +457,7 @@
     <string name="lbl_series_num">Nº</string>
     <string name="lbl_import_books">Importar Livros</string>
     <string name="lbl_covers_long">Imagens de capa</string>
+    <string name="lbl_images">Imagens</string>
     <string name="lbl_pages">Páginas</string>
     <string name="lbl_format">Formato</string>
     <string name="lbl_date_read_day">Dia de leitura</string>

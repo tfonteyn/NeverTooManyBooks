@@ -60,7 +60,7 @@
     <string name="X_info_not_authorized">Niet geautoriseerd</string>
     <string name="X_info_site_authorization_successful">%1$s autorisatie gelukt</string>
     <string name="X_lbl_folder">Map</string>
-    <string name="X_lbl_image">Afbeelding</string>
+    <string name="lbl_image">Afbeelding</string>
     <string name="X_lbl_system">(Systeem)</string>
     <string name="X_lbl_thumbnails">Miniaturen</string>
     <string name="X_neither">Geen van beide</string>
@@ -384,6 +384,7 @@
     <string name="lbl_name">Naam</string>
     <string name="lbl_number">Aantal</string>
     <string name="lbl_owned">In bezit</string>
+    <string name="lbl_images">Afbeeldingen</string>
     <string name="lbl_pages">Pagina’s</string>
     <string name="lbl_personal_notes">Opmerkingen</string>
     <string name="lbl_price_listed">Lijstprijs</string>

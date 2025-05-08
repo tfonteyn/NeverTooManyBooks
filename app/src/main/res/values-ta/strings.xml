@@ -507,6 +507,7 @@
     <string name="lbl_cover_back">பின் கவர்</string>
     <string name="lbl_covers">மறையம்</string>
     <string name="lbl_covers_long">படங்களை மறைக்கவும்</string>
+    <string name="lbl_images">படங்கள்</string>
     <string name="lbl_pages">பக்கங்கள்</string>
     <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d பக்கங்கள்</string>
     <string name="lbl_country">நாடு</string>
@@ -829,7 +830,7 @@
     <string name="X_action_update">புதுப்பிப்பு</string>
     <string name="X_lbl_folder">கோப்புறை</string>
     <string name="X_lbl_general">பொது</string>
-    <string name="X_lbl_image">படம்</string>
+    <string name="lbl_image">படம்</string>
     <string name="X_lbl_system">(அமைப்பு)</string>
     <string name="X_neither">இல்லை</string>
     <string name="X_lbl_thumbnails">சிறு உருவங்கள்</string>

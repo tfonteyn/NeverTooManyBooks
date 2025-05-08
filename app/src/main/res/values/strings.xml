@@ -1151,6 +1151,12 @@
     <string name="lbl_covers">Covers</string>
     <!-- Multiple book covers. Long label. -->
     <string name="lbl_covers_long">Cover images</string>
+
+    <!-- [VERIFIED] Generic image (singular); authors,...-->
+    <string name="lbl_image">Image</string>
+    <!-- [VERIFIED] Generic images (plural); authors,... -->
+    <string name="lbl_images">Images</string>
+
     <!-- number of pages; this is a field-label + also used for a radio button text. -->
     <string name="lbl_pages">Pages</string>
     <!-- number of pages; this is formatted text. -->
@@ -2033,8 +2039,6 @@
     <string name="X_lbl_folder">Folder</string>
     <!-- [VERIFIED] -->
     <string name="X_lbl_general">General</string>
-    <!-- [VERIFIED] -->
-    <string name="X_lbl_image">Image</string>
     <!-- [VERIFIED] -->
     <string name="X_lbl_system">(System)</string>
 

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
@@ -96,7 +99,7 @@
     <string name="X_action_update">Frissítés</string>
     <string name="X_lbl_folder">Mappa</string>
     <string name="X_lbl_general">Általános</string>
-    <string name="X_lbl_image">Kép</string>
+    <string name="lbl_image">Kép</string>
     <string name="X_lbl_system">(Rendszer)</string>
     <string name="X_whichImageCaptureApplication">Kép készítése a következővel</string>
     <string name="X_whichSendToApplication">Küldés a következővel</string>
@@ -527,6 +530,7 @@
     <string name="lbl_cover_back">Hátlap</string>
     <string name="lbl_covers">Borítók</string>
     <string name="lbl_covers_long">Borítóképek</string>
+    <string name="lbl_images">Képek</string>
     <string name="lbl_pages">Oldalszám</string>
     <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d oldal</string>
     <string name="lbl_group">Csoport</string>

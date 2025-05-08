@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -65,7 +68,7 @@
     <string name="X_info_not_authorized">Nieautoryzowany</string>
     <string name="X_info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
     <string name="X_lbl_folder">Folder</string>
-    <string name="X_lbl_image">Obraz</string>
+    <string name="lbl_image">Obraz</string>
     <string name="X_lbl_thumbnails">Miniatury</string>
     <string name="X_neither">Żaden</string>
     <string name="X_lbl_anthologies">Antologie</string>
@@ -385,6 +388,7 @@
     <string name="option_goto_next_book_without_cover">Przejdź do następnej książki bez okładki</string>
     <string name="lbl_number">Numer</string>
     <string name="lbl_owned">Posiadane</string>
+    <string name="lbl_images">Obrazy</string>
     <string name="lbl_pages">Stron</string>
     <string name="lbl_personal_notes">Notatki osobiste</string>
     <string name="lbl_price_listed">Cena katalogowa</string>
