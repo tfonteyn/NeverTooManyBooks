@@ -855,4 +855,6 @@
     <string name="action_restore_default_identifiers">Alapértelmezett azonosítók visszaállítása</string>
     <string name="lbl_book_uri">Könyv URL</string>
     <string name="lbl_author_uri">Szerző URL</string>
+    <string name="pv_reformat_titles_prefixes">a|A|az|Az|egy|Egy</string>
+
 </resources>

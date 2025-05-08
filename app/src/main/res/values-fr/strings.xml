@@ -627,7 +627,8 @@
     <string name="pv_bob_header_nr_of_books">Montrer le nombre de livres</string>
     <string name="pv_bob_header_style_name">Nom du style</string>
     <!-- use the default single quote character and NOT the stylized! -->
-    <string name="pv_reformat_titles_prefixes" tools:ignore="TypographyQuotes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une</string>
+    <string name="pv_reformat_titles_prefixes"
+            tools:ignore="TypographyQuotes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une|des|Des</string>
     <string name="size_hidden">Caché</string>
     <string name="size_large">Grand</string>
     <string name="size_medium">Moyen</string>
