@@ -221,8 +221,8 @@ public class BookCoder {
     private void processIsbn(@NonNull final Book book) {
         if (!book.hasIsbn() && book.contains(CsvGoodreads.ISBN10)) {
             book.setIsbn(book.getString(CsvGoodreads.ISBN10));
-            book.remove(CsvGoodreads.ISBN10);
         }
+        book.remove(CsvGoodreads.ISBN10);
 
         if (book.hasIsbn()) {
             // ALWAYS try to clean the ISBN.
@@ -476,17 +476,18 @@ public class BookCoder {
             //ENHANCE: provide mapping for the Goodreads "read", "to-read" and "currently-reading"
             // fixed shelves. For now we just create those 3 when not there yet.
             // If 'read' is present, we also set our DBKey.READ__BOOL flag.
-            processBookshelf(book, getGoodreads().getBookshelfCoder(),
-                             CsvGoodreads.BOOKSHELVES, list);
-            processBookshelf(book, getGoodreads().getBookshelfCoder(),
-                             CsvGoodreads.EXCLUSIVE_SHELF, list);
+            final StringList<Bookshelf> grBookshelfCoder = getGoodreads().getBookshelfCoder();
+            processBookshelf(book, grBookshelfCoder, CsvGoodreads.BOOKSHELVES, list);
+            processBookshelf(book, grBookshelfCoder, CsvGoodreads.EXCLUSIVE_SHELF, list);
 
             if (list.stream().anyMatch(bookshelf -> "read".equals(bookshelf.getName()))) {
                 // DO NOT use book.setRead(true) as that will set related fields
-                // which is not desired here as this might overwrite incoming data
+                // which is not desired here as that might overwrite incoming data
                 book.putBoolean(DBKey.READ__BOOL, true);
             }
         }
+        book.remove(CsvGoodreads.BOOKSHELVES);
+        book.remove(CsvGoodreads.EXCLUSIVE_SHELF);
 
         if (!list.isEmpty()) {
             book.setBookshelves(list);
@@ -544,14 +545,14 @@ public class BookCoder {
         if (!book.contains(DBKey.RATING) && book.contains(CsvGoodreads.MY_RATING)) {
             ratingParser.parse(book.getString(CsvGoodreads.MY_RATING))
                         .ifPresent(book::setRating);
-            book.remove(CsvGoodreads.MY_RATING);
         }
+        book.remove(CsvGoodreads.MY_RATING);
 
         if (!book.contains(DBKey.RATING) && book.contains(CsvGoodreads.AVERAGE_RATING)) {
             ratingParser.parse(book.getString(CsvGoodreads.AVERAGE_RATING))
                         .ifPresent(book::setRating);
-            book.remove(CsvGoodreads.AVERAGE_RATING);
         }
+        book.remove(CsvGoodreads.AVERAGE_RATING);
     }
 
     private void processDescriptionAndNotes(@NonNull final Book book) {
@@ -642,5 +643,4 @@ public class BookCoder {
             }
         });
     }
-
 }
