@@ -32,6 +32,7 @@ import java.util.EnumSet;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
@@ -40,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
-import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -92,13 +92,13 @@ public class ZipArchiveWriterTest
         final ExportResults exportResults;
 
         // Full backup except covers.
-        final ExportHelper exportHelper = new ExportHelper(ArchiveEncoding.Zip,
+        final ExportHelper exportHelper = new ExportHelper(ArchiveWriterEncoding.Zip,
                                                            EnumSet.of(RecordType.Books,
                                                                       RecordType.Preferences,
                                                                       RecordType.Certificates,
                                                                       RecordType.Styles),
                                                            dateParser);
-        exportHelper.setEncoding(ArchiveEncoding.Zip);
+        exportHelper.setEncoding(ArchiveWriterEncoding.Zip);
         exportHelper.setUri(uri);
 
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));

@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.DbPrep;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
@@ -47,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -98,7 +98,7 @@ public class JsonArchiveWriterTest
 
         final ExportResults exportResults;
 
-        final ExportHelper exportHelper = new ExportHelper(ArchiveEncoding.Json,
+        final ExportHelper exportHelper = new ExportHelper(ArchiveWriterEncoding.Json,
                                                            EnumSet.of(RecordType.Styles),
                                                            dateParser);
 
@@ -137,7 +137,7 @@ public class JsonArchiveWriterTest
 
         final ExportResults exportResults;
 
-        final ExportHelper exportHelper = new ExportHelper(ArchiveEncoding.Json,
+        final ExportHelper exportHelper = new ExportHelper(ArchiveWriterEncoding.Json,
                                                            EnumSet.of(RecordType.Preferences,
                                                                       RecordType.Styles,
                                                                       RecordType.Books),

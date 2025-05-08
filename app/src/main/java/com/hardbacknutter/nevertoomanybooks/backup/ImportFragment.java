@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.InfoPopup;
-import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -386,7 +385,7 @@ public class ImportFragment
             return;
         }
 
-        if (vm.getEncoding() == ArchiveEncoding.Csv) {
+        if (vm.getEncoding() == ArchiveReaderEncoding.Csv) {
             // CsvArchiveReader will make a database backup before importing.
             //noinspection DataFlowIssue
             new MaterialAlertDialogBuilder(getContext())

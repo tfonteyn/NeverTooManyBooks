@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapte
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.InfoPopup;
-import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
@@ -177,7 +176,7 @@ public class ExportFragment
         vb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void updateFormatSelection(@NonNull final ArchiveEncoding encoding) {
+    private void updateFormatSelection(@NonNull final ArchiveWriterEncoding encoding) {
 
         vm.setEncoding(encoding);
 
@@ -244,7 +243,6 @@ public class ExportFragment
                 vb.cbxCovers.setEnabled(false);
                 break;
             }
-            case Csv:
             default:
                 throw new IllegalArgumentException(encoding.toString());
         }

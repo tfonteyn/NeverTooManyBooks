@@ -30,7 +30,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -86,7 +85,7 @@ public class ImportViewModel
      * @return encoding
      */
     @NonNull
-    public ArchiveEncoding getEncoding() {
+    public ArchiveReaderEncoding getEncoding() {
         Objects.requireNonNull(importHelper, ERROR_IMPORT_HELPER);
         return importHelper.getEncoding();
     }

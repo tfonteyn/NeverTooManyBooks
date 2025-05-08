@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -52,10 +51,10 @@ public class ExportViewModel
     /**
      * The encodings we currently (fully or limited) support writing.
      */
-    private static final ArchiveEncoding[] ENCODINGS = {
-            ArchiveEncoding.Zip,
-            ArchiveEncoding.Json,
-            ArchiveEncoding.SqLiteDb};
+    private static final ArchiveWriterEncoding[] ENCODINGS = {
+            ArchiveWriterEncoding.Zip,
+            ArchiveWriterEncoding.Json,
+            ArchiveWriterEncoding.SqLiteDb};
 
     @Nullable
     private ExportHelper exportHelper;
@@ -114,7 +113,7 @@ public class ExportViewModel
      * @return encoding
      */
     @NonNull
-    public ArchiveEncoding getEncoding() {
+    public ArchiveWriterEncoding getEncoding() {
         return getDataWriterHelper().getEncoding();
     }
 
@@ -123,19 +122,19 @@ public class ExportViewModel
      *
      * @param encoding to use
      */
-    public void setEncoding(@NonNull final ArchiveEncoding encoding) {
+    public void setEncoding(@NonNull final ArchiveWriterEncoding encoding) {
         getDataWriterHelper().setEncoding(encoding);
     }
 
     /**
-     * Get the {@link ArchiveEncoding} for the given position in the dropdown menu.
+     * Get the {@link ArchiveWriterEncoding} for the given position in the dropdown menu.
      *
      * @param position to get
      *
      * @return encoding
      */
     @NonNull
-    ArchiveEncoding getEncoding(final int position) {
+    ArchiveWriterEncoding getEncoding(final int position) {
         return ENCODINGS[position];
     }
 
@@ -151,11 +150,11 @@ public class ExportViewModel
     Pair<Integer, List<String>> getFormatOptions(@NonNull final Context context) {
         Objects.requireNonNull(exportHelper);
 
-        final ArchiveEncoding currentEncoding = exportHelper.getEncoding();
+        final ArchiveWriterEncoding currentEncoding = exportHelper.getEncoding();
         int initialPos = 0;
         final List<String> list = new ArrayList<>();
         for (int i = 0; i < ENCODINGS.length; i++) {
-            final ArchiveEncoding encoding = ENCODINGS[i];
+            final ArchiveWriterEncoding encoding = ENCODINGS[i];
             if (encoding == currentEncoding) {
                 initialPos = i;
             }

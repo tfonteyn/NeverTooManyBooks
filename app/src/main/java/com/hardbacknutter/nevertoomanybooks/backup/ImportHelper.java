@@ -30,7 +30,6 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -46,7 +45,7 @@ public final class ImportHelper
 
     /** <strong>How</strong> we read from the uri. */
     @NonNull
-    private final ArchiveEncoding encoding;
+    private final ArchiveReaderEncoding encoding;
 
     /** <strong>Where</strong> we read from. */
     @NonNull
@@ -68,7 +67,7 @@ public final class ImportHelper
 
         this.uri = uri;
 
-        encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
+        encoding = ArchiveReaderEncoding.getEncoding(context, uri).orElseThrow(
                 () -> new DataReaderException(context.getString(
                         R.string.error_import_file_not_supported)));
 
@@ -112,7 +111,7 @@ public final class ImportHelper
      * @return encoding
      */
     @NonNull
-    public ArchiveEncoding getEncoding() {
+    public ArchiveReaderEncoding getEncoding() {
         return encoding;
     }
 

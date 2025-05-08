@@ -268,6 +268,8 @@
           <option value="RegExpUnnecessaryNonCapturingGroup" />
           <option value="Annotator" />
           <option value="UnusedReturnValue" />
+          <option value="MagicNumber" />
+          <option value="CheckStyle" />
         </list>
       </option>
     </inspection_tool>

@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -76,13 +75,13 @@ public class ExportHelper
     private Uri uri;
     /** <strong>How</strong> to write to the Uri. */
     @NonNull
-    private ArchiveEncoding encoding;
+    private ArchiveWriterEncoding encoding;
 
     /**
      * Constructor.
      */
     ExportHelper() {
-        this(ArchiveEncoding.Zip,
+        this(ArchiveWriterEncoding.Zip,
              EnumSet.of(RecordType.Styles,
                         RecordType.Preferences,
                         RecordType.Certificates,
@@ -100,7 +99,7 @@ public class ExportHelper
      * @param dateParser  to use for ISO date parsing
      */
     @VisibleForTesting
-    public ExportHelper(@NonNull final ArchiveEncoding encoding,
+    public ExportHelper(@NonNull final ArchiveWriterEncoding encoding,
                         @NonNull final Set<RecordType> recordTypes,
                         @NonNull final DateParser<LocalDateTime> dateParser) {
         this.encoding = encoding;
@@ -114,7 +113,7 @@ public class ExportHelper
      * @return encoding
      */
     @NonNull
-    public ArchiveEncoding getEncoding() {
+    public ArchiveWriterEncoding getEncoding() {
         return encoding;
     }
 
@@ -123,7 +122,7 @@ public class ExportHelper
      *
      * @param encoding to use
      */
-    public void setEncoding(@NonNull final ArchiveEncoding encoding) {
+    public void setEncoding(@NonNull final ArchiveWriterEncoding encoding) {
         this.encoding = encoding;
     }
 
@@ -155,7 +154,7 @@ public class ExportHelper
      *         {@code false} when it's considered an export.
      */
     public boolean isBackup() {
-        return encoding == ArchiveEncoding.Zip;
+        return encoding == ArchiveWriterEncoding.Zip;
     }
 
     @WorkerThread
@@ -233,7 +232,7 @@ public class ExportHelper
     private Optional<LocalDateTime> getLastDone(@NonNull final Context context) {
         if (isIncremental()) {
             final String key;
-            if (encoding == ArchiveEncoding.Zip) {
+            if (encoding == ArchiveWriterEncoding.Zip) {
                 // backwards compatibility
                 key = PK_LAST_FULL_BACKUP_DATE;
             } else {
@@ -263,7 +262,7 @@ public class ExportHelper
             final SharedPreferences.Editor editor = PreferenceManager
                     .getDefaultSharedPreferences(context)
                     .edit();
-            if (encoding == ArchiveEncoding.Zip) {
+            if (encoding == ArchiveWriterEncoding.Zip) {
                 // backwards compatibility
                 editor.putString(PK_LAST_FULL_BACKUP_DATE, date)
                       // reset the startup prompt-counter.

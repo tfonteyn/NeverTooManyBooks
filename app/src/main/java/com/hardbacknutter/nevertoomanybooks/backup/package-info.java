@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,9 +22,8 @@
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportViewModel}
  * serves as the glue between the UI and the
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportHelper}
- * The helper inspects the Uri and determines the
- * {@link com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding}
- * of the given archive. Other options are carried forward as well.
+ * The user has choosen an output format:
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterEncoding}
  * <p>
  * The helper is passed to:
  * {@link com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel}.DataWriterTask
@@ -49,7 +48,7 @@
  * serves as the glue between the UI and the
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ImportHelper}
  * The helper inspects the Uri and determines the
- * {@link com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding}
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.ArchiveReaderEncoding}
  * of the given archive. Other options are carried forward as well.
  * <p>
  * The helper is passed to:
@@ -81,7 +80,12 @@
  * <p>
  * Archives read:
  * <ul>
- * <li>csv: books only</li>
+ * <li>csv: books only
+ *      <ul>
+ *          <li>BookCatalogue / Legacy NTMB 1.0-3.x</li>
+ *          <li>Goodreads</li>
+ *      </ul>
+ * </li>
  * <li>db: nothing actually implemented for now</li>
  * <li>json: all data (except covers)</li>
  * <li>zip: all data in json,xml,csv formats + covers</li>
