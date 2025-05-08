@@ -623,7 +623,7 @@
     <string name="lbl_date_first_publication_year">Első kiadás éve</string>
     <string name="info_backup_successful">Biztonsági mentés sikeres</string>
     <string name="info_export_successful">Exportálás sikeres</string>
-    <string name="info_export_report">A kiválasztott mappában létrejött egy „%2$s\" nevű %1$s fájl, másolja át egy másik helyre, hogy megvédje az adatokat arra az esetre, ha az eszköz megsérülne, elveszne vagy ellopnák.</string>
+    <string name="info_export_report">A kiválasztott mappában létrejött egy „%2$s” nevű %1$s fájl, másolja át egy másik helyre, hogy megvédje az adatokat arra az esetre, ha az eszköz megsérülne, elveszne vagy ellopnák.</string>
     <string name="lbl_import_options">Válassza ki, mi kerüljön importálásra.</string>
     <string name="option_import_books_option_new_only">Csak új könyvek</string>
     <string name="option_import_books_option_new_and_updated">Új és frissített könyvek</string>
@@ -668,8 +668,8 @@
     <string name="info_identifier_editor"><![CDATA[Please read the <a href="%1$s">dokumentáció</a>az azonosítókról szerkesztés előtt.]]></string>
     <string name="pe_thumbnails_cache_resized_stored">Átméretezett képek gyorsítótárazása (görgetés gyorsabb lesz, több tárhelyet használ)</string>
     <string name="pt_search_uses_publisher">A keresés a kiadót is használja</string>
-    <string name="pt_search_reformat_color">„Könyvszín\" elnevezések egységesítése</string>
-    <string name="pt_search_reformat_format">„Könyvformátum\" elnevezések egységesítése</string>
+    <string name="pt_search_reformat_color">„Könyvszín” elnevezések egységesítése</string>
+    <string name="pt_search_reformat_format">„Könyvformátum” elnevezések egységesítése</string>
     <string name="pt_search_prefer_isbn10">ISBN-10 használata, mikor lehetséges</string>
     <string name="pt_collect_series_info_from_toc">Sorozatadatok gyűjtése a tartalomjegyzékből</string>
     <string name="pt_search_resolve_authors">Szerzői álnevek meghatározása</string>
@@ -754,16 +754,16 @@
     <string name="pt_bob_cover_click">Borítókép megérintése.</string>
     <string name="pe_bob_cover_click_details">Megnyitja a könyv részletek oldalt.</string>
     <string name="lbl_citation_type_default">A következőt olvasom…</string>
-    <string name="citation_share_book_im_reading">A következőt olvasom: %3$s - „%1$s\" %2$s %4$s</string>
+    <string name="citation_share_book_im_reading">A következőt olvasom: %3$s - „%1$s” %2$s %4$s</string>
     <string name="pt_bob_cover_long_click">Könyvmenü megnyitása.</string>
     <string name="pe_bob_cover_long_click_popupmenu">Borítókép hosszú megnyomásával.</string>
     <string name="pt_bob_cover_scale">Borító méret</string>
     <string name="pt_line_spacing">Sorköz</string>
     <string name="pt_bob_list_state_expansion_level">Alapértelmezett könyvlista kibontás</string>
-    <string name="ps_sort_author_name_given_first">Rendezés megadott név alapján,\npl. „Connie Willis\"</string>
-    <string name="ps_sort_author_name_family_first">Rendezés családnév alapján,\npl. „Willis, Connie\"</string>
-    <string name="ps_show_author_name_given_first">Megadott név megjelenítése,\npl. „Connie Willis\"</string>
-    <string name="ps_show_author_name_family_first">Családnév megjelenítése először,\npl. „Willis, Connie\"</string>
+    <string name="ps_sort_author_name_given_first">Rendezés megadott név alapján,\npl. „Connie Willis”</string>
+    <string name="ps_sort_author_name_family_first">Rendezés családnév alapján,\npl. „Willis, Connie”</string>
+    <string name="ps_show_author_name_given_first">Megadott név megjelenítése,\npl. „Connie Willis”</string>
+    <string name="ps_show_author_name_family_first">Családnév megjelenítése először,\npl. „Willis, Connie”</string>
     <string name="pt_bob_show_group_book_count">Könyvek számának mutatása a csoportokban.</string>
     <string name="ps_bob_books_under_multiple_authors_main_only">csak az elsődleges szerző alatt</string>
     <string name="ps_bob_books_under_multiple_authors_each">mindegyik szerző alatt</string>
