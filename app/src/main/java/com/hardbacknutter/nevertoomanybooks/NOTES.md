@@ -1,8 +1,12 @@
 Draft notes for next version:
 
-### 7.3.3
+### 7.4.0
 
 NEW:
+
+- new UI language: Hungarian, kindly contributed
+  by [boldizsar-nagy](https://hosted.weblate.org/user/boldizsar-nagy/)
+- Android 16 tested/supported.
 
 FIXES:
 
