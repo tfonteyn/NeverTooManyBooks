@@ -28,5 +28,6 @@
     <dimen name="til_fixed_width_price">130dp</dimen>
     <dimen name="til_fixed_width_series_num">200dp</dimen>
     <dimen name="til_fixed_width_year">120dp</dimen>
+    <dimen name="til_fixed_width_date">180dp</dimen>
 
 </resources>
