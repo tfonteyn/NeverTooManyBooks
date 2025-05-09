@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -294,6 +295,13 @@ public class Author
     @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
     private String givenNames;
+    @Nullable
+    private String birthDate;
+    @Nullable
+    private String deathDate;
+    @Nullable
+    private String photoUuid;
+
     /** whether we have all we want from this Author. */
     private boolean complete;
 
@@ -334,6 +342,9 @@ public class Author
         this.id = id;
         familyName = rowData.getString(DBKey.AUTHOR.FAMILY_NAME);
         givenNames = rowData.getString(DBKey.AUTHOR.GIVEN_NAMES);
+        birthDate = rowData.getString(DBKey.AUTHOR.BIRTH_DATE);
+        deathDate = rowData.getString(DBKey.AUTHOR.DEATH_DATE);
+        photoUuid = rowData.getString(DBKey.AUTHOR.PHOTO_UUID);
         complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
 
         setIdentifiers(ServiceLocator.getInstance().getAuthorIdentifierDao().getByFkId(this.id));
@@ -374,6 +385,9 @@ public class Author
         familyName = in.readString();
         //noinspection DataFlowIssue
         givenNames = in.readString();
+        birthDate = in.readString();
+        deathDate = in.readString();
+        photoUuid = in.readString();
         complete = in.readByte() != 0;
         type = in.readInt();
         realAuthor = in.readParcelable(getClass().getClassLoader());
@@ -949,6 +963,36 @@ public class Author
         return givenNames;
     }
 
+    @NonNull
+    public Optional<String> getBirthDate() {
+        return birthDate == null || birthDate.isEmpty() ? Optional.empty()
+                                                        : Optional.of(birthDate);
+    }
+
+    public void setBirthDate(@Nullable final String birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    @NonNull
+    public Optional<String> getDeathDate() {
+        return deathDate == null || deathDate.isEmpty() ? Optional.empty()
+                                                        : Optional.of(deathDate);
+    }
+
+    public void setDeathDate(@Nullable final String deathDate) {
+        this.deathDate = deathDate;
+    }
+
+    @NonNull
+    public Optional<String> getPhotoUuid() {
+        return photoUuid == null || photoUuid.isEmpty() ? Optional.empty()
+                                                        : Optional.of(photoUuid);
+    }
+
+    public void setPhotoUuid(@Nullable final String photoUuid) {
+        this.photoUuid = photoUuid;
+    }
+
     /**
      * Replace local details from another author.
      *
@@ -959,6 +1003,10 @@ public class Author
                          final boolean includeBookFields) {
         familyName = source.familyName;
         givenNames = source.givenNames;
+        birthDate = source.birthDate;
+        deathDate = source.deathDate;
+        photoUuid = source.photoUuid;
+
         complete = source.complete;
         // Do not deep copy! We WANT the same/original object
         realAuthor = source.realAuthor;
@@ -976,6 +1024,10 @@ public class Author
         dest.writeLong(id);
         dest.writeString(familyName);
         dest.writeString(givenNames);
+        dest.writeString(birthDate);
+        dest.writeString(deathDate);
+        dest.writeString(photoUuid);
+
         dest.writeByte((byte) (complete ? 1 : 0));
         dest.writeInt(type);
         dest.writeParcelable(realAuthor, flags);
@@ -1044,6 +1096,9 @@ public class Author
         // The ids MAY be different, but at least one is != 0
         return Objects.equals(familyName, that.familyName)
                && Objects.equals(givenNames, that.givenNames)
+               && Objects.equals(birthDate, that.birthDate)
+               && Objects.equals(deathDate, that.deathDate)
+               && Objects.equals(photoUuid, that.photoUuid)
                && Objects.equals(realAuthor, that.realAuthor);
     }
 
@@ -1114,6 +1169,9 @@ public class Author
                + "id=" + id
                + ", familyName=`" + familyName + '`'
                + ", givenNames=`" + givenNames + '`'
+               + ", birthDate=`" + birthDate + '`'
+               + ", deathDate=`" + deathDate + '`'
+               + ", photoUuid=`" + photoUuid + '`'
                + ", complete=" + complete
                + ", type=0b" + Integer.toBinaryString(type) + ": " + sj
                + ", identifiers=" + identifiers

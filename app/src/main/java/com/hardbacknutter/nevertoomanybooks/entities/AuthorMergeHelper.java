@@ -38,24 +38,41 @@ public class AuthorMergeHelper
                             @NonNull final Locale previousLocale,
                             @NonNull final Author current,
                             @NonNull final Locale currentLocale) {
+
+        final boolean canMerge = mergeRealAuthor(previous, current);
+        if (!canMerge) {
+            return false;
+        }
+
         // always combine the types using 'OR'
         previous.setType(previous.getType() | current.getType());
 
-        final boolean canMerge = mergeRealAuthor(previous, current);
-
-        if (canMerge) {
-            // overwrite the id
-            if (current.getId() > 0) {
-                previous.setId(current.getId());
-            }
-            // merge the identifiers
-            final List<Identifier.Value> identifiers = previous.getIdentifiers();
-            identifiers.addAll(current.getIdentifiers());
-            ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
-            previous.setIdentifiers(identifiers);
+        // overwrite the id unless we're 'new'
+        if (current.getId() > 0) {
+            previous.setId(current.getId());
         }
 
-        return canMerge;
+        if (current.getBirthDate().isPresent() && previous.getBirthDate().isEmpty()) {
+            previous.setBirthDate(current.getBirthDate().get());
+        }
+        if (current.getDeathDate().isPresent() && previous.getDeathDate().isEmpty()) {
+            previous.setDeathDate(current.getDeathDate().get());
+        }
+        if (current.getPhotoUuid().isPresent() && previous.getPhotoUuid().isEmpty()) {
+            previous.setPhotoUuid(current.getPhotoUuid().get());
+        }
+
+        if (current.isComplete()) {
+            previous.setComplete(true);
+        }
+
+        // merge the identifiers
+        final List<Identifier.Value> identifiers = previous.getIdentifiers();
+        identifiers.addAll(current.getIdentifiers());
+        ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
+        previous.setIdentifiers(identifiers);
+
+        return true;
     }
 
     private boolean mergeRealAuthor(@NonNull final Author previous,

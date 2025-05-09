@@ -35,6 +35,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -60,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -332,8 +334,8 @@ public class JsonRecordWriter
             if (recordTypes.contains(RecordType.Books)
                 && !progressListener.isCancelled()) {
 
-                final boolean collectCoverFilenames = recordTypes.contains(
-                        RecordType.Cover);
+                // We're (ab)using the Cover record-type for ALL image types!
+                final boolean collectImageFilenames = recordTypes.contains(RecordType.Cover);
 
                 final JsonCoder<Book> coder = new BookCoder(context, defaultStyle);
 
@@ -348,12 +350,26 @@ public class JsonRecordWriter
                         bookArray.put(coder.encode(book));
                         results.addBook(book.getId());
 
-                        if (collectCoverFilenames) {
+                        if (collectImageFilenames) {
+                            // Book covers
                             final String uuid = book.getUuid();
                             for (int cIdx = 0; cIdx < 2; cIdx++) {
                                 coverStorage.getPersistedFile(uuid, cIdx)
                                             .ifPresent(results::addCover);
                             }
+
+                            // Author photos
+                            book.getAuthors()
+                                .stream()
+                                .map(Author::getPhotoUuid)
+                                .flatMap(Optional::stream)
+                                // Filter FIRST so we do not run the File() method if not
+                                // actually needed.
+                                .filter(au -> !results.getOtherImages().contains(au))
+                                // Only now check if the file exists
+                                .map(au -> coverStorage.getPersistedFile(au, 0))
+                                .flatMap(Optional::stream)
+                                .forEach(results::addImage);
                         }
 
                         delta++;

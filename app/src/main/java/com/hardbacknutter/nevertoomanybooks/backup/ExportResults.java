@@ -28,7 +28,9 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -61,6 +63,8 @@ public class ExportResults
     private final List<Long> booksExported = new ArrayList<>();
     /** filenames of covers exported. */
     private final List<String> coversExported = new ArrayList<>();
+    private final Set<String> otherImages = new HashSet<>();
+
     /** #styles we exported. */
     public int styles;
     /** #preferences we exported. */
@@ -98,6 +102,9 @@ public class ExportResults
     private ExportResults(@NonNull final Parcel in) {
         in.readList(booksExported, getClass().getClassLoader());
         in.readStringList(coversExported);
+        final List<String> tmp = new ArrayList<>();
+        in.readStringList(tmp);
+        otherImages.addAll(tmp);
 
         bookshelves = in.readInt();
         calibreLibraries = in.readInt();
@@ -182,6 +189,7 @@ public class ExportResults
     public void add(@NonNull final ExportResults results) {
         booksExported.addAll(results.booksExported);
         coversExported.addAll(results.coversExported);
+        otherImages.addAll(results.otherImages);
 
         bookshelves += results.bookshelves;
         calibreLibraries += results.calibreLibraries;
@@ -226,6 +234,14 @@ public class ExportResults
         coversExported.add(name);
     }
 
+    public void addImage(@NonNull final File file) {
+        addImage(file.getName());
+    }
+
+    public void addImage(@NonNull final String name) {
+        otherImages.add(name);
+    }
+
     public int getCoverCount() {
         return coversExported.size();
     }
@@ -244,11 +260,17 @@ public class ExportResults
         return coversExported;
     }
 
+    @NonNull
+    public Set<String> getOtherImages() {
+        return otherImages;
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeList(booksExported);
         dest.writeStringList(coversExported);
+        dest.writeStringList(new ArrayList<>(otherImages));
 
         dest.writeInt(bookshelves);
         dest.writeInt(calibreLibraries);
@@ -273,6 +295,7 @@ public class ExportResults
         return "ExportResults{"
                + "booksExported=" + booksExported
                + ", coversExported=" + coversExported
+               + ", otherImages=" + otherImages
                + ", bookshelves=" + bookshelves
                + ", calibreLibraries=" + calibreLibraries
                + ", calibreCustomFields=" + calibreCustomFields

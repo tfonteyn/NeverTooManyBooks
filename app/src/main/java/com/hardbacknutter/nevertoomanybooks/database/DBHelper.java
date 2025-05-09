@@ -114,10 +114,11 @@ public class DBHelper
      * v7.1.0: 38
      * v7.2.0: 39
      * v7.3.0: 40
+     * v7.4.0: 41
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 40;
+    public static final int DATABASE_VERSION = 41;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -668,6 +669,12 @@ public class DBHelper
                     VIAF.SITE_URL,
                     null,
                     VIAF.AUTHOR_URL));
+        }
+        if (oldVersion < 41) {
+            TBL_AUTHORS.alterTableAddColumns(db,
+                                             DBDefinitions.DOM_AUTHOR_BIRTH_DATE,
+                                             DBDefinitions.DOM_AUTHOR_DEATH_DATE,
+                                             DBDefinitions.DOM_AUTHOR_PHOTO_UUID);
         }
 
         // We have to do this here due to some users skipping updates (see github #30)

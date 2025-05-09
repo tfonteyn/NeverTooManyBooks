@@ -44,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -228,10 +229,19 @@ public class ZipArchiveWriter
                 }
             }
 
-            // Always do the covers as the last step
+            // Always do the images as the last step
             if (!progressListener.isCancelled() && writeCovers && results.has(RecordType.Cover)) {
                 final File dir = serviceLocator.getCoverStorage().getDir();
-                writeCovers(context, dir, progressListener);
+
+                // Write author photos
+                final String imagesStr = context.getString(R.string.lbl_images);
+                progressListener.publishProgress(0, imagesStr);
+                writeImages(context, dir, results.getOtherImages(), progressListener, imagesStr);
+
+                // Write book covers
+                progressListener.publishProgress(0, context.getString(R.string.lbl_covers_long));
+                writeImages(context, dir, results.getCoverFileNames(), progressListener,
+                            context.getString(R.string.lbl_covers));
             }
 
         } finally {
@@ -378,25 +388,26 @@ public class ZipArchiveWriter
      * Write each cover file as collected in {@link #prepareBooks}
      * to the archive.
      *
-     * @param context          Current context
-     * @param coverDir         root of the cover directory / destination to write
-     * @param progressListener Progress and cancellation interface
+     * @param context           Current context
+     * @param coverDir          root of the cover directory / destination to write
+     * @param fileNames         to write
+     * @param progressListener  Progress and cancellation interface
+     * @param progressLabel     label for progress message
      *
      * @throws IOException on generic/other IO failures
      */
-    private void writeCovers(@NonNull final Context context,
+    private void writeImages(@NonNull final Context context,
                              @NonNull final File coverDir,
-                             @NonNull final ProgressListener progressListener)
+                             @NonNull final Collection<String> fileNames,
+                             @NonNull final ProgressListener progressListener,
+                             @NonNull final String progressLabel)
             throws IOException {
-
-        progressListener.publishProgress(0, context.getString(R.string.lbl_covers_long));
 
         int exported = 0;
         int delta = 0;
         long lastUpdate = 0;
 
-        final String coverStr = context.getString(R.string.lbl_covers);
-        for (final String filename : results.getCoverFileNames()) {
+        for (final String filename : fileNames) {
             if (progressListener.isCancelled()) {
                 return;
             }
@@ -410,7 +421,7 @@ public class ZipArchiveWriter
             final long now = System.currentTimeMillis();
             if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
                 final String msg = context.getString(R.string.name_colon_value,
-                                                     coverStr,
+                                                     progressLabel,
                                                      String.valueOf(exported));
                 progressListener.publishProgress(delta, msg);
                 lastUpdate = now;

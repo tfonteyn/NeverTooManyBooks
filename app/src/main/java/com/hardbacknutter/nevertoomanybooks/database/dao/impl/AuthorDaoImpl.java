@@ -505,7 +505,10 @@ public class AuthorDaoImpl
                 stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), locale));
                 stmt.bindString(3, author.getGivenNames());
                 stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), locale));
-                stmt.bindBoolean(5, author.isComplete());
+                stmt.bindString(5, author.getBirthDate().orElse(null));
+                stmt.bindString(6, author.getDeathDate().orElse(null));
+                stmt.bindString(7, author.getPhotoUuid().orElse(null));
+                stmt.bindBoolean(8, author.isComplete());
                 iId = stmt.executeInsert();
             }
 
@@ -552,9 +555,12 @@ public class AuthorDaoImpl
                 stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), locale));
                 stmt.bindString(3, author.getGivenNames());
                 stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), locale));
-                stmt.bindBoolean(5, author.isComplete());
+                stmt.bindString(5, author.getBirthDate().orElse(null));
+                stmt.bindString(6, author.getDeathDate().orElse(null));
+                stmt.bindString(7, author.getPhotoUuid().orElse(null));
+                stmt.bindBoolean(8, author.isComplete());
 
-                stmt.bindLong(6, author.getId());
+                stmt.bindLong(9, author.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
 
@@ -803,14 +809,20 @@ public class AuthorDaoImpl
                 INSERT_INTO_ + TBL_AUTHORS.getName()
                 + '(' + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.FAMILY_NAME_OB
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB
+                + ',' + DBKey.AUTHOR.BIRTH_DATE
+                + ',' + DBKey.AUTHOR.DEATH_DATE
+                + ',' + DBKey.AUTHOR.PHOTO_UUID
                 + ',' + DBKey.AUTHOR.COMPLETE
-                + ") VALUES (?,?,?,?,?)";
+                + ") VALUES (?,?,?,?,?,?,?,?)";
 
         /** Update an {@link Author}. */
         static final String UPDATE =
                 UPDATE_ + TBL_AUTHORS.getName()
                 + _SET_ + DBKey.AUTHOR.FAMILY_NAME + "=?," + DBKey.AUTHOR.FAMILY_NAME_OB + "=?"
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES + "=?," + DBKey.AUTHOR.GIVEN_NAMES_OB + "=?"
+                + ',' + DBKey.AUTHOR.BIRTH_DATE + "=?"
+                + ',' + DBKey.AUTHOR.DEATH_DATE + "=?"
+                + ',' + DBKey.AUTHOR.PHOTO_UUID + "=?"
                 + ',' + DBKey.AUTHOR.COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
@@ -911,6 +923,9 @@ public class AuthorDaoImpl
                 SELECT_DISTINCT_ + TBL_AUTHORS.dotAs(DBKey.PK_ID,
                                                      DBKey.AUTHOR.FAMILY_NAME,
                                                      DBKey.AUTHOR.GIVEN_NAMES,
+                                                     DBKey.AUTHOR.BIRTH_DATE,
+                                                     DBKey.AUTHOR.DEATH_DATE,
+                                                     DBKey.AUTHOR.PHOTO_UUID,
                                                      DBKey.AUTHOR.COMPLETE)
                 + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.AUTHOR.BOOK_AUTHOR_POSITION,
                                               DBKey.AUTHOR.BOOK_AUTHOR_TYPE)

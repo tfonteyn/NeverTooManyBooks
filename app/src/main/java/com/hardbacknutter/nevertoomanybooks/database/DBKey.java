@@ -251,6 +251,11 @@ public final class DBKey {
         public static final String GIVEN_NAMES = "given_names";
         /** The reordered name as per user preference for sorting. */
         public static final String GIVEN_NAMES_OB = GIVEN_NAMES + ORDER_BY_SUFFIX;
+
+        public static final String BIRTH_DATE = "birth_date";
+        public static final String DEATH_DATE = "death_date";
+        public static final String PHOTO_UUID = "photo_uuid";
+
         /** Users "author is complete" flag. */
         public static final String COMPLETE = "author_complete";
         /**

@@ -44,6 +44,11 @@ public class AuthorCoder
         if (!author.getGivenNames().isEmpty()) {
             out.put(DBKey.AUTHOR.GIVEN_NAMES, author.getGivenNames());
         }
+
+        author.getBirthDate().ifPresent(s -> out.put(DBKey.AUTHOR.BIRTH_DATE, s));
+        author.getDeathDate().ifPresent(s -> out.put(DBKey.AUTHOR.DEATH_DATE, s));
+        author.getPhotoUuid().ifPresent(uuid -> out.put(DBKey.AUTHOR.PHOTO_UUID, uuid));
+
         if (author.isComplete()) {
             out.put(DBKey.AUTHOR.COMPLETE, true);
         }
@@ -68,6 +73,15 @@ public class AuthorCoder
 
         author.setId(data.getLong(DBKey.PK_ID));
 
+        if (data.has(DBKey.AUTHOR.BIRTH_DATE)) {
+            author.setBirthDate(data.optString(DBKey.AUTHOR.BIRTH_DATE));
+        }
+        if (data.has(DBKey.AUTHOR.DEATH_DATE)) {
+            author.setDeathDate(data.optString(DBKey.AUTHOR.DEATH_DATE));
+        }
+        if (data.has(DBKey.AUTHOR.PHOTO_UUID)) {
+            author.setPhotoUuid(data.optString(DBKey.AUTHOR.PHOTO_UUID));
+        }
         if (data.has(DBKey.AUTHOR.COMPLETE)) {
             author.setComplete(data.getBoolean(DBKey.AUTHOR.COMPLETE));
         } else if (data.has("complete")) {

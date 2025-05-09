@@ -274,6 +274,13 @@ public final class DBDefinitions {
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
+    public static final Domain DOM_AUTHOR_BIRTH_DATE;
+    /** {@link #TBL_AUTHORS}. */
+    public static final Domain DOM_AUTHOR_DEATH_DATE;
+    /** {@link #TBL_AUTHORS}. */
+    public static final Domain DOM_AUTHOR_PHOTO_UUID;
+
+    /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
 
     /**
@@ -775,6 +782,16 @@ public final class DBDefinitions {
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
+                        .build();
+
+        DOM_AUTHOR_BIRTH_DATE =
+                new Domain.Builder(DBKey.AUTHOR.BIRTH_DATE, SqLiteDataType.Date)
+                        .build();
+        DOM_AUTHOR_DEATH_DATE =
+                new Domain.Builder(DBKey.AUTHOR.DEATH_DATE, SqLiteDataType.Date)
+                        .build();
+        DOM_AUTHOR_PHOTO_UUID =
+                new Domain.Builder(DBKey.AUTHOR.PHOTO_UUID, SqLiteDataType.Text)
                         .build();
 
         DOM_AUTHOR_IS_COMPLETE =
@@ -1551,6 +1568,9 @@ public final class DBDefinitions {
                             DOM_AUTHOR_FAMILY_NAME_OB,
                             DOM_AUTHOR_GIVEN_NAMES,
                             DOM_AUTHOR_GIVEN_NAMES_OB,
+                            DOM_AUTHOR_BIRTH_DATE,
+                            DOM_AUTHOR_DEATH_DATE,
+                            DOM_AUTHOR_PHOTO_UUID,
                             DOM_AUTHOR_IS_COMPLETE)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.AUTHOR.FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)

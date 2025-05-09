@@ -555,6 +555,9 @@ public class TocEntryDaoImpl
                                       DBKey.FIRST_PUBLICATION_DATE)
                 + ',' + TBL_AUTHORS.dotAs(DBKey.AUTHOR.FAMILY_NAME,
                                           DBKey.AUTHOR.GIVEN_NAMES,
+                                          DBKey.AUTHOR.BIRTH_DATE,
+                                          DBKey.AUTHOR.DEATH_DATE,
+                                          DBKey.AUTHOR.PHOTO_UUID,
                                           DBKey.AUTHOR.COMPLETE)
                 // count the number of books this TOC entry is present in.
                 + ", ("

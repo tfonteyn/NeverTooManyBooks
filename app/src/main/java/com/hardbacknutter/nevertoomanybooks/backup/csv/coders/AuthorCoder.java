@@ -74,7 +74,15 @@ public class AuthorCoder
         if (parts.size() > 1) {
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
-
+                if (details.has(DBKey.AUTHOR.BIRTH_DATE)) {
+                    author.setBirthDate(details.optString(DBKey.AUTHOR.BIRTH_DATE));
+                }
+                if (details.has(DBKey.AUTHOR.DEATH_DATE)) {
+                    author.setDeathDate(details.optString(DBKey.AUTHOR.DEATH_DATE));
+                }
+                if (details.has(DBKey.AUTHOR.PHOTO_UUID)) {
+                    author.setPhotoUuid(details.optString(DBKey.AUTHOR.PHOTO_UUID));
+                }
                 if (details.has(DBKey.AUTHOR.COMPLETE)) {
                     author.setComplete(details.optBoolean(DBKey.AUTHOR.COMPLETE));
                 } else if (details.has("complete")) {
