@@ -2100,5 +2100,7 @@
              HTML string, must be inside a CDATA section;
             -->
     <string name="info_identifier_editor"><![CDATA[Please read the <a href="%1$s">documentation</a> on Identifiers before editing.]]></string>
+    <string name="lbl_date_born">Born</string>
+    <string name="lbl_date_died">Died</string>
 
 </resources>
