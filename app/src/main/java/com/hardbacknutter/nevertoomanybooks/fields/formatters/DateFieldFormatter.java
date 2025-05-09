@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,8 +27,6 @@ import androidx.annotation.Nullable;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
 import com.hardbacknutter.nevertoomanybooks.fields.TextViewField;
 
 /**
@@ -37,19 +35,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.TextViewField;
  *      <li>Multiple fields: <strong>yes</strong> but sharing the same Locale.</li>
  * </ul>
  * <p>
- * This class can be used in two ways:
- * <ol>
- *     <li>with a {@link TextViewField}: the value is stored in the object,<br>
- *         This is meant to be used with a Date-Picker (i.e. the user selects a date).
- *         i.e. the {@link #extract(Context, String)} method is <strong>NOT</strong> called
- *     </li>
- *     <li>with an {@link EditTextField}: the value will be extracted from the View.<br>
- *         This is meant to be used as a free-entry field (i.e. the user types in the date).
- *     </li>
- * </ol>
+ * This class can be used with a {@link TextViewField}: the value is stored in the object,<br>
+ * This is meant to be used with a Date-Picker (i.e. the user selects a date).
  */
 public class DateFieldFormatter
-        implements EditFieldFormatter<String> {
+        implements FieldFormatter<String> {
 
     @NonNull
     private final Locale locale;
@@ -64,8 +54,6 @@ public class DateFieldFormatter
      * @param locale to use
      * @param isUtc  set to {@code true} if dates are to be handled as UTC
      *               with {@link #format(Context, String)}
-     *               This flag has no effect for {@link #extract(Context, String)}
-     *               as we drop the timestamp part after parsing.
      */
     public DateFieldFormatter(@NonNull final Locale locale,
                               final boolean isUtc) {
@@ -86,20 +74,6 @@ public class DateFieldFormatter
                          @Nullable final String rawValue) {
         return parser.parse(rawValue, null, isUtc)
                      .map(date -> date.toDisplay(locale, rawValue))
-                     .orElse("");
-    }
-
-    /**
-     * Extract as an ISO date (full or partial).
-     *
-     * @return a (partial) date
-     */
-    @Override
-    @NonNull
-    public String extract(@NonNull final Context context,
-                          @NonNull final String text) {
-        return parser.parse(text, null, isUtc)
-                     .map(PartialDate::getIsoString)
                      .orElse("");
     }
 }
