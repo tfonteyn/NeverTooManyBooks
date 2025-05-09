@@ -30,6 +30,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
@@ -51,11 +52,16 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBindi
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorBottomSheet;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.author.EditAuthorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
@@ -103,6 +109,13 @@ public class AuthorWorksFragment
     /** View Binding. */
     private FragmentAuthorWorksBinding vb;
     private Menu rowMenu;
+    private TextView nameView;
+    private TextView birthDateView;
+    private TextView bookshelfView;
+    private TextView deathDateView;
+    private EditParcelableLauncher<Author> editAuthorLauncher;
+
+    private FieldFormatter<String> dff;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -119,6 +132,16 @@ public class AuthorWorksFragment
 
         menuLauncher = new ExtMenuLauncher(RK_MENU, this::onMenuItemSelected);
         menuLauncher.registerForFragmentResult(fm, this);
+
+        editAuthorLauncher = new EditParcelableLauncher<>(
+                DBKey.FK_AUTHOR,
+                EditAuthorDialogFragment::new,
+                EditAuthorBottomSheet::new);
+        editAuthorLauncher.registerForFragmentResult(fm, this);
+        editAuthorLauncher.setOnEditInPlaceListener(author -> vm.onAuthorUpdate(author));
+
+        dff = new DateFieldFormatter(
+                getContext().getResources().getConfiguration().getLocales().get(0), false);
     }
 
     @Nullable
@@ -141,16 +164,20 @@ public class AuthorWorksFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        final Context context = getContext();
-
         final Toolbar toolbar = getToolbar();
-        //noinspection DataFlowIssue
-        toolbar.setTitle(vm.getScreenTitle(context));
-        toolbar.setSubtitle(vm.getScreenSubtitle(context));
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
+        nameView = toolbar.findViewById(R.id.name);
+        birthDateView = toolbar.findViewById(R.id.birth_date);
+        deathDateView = toolbar.findViewById(R.id.death_date);
+        bookshelfView = toolbar.findViewById(R.id.bookshelf);
+
+        vm.onAuthor().observe(getViewLifecycleOwner(), this::onAuthorUpdate);
+        vm.getOnBookshelf().observe(getViewLifecycleOwner(), s -> bookshelfView.setText(s));
 
         vb.authorWorks.setHasFixedSize(true);
 
+        final Context context = getContext();
+        //noinspection DataFlowIssue
         FastScrollerMode.create(context).attach(vb.authorWorks);
 
         adapter = new AuthorWorksAdapter(context, vm.getStyle(), List.of(vm.getAuthor()),
@@ -191,6 +218,25 @@ public class AuthorWorksFragment
         if (savedInstanceState == null) {
             TipManager.getInstance().show(context, Tip.AUTHORS_WORKS);
         }
+    }
+
+    private void onAuthorUpdate(@NonNull final Author author) {
+        final Context context = getContext();
+
+        //noinspection DataFlowIssue
+        nameView.setText(author.getLabel(context, Details.AutoSelect, vm.getStyle()));
+
+        birthDateView.setText(author.getBirthDate()
+                                    .map(d -> getString(R.string.name_colon_value,
+                                                        getString(R.string.lbl_date_born),
+                                                        dff.format(getContext(), d)))
+                                    .orElse(null));
+
+        deathDateView.setText(author.getDeathDate()
+                                    .map(d -> getString(R.string.name_colon_value,
+                                                        getString(R.string.lbl_date_died),
+                                                        dff.format(getContext(), d)))
+                                    .orElse(null));
     }
 
     /**
@@ -290,7 +336,12 @@ public class AuthorWorksFragment
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             final int menuItemId = menuItem.getItemId();
 
-            if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_TITLE) {
+            if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
+                //noinspection DataFlowIssue
+                editAuthorLauncher.editInPlace(getContext(), vm.getAuthor());
+                return true;
+
+            } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_TITLE) {
                 menuItem.setChecked(true);
                 vm.setOrderByColumn(DBKey.TITLE_OB);
                 vm.reloadWorkList();
@@ -328,14 +379,10 @@ public class AuthorWorksFragment
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
                 final boolean checked = !menuItem.isChecked();
                 menuItem.setChecked(checked);
-                vm.setAllBookshelves(checked);
+                //noinspection DataFlowIssue
+                vm.setAllBookshelves(getContext(), checked);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
-
-                final Toolbar toolbar = getToolbar();
-                //noinspection DataFlowIssue
-                toolbar.setTitle(vm.getScreenTitle(getContext()));
-                toolbar.setSubtitle(vm.getScreenSubtitle(getContext()));
                 return true;
             }
 

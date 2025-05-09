@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -42,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.menus.AuthorViewAuthorOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
@@ -50,6 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
 @SuppressWarnings("WeakerAccess")
 public class AuthorWorksViewModel
         extends ViewModel {
+
+    private final MutableLiveData<Author> onAuthor = new MutableLiveData<>();
+    private final MutableLiveData<String> onBookshelf = new MutableLiveData<>();
 
     /** The list of TOC/Books we're displaying. */
     private final List<AuthorWork> works = new ArrayList<>();
@@ -80,6 +83,16 @@ public class AuthorWorksViewModel
     private Style style;
     private List<MenuHandler<Author>> menuHandlers;
 
+    @NonNull
+    MutableLiveData<Author> onAuthor() {
+        return onAuthor;
+    }
+
+    @NonNull
+    MutableLiveData<String> getOnBookshelf() {
+        return onBookshelf;
+    }
+
     /**
      * Pseudo constructor.
      *
@@ -109,7 +122,6 @@ public class AuthorWorksViewModel
             author = ServiceLocator.getInstance().getAuthorDao()
                                    .findById(authorId)
                                    .orElseThrow();
-
             final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
 
             bookshelf = ServiceLocator.getInstance().getBookshelfDao()
@@ -121,10 +133,13 @@ public class AuthorWorksViewModel
             withBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, withBooks);
             reloadWorkList();
         }
+
+        onAuthor.setValue(author);
+        onBookshelf.setValue(getBookshelfAndNrOfEntries(context));
     }
 
     @NonNull
-    public List<MenuHandler<Author>> getMenuHandlers() {
+    List<MenuHandler<Author>> getMenuHandlers() {
         return menuHandlers;
     }
 
@@ -148,7 +163,7 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
-    public Style getStyle() {
+    Style getStyle() {
         return style;
     }
 
@@ -160,11 +175,13 @@ public class AuthorWorksViewModel
         return allBookshelves;
     }
 
-    void setAllBookshelves(final boolean all) {
+    void setAllBookshelves(@NonNull final Context context,
+                           final boolean all) {
         allBookshelves = all;
+        onBookshelf.setValue(getBookshelfAndNrOfEntries(context));
     }
 
-    public void setOrderByColumn(@AuthorDao.WorksOrderBy @Nullable final String orderByColumn) {
+    void setOrderByColumn(@AuthorDao.WorksOrderBy @Nullable final String orderByColumn) {
         this.orderByColumn = orderByColumn;
     }
 
@@ -174,7 +191,7 @@ public class AuthorWorksViewModel
      * @return author
      */
     @NonNull
-    public Author getAuthor() {
+    Author getAuthor() {
         return author;
     }
 
@@ -229,35 +246,18 @@ public class AuthorWorksViewModel
     }
 
     /**
-     * Activity title consists of the author name + the number of entries shown.
-     *
-     * @param context Current context
-     *
-     * @return title
-     */
-    @NonNull
-    String getScreenTitle(@NonNull final Context context) {
-        return context.getString(R.string.name_hash_nr,
-                                 author.getLabel(context, Details.AutoSelect, style),
-                                 works.size());
-    }
-
-    /**
-     * Activity subtitle will show the bookshelf name or nothing if all-shelves.
+     * Activity subtitle will show the bookshelf name (or empty for all-shelves)
+     * + the number of entries shown.
      *
      * @param context Current context
      *
      * @return subtitle
      */
-    @Nullable
-    String getScreenSubtitle(@NonNull final Context context) {
-        if (allBookshelves) {
-            return null;
-        } else {
-            return context.getString(R.string.name_colon_value,
-                                     context.getString(R.string.lbl_bookshelf),
-                                     bookshelf.getName());
-        }
+    @NonNull
+    private String getBookshelfAndNrOfEntries(@NonNull final Context context) {
+        return context.getString(R.string.name_hash_nr,
+                                 allBookshelves ? "" : bookshelf.getName(),
+                                 works.size());
     }
 
     @NonNull
@@ -270,5 +270,10 @@ public class AuthorWorksViewModel
         if (data.isModified()) {
             dataModified = true;
         }
+    }
+
+    void onAuthorUpdate(@NonNull final Author author) {
+        this.author = author;
+        onAuthor.setValue(author);
     }
 }

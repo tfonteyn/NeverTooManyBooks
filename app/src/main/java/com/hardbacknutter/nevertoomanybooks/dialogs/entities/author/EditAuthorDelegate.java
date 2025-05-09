@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -42,6 +43,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -52,7 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAction;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
+import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.partialdate.PartialDatePickerLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.TilUtil;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -71,6 +76,8 @@ class EditAuthorDelegate
         implements FlexDialogDelegate {
 
     private static final String TAG = "EditAuthorDelegate";
+    private static final String RK_DATE_PICKER_PARTIAL = TAG + ":rk:pd";
+    private static final String BKEY_DATE_PICKER_FIELD_ID = TAG + ":pd:fieldId";
 
     /** Author View model. Fragment scope. */
     private final EditAuthorViewModel vm;
@@ -78,8 +85,12 @@ class EditAuthorDelegate
     private final DialogFragment owner;
     @NonNull
     private final String requestKey;
+    private final PartialDatePickerLauncher partialDatePickerLauncher;
+    private final FieldFormatter<String> dateFieldFormatter;
     /** View Binding. */
     private DialogEditAuthorContentBinding vb;
+    /** MUST keep a strong reference. */
+    private final PartialDatePickerLauncher.ResultListener datePickerListener = this::onDateSet;
     @Nullable
     private Toolbar toolbar;
 
@@ -90,6 +101,15 @@ class EditAuthorDelegate
                                             DialogLauncher.BKEY_REQUEST_KEY);
         vm = new ViewModelProvider(owner).get(EditAuthorViewModel.class);
         vm.init(args);
+
+        final FragmentManager fm = owner.getChildFragmentManager();
+
+        partialDatePickerLauncher = new PartialDatePickerLauncher(RK_DATE_PICKER_PARTIAL);
+        partialDatePickerLauncher.setResultListener(datePickerListener);
+        partialDatePickerLauncher.registerForFragmentResult(fm, owner);
+
+        dateFieldFormatter = new DateFieldFormatter(
+                owner.getResources().getConfiguration().getLocales().get(0), false);
     }
 
     @NonNull
@@ -121,6 +141,8 @@ class EditAuthorDelegate
 
     @Override
     public void onViewCreated(@NonNull final DialogType dialogType) {
+        final Context context = vb.getRoot().getContext();
+
         if (toolbar != null) {
             if (dialogType == DialogType.BottomSheet) {
                 toolbar.inflateMenu(R.menu.toolbar_action_save);
@@ -128,17 +150,25 @@ class EditAuthorDelegate
             initToolbar(owner, dialogType, toolbar);
         }
 
-        final Context context = vb.getRoot().getContext();
-
-        final Author currentEdit = vm.getCurrentEdit();
-
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
+        setupNames(context, authorDao);
+        setupRealAuthorField(context, authorDao);
+        setupBirthDate(context);
+        setupDeathDate(context);
+
+        vb.cbxIsComplete.setChecked(vm.getCurrentEdit().isComplete());
+
+        vb.familyName.requestFocus();
+    }
+
+    private void setupNames(@NonNull final Context context,
+                            @NonNull final AuthorDao authorDao) {
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.AUTHOR.FAMILY_NAME));
-        vb.familyName.setText(currentEdit.getFamilyName());
+        vb.familyName.setText(vm.getCurrentEdit().getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
         TilUtil.autoRemoveError(vb.familyName, vb.lblFamilyName);
 
@@ -146,14 +176,8 @@ class EditAuthorDelegate
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.AUTHOR.GIVEN_NAMES));
-        vb.givenNames.setText(currentEdit.getGivenNames());
+        vb.givenNames.setText(vm.getCurrentEdit().getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
-
-        setupRealAuthorField(context, authorDao);
-
-        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
-
-        vb.familyName.requestFocus();
     }
 
     private void setupRealAuthorField(@NonNull final Context context,
@@ -174,6 +198,48 @@ class EditAuthorDelegate
             vb.lblRealAuthorHeader.setVisibility(View.GONE);
             vb.lblRealAuthor.setVisibility(View.GONE);
         }
+    }
+
+    private void setupBirthDate(@NonNull final Context context) {
+        vb.birthDate.setText(dateFieldFormatter.format(
+                context, vm.getCurrentEdit().getBirthDate().orElse(null)));
+        vb.lblBirthDate.setEndIconOnClickListener(v -> {
+            vm.getCurrentEdit().setBirthDate(null);
+            vb.birthDate.setText(null);
+        });
+        vb.birthDate.setOnClickListener(v -> {
+            // We're using the extras to pass the field id
+            final Bundle extras = new Bundle(1);
+            extras.putInt(BKEY_DATE_PICKER_FIELD_ID, vb.birthDate.getId());
+            //noinspection DataFlowIssue
+            partialDatePickerLauncher.launch(
+                    owner.getActivity(),
+                    context.getString(R.string.lbl_date_born),
+                    null,
+                    vm.getCurrentEdit().getBirthDate().orElse(null),
+                    extras);
+        });
+    }
+
+    private void setupDeathDate(@NonNull final Context context) {
+        vb.deathDate.setText(dateFieldFormatter.format(
+                context, vm.getCurrentEdit().getDeathDate().orElse(null)));
+        vb.lblDeathDate.setEndIconOnClickListener(v -> {
+            vm.getCurrentEdit().setDeathDate(null);
+            vb.deathDate.setText(null);
+        });
+        vb.deathDate.setOnClickListener(v -> {
+            // We're using the extras to pass the field id
+            final Bundle extras = new Bundle(1);
+            extras.putInt(BKEY_DATE_PICKER_FIELD_ID, vb.deathDate.getId());
+            //noinspection DataFlowIssue
+            partialDatePickerLauncher.launch(
+                    owner.getActivity(),
+                    context.getString(R.string.lbl_date_died),
+                    null,
+                    vm.getCurrentEdit().getDeathDate().orElse(null),
+                    extras);
+        });
     }
 
     @Override
@@ -277,12 +343,42 @@ class EditAuthorDelegate
 
     private void viewToModel() {
         final Author currentEdit = vm.getCurrentEdit();
+
         currentEdit.setName(vb.familyName.getText().toString().trim(),
                             vb.givenNames.getText().toString().trim());
-        currentEdit.setComplete(vb.cbxIsComplete.isChecked());
+
+        // Dates have already been set in the PartialDatePickerLauncher.ResultListener
 
         if (vm.showRealAuthorName()) {
             vm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
+        }
+
+        currentEdit.setComplete(vb.cbxIsComplete.isChecked());
+    }
+
+    private void onDateSet(@NonNull final PartialDate previousSelection,
+                           @NonNull final PartialDate currentSelection,
+                           @Nullable final Bundle extras) {
+        if (extras == null) {
+            throw new IllegalArgumentException("No extras?");
+        }
+        final int fieldId = extras.getInt(BKEY_DATE_PICKER_FIELD_ID, -1);
+        if (fieldId == -1) {
+            throw new IllegalArgumentException("No fieldId?");
+        }
+
+        final Context context = owner.getContext();
+        // set BOTH author and fields.
+        final Author currentEdit = vm.getCurrentEdit();
+        final String isoString = currentSelection.getIsoString();
+        //noinspection DataFlowIssue
+        final String display = dateFieldFormatter.format(context, isoString);
+        if (fieldId == vb.birthDate.getId()) {
+            currentEdit.setBirthDate(isoString);
+            vb.birthDate.setText(display);
+        } else if (fieldId == vb.deathDate.getId()) {
+            currentEdit.setDeathDate(isoString);
+            vb.deathDate.setText(display);
         }
     }
 }

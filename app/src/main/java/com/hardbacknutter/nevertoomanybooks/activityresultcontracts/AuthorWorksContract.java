@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -46,11 +47,11 @@ public class AuthorWorksContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        return FragmentHostActivity
-                .createIntent(context, AuthorWorksFragment.class)
-                .putExtra(Style.BKEY_UUID, input.styleUuid)
-                .putExtra(DBKey.FK_AUTHOR, input.authorId)
-                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId);
+        return FragmentHostActivity.createIntent(context, R.layout.activity_author_works,
+                                                 AuthorWorksFragment.class)
+                                   .putExtra(Style.BKEY_UUID, input.styleUuid)
+                                   .putExtra(DBKey.FK_AUTHOR, input.authorId)
+                                   .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId);
     }
 
     @Override

@@ -197,8 +197,10 @@ public class EditAuthorViewModel
      */
     public boolean isModified() {
         return !(original.isSameName(currentEdit)
-                 && original.isComplete() == currentEdit.isComplete()
-                 && Objects.equals(original.getRealAuthor(), currentEdit.getRealAuthor()));
+                 && Objects.equals(original.getBirthDate(), currentEdit.getBirthDate())
+                 && Objects.equals(original.getDeathDate(), currentEdit.getDeathDate())
+                 && Objects.equals(original.getRealAuthor(), currentEdit.getRealAuthor())
+                 && original.isComplete() == currentEdit.isComplete());
     }
 
     /**

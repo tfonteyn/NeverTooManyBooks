@@ -92,23 +92,60 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <CheckBox
-        android:id="@+id/cbx_is_complete"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow_dates"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/lbl_author_is_complete"
-        app:layout_constraintStart_toStartOf="@id/lbl_family_name"
-        app:layout_constraintTop_toBottomOf="@id/lbl_given_names"
+        app:constraint_referenced_ids="lbl_birth_date,lbl_death_date"
+        android:layout_marginTop="@dimen/field_margin_top"
+        app:flow_horizontalAlign="start"
+        app:flow_horizontalBias="0"
+        app:flow_horizontalGap="@dimen/field_margin_inline"
+        app:flow_horizontalStyle="packed"
+        app:flow_maxElementsWrap="2"
+        app:flow_verticalBias="0"
+        app:flow_verticalGap="@dimen/field_margin_top"
+        app:flow_wrapMode="aligned"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/flow_names"
         />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_birth_date"
+        style="@style/TIL.DatePicker"
+        android:layout_width="@dimen/til_fixed_width_date"
+        android:hint="@string/lbl_date_born">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/birth_date"
+            style="@style/TIE.ReadOnly"
+            tools:text="@sample/data.json/date/long"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_death_date"
+        style="@style/TIL.DatePicker"
+        android:layout_width="@dimen/til_fixed_width_date"
+        android:hint="@string/lbl_date_died">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/death_date"
+            style="@style/TIE.ReadOnly"
+            tools:text="@sample/data.json/date/long"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/lbl_real_author_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/section_margin_top"
+        android:layout_marginTop="@dimen/field_margin_top"
         android:text="@string/lbl_author_is_a_pen_name_of"
         app:layout_constraintStart_toStartOf="@id/flow_names"
-        app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
+        app:layout_constraintTop_toBottomOf="@id/flow_dates"
         />
 
     <!-- NO hint text! -->
@@ -116,7 +153,6 @@
         android:id="@+id/lbl_real_author"
         style="@style/TIL.AutoCompleteTextView"
         android:layout_width="@dimen/til_fixed_width_personal_name"
-        android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintStart_toStartOf="@id/lbl_family_name"
         app:layout_constraintTop_toBottomOf="@id/lbl_real_author_header"
         >
@@ -130,15 +166,24 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <CheckBox
+        android:id="@+id/cbx_is_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_author_is_complete"
+        app:layout_constraintStart_toStartOf="@id/lbl_family_name"
+        app:layout_constraintTop_toBottomOf="@id/lbl_real_author"
+        />
+
     <TextView
         android:id="@+id/note"
         style="@style/Text.Body"
         android:layout_marginTop="@dimen/section_margin_top"
-        android:text="@string/warning_immediate_global_changes"
         android:maxLines="2"
+        android:text="@string/warning_immediate_global_changes"
         android:textAppearance="?attr/textAppearanceBodySmall"
         app:layout_constraintStart_toStartOf="@id/lbl_family_name"
-        app:layout_constraintTop_toBottomOf="@id/lbl_real_author"
+        app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -147,18 +192,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/note">
-
-        <!--        <Button-->
-        <!--            android:id="@+id/btn_neutral"-->
-        <!--            style="?attr/buttonBarNeutralButtonStyle"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:visibility="gone"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            tools:text="x"-->
-        <!--            tools:visibility="visible"-->
-        <!--            />-->
 
         <Button
             android:id="@+id/btn_negative"
