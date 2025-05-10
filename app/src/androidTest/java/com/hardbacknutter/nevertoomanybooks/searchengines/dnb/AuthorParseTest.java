@@ -105,6 +105,9 @@ public class AuthorParseTest
         assertEquals("Flix", author.getFamilyName());
         assertEquals("", author.getGivenNames());
 
+        assertEquals("1976", author.getBirthDate().orElse(null));
+        assertNull(author.getDeathDate().orElse(null));
+
         assertEquals(1, author.getIdentifiers().size());
         Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_DNB);
@@ -140,6 +143,34 @@ public class AuthorParseTest
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_DNB);
         assertTrue(oIv.isPresent());
         assertEquals("1300021055", oIv.get());
+        author = author.getRealAuthor();
+        assertNull(author);
+    }
+
+    @Test
+    public void parse118678175()
+            throws IOException, SearchException, CredentialsException {
+        final String locationHeader = "https://katalog.dnb.de/DE/resource.html?hit=1&t=philip+dick&key=all&sp=auth&th=14&tk=8E76F448EDCF3C6474A171E4B7B6824CE00C0401&pr=0&sortA=bez&sortD=-dat&v=plist";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.dnb_author_118678175;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+
+        Author author = resolver.parse(context, document);
+        assertNotNull(author);
+
+        Log.d(TAG, author.toString());
+
+        assertEquals("Dick", author.getFamilyName());
+        assertEquals("Philip K.", author.getGivenNames());
+
+        assertEquals("1928", author.getBirthDate().orElse(null));
+        assertEquals("1982", author.getDeathDate().orElse(null));
+
+
+        final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_DNB);
+        assertTrue(oIv.isPresent());
+        assertEquals("118678175", oIv.get());
         author = author.getRealAuthor();
         assertNull(author);
     }

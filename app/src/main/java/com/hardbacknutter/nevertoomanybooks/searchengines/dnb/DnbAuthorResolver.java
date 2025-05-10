@@ -28,6 +28,8 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
@@ -60,6 +62,13 @@ import org.jsoup.select.Elements;
  */
 public final class DnbAuthorResolver
         implements AuthorResolver {
+
+    /**
+     * {@code <p>1920-1992 <small>(Lebensdaten)</small></p>}
+     * {@code <p>1972- <small>(Lebensdaten)</small></p>}
+     */
+    private static final Pattern BIRTH_DEATH_DATE_PATTERN = Pattern.compile(
+            "(\\d\\d\\d\\d)-(\\d\\d\\d\\d|)\\s*\\(Lebensdaten\\)");
 
     @NonNull
     private final DnbSearchEngine searchEngine;
@@ -126,11 +135,6 @@ public final class DnbAuthorResolver
             return false;
         }
 
-        // If we already have a real-author set, we're done.
-        if (author.getRealAuthor() != null) {
-            return false;
-        }
-
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_DNB);
         // no id, give up
         if (oIv.isEmpty()) {
@@ -144,9 +148,10 @@ public final class DnbAuthorResolver
 
         if (!searchEngine.isCancelled()) {
             final Author found = parse(context, document);
-            if (found != null) {
-                author.setRealAuthor(found);
-                return true;
+            // 2025-05-10: insist on case-sensitive name equality for now.
+            // If this proves problematic, we'll change it later...
+            if (found != null && author.isSameName(found)) {
+                return author.merge(found, true);
             }
         }
 
@@ -192,6 +197,19 @@ public final class DnbAuthorResolver
                             }
                             case "Zeit":
                             case "Time": {
+                                final Matcher matcher = BIRTH_DEATH_DATE_PATTERN.matcher(td.text());
+                                if (matcher.find()) {
+                                    final String birthYear = matcher.group(1);
+                                    if (birthYear != null && !birthYear.isEmpty()) {
+                                        //noinspection DataFlowIssue
+                                        author.setBirthDate(birthYear);
+                                    }
+                                    final String deathYear = matcher.group(2);
+                                    if (deathYear != null && !deathYear.isEmpty()) {
+                                        //noinspection DataFlowIssue
+                                        author.setDeathDate(deathYear);
+                                    }
+                                }
                                 break;
                             }
                             case "Ort":
