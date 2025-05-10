@@ -235,6 +235,8 @@ public interface AuthorDao {
      * <p>
      * If the item has child items, then implementations must propagate the call.
      *
+     * URGENT: fixId should be able to merge the given item with the database data
+     *
      * @param context Current context
      * @param item    to update
      * @param locale  to use
