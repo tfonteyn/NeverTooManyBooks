@@ -27,10 +27,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
@@ -43,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * It's a little unreliable... see comments inside {@link #parse}.
@@ -56,6 +60,8 @@ import com.hardbacknutter.org.json.JSONObject;
  */
 public final class OpenLibraryAuthorResolver
         implements AuthorResolver {
+
+    private static final String TAG = "OpenLibraryAuthorResolv";
 
     // There can be MANY different keys... sigh.
     //  "remote_ids": {
@@ -83,6 +89,10 @@ public final class OpenLibraryAuthorResolver
     @Nullable
     private final String authorUri;
 
+    private final PartialDateParser dateParser;
+    @NonNull
+    private final Locale locale;
+
     /**
      * Private Constructor.
      *
@@ -92,6 +102,7 @@ public final class OpenLibraryAuthorResolver
     private OpenLibraryAuthorResolver(@NonNull final Context context,
                                       @NonNull final OpenLibrarySearchEngine searchEngine) {
         this.searchEngine = searchEngine;
+        locale = searchEngine.getLocale(context);
         // The engine is hardcoded/defined with the identifier,
         // but the author-uri can be absent
         authorUri = this.searchEngine
@@ -99,6 +110,8 @@ public final class OpenLibraryAuthorResolver
                 .getIdentifier()
                 .flatMap(identifier -> identifier.getAuthorUri(context))
                 .orElse(OpenLibrarySearchEngine.AUTHOR_URL);
+
+        dateParser = new PartialDateParser();
     }
 
     /**
@@ -143,11 +156,6 @@ public final class OpenLibraryAuthorResolver
             return false;
         }
 
-        // If we already have a real-author set, we're done.
-        if (author.getRealAuthor() != null) {
-            return false;
-        }
-
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         // no id, give up
         if (oIv.isEmpty()) {
@@ -162,9 +170,10 @@ public final class OpenLibraryAuthorResolver
             final JSONObject jsonObject = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 final Author found = parse(jsonObject);
-                if (found != null) {
-                    author.setRealAuthor(found);
-                    return true;
+                // 2025-05-10: insist on case-sensitive name equality for now.
+                // If this proves problematic, we'll change it later...
+                if (found != null && author.isSameName(found)) {
+                    return author.merge(found, true);
                 }
             }
         } catch (@NonNull final StorageException | IOException | JSONException e) {
@@ -208,6 +217,15 @@ public final class OpenLibraryAuthorResolver
         // "org" : e.g. ""James S. A. Corey""
         final String entityType = document.optString("entity_type");
 
+        if (BuildConfig.DEBUG /* always */) {
+            LoggerFactory.getLogger().d(TAG,
+                                        "name=" + name,
+                                        "personalName=" + personalName,
+                                        "fullerName=" + fullerName,
+                                        "alternateNames=" + alternateNames,
+                                        "entityType=" + entityType);
+        }
+
         // ok... best guess/attempt here
         final Author author;
         if (!name.isEmpty()) {
@@ -218,7 +236,7 @@ public final class OpenLibraryAuthorResolver
             return null;
         }
 
-        // entityType and fullerName/alternateNames ...
+        // fullerName/alternateNames ...
         // from a couple of examples, it's likely that fullerName is used
         // when "name" is a Pseudonym.
         // "alternateNames" is rather useless/unreliable in this context..
@@ -227,6 +245,11 @@ public final class OpenLibraryAuthorResolver
             // there is no OL number, so we can't easily lookup identifiers...
             author.setRealAuthor(ps);
         }
+
+        dateParser.parse(document.optString("birth_date"), locale).ifPresent(
+                date -> author.setBirthDate(date.getIsoString()));
+        dateParser.parse(document.optString("death_date"), locale).ifPresent(
+                date -> author.setDeathDate(date.getIsoString()));
 
         final JSONObject remoteIds = document.optJSONObject("remote_ids");
         if (remoteIds != null) {

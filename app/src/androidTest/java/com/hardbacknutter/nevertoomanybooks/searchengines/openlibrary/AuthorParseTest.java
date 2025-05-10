@@ -77,6 +77,8 @@ public class AuthorParseTest
 
         assertEquals("Vonnegut", author.getFamilyName());
         assertEquals("Kurt", author.getGivenNames());
+        assertEquals("1922-11-11", author.getBirthDate().orElse(null));
+        assertEquals("2007-04-11", author.getDeathDate().orElse(null));
 
         assertEquals(3, author.getIdentifiers().size());
         Optional<String> oIv;
@@ -107,6 +109,9 @@ public class AuthorParseTest
 
         assertEquals("Tiptree Jr.", author.getFamilyName());
         assertEquals("James", author.getGivenNames());
+
+        assertEquals("1915-08-24", author.getBirthDate().orElse(null));
+        assertEquals("1987-05-19", author.getDeathDate().orElse(null));
 
         assertEquals(3, author.getIdentifiers().size());
         Optional<String> oIv;
