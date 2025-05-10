@@ -53,13 +53,11 @@ public class EntityMergeHelper<T extends Mergeable> {
      * <strong>The default implementation ONLY handles the id. You MUST override
      * if the {@link Mergeable} has more attributes to consider.</strong>
      *
-     * @param context        Current context
-     * @param previous       element
-     * @param previousLocale Locale for the previous element
-     * @param current        element
-     * @param currentLocale  Locale for the current element
+     * @param context  Current context
+     * @param previous element to copy into
+     * @param source   to copy from
      *
-     * @return {@code true} if the list was modified in any way
+     * @return {@code true} if the <em>previous</em> was modified in any way
      */
     @EmptySuper
     protected boolean merge(@NonNull final Context context,

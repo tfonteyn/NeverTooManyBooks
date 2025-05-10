@@ -337,9 +337,9 @@ public class Bookshelf
     }
 
     /**
-     * Replace local details from another Bookshelf.
+     * <strong>Replace</strong> local details with those from the given Bookshelf.
      *
-     * @param source Bookshelf to copy from
+     * @param source to copy from
      */
     public void copyFrom(@NonNull final Bookshelf source) {
         name = source.name;

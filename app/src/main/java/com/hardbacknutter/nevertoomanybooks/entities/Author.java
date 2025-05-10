@@ -220,9 +220,9 @@ public class Author
      * "Dr. Asimov" -> titles... pre or suffixed
      * <p>
      * 2025-05-05: ISFDB registers these as suffixes:
-     *  II, III, IV, V, VI, VII, VIII, IX, X, B.A., B.Sc., D.D., D.Sc., Ed.D., J.D.,
-     *  Jr., Lit.D., Litt.D., M.B.I.F., M.B.I.S., M.A., M.D., M.E., M.S., Ph.D.,
-     *  P.J.F., R.I., Sr., U.S.A.
+     * II, III, IV, V, VI, VII, VIII, IX, X, B.A., B.Sc., D.D., D.Sc., Ed.D., J.D.,
+     * Jr., Lit.D., Litt.D., M.B.I.F., M.B.I.S., M.A., M.D., M.E., M.S., Ph.D.,
+     * P.J.F., R.I., Sr., U.S.A.
      */
     private static final Pattern FAMILY_NAME_SUFFIX_PATTERN =
             Pattern.compile("jr\\.|jr|junior|sr\\.|sr|senior|II|III",
@@ -285,6 +285,9 @@ public class Author
         TYPES.put(TYPE_COVER_COLORIST, R.string.lbl_author_type_cover_colorist);
     }
 
+    @NonNull
+    private final List<Identifier.Value> identifiers = new ArrayList<>();
+
     /** Row ID. */
     private long id;
     /** Family name(s). (NotNullFieldNotInitialized: see copy-constructor). */
@@ -304,10 +307,6 @@ public class Author
 
     /** whether we have all we want from this Author. */
     private boolean complete;
-
-    @NonNull
-    private final List<Identifier.Value> identifiers = new ArrayList<>();
-
     /**
      * If this Author is a pseudonym, then 'realAuthorId' points to that author.
      * When {@code null} this IS a real author.
@@ -995,9 +994,9 @@ public class Author
     }
 
     /**
-     * Replace local details from another author.
+     * <strong>Replace</strong> local details with those from the given Author.
      *
-     * @param source            Author to copy from
+     * @param source            to copy from
      * @param includeBookFields Flag to force copying the Book related fields as well
      */
     public void copyFrom(@NonNull final Author source,

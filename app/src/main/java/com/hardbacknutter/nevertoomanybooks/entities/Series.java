@@ -211,12 +211,12 @@ public class Series
     private long id;
     /** Series title. */
     @NonNull
-    private String title;
+    private String title = "";
     /** whether we have all we want from this Series / if the Series is finished. */
     private boolean complete;
     /** number (alphanumeric) of a book in this Series. */
     @NonNull
-    private String number;
+    private String number = "";
 
     /**
      * Copy constructor.
@@ -572,9 +572,9 @@ public class Series
     }
 
     /**
-     * Replace local details from another Series.
+     * <strong>Replace</strong> local details with those from the given Series.
      *
-     * @param source            Series to copy from
+     * @param source            to copy from
      * @param includeBookFields Flag to force copying the Book related fields as well
      */
     public void copyFrom(@NonNull final Series source,

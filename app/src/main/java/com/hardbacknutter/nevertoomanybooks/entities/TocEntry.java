@@ -220,9 +220,9 @@ public class TocEntry
     }
 
     /**
-     * Replace local details from another TocEntry.
+     * <strong>Replace</strong> local details with those from the given  TocEntry.
      *
-     * @param source TocEntry to copy from
+     * @param source to copy from
      */
     public void copyFrom(@NonNull final TocEntry source) {
         // While editing, the user was only giving us a (potential) new name,

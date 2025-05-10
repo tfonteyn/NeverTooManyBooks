@@ -174,9 +174,9 @@ public class Publisher
     }
 
     /**
-     * Replace local details from another publisher.
+     * <strong>Replace</strong> local details with those from the given Publisher.
      *
-     * @param source publisher to copy from
+     * @param source to copy from
      */
     public void copyFrom(@NonNull final Publisher source) {
         name = source.name;

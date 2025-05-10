@@ -134,7 +134,7 @@ public class Tag
     }
 
     /**
-     * Replace local details from another Tag.
+     * <strong>Replace</strong> local details with those from the given Tag.
      *
      * @param source to copy from
      */
