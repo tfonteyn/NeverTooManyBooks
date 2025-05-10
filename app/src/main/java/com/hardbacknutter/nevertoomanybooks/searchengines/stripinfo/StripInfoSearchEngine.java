@@ -47,9 +47,12 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -154,6 +157,9 @@ public class StripInfoSearchEngine
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
     /** Delegate common Element handling. */
     private final JSoupHelper jSoupHelper = new JSoupHelper();
+
+    private final DateParser<PartialDate> dateParser = new PartialDateParser();
+
     @NonNull
     private final RatingParser ratingParser;
     @Nullable
@@ -478,9 +484,8 @@ public class StripInfoSearchEngine
 
                                 case "Jaar": {
                                     final String text = extractText(td);
-                                    if (text != null) {
-                                        addPublicationDate(context, getLocale(context),
-                                                           text, book);
+                                    if (text != null && !text.isEmpty()) {
+                                        dateParser.parse(text).ifPresent(book::setPublicationDate);
                                         i++;
                                     }
                                     break;
