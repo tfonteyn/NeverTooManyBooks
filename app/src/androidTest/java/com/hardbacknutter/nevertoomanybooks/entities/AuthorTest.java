@@ -115,7 +115,7 @@ public class AuthorTest
         author.setComplete(false);
         list.add(author);
 
-        // discard
+        // same name, with a 0 id: merge with position 0
         author = Author.from(ISAAC_ASIMOV);
         author.setId(0);
         author.setComplete(true);
@@ -194,7 +194,7 @@ public class AuthorTest
         assertEquals(id0, author.getId());
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
-        assertFalse(author.isComplete());
+        assertTrue(author.isComplete());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
 
         author = list.get(1);
