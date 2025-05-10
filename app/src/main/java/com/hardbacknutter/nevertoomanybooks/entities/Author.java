@@ -641,8 +641,10 @@ public class Author
      */
     @Nullable
     public Author getRealAuthor() {
-        // always assume the worst; resolve here AGAIN
-        realAuthor = resolveRealAuthor(realAuthor);
+        if (realAuthor != null) {
+            // always assume the worst; resolve here AGAIN
+            realAuthor = resolveRealAuthor(realAuthor);
+        }
         return realAuthor;
     }
 
@@ -655,24 +657,23 @@ public class Author
      */
     @Nullable
     public Author setRealAuthor(@Nullable final Author author) {
-        realAuthor = resolveRealAuthor(author);
+        if (author != null) {
+            realAuthor = resolveRealAuthor(author);
+        }
         return realAuthor;
     }
 
     @Nullable
-    private Author resolveRealAuthor(@Nullable final Author author) {
+    private Author resolveRealAuthor(@NonNull final Author author) {
         @Nullable
         Author a = author;
-        if (a != null) {
-            // resolve any nested reference
-            while (a.getRealAuthor() != null) {
-                a = a.getRealAuthor();
-            }
+        // resolve any nested reference
+        while (a.getRealAuthor() != null) {
+            a = a.getRealAuthor();
         }
 
-        // resolve 1:1 circular reference
-        // Case-sensitive!
-        if (a != null && (a.isSameName(this))) {
+        // resolve 1:1 circular reference; Case-sensitive!
+        if (a.isSameName(this)) {
             a = null;
         }
         return a;
