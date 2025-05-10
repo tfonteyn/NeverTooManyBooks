@@ -38,8 +38,11 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -103,6 +106,8 @@ public class LastDodoSearchEngine
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     /** It's a relative url. */
     private static final Pattern AUTHOR_ID = Pattern.compile(".*/nl/areas/(\\d+)-.*");
+
+    private final DateParser<PartialDate> dateParser = new PartialDateParser();
 
     /**
      * Constructor.
@@ -574,7 +579,7 @@ public class LastDodoSearchEngine
                     case "Jaar": {
                         final String text = SearchEngineUtils.cleanText(td.text());
                         if (!text.isEmpty()) {
-                            addPublicationDate(context, getLocale(context), text, book);
+                            dateParser.parse(text).ifPresent(book::setPublicationDate);
                         }
                         break;
                     }
