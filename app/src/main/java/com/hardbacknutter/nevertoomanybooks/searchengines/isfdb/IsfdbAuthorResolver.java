@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +30,10 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -65,6 +67,7 @@ public final class IsfdbAuthorResolver
     private final String authorUri;
     @NonNull
     private final String authorSearchUrl;
+    private final DateParser<PartialDate> dateParser = new PartialDateParser();
 
     /**
      * Private Constructor.
@@ -123,11 +126,6 @@ public final class IsfdbAuthorResolver
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
 
-        // If we already have a real-author set, we're done.
-        if (author.getRealAuthor() != null) {
-            return false;
-        }
-
         final Author found;
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
         if (oIv.isEmpty()) {
@@ -136,9 +134,10 @@ public final class IsfdbAuthorResolver
             found = searchBySid(context, oIv.get());
         }
 
-        if (found != null) {
-            author.setRealAuthor(found);
-            return true;
+        // 2025-05-10: insist on case-sensitive name equality for now.
+        // If this proves problematic, we'll change it later...
+        if (found != null && author.isSameName(found)) {
+            return author.merge(found, true);
         }
 
         return false;
@@ -265,8 +264,6 @@ public final class IsfdbAuthorResolver
                                 @NonNull final Author author) {
 
         String birthPlace = null;
-        String birthDate = null;
-        String deathDate = null;
         String imageUrl = null;
 
         final Element image = root.selectFirst("img[alt='Author Picture']");
@@ -283,21 +280,25 @@ public final class IsfdbAuthorResolver
                     case "Birthplace:": {
                         final Node node = label.nextSibling();
                         if (node != null) {
-                            birthPlace = node.toString();
+                            birthPlace = node.toString().trim();
                         }
                         break;
                     }
                     case "Birthdate:": {
                         final Node node = label.nextSibling();
                         if (node != null) {
-                            birthDate = node.toString();
+                            dateParser.parse(node.toString().trim())
+                                      .map(PartialDate::getIsoString)
+                                      .ifPresent(author::setBirthDate);
                         }
                         break;
                     }
                     case "Deathdate:": {
                         final Node node = label.nextSibling();
                         if (node != null) {
-                            deathDate = node.toString();
+                            dateParser.parse(node.toString().trim())
+                                      .map(PartialDate::getIsoString)
+                                      .ifPresent(author::setDeathDate);
                         }
                         break;
                     }
@@ -317,10 +318,5 @@ public final class IsfdbAuthorResolver
                 }
             }
         }
-
-        Log.d(TAG, "imageUrl: " + imageUrl);
-        Log.d(TAG, "birthPlace: " + birthPlace);
-        Log.d(TAG, "birthDate: " + birthDate);
-        Log.d(TAG, "deathDate: " + deathDate);
     }
 }

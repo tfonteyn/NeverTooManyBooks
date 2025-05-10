@@ -97,6 +97,9 @@ public class AuthorParseTest
         assertEquals("Robinson", author.getFamilyName());
         assertEquals("Kim Stanley", author.getGivenNames());
 
+        assertEquals("1952-03-23", author.getBirthDate().orElse(null));
+        assertNull(author.getDeathDate().orElse(null));
+
         assertEquals(1, author.getIdentifiers().size());
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
         assertTrue(oIv.isPresent());
@@ -118,6 +121,9 @@ public class AuthorParseTest
 
         assertEquals("Robinson", author.getFamilyName());
         assertEquals("Kim Stanley", author.getGivenNames());
+
+        assertEquals("1952-03-23", author.getBirthDate().orElse(null));
+        assertNull(author.getDeathDate().orElse(null));
 
         assertEquals(1, author.getIdentifiers().size());
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
@@ -176,6 +182,9 @@ public class AuthorParseTest
 
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
+
+        assertEquals("1920-01-02", author.getBirthDate().orElse(null));
+        assertEquals("1992-04-06", author.getDeathDate().orElse(null));
 
         assertEquals(1, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
