@@ -95,9 +95,17 @@ class PartialDateParserTest {
         assertTrue(od.isPresent());
         assertEquals("2020-06", od.get().getIsoString());
 
+        od = parser.parse("13 Jun 2020", Locale.UK);
+        assertTrue(od.isPresent());
+        assertEquals("2020-06-13", od.get().getIsoString());
+
         od = parser.parse("June 2020", Locale.UK);
         assertTrue(od.isPresent());
         assertEquals("2020-06", od.get().getIsoString());
+
+        od = parser.parse("9 June 2020", Locale.UK);
+        assertTrue(od.isPresent());
+        assertEquals("2020-06-09", od.get().getIsoString());
 
         od = parser.parse("Juni 2020", Locale.GERMAN);
         assertTrue(od.isPresent());
@@ -110,6 +118,10 @@ class PartialDateParserTest {
         od = parser.parse("juin 2020", Locale.FRENCH);
         assertTrue(od.isPresent());
         assertEquals("2020-06", od.get().getIsoString());
+
+        od = parser.parse("13 juin 2020", Locale.FRENCH);
+        assertTrue(od.isPresent());
+        assertEquals("2020-06-13", od.get().getIsoString());
     }
 
     @Test

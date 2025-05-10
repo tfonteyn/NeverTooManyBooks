@@ -57,19 +57,42 @@ public class PartialDateParser
 
     private static final String TAG = "PartialDateParser";
 
+    /**
+     * Numeric 4-digit year. Negative years supported.
+     */
     private static final Pattern PATTERN_YYYY =
             Pattern.compile("^(-?\\d{1,4})$");
+    /**
+     * Numeric 4-digit year. Negative years supported.
+     * Followed by 1 or 2 digit month.
+     */
     private static final Pattern PATTERN_YYYY_MM =
             Pattern.compile("^(-?\\d{1,4})[\\s/-](\\d{1,2})$");
+    /**
+     * Numeric 4-digit year. Negative years supported.
+     * Followed by 1 or 2 digit month.
+     */
     private static final Pattern PATTERN_YYYY_MM_DD_TIMESTAMP =
             Pattern.compile("^(-?\\d{1,4})[\\s/-](\\d{1,2})[/-](\\d{1,2}).*");
-
-    /** The year MUST be positive, 4-digits. */
+    /**
+     * Numeric 1 or 2 digit month.
+     * Followed by 4 digit year. Positive only.
+     */
     private static final Pattern PATTERN_MM_YYYY =
             Pattern.compile("^(\\d{1,2})[\\s/-](\\d\\d\\d\\d)$");
-    /** The year MUST be positive, 4-digits. */
+    /**
+     * Alpha month various formats.
+     * Followed by 4 digit year. Positive only.
+     */
     private static final Pattern PATTERN_MMM_YYYY =
-            Pattern.compile("^(.*)[\\s/-](\\d\\d\\d\\d)$");
+            Pattern.compile("^(\\D.*)[\\s/-](\\d\\d\\d\\d)$");
+    /**
+     * Numeric 1 or 2 digit day.
+     * Followed by alpha month various formats.
+     * Followed by 4 digit year. Positive only.
+     */
+    private static final Pattern PATTERN_DD_MMM_YYYY =
+            Pattern.compile("^(\\d{1,2})[\\s/-](.*)[\\s/-](\\d\\d\\d\\d)$");
 
     /** Used to transform SQL-ISO to Java-ISO datetime format for UTC conversions. */
     private static final Pattern SPACE = Pattern.compile(" ");
@@ -137,6 +160,44 @@ public class PartialDateParser
             // ignore
         }
         return Optional.empty();
+    }
+
+    /**
+     * Parse a string into a month number.
+     *
+     * @param locale   (optional) to use; if missing we'll use {@code Locale.ENGLISH}
+     * @param monthStr to parse
+     *
+     * @return month 1..12, or {@code 0} on error
+     */
+    private static int parseMonth(@Nullable final Locale locale,
+                                  @Nullable final String monthStr) {
+        if (monthStr == null || monthStr.isEmpty()) {
+            return 0;
+        }
+
+        int monthNumber = 0;
+        try {
+            // We check for these 3 different patterns...
+            // LLL     3      appendText(ChronoField.MONTH_OF_YEAR,
+            //                          TextStyle.SHORT_STANDALONE)
+            // LLLL    4      appendText(ChronoField.MONTH_OF_YEAR,
+            //                          TextStyle.FULL_STANDALONE)
+            // LLLLL   5      appendText(ChronoField.MONTH_OF_YEAR,
+            //                          TextStyle.NARROW_STANDALONE)
+            monthNumber = new DateTimeFormatterBuilder()
+                    .parseLenient()
+                    .parseCaseInsensitive()
+                    .appendPattern("[LLLL][LLL][LLLLL]")
+                    .toFormatter(Objects.requireNonNullElse(locale, Locale.ENGLISH))
+                    .parse(monthStr)
+                    .get(ChronoField.MONTH_OF_YEAR);
+        } catch (DateTimeParseException | NumberFormatException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                LoggerFactory.getLogger().e(TAG, e, "monthStr=" + monthStr);
+            }
+        }
+        return monthNumber;
     }
 
     @NonNull
@@ -218,31 +279,15 @@ public class PartialDateParser
             matcher = PATTERN_MMM_YYYY.matcher(dateStr);
             if (matcher.find()) {
                 localDate = Year.parse(matcher.group(2)).atDay(1);
-                final Locale withLocale = Objects.requireNonNullElse(locale, Locale.ENGLISH);
-                int monthNumber = 0;
-                final String monthStr = matcher.group(1);
-                try {
-                    // We check for these 3 different patterns...
-                    // LLL     3      appendText(ChronoField.MONTH_OF_YEAR,
-                    //                          TextStyle.SHORT_STANDALONE)
-                    // LLLL    4      appendText(ChronoField.MONTH_OF_YEAR,
-                    //                          TextStyle.FULL_STANDALONE)
-                    // LLLLL   5      appendText(ChronoField.MONTH_OF_YEAR,
-                    //                          TextStyle.NARROW_STANDALONE)
-                    monthNumber = new DateTimeFormatterBuilder()
-                            .parseLenient()
-                            .parseCaseInsensitive()
-                            .appendPattern("[LLLL][LLL][LLLLL]")
-                            .toFormatter(withLocale)
-                            .parse(monthStr)
-                            .get(ChronoField.MONTH_OF_YEAR);
-                } catch (DateTimeParseException | NumberFormatException e) {
-                    if (BuildConfig.DEBUG /* always */) {
-                        LoggerFactory.getLogger().e(TAG, e, "monthStr=" + monthStr);
-                    }
-                }
-
+                final int monthNumber = parseMonth(locale, matcher.group(1));
                 return Optional.of(new PartialDate(localDate.getYear(), monthNumber, 0));
+            }
+            matcher = PATTERN_DD_MMM_YYYY.matcher(dateStr);
+            if (matcher.find()) {
+                localDate = Year.parse(matcher.group(3)).atDay(1);
+                final int monthNumber = parseMonth(locale, matcher.group(2));
+                final int dayNumber = Integer.parseInt(matcher.group(1));
+                return Optional.of(new PartialDate(localDate.getYear(), monthNumber, dayNumber));
             }
 
             // Paranoia: already handled by #parseLenBased
