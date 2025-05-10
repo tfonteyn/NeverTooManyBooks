@@ -1018,6 +1018,65 @@ public class Author
         }
     }
 
+    /**
+     * <strong>Merge</strong> local details with those from the given Author.
+     * The <em>family</em> and <em>given</em> names are never merged.
+     *
+     * @param source            to copy from
+     * @param includeBookFields Flag to force copying the Book related fields as well
+     *
+     * @return {@code true} if this Author was modified in any way
+     */
+    public boolean merge(@NonNull final Author source,
+                         final boolean includeBookFields) {
+
+        // Make sure to resolve both!
+        final Author sourceRealAuthor = source.getRealAuthor();
+        final Author currentRealAuthor = getRealAuthor();
+        // If both have a real-author set, and they are different,
+        // abort, we can't merge.
+        if (currentRealAuthor != null && sourceRealAuthor != null
+            && !currentRealAuthor.equals(sourceRealAuthor)) {
+            return false;
+        }
+
+        if (includeBookFields) {
+            // always merge using an OR
+            type |= source.getType();
+        }
+
+        // overwrite the id unless we're 'new'
+        if (source.getId() > 0) {
+            id = source.getId();
+        }
+
+        // Other fields are copied when this object does not have values for them.
+
+        // use direct; already resolved above
+        if (realAuthor == null) {
+            realAuthor = sourceRealAuthor;
+        }
+
+        if (getBirthDate().isEmpty()) {
+            source.getBirthDate().ifPresent(this::setBirthDate);
+        }
+        if (getDeathDate().isEmpty()) {
+            source.getDeathDate().ifPresent(this::setDeathDate);
+        }
+        if (getPhotoUuid().isEmpty()) {
+            source.getPhotoUuid().ifPresent(this::setPhotoUuid);
+        }
+
+        if (source.isComplete()) {
+            complete = true;
+        }
+
+        identifiers.addAll(source.getIdentifiers());
+        ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
+
+        return true;
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {

@@ -62,11 +62,9 @@ public class EntityMergeHelper<T extends Mergeable> {
     @EmptySuper
     protected boolean merge(@NonNull final Context context,
                             @NonNull final T previous,
-                            @NonNull final Locale previousLocale,
-                            @NonNull final T current,
-                            @NonNull final Locale currentLocale) {
-        if (current.getId() > 0) {
-            previous.setId(current.getId());
+                            @NonNull final T source) {
+        if (source.getId() > 0) {
+            previous.setId(source.getId());
         }
 
         // no other attributes, so we can always merge
@@ -125,9 +123,7 @@ public class EntityMergeHelper<T extends Mergeable> {
             } else {
                 // There is a previous one with the same "name" as the current one.
                 // Try merging the "non-name" attributes from the current into the previous.
-                final Locale previousLocale = localeSupplier.apply(previous);
-
-                if (merge(context, previous, previousLocale, current, currentLocale)) {
+                if (merge(context, previous, current)) {
                     // merged successfully, remove the current, we're keeping the previous one.
                     iterator.remove();
 

@@ -587,6 +587,39 @@ public class Series
     }
 
     /**
+     * <strong>Merge</strong> local details with those from the given Series.
+     * The <em>title</em> is never merged.
+     *
+     * @param source            to copy from
+     * @param includeBookFields Flag to force copying the Book related fields as well
+     *
+     * @return {@code true} if this Series was modified in any way
+     */
+    public boolean merge(@NonNull final Series source,
+                         final boolean includeBookFields) {
+
+        // If both have a number set, and they are different,
+        // abort, we can't merge.
+        if (!number.isEmpty() && !source.number.isEmpty()
+            && !number.equals(source.number)) {
+            return false;
+        }
+
+        if (includeBookFields) {
+            if (number.isEmpty()) {
+                number = source.number;
+            }
+        }
+
+        // overwrite the id unless we're 'new'
+        if (source.getId() > 0) {
+            this.id = source.getId();
+        }
+
+        return true;
+    }
+
+    /**
      * Get the Locale for a Series.
      * This is defined as the Locale for the language from the first book in the Series.
      *

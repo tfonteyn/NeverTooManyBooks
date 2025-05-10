@@ -232,6 +232,42 @@ public class TocEntry
         firstPublicationDate = source.firstPublicationDate;
     }
 
+    /**
+     * <strong>Merge</strong> local details with those from the given TocEntry.
+     * The <em>title</em> is never merged.
+     *
+     * @param source to copy from
+     *
+     * @return {@code true} if this TocEntry was modified in any way
+     */
+    public boolean merge(@NonNull final TocEntry source) {
+
+        // If both have a date set, and they are different,
+        // abort, we can't merge.
+        if (firstPublicationDate.isPresent() && source.firstPublicationDate.isPresent()
+            && !firstPublicationDate.equals(source.firstPublicationDate)) {
+            return false;
+        }
+
+        // attempt to merge; hardcode includeBookFields=false
+        if (!getPrimaryAuthor().merge(source.getPrimaryAuthor(), false)) {
+            return false;
+        }
+
+        // overwrite the id unless we're 'new'
+        if (source.getId() > 0) {
+            this.id = source.getId();
+        }
+
+        // Other fields are copied when this object does not have values for them.
+
+        if (!firstPublicationDate.isPresent()) {
+            firstPublicationDate = source.firstPublicationDate;
+        }
+
+        return true;
+    }
+
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {

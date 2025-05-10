@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,43 +24,14 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.Locale;
-
 public class SeriesMergeHelper
         extends EntityMergeHelper<Series> {
 
     @Override
     protected boolean merge(@NonNull final Context context,
                             @NonNull final Series previous,
-                            @NonNull final Locale previousLocale,
-                            @NonNull final Series current,
-                            @NonNull final Locale currentLocale) {
+                            @NonNull final Series current) {
 
-        final boolean canMerge = mergeNumber(previous, current);
-
-        if (canMerge && current.getId() > 0) {
-            previous.setId(current.getId());
-        }
-
-        return canMerge;
-    }
-
-    private boolean mergeNumber(@NonNull final Series previous,
-                                @NonNull final Series current) {
-        // If the current Series has no number set, we're done
-        if (current.getNumber().isEmpty()) {
-            return true;
-        }
-
-        // If the previous Series has no number set,
-        // copy the current data to the previous one.
-        if (previous.getNumber().isEmpty()) {
-            previous.setNumber(current.getNumber());
-            return true;
-        }
-
-        // Both have a number set.
-        // If they are the same, we're done; else we can't merge.
-        return previous.getNumber().equals(current.getNumber());
+        return previous.merge(current, true);
     }
 }

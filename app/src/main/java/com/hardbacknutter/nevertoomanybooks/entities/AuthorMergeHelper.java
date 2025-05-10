@@ -24,73 +24,14 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.List;
-import java.util.Locale;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-
 public class AuthorMergeHelper
         extends EntityMergeHelper<Author> {
 
     @Override
     protected boolean merge(@NonNull final Context context,
                             @NonNull final Author previous,
-                            @NonNull final Locale previousLocale,
-                            @NonNull final Author current,
-                            @NonNull final Locale currentLocale) {
+                            @NonNull final Author current) {
 
-        final boolean canMerge = mergeRealAuthor(previous, current);
-        if (!canMerge) {
-            return false;
-        }
-
-        // always combine the types using 'OR'
-        previous.setType(previous.getType() | current.getType());
-
-        // overwrite the id unless we're 'new'
-        if (current.getId() > 0) {
-            previous.setId(current.getId());
-        }
-
-        if (current.getBirthDate().isPresent() && previous.getBirthDate().isEmpty()) {
-            previous.setBirthDate(current.getBirthDate().get());
-        }
-        if (current.getDeathDate().isPresent() && previous.getDeathDate().isEmpty()) {
-            previous.setDeathDate(current.getDeathDate().get());
-        }
-        if (current.getPhotoUuid().isPresent() && previous.getPhotoUuid().isEmpty()) {
-            previous.setPhotoUuid(current.getPhotoUuid().get());
-        }
-
-        if (current.isComplete()) {
-            previous.setComplete(true);
-        }
-
-        // merge the identifiers
-        final List<Identifier.Value> identifiers = previous.getIdentifiers();
-        identifiers.addAll(current.getIdentifiers());
-        ServiceLocator.getInstance().getIdentifierDao().pruneList(identifiers);
-        previous.setIdentifiers(identifiers);
-
-        return true;
-    }
-
-    private boolean mergeRealAuthor(@NonNull final Author previous,
-                                    @NonNull final Author current) {
-        // If the current Author has no 'real-author' set, we're done
-        if (current.getRealAuthor() == null) {
-            return true;
-        }
-
-        // If the previous Author has no 'real-author' set,
-        // copy the current data to the previous one.
-        if (previous.getRealAuthor() == null) {
-            previous.setRealAuthor(current.getRealAuthor());
-            return true;
-        }
-
-        // Both have a 'real-author' set,
-        // If they are the same, we're done; else we can't merge.
-        return previous.getRealAuthor().equals(current.getRealAuthor());
+        return previous.merge(current, true);
     }
 }
