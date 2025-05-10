@@ -45,7 +45,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -140,6 +143,7 @@ public class BedethequeSearchEngine
     private static final String BY_EXTERNAL_ID = "/BD-x-%s.html";
 
     private final Map<String, String> extraRequestProperties;
+    private final DateParser<PartialDate> dateParser = new PartialDateParser();
     @Nullable
     private HttpCookie csrfCookie;
 
@@ -459,11 +463,14 @@ public class BedethequeSearchEngine
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
                             String date = textNode.toString().strip();
-                            if (PUB_DATE.matcher(date).matches()) {
-                                // Flip to "YYYY-MM" (or use as-is)
-                                date = date.substring(3) + "-" + date.substring(0, 2);
+                            if (!date.isBlank()) {
+                                if (PUB_DATE.matcher(date).matches()) {
+                                    // Flip to "YYYY-MM" (or use as-is)
+                                    date = date.substring(3) + "-" + date.substring(0, 2);
+                                }
+                                dateParser.parse(date).ifPresent(book::setPublicationDate);
                             }
-                            addPublicationDate(context, getLocale(context), date, book);
+
                         }
                         break;
                     }
