@@ -761,6 +761,7 @@
     <string name="lbl_tip">提示</string>
     <string name="option_reset_all_tips">重置提示</string>
     <string name="info_tip_reset_done">提示已重置</string>
+    <string name="lbl_date_died">死亡</string>
     <string name="title_backup_and_export">備份 &amp; 匯出</string>
     <string name="unknown">不明</string>
     <string name="unknown_author">［作者不詳］</string>
@@ -855,4 +856,5 @@
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">需為空值、或有單一「%s」id 佔位符的有效「https」URL</string>
     <string name="vldt_blank_or_valid_url_required">需要空值或有效 URL</string>
     <string name="info_identifier_editor"><![CDATA[編輯前請閱讀關於標識符的 <a href="%1$s">文檔</a>]]></string>
+    <string name="lbl_date_born">出生</string>
 </resources>

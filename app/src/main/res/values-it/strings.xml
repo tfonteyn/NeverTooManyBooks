@@ -472,6 +472,7 @@
     <string name="option_author_details">Tutte le opere di questo autore</string>
     <string name="option_author_works_book">Solo libri</string>
     <string name="option_author_works_toc">Solo titoli di contenuti</string>
+    <string name="lbl_date_died">Morto</string>
     <string name="title_backup_and_export">Backup ed esportazione</string>
     <string name="option_apply_to_this_node_only">Solo questo nodo</string>
     <string name="option_apply_to_all_related_books">Tutti i libri correlati</string>
@@ -860,4 +861,5 @@
     <string name="lbl_book_uri">URL del libro</string>
     <string name="lbl_author_uri">URL dell\'autore</string>
     <string name="info_identifier_editor"><![CDATA[Leggere la <a href="%1$s">documentazione</a> sugli identificatori prima di modificarla.]]></string>
+    <string name="lbl_date_born">Nato</string>
 </resources>

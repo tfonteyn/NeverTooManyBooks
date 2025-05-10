@@ -1296,7 +1296,7 @@
     <string name="lbl_date_published">Date Published</string>
     <string name="lbl_date_published_year">Publication Year</string>
     <string name="lbl_date_published_month">Publication Month</string>
-    <!-- First Publication Date for the CONTENT of the book. (e.g. magazine pub... etc... -->
+    <!-- First Publication Date for the CONTENT of the book. e.g. magazine pub... etc... -->
     <string name="lbl_date_first_publication">First Publication</string>
     <!-- "First Publication Date" as a single unicode 9.0 character/symbol.
          By default:  1️⃣  == \u0031\ufe0f\u20e3
@@ -1305,6 +1305,12 @@
     <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">First Pub. Year</string>
     <string name="lbl_date_first_publication_month">First Pub. Month</string>
+
+    <!-- Author birth date -->
+    <string name="lbl_date_born">Born</string>
+    <!-- Author death date -->
+    <string name="lbl_date_died">Died</string>
+
     <!-- endregion -->
     <!-- region ========== Backup, Export and Import. -->
     <!-- Dialog /screen / Navigation panel menu option -->
@@ -2100,7 +2106,5 @@
              HTML string, must be inside a CDATA section;
             -->
     <string name="info_identifier_editor"><![CDATA[Please read the <a href="%1$s">documentation</a> on Identifiers before editing.]]></string>
-    <string name="lbl_date_born">Born</string>
-    <string name="lbl_date_died">Died</string>
 
 </resources>

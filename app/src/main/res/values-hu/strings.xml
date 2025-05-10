@@ -576,6 +576,7 @@
     <string name="pt_field_visibility">Mezők láthatósága</string>
     <string name="pc_formatting">Formázás</string>
     <string name="option_info_archive_format_json">Összes adat JSON formátumban.</string>
+    <string name="lbl_date_died">Meghalt</string>
     <string name="title_backup_and_export">Biztonsági mentés &amp; Exportálás</string>
     <string name="option_archive_type_db">Adatbázis fájl (.db)</string>
     <string name="option_archive_type_csv">Könyvek (.csv)</string>
@@ -856,5 +857,6 @@
     <string name="lbl_book_uri">Könyv URL</string>
     <string name="lbl_author_uri">Szerző URL</string>
     <string name="pv_reformat_titles_prefixes">a|A|az|Az|egy|Egy</string>
+    <string name="lbl_date_born">Született</string>
 
 </resources>

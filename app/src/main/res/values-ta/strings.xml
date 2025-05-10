@@ -564,6 +564,7 @@
     <string name="lbl_date_acquired_year">ஆண்டு பெறப்பட்டது</string>
     <string name="lbl_date_acquired_month">மாதம் வாங்கியது</string>
     <string name="lbl_date_first_publication_month">முதல் பப். மாதம்</string>
+    <string name="lbl_date_died">இறந்தார்</string>
     <string name="title_backup_and_export">காப்புப்பிரதி மற்றும் ஏற்றுமதி</string>
     <string name="lbl_export_options">ஏற்றுமதி செய்யப்படும் என்பதைத் தேர்ந்தெடுக்கவும்.</string>
     <string name="lbl_export_books_option_all">அனைத்து புத்தகங்களும்</string>
@@ -855,5 +856,6 @@
     <string name="lbl_book_uri">புத்தக URL</string>
     <string name="lbl_author_uri">ஆசிரியர் URL</string>
     <string name="info_identifier_editor"><![CDATA[திருத்துவதற்கு முன் அடையாளங்காட்டிகளில் உள்ள <a href="%1$s">ஆவணத்தைப்</a> படிக்கவும்.]]></string>
+    <string name="lbl_date_born">பிறந்தது</string>
 
 </resources>

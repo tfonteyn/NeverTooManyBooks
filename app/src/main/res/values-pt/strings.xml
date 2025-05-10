@@ -726,6 +726,7 @@
     <string name="lbl_given_names">Nomes Próprios</string>
     <string name="lbl_author_type">Tipo de autor</string>
     <string name="lbl_export_books_option_since_last_full_backup">Livros novos e atualizados</string>
+    <string name="lbl_date_died">Morreu</string>
     <string name="title_backup_and_export">Cópia de Segurança e Exportação</string>
     <string name="lbl_export_options">Selecione o que será exportado.</string>
     <string name="info_export_books_option_since_last_full_backup">Livros adicionados ou atualizados desde a última cópia de segurança completa.</string>
@@ -859,4 +860,5 @@
     <string name="lbl_book_uri">URL do livro</string>
     <string name="lbl_author_uri">URL do autor</string>
     <string name="info_identifier_editor"><![CDATA[Leia a <a href="%1$s">documentação</a> sobre Identificadores antes de editar.]]></string>
+    <string name="lbl_date_born">Nascido</string>
 </resources>

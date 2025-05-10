@@ -774,6 +774,7 @@
     <string name="tip_series_book_may_appear_more_than_once">如果图书在其所属的所有系列中显示，则它们可能在列表中出现多次。删除其中一本书的效果是将所有副本从列表中删除。</string>
     <string name="X_tip_update_fields_from_internet">外部站点链接只有在实际联系该站点时才会被处理。菜单“在…中查看”将同样只显示可用的内容。</string>
     <string name="tip_view_only_help">你可以向左或向右滑动来浏览其他图书。</string>
+    <string name="lbl_date_died">死亡</string>
     <string name="title_backup_and_export">备份 &amp; 导出</string>
     <string name="unknown">未知</string>
     <string name="unknown_author">［作者不详］</string>
@@ -854,4 +855,5 @@
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">需为空值、或有单个“%s” id 占位符的有效 “https” URL</string>
     <string name="vldt_blank_or_valid_url_required">需要空值或有效 URL</string>
     <string name="info_identifier_editor"><![CDATA[编辑前请阅读关于标识符的 <a href="%1$s">文档</a>]]></string>
+    <string name="lbl_date_born">出生</string>
 </resources>
