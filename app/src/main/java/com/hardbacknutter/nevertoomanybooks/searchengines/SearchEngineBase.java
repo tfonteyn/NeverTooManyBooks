@@ -525,10 +525,10 @@ public abstract class SearchEngineBase
      * @param dateStr the date field as retrieved
      * @param book    Bundle to update
      */
-    public void addPublicationDate(@NonNull final Context context,
-                                   @NonNull final Locale locale,
-                                   @Nullable final String dateStr,
-                                   @NonNull final Book book) {
+    protected void addPublicationDate(@NonNull final Context context,
+                                      @NonNull final Locale locale,
+                                      @Nullable final String dateStr,
+                                      @NonNull final Book book) {
 
         if (dateStr == null || dateStr.isBlank()) {
             return;
@@ -548,47 +548,6 @@ public abstract class SearchEngineBase
         getFullDateParser(context, locale)
                 .parse(dateStr)
                 .ifPresent(book::setPublicationDate);
-    }
-
-    /**
-     * Process the first-publication-date field according to the given site locale.
-     * <p>
-     * If the given date-string consists of 4 characters, it is assumed it's
-     * a year-value and the simplified form will be set on the book.
-     * Otherwise full parsing is done.
-     * <p>
-     * Note that the input <strong>MUST</strong> be either a 4-digit year,
-     * or a full-date string in one of the supported formats.
-     * Partial date-strings will <strong>FAIL</strong>
-     *
-     * @param context Current context
-     * @param locale  for parsing
-     * @param dateStr the date field as retrieved
-     * @param book    Bundle to update
-     */
-    protected void addFirstPublicationDate(@NonNull final Context context,
-                                           @NonNull final Locale locale,
-                                           @Nullable final String dateStr,
-                                           @NonNull final Book book) {
-
-        if (dateStr == null || dateStr.isBlank()) {
-            return;
-        }
-
-        if (dateStr.length() == 4) {
-            // we have a 4-digit year, use the simplified notation.
-            try {
-                book.setFirstPublicationDate(Integer.parseInt(dateStr));
-                return;
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore and continue with full parsing
-            }
-        }
-
-        // error or not 4 digits? Do a full parse.
-        getFullDateParser(context, locale)
-                .parse(dateStr)
-                .ifPresent(book::setFirstPublicationDate);
     }
 
     /**
