@@ -119,7 +119,7 @@ public class ParseTest
                      book.getString(DBKey.DESCRIPTION, null));
         assertEquals("92", book.getString(DBKey.PAGES, null));
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
-        assertEquals("2009-03-01", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("2009-03", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals(Book.ContentType.Collection.getId(), book.getLong(DBKey.CONTENT_TYPE));
 
@@ -394,7 +394,7 @@ public class ParseTest
         assertEquals("361081", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertEquals("1182484", book.requireIdentifierValue(Identifier.SID_LIBRARY_THING));
 
-        assertEquals("1984-10-01", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("1984-10", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("1982", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
         assertEquals("270", book.getString(DBKey.PAGES, null));
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));

@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -155,6 +156,7 @@ public class OpenLibrarySearchEngine
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @NonNull
     private final CookieManager cookieManager;
+    private final PartialDateParser dateParser = new PartialDateParser();
     @Nullable
     private FutureHttpGet<String> futureHttpGet;
     @Nullable
@@ -660,20 +662,8 @@ public class OpenLibrarySearchEngine
             parsePublishers(a, book);
         }
 
-        s = document.optString("publish_date", null);
-        if (s != null && !s.isEmpty()) {
-            // The site serves dates in multiple formats...
-            // "2013"
-            // "1984-10"
-            // "2022-02-09"
-            // "March 2009"
-            // "18 October 2006"
-            // "May 1, 1983"
-            // hope for the best by parsing
-            addPublicationDate(context, getLocale(context), s, book);
-        }
-
-        parseFirstPublicationDate(context, document, book);
+        parsePublicationDate(document, book);
+        parseFirstPublicationDate(document, book);
 
         // ENHANCE: "subjects" could be used for tags...
         //  but the subject list for a single book can be very large
@@ -865,23 +855,43 @@ public class OpenLibrarySearchEngine
         }
     }
 
-    private void parseFirstPublicationDate(@NonNull final Context context,
-                                           @NonNull final JSONObject document,
+    private void parsePublicationDate(@NonNull final JSONObject document,
+                                      @NonNull final Book book) {
+        final String s = document.optString("publish_date", null);
+        if (s != null && !s.isEmpty()) {
+            // The site serves dates in multiple formats...
+            // "2013"
+            // "1984-10"
+            // "2022-02-09"
+            // "March 2009"
+            // "18 October 2006"
+            // "May 1, 1983"
+            // hope for the best by parsing
+            dateParser.parse(s).ifPresent(book::setPublicationDate);
+        }
+    }
+
+    private void parseFirstPublicationDate(@NonNull final JSONObject document,
                                            @NonNull final Book book) {
         String s;
         s = document.optString("first_publish_date", null);
         if (s != null && !s.isEmpty()) {
-            addFirstPublicationDate(context, getLocale(context), s, book);
-        } else {
-            //  "copyright_date": "1982, 1994",
-            //  "copyright_date": "2022",
-            s = document.optString("copyright_date", null);
-            if (s != null && !s.isEmpty()) {
-                // grab the first, we'll assume it will the earlier date.
-                // Given OL track record of structure we'll probably be wrong sometimes
-                final String[] split = s.split(",");
-                addFirstPublicationDate(context, getLocale(context), split[0], book);
+            dateParser.parse(s).ifPresent(book::setFirstPublicationDate);
+            return;
+        }
+
+        //  "copyright_date": "1982, 1994",
+        //  "copyright_date": "2022",
+        s = document.optString("copyright_date", null);
+        if (s != null && !s.isEmpty()) {
+            // grab the first, we'll assume it will the earlier date.
+            // Given OL track record of structure we'll probably be wrong sometimes
+            final String[] split = s.split(",");
+            if (split[0] == null || split[0].isBlank()) {
+                return;
             }
+
+            dateParser.parse(split[0]).ifPresent(book::setFirstPublicationDate);
         }
     }
 
