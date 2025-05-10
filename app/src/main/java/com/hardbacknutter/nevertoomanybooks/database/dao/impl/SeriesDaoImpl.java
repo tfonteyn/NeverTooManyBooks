@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.SeriesMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -230,7 +231,7 @@ public class SeriesDaoImpl
             });
         }
 
-        final SeriesMergeHelper mergeHelper = new SeriesMergeHelper();
+        final EntityMergeHelper<Series> mergeHelper = new SeriesMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, locale));

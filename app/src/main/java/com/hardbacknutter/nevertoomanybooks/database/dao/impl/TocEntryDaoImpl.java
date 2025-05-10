@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntryMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -125,7 +126,7 @@ public class TocEntryDaoImpl
             });
         }
 
-        final TocEntryMergeHelper mergeHelper = new TocEntryMergeHelper();
+        final EntityMergeHelper<TocEntry> mergeHelper = new TocEntryMergeHelper();
         return mergeHelper.merge(context, list, localeSupplier,
                                  // Don't lookup the locale a 2nd time.
                                  (current, locale) -> fixId(context, current, locale));
