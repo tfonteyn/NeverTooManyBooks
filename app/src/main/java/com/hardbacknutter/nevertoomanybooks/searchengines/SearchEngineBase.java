@@ -192,8 +192,8 @@ public abstract class SearchEngineBase
      */
     @EmptySuper
     @NonNull
-    protected DateParser<LocalDateTime> getDateParser(@NonNull final Context context,
-                                                      @NonNull final Locale locale) {
+    protected DateParser<LocalDateTime> getFullDateParser(@NonNull final Context context,
+                                                          @NonNull final Locale locale) {
         final List<Locale> locales = LocaleListUtils.asList(context, locale);
         final Locale systemLocale = ServiceLocator
                 .getInstance().getSystemLocaleList().get(0);
@@ -545,7 +545,7 @@ public abstract class SearchEngineBase
         }
 
         // error or not 4 digits? Do a full parse.
-        getDateParser(context, locale)
+        getFullDateParser(context, locale)
                 .parse(dateStr)
                 .ifPresent(book::setPublicationDate);
     }
@@ -586,7 +586,7 @@ public abstract class SearchEngineBase
         }
 
         // error or not 4 digits? Do a full parse.
-        getDateParser(context, locale)
+        getFullDateParser(context, locale)
                 .parse(dateStr)
                 .ifPresent(book::setFirstPublicationDate);
     }

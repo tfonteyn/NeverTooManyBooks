@@ -631,8 +631,8 @@ public class AmazonSearchEngine
     }
 
     @NonNull
-    protected DateParser<LocalDateTime> getDateParser(@NonNull final Context context,
-                                                      @NonNull final Locale locale) {
+    protected DateParser<LocalDateTime> getFullDateParser(@NonNull final Context context,
+                                                          @NonNull final Locale locale) {
         final List<Locale> locales;
 
         // Hack to support the Portuguese site which does a redirect to the Spanish one
