@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
@@ -48,16 +50,22 @@ import org.jsoup.nodes.Element;
  * <ul>
  *     <li>add the {@link Author#setRealAuthor(Author)} if applicable</li>
  * </ul>
- *
+ * <p>
  * Available:
  * - Birthdate
  * - Deathdate
  * - country
- *
  */
 public final class DatabazeKnihAuthorResolver
         implements AuthorResolver {
+
     private static final String TAG = "DatabazeKnihAuthorRes";
+
+    // <a href="/filtrovani-autoru?nationId=80">britská</a><span class="gray">,</span>  1916 - 1990
+    // <a href="/filtrovani-autoru?nationId=79">americká</a><span class="gray">,</span>  1948
+    // <a href="/filtrovani-autoru?nationId=13">česká</a>
+    private static final Pattern BIRTH_DEATH_DATE_PATTERN = Pattern.compile(
+            ".*,\\s*(\\d\\d\\d\\d)\\s*(?:-\\s*|)(\\d\\d\\d\\d|)");
 
     @NonNull
     private final DatabazeKnihSearchEngine searchEngine;
@@ -124,11 +132,6 @@ public final class DatabazeKnihAuthorResolver
             return false;
         }
 
-        // If we already have a real-author set, we're done.
-        if (author.getRealAuthor() != null) {
-            return false;
-        }
-
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
         // no id, give up
         if (oIv.isEmpty()) {
@@ -136,22 +139,88 @@ public final class DatabazeKnihAuthorResolver
         }
 
         final String url = String.format(authorUri, oIv.get());
-
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
-            Element element = document.selectFirst("div#left_less");
-            if (element != null) {
-                element = element.selectFirst("h1");
-                if (element != null) {
-                    final String text = element.text();
-                    if (!text.isEmpty()) {
-                        author.setRealAuthor(Author.from(text));
-                        return true;
-                    }
+            final Author found = parse(document);
+            // 2025-05-10: insist on case-sensitive name equality for now.
+            // If this proves problematic, we'll change it later...
+            if (found != null && author.isSameName(found)) {
+                final boolean merged = author.merge(found, true);
+                // force the real-author to have the same id
+                final Author realAuthor = author.getRealAuthor();
+                if (realAuthor != null) {
+                    author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH)
+                          .ifPresent(id -> realAuthor.setIdentifierValue(
+                                  Identifier.SID_DATABAZE_KNIH, id));
                 }
+                return merged;
             }
         }
 
         return false;
+    }
+
+    @Nullable
+    private Author parse(@NonNull final Document document) {
+        final Element section = document.selectFirst("div#left_less");
+        if (section == null) {
+            return null;
+        }
+        final Element realNameElement = section.selectFirst("h1");
+        if (realNameElement == null) {
+            return null;
+        }
+        final String realName = realNameElement.text();
+        if (realName.isEmpty()) {
+            return null;
+        }
+
+        // Always present, but can be empty
+        String pseudonym = null;
+        final Element pseudonymElement = section.selectFirst("h2");
+        if (pseudonymElement != null) {
+            final String text = pseudonymElement.text();
+            if (text.contains("pseudonym")) {
+                final Element a = pseudonymElement.selectFirst("a");
+                if (a != null) {
+                    pseudonym = a.text();
+                }
+            }
+        }
+
+        final Author author;
+        @Nullable
+        final Author realAuthor;
+        if (pseudonym == null) {
+            author = Author.from(realName);
+            realAuthor = null;
+        } else {
+            // The author of the book IS the pseudonym (as listed on the book)
+            author = Author.from(pseudonym);
+            realAuthor = Author.from(realName);
+            author.setRealAuthor(realAuthor);
+        }
+
+        final Element birthEtcElement = section.selectFirst("h3.norma");
+        if (birthEtcElement != null) {
+            final Matcher matcher = BIRTH_DEATH_DATE_PATTERN.matcher(birthEtcElement.text());
+            if (matcher.find()) {
+                final String birthYear = matcher.group(1);
+                if (birthYear != null && !birthYear.isEmpty()) {
+                    author.setBirthDate(birthYear);
+                    if (realAuthor != null) {
+                        realAuthor.setBirthDate(birthYear);
+                    }
+                }
+                final String deathYear = matcher.group(2);
+                if (deathYear != null && !deathYear.isEmpty()) {
+                    author.setDeathDate(deathYear);
+                    if (realAuthor != null) {
+                        realAuthor.setDeathDate(birthYear);
+                    }
+                }
+            }
+        }
+        return author;
     }
 }
