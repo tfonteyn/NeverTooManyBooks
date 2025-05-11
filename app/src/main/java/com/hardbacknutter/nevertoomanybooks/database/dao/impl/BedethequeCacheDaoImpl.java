@@ -145,23 +145,24 @@ public class BedethequeCacheDaoImpl
             }
 
             final String sqlInsert = INSERT_INTO_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
-                                     + '(' + CacheDbHelper.BDT_AUTHOR_NAME
-                                     + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB
+                                     + '(' + CacheDbHelper.BDT_AUTHOR_LIST_NAME
+                                     + ',' + CacheDbHelper.BDT_AUTHOR_LIST_NAME_OB
                                      + ',' + CacheDbHelper.BDT_AUTHOR_URL
                                      + ") VALUES(?,?,?)";
 
-            final String sqlUpdate = UPDATE_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
+            final String sqlUpdateUrl = UPDATE_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
                                      + _SET_ + CacheDbHelper.BDT_AUTHOR_URL + "=?"
                                      + _WHERE_ + DBKey.PK_ID + "=?";
 
             long iId;
             try (SynchronizedStatement stmtInsert = db.compileStatement(sqlInsert);
-                 SynchronizedStatement stmtUpdate = db.compileStatement(sqlUpdate)) {
+                 SynchronizedStatement stmtUpdate = db.compileStatement(sqlUpdateUrl)) {
                 while ((bdtAuthor = recordSupplier.get()) != null) {
                     // check if we already have this one
                     fixId(bdtAuthor, locale);
 
                     if (bdtAuthor.getId() == 0) {
+                        // insert the name from the last AS-IS
                         stmtInsert.bindString(1, bdtAuthor.getName());
                         stmtInsert.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(),
                                                                          locale));
@@ -174,6 +175,7 @@ public class BedethequeCacheDaoImpl
                             throw new DaoInsertException(ERROR_INSERT_FROM + bdtAuthor);
                         }
                     } else {
+                        // We ALWAYS update the url.
                         stmtUpdate.bindString(1, bdtAuthor.getUrl());
                         stmtUpdate.bindLong(2, bdtAuthor.getId());
                         if (stmtUpdate.executeUpdateDelete() <= 0) {
@@ -197,7 +199,7 @@ public class BedethequeCacheDaoImpl
                        @NonNull final Locale locale)
             throws DaoUpdateException {
 
-        final String resolvedName = bdtAuthor.getResolvedName();
+        final String realName = bdtAuthor.getRealName();
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -207,16 +209,20 @@ public class BedethequeCacheDaoImpl
 
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+                // the name from the last AS-IS
                 stmt.bindString(1, bdtAuthor.getName());
                 stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
                 stmt.bindString(3, bdtAuthor.getUrl());
+
                 stmt.bindBoolean(4, bdtAuthor.isResolved());
-                if (resolvedName == null || resolvedName.equals(bdtAuthor.getName())) {
+                // if there is no real-name, or it's identical to the list name
+                if (realName == null || realName.equals(bdtAuthor.getName())) {
+                    // remove/null it
                     stmt.bindNull(5);
                     stmt.bindNull(6);
                 } else {
-                    stmt.bindString(5, resolvedName);
-                    stmt.bindString(6, SqlEncode.orderByColumn(resolvedName, locale));
+                    stmt.bindString(5, realName);
+                    stmt.bindString(6, SqlEncode.orderByColumn(realName, locale));
                 }
 
                 stmt.bindLong(7, bdtAuthor.getId());
@@ -269,34 +275,35 @@ public class BedethequeCacheDaoImpl
         @RequiresApi(Build.VERSION_CODES.R)
         static final String INSERT =
                 INSERT_INTO_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
-                + '(' + CacheDbHelper.BDT_AUTHOR_NAME
-                + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB
+                + '(' + CacheDbHelper.BDT_AUTHOR_LIST_NAME
+                + ',' + CacheDbHelper.BDT_AUTHOR_LIST_NAME_OB
                 + ',' + CacheDbHelper.BDT_AUTHOR_URL
-                + ") VALUES(?,?,?) ON CONFLICT(" + CacheDbHelper.BDT_AUTHOR_NAME_OB
+                + ") VALUES(?,?,?) ON CONFLICT(" + CacheDbHelper.BDT_AUTHOR_LIST_NAME_OB
                 + ") DO UPDATE SET " + CacheDbHelper.BDT_AUTHOR_URL
                 + "=excluded." + CacheDbHelper.BDT_AUTHOR_URL;
         static final String IS_PAGE_CACHED =
                 "SELECT DISTINCT 1 FROM " + CacheDbHelper.TBL_BDT_AUTHORS.getName()
-                + _WHERE_ + CacheDbHelper.BDT_AUTHOR_NAME + " LIKE ?";
+                + _WHERE_ + CacheDbHelper.BDT_AUTHOR_LIST_NAME + " LIKE ?";
+
         static final String FIND_BY_NAME =
                 SELECT_
                 + CacheDbHelper.PK_ID
-                + ',' + CacheDbHelper.BDT_AUTHOR_NAME
+                + ',' + CacheDbHelper.BDT_AUTHOR_LIST_NAME
                 + ',' + CacheDbHelper.BDT_AUTHOR_IS_RESOLVED
-                + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME
+                + ',' + CacheDbHelper.BDT_AUTHOR_REAL_NAME
                 + ',' + CacheDbHelper.BDT_AUTHOR_URL
                 + _FROM_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
-                + _WHERE_ + CacheDbHelper.BDT_AUTHOR_NAME_OB + "=?"
-                + _OR_ + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME_OB + "=?";
+                + _WHERE_ + CacheDbHelper.BDT_AUTHOR_LIST_NAME_OB + "=?"
+                + _OR_ + CacheDbHelper.BDT_AUTHOR_REAL_NAME_OB + "=?";
 
         static final String UPDATE =
                 UPDATE_ + CacheDbHelper.TBL_BDT_AUTHORS.getName() + _SET_
-                + CacheDbHelper.BDT_AUTHOR_NAME + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB + "=?"
+                + CacheDbHelper.BDT_AUTHOR_LIST_NAME + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_LIST_NAME_OB + "=?"
                 + ',' + CacheDbHelper.BDT_AUTHOR_URL + "=?"
                 + ',' + CacheDbHelper.BDT_AUTHOR_IS_RESOLVED + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME_OB + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_REAL_NAME + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_REAL_NAME_OB + "=?"
                 + _WHERE_ + CacheDbHelper.PK_ID + "=?";
     }
 }

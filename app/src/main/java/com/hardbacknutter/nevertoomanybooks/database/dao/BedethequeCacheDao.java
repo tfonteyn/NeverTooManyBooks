@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,8 @@ public interface BedethequeCacheDao {
 
     /**
      * Find a {@link BdtAuthor} with the given name.
+     * <p>
+     * Searches on both list-name AND real-name.
      *
      * @param name   to find
      * @param locale to use
@@ -57,11 +59,10 @@ public interface BedethequeCacheDao {
 
     /**
      * Create the {@link BdtAuthor}s as supplied into the database.
+     * We store the name as it is coming from the list page (and the author url for later lookups).
      * <p>
      * There can be 100's or even 1000's of Authors. Pass an Supplier
      * to the insert method so we can read/insert one-by-one.
-     * <p>
-     * Because this method deals with a list of items to insert, it returns a simple boolean.
      *
      * @param locale         to use
      * @param recordSupplier a supplier which delivers a {@link BdtAuthor} to insert,

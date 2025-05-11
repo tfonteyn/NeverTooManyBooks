@@ -54,9 +54,9 @@ public class BdtAuthor {
     public BdtAuthor(final long id,
                      @NonNull final DataHolder rowData) {
         this.id = id;
-        this.name = rowData.getString(CacheDbHelper.BDT_AUTHOR_NAME);
+        this.name = rowData.getString(CacheDbHelper.BDT_AUTHOR_LIST_NAME);
         this.resolved = rowData.getBoolean(CacheDbHelper.BDT_AUTHOR_IS_RESOLVED);
-        this.resolvedName = rowData.getString(CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME, null);
+        this.resolvedName = rowData.getString(CacheDbHelper.BDT_AUTHOR_REAL_NAME, null);
         this.url = rowData.getString(CacheDbHelper.BDT_AUTHOR_URL, null);
     }
 

@@ -48,15 +48,20 @@ public class CacheDbHelper
     public static final String IMAGE_BLOB = "image";
     public static final String IMAGE_LAST_UPDATED__UTC = "last_update_date";
 
-    /** The pen-name or real name. */
-    public static final String BDT_AUTHOR_NAME = "name";
-    public static final String BDT_AUTHOR_NAME_OB = "name_ob";
+    /**
+     * The pen-name or real name if the author does not use a pen-name.
+     * This is the name AS-IS from the authors-list pages.
+     */
+    public static final String BDT_AUTHOR_LIST_NAME = "name";
+    public static final String BDT_AUTHOR_LIST_NAME_OB = "name_ob";
     /** The url for the author page. */
     public static final String BDT_AUTHOR_URL = "url";
     public static final String BDT_AUTHOR_IS_RESOLVED = "res";
-    /** The resolved name if any. */
-    public static final String BDT_AUTHOR_RESOLVED_NAME = "res_name";
-    public static final String BDT_AUTHOR_RESOLVED_NAME_OB = "res_name_ob";
+    /**
+     * The real-name if any.
+     */
+    public static final String BDT_AUTHOR_REAL_NAME = "res_name";
+    public static final String BDT_AUTHOR_REAL_NAME_OB = "res_name_ob";
     /** pre-scaled images. */
     public static final TableDefinition TBL_IMAGE;
     /** author page urls from Bedetheque. */
@@ -81,17 +86,17 @@ public class CacheDbHelper
     /** {@link #TBL_IMAGE}. */
     private static final Domain DOM_IMAGE_LAST_UPDATED__UTC;
     /** {@link #TBL_BDT_AUTHORS}. */
-    private static final Domain DOM_BDT_AUTHOR_NAME;
+    private static final Domain DOM_BDT_AUTHOR_LIST_NAME;
     /** {@link #TBL_BDT_AUTHORS}. */
-    private static final Domain DOM_BDT_AUTHOR_NAME_OB;
+    private static final Domain DOM_BDT_AUTHOR_LIST_NAME_OB;
     /** {@link #TBL_BDT_AUTHORS}. The url to the author page on Bedetheque. */
     private static final Domain DOM_BDT_AUTHOR_URL;
     /** {@link #TBL_BDT_AUTHORS}. */
     private static final Domain DOM_BDT_AUTHOR_IS_RESOLVED;
     /** {@link #TBL_BDT_AUTHORS}. */
-    private static final Domain DOM_BDT_AUTHOR_RESOLVED_NAME;
+    private static final Domain DOM_BDT_AUTHOR_REAL_NAME;
     /** {@link #TBL_BDT_AUTHORS}. */
-    private static final Domain DOM_BDT_AUTHOR_RESOLVED_NAME_OB;
+    private static final Domain DOM_BDT_AUTHOR_REAL_NAME_OB;
 
     /** Readers/Writer lock for <strong>this</strong> database. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
@@ -122,22 +127,22 @@ public class CacheDbHelper
                         .withDefaultCurrentTimeStamp()
                         .build();
 
-        DOM_BDT_AUTHOR_NAME =
-                new Domain.Builder(BDT_AUTHOR_NAME, SqLiteDataType.Text)
+        DOM_BDT_AUTHOR_LIST_NAME =
+                new Domain.Builder(BDT_AUTHOR_LIST_NAME, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
-        DOM_BDT_AUTHOR_NAME_OB =
-                new Domain.Builder(BDT_AUTHOR_NAME_OB, SqLiteDataType.Text)
+        DOM_BDT_AUTHOR_LIST_NAME_OB =
+                new Domain.Builder(BDT_AUTHOR_LIST_NAME_OB, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
-        DOM_BDT_AUTHOR_RESOLVED_NAME =
-                new Domain.Builder(BDT_AUTHOR_RESOLVED_NAME, SqLiteDataType.Text)
+        DOM_BDT_AUTHOR_REAL_NAME =
+                new Domain.Builder(BDT_AUTHOR_REAL_NAME, SqLiteDataType.Text)
                         .build();
 
-        DOM_BDT_AUTHOR_RESOLVED_NAME_OB =
-                new Domain.Builder(BDT_AUTHOR_RESOLVED_NAME_OB, SqLiteDataType.Text)
+        DOM_BDT_AUTHOR_REAL_NAME_OB =
+                new Domain.Builder(BDT_AUTHOR_REAL_NAME_OB, SqLiteDataType.Text)
                         .build();
 
         DOM_BDT_AUTHOR_URL =
@@ -166,16 +171,16 @@ public class CacheDbHelper
         TBL_BDT_AUTHORS =
                 new TableDefinition("bdt_authors", "bdt_a")
                         .addDomains(DOM_PK_ID,
-                                    DOM_BDT_AUTHOR_NAME,
-                                    DOM_BDT_AUTHOR_NAME_OB,
+                                    DOM_BDT_AUTHOR_LIST_NAME,
+                                    DOM_BDT_AUTHOR_LIST_NAME_OB,
                                     DOM_BDT_AUTHOR_IS_RESOLVED,
-                                    DOM_BDT_AUTHOR_RESOLVED_NAME,
-                                    DOM_BDT_AUTHOR_RESOLVED_NAME_OB,
+                                    DOM_BDT_AUTHOR_REAL_NAME,
+                                    DOM_BDT_AUTHOR_REAL_NAME_OB,
                                     DOM_BDT_AUTHOR_URL)
                         .setPrimaryKey(DOM_PK_ID)
-                        .addIndex(BDT_AUTHOR_NAME_OB, true, DOM_BDT_AUTHOR_NAME_OB)
-                        .addIndex(BDT_AUTHOR_RESOLVED_NAME_OB, false,
-                                  DOM_BDT_AUTHOR_RESOLVED_NAME_OB);
+                        .addIndex(BDT_AUTHOR_LIST_NAME_OB, true, DOM_BDT_AUTHOR_LIST_NAME_OB)
+                        .addIndex(BDT_AUTHOR_REAL_NAME_OB, false,
+                                  DOM_BDT_AUTHOR_REAL_NAME_OB);
     }
 
     private final boolean collationCaseSensitive;
