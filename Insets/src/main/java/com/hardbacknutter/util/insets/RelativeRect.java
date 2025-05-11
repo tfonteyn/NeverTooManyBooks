@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.util.insets;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.util.Log;
 import android.view.View;
@@ -76,6 +77,7 @@ public class RelativeRect {
         return new RelativeRect(nStart, nTop, nEnd, nBottom, sides);
     }
 
+    @SuppressLint("LogConditional")
     private void dumpDebug(@NonNull final View view,
                            @NonNull final Insets insets) {
         final int id = view.getId();

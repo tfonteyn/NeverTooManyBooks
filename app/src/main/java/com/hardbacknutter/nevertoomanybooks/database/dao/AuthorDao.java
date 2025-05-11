@@ -234,7 +234,7 @@ public interface AuthorDao {
      * If found, updates <strong>ONLY</strong> the id with the one found in the database.
      * <p>
      * If the item has child items, then implementations must propagate the call.
-     *
+     * <p>
      * URGENT: fixId should be able to merge the given item with the database data
      *
      * @param context Current context
