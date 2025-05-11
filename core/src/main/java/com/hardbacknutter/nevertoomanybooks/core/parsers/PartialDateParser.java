@@ -46,7 +46,10 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Parser for dates coming from the database or other sources
  * where we are certain the format is ISO.
  * Negative years are fully supported.
- * In addition, this parser also accept MM_YYYY, MMM_YYYY but only with positive 4 digit years.
+ *
+ * In addition, this parser also accept the following, but only with positive 4 digit years.
+ * - MMM_YYYY + DD_MMM_YYYY: where MMM is a short or long alpha month string.
+ * - MM_YYYY: specifically only a numeric 1 or 2 digit month + a 4 digit year
  * <p>
  * The result is always a {@link PartialDate}.
  * <p>
