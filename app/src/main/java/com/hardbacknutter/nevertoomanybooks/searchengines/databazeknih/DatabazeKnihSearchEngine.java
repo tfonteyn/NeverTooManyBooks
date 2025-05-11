@@ -74,6 +74,14 @@ import org.jsoup.select.Elements;
 
 /**
  * Catalog site serving Czech and Slovak mainly.
+ * <p>
+ * The site uses different id's for different types of authors.
+ * Example:
+ * https://www.databazeknih.cz/autori/albert-uderzo-76934
+ * https://www.databazeknih.cz/ilustratori/albert-uderzo-91908
+ * (there are more types!)
+ * <p>
+ * We only use the "autori" links for now as we have no mapping to the others
  */
 public class DatabazeKnihSearchEngine
         extends JsoupSearchEngineBase
@@ -83,6 +91,7 @@ public class DatabazeKnihSearchEngine
 
     public static final String SITE_URL = "https://www.databazeknih.cz";
     public static final String BOOK_URL = "https://www.databazeknih.cz/prehled-knihy/x-%s";
+    // see class docs!
     public static final String AUTHOR_URL = "https://www.databazeknih.cz/autori/x-%s";
 
     private static final String TAG = "DatabazeKnihSearchEngin";
@@ -693,24 +702,20 @@ public class DatabazeKnihSearchEngine
         final Author author = Author.from(text);
 
         final String url = a.attr("href");
-        final int index = url.lastIndexOf('-');
-        if (index > 0 && (index + 1) < url.length()) {
-            final String id = url.substring(index + 1);
-            if (!id.isEmpty()) {
-                author.setIdentifierValue(Identifier.SID_DATABAZE_KNIH, id);
+        // see class docs!
+        if (url.contains("/autori/")) {
+            final int index = url.lastIndexOf('-');
+            if (index > 0 && (index + 1) < url.length()) {
+                final String id = url.substring(index + 1);
+                if (!id.isEmpty()) {
+                    author.setIdentifierValue(Identifier.SID_DATABAZE_KNIH, id);
+                }
             }
-        }
 
-        // an adjacent "(p)" indicates this is a Pseudonym.
-        final Element maybePseudonym = a.nextElementSibling();
-        if (maybePseudonym != null
-            && "span".equals(maybePseudonym.tag().getName())
-            && "(p)".equals(maybePseudonym.text())) {
             for (final AuthorResolver resolver : authorResolvers) {
                 resolver.resolve(context, author);
             }
         }
-
         addAuthor(author, type, book);
     }
 
