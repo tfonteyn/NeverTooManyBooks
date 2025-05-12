@@ -160,7 +160,7 @@ public class BedethequeAuthorResolver
         if (url != null && !url.isEmpty()) {
             final Document document = searchEngine.loadDocument(context, url, null);
             if (!searchEngine.isCancelled()) {
-                final Author found = parse(document);
+                final Author found = parse(context, document);
                 if (found != null && author.isSameName(found)) {
                     // Overwrite the original name; this will correct any diacritics
                     // We're not doing the same for the 'realAuthor' ...
@@ -262,13 +262,15 @@ public class BedethequeAuthorResolver
     /**
      * Parse the author details.
      *
+     * @param context  Current context
      * @param document to parse
      *
      * @return author, or {@code null} on failure
      */
     @VisibleForTesting
     @Nullable
-    Author parse(@NonNull final Document document) {
+    Author parse(@NonNull final Context context,
+                 @NonNull final Document document) {
         final Element info = document.selectFirst("div.auteur-infos ul.auteur-info");
         if (info != null) {
             final Elements labels = info.getElementsByTag("label");
@@ -329,7 +331,7 @@ public class BedethequeAuthorResolver
                     case "Naissance :": {
                         // <label>Naissance :</label>le 13/10/1980 <span class="pays-auteur">(BELGIQUE)</span>
                         birthDate = parseDate(label.nextSibling());
-                        birthCountry = parseBirthCountry(label.nextElementSibling());
+//                        birthCountry = parseBirthCountry(label.nextElementSibling());
                         break;
                     }
                     case "Décès :": {
@@ -337,22 +339,22 @@ public class BedethequeAuthorResolver
                         deathDate = parseDate(label.nextSibling());
                         break;
                     }
-                    case "Pays :": {
-                        // <label>Pays :</label><span class="pays-auteur">FRANCE</span>
-                        // Don't overwrite
-                        if (birthCountry == null) {
-                            birthCountry = parseBirthCountry(label.nextElementSibling());
-                        }
-                        break;
-                    }
-                    case "Site internet :": {
-                        // <label>Site internet :</label><a href="https://bealema.com" target="_blank">https://bealema.com</a>
-                        final Element a = label.nextElementSibling();
-                        if (a != null) {
-                            website = a.attr("href");
-                        }
-                        break;
-                    }
+//                    case "Pays :": {
+//                        // <label>Pays :</label><span class="pays-auteur">FRANCE</span>
+//                        // Don't overwrite
+//                        if (birthCountry == null) {
+//                            birthCountry = parseBirthCountry(label.nextElementSibling());
+//                        }
+//                        break;
+//                    }
+//                    case "Site internet :": {
+//                        // <label>Site internet :</label><a href="https://bealema.com" target="_blank">https://bealema.com</a>
+//                        final Element a = label.nextElementSibling();
+//                        if (a != null) {
+//                            website = a.attr("href");
+//                        }
+//                        break;
+//                    }
                 }
             }
 
@@ -445,13 +447,17 @@ public class BedethequeAuthorResolver
     @NonNull
     private Optional<String> parseImage(@NonNull final Context context,
                                         @NonNull final Document document,
-                                        @NonNull final String bdtId)
-            throws StorageException {
+                                        final int bdtId) {
         final Element a = document.selectFirst("div.auteur-image a");
         if (a != null) {
             final String url = a.attr("href");
             if (!"https://www.bdgest.com/skin/nophoto.png".equals(url)) {
-                return searchEngine.saveImage(context, url, null, bdtId, 0, null);
+                try {
+                    return searchEngine.saveImage(context, url, null, String.valueOf(bdtId), 0,
+                                                  null);
+                } catch (@NonNull final StorageException ignore) {
+                    // ignore
+                }
             }
         }
         return Optional.empty();
