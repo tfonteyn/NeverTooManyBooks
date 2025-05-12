@@ -27,8 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -36,11 +34,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -88,7 +83,6 @@ public class BedethequeAuthorResolver
     private final BedethequeSearchEngine searchEngine;
     @NonNull
     private final Locale locale;
-    private final FullDateParser dateParser;
 
     /**
      * Private Constructor.
@@ -100,10 +94,6 @@ public class BedethequeAuthorResolver
                                      @NonNull final BedethequeSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
-
-        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final List<Locale> locales = LocaleListUtils.asList(context, locale);
-        dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
     }
 
     /**
@@ -148,75 +138,75 @@ public class BedethequeAuthorResolver
         // We SHOULD pass in the book-locale here...
         authorDao.refresh(context, author, locale);
 
-        // If we already have a real-author set, we're done.
-        if (author.getRealAuthor() != null) {
-            return false;
-        }
-
         final BdtAuthor bdtAuthor = lookupInCache(context, author);
-        // If the author is not found, the website does not know that name at all, give up
         if (bdtAuthor == null) {
+            // The website does not know that name at all, give up
             return false;
         }
 
         boolean modified = false;
 
-        // Add/update the identifier while we have it.
-        final String bdtId = bdtAuthor.getBdtId();
-        if (bdtId != null) {
-            author.setIdentifierValue(Identifier.SID_BEDETHEQUE, bdtId);
-            modified = true;
-        }
-
-        // we have it in the cache, check if it's fully resolved
-        if (!bdtAuthor.isResolved()) {
-            // load the details-page from the site, and parse it.
-            if (!lookupOnSite(context, bdtAuthor, author)) {
-                // The website list page had it, but there is no details page.
-                // We should never get here... flw
-                return false;
+        // Add the identifier if needed.
+        if (author.getIdentifierValue(Identifier.SID_BEDETHEQUE).isEmpty()) {
+            final String bdtId = bdtAuthor.getBdtId();
+            if (bdtId != null) {
+                author.setIdentifierValue(Identifier.SID_BEDETHEQUE, bdtId);
+                modified = true;
             }
         }
 
-        // it should now be resolved
-        // Copy temporary info from bdtAuthor to the author, and resolve the realAuthor
-        if (resolvePenName(context, author, bdtAuthor)) {
-            modified = true;
+        // load the details-page from the site, and parse it.
+        final String url = bdtAuthor.getUrl();
+        if (url != null && !url.isEmpty()) {
+            final Document document = searchEngine.loadDocument(context, url, null);
+            if (!searchEngine.isCancelled()) {
+                final Author found = parse(document);
+                if (found != null && author.isSameName(found)) {
+                    // Overwrite the original name; this will correct any diacritics
+                    // We're not doing the same for the 'realAuthor' ...
+                    // typically this will not be needed anyhow
+                    // but if it is... it's too difficult to be sure we're doing it right.
+                    // (might be a wrong assumption... oh well)
+                    author.setName(found.getFamilyName(), found.getGivenNames());
+                    // and merge as normal
+                    author.merge(found, true);
+
+                    updateCache(author, bdtAuthor);
+
+                    // be paranoid, ALWAYS report we modified the author
+                    return true;
+                }
+            }
         }
 
+        // We really should never get here as we should always have a url.
+        // But we STILL CAN get here if the user tapped 'cancel' at the exact moment....
         return modified;
     }
 
-    private boolean resolvePenName(@NonNull final Context context,
-                                   @NonNull final Author author,
-                                   @NonNull final BdtAuthor bdtAuthor) {
-        final String resolvedName = bdtAuthor.getResolvedName();
-        // If the author uses a pen-name, update accordingly
-        if (resolvedName != null) {
-            // The name was a pen-name and we have resolved it to their real name
-            // Add it accordingly to the original Author object
-            final Author realAuthor = Author.from(resolvedName);
-            ServiceLocator.getInstance().getAuthorDao().refresh(context, realAuthor, locale);
+    private void updateCache(@NonNull final Author author,
+                             @NonNull final BdtAuthor bdtAuthor) {
 
-            author.setRealAuthor(realAuthor);
-
-            // While resolving, the name of the bdtAuthor CAN be corrected/updated.
-            // Check that it still MATCHES the original author name
-            final Author penAuthor = Author.from(bdtAuthor.getName());
-            // Case-sensitive! We must allow correcting the case.
-            if (penAuthor.isSameName(author)) {
-                // It does, we now overwrite the original name; this will correct any diacritics
-                author.setName(penAuthor.getFamilyName(), penAuthor.getGivenNames());
+        final Author realAuthor = author.getRealAuthor();
+        if (realAuthor != null) {
+            final String realName = realAuthor.getFormattedName(false);
+            if (!realName.equals(bdtAuthor.getRealName())) {
+                bdtAuthor.setRealName(realName);
+                try {
+                    ServiceLocator.getInstance().getBedethequeCacheDao().update(bdtAuthor, locale);
+                } catch (@NonNull final DaoWriteException e) {
+                    // log, but ignore - should never happen unless disk full
+                    LoggerFactory.getLogger().e(TAG, e);
+                }
             }
-            return true;
         }
-        return false;
     }
 
     /**
-     * Lookup the Author in the local cache.
+     * Lookup the Author in the local cache. Searches on both list-name AND real-name.
+     * <p>
      * If not found, fetch the alphabet-page from the website which updates the cache,
-     * and check again.
+     * and searches the cache a second time.
      *
      * @param context current Context
      * @param author  to lookup
@@ -270,71 +260,50 @@ public class BedethequeAuthorResolver
     }
 
     /**
-     * Lookup the author on the website.
-     * If successful, it will have been updated in the cache database.
+     * Parse the author details.
      *
-     * @param context   current Context
-     * @param bdtAuthor to lookup
-     * @param author
+     * @param document to parse
      *
-     * @return {@code true} on success
-     *
-     * @throws SearchException      on generic exceptions (wrapped) during search
-     * @throws CredentialsException on authentication/login failures
-     */
-    private boolean lookupOnSite(@NonNull final Context context,
-                                 @NonNull final BdtAuthor bdtAuthor,
-                                 @NonNull final Author author)
-            throws SearchException, CredentialsException {
-        final String url = bdtAuthor.getUrl();
-        if (url == null || url.isEmpty()) {
-            return false;
-        }
-
-        final Document document = searchEngine.loadDocument(context, url, null);
-        if (!searchEngine.isCancelled()) {
-            if (parseAuthor(document, bdtAuthor)) {
-                try {
-                    ServiceLocator.getInstance().getBedethequeCacheDao()
-                                  .update(bdtAuthor, locale);
-                    return true;
-                } catch (@NonNull final DaoWriteException e) {
-                    // log, but ignore - should never happen unless disk full
-                    LoggerFactory.getLogger().e(TAG, e);
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Parse the downloaded document and update the given {@link BdtAuthor} if possible.
-     *
-     * @param document  to parse
-     * @param bdtAuthor to update
-     *
-     * @return {@code true} on success
+     * @return author, or {@code null} on failure
      */
     @VisibleForTesting
-    boolean parseAuthor(@NonNull final Document document,
-                        @NonNull final BdtAuthor bdtAuthor) {
-
+    @Nullable
+    Author parse(@NonNull final Document document) {
         final Element info = document.selectFirst("div.auteur-infos ul.auteur-info");
         if (info != null) {
             final Elements labels = info.getElementsByTag("label");
-            String familyName = "";
-            String givenName = "";
-            String penName = "";
-            String website;
-            LocalDate birthDate;
-            LocalDate deathDate;
+            int sid = 0;
+            @Nullable
+            String familyName = null;
+            @Nullable
+            String givenName = null;
+            @Nullable
+            String penName = null;
+            @Nullable
+            String website = null;
+            @Nullable
+            String birthDate = null;
+            @Nullable
+            String deathDate = null;
             @Nullable
             String birthCountry = null;
 
             for (final Element label : labels) {
                 switch (label.text()) {
+                    case "Identifiant :": {
+                        // <label>Identifiant :</label>111
+                        final Node textNode = label.nextSibling();
+                        if (textNode != null) {
+                            try {
+                                sid = Integer.parseInt(textNode.toString().trim());
+                            } catch (@NonNull final NumberFormatException ignore) {
+                                // ignore
+                            }
+                        }
+                        break;
+                    }
                     case "Nom :": {
-                        // <label>Nom :</label><span>Lemmens</span>
+                        // <label>Nom :</label><span>De Bevere</span>
                         final Element span = label.nextElementSibling();
                         if (span != null) {
                             familyName = span.text();
@@ -342,7 +311,7 @@ public class BedethequeAuthorResolver
                         break;
                     }
                     case "Prénom :": {
-                        // <label>Prénom :</label><span>Xavier</span>
+                        // <label>Prénom :</label><span>Maurice</span>
                         final Element span = label.nextElementSibling();
                         if (span != null) {
                             givenName = span.text();
@@ -350,24 +319,22 @@ public class BedethequeAuthorResolver
                         break;
                     }
                     case "Pseudo :": {
-                        // <label>Pseudo :</label>Lem
+                        // <label>Pseudo :</label>Morris
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            penName = textNode.toString();
+                            penName = textNode.toString().trim();
                         }
                         break;
                     }
                     case "Naissance :": {
                         // <label>Naissance :</label>le 13/10/1980 <span class="pays-auteur">(BELGIQUE)</span>
-                        final Node textNode = label.nextSibling();
-                        birthDate = parseDate(textNode).orElse(null);
+                        birthDate = parseDate(label.nextSibling());
                         birthCountry = parseBirthCountry(label.nextElementSibling());
                         break;
                     }
                     case "Décès :": {
                         // <label>Décès :</label>le 27/03/2006
-                        final Node textNode = label.nextSibling();
-                        deathDate = parseDate(textNode).orElse(null);
+                        deathDate = parseDate(label.nextSibling());
                         break;
                     }
                     case "Pays :": {
@@ -386,23 +353,34 @@ public class BedethequeAuthorResolver
                         }
                         break;
                     }
-                    default:
-                        // "Identifiant :"
-                        // skipped, we already have the bdtId from the url
-                        break;
                 }
             }
 
             // sanity check
-            if (!familyName.isEmpty()) {
-                bdtAuthor.setResolvedName(
-                        familyName + (givenName.isBlank() ? "" : ", " + givenName));
-                return true;
+            if (familyName != null && !familyName.isEmpty()) {
+                final Author realAuthor = new Author(familyName, givenName);
+                if (sid > 0) {
+                    realAuthor.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
+                }
+                realAuthor.setBirthDate(birthDate);
+                realAuthor.setDeathDate(deathDate);
+
+                if (penName == null) {
+                    return realAuthor;
+                } else {
+                    final Author penNameAuthor = Author.from(penName);
+                    if (sid > 0) {
+                        penNameAuthor.setIdentifierValue(Identifier.SID_BEDETHEQUE, sid);
+                    }
+                    penNameAuthor.setBirthDate(birthDate);
+                    penNameAuthor.setDeathDate(deathDate);
+
+                    penNameAuthor.setRealAuthor(realAuthor);
+                    return penNameAuthor;
+                }
             }
         }
-
-        bdtAuthor.setResolvedName(null);
-        return false;
+        return null;
     }
 
     @Nullable
@@ -418,16 +396,35 @@ public class BedethequeAuthorResolver
         return birthCountry;
     }
 
-    @NonNull
-    private Optional<LocalDate> parseDate(@Nullable final Node textNode) {
+    /**
+     * Parse a date.
+     *
+     * @param textNode to parse
+     *
+     * @return (partial) date as an iso string, or {@code null} if none found.
+     */
+    @Nullable
+    private String parseDate(@Nullable final Node textNode) {
         if (textNode != null) {
-            String s = textNode.toString();
+            String s = textNode.toString().trim();
+            // Not in the Pattern, paranoia...
             if (s.startsWith("le ")) {
                 s = s.substring(3);
             }
-            return dateParser.parse(s, locale).map(LocalDate::from);
+            // quick and dirty check for dd/mm/yyyy
+            if (s.length() != 10 || s.charAt(2) != '/' || s.charAt(5) != '/') {
+                return null;
+            }
+
+            final String year = s.substring(6);
+            final String month = s.substring(3, 5);
+            final String day = s.substring(0, 2);
+            if ("01".equals(day) && "01".equals(month)) {
+                return year;
+            }
+            return year + "-" + month + "-" + day;
         }
-        return Optional.empty();
+        return null;
     }
 
     /**

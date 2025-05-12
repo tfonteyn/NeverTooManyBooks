@@ -38,7 +38,6 @@ public class BdtAuthor {
     @Nullable
     private final String url;
     private long id;
-    private boolean resolved;
     @Nullable
     private String resolvedName;
 
@@ -55,7 +54,6 @@ public class BdtAuthor {
                      @NonNull final DataHolder rowData) {
         this.id = id;
         this.name = rowData.getString(CacheDbHelper.BDT_AUTHOR_LIST_NAME);
-        this.resolved = rowData.getBoolean(CacheDbHelper.BDT_AUTHOR_IS_RESOLVED);
         this.resolvedName = rowData.getString(CacheDbHelper.BDT_AUTHOR_REAL_NAME, null);
         this.url = rowData.getString(CacheDbHelper.BDT_AUTHOR_URL, null);
     }
@@ -98,7 +96,7 @@ public class BdtAuthor {
     }
 
     @Nullable
-    public String getBdtId() {
+    String getBdtId() {
         if (bdtId != null && !bdtId.isEmpty()) {
             return bdtId;
         }
@@ -113,28 +111,26 @@ public class BdtAuthor {
         return null;
     }
 
-    public boolean isResolved() {
-        return resolved;
-    }
-
     /**
-     * Get the resolved name.
+     * Get the resolved name. This is the "family, given" formatted name of the author.
      *
      * @return resolved name; or {@code null} if none or equal to the actual name
      */
     @Nullable
-    public String getResolvedName() {
-        if (!resolved
-            || resolvedName == null || resolvedName.isEmpty()
-            || resolvedName.equals(name)) {
+    public String getRealName() {
+        if (resolvedName == null || resolvedName.isEmpty() || resolvedName.equals(name)) {
             return null;
         }
         return resolvedName;
     }
 
-    void setResolvedName(@Nullable final String resolvedName) {
-        this.resolved = resolvedName != null;
-        this.resolvedName = resolvedName;
+    /**
+     * Set the resolved status/data.
+     *
+     * @param realName to use, formatted as "family, given", or {@code null} to delete.
+     */
+    void setRealName(@Nullable final String realName) {
+        this.resolvedName = realName;
     }
 
     @Override
@@ -145,7 +141,6 @@ public class BdtAuthor {
                + ", bdtId=" + bdtId
                + ", name=`" + name + '`'
                + ", url=`" + url + '`'
-               + ", resolved=" + resolved
                + ", resolvedName=`" + resolvedName + '`'
                + '}';
     }

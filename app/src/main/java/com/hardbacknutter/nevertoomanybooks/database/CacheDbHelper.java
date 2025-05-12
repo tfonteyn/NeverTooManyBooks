@@ -56,28 +56,30 @@ public class CacheDbHelper
     public static final String BDT_AUTHOR_LIST_NAME_OB = "name_ob";
     /** The url for the author page. */
     public static final String BDT_AUTHOR_URL = "url";
-    public static final String BDT_AUTHOR_IS_RESOLVED = "res";
     /**
      * The real-name if any.
      */
     public static final String BDT_AUTHOR_REAL_NAME = "res_name";
     public static final String BDT_AUTHOR_REAL_NAME_OB = "res_name_ob";
+
     /** pre-scaled images. */
     public static final TableDefinition TBL_IMAGE;
     /** author page urls from Bedetheque. */
     public static final TableDefinition TBL_BDT_AUTHORS;
     /** DB name. */
     private static final String DATABASE_NAME = "cache.db";
+
     /**
      * Previous versions.
      * <p>
      * v1.0.0: 1
      * v5.3.0: 2
-     * v7.1.0: 3  DOM_IMAGE_LAST_UPDATED__UTC -> "text"
+     * v7.4.0: 3  removed Bdt 'resolved' flag
      * <p>
      * Current version.
      */
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
+
     private static final Domain DOM_PK_ID;
     /** {@link #TBL_IMAGE}. */
     private static final Domain DOM_IMAGE_ID;
@@ -92,8 +94,6 @@ public class CacheDbHelper
     /** {@link #TBL_BDT_AUTHORS}. The url to the author page on Bedetheque. */
     private static final Domain DOM_BDT_AUTHOR_URL;
     /** {@link #TBL_BDT_AUTHORS}. */
-    private static final Domain DOM_BDT_AUTHOR_IS_RESOLVED;
-    /** {@link #TBL_BDT_AUTHORS}. */
     private static final Domain DOM_BDT_AUTHOR_REAL_NAME;
     /** {@link #TBL_BDT_AUTHORS}. */
     private static final Domain DOM_BDT_AUTHOR_REAL_NAME_OB;
@@ -104,6 +104,8 @@ public class CacheDbHelper
     /** Static Factory object to create the custom cursor. */
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
+
+    private static final String DROP_TABLE_IF_EXISTS_ = "DROP TABLE IF EXISTS ";
 
     static {
         DOM_PK_ID =
@@ -150,12 +152,6 @@ public class CacheDbHelper
                         .notNull()
                         .build();
 
-        DOM_BDT_AUTHOR_IS_RESOLVED =
-                new Domain.Builder(BDT_AUTHOR_IS_RESOLVED, SqLiteDataType.Boolean)
-                        .notNull()
-                        .withDefault(false)
-                        .build();
-
         TBL_IMAGE =
                 new TableDefinition("image", "image")
                         .addDomains(DOM_PK_ID,
@@ -173,7 +169,6 @@ public class CacheDbHelper
                         .addDomains(DOM_PK_ID,
                                     DOM_BDT_AUTHOR_LIST_NAME,
                                     DOM_BDT_AUTHOR_LIST_NAME_OB,
-                                    DOM_BDT_AUTHOR_IS_RESOLVED,
                                     DOM_BDT_AUTHOR_REAL_NAME,
                                     DOM_BDT_AUTHOR_REAL_NAME_OB,
                                     DOM_BDT_AUTHOR_URL)
@@ -237,8 +232,8 @@ public class CacheDbHelper
                           final int oldVersion,
                           final int newVersion) {
         // This is a cache, so no data needs preserving. Drop & recreate.
-        db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE.getName());
-        db.execSQL("DROP TABLE IF EXISTS " + TBL_BDT_AUTHORS.getName());
+        db.execSQL(DROP_TABLE_IF_EXISTS_ + TBL_IMAGE.getName());
+        db.execSQL(DROP_TABLE_IF_EXISTS_ + TBL_BDT_AUTHORS.getName());
         onCreate(db);
     }
 

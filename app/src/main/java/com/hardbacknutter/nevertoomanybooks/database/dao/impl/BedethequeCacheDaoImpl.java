@@ -214,18 +214,17 @@ public class BedethequeCacheDaoImpl
                 stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
                 stmt.bindString(3, bdtAuthor.getUrl());
 
-                stmt.bindBoolean(4, bdtAuthor.isResolved());
                 // if there is no real-name, or it's identical to the list name
                 if (realName == null || realName.equals(bdtAuthor.getName())) {
                     // remove/null it
+                    stmt.bindNull(4);
                     stmt.bindNull(5);
-                    stmt.bindNull(6);
                 } else {
-                    stmt.bindString(5, realName);
-                    stmt.bindString(6, SqlEncode.orderByColumn(realName, locale));
+                    stmt.bindString(4, realName);
+                    stmt.bindString(5, SqlEncode.orderByColumn(realName, locale));
                 }
 
-                stmt.bindLong(7, bdtAuthor.getId());
+                stmt.bindLong(6, bdtAuthor.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
 
@@ -289,7 +288,6 @@ public class BedethequeCacheDaoImpl
                 SELECT_
                 + CacheDbHelper.PK_ID
                 + ',' + CacheDbHelper.BDT_AUTHOR_LIST_NAME
-                + ',' + CacheDbHelper.BDT_AUTHOR_IS_RESOLVED
                 + ',' + CacheDbHelper.BDT_AUTHOR_REAL_NAME
                 + ',' + CacheDbHelper.BDT_AUTHOR_URL
                 + _FROM_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
@@ -301,7 +299,6 @@ public class BedethequeCacheDaoImpl
                 + CacheDbHelper.BDT_AUTHOR_LIST_NAME + "=?"
                 + ',' + CacheDbHelper.BDT_AUTHOR_LIST_NAME_OB + "=?"
                 + ',' + CacheDbHelper.BDT_AUTHOR_URL + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_IS_RESOLVED + "=?"
                 + ',' + CacheDbHelper.BDT_AUTHOR_REAL_NAME + "=?"
                 + ',' + CacheDbHelper.BDT_AUTHOR_REAL_NAME_OB + "=?"
                 + _WHERE_ + CacheDbHelper.PK_ID + "=?";

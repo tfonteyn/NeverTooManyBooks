@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,15 +20,22 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
+import android.util.Log;
+
 import java.io.IOException;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
@@ -36,6 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -67,41 +75,58 @@ public class AuthorParseTest
     }
 
     @Test
-    public void parseOneWithout()
+    public void parseOnly_no_pseudonym01()
             throws IOException {
         final String locationHeader = "https://www.bedetheque.com/auteur-96-BD-Leloup-Roger.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bedetheque_auteur_96_bd_leloup_roger;
 
-        final BdtAuthor bdtAuthor = new BdtAuthor("Leloup, Roger", locationHeader);
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final boolean modified = resolver.parseAuthor(document, bdtAuthor);
-        assertTrue(modified);
-        assertEquals("Leloup, Roger", bdtAuthor.getName());
-        assertTrue(bdtAuthor.isResolved());
-        assertNull(bdtAuthor.getResolvedName());
+        final Author author = resolver.parse(document);
+        assertNotNull(author);
+        assertEquals("Leloup", author.getFamilyName());
+        assertEquals("Roger", author.getGivenNames());
+        assertEquals("1933-11-17", author.getBirthDate().orElse(null));
+
+        Optional<String> oIv;
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("96", oIv.get());
     }
 
     @Test
-    public void parseOneWith()
+    public void parseOnly_with_pseudonym01()
             throws IOException {
         final String locationHeader = "https://www.bedetheque.com/auteur-97-BD-Leo.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bedetheque_auteur_97_bd_leo;
 
-        final BdtAuthor bdtAuthor = new BdtAuthor("Leo", locationHeader);
-
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-        final boolean modified = resolver.parseAuthor(document, bdtAuthor);
-        assertTrue(modified);
-        assertEquals("Leo", bdtAuthor.getName());
-        assertTrue(bdtAuthor.isResolved());
-        assertEquals("De Oliveira, Luiz Eduardo", bdtAuthor.getResolvedName());
+        final Author author = resolver.parse(document);
+        assertNotNull(author);
+        assertEquals("Leo", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals("1944-12-13", author.getBirthDate().orElse(null));
+
+        Optional<String> oIv;
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("97", oIv.get());
+
+        final Author realAuthor = author.getRealAuthor();
+        assertNotNull(realAuthor);
+        assertEquals("De Oliveira", realAuthor.getFamilyName());
+        assertEquals("Luiz Eduardo", realAuthor.getGivenNames());
+        assertEquals("1944-12-13", realAuthor.getBirthDate().orElse(null));
+
+        oIv = realAuthor.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        // SAME as the pen-name!
+        assertEquals("97", oIv.get());
     }
 
     @Test
-    public void parseList()
+    public void parse_downloaded_L_page()
             throws IOException {
         final String locationHeader = "https://www.bedetheque.com/liste_auteurs_BD_L.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
@@ -122,5 +147,101 @@ public class AuthorParseTest
         final int countAuthors = bedethequeCacheDao.countAuthors();
         assertEquals(2578, countAuthors);
 //        assertEquals(2585, countAuthors);
+    }
+
+    @Test
+    public void liveLookup_no_pseudonym01()
+            throws SearchException, CredentialsException {
+
+        final Author author = new Author("Giraud", "Jean");
+
+        final boolean resolved = resolver.resolve(context, author);
+        assertTrue(resolved);
+
+        Log.d(TAG, author.toString());
+
+        assertEquals("Giraud", author.getFamilyName());
+        assertEquals("Jean", author.getGivenNames());
+        assertEquals("1938-05-08", author.getBirthDate().orElse(null));
+        assertEquals("2012-03-10", author.getDeathDate().orElse(null));
+        assertNull(author.getRealAuthor());
+
+        Optional<String> oIv;
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("6231", oIv.get());
+    }
+
+    @Test
+    public void liveLookup_with_pseudonym01()
+            throws SearchException, CredentialsException {
+
+        final Author author = new Author("Moebius", "");
+
+        final boolean resolved = resolver.resolve(context, author);
+        assertTrue(resolved);
+
+        Log.d(TAG, author.toString());
+
+        assertEquals("Moebius", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals("1938-05-08", author.getBirthDate().orElse(null));
+        assertEquals("2012-03-10", author.getDeathDate().orElse(null));
+
+        Optional<String> oIv;
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("70", oIv.get());
+
+        final Author realAuthor = author.getRealAuthor();
+        assertNotNull(realAuthor);
+
+        assertEquals("Giraud", realAuthor.getFamilyName());
+        assertEquals("Jean", realAuthor.getGivenNames());
+        assertEquals("1938-05-08", realAuthor.getBirthDate().orElse(null));
+        assertEquals("2012-03-10", realAuthor.getDeathDate().orElse(null));
+
+        oIv = realAuthor.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        // 70, same as the pen-name, AND NOT 6231 which is Jean Giraud himself.
+        // The site actually has TWO records for these situations.
+        // One for "pen+real", and ANOTHER for "real-name-on-book".
+        assertEquals("70", oIv.get());
+    }
+
+    @Test
+    public void liveLookup_with_pseudonym02()
+            throws SearchException, CredentialsException {
+
+        // WRONG diacritic on purpose. Actual is "Jijé"
+        final Author author = new Author("Jije", "");
+
+        final boolean resolved = resolver.resolve(context, author);
+        assertTrue(resolved);
+
+        Log.d(TAG, author.toString());
+
+        // Diacritic should be corrected
+        assertEquals("Jijé", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals("1914-01-13", author.getBirthDate().orElse(null));
+        assertEquals("1980-06-19", author.getDeathDate().orElse(null));
+
+        Optional<String> oIv;
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("367", oIv.get());
+
+        final Author realAuthor = author.getRealAuthor();
+        assertNotNull(realAuthor);
+
+        assertEquals("Gillain", realAuthor.getFamilyName());
+        assertEquals("Joseph", realAuthor.getGivenNames());
+        assertEquals("1914-01-13", realAuthor.getBirthDate().orElse(null));
+        assertEquals("1980-06-19", realAuthor.getDeathDate().orElse(null));
+
+        oIv = realAuthor.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("367", oIv.get());
     }
 }
