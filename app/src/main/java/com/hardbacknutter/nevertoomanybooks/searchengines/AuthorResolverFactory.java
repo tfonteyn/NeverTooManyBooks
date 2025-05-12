@@ -51,6 +51,13 @@ public final class AuthorResolverFactory {
     private AuthorResolverFactory() {
     }
 
+    private static boolean isEnabled(@NonNull final Context context,
+                                     @NonNull final String key) {
+        return ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
+               && PreferenceManager.getDefaultSharedPreferences(context)
+                                   .getBoolean(key, true);
+    }
+
     /**
      * Get a list of the supported resolvers for the given engine.
      *
@@ -69,10 +76,7 @@ public final class AuthorResolverFactory {
                            + PK_RESOLVE_AUTHORS
                            + EngineId.Bedetheque.getPreferenceKey();
 
-        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
-            && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(key, false)) {
-
+        if (isEnabled(context, key)) {
             return List.of(BedethequeAuthorResolver.create(context, searchEngine));
         } else {
             return List.of();
@@ -87,10 +91,7 @@ public final class AuthorResolverFactory {
         // so the last part is the same as the first
         final String key = pk + PK_RESOLVE_AUTHORS + pk;
 
-        if (ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
-            && PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(key, true)) {
-
+        if (isEnabled(context, key)) {
             switch (searchEngine.getEngineId()) {
                 case DatabazeKnih: {
                     return List.of(DatabazeKnihAuthorResolver.create(context, searchEngine));
