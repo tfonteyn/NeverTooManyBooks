@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -88,23 +88,36 @@ public class BedethequeSearchEngine
     public static final String SITE_URL = "https://www.bedetheque.com";
     public static final String BOOK_URL = "https://www.bedetheque.com/BD-x-%s.html";
     public static final String AUTHOR_URL = "https://www.bedetheque.com/auteur-%s-BD-x.html";
+
+    private static final String PREFERENCE_KEY = "bedetheque";
+
+    /** Later editions; heading format. */
+    private static final Pattern NR_TITLE_PATTERN = Pattern.compile(
+            "(\\d*)\\s*<span.*/span>\\s?\\.\\s?(.*)");
+    /** MM-YYYY. */
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
-    private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES = "bedetheque.resolve.formats";
+
+    /** Whether we can map as usual, or (true) if we want to keep the french format names. */
+    private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES =
+            PREFERENCE_KEY + ".resolve.formats";
 
     /** These are generic author names which are really the color. */
     private static final List<String> AUTHOR_NAME_COLOR =
             List.of("<N&B>", "<Monochromie>", "<Bichromie>", "<Trichromie>", "<Quadrichromie>");
 
+    /** A text indicating it's a softcover. Can occur in more than one field. */
+    private static final String FORMAT_COUVERTURE_SOUPLE = "Couverture souple";
+
     /** The "en" must be as-is. */
     private static final Pattern SERIES_WITH_LANGUAGE = Pattern
             .compile("(.*)\\s+\\(en (.*)\\)");
+
     private static final Pattern SERIES_WITH_SIMPLE_PREFIX = Pattern
             .compile("(.*)\\s+\\((le|la|les|l'|the)\\)",
                      Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
     private static final String COOKIE = "csrf_cookie_bel";
     private static final String COOKIE_DOMAIN = ".bedetheque.com";
-    /** A text indicating it's a softcover. Can occur in more than one field. */
-    private static final String FORMAT_COUVERTURE_SOUPLE = "Couverture souple";
     private static final String SEARCH_URL = "/search";
 
     /**
@@ -136,6 +149,7 @@ public class BedethequeSearchEngine
                                           + "&RechCoteMin="
                                           + "&RechCoteMax="
                                           + "&RechEO=0";
+
     /**
      * 'x' is normally the title, which the site will ignore.
      * The site recognizes the url by the prefix 'BD-' and the last '-' followed by the sid
@@ -174,7 +188,7 @@ public class BedethequeSearchEngine
     @Keep
     @NonNull
     public static EngineId.Builder init() {
-        return new EngineId.Builder("bedetheque",
+        return new EngineId.Builder(PREFERENCE_KEY,
                                     R.string.site_bedetheque,
                                     List.of(R.string.site_description_french,
                                             R.string.site_description_catalog,
@@ -240,7 +254,8 @@ public class BedethequeSearchEngine
 
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
+            parseMultiResult(context, document, fetchCovers, book,
+                             validIsbn);
         }
         return book;
     }
@@ -255,7 +270,7 @@ public class BedethequeSearchEngine
         final Book book = new Book();
         final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, extraRequestProperties);
-        parse(context, document, fetchCovers, book, getAuthorResolvers(context));
+        parse(context, document, fetchCovers, null, book, getAuthorResolvers(context));
 
         return book;
     }
@@ -264,11 +279,12 @@ public class BedethequeSearchEngine
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retrieved.
      *
-     * @param context     Current context
-     * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param context      Current context
+     * @param document     to parse
+     * @param fetchCovers  Set to {@code true} if we want to get covers
+     *                     The array is guaranteed to have at least one element.
+     * @param book         Bundle to update
+     * @param searchedIsbn ISBN from user-search
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
@@ -278,7 +294,8 @@ public class BedethequeSearchEngine
     private void parseMultiResult(@NonNull final Context context,
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Book book)
+                                  @NonNull final Book book,
+                                  @Nullable final String searchedIsbn)
             throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
@@ -290,7 +307,9 @@ public class BedethequeSearchEngine
                 if (!url.isBlank()) {
                     final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
-                        parse(context, redirected, fetchCovers, book, getAuthorResolvers(context));
+                        parse(context, redirected, fetchCovers, searchedIsbn, book,
+                              getAuthorResolvers(context)
+                        );
                     }
                 }
             }
@@ -304,6 +323,8 @@ public class BedethequeSearchEngine
      * @param document        to parse
      * @param fetchCovers     Set to {@code true} if we want to get covers
      *                        The array is guaranteed to have at least one element.
+     * @param searchedIsbnStr the ISBN the user searched for;
+     *                        Will be {@code null} if the search was done by SID
      * @param book            Bundle to update
      * @param authorResolvers {@link AuthorResolver}s to use
      *                        (passed in for easy testing)
@@ -319,300 +340,467 @@ public class BedethequeSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
+                      @Nullable final String searchedIsbnStr,
                       @NonNull final Book book,
                       @NonNull final List<AuthorResolver> authorResolvers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Element section = document.selectFirst(
+        // The main book.
+        // If we searched by SID, this will be the exact edition we wanted.
+        final Element mainSection = document.selectFirst(
                 "div.tab_content_liste_albums > ul.infos-albums");
-        if (section != null) {
-            int lastAuthorType = -1;
+        if (mainSection == null) {
+            return;
+        }
 
-            String currentFormat = null;
+        boolean isMainEdition = true;
 
-            final Elements labels = section.select("li > label");
-            for (final Element label : labels) {
-                final String text = label.text();
-                // check for multiple author entries of the same type
-                if (text.isBlank() && lastAuthorType != -1) {
-                    final Element span = label.nextElementSibling();
-                    if (span != null) {
-                        parseAuthor(context, span.text(), lastAuthorType, book);
-                    }
-                    continue;
-                }
-                lastAuthorType = -1;
-
-                //noinspection SwitchStatementWithoutDefaultBranch
-                switch (text) {
-                    case "Série :": {
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            book.add(processSeries(textNode.toString().trim(), book));
-                        }
-                        break;
-                    }
-                    case "Titre :": {
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            book.setTitle(textNode.toString().trim());
-                        }
-                        break;
-                    }
-                    case "Tome :": {
-                        //FIXME: some books (non-french only?) have two numbers
-                        // which the site concatenates... uh???
-                        // e.g. the series "Lucky Luke (en anglais)":
-                        // https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html
-                        // seems to have BOTH "1" and "48" ... and we end up with "148"
-                        // This is clearly a bug on the site... not much we can do about that
-                        final Node textNode = label.nextSibling();
-                        final List<Series> seriesList = book.getSeries();
-                        if (textNode != null && !seriesList.isEmpty()) {
-                            seriesList.get(seriesList.size() - 1)
-                                      .setNumber(textNode.toString().trim());
-                        }
-                        break;
-                    }
-                    case "Identifiant :": {
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            book.setIdentifierValue(Identifier.SID_BEDETHEQUE,
-                                                    textNode.toString().trim());
-                        }
-                        break;
-                    }
-
-                    case "Scénario :":
-                    case "Adapté de :": {
-                        final Element a = label.nextElementSibling();
-                        if (a != null) {
-                            lastAuthorType = Author.TYPE_WRITER;
-                            parseAuthor(context, a.text(), Author.TYPE_WRITER, book);
-                        }
-                        break;
-                    }
-                    case "Dessin :": {
-                        final Element a = label.nextElementSibling();
-                        if (a != null) {
-                            lastAuthorType = Author.TYPE_ARTIST;
-                            parseAuthor(context, a.text(), Author.TYPE_ARTIST, book);
-                        }
-                        break;
-                    }
-                    case "Encrage :": {
-                        final Element a = label.nextElementSibling();
-                        if (a != null) {
-                            lastAuthorType = Author.TYPE_INKING;
-                            parseAuthor(context, a.text(), Author.TYPE_INKING, book);
-                        }
-                        break;
-                    }
-                    case "Couleurs :": {
-                        final Element a = label.nextElementSibling();
-                        if (a != null) {
-                            lastAuthorType = Author.TYPE_COLORIST;
-
-                            final String colorOrColorist = a.text();
-                            if (AUTHOR_NAME_COLOR.contains(colorOrColorist)) {
-                                // REMOVE the "<>" as we really don't want fake html tags
-                                book.setColor(
-                                        colorOrColorist.substring(1, colorOrColorist.length() - 1));
-                            } else {
-                                // it's a real name
-                                parseAuthor(context, colorOrColorist, Author.TYPE_COLORIST,
-                                            book);
+        if (searchedIsbnStr == null) {
+            // search by SID, always/only the main edition
+            parseLabels(context, book, mainSection);
+        } else {
+            // search by ISBN
+            final ISBN searchedIsbn = new ISBN(searchedIsbnStr, true);
+            // check if the main edition is an exact match
+            if (matches(mainSection, searchedIsbn)) {
+                parseLabels(context, book, mainSection);
+            } else {
+                // check the other editions
+                final Elements editions = document.select("ul.liste-albums > li");
+                for (final Element edition : editions) {
+                    final Element albumMain = edition.selectFirst("div.album-main");
+                    final Elements covers = edition.select("div.album-side > div.sous-couv > a");
+                    if (albumMain != null) {
+                        final Element infos = albumMain.selectFirst("div.album-main > ul.infos");
+                        if (infos != null && matches(infos, searchedIsbn)) {
+                            parseOtherEdition(context, mainSection, albumMain, infos, book);
+                            if (!covers.isEmpty()) {
+                                parseOtherEditionCovers(context, covers, fetchCovers, book);
                             }
-                        }
-                        break;
-                    }
-                    case "Couverture :": {
-                        final Element a = label.nextElementSibling();
-                        if (a != null) {
-                            lastAuthorType = Author.TYPE_COVER_ARTIST;
-                            parseAuthor(context, a.text(), Author.TYPE_COVER_ARTIST, book);
-                        }
-                        break;
-                    }
-                    case "Préface :": {
-                        final Element a = label.nextElementSibling();
-                        if (a != null) {
-                            lastAuthorType = Author.TYPE_FOREWORD;
-                            parseAuthor(context, a.text(), Author.TYPE_FOREWORD, book);
-                        }
-                        break;
-                    }
-                    case "Traduction :": {
-                        final Element a = label.nextElementSibling();
-                        if (a != null) {
-                            lastAuthorType = Author.TYPE_TRANSLATOR;
-                            parseAuthor(context, a.text(), Author.TYPE_TRANSLATOR, book);
-                        }
-                        break;
-                    }
-                    case "Autres :": {
-                        final Element a = label.nextElementSibling();
-                        if (a != null) {
-                            lastAuthorType = Author.TYPE_CONTRIBUTOR;
-                            parseAuthor(context, a.text(), Author.TYPE_CONTRIBUTOR, book);
-                        }
-                        break;
-                    }
-
-                    case "Dépot légal :": {
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            String date = textNode.toString().strip();
-                            if (!date.isBlank()) {
-                                if (PUB_DATE.matcher(date).matches()) {
-                                    // Flip to "YYYY-MM" (or use as-is)
-                                    date = date.substring(3) + "-" + date.substring(0, 2);
-                                }
-                                dateParser.parse(date).ifPresent(book::setPublicationDate);
-                            }
-
-                        }
-                        break;
-                    }
-                    case "Editeur :": {
-                        final Element span = label.nextElementSibling();
-                        if (span != null) {
-                            book.add(Publisher.from(span.text()));
-                        }
-                        break;
-                    }
-                    case "Format :": {
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            currentFormat = textNode.toString().trim();
-                            mapFormat(context, currentFormat, false, book);
-                        }
-                        break;
-                    }
-                    case "EAN/ISBN :": {
-                        final Element span = label.nextElementSibling();
-                        if (span != null) {
-                            book.setIsbn(span.text());
-                        }
-                        break;
-                    }
-                    case "Planches :": {
-                        final Element span = label.nextElementSibling();
-                        if (span != null) {
-                            book.setPages(span.text());
-                        }
-                        break;
-                    }
-                    case "Autres info :": {
-                        if (label.nextElementSiblings()
-                                 .stream()
-                                 .map(sib -> sib.attr("title"))
-                                 .anyMatch(FORMAT_COUVERTURE_SOUPLE::equals)) {
-                            // Sanity check, it should never be null at this point.
-                            if (currentFormat == null) {
-                                currentFormat = FORMAT_COUVERTURE_SOUPLE;
-                            }
-                            mapFormat(context, currentFormat, true, book);
+                            // quit the for-loop
+                            isMainEdition = false;
+                            break;
                         }
                     }
                 }
             }
 
-            final Element description = document.selectFirst("span[itemprop='description']");
-            if (description != null) {
-                book.setDescription(description.text());
-            }
-
-            for (final AuthorResolver resolver : authorResolvers) {
-                for (final Author author : book.getAuthors()) {
-                    resolver.resolve(context, author);
-                }
-            }
-
-            // Unless present, add the default language
-            if (!book.contains(DBKey.LANGUAGE)) {
-                book.setLanguage("fra");
-            }
-
-            if (isCancelled()) {
+            if (book.getTitle().isEmpty()) {
                 return;
             }
+        }
 
-            final String isbn = book.getIsbn();
+        final Element description = document.selectFirst("span[itemprop='description']");
+        if (description != null) {
+            book.setDescription(description.text());
+        }
 
-            if (fetchCovers[0]) {
-                parseCover(context, document, isbn, 0).ifPresent(
-                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        for (final AuthorResolver resolver : authorResolvers) {
+            for (final Author author : book.getAuthors()) {
+                resolver.resolve(context, author);
             }
+        }
 
-            if (isCancelled()) {
-                return;
-            }
+        // Unless present, add the default language
+        if (!book.contains(DBKey.LANGUAGE)) {
+            book.setLanguage("fra");
+        }
 
-            if (fetchCovers.length > 1 && fetchCovers[1]) {
-                parseCover(context, document, isbn, 1).ifPresent(
-                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 1, fileSpec));
+        if (isCancelled()) {
+            return;
+        }
+
+        if (isMainEdition) {
+            parseMainCovers(context, document, fetchCovers, book);
+        }
+    }
+
+    private void parseOtherEdition(@NonNull final Context context,
+                                   @NonNull final Element mainSection,
+                                   @NonNull final Element albumMain,
+                                   @NonNull final Element infos,
+                                   @NonNull final Book book) {
+        // "infos" lacks title and series
+        parseLabels(context, book, infos);
+
+        // The series is only listed in the main edition
+        final Element seriesLabel = mainSection.selectFirst(
+                "li > label:contains(Série :)");
+        if (seriesLabel != null) {
+            parseSeries(seriesLabel, book);
+        }
+
+        // The title and series nr is a heading
+        final Element titre = albumMain.selectFirst("h3.titre");
+        if (titre != null) {
+            // <h3 class="titre">9<span class="numa">a1978/01</span> . Les soucoupes volantes</h3>
+            // grab the html, to avoid the concatenation of the text
+            // in the span. We might later want to extract that text as well
+            final Matcher matcher = NR_TITLE_PATTERN.matcher(titre.html());
+            if (matcher.find()) {
+                book.setTitle(matcher.group(2));
+                final String nrInSeries = matcher.group(1);
+                // gamble...
+                final List<Series> series = book.getSeries();
+                if (!series.isEmpty()) {
+                    series.get(0).setNumber(nrInSeries);
+                }
             }
         }
     }
 
-    /**
-     * Map Bedetheque specific formats to our generalized ones if allowed.
-     *
-     * @param context       Current context
-     * @param currentFormat original french format string
-     * @param softcover     {@code true} if the books is a softcover, {@code false} for hardcover
-     * @param book          Bundle to update
-     */
-    private void mapFormat(@NonNull final Context context,
-                           @NonNull final String currentFormat,
-                           final boolean softcover,
-                           @NonNull final Book book) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES, false)) {
-            book.setFormat(currentFormat + (softcover ? "; Couverture souple" : ""));
+    private void parseOtherEditionCovers(@NonNull final Context context,
+                                         @NonNull final Elements covers,
+                                         @NonNull final boolean[] fetchCovers,
+                                         @NonNull final Book book)
+            throws StorageException {
+        final String isbn = book.getIsbn();
+
+        if (fetchCovers[0]) {
+            final Element a = covers.get(0);
+            fetchCover(context, a, 0, isbn, book);
+        }
+        if (isCancelled()) {
             return;
         }
 
-        final String format;
-        switch (currentFormat) {
-            case FORMAT_COUVERTURE_SOUPLE:
-                format = context.getString(R.string.book_format_softcover);
-                break;
+        if (fetchCovers.length > 1 && fetchCovers[1]
+            && covers.size() > 1) {
+            // There can be multiple images. The last one is the back-cover.
+            final Element a = covers.last();
+            fetchCover(context, a, 1, isbn, book);
+        }
+    }
 
-            case "Format normal":
-            case "Grand format":
-                format = context.getString(softcover ? R.string.book_format_softcover
-                                                     : R.string.book_format_hardcover);
-                break;
+    private void parseMainCovers(@NonNull final Context context,
+                                 @NonNull final Document document,
+                                 @NonNull final boolean[] fetchCovers,
+                                 @NonNull final Book book)
+            throws StorageException {
 
-            case "A l'italienne":
-                format = context.getString(softcover ? R.string.book_format_softcover_oblong
-                                                     : R.string.book_format_hardcover_oblong);
-                break;
+        final String isbn = book.getIsbn();
 
-            case "Format comics":
-                format = context.getString(softcover ? R.string.book_format_comic
-                                                     : R.string.book_format_hardcover);
-                break;
-
-            case "Format manga":
-            case "Format poche":
-                format = context.getString(softcover ? R.string.book_format_paperback
-                                                     : R.string.book_format_hardcover);
-                break;
-
-            case "Autre format":
-                format = context.getString(R.string.book_format_other);
-                break;
-
-            default:
-                // fallback
-                format = currentFormat;
-                break;
+        if (fetchCovers[0]) {
+            final Element a = document.selectFirst("div.bandeau-principal > div.bandeau-image > a");
+            fetchCover(context, a, 0, isbn, book);
         }
 
-        book.setFormat(format);
+        if (isCancelled()) {
+            return;
+        }
+
+        if (fetchCovers.length > 1 && fetchCovers[1]) {
+            // bandeau-vignette contains a list, each "li" contains at least one "a",
+            // There can be multiple images. The last one is the back-cover.
+            final Element a = document.select("div.bandeau-vignette a").last();
+            fetchCover(context, a, 1, isbn, book);
+        }
+    }
+
+    private void fetchCover(@NonNull final Context context,
+                            @Nullable final Element a,
+                            @IntRange(from = 0, to = 1) final int cIdx,
+                            @NonNull final String isbn,
+                            @NonNull final Book book)
+            throws StorageException {
+        if (a != null) {
+            final String url = a.attr("href");
+            saveImage(context, url, null, isbn, cIdx, null).ifPresent(
+                    fileSpec -> CoverFileSpecArray.setFileSpec(book, cIdx, fileSpec));
+        }
+    }
+
+    private boolean matches(@NonNull final Element section,
+                            @NonNull final ISBN searchedIsbn) {
+        final Element isbnLabel = section.selectFirst("li > label:contains(EAN/ISBN :)");
+        if (isbnLabel != null) {
+            final String isbnStr = parseLabelText(isbnLabel);
+            if (isbnStr != null) {
+                final ISBN isbnFound = new ISBN(isbnStr, true);
+                return isbnFound.equals(searchedIsbn);
+            }
+        }
+        return false;
+    }
+
+    private void parseLabels(@NonNull final Context context,
+                             @NonNull final Book book,
+                             @NonNull final Element section) {
+        int lastAuthorType = -1;
+
+        String currentFormat = null;
+
+        final Elements labels = section.select("li > label");
+        for (final Element labelElement : labels) {
+            final String label = labelElement.text();
+            // check for multiple author entries of the same type
+            if (label.isBlank() && lastAuthorType != -1) {
+                final Element span = labelElement.nextElementSibling();
+                if (span != null) {
+                    parseAuthor(context, span.text(), lastAuthorType, book);
+                }
+                // skip to next label
+                continue;
+            }
+            lastAuthorType = -1;
+
+            //noinspection SwitchStatementWithoutDefaultBranch
+            switch (label) {
+                case "Série :": {
+                    parseSeries(labelElement, book);
+                    break;
+                }
+                case "Titre :": {
+                    final Node textNode = labelElement.nextSibling();
+                    if (textNode != null) {
+                        book.setTitle(textNode.toString().trim());
+                    }
+                    break;
+                }
+                case "Tome :": {
+                    //FIXME: some books (non-french only?) have two numbers
+                    // which the site concatenates.
+                    // e.g. the series "Lucky Luke (en anglais)":
+                    // https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html
+                    // have BOTH "1" and "48" ... and we end up with "148"
+                    // The "1" is the number in the original series.
+                    // The "48" is the number of the actual book in this specific series.
+                    // i.o.w. this specific series published the books in a new/different order.
+                    // This is clearly a bug on the site... not much we can do about that.
+                    // The only solution... never parse the mainSection,
+                    // but always parse the edition-section...  to be decided later...
+                    final Node textNode = labelElement.nextSibling();
+                    final List<Series> seriesList = book.getSeries();
+                    if (textNode != null && !seriesList.isEmpty()) {
+                        seriesList.get(seriesList.size() - 1)
+                                  .setNumber(textNode.toString().trim());
+                    }
+                    break;
+                }
+                case "Identifiant :": {
+                    final Node textNode = labelElement.nextSibling();
+                    if (textNode != null) {
+                        book.setIdentifierValue(Identifier.SID_BEDETHEQUE,
+                                                textNode.toString().trim());
+                    }
+                    break;
+                }
+
+                case "Scénario :":
+                case "Adapté de :": {
+                    final Element a = labelElement.nextElementSibling();
+                    if (a != null) {
+                        lastAuthorType = Author.TYPE_WRITER;
+                        parseAuthor(context, a.text(), Author.TYPE_WRITER, book);
+                    }
+                    break;
+                }
+                case "Dessin :": {
+                    final Element a = labelElement.nextElementSibling();
+                    if (a != null) {
+                        lastAuthorType = Author.TYPE_ARTIST;
+                        parseAuthor(context, a.text(), Author.TYPE_ARTIST, book);
+                    }
+                    break;
+                }
+                case "Encrage :": {
+                    final Element a = labelElement.nextElementSibling();
+                    if (a != null) {
+                        lastAuthorType = Author.TYPE_INKING;
+                        parseAuthor(context, a.text(), Author.TYPE_INKING, book);
+                    }
+                    break;
+                }
+                case "Couleurs :": {
+                    final Element a = labelElement.nextElementSibling();
+                    if (a != null) {
+                        lastAuthorType = Author.TYPE_COLORIST;
+
+                        final String colorOrColorist = a.text();
+                        if (AUTHOR_NAME_COLOR.contains(colorOrColorist)) {
+                            // REMOVE the "<>" as we really don't want fake html tags
+                            book.setColor(
+                                    colorOrColorist.substring(1, colorOrColorist.length() - 1));
+                        } else {
+                            // it's a real name
+                            parseAuthor(context, colorOrColorist, Author.TYPE_COLORIST,
+                                        book);
+                        }
+                    }
+                    break;
+                }
+                case "Couverture :": {
+                    final Element a = labelElement.nextElementSibling();
+                    if (a != null) {
+                        lastAuthorType = Author.TYPE_COVER_ARTIST;
+                        parseAuthor(context, a.text(), Author.TYPE_COVER_ARTIST, book);
+                    }
+                    break;
+                }
+                case "Préface :": {
+                    final Element a = labelElement.nextElementSibling();
+                    if (a != null) {
+                        lastAuthorType = Author.TYPE_FOREWORD;
+                        parseAuthor(context, a.text(), Author.TYPE_FOREWORD, book);
+                    }
+                    break;
+                }
+                case "Traduction :": {
+                    final Element a = labelElement.nextElementSibling();
+                    if (a != null) {
+                        lastAuthorType = Author.TYPE_TRANSLATOR;
+                        parseAuthor(context, a.text(), Author.TYPE_TRANSLATOR, book);
+                    }
+                    break;
+                }
+                case "Autres :": {
+                    final Element a = labelElement.nextElementSibling();
+                    if (a != null) {
+                        lastAuthorType = Author.TYPE_CONTRIBUTOR;
+                        parseAuthor(context, a.text(), Author.TYPE_CONTRIBUTOR, book);
+                    }
+                    break;
+                }
+
+                case "Dépot légal :": {
+                    final Node textNode = labelElement.nextSibling();
+                    if (textNode != null) {
+                        String date = textNode.toString().strip();
+                        if (!date.isBlank()) {
+                            if (PUB_DATE.matcher(date).matches()) {
+                                // Flip to "YYYY-MM" (or use as-is)
+                                date = date.substring(3) + "-" + date.substring(0, 2);
+                                book.setPublicationDate(date);
+                            } else {
+                                // we should never get here unless the site changes
+                                dateParser.parse(date).ifPresent(book::setPublicationDate);
+                            }
+                        }
+
+                    }
+                    break;
+                }
+                case "Editeur :": {
+                    final String text = parseLabelText(labelElement);
+                    if (text != null) {
+                        book.add(Publisher.from(text));
+                    }
+                    break;
+                }
+                case "Format :": {
+                    final Node textNode = labelElement.nextSibling();
+                    if (textNode != null) {
+                        currentFormat = textNode.toString().trim();
+                        mapFormat(context, currentFormat, false, book);
+                    }
+                    break;
+                }
+                case "EAN/ISBN :": {
+                    final String text = parseLabelText(labelElement);
+                    if (text != null) {
+                        book.setIsbn(ISBN.cleanText(text));
+                    }
+                    break;
+                }
+                case "Planches :": {
+                    final String text = parseLabelText(labelElement);
+                    if (text != null) {
+                        book.setPages(text);
+                    }
+                    break;
+                }
+                case "Autres info :": {
+                    if (labelElement.nextElementSiblings()
+                                    .stream()
+                                    .map(sib -> sib.attr("title"))
+                                    .anyMatch(FORMAT_COUVERTURE_SOUPLE::equals)) {
+                        // Sanity check, it should never be null at this point.
+                        if (currentFormat == null) {
+                            currentFormat = FORMAT_COUVERTURE_SOUPLE;
+                        }
+                        mapFormat(context, currentFormat, true, book);
+                    }
+                }
+
+                // Collection : publisher collection
+            }
+        }
+    }
+
+    @Nullable
+    private String parseLabelText(@NonNull final Element label) {
+        // the main section has a span
+        final Element span = label.nextElementSibling();
+        if (span != null) {
+            return span.text();
+        }
+
+        // a later edition is a plain text
+        final Node node = label.nextSibling();
+        if (node != null) {
+            return node.toString().trim();
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse an Author. Handles Bedetheque specific hardcoded pseudo-names.
+     *
+     * @param context Current context
+     * @param text    to parse
+     * @param type    the Author type
+     * @param book    Bundle to update
+     */
+    private void parseAuthor(@NonNull final Context context,
+                             @NonNull final String text,
+                             @Author.Type final int type,
+                             @NonNull final Book book) {
+
+        // REMOVE potential "<>" as we really don't want fake html tags
+        String names = text;
+        if (names.startsWith("<")) {
+            names = names.substring(1);
+        }
+        if (names.endsWith(">")) {
+            names = names.substring(0, names.length() - 1);
+        }
+
+        // colors - handled by "Couleurs"
+        //"<N&B>", "<Monochromie>", "<Bichromie>", "<Trichromie>", "<Quadrichromie>"
+        // scenario author for an art-book; ignore
+        // "<Art Book>"
+        // Used for books; The authors for "dessin" and "couleurs"; ignore
+        // "<Texte non illustré>"
+        switch (names) {
+            case "Indéterminé": {
+                addAuthor(Author.createUnknownAuthor(context), type, book);
+                break;
+            }
+            case "Anonyme": {
+                addAuthor(new Author(context.getString(R.string.anonymous_author), ""),
+                          type, book);
+                break;
+            }
+            case "Art Book":
+            case "Texte non illustré": {
+                // ignore these
+                return;
+            }
+            case "Collectif":
+            default: {
+                addAuthor(Author.from(names), type, book);
+                break;
+            }
+        }
+    }
+
+    private void parseSeries(@NonNull final Element labelElement,
+                             @NonNull final Book book) {
+        final Node textNode = labelElement.nextSibling();
+        if (textNode != null) {
+            book.add(processSeries(textNode.toString().trim(), book));
+        }
     }
 
     /**
@@ -673,88 +861,62 @@ public class BedethequeSearchEngine
     }
 
     /**
-     * Parses the given {@link Document} for the cover and fetches it when present.
+     * Map Bedetheque specific formats to our generalized ones if allowed.
      *
-     * @param context  Current context
-     * @param document to parse
-     * @param bookId   (optional) isbn or native id of the book,
-     *                 will only be used for the temporary cover filename
-     * @param cIdx     0..n image index
-     *
-     * @return fileSpec
-     *
-     * @throws StorageException on storage related failures
+     * @param context       Current context
+     * @param currentFormat original french format string
+     * @param softcover     {@code true} if the books is a softcover, {@code false} for hardcover
+     * @param book          Bundle to update
      */
-    @WorkerThread
-    @NonNull
-    private Optional<String> parseCover(@NonNull final Context context,
-                                        @NonNull final Document document,
-                                        @Nullable final String bookId,
-                                        @IntRange(from = 0, to = 1) final int cIdx)
-            throws StorageException {
+    private void mapFormat(@NonNull final Context context,
+                           @NonNull final String currentFormat,
+                           final boolean softcover,
+                           @NonNull final Book book) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES, false)) {
+            book.setFormat(currentFormat + (softcover ? "; " + FORMAT_COUVERTURE_SOUPLE : ""));
+            return;
+        }
 
-        Element a = null;
-        if (cIdx == 0) {
-            a = document.selectFirst("div.bandeau-principal > div.bandeau-image > a");
-        } else if (cIdx == 1) {
-            // bandeau-vignette contains a list, each "li" contains an "a"
-            a = document.select("div.bandeau-vignette a").last();
+        final String format;
+        switch (currentFormat) {
+            case FORMAT_COUVERTURE_SOUPLE:
+                format = context.getString(R.string.book_format_softcover);
+                break;
+
+            case "Format normal":
+            case "Grand format":
+                format = context.getString(softcover ? R.string.book_format_softcover
+                                                     : R.string.book_format_hardcover);
+                break;
+
+            case "A l'italienne":
+                format = context.getString(softcover ? R.string.book_format_softcover_oblong
+                                                     : R.string.book_format_hardcover_oblong);
+                break;
+
+            case "Format comics":
+                format = context.getString(softcover ? R.string.book_format_comic
+                                                     : R.string.book_format_hardcover);
+                break;
+
+            case "Format manga":
+            case "Format poche":
+                format = context.getString(softcover ? R.string.book_format_paperback
+                                                     : R.string.book_format_hardcover);
+                break;
+
+            case "Autre format":
+                format = context.getString(R.string.book_format_other);
+                break;
+
+            default:
+                // fallback
+                format = currentFormat;
+                break;
         }
-        if (a == null) {
-            return Optional.empty();
-        }
-        final String url = a.attr("href");
-        return saveImage(context, url, null, bookId, cIdx, null);
+
+        book.setFormat(format);
     }
 
-    /**
-     * Parse an Author. Handles Bedetheque specific hardcoded pseudo-names.
-     *
-     * @param context Current context
-     * @param text    to parse
-     * @param type    the Author type
-     * @param book    Bundle to update
-     */
-    private void parseAuthor(@NonNull final Context context,
-                             @NonNull final String text,
-                             @Author.Type final int type,
-                             @NonNull final Book book) {
-
-        // REMOVE potential "<>" as we really don't want fake html tags
-        String names = text;
-        if (names.startsWith("<")) {
-            names = names.substring(1);
-        }
-        if (names.endsWith(">")) {
-            names = names.substring(0, names.length() - 1);
-        }
-
-        // colors - handled by "Couleurs"
-        //"<N&B>", "<Monochromie>", "<Bichromie>", "<Trichromie>", "<Quadrichromie>"
-        // scenario author for an art-book; ignore
-        // "<Art Book>"
-        // Used for books; The authors for "dessin" and "couleurs"; ignore
-        // "<Texte non illustré>"
-        switch (names) {
-            case "Indéterminé": {
-                addAuthor(Author.createUnknownAuthor(context), type, book);
-                break;
-            }
-            case "Anonyme": {
-                addAuthor(new Author(context.getString(R.string.anonymous_author), ""),
-                          type, book);
-                break;
-            }
-            case "Art Book":
-            case "Texte non illustré": {
-                // ignore these
-                return;
-            }
-            case "Collectif":
-            default: {
-                addAuthor(Author.from(names), type, book);
-                break;
-            }
-        }
-    }
 }
