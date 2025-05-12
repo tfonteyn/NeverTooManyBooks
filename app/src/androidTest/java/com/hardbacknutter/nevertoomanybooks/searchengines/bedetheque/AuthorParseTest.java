@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.jsoup.nodes.Document;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -147,6 +148,58 @@ public class AuthorParseTest
         final int countAuthors = bedethequeCacheDao.countAuthors();
         assertEquals(2578, countAuthors);
 //        assertEquals(2585, countAuthors);
+    }
+
+    @Test
+    public void liveLookup01()
+            throws SearchException, CredentialsException {
+
+        final boolean modified;
+        final Author author;
+        final Author realAuthor;
+
+        author = new Author("Leloup", "Roger");
+        modified = resolver.resolve(context, author);
+        Assert.assertTrue(modified);
+        Assert.assertEquals("Leloup", author.getFamilyName());
+        Assert.assertEquals("Roger", author.getGivenNames());
+        realAuthor = author.getRealAuthor();
+        Assert.assertNull(realAuthor);
+    }
+
+    @Test
+    public void liveLookup02()
+            throws SearchException, CredentialsException {
+
+        final boolean modified;
+        final Author author;
+        final Author realAuthor;
+
+        author = new Author("<Indéterminé>", "");
+        modified = resolver.resolve(context, author);
+        Assert.assertFalse(modified);
+        Assert.assertEquals("<Indéterminé>", author.getFamilyName());
+        realAuthor = author.getRealAuthor();
+        Assert.assertNull(realAuthor);
+    }
+
+    @Test
+    public void liveLookup03()
+            throws SearchException, CredentialsException {
+
+        final boolean modified;
+        final Author author;
+        final Author realAuthor;
+
+        author = new Author("61Chi", "");
+        modified = resolver.resolve(context, author);
+        Assert.assertTrue(modified);
+        Assert.assertEquals("61Chi", author.getFamilyName());
+        realAuthor = author.getRealAuthor();
+        Assert.assertNotNull(realAuthor);
+        Assert.assertEquals("Liu", realAuthor.getFamilyName());
+        Assert.assertEquals("Yi-chi", realAuthor.getGivenNames());
+        Assert.assertNull(realAuthor.getRealAuthor());
     }
 
     @Test
