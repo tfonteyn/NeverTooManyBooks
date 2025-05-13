@@ -55,7 +55,13 @@ class KbNlBookHandler
 
     /** Example: {@code REL?PPN=068561504}. */
     private static final Pattern AUTHOR_ID = Pattern.compile("REL\\?PPN=(\\d+)");
+    /** Split the author name from the trailing bracketed sections. */
+    private static final Pattern AUTHOR_NAME = Pattern.compile("(?=\\()");
+    /** Loop over the bracketed sections after the author name. */
     private static final Pattern AUTHOR_BRACKETED_SUFFIX = Pattern.compile("\\((.*?)\\)");
+    /** Parse the bracketed section with the author dates. */
+    private static final Pattern BIRTH_DEATH_DATES =
+            Pattern.compile("(\\d\\d\\d\\d)-(\\d\\d\\d\\d|)");
 
     @NonNull
     private final KbNlSearchEngine searchEngine;
@@ -389,9 +395,7 @@ class KbNlBookHandler
                      @Author.Type final int type) {
         for (final CurrentData cd : currentData) {
             final String text = cd.data;
-            // this and below is not efficient... but we'll optimize when
-            // implementing author birth/dead date parsing
-            final String[] parts = text.split("\\(", 2);
+            final String[] parts = AUTHOR_NAME.split(text, 2);
 
             final String name = parts[0].strip();
             // reject separators as for example: <psi:text>;</psi:text>
@@ -411,17 +415,26 @@ class KbNlBookHandler
             }
             if (parts.length > 1) {
                 // "Isaak Judovič Ozimov (1920-1992) (ISNI 0000 0001 2259 0564)"
-                // parts[1] == "(1920-1992) (ISNI 0000 0001 2259 0564)";
-                // Instead of doing a regexp for "(ISNI...), we loop manually
-                // with the intention at a later time to parse the other ()'s we find
+                // parts[1] == "(1920-1992) (ISNI 0000 0001 2259 0564)"
+                // parts[1] == "(1976-) (ISNI 0000 0004 8004 6868)"
                 final Matcher matcher = AUTHOR_BRACKETED_SUFFIX.matcher(parts[1]);
                 while (matcher.find()) {
-                    String s = matcher.group(1);
-                    if (s != null && s.startsWith("ISNI")) {
-                        s = s.substring(4);
-                        final ISNI isni = new ISNI(s);
-                        if (isni.isValid()) {
-                            author.setIdentifierValue(Identifier.SID_ISNI, isni.getIsni());
+                    final String s = matcher.group(1);
+                    if (s != null) {
+                        if (s.startsWith("ISNI")) {
+                            final ISNI isni = new ISNI(s.substring(4));
+                            if (isni.isValid()) {
+                                author.setIdentifierValue(Identifier.SID_ISNI, isni.getIsni());
+                            }
+                        } else {
+                            final Matcher bddMatcher = BIRTH_DEATH_DATES.matcher(s);
+                            if (bddMatcher.find()) {
+                                author.setBirthDate(bddMatcher.group(1));
+                                final String deathDate = bddMatcher.group(2);
+                                if (deathDate != null) {
+                                    author.setDeathDate(deathDate);
+                                }
+                            }
                         }
                     }
                 }
