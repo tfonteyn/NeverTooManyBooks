@@ -221,8 +221,13 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
-        assertEquals("刘慈欣", authors.get(0).getFamilyName());
-        assertEquals("", authors.get(0).getGivenNames());
+
+        final Author author;
+
+        author = authors.get(0);
+        assertEquals("刘慈欣", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertTrue(author.getIdentifierValue(Identifier.SID_DOUBAN).isEmpty());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -277,8 +282,16 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
-        assertEquals("刘慈欣", authors.get(0).getFamilyName());
-        assertEquals("", authors.get(0).getGivenNames());
+
+        Optional<String> oIv;
+        final Author author;
+
+        author = authors.get(0);
+        assertEquals("刘慈欣", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        //oIv = author.getIdentifierValue(Identifier.SID_DOUBAN);
+        //assertTrue(oIv.isPresent());
+        //assertEquals("4561353", oIv.get());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -386,16 +399,21 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
+        Optional<String> oIv;
         Author author;
 
         author = authors.get(0);
         assertEquals("保罗·霍尔特 [法]", author.getFamilyName());
         assertEquals("", author.getGivenNames());
+//        oIv = author.getIdentifierValue(Identifier.SID_DOUBAN);
+//        assertTrue(oIv.isPresent());
+//        assertEquals("322717", oIv.get());
 
         author = authors.get(1);
         assertEquals("朱寒依", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertTrue(author.getIdentifierValue(Identifier.SID_DOUBAN).isEmpty());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -551,16 +569,19 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
+        Optional<String> oIv;
         Author author;
 
         author = authors.get(0);
         assertEquals("菲利普·高夫 [英]", author.getFamilyName());
         assertEquals("", author.getGivenNames());
+        assertTrue(author.getIdentifierValue(Identifier.SID_DOUBAN).isEmpty());
 
         author = authors.get(1);
         assertEquals("傅星源", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertTrue(author.getIdentifierValue(Identifier.SID_DOUBAN).isEmpty());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);

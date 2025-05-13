@@ -488,18 +488,27 @@ public class DoubanSearchEngine
                 case "作者": {
                     // Author
                     final Element a = label.nextElementSibling();
+                    // make sure that sibling IS an "a"
                     if (a != null && "a".equals(a.tagName())) {
-                        final String text = a.text();
+                        String text = a.text();
                         final Matcher matcher = PATTERN_FOREIGN_AUTHOR.matcher(text);
                         if (matcher.find()) {
                             // [法] 保罗·霍尔特   ==>  [France] Paul Holt
                             // Move the country prefix to the end to allow
                             // sorting on author names to work.
-                            final String name = matcher.group(2) + " [" + matcher.group(1) + "]";
-                            addAuthor(Author.from(name), Author.TYPE_UNKNOWN, book);
-                        } else {
-                            addAuthor(Author.from(text), Author.TYPE_UNKNOWN, book);
+                            text = matcher.group(2) + " [" + matcher.group(1) + "]";
                         }
+                        final Author author = Author.from(text);
+
+                        // ENHANCE: we parsed the author link as per below to get the SID
+                        //  Example: https://book.douban.com/author/322717
+                        //  when followed, this redirects to
+                        //  https://www.douban.com/personage/30081700/
+                        //  so the SID from the author link is WRONG...
+                        //  We'll need to follow the link to the "personage" to get the correct SID.
+                        //  This would also allow us to get Birthdate etc
+
+                        addAuthor(author, Author.TYPE_UNKNOWN, book);
                     }
                     break;
                 }
