@@ -428,7 +428,7 @@
     <string name="pt_search_prefer_isbn10">Ak je to možné, použiť ISBN-10</string>
     <string name="pt_collect_series_info_from_toc">Zhromažďovať informácie o sérii z prehľadu obsahu</string>
     <string name="pt_search_resolve_authors">Riešenie pseudonymov autorov</string>
-    <string name="pt_search_resolve_authors_bedetheque">Riešenie pseudonymov autorov pomocou webovej stránky Bedetheque</string>
+    <string name="pt_search_resolve_authors_using_site_x">Riešenie pseudonymov autorov pomocou webovej stránky %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovať názvoslovie (francúzskeho) formátu Bedetheque</string>
     <string name="pt_main_author_type">Primárny typ autora</string>
     <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>

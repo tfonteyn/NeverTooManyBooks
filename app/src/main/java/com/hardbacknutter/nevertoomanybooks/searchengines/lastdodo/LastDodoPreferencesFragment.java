@@ -36,5 +36,10 @@ public class LastDodoPreferencesFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_lastdodo, rootKey);
+
+        //noinspection DataFlowIssue
+        findPreference("lastdodo.resolve.authors.bedetheque")
+                .setTitle(getString(R.string.pt_search_resolve_authors_using_site_x,
+                                    getString(R.string.site_bedetheque)));
     }
 }

@@ -36,5 +36,10 @@ public class GoodreadsPreferencesFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_goodreads, rootKey);
+
+        //noinspection DataFlowIssue
+        findPreference("goodreads.resolve.authors.openlibrary")
+                .setTitle(getString(R.string.pt_search_resolve_authors_using_site_x,
+                                    getString(R.string.site_open_library)));
     }
 }

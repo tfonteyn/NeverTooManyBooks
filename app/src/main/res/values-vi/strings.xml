@@ -720,7 +720,7 @@
     <string name="pt_search_reformat_color">Chuẩn hóa tên “màu sách”</string>
     <string name="pt_search_reformat_format">Chuẩn hóa tên “định dạng sách”</string>
     <string name="pt_search_resolve_authors">Giải quyết bút danh của tác giả</string>
-    <string name="pt_search_resolve_authors_bedetheque">Giải quyết bút danh của tác giả bằng cách sử dụng trang web Bedetheque</string>
+    <string name="pt_search_resolve_authors_using_site_x">Giải quyết bút danh của tác giả bằng cách sử dụng trang web %1$s</string>
     <string name="pt_search_result_order">Tìm kiếm sẽ trả về cuốn sách gần đây nhất hoặc cuốn sách đầu tiên được tìm thấy.</string>
     <string name="pt_search_show_menu_options">Hiển thị menu tìm kiếm</string>
     <string name="pt_search_uses_publisher">Tìm kiếm sử dụng nhà xuất bản</string>

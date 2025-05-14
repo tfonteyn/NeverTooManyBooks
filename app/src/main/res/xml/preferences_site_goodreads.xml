@@ -20,7 +20,8 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:app="http://schemas.android.com/apk/res-auto">
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+                  xmlns:tools="http://schemas.android.com/tools">
 
     <PreferenceCategory
         android:title="@string/site_goodreads">
@@ -39,8 +40,7 @@
             android:key="goodreads.resolve.authors.openlibrary"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/pt_search_resolve_authors_openlibrary" />
-
+            tools:title="@string/pt_search_resolve_authors_using_site_x" />
 
     </PreferenceCategory>
 

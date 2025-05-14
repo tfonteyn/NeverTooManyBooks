@@ -678,7 +678,7 @@
     <string name="pt_search_prefer_isbn10">ISBN-10 használata, mikor lehetséges</string>
     <string name="pt_collect_series_info_from_toc">Sorozatadatok gyűjtése a tartalomjegyzékből</string>
     <string name="pt_search_resolve_authors">Szerzői álnevek meghatározása</string>
-    <string name="pt_search_resolve_authors_bedetheque">Szerzői álnevek meghatározása a Bedetheque webhely segítségével</string>
+    <string name="pt_search_resolve_authors_using_site_x">Szerzői álnevek meghatározása a %1$s webhely segítségével</string>
     <string name="pt_bedetheque_search_resolve_formats">A Bedetheque (francia) formátum megőrzése</string>
     <string name="pt_main_author_type">Elsődleges szerzőtípus</string>
     <string name="pt_edit_book_isbn_checks">ISBN érvényesség ellenőrzés</string>

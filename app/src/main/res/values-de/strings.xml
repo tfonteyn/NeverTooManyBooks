@@ -736,7 +736,7 @@
     <string name="vldt_real_author_must_be_valid">Muss leer oder ein vorhandener Autor sein</string>
     <string name="confirm_create_real_author">„%1$s“ existiert noch nicht. Sollen sie erstellt werden?</string>
     <string name="pt_search_resolve_authors">Autoren-Pseudonyme auflösen</string>
-    <string name="pt_search_resolve_authors_bedetheque">Pseudonyme von Autoren über die Website der Bedetheque auflösen</string>
+    <string name="pt_search_resolve_authors_using_site_x">Pseudonyme von Autoren über die Website der %1$s auflösen</string>
     <string name="pt_bedetheque_search_resolve_formats">Benennung im Bedetheque-Format (französisch) beibehalten</string>
     <string name="confirm_toc_list_update_with_books_main_author">Ersetze den Autor in allen Einträgen durch den Hauptautor des Buches „%1$s“ ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Alle Bücher unterhalb dieser Zeile haben Cover. Nochmals von oben suchen?</string>

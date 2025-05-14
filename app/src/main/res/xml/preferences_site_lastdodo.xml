@@ -20,7 +20,8 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:app="http://schemas.android.com/apk/res-auto">
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+                  xmlns:tools="http://schemas.android.com/tools">
 
     <PreferenceCategory
         android:title="@string/site_lastdodo_nl">
@@ -40,7 +41,7 @@
             android:key="lastdodo.resolve.authors.bedetheque"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/pt_search_resolve_authors_bedetheque" />
+            tools:title="@string/pt_search_resolve_authors_using_site_x" />
 
     </PreferenceCategory>
 

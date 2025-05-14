@@ -649,7 +649,7 @@
     <string name="pt_allow_metered_network_data">Permitir o uso de dados móveis</string>
     <string name="pt_scanning_beep_on_invalid">Apitar se o ISBN lido é inválido</string>
     <string name="pt_search_resolve_authors">Resolver nomes de pseudónimos de autores</string>
-    <string name="pt_search_resolve_authors_bedetheque">Resolver pseudónimos de autor usando o site Bedetheque</string>
+    <string name="pt_search_resolve_authors_using_site_x">Resolver pseudónimos de autor usando o site %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Preservar a nomenclatura do formato Bedetheque (francês)</string>
     <string name="pe_ui_theme_dark">Escuro</string>
     <string name="pe_ui_theme_light">Luz</string>

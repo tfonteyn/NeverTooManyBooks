@@ -745,7 +745,7 @@
     <string name="vldt_real_author_must_be_valid">Должно быть пустым или существующим автором</string>
     <string name="confirm_create_real_author">«%1$s» еще не существует. Должны ли они быть созданы?</string>
     <string name="pt_search_resolve_authors">Разрешить псевдонимы авторов</string>
-    <string name="pt_search_resolve_authors_bedetheque">Разрешить авторские псевдонимы с помощью веб-сайта Bedetheque</string>
+    <string name="pt_search_resolve_authors_using_site_x">Разрешить авторские псевдонимы с помощью веб-сайта %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Сохранить название формата Bedetheque (французский)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Заменить автора во всех записях на основного автора книги «%1$s»?</string>
     <string name="confirm_no_missing_covers_search_from_top">Все книги ниже этого ряда имеют обложки. Искать снова сверху?</string>

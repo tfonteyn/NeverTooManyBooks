@@ -50,6 +50,11 @@ public class StripInfoBePreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
+        //noinspection DataFlowIssue
+        findPreference("stripinfo.resolve.authors.bedetheque")
+                .setTitle(getString(R.string.pt_search_resolve_authors_using_site_x,
+                                    getString(R.string.site_bedetheque)));
+
         initLoginPrefs();
 
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {

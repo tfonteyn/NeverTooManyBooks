@@ -42,6 +42,11 @@ public class StripWebPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_stripweb, rootKey);
 
+        //noinspection DataFlowIssue
+        findPreference("stripweb.resolve.authors.bedetheque")
+                .setTitle(getString(R.string.pt_search_resolve_authors_using_site_x,
+                                    getString(R.string.site_bedetheque)));
+
         initSearchMenuPref(EngineId.StripWebBe);
     }
 

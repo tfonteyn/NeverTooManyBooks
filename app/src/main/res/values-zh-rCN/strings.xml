@@ -709,7 +709,7 @@
     <string name="pt_search_prefer_isbn10">可用时使用 ISBN-10</string>
     <string name="pt_search_reformat_color">标准化“图书颜色”名称</string>
     <string name="pt_search_reformat_format">标准化“图书格式”名称</string>
-    <string name="pt_search_resolve_authors_bedetheque">用 Bedetheque 网站解析作者笔名</string>
+    <string name="pt_search_resolve_authors_using_site_x">用 %1$s 网站解析作者笔名</string>
     <string name="pt_search_result_order">搜索返回最新书籍或者第找到的第一本。</string>
     <string name="pt_search_show_menu_options">显示搜索菜单</string>
     <string name="pt_search_uses_publisher">搜索时使用出版商</string>

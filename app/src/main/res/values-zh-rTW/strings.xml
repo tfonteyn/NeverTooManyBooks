@@ -707,7 +707,7 @@
     <string name="pt_search_prefer_isbn10">可用時使用 ISBN-10</string>
     <string name="pt_search_reformat_color">標準化「圖書顏色」名稱</string>
     <string name="pt_search_reformat_format">標準化「圖書格式」名稱</string>
-    <string name="pt_search_resolve_authors_bedetheque">用 Bedetheque 網站解析作者筆名</string>
+    <string name="pt_search_resolve_authors_using_site_x">用 %1$s 網站解析作者筆名</string>
     <string name="pt_search_result_order">搜尋返回最新書籍或第找到的第一本。</string>
     <string name="pt_search_show_menu_options">顯示搜尋選單</string>
     <string name="pt_search_uses_publisher">搜尋時使用出版商</string>
