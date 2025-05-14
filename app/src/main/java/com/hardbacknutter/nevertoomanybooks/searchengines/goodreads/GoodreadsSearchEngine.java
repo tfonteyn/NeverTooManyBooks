@@ -50,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -69,9 +71,9 @@ import org.jsoup.select.Elements;
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>
  * <p>
- * Goodreads is owned by Amazon and is shutting their API down.
+ * Goodreads is owned by Amazon and has shut their API down.
  * <p>
- * But in apparently 2022 the html pages started to contain a json blob making them easy to parse.
+ * But in 2022 the html pages started to contain a json blob making them easy to parse.
  */
 public class GoodreadsSearchEngine
         extends JsoupSearchEngineBase
@@ -327,7 +329,7 @@ public class GoodreadsSearchEngine
                @NonNull final Document document,
                @NonNull final boolean[] fetchCovers,
                @NonNull final Book book)
-            throws StorageException, SearchException {
+            throws StorageException, SearchException, CredentialsException {
 
         try {
             final Element scriptTag = document.selectFirst("script#__NEXT_DATA__");
@@ -345,7 +347,7 @@ public class GoodreadsSearchEngine
                @NonNull final JSONObject root,
                @NonNull final Book book,
                @NonNull final boolean[] fetchCovers)
-            throws JSONException, StorageException {
+            throws JSONException, StorageException, SearchException, CredentialsException {
 
         final JSONObject props = root.optJSONObject("props");
         if (props == null) {
@@ -393,7 +395,7 @@ public class GoodreadsSearchEngine
                            @NonNull final JSONObject o,
                            @NonNull final Book book,
                            @NonNull final boolean[] fetchCovers)
-            throws JSONException, StorageException {
+            throws JSONException, StorageException, SearchException, CredentialsException {
         final String title = o.optString("title");
         if (title.isEmpty()) {
             return;
@@ -441,6 +443,12 @@ public class GoodreadsSearchEngine
         final JSONObject work = o.optJSONObject("work");
         if (work != null) {
             parseWork(apolloState, work, book);
+        }
+
+        for (final AuthorResolver resolver : AuthorResolverFactory.getResolvers(context, this)) {
+            for (final Author author : book.getAuthors()) {
+                resolver.resolve(context, author);
+            }
         }
 
         if (isCancelled()) {

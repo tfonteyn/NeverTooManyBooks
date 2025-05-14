@@ -79,7 +79,7 @@ public class ParseTest
 
     @Test
     public void parseNextDataJson9789604419197()
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.goodreads_next_data_9789604419197);
@@ -87,6 +87,8 @@ public class ParseTest
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("Ο νόμος ποτέ δε κοιμάται...", book.getString(DBKey.TITLE, null));
         assertEquals("9789604419197", book.getString(DBKey.ISBN, null));
@@ -127,18 +129,46 @@ public class ParseTest
         assertNotNull(authors);
         assertEquals(3, authors.size());
         Author author;
+        Optional<String> oIv;
+
         author = authors.get(0);
         assertEquals("Cauvin", author.getFamilyName());
         assertEquals("Raoul", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1938-09-26", author.getBirthDate().orElse(null));
+        assertEquals("2021-08-19", author.getDeathDate().orElse(null));
+        assertEquals(2, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
+        assertTrue(oIv.isPresent());
+        assertEquals("115105", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL1559643A", oIv.get());
+
         author = authors.get(1);
         assertEquals("Kox", author.getFamilyName());
         assertEquals("Daniel", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertNull(author.getBirthDate().orElse(null));
+        assertNull(author.getDeathDate().orElse(null));
+        assertEquals(2, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
+        assertTrue(oIv.isPresent());
+        assertEquals("120410", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL3144084A", oIv.get());
+
         author = authors.get(2);
         assertEquals("Γαλάτουλα", author.getFamilyName());
         assertEquals("Τατιάνα", author.getGivenNames());
         assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertNull(author.getBirthDate().orElse(null));
+        assertNull(author.getDeathDate().orElse(null));
+        assertEquals(1, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
+        assertTrue(oIv.isPresent());
+        assertEquals("7048501", oIv.get());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -155,7 +185,7 @@ public class ParseTest
 
     @Test
     public void parseNextDataJson9789028453807()
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -234,7 +264,7 @@ public class ParseTest
 
     @Test
     public void parseNextDataJson9780062683250()
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -305,9 +335,22 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
-        assertEquals("Nix", authors.get(0).getFamilyName());
-        assertEquals("Garth", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        final Author author;
+        Optional<String> oIv;
+
+        author = authors.get(0);
+        assertEquals("Nix", author.getFamilyName());
+        assertEquals("Garth", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1963", author.getBirthDate().orElse(null));
+        assertNull(author.getDeathDate().orElse(null));
+        assertEquals(2, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
+        assertTrue(oIv.isPresent());
+        assertEquals("8347", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL382982A", oIv.get());
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -325,7 +368,7 @@ public class ParseTest
 
     @Test
     public void parseNextDataJson9780553803723()
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -381,9 +424,23 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
-        assertEquals("Asimov", authors.get(0).getFamilyName());
-        assertEquals("Isaac", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        final Author author;
+        Optional<String> oIv;
+
+        author = authors.get(0);
+
+        assertEquals("Asimov", author.getFamilyName());
+        assertEquals("Isaac", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1920-01-02", author.getBirthDate().orElse(null));
+        assertEquals("1992-04-06", author.getDeathDate().orElse(null));
+        assertEquals(2, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL34221A", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
+        assertTrue(oIv.isPresent());
+        assertEquals("16667", oIv.get());
 
         final List<Series> seriesList = book.getSeries();
         assertNotNull(seriesList);
@@ -413,7 +470,7 @@ public class ParseTest
      */
     @Test
     public void withNulls()
-            throws IOException, StorageException {
+            throws IOException, StorageException, SearchException, CredentialsException {
 
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
@@ -478,9 +535,23 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
-        assertEquals("Virgil", authors.get(0).getFamilyName());
-        assertEquals("", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        final Author author;
+        Optional<String> oIv;
+
+        author = authors.get(0);
+        assertEquals("Virgil", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+
+        // the lookup on OPEN_LIBRARY fails as they have this author listed as "Virgil Virgil"
+        assertEquals(1, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
+        assertTrue(oIv.isPresent());
+        assertEquals("919", oIv.get());
+//        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+//        assertTrue(oIv.isPresent());
+//        assertEquals("OL34221A", oIv.get());
+
 
         final List<Series> seriesList = book.getSeries();
         assertNotNull(seriesList);
@@ -527,6 +598,4 @@ public class ParseTest
         assertEquals("Spectra", book.getPrimaryPublisher().get().getName());
         // full assert is already tested in parseNextDataJson9780553803723()
     }
-
-
 }

@@ -78,6 +78,12 @@ public final class AuthorResolverFactory {
                 }
                 break;
             }
+            case Goodreads: {
+                if (isEnabled(context, engineId, EngineId.OpenLibrary)) {
+                    return List.of(OpenLibraryAuthorResolver.create(context, searchEngine));
+                }
+                break;
+            }
             case Isfdb: {
                 if (isEnabled(context, engineId)) {
                     return List.of(IsfdbAuthorResolver.create(context, searchEngine));

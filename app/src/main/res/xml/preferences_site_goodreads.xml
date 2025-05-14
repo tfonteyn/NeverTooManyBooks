@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -32,6 +32,15 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/cloud_download_24px"
+            android:key="goodreads.resolve.authors.openlibrary"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_resolve_authors_openlibrary" />
+
 
     </PreferenceCategory>
 

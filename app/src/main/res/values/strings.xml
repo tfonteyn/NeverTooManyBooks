@@ -1517,6 +1517,8 @@
     <!-- option to resolve author pen-names -->
     <string name="pt_search_resolve_authors">Resolve author pen-names</string>
     <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
+    <string name="pt_search_resolve_authors_openlibrary">Resolve author pen-names using the OpenLibrary website</string>
+
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
     <!-- MultiSelectListPreference title -->
     <string name="pt_main_author_type">Primary author type</string>
