@@ -205,11 +205,6 @@ public class BedethequeSearchEngine
     }
 
     @NonNull
-    private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
-        return AuthorResolverFactory.getEuroComicResolvers(context, this);
-    }
-
-    @NonNull
     private String requireCookieNameValueString(@NonNull final Context context)
             throws SearchException {
         if (csrfCookie == null || csrfCookie.hasExpired()) {
@@ -270,7 +265,8 @@ public class BedethequeSearchEngine
         final Book book = new Book();
         final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, extraRequestProperties);
-        parse(context, document, fetchCovers, null, book, getAuthorResolvers(context));
+        parse(context, document, fetchCovers, null, book,
+              AuthorResolverFactory.getResolvers(context, this));
 
         return book;
     }
@@ -308,7 +304,7 @@ public class BedethequeSearchEngine
                     final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
                         parse(context, redirected, fetchCovers, searchedIsbn, book,
-                              getAuthorResolvers(context)
+                              AuthorResolverFactory.getResolvers(context, this)
                         );
                     }
                 }

@@ -251,11 +251,6 @@ public class LastDodoSearchEngine
     }
 
     @NonNull
-    private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
-        return AuthorResolverFactory.getEuroComicResolvers(context, this);
-    }
-
-    @NonNull
     public Book searchByExternalId(@NonNull final Context context,
                                    @NonNull final String externalId,
                                    @NonNull final boolean[] fetchCovers)
@@ -266,7 +261,8 @@ public class LastDodoSearchEngine
         final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book, getAuthorResolvers(context));
+            parse(context, document, fetchCovers, book,
+                  AuthorResolverFactory.getResolvers(context, this));
         }
         return book;
     }
@@ -366,7 +362,8 @@ public class LastDodoSearchEngine
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book, getAuthorResolvers(context));
+                    parse(context, redirected, fetchCovers, book,
+                          AuthorResolverFactory.getResolvers(context, this));
                 }
             }
         }

@@ -164,11 +164,6 @@ public class StripWebSearchEngine
     }
 
     @NonNull
-    private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
-        return AuthorResolverFactory.getEuroComicResolvers(context, this);
-    }
-
-    @NonNull
     @Override
     public Book searchByIsbn(@NonNull final Context context,
                              @NonNull final String validIsbn,
@@ -250,7 +245,8 @@ public class StripWebSearchEngine
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book, getAuthorResolvers(context));
+                    parse(context, redirected, fetchCovers, book,
+                          AuthorResolverFactory.getResolvers(context, this));
                 }
             }
         }

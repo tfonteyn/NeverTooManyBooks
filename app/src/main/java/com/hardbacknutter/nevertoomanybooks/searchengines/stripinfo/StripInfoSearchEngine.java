@@ -221,11 +221,6 @@ public class StripInfoSearchEngine
         }
     }
 
-    @NonNull
-    private List<AuthorResolver> getAuthorResolvers(@NonNull final Context context) {
-        return AuthorResolverFactory.getEuroComicResolvers(context, this);
-    }
-
     @Override
     public void setAuthModule(@NonNull final SiteAuthModule authModule) {
         if (BuildConfig.DEBUG /* always */) {
@@ -278,7 +273,8 @@ public class StripInfoSearchEngine
         final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book, getAuthorResolvers(context));
+            parse(context, document, fetchCovers, book,
+                  AuthorResolverFactory.getResolvers(context, this));
         }
         return book;
     }
@@ -315,7 +311,8 @@ public class StripInfoSearchEngine
         if (isMultiResult(document)) {
             parseMultiResult(context, document, fetchCovers, book);
         } else {
-            parse(context, document, fetchCovers, book, getAuthorResolvers(context));
+            parse(context, document, fetchCovers, book,
+                  AuthorResolverFactory.getResolvers(context, this));
         }
 
         // Finally, replace potential invalid ISBN numbers.
@@ -361,7 +358,8 @@ public class StripInfoSearchEngine
                 if (!isCancelled()) {
                     // prevent looping.
                     if (!isMultiResult(redirected)) {
-                        parse(context, redirected, fetchCovers, book, getAuthorResolvers(context));
+                        parse(context, redirected, fetchCovers, book,
+                              AuthorResolverFactory.getResolvers(context, this));
                     }
                 }
                 return;

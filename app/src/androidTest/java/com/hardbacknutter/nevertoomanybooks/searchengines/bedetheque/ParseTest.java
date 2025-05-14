@@ -71,7 +71,7 @@ public class ParseTest
 
         searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        authorResolvers = AuthorResolverFactory.getEuroComicResolvers(context, searchEngine);
+        authorResolvers = AuthorResolverFactory.getResolvers(context, searchEngine);
     }
 
     @Test
