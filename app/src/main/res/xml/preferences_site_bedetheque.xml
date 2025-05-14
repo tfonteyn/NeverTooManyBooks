@@ -33,7 +33,6 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
 
-        <!-- note the default is 'true'! Other sites using THIS resolver, default to 'false' -->
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/cloud_download_24px"
