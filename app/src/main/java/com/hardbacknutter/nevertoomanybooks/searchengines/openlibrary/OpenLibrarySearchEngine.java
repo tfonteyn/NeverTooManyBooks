@@ -43,8 +43,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -156,7 +158,7 @@ public class OpenLibrarySearchEngine
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @NonNull
     private final CookieManager cookieManager;
-    private final PartialDateParser dateParser = new PartialDateParser();
+    private final DateParser<PartialDate> dateParser = new PartialDateParser();
     @Nullable
     private FutureHttpGet<String> futureHttpGet;
     @Nullable
