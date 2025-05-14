@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -62,6 +63,9 @@ public final class OpenLibraryAuthorResolver
         implements AuthorResolver {
 
     private static final String TAG = "OpenLibraryAuthorResolv";
+    private static final String CHARSET = "UTF-8";
+
+    private static final String AUTHOR_SEARCH = "https://openlibrary.org/search/authors.json?q=";
 
     // There can be MANY different keys... sigh.
     //  "remote_ids": {
@@ -151,18 +155,99 @@ public final class OpenLibraryAuthorResolver
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
+
+        final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        if (oIv.isPresent()) {
+            return searchBySid(context, author, oIv.get());
+        } else {
+            return search(context, author);
+        }
+    }
+
+    /**
+     * As usual with OpenLibrary, the json returned here is (slightly) DIFFERENT
+     * from the json returned in {@link #search(Context, Author)}. Sigh...
+     * <pre>
+     * {@code
+     * {
+     *   "name": "Isaac Asimov",
+     *   "key": "/authors/OL34221A",
+     *   "entity_type": "Pseudonym",
+     *   "birth_date": "2 January 1920",
+     *   "personal_name": "Isaac Asimov",
+     *   "remote_ids": {
+     *     "viaf": "24597135",
+     *     "wikidata": "Q34981",
+     *     "isni": "0000000122590564"
+     *   },
+     *   "source_records": [
+     *     ...SNIP...
+     *   ],
+     *   "photos": [
+     *     7425151,
+     *     7893107,
+     *     7241360,
+     *     5544324,
+     *     -1
+     *   ],
+     *   "death_date": "6 April 1992",
+     *   "type": {
+     *     "key": "/type/author"
+     *   },
+     *   "title": "Ph.D.",
+     *   "alternate_names": [
+     *     "Aximofu",
+     *     "Azimov Ayzek",
+     *     "Dr. A",
+     *     "Isaac Asimoc",
+     *     "Isaak Asimov",
+     *     "Isaak Judovič",
+     *     "Issac Azimov",
+     *     "The Good Doctor"
+     *   ],
+     *   "role": "ed",
+     *   "links": [
+     *     {
+     *       "title": "French Wikipédia Page",
+     *       "url": "http://fr.wikipedia.org/wiki/Isaac_Asimov",
+     *       "type": {
+     *         "key": "/type/link"
+     *       }
+     *     }
+     *   ],
+     *   "bio": "Asimov was born sometime between O.....",
+     *   "latest_revision": 91,
+     *   "revision": 91,
+     *   "created": {
+     *     "type": "/type/datetime",
+     *     "value": "2008-04-01T03:28:50.625462"
+     *   },
+     *   "last_modified": {
+     *     "type": "/type/datetime",
+     *     "value": "2025-01-13T16:14:01.971754"
+     *   }
+     * }
+     * }
+     * </pre>
+     *
+     * @param context Current context
+     * @param author  to search for
+     * @param sid     to search
+     *
+     * @return {@code true} if the {@link Author} was modified; {@code false} otherwise
+     *
+     * @throws SearchException on generic exceptions (wrapped) during search
+     */
+    private boolean searchBySid(@NonNull final Context context,
+                                @NonNull final Author author,
+                                @NonNull final String sid)
+            throws SearchException {
         // the user can delete it...
         if (authorUri == null) {
             return false;
         }
 
-        final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
-        // no id, give up
-        if (oIv.isEmpty()) {
-            return false;
-        }
-
-        final String url = String.format(authorUri, oIv.get()) + ".json";
+        final String url = String.format(authorUri, sid) + ".json";
 
         final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
         try {
@@ -182,6 +267,111 @@ public final class OpenLibraryAuthorResolver
         return false;
     }
 
+    /**
+     * As usual with OpenLibrary, the json (docs[0]) returned here is (slightly) DIFFERENT
+     * from the json returned in {@link #searchBySid(Context, Author, String)}. Sigh...
+     * <pre>
+     * {@code
+     * {
+     *   "numFound": 12,
+     *   "start": 0,
+     *   "numFoundExact": true,
+     *   "docs": [
+     *     {
+     *       "alternate_names": [
+     *         "Aximofu",
+     *         "Azimov Ayzek",
+     *         "Dr. A",
+     *         "Isaac Asimoc",
+     *         "Isaak Asimov",
+     *         "Isaak Judovič",
+     *         "Issac Azimov",
+     *         "The Good Doctor"
+     *       ],
+     *       "birth_date": "2 January 1920",
+     *       "death_date": "6 April 1992",
+     *       "key": "OL34221A",
+     *       "name": "Isaac Asimov",
+     *       "top_subjects": [
+     *         "Science fiction",
+     *         "American Science fiction",
+     *         "Juvenile literature",
+     *         "Fiction",
+     *         "Science",
+     *         "Fiction, science fiction, general",
+     *         "Short stories",
+     *         "History",
+     *         "Children's fiction",
+     *         "English Science fiction"
+     *       ],
+     *       "top_work": "Foundation",
+     *       "type": "author",
+     *       "work_count": 1358,
+     *       "ratings_average": 4.118677,
+     *       "ratings_sortable": 4.076448,
+     *       "ratings_count": 1542,
+     *       "ratings_count_1": 21,
+     *       "ratings_count_2": 57,
+     *       "ratings_count_3": 270,
+     *       "ratings_count_4": 564,
+     *       "ratings_count_5": 630,
+     *       "want_to_read_count": 10311,
+     *       "already_read_count": 2988,
+     *       "currently_reading_count": 504,
+     *       "readinglog_count": 13803,
+     *       "_version_": 1828575192250580992
+     *     },
+     *     ...
+     *   ]
+     * }
+     * }
+     * </pre>
+     *
+     * @param context Current context
+     * @param author  to search for
+     *
+     * @return {@code true} if the {@link Author} was modified; {@code false} otherwise
+     *
+     * @throws SearchException on generic exceptions (wrapped) during search
+     */
+    public boolean search(@NonNull final Context context,
+                          @NonNull final Author author)
+            throws SearchException {
+
+        final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
+        try {
+            final String url = AUTHOR_SEARCH + URLEncoder.encode(
+                    author.getFormattedName(true), CHARSET);
+
+            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
+            JSONObject json = new JSONObject(response);
+            if (!searchEngine.isCancelled()) {
+                final int numFound = json.optInt("numFound");
+                if (numFound < 1) {
+                    return false;
+                }
+                final JSONArray docs = json.optJSONArray("docs");
+                if (docs != null && !docs.isEmpty()) {
+                    json = docs.getJSONObject(0);
+                    final Author found = parse(json);
+                    // 2025-05-10: insist on case-sensitive name equality for now.
+                    // If this proves problematic, we'll change it later...
+                    if (found != null && author.isSameName(found)) {
+                        // the "key" is a simple string.
+                        final String sid = json.optString("key");
+                        if (!sid.isEmpty()) {
+                            found.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, sid);
+                        }
+                        return author.merge(found, true);
+                    }
+                }
+            }
+        } catch (@NonNull final StorageException | IOException | JSONException e) {
+            throw new SearchException(searchEngine.getEngineId(), e);
+        }
+        return false;
+    }
+
     @VisibleForTesting
     @Nullable
     Author parse(@NonNull final JSONObject document) {
@@ -192,29 +382,44 @@ public final class OpenLibraryAuthorResolver
         // 2. "Kurt Vonnegut"
         // 3. "Stephen King"
         // 4. "Philip K. Dick"
+        //
+        // #search : present
+        // #resolve: present
         final String name = document.optString("name");
         // A variant of "name" ?
         // 1. "James Tiptree"
         // 2. "Vonnegut, Kurt."
         // 3. "King, Stephen"
         // 4. "Dick, Philip K."
+        //
+        // #search : absent
+        // #resolve: present
         final String personalName = document.optString("personal_name");
         // If the above was a pseudonym, this seems to be the real-name
         // 1. "Alice Bradley Sheldon"
         // 2. [absent]
         // 3. [absent]
         // 4. [absent]
+        //
+        // #search : absent
+        // #resolve: present
         final String fullerName = document.optString("fuller_name");
         // real-name(s), but not necessarily what appears on a book
         // 1. "Alice B. Sheldon"
         // 2. "Kurt Vonnegut, Jr."
         // 3. "Stephen king"
         // 4. "Philip Kindred Dick"
+        //
+        // #search : present
+        // #resolve: present
         final JSONArray alternateNames = document.optJSONArray("alternate_names");
 
         // We've seen, BUT not used consistently (or at all)...
-        // "Pseudonym"  for "Isaac Asimov" ?? but his russian name is not even listed
-        // "org" : e.g. ""James S. A. Corey""
+        // - "Pseudonym"  for "Isaac Asimov" ?? but his russian name is not even listed
+        // - "org" : e.g. ""James S. A. Corey""
+        //
+        // #search : absent
+        // #resolve: present
         final String entityType = document.optString("entity_type");
 
         if (BuildConfig.DEBUG /* always */) {
@@ -246,11 +451,17 @@ public final class OpenLibraryAuthorResolver
             author.setRealAuthor(ps);
         }
 
+        // #search : present
+        // #resolve: present
         dateParser.parse(document.optString("birth_date"), locale).ifPresent(
                 date -> author.setBirthDate(date.getIsoString()));
+        // #search : present
+        // #resolve: present
         dateParser.parse(document.optString("death_date"), locale).ifPresent(
                 date -> author.setDeathDate(date.getIsoString()));
 
+        // #search : absent
+        // #resolve: present
         final JSONObject remoteIds = document.optJSONObject("remote_ids");
         if (remoteIds != null) {
             for (final String key : remoteIds.keySet()) {

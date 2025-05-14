@@ -28,10 +28,12 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -130,5 +132,24 @@ public class AuthorParseTest
         assertEquals("Sheldon", author.getFamilyName());
         assertEquals("Alice Bradley", author.getGivenNames());
 
+    }
+
+    @Test
+    public void liveSearchAsimov()
+            throws SearchException, CredentialsException {
+        final Author author = new Author("Asimov", "Isaac");
+        final boolean resolved = resolver.resolve(context, author);
+        assertTrue(resolved);
+
+        assertEquals("Asimov", author.getFamilyName());
+        assertEquals("Isaac", author.getGivenNames());
+        assertEquals("1920-01-02", author.getBirthDate().orElse(null));
+        assertEquals("1992-04-06", author.getDeathDate().orElse(null));
+
+        assertEquals(1, author.getIdentifiers().size());
+        Optional<String> oIv;
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL34221A", oIv.get());
     }
 }
