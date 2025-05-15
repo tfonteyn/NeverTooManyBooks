@@ -68,6 +68,7 @@ public final class AuthorResolverFactory {
                                @NonNull final Book book)
             throws CredentialsException {
         try {
+            // Note we NOT using {@link book#refreshAuthors} as we want to use the website Locale
             final List<AuthorResolver> authorResolvers = getResolvers(context, searchEngine);
             final Locale locale = book.getLocale(context)
                                       .orElseGet(() -> searchEngine.getLocale(context));

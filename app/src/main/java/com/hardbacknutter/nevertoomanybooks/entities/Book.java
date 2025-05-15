@@ -914,7 +914,7 @@ public class Book
     }
 
     /**
-     * Update all {@link Bookshelf} details from DB.
+     * Update all {@link Bookshelf} details from/with the database.
      *
      * @param context Current context
      */
@@ -928,7 +928,7 @@ public class Book
     }
 
     /**
-     * Update all {@link Author} details from DB.
+     * Update all {@link Author} details from/with the database.
      *
      * @param context Current context
      */
@@ -1020,7 +1020,7 @@ public class Book
     }
 
     /**
-     * Update all {@link Series} details from DB.
+     * Update all {@link Series} details from/with the database.
      *
      * @param context Current context
      */
@@ -1103,7 +1103,7 @@ public class Book
     }
 
     /**
-     * Update all {@link Publisher} details from DB.
+     * Update all {@link Publisher} details from/with the database.
      *
      * @param context Current context
      */
