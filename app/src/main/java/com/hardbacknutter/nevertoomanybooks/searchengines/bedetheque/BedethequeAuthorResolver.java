@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -133,10 +132,6 @@ public class BedethequeAuthorResolver
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-        // We SHOULD pass in the book-locale here...
-        authorDao.refresh(context, author, locale);
 
         final BdtAuthor bdtAuthor = lookupInCache(context, author);
         if (bdtAuthor == null) {

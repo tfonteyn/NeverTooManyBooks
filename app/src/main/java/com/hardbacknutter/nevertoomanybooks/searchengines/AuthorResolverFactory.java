@@ -26,16 +26,24 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuthorResolver;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 public final class AuthorResolverFactory {
+
+    private static final String TAG = "AuthorResolverFactory";
 
     /**
      * Pref key.
@@ -44,6 +52,35 @@ public final class AuthorResolverFactory {
     private static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
 
     private AuthorResolverFactory() {
+    }
+
+    /**
+     * Convenience method to resolve all authors of the given book.
+     *
+     * @param context      Current context
+     * @param searchEngine requesting the resolve action
+     * @param book         with authors
+     *
+     * @throws CredentialsException on authentication/login failures
+     */
+    public static void resolve(@NonNull final Context context,
+                               @NonNull final SearchEngine searchEngine,
+                               @NonNull final Book book)
+            throws CredentialsException {
+        try {
+            final List<AuthorResolver> authorResolvers = getResolvers(context, searchEngine);
+            final Locale locale = book.getLocale(context)
+                                      .orElseGet(() -> searchEngine.getLocale(context));
+            final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+            for (final AuthorResolver resolver : authorResolvers) {
+                for (final Author author : book.getAuthors()) {
+                    authorDao.refresh(context, author, locale);
+                    resolver.resolve(context, author);
+                }
+            }
+        } catch (@NonNull final SearchException e) {
+            LoggerFactory.getLogger().e(TAG, e, "AuthorResolver");
+        }
     }
 
     /**

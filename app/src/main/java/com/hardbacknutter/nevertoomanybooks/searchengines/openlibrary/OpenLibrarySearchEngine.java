@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -576,9 +575,6 @@ public class OpenLibrarySearchEngine
                @NonNull final Book book)
             throws StorageException, IOException, SearchException, CredentialsException {
 
-        final List<AuthorResolver> authorResolvers = AuthorResolverFactory
-                .getResolvers(context, this);
-
         JSONArray a;
         String s;
         final int i;
@@ -601,7 +597,7 @@ public class OpenLibrarySearchEngine
         // "authors" contains structured Author data
         a = document.optJSONArray("authors");
         if (a != null && !a.isEmpty()) {
-            parseAuthors(context, a, authorResolvers, book);
+            parseAuthors(context, a, book);
         }
         // "by_statement" contains NON-structured author data:
         //     "by John Miedema."
@@ -627,7 +623,7 @@ public class OpenLibrarySearchEngine
 
         a = document.optJSONArray("contributors");
         if (a != null && !a.isEmpty()) {
-            parseContributors(context, a, authorResolvers, book);
+            parseContributors(context, a, book);
         }
 
         // There is also a key "pagination" which for example
@@ -697,6 +693,8 @@ public class OpenLibrarySearchEngine
             parseToc(context, a, book);
         }
 
+        AuthorResolverFactory.resolve(context, this, book);
+
         if (isCancelled()) {
             return;
         }
@@ -743,20 +741,17 @@ public class OpenLibrarySearchEngine
      * }
      * </pre>
      *
-     * @param context         Current context
-     * @param a               array with author elements
-     * @param authorResolvers to use
-     * @param book            destination
+     * @param context Current context
+     * @param a       array with author elements
+     * @param book    destination
      *
-     * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws StorageException on storage related failures
+     * @throws SearchException  on generic exceptions (wrapped) during search
      */
     private void parseAuthors(@NonNull final Context context,
                               @NonNull final JSONArray a,
-                              @NonNull final List<AuthorResolver> authorResolvers,
                               @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException {
 
         JSONObject element;
         for (int ai = 0; ai < a.length(); ai++) {
@@ -776,9 +771,6 @@ public class OpenLibrarySearchEngine
                             final String iv = key.substring(9);
                             author.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, iv);
                         }
-                        for (final AuthorResolver resolver : authorResolvers) {
-                            resolver.resolve(context, author);
-                        }
                         addAuthor(author, Author.TYPE_UNKNOWN, book);
                     }
                 }
@@ -788,9 +780,7 @@ public class OpenLibrarySearchEngine
 
     private void parseContributors(@NonNull final Context context,
                                    @NonNull final JSONArray a,
-                                   @NonNull final List<AuthorResolver> authorResolvers,
-                                   @NonNull final Book book)
-            throws SearchException, CredentialsException {
+                                   @NonNull final Book book) {
         for (int ai = 0; ai < a.length(); ai++) {
             final JSONObject c = a.optJSONObject(ai);
             if (c != null) {
@@ -803,9 +793,6 @@ public class OpenLibrarySearchEngine
                         type = authorTypeMapper.map(getLocale(context), role);
                     } else {
                         type = Author.TYPE_UNKNOWN;
-                    }
-                    for (final AuthorResolver resolver : authorResolvers) {
-                        resolver.resolve(context, author);
                     }
                     addAuthor(author, type, book);
                 }
@@ -1066,7 +1053,7 @@ public class OpenLibrarySearchEngine
                                      @NonNull final JSONArray coverIds,
                                      @NonNull final boolean[] fetchCovers,
                                      @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException {
         for (int cIdx = 0; cIdx < 2; cIdx++) {
             if (fetchCovers[cIdx] && coverIds.length() > cIdx) {
                 final int coverId = coverIds.optInt(cIdx);
@@ -1312,7 +1299,7 @@ public class OpenLibrarySearchEngine
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 1) final int cIdx,
                                                  @Nullable final Size size)
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException {
 
         if (altEdition instanceof AltEditionOpenLibrary) {
             final AltEditionOpenLibrary edition = (AltEditionOpenLibrary) altEdition;
@@ -1352,16 +1339,14 @@ public class OpenLibrarySearchEngine
      *
      * @return fileSpec
      *
-     * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws StorageException on storage related failures
      */
     @NonNull
     private Optional<String> searchBestCover(@NonNull final Context context,
                                              @NonNull final String key,
                                              @NonNull final String id,
                                              final int cIdx)
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException {
 
         Optional<String> oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Large);
         if (oFileSpec.isEmpty()) {

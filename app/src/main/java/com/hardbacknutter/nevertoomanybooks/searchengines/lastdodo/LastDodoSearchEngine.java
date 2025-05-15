@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -261,8 +260,7 @@ public class LastDodoSearchEngine
         final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book,
-                  AuthorResolverFactory.getResolvers(context, this));
+            parse(context, document, fetchCovers, book);
         }
         return book;
     }
@@ -362,8 +360,7 @@ public class LastDodoSearchEngine
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book,
-                          AuthorResolverFactory.getResolvers(context, this));
+                    parse(context, redirected, fetchCovers, book);
                 }
             }
         }
@@ -467,13 +464,11 @@ public class LastDodoSearchEngine
     /**
      * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      *
-     * @param context         Current context
-     * @param document        to parse
-     * @param fetchCovers     Set to {@code true} if we want to get covers
-     *                        The array is guaranteed to have at least one element.
-     * @param book            Bundle to update
-     * @param authorResolvers {@link AuthorResolver}s to use
-     *                        (passed in for easy testing)
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -486,8 +481,7 @@ public class LastDodoSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Book book,
-                      @NonNull final List<AuthorResolver> authorResolvers)
+                      @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         //noinspection NonConstantStringShouldBeStringBuffer
@@ -669,11 +663,7 @@ public class LastDodoSearchEngine
             }
         }
 
-        for (final AuthorResolver resolver : authorResolvers) {
-            for (final Author author : book.getAuthors()) {
-                resolver.resolve(context, author);
-            }
-        }
+        AuthorResolverFactory.resolve(context, this, book);
 
         // It's extremely unlikely, but should the language be missing, add dutch.
         if (!book.contains(DBKey.LANGUAGE)) {

@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -265,8 +264,7 @@ public class BedethequeSearchEngine
         final Book book = new Book();
         final String url = getHostUrl(context) + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, extraRequestProperties);
-        parse(context, document, fetchCovers, null, book,
-              AuthorResolverFactory.getResolvers(context, this));
+        parse(context, document, fetchCovers, null, book);
 
         return book;
     }
@@ -303,9 +301,7 @@ public class BedethequeSearchEngine
                 if (!url.isBlank()) {
                     final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
-                        parse(context, redirected, fetchCovers, searchedIsbn, book,
-                              AuthorResolverFactory.getResolvers(context, this)
-                        );
+                        parse(context, redirected, fetchCovers, searchedIsbn, book);
                     }
                 }
             }
@@ -322,8 +318,6 @@ public class BedethequeSearchEngine
      * @param searchedIsbnStr the ISBN the user searched for;
      *                        Will be {@code null} if the search was done by SID
      * @param book            Bundle to update
-     * @param authorResolvers {@link AuthorResolver}s to use
-     *                        (passed in for easy testing)
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -337,8 +331,7 @@ public class BedethequeSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @Nullable final String searchedIsbnStr,
-                      @NonNull final Book book,
-                      @NonNull final List<AuthorResolver> authorResolvers)
+                      @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         // The main book.
@@ -391,11 +384,7 @@ public class BedethequeSearchEngine
             book.setDescription(description.text());
         }
 
-        for (final AuthorResolver resolver : authorResolvers) {
-            for (final Author author : book.getAuthors()) {
-                resolver.resolve(context, author);
-            }
-        }
+        AuthorResolverFactory.resolve(context, this, book);
 
         // Unless present, add the default language
         if (!book.contains(DBKey.LANGUAGE)) {

@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -67,7 +66,6 @@ public class ParseTest
 
     private static final String UTF_8 = "UTF-8";
     private StripInfoSearchEngine searchEngine;
-    private final List<AuthorResolver> mockAuthorResolvers = List.of();
 
     @Before
     public void setup()
@@ -88,8 +86,10 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book,
-                           mockAuthorResolvers);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+
+        assertFalse(book.isEmpty());
+
         Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
@@ -168,9 +168,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book,
-                           mockAuthorResolvers);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("De boom van de twee lentes", book.getString(DBKey.TITLE, null));
         assertEquals("905581315X", book.getString(DBKey.ISBN, null));
@@ -313,9 +315,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book,
-                           mockAuthorResolvers);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("Het huis van verboden geneugten",
                      book.getString(DBKey.TITLE, null));
@@ -378,9 +382,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book,
-                           mockAuthorResolvers);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("De integrale 5", book.getString(DBKey.TITLE, null));
         assertEquals("9789055819485", book.getString(DBKey.ISBN, null));
@@ -442,9 +448,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book,
-                           mockAuthorResolvers);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("Red Dust", book.getString(DBKey.TITLE, null));
         assertNull(book.getString(DBKey.ISBN, null));
@@ -504,9 +512,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book,
-                           mockAuthorResolvers);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("Spoken in de grot", book.getString(DBKey.TITLE, null));
         assertNull(book.getString(DBKey.ISBN, null));

@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -245,8 +244,7 @@ public class StripWebSearchEngine
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book,
-                          AuthorResolverFactory.getResolvers(context, this));
+                    parse(context, redirected, fetchCovers, book);
                 }
             }
         }
@@ -260,8 +258,6 @@ public class StripWebSearchEngine
      * @param fetchCovers     Set to {@code true} if we want to get covers
      *                        The array is guaranteed to have at least one element.
      * @param book            Bundle to update
-     * @param authorResolvers {@link AuthorResolver}s to use
-     *                        (passed in for easy testing)
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -274,8 +270,7 @@ public class StripWebSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Book book,
-                      @NonNull final List<AuthorResolver> authorResolvers)
+                      @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         final Locale siteLocale = getLocale(context);
@@ -426,11 +421,7 @@ public class StripWebSearchEngine
             //}
         }
 
-        for (final AuthorResolver resolver : authorResolvers) {
-            for (final Author author : book.getAuthors()) {
-                resolver.resolve(context, author);
-            }
-        }
+        AuthorResolverFactory.resolve(context, this, book);
 
         if (isCancelled()) {
             return;

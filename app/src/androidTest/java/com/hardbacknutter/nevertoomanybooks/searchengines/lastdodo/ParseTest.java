@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -79,7 +80,10 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book, List.of());
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+
+        assertFalse(book.isEmpty());
+
         Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
@@ -143,8 +147,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book, List.of());
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("Schoot der aarde", book.getString(DBKey.TITLE, null));
         assertEquals("9789463943109", book.getString(DBKey.ISBN, null));

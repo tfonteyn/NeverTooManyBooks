@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -395,7 +394,7 @@ public class GoodreadsSearchEngine
                            @NonNull final JSONObject o,
                            @NonNull final Book book,
                            @NonNull final boolean[] fetchCovers)
-            throws JSONException, StorageException, SearchException, CredentialsException {
+            throws JSONException, StorageException, CredentialsException {
         final String title = o.optString("title");
         if (title.isEmpty()) {
             return;
@@ -445,11 +444,7 @@ public class GoodreadsSearchEngine
             parseWork(apolloState, work, book);
         }
 
-        for (final AuthorResolver resolver : AuthorResolverFactory.getResolvers(context, this)) {
-            for (final Author author : book.getAuthors()) {
-                resolver.resolve(context, author);
-            }
-        }
+        AuthorResolverFactory.resolve(context, this, book);
 
         if (isCancelled()) {
             return;

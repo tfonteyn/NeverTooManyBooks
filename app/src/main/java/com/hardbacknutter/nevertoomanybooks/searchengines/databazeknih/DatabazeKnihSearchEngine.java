@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -305,8 +304,6 @@ public class DatabazeKnihSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        final List<AuthorResolver> authorResolvers = AuthorResolverFactory
-                .getResolvers(context, this);
         // id and title
         @Nullable
         final String sid = parseMetaTags(document, book);
@@ -316,7 +313,7 @@ public class DatabazeKnihSearchEngine
             final String prop = itemProp.attr("itemprop");
             switch (prop) {
                 case "author": {
-                    parseAuthors(context, itemProp, Author.TYPE_WRITER, authorResolvers, book);
+                    parseAuthors(itemProp, Author.TYPE_WRITER, book);
                     break;
                 }
                 case "description": {
@@ -417,8 +414,7 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 final String url = element.attr("href");
                 if (!url.isEmpty()) {
-                    parseAuthor(context, element, element.text(), Author.TYPE_NARRATOR,
-                                authorResolvers, book);
+                    parseAuthor(element, element.text(), Author.TYPE_NARRATOR, book);
                 }
             }
         }
@@ -434,7 +430,7 @@ public class DatabazeKnihSearchEngine
             // fetch the "more details" and parse
             final String url = getHostUrl(context) + String.format(MORE_DETAILS_URL, sid);
             final Document d2 = loadDocument(context, url, null);
-            parseAdditional(context, d2, authorResolvers, book);
+            parseAdditional(d2, book);
         }
 
         // Check if there is TOC: there will be a link on the lower menu bar.
@@ -451,6 +447,8 @@ public class DatabazeKnihSearchEngine
                 }
             }
         }
+
+        AuthorResolverFactory.resolve(context, this, book);
 
         if (isCancelled()) {
             return;
@@ -495,19 +493,11 @@ public class DatabazeKnihSearchEngine
      *  but how reliable is this? Need more examples.
      *  https://www.databazeknih.cz/prehled-knihy/lucky-luke-crew-jak-se-daltonovi-polepsili-555445
      *
-     * @param context         current Context
-     * @param root            to parse
-     * @param authorResolvers to use
-     * @param book            to update
-     *
-     * @throws CredentialsException on authentication/login failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @param root    to parse
+     * @param book    to update
      */
-    private void parseAdditional(@NonNull final Context context,
-                                 @NonNull final Document root,
-                                 @NonNull final List<AuthorResolver> authorResolvers,
-                                 @NonNull final Book book)
-            throws SearchException, CredentialsException {
+    private void parseAdditional(@NonNull final Document root,
+                                 @NonNull final Book book) {
         Element element;
 
         element = root.selectFirst("[itemprop='numberOfPages']");
@@ -530,15 +520,15 @@ public class DatabazeKnihSearchEngine
 
         element = root.selectFirst("[itemprop='ilustrator']");
         if (element != null) {
-            parseAuthors(context, element, Author.TYPE_ARTIST, authorResolvers, book);
+            parseAuthors(element, Author.TYPE_ARTIST, book);
         }
         element = root.selectFirst("[itemprop='cover']");
         if (element != null) {
-            parseAuthors(context, element, Author.TYPE_COVER_ARTIST, authorResolvers, book);
+            parseAuthors(element, Author.TYPE_COVER_ARTIST, book);
         }
         element = root.selectFirst("[itemprop='translator']");
         if (element != null) {
-            parseAuthors(context, element, Author.TYPE_TRANSLATOR, authorResolvers, book);
+            parseAuthors(element, Author.TYPE_TRANSLATOR, book);
         }
 
         // Audio books duration
@@ -656,25 +646,17 @@ public class DatabazeKnihSearchEngine
     /**
      * Parse all "a" links in the given element for Authors.
      *
-     * @param context         current Context
-     * @param element         to parse
-     * @param type            of author
-     * @param authorResolvers to use
-     * @param book            to update
-     *
-     * @throws CredentialsException on authentication/login failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @param element to parse
+     * @param type    of author
+     * @param book    to update
      */
-    private void parseAuthors(@NonNull final Context context,
-                              @NonNull final Element element,
+    private void parseAuthors(@NonNull final Element element,
                               @Author.Type final int type,
-                              @NonNull final List<AuthorResolver> authorResolvers,
-                              @NonNull final Book book)
-            throws SearchException, CredentialsException {
+                              @NonNull final Book book) {
         for (final Element a : element.select("a")) {
             final String text = a.text();
             if (!text.isEmpty()) {
-                parseAuthor(context, a, text, type, authorResolvers, book);
+                parseAuthor(a, text, type, book);
             }
         }
     }
@@ -682,23 +664,15 @@ public class DatabazeKnihSearchEngine
     /**
      * Parse the given link/text for an Author.
      *
-     * @param context         current Context
-     * @param a               to parse
-     * @param text            author name
-     * @param type            of author
-     * @param authorResolvers to use
-     * @param book            to update
-     *
-     * @throws CredentialsException on authentication/login failures
-     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @param a       to parse
+     * @param text    author name
+     * @param type    of author
+     * @param book    to update
      */
-    private void parseAuthor(@NonNull final Context context,
-                             @NonNull final Element a,
+    private void parseAuthor(@NonNull final Element a,
                              @NonNull final String text,
                              @Author.Type final int type,
-                             @NonNull final List<AuthorResolver> authorResolvers,
-                             @NonNull final Book book)
-            throws SearchException, CredentialsException {
+                             @NonNull final Book book) {
         final Author author = Author.from(text);
 
         final String url = a.attr("href");
@@ -710,10 +684,6 @@ public class DatabazeKnihSearchEngine
                 if (!id.isEmpty()) {
                     author.setIdentifierValue(Identifier.SID_DATABAZE_KNIH, id);
                 }
-            }
-
-            for (final AuthorResolver resolver : authorResolvers) {
-                resolver.resolve(context, author);
             }
         }
         addAuthor(author, type, book);

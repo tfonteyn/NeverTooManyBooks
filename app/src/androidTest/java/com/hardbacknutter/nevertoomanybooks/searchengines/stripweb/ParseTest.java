@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripweb;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -49,6 +51,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -87,9 +90,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book, List.of());
+        searchEngine.parse(context, document, new boolean[]{true, false}, book);
 
-        //Log.d(TAG, book.toString());
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("Wanted Lucky Luke", book.getString(DBKey.TITLE, null));
         assertEquals("9782884719506", book.getString(DBKey.ISBN, null));
@@ -166,9 +171,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book, List.of());
+        searchEngine.parse(context, document, new boolean[]{true, false}, book);
 
-        //Log.d(TAG, book.toString());
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("Valstrikken en emoties", book.getString(DBKey.TITLE, null));
         assertEquals("9789085587187", book.getString(DBKey.ISBN, null));
@@ -284,9 +291,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book, List.of());
+        searchEngine.parse(context, document, new boolean[]{true, false}, book);
 
-        //Log.d(TAG, book.toString());
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("XIII- box Delen 1-3", book.getString(DBKey.TITLE, null));
         assertEquals("3600121191341", book.getString(DBKey.ISBN, null));

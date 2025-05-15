@@ -69,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -1159,10 +1158,6 @@ public class IsfdbSearchEngine
         }
         final Elements lis = ul.children();
 
-        @NonNull
-        final List<AuthorResolver> authorResolvers = AuthorResolverFactory
-                .getResolvers(context, this);
-
         for (final Element li : lis) {
             if (isCancelled()) {
                 return;
@@ -1190,7 +1185,7 @@ public class IsfdbSearchEngine
                         }
                         case "Author:":
                         case "Authors:": {
-                            parseAuthors(context, li, Author.TYPE_UNKNOWN, authorResolvers, book);
+                            parseAuthors(li, Author.TYPE_UNKNOWN, book);
                             break;
                         }
                         case "Date:": {
@@ -1234,8 +1229,7 @@ public class IsfdbSearchEngine
                             break;
                         }
                         case "Cover:": {
-                            parseAuthors(context, li, Author.TYPE_COVER_ARTIST,
-                                         authorResolvers, book);
+                            parseAuthors(li, Author.TYPE_COVER_ARTIST, book);
                             break;
                         }
                         case "External IDs:": {
@@ -1245,7 +1239,7 @@ public class IsfdbSearchEngine
                         }
                         case "Editor:":
                         case "Editors:": {
-                            parseAuthors(context, li, Author.TYPE_EDITOR, authorResolvers, book);
+                            parseAuthors(li, Author.TYPE_EDITOR, book);
                             break;
                         }
 
@@ -1294,6 +1288,8 @@ public class IsfdbSearchEngine
         }
 
         // post-process all found data.
+
+        AuthorResolverFactory.resolve(context, this, book);
 
         Series.checkForSeriesNameInTitle(book);
 
@@ -1438,41 +1434,22 @@ public class IsfdbSearchEngine
         }
     }
 
-    private void parseAuthors(@NonNull final Context context,
-                              @NonNull final Element li,
+    private void parseAuthors(@NonNull final Element li,
                               @Author.Type final int type,
-                              @NonNull final List<AuthorResolver> authorResolvers,
-                              @NonNull final Book book)
-            throws CredentialsException {
+                              @NonNull final Book book) {
         for (final Element a : li.select("a[href*=/ea.cgi]")) {
-            final Author author = parseAuthor(context, a, authorResolvers);
+            final Author author = Author.from(a.text());
+
+            final String url = a.attr("href");
+            final Matcher matcher = AUTHOR_ID.matcher(url);
+            if (matcher.find()) {
+                final String siId = matcher.group(1);
+                if (siId != null) {
+                    author.setIdentifierValue(Identifier.SID_ISFDB, siId);
+                }
+            }
             addAuthor(author, type, book);
         }
-    }
-
-    @NonNull
-    private Author parseAuthor(@NonNull final Context context,
-                               @NonNull final Element a,
-                               @NonNull final List<AuthorResolver> authorResolvers)
-            throws CredentialsException {
-        final Author author = Author.from(a.text());
-        final String url = a.attr("href");
-        final Matcher matcher = AUTHOR_ID.matcher(url);
-        if (matcher.find()) {
-            final String siId = matcher.group(1);
-            if (siId != null) {
-                author.setIdentifierValue(Identifier.SID_ISFDB, siId);
-            }
-        }
-
-        try {
-            for (final AuthorResolver resolver : authorResolvers) {
-                resolver.resolve(context, author);
-            }
-        } catch (@NonNull final SearchException e) {
-            LoggerFactory.getLogger().e(TAG, e, "AuthorResolver");
-        }
-        return author;
     }
 
     /**

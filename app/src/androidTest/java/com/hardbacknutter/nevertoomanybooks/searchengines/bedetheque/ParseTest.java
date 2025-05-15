@@ -36,8 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -62,7 +60,6 @@ public class ParseTest
     private static final String UTF_8 = "UTF-8";
 
     private BedethequeSearchEngine searchEngine;
-    private List<AuthorResolver> authorResolvers;
 
     @Before
     public void setup()
@@ -71,7 +68,6 @@ public class ParseTest
 
         searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
-        authorResolvers = AuthorResolverFactory.getResolvers(context, searchEngine);
     }
 
     @Test
@@ -85,9 +81,11 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, null, book,
-                           authorResolvers);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, true}, null, book);
+
+        assertFalse(book.isEmpty());
+
+        Log.d(TAG, book.toString());
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));
         assertEquals("2840557428", book.getString(DBKey.ISBN, null));
@@ -161,10 +159,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, null, book,
-                           authorResolvers);
+        searchEngine.parse(context, document, new boolean[]{true, true}, null, book);
 
-        assertNotNull(book);
         assertFalse(book.isEmpty());
 
         Log.d(TAG, book.toString());
@@ -241,10 +237,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, "280010578X", book,
-                           authorResolvers);
+        searchEngine.parse(context, document, new boolean[]{true, true}, "280010578X", book);
 
-        assertNotNull(book);
         assertFalse(book.isEmpty());
 
         Log.d(TAG, book.toString());
@@ -315,6 +309,5 @@ public class ParseTest
         cover = coverList.get(0);
         assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey() +
                                   "_280010578X_1_.jpg"));
-
     }
 }
