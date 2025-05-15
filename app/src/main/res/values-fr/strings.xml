@@ -563,7 +563,7 @@
     <string name="progress_msg_searching_editions">Éditions en cours de recherche…</string>
     <string name="progress_msg_authenticating_to_site">Authentification sur %1$s</string>
     <string name="progress_msg_searching_site">Recherche en cours sur %1$s</string>
-    <string name="progress_msg_skip_s">Passer - %1$s</string>
+    <string name="progress_msg_skip_s">Passer « %1$s »</string>
     <string name="progress_msg_starting_up">Démarrage…</string>
     <string name="progress_msg_upgrading">Mise à niveau…</string>
     <string name="progress_msg_x_created">%1$d ajoutés</string>
@@ -582,9 +582,9 @@
     <string name="pt_bob_cover_scale">Taille de couverture</string>
     <string name="pt_bob_cover_show">Montrer les couvertures</string>
     <string name="pt_bob_font_size">Taille de la police</string>
-    <string name="pt_bob_header">Détails du résumé dans l’en-tête</string>
+    <string name="pt_bob_header">En-tête</string>
     <string name="pt_bob_list_rebuild_state">Etat de démarrage de la liste de lecture</string>
-    <string name="pt_bob_list_state_expansion_level">Liste de livres d’expansion par défaut</string>
+    <string name="pt_bob_list_state_expansion_level">Niveau de dépliement par défaut</string>
     <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
     <string name="pt_edit_book_isbn_checks">Vérifications de validité ISBN</string>
     <string name="pt_bob_row_menu">Menu contextuel de ligne</string>

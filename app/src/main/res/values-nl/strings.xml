@@ -587,7 +587,7 @@
     <string name="progress_msg_searching_editions">Zoeken naar uitgaven…</string>
     <string name="progress_msg_authenticating_to_site">Authentificeren op %1$s</string>
     <string name="progress_msg_searching_site">Zoeken bij %1$s</string>
-    <string name="progress_msg_skip_s">Overslaan van - %1$s</string>
+    <string name="progress_msg_skip_s">Overslaan van „%1$s”</string>
     <string name="progress_msg_starting_up">Opstarten…</string>
     <string name="progress_msg_upgrading">Nieuwe versie voorbereiden…</string>
     <string name="progress_msg_x_created">%1$d toegevoegd</string>
@@ -622,9 +622,9 @@
     <string name="pt_bob_cover_show">Toon omslagafbeeldingen</string>
     <string name="pt_bob_font_size">Lettergrootte</string>
     <string name="pt_bob_groups">Groeperingen</string>
-    <string name="pt_bob_header">Details in de koptekst</string>
+    <string name="pt_bob_header">Koptekst</string>
     <string name="pt_bob_list_rebuild_state">Boekenlijst opstart status</string>
-    <string name="pt_bob_list_state_expansion_level">Standaard boekenlijst niveau</string>
+    <string name="pt_bob_list_state_expansion_level">Standaard uitvouwniveau</string>
     <string name="pt_bob_row_menu">Context-menu van een lijn</string>
     <string name="pt_bob_show_details">Boekdetails weergegeven in de lijst</string>
     <string name="pt_collect_series_info_from_toc">Verzamel reeks-informatie van de inhouds tabel</string>

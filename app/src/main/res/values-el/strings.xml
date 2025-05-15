@@ -563,7 +563,7 @@ A question mark is written as the character semicolon: ';'
     <string name="progress_msg_searching_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
     <string name="progress_msg_authenticating_to_site">Πιστοποίηση ταυτότητας στο %1$s</string>
     <string name="progress_msg_searching_site">Αναζήτηση στο %1$s</string>
-    <string name="progress_msg_skip_s">Παράβλεψη - %1$s</string>
+    <string name="progress_msg_skip_s">Παράβλεψη «%1$s»</string>
     <string name="progress_msg_starting_up">Εκκίνηση…</string>
     <string name="progress_msg_upgrading">Γίνεται αναβάθμηση…</string>
     <string name="progress_msg_x_created">%1$d δημιουργήθηκαν</string>
@@ -582,9 +582,9 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_bob_cover_scale">Μέγεθος εικόνας εξωφύλλου</string>
     <string name="pt_bob_cover_show">Εμφάνιση μικρογραφιών</string>
     <string name="pt_bob_font_size">Μέγεθος γραμματοσειράς</string>
-    <string name="pt_bob_header">Λεπτομέρειες περίληψης στην επικεφαλίδα</string>
+    <string name="pt_bob_header">επικεφαλίδα</string>
     <string name="pt_bob_list_rebuild_state">Κατάσταση εκκίνησης βιβλιοθήκης</string>
-    <string name="pt_bob_list_state_expansion_level">Προεπιλογή επέκτασης λίστας</string>
+    <string name="pt_bob_list_state_expansion_level">Προεπιλεγμένο επίπεδο ανάπτυξης</string>
     <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
     <string name="pt_edit_book_isbn_checks">Έλεγχοι εγκυρότητας ISBN</string>
     <string name="pt_bob_row_menu">Μενού περιβάλλοντος σειράς</string>

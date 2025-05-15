@@ -700,19 +700,24 @@
     <string name="lbl_author_type_narrator">Narrator</string>
     <!-- Interior art / illustrations / photos / comics -->
     <string name="lbl_author_type_artist">Illustrations</string>
-    <!-- Comics: the artist who did the (typical) black ink drawing.-->
+    <!-- Comics: the artist who did the (typical) black ink drawing.
+         Can be different from the "lbl_author_type_artist" who may only do the pencil sketches. -->
     <string name="lbl_author_type_inking">Inking</string>
     <!-- Comics: the artist who coloured in the original ink drawing.-->
     <string name="lbl_author_type_colorist">Colorist</string>
-    <!-- Books based on movies. Typically the steps are "story writer" -> "Screenplay" and/or "Storyboard" -> "book adaptation" -->
+    <!-- Books based on movies. Typically the steps are:
+         "story writer" -> "Screenplay" and/or "Storyboard" -> "book adaptation" -->
     <string name="lbl_author_type_storyboard">Storyboard</string>
     <!-- Comics: the person who puts the text into/on the text-balloons. -->
     <string name="lbl_author_type_lettering">Lettering</string>
     <!-- Cover art / Cover illustration / Cover photo, composition, ...-->
     <string name="lbl_author_type_cover_artist">Cover art</string>
-    <!-- Comics: the artist who did the (typical) black ink drawing. (if different from the interior of the comic) -->
+    <!-- Comics: the artist who did the (typical) black ink drawing.
+        (if different from the interior of the comic) -->
     <string name="lbl_author_type_cover_inking">Cover inking</string>
-    <!-- Comics: the artist who coloured in the original cover ink drawing. (if different from the interior of the comic) -->
+    <!-- Comics: the artist who coloured in the original cover ink drawing.
+        (if different from the interior of the comic)
+        Can be different from the "lbl_author_type_cover_artist" who may only do the pencil sketches. -->
     <string name="lbl_author_type_cover_colorist">Cover colorist</string>
 
     <!-- endregion -->
@@ -1718,7 +1723,7 @@
          Opens a new screen with the related settings. -->
     <string name="pt_bob_show_details">Book Details shown in the list</string>
     <!-- MultiSelectListPreference - Determines what is show in booklist header -->
-    <string name="pt_bob_header">Summary details in header</string>
+    <string name="pt_bob_header">Header</string>
     <!-- Option to show in the booklist header -->
     <string name="pv_bob_header_nr_of_books">Number of books</string>
     <!-- Option to show in the booklist header -->
@@ -1769,7 +1774,7 @@
     <!-- SwitchPreference - the height of the rows in the booklist (Small/Large) -->
     <string name="pt_line_spacing">Line spacing</string>
     <!-- SeekBarPreference -->
-    <string name="pt_bob_list_state_expansion_level">Default booklist expansion</string>
+    <string name="pt_bob_list_state_expansion_level">Default expand level</string>
 
     <!-- Preference summary strings on how to SORT an Author name.
          Translator: use your favourite Author in your country. -->
@@ -1788,17 +1793,53 @@
     <!--Style option: on the book-list: should the number of books be displayed on grouping level (or not). -->
     <string name="pt_bob_show_group_book_count">Show the number of books in each group.</string>
 
-    <!-- Style option -->
+    <!-- Style option.
+      Options see:
+      - pt_bob_books_under_multiple_authors
+      - ps_bob_books_under_multiple_authors_main_only
+      -->
     <string name="pt_bob_books_under_multiple_authors">Show books with multiple authors</string>
+    <!-- If a book has multiple authors:
+         Display the book only under its primary author.
+         -->
     <string name="ps_bob_books_under_multiple_authors_main_only">under their primary author only</string>
+    <!-- If a book has multiple authors:
+         Display the book multiple times, under each of its authors.
+         -->
     <string name="ps_bob_books_under_multiple_authors_each">under each author</string>
-    <!-- Style option  -->
+    <!-- Style option.
+      This is a special situation where a book/comic can be part of multiple series.
+      For example, it can be part of it's own series, i.e. a writer just writes multiple books in a series.
+      But at the SAME TIME , those same books could be part of a publisher series.
+      Let's say author series "My Detective", nr 5.
+      But at the same time "Great detectives", nr 1234, i.e. ALL detectives this publisher does.
+      It is the SAME book though.
+      Options see:
+      - pt_bob_books_under_multiple_series
+      - ps_bob_books_under_multiple_series_main_only
+      -->
     <string name="pt_bob_books_under_multiple_series">Show books in multiple series</string>
+    <!-- If a book has multiple Series:
+         Display the book only under its primary Series.
+    -->
     <string name="ps_bob_books_under_multiple_series_main_only">under their primary series only</string>
+    <!-- If a book has multiple authors:
+         Display the book multiple times, under each of its authors.
+    -->
     <string name="ps_bob_books_under_multiple_series_each">under each series</string>
-    <!-- Style option  -->
+    <!-- Style option.
+      Options see:
+      - ps_bob_books_under_multiple_publishers_main_only
+      - ps_bob_books_under_multiple_publishers_each
+    -->
     <string name="pt_bob_books_under_multiple_publishers">Show books with multiple publishers</string>
+    <!-- If a book has multiple publishers (cooperating):
+         Display the book only under its primary publisher.
+    -->
     <string name="ps_bob_books_under_multiple_publishers_main_only">under their primary publisher only</string>
+    <!-- If a book has multiple publishers (cooperating):
+         Display the book multiple times, under each of its publishers.
+    -->
     <string name="ps_bob_books_under_multiple_publishers_each">under each publisher</string>
     <!-- endregion -->
     <!-- region ========== Filters. -->

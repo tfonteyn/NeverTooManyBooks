@@ -696,9 +696,9 @@
     <string name="pt_bob_cover_show">Hiển thị bìa</string>
     <string name="pt_bob_font_size">Cỡ chữ</string>
     <string name="pt_bob_groups">Nhóm</string>
-    <string name="pt_bob_header">Chi tiết tóm tắt trong tiêu đề</string>
+    <string name="pt_bob_header">Tiêu đề</string>
     <string name="pt_bob_list_rebuild_state">Trạng thái khởi động danh mục sách</string>
-    <string name="pt_bob_list_state_expansion_level">Mở rộng danh mục sách mặc định</string>
+    <string name="pt_bob_list_state_expansion_level">Mức mở rộng mặc định</string>
     <string name="pt_bob_row_menu">Thực đơn ngữ cảnh hàng</string>
     <string name="pt_bob_show_details">Chi tiết sách hiển thị trong danh sách</string>
     <string name="pt_capitalize_title">Tiêu đề viết hoa</string>

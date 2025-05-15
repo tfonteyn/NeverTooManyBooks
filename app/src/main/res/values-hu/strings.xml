@@ -749,7 +749,7 @@
     <string name="pc_book_detail_screen">Könyv részletek</string>
     <string name="pt_bob_groups">Csoportok</string>
     <string name="pt_bob_show_details">Listában látható könyv részletek</string>
-    <string name="pt_bob_header">Fejlécben látható részletek</string>
+    <string name="pt_bob_header">Fejléc</string>
     <string name="pv_bob_header_nr_of_books">Könyvek száma</string>
     <string name="pv_bob_header_style_name">Stílus név</string>
     <string name="pv_bob_header_filters">Szűrők</string>
@@ -764,7 +764,7 @@
     <string name="pe_bob_cover_long_click_popupmenu">Borítókép hosszú megnyomásával.</string>
     <string name="pt_bob_cover_scale">Borító méret</string>
     <string name="pt_line_spacing">Sorköz</string>
-    <string name="pt_bob_list_state_expansion_level">Alapértelmezett könyvlista kibontás</string>
+    <string name="pt_bob_list_state_expansion_level">Alapértelmezett kinyitási szint</string>
     <string name="ps_sort_author_name_given_first">Rendezés megadott név alapján,\npl. „Connie Willis”</string>
     <string name="ps_sort_author_name_family_first">Rendezés családnév alapján,\npl. „Willis, Connie”</string>
     <string name="ps_show_author_name_given_first">Megadott név megjelenítése,\npl. „Connie Willis”</string>

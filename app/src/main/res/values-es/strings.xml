@@ -560,7 +560,7 @@
     <string name="progress_msg_searching">Buscando…</string>
     <string name="progress_msg_searching_editions">Buscando ediciones…</string>
     <string name="progress_msg_searching_site">Buscando en %1$s</string>
-    <string name="progress_msg_skip_s">Excluir - %1$s</string>
+    <string name="progress_msg_skip_s">Excluir «%1$s»</string>
     <string name="progress_msg_starting_up">Arrancando…</string>
     <string name="progress_msg_upgrading">Actualizando…</string>
     <string name="progress_msg_x_created">%1$d creados</string>
@@ -578,9 +578,9 @@
     <string name="pt_bob_cover_scale">Tamaño de la imagen de portada</string>
     <string name="pt_bob_cover_show">Mostrar miniaturas</string>
     <string name="pt_bob_font_size">Tamaño de la fuente</string>
-    <string name="pt_bob_header">Resumen en la cabecera</string>
+    <string name="pt_bob_header">Cabecera</string>
     <string name="pt_bob_list_rebuild_state">Estado de inicio de la lista de libros</string>
-    <string name="pt_bob_list_state_expansion_level">Expansión predeterminada de la lista de libros</string>
+    <string name="pt_bob_list_state_expansion_level">Nivel de expansión predeterminado</string>
     <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de la tabla de contenido</string>
     <string name="pt_edit_book_isbn_checks">Comprobaciones de validez de ISBN</string>
     <string name="pt_bob_row_menu">Menú contextual de fila</string>

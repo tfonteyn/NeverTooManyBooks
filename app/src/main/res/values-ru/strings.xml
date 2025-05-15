@@ -572,7 +572,7 @@
     <string name="progress_msg_searching_editions">Поиск изданий…</string>
     <string name="progress_msg_authenticating_to_site">Аутентификация на %1$s</string>
     <string name="progress_msg_searching_site">Поиск в %1$s</string>
-    <string name="progress_msg_skip_s">Пропустить - %1$s</string>
+    <string name="progress_msg_skip_s">Пропустить «%1$s»</string>
     <string name="progress_msg_starting_up">Запуск…</string>
     <string name="progress_msg_upgrading">Обновление…</string>
     <string name="progress_msg_x_created">%1$d создано</string>
@@ -591,9 +591,9 @@
     <string name="pt_bob_cover_scale">Размер изображения на обложке</string>
     <string name="pt_bob_cover_show">Показать обложки</string>
     <string name="pt_bob_font_size">Размер шрифта</string>
-    <string name="pt_bob_header">Суммарная информация в заголовке</string>
+    <string name="pt_bob_header">Заголовок</string>
     <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
-    <string name="pt_bob_list_state_expansion_level">Расширение списка книг по умолчанию</string>
+    <string name="pt_bob_list_state_expansion_level">Уровень раскрытия по умолчанию</string>
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
     <string name="pt_edit_book_isbn_checks">ISBN проверки достоверности</string>
     <string name="pt_bob_row_menu">Контекстное меню строки</string>

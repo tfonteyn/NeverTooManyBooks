@@ -575,7 +575,7 @@
     <string name="progress_msg_searching_editions">Hledání edicí…</string>
     <string name="progress_msg_authenticating_to_site">Ověřování na %1$s</string>
     <string name="progress_msg_searching_site">Vyhledávám na %1$s</string>
-    <string name="progress_msg_skip_s">Vynechání %1$s</string>
+    <string name="progress_msg_skip_s">Vynechání „%1$s“</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
     <string name="progress_msg_upgrading">Aktualizování…</string>
     <string name="progress_msg_x_created">%1$d vytvořeno</string>
@@ -594,9 +594,9 @@
     <string name="pt_bob_cover_scale">Zobrazení obálky</string>
     <string name="pt_bob_cover_show">Zobrazit obálky</string>
     <string name="pt_bob_font_size">Velikost písma</string>
-    <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
+    <string name="pt_bob_header">Záhlaví</string>
     <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
-    <string name="pt_bob_list_state_expansion_level">Výchozí rozšíření seznamu knih</string>
+    <string name="pt_bob_list_state_expansion_level">Výchozí úroveň rozbalení</string>
     <string name="pt_collect_series_info_from_toc">Sbírat informace o sériích z obsahu</string>
     <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>
     <string name="pt_bob_row_menu">Kontextová nabídka řádku</string>

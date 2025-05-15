@@ -706,7 +706,7 @@
     <string name="pc_book_detail_screen">புத்தக விவரங்கள் பக்கம்</string>
     <string name="pt_bob_groups">குழுக்கள்</string>
     <string name="pt_bob_show_details">பட்டியலில் காட்டப்பட்டுள்ள புத்தக விவரங்கள்</string>
-    <string name="pt_bob_header">தலைப்பில் சுருக்கமான விவரங்கள்</string>
+    <string name="pt_bob_header">தலைப்பு</string>
     <string name="pv_bob_header_nr_of_books">புத்தகங்களின் எண்ணிக்கை</string>
     <string name="pv_bob_header_style_name">பாணி பெயர்</string>
     <string name="pv_bob_header_filters">வடிப்பான்கள்</string>
@@ -725,7 +725,7 @@
     <string name="pt_bob_font_size">எழுத்துரு அளவு</string>
     <string name="citation_share_book_im_reading">நான் “%1$s” %2$s ஐ %3$s %4$s ஐப் படிக்கிறேன்</string>
     <string name="pt_line_spacing">வரி இடைவெளி</string>
-    <string name="pt_bob_list_state_expansion_level">இயல்புநிலை புத்தக பட்டியல் விரிவாக்கம்</string>
+    <string name="pt_bob_list_state_expansion_level">இயல்புநிலை விரிவாக்க நிலை</string>
     <string name="ps_sort_author_name_given_first">கொடுக்கப்பட்ட பெயர்களை முதலில் வரிசைப்படுத்தவும்,\n எ.கா. “கோனி வில்லிச்”</string>
     <string name="ps_sort_author_name_family_first">குடும்பப் பெயரை முதலில் வரிசைப்படுத்தவும்,\n .e.g. “வில்லிச், கோனி”</string>
     <string name="ps_show_author_name_given_first">முதலில் கொடுக்கப்பட்ட பெயர்களுடன் காண்பி,\n எ.கா. “கோனி வில்லிச்”</string>

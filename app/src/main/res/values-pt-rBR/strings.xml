@@ -151,7 +151,6 @@
     <string name="pe_ui_theme_from_device">Tema do dispositivo</string>
     <string name="pe_ui_theme_dark">Escuro</string>
     <string name="pt_ui_theme_colors">Cores do tema</string>
-    <string name="pt_bob_header">Detalhes do resumo no cabeçalho</string>
     <string name="pt_bob_cover_show">Mostrar capas</string>
     <string name="pe_bob_cover_click_zoom">Ampliará a imagem da capa.</string>
     <string name="pt_bob_cover_long_click">Abra o menu do livro.</string>

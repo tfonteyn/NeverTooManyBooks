@@ -658,12 +658,12 @@
     <string name="pe_ui_context_menu_mode_by_size">Os ecrãs mais pequenos apresentam menus longos na parte inferior do ecrã e menus curtos como menus de contexto clássicos.\nOs ecrãs maiores, como os tablets, utilizam sempre menus de contexto clássicos.</string>
     <string name="option_purge_files">Limpeza de Ficheiros</string>
     <string name="lbl_login_to_search">Entrar para pesquisar</string>
-    <string name="pt_bob_header">Detalhes do resumo no cabeçalho</string>
+    <string name="pt_bob_header">Cabeçalho</string>
     <string name="pv_bob_header_nr_of_books">Número de livros</string>
     <string name="pv_bob_header_style_name">Nome do estilo</string>
     <string name="pv_bob_header_filters">Filtros</string>
     <string name="pt_line_spacing">Espaçamento entre linhas</string>
-    <string name="pt_bob_list_state_expansion_level">Expansão por defeito da lista de livros</string>
+    <string name="pt_bob_list_state_expansion_level">Nível padrão de expansão</string>
     <string name="ps_bob_books_under_multiple_authors_each">sob cada autor</string>
     <string name="X_option_bob_filter_read_yes">Livros lidos</string>
     <string name="ps_bob_books_under_multiple_publishers_each">em cada editor</string>

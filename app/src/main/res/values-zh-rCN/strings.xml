@@ -686,9 +686,9 @@
     <string name="pt_bob_cover_show">显示封面</string>
     <string name="pt_bob_font_size">字体大小</string>
     <string name="pt_bob_groups">组别</string>
-    <string name="pt_bob_header">在头栏中显示细节概要</string>
+    <string name="pt_bob_header">页眉</string>
     <string name="pt_bob_list_rebuild_state">书单启动时状态</string>
-    <string name="pt_bob_list_state_expansion_level">书单默认展开设置</string>
+    <string name="pt_bob_list_state_expansion_level">默认展开级别</string>
     <string name="pt_bob_row_menu">行上下文菜单</string>
     <string name="pt_bob_show_details">在列表中显示的图书详情</string>
     <string name="pt_capitalize_title">书名大写</string>

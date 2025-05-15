@@ -485,7 +485,7 @@
     <string name="pc_book_detail_screen">Stránka s podrobnosťami o knihe</string>
     <string name="pt_bob_groups">Skupiny</string>
     <string name="pt_bob_show_details">Podrobnosti o knihe zobrazené v zozname</string>
-    <string name="pt_bob_header">Súhrnné podrobnosti v hlavičke</string>
+    <string name="pt_bob_header">Záhlavie</string>
     <string name="pv_bob_header_nr_of_books">Počet kníh</string>
     <string name="pv_bob_header_style_name">Názov štýlu</string>
     <string name="pv_bob_header_filters">Filtre</string>
@@ -790,7 +790,7 @@
     <string name="pt_bob_cover_long_click">Otvoriť ponuku knihy.</string>
     <string name="pt_bob_font_size">Veľkosť písma</string>
     <string name="lbl_track_progress">Pokrok</string>
-    <string name="pt_bob_list_state_expansion_level">Predvolené rozbalenie zoznamu kníh</string>
+    <string name="pt_bob_list_state_expansion_level">Predvolená úroveň rozbalenia</string>
     <string name="pt_bob_books_under_multiple_authors">Zobraziť knihy s viacerými autormi</string>
     <string name="info_bulk_set_bookshelves">Vyberte knižnice, ktoré chcete priradiť všetkým knihám uvedeným pod vybratým uzlom.</string>
     <string name="lbl_filters">Filtre</string>

@@ -564,7 +564,7 @@
     <string name="progress_msg_searching_editions">Sürümler bulunuyor…</string>
     <string name="progress_msg_authenticating_to_site">%1$s üzerinde kimlik doğrulama</string>
     <string name="progress_msg_searching_site">%1$s aranıyor</string>
-    <string name="progress_msg_skip_s">Atla - %1$s</string>
+    <string name="progress_msg_skip_s">Atla “%1$s”</string>
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
     <string name="progress_msg_upgrading">Yükseltiliyor…</string>
     <string name="progress_msg_x_created">%1$d oluşturuldu</string>
@@ -583,9 +583,9 @@
     <string name="pt_bob_cover_scale">Kapak resmi boyutu</string>
     <string name="pt_bob_cover_show">Ufak resimleri göster</string>
     <string name="pt_bob_font_size">Yazı tipi boyutu</string>
-    <string name="pt_bob_header">Başlık özet ayrıntıları</string>
+    <string name="pt_bob_header">Başlık</string>
     <string name="pt_bob_list_rebuild_state">Kitap listesi başlangıç durumu</string>
-    <string name="pt_bob_list_state_expansion_level">Varsayılan Kitap listesi genişletme</string>
+    <string name="pt_bob_list_state_expansion_level">Varsayılan açılma seviyesi</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="pt_edit_book_isbn_checks">ISBN geçerlilik kontrolleri</string>
     <string name="pt_bob_row_menu">Satır bağlam menüsü</string>
