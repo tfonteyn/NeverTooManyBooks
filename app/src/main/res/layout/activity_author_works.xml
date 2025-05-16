@@ -44,9 +44,9 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/photo"
-                    android:layout_width="128dp"
-                    android:layout_height="128dp"
+                    android:id="@+id/picture"
+                    android:layout_width="@dimen/author_picture_width"
+                    android:layout_height="@dimen/author_picture_height"
                     android:scaleType="fitCenter"
                     android:src="@drawable/person_24px"
                     app:layout_constraintStart_toStartOf="parent"
@@ -58,11 +58,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/section_margin_top"
+                    android:layout_marginStart="@dimen/field_margin_start"
                     android:maxLines="2"
                     android:textAppearance="?attr/textAppearanceTitleLarge"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/photo"
-                    app:layout_constraintTop_toTopOf="@id/photo"
+                    app:layout_constraintStart_toEndOf="@id/picture"
+                    app:layout_constraintTop_toTopOf="@id/picture"
                     tools:text="@sample/data.json/author/full_name"
                     />
 
@@ -94,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/section_margin_top"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
-                    app:layout_constraintStart_toEndOf="@id/photo"
+                    app:layout_constraintStart_toStartOf="@id/name"
                     app:layout_constraintTop_toBottomOf="@id/death_date"
                     tools:text="@sample/data.json/shelves/name"
                     />
