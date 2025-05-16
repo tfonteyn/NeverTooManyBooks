@@ -86,6 +86,9 @@ public final class AuthorResolverFactory {
 
     /**
      * Get a list of the supported resolvers for the given engine.
+     * <p>
+     * Note that {@link EngineId#KbNl} does not need a resolver as all available
+     * author data is present on a book page.
      *
      * @param context      Current context
      * @param searchEngine to use
