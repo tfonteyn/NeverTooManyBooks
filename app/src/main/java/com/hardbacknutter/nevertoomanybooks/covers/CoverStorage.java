@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -479,8 +479,8 @@ public class CoverStorage {
 
         // Delete from the cache. And yes, we also delete the ones
         // where != index, but we don't care; it's a cache.
-        // If the user flipped the cache on/off we'll
-        // not always be cleaning up correctly. It's not that important though.
+        // If the user flipped the cache on/off we're not always be cleaning up correctly.
+        // It's not that important though.
         if (isImageCachingEnabled()) {
             coverCacheDaoSupplier.get().delete(uuid);
         }
