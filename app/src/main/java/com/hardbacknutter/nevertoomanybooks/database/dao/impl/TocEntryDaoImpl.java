@@ -558,7 +558,7 @@ public class TocEntryDaoImpl
                                           DBKey.AUTHOR.GIVEN_NAMES,
                                           DBKey.AUTHOR.BIRTH_DATE,
                                           DBKey.AUTHOR.DEATH_DATE,
-                                          DBKey.AUTHOR.PHOTO_UUID,
+                                          DBKey.AUTHOR.PICTURE_UUID,
                                           DBKey.AUTHOR.COMPLETE)
                 // count the number of books this TOC entry is present in.
                 + ", ("

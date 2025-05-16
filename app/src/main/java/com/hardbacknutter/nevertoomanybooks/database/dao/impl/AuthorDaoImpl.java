@@ -27,16 +27,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoCoverException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -45,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -74,6 +79,8 @@ public class AuthorDaoImpl
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
+    private static final String ERROR_STORING_IMAGES =
+            "Failed storing the pictures for author from\n";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
 
@@ -499,6 +506,9 @@ public class AuthorDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
+            // Store first, this will update the author fields if successful
+            persistPicture(author);
+
             final long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, author.getFamilyName());
@@ -507,7 +517,7 @@ public class AuthorDaoImpl
                 stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), locale));
                 stmt.bindString(5, author.getBirthDate().orElse(null));
                 stmt.bindString(6, author.getDeathDate().orElse(null));
-                stmt.bindString(7, author.getPhotoUuid().orElse(null));
+                stmt.bindString(7, author.getPictureUuid().orElse(null));
                 stmt.bindBoolean(8, author.isComplete());
                 iId = stmt.executeInsert();
             }
@@ -549,6 +559,9 @@ public class AuthorDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
+            // Store first, this will update the author fields if successful
+            persistPicture(author);
+
             final int rowsAffected;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, author.getFamilyName());
@@ -557,7 +570,7 @@ public class AuthorDaoImpl
                 stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), locale));
                 stmt.bindString(5, author.getBirthDate().orElse(null));
                 stmt.bindString(6, author.getDeathDate().orElse(null));
-                stmt.bindString(7, author.getPhotoUuid().orElse(null));
+                stmt.bindString(7, author.getPictureUuid().orElse(null));
                 stmt.bindBoolean(8, author.isComplete());
 
                 stmt.bindLong(9, author.getId());
@@ -643,6 +656,30 @@ public class AuthorDaoImpl
         return rows == 0;
     }
 
+    /**
+     * Persist the temporary FileSpec to a permanent UUID based filename.
+     *
+     * @param author to store
+     *
+     * @throws DaoCoverException on any error.
+     *                           Note this will wrap any IOException or CoverStorageException
+     */
+    private void persistPicture(@NonNull final Author author)
+            throws DaoCoverException {
+        final Optional<String> fileSpec = author.getTmpPictureFileSpec();
+        if (fileSpec.isPresent()) {
+            final String uuid = UUID.randomUUID().toString();
+            try {
+                ServiceLocator.getInstance().getCoverStorage()
+                              .persist(new File(fileSpec.get()), uuid, 0);
+                author.setTmpPictureFileSpec(null);
+                author.setPictureUuid(uuid);
+            } catch (@NonNull final IOException | CoverStorageException e) {
+                throw new DaoCoverException(ERROR_STORING_IMAGES + author, e);
+            }
+        }
+    }
+
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Author author) {
@@ -660,6 +697,13 @@ public class AuthorDaoImpl
             if (rowsAffected > 0) {
                 author.setId(0);
                 fixPositions(context);
+
+                final Optional<String> pictureUuid = author.getPictureUuid();
+                if (pictureUuid.isPresent()) {
+                    ServiceLocator.getInstance().getCoverStorage()
+                                  .delete(pictureUuid.get(), 0);
+                    author.setPictureUuid(null);
+                }
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -811,7 +855,7 @@ public class AuthorDaoImpl
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB
                 + ',' + DBKey.AUTHOR.BIRTH_DATE
                 + ',' + DBKey.AUTHOR.DEATH_DATE
-                + ',' + DBKey.AUTHOR.PHOTO_UUID
+                + ',' + DBKey.AUTHOR.PICTURE_UUID
                 + ',' + DBKey.AUTHOR.COMPLETE
                 + ") VALUES (?,?,?,?,?,?,?,?)";
 
@@ -822,7 +866,7 @@ public class AuthorDaoImpl
                 + ',' + DBKey.AUTHOR.GIVEN_NAMES + "=?," + DBKey.AUTHOR.GIVEN_NAMES_OB + "=?"
                 + ',' + DBKey.AUTHOR.BIRTH_DATE + "=?"
                 + ',' + DBKey.AUTHOR.DEATH_DATE + "=?"
-                + ',' + DBKey.AUTHOR.PHOTO_UUID + "=?"
+                + ',' + DBKey.AUTHOR.PICTURE_UUID + "=?"
                 + ',' + DBKey.AUTHOR.COMPLETE + "=?"
                 + _WHERE_ + DBKey.PK_ID + "=?";
 
@@ -925,7 +969,7 @@ public class AuthorDaoImpl
                                                      DBKey.AUTHOR.GIVEN_NAMES,
                                                      DBKey.AUTHOR.BIRTH_DATE,
                                                      DBKey.AUTHOR.DEATH_DATE,
-                                                     DBKey.AUTHOR.PHOTO_UUID,
+                                                     DBKey.AUTHOR.PICTURE_UUID,
                                                      DBKey.AUTHOR.COMPLETE)
                 + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.AUTHOR.BOOK_AUTHOR_POSITION,
                                               DBKey.AUTHOR.BOOK_AUTHOR_TYPE)

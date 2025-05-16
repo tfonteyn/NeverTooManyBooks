@@ -358,10 +358,10 @@ public class JsonRecordWriter
                                             .ifPresent(results::addCover);
                             }
 
-                            // Author photos
+                            // Author pictures
                             book.getAuthors()
                                 .stream()
-                                .map(Author::getPhotoUuid)
+                                .map(Author::getPictureUuid)
                                 .flatMap(Optional::stream)
                                 // Filter FIRST so we do not run the File() method if not
                                 // actually needed.

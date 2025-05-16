@@ -674,7 +674,7 @@ public class DBHelper
             TBL_AUTHORS.alterTableAddColumns(db,
                                              DBDefinitions.DOM_AUTHOR_BIRTH_DATE,
                                              DBDefinitions.DOM_AUTHOR_DEATH_DATE,
-                                             DBDefinitions.DOM_AUTHOR_PHOTO_UUID);
+                                             DBDefinitions.DOM_AUTHOR_PICTURE_UUID);
         }
 
         // We have to do this here due to some users skipping updates (see github #30)

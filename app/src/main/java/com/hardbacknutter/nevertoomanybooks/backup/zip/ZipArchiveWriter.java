@@ -233,7 +233,7 @@ public class ZipArchiveWriter
             if (!progressListener.isCancelled() && writeCovers && results.has(RecordType.Cover)) {
                 final File dir = serviceLocator.getCoverStorage().getDir();
 
-                // Write author photos
+                // Write author pictures
                 final String imagesStr = context.getString(R.string.lbl_images);
                 progressListener.publishProgress(0, imagesStr);
                 writeImages(context, dir, results.getOtherImages(), progressListener, imagesStr);

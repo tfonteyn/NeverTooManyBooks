@@ -263,7 +263,7 @@ public final class DBKey {
         /**
          * Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
          */
-        public static final String PHOTO_UUID = "photo_uuid";
+        public static final String PICTURE_UUID = "pic_uuid";
 
         /** Users "author is complete" flag. */
         public static final String COMPLETE = "author_complete";

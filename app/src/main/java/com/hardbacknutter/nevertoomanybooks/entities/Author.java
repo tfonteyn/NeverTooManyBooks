@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -302,8 +304,23 @@ public class Author
     private String birthDate;
     @Nullable
     private String deathDate;
+    /**
+     * Not stored in the database. This is temporary used:
+     * - set during a search/resolve
+     * - read and displayed when editing the author
+     * - read, file stored, and cleared.
+     * In this case the file uuid is set in {@link #pictureUuid} and stored in the database
+     */
     @Nullable
-    private String photoUuid;
+    private String tmpPictureFileSpec;
+
+    /**
+     * Stored file uuid.
+     *
+     * @see #tmpPictureFileSpec
+     */
+    @Nullable
+    private String pictureUuid;
 
     /** whether we have all we want from this Author. */
     private boolean complete;
@@ -343,7 +360,7 @@ public class Author
         givenNames = rowData.getString(DBKey.AUTHOR.GIVEN_NAMES);
         birthDate = rowData.getString(DBKey.AUTHOR.BIRTH_DATE);
         deathDate = rowData.getString(DBKey.AUTHOR.DEATH_DATE);
-        photoUuid = rowData.getString(DBKey.AUTHOR.PHOTO_UUID);
+        pictureUuid = rowData.getString(DBKey.AUTHOR.PICTURE_UUID);
         complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
 
         setIdentifiers(ServiceLocator.getInstance().getAuthorIdentifierDao().getByFkId(this.id));
@@ -386,7 +403,9 @@ public class Author
         givenNames = in.readString();
         birthDate = in.readString();
         deathDate = in.readString();
-        photoUuid = in.readString();
+        pictureUuid = in.readString();
+        tmpPictureFileSpec = in.readString();
+
         complete = in.readByte() != 0;
         type = in.readInt();
         realAuthor = in.readParcelable(getClass().getClassLoader());
@@ -983,14 +1002,56 @@ public class Author
         this.deathDate = deathDate;
     }
 
+
+    /**
+     * Get the <strong>current</strong> picture for this author.
+     * <p>
+     * This method gets the temporary picture or the persisted picture as available.
+     * <p>
+     * Any {@link StorageException} is <strong>IGNORED</strong>
+     *
+     * @return file
+     */
     @NonNull
-    public Optional<String> getPhotoUuid() {
-        return photoUuid == null || photoUuid.isEmpty() ? Optional.empty()
-                                                        : Optional.of(photoUuid);
+    public Optional<File> getPicture() {
+        final Optional<String> oFileSpec = getTmpPictureFileSpec();
+        if (oFileSpec.isPresent()) {
+            final File file = new File(oFileSpec.get());
+            if (file.exists()) {
+                return Optional.of(file);
+            }
+        }
+
+        return getPictureUuid()
+                .flatMap(s -> ServiceLocator.getInstance().getCoverStorage()
+                                            .getPersistedFile(s, 0));
     }
 
-    public void setPhotoUuid(@Nullable final String photoUuid) {
-        this.photoUuid = photoUuid;
+    /**
+     * Get the UUID for the picture.
+     * <p>
+     * Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
+     *
+     * @return uuid
+     */
+    @NonNull
+    public Optional<String> getPictureUuid() {
+        return pictureUuid == null || pictureUuid.isEmpty()
+               ? Optional.empty() : Optional.of(pictureUuid);
+    }
+
+    public void setPictureUuid(@Nullable final String pictureUuid) {
+        this.pictureUuid = pictureUuid;
+    }
+
+    @NonNull
+    public Optional<String> getTmpPictureFileSpec() {
+        return tmpPictureFileSpec == null || tmpPictureFileSpec.isEmpty()
+               ? Optional.empty() : Optional.of(tmpPictureFileSpec);
+    }
+
+    public void setTmpPictureFileSpec(@Nullable final String tmpPictureFileSpec) {
+        this.tmpPictureFileSpec = tmpPictureFileSpec;
     }
 
     /**
@@ -1005,7 +1066,8 @@ public class Author
         givenNames = source.givenNames;
         birthDate = source.birthDate;
         deathDate = source.deathDate;
-        photoUuid = source.photoUuid;
+        pictureUuid = source.pictureUuid;
+        tmpPictureFileSpec = source.tmpPictureFileSpec;
 
         complete = source.complete;
         // Do not deep copy! We WANT the same/original object
@@ -1063,10 +1125,12 @@ public class Author
         if (getDeathDate().isEmpty()) {
             source.getDeathDate().ifPresent(this::setDeathDate);
         }
-        if (getPhotoUuid().isEmpty()) {
-            source.getPhotoUuid().ifPresent(this::setPhotoUuid);
+        if (getPictureUuid().isEmpty()) {
+            source.getPictureUuid().ifPresent(this::setPictureUuid);
         }
-
+        if (getTmpPictureFileSpec().isEmpty()) {
+            source.getTmpPictureFileSpec().ifPresent(this::setTmpPictureFileSpec);
+        }
         if (source.isComplete()) {
             complete = true;
         }
@@ -1085,7 +1149,8 @@ public class Author
         dest.writeString(givenNames);
         dest.writeString(birthDate);
         dest.writeString(deathDate);
-        dest.writeString(photoUuid);
+        dest.writeString(pictureUuid);
+        dest.writeString(tmpPictureFileSpec);
 
         dest.writeByte((byte) (complete ? 1 : 0));
         dest.writeInt(type);
@@ -1157,7 +1222,8 @@ public class Author
                && Objects.equals(givenNames, that.givenNames)
                && Objects.equals(birthDate, that.birthDate)
                && Objects.equals(deathDate, that.deathDate)
-               && Objects.equals(photoUuid, that.photoUuid)
+               && Objects.equals(pictureUuid, that.pictureUuid)
+               && Objects.equals(tmpPictureFileSpec, that.tmpPictureFileSpec)
                && Objects.equals(realAuthor, that.realAuthor);
     }
 
@@ -1230,7 +1296,8 @@ public class Author
                + ", givenNames=`" + givenNames + '`'
                + ", birthDate=`" + birthDate + '`'
                + ", deathDate=`" + deathDate + '`'
-               + ", photoUuid=`" + photoUuid + '`'
+               + ", pictureUuid=`" + pictureUuid + '`'
+               + ", tmpPictureFileSpec=`" + tmpPictureFileSpec + '`'
                + ", complete=" + complete
                + ", type=0b" + Integer.toBinaryString(type) + ": " + sj
                + ", identifiers=" + identifiers

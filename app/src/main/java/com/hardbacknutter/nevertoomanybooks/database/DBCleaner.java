@@ -47,9 +47,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * TODO: check for orphaned images
  *  - book covers:
  *    - delete all [16-char uuid].ext files where there is no equivalent book
- *  - author photos:
- *    - delete all uuid.ext files where there is no author with the photoUuid set to that uuid
- *    - clear authors photoUuid if set without there being an actual file
+ *  - author pictures:
+ *    - delete all uuid.ext files where there is no author with the pictureUuid set to that uuid
+ *    - clear authors pictureUuid if set without there being an actual file
  *  - remove rows from the cache db where the referenced book uuid does not exist
  */
 public class DBCleaner {
