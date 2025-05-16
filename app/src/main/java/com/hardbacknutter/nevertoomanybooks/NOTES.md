@@ -71,7 +71,7 @@ ENHANCE: add book by search: allow publisher + present list of finds instead of 
 and then redo the search WITH the isbn
 ==> so this is why we only ever get ONE result back.
 
-Look into using
+TODO: Look into using
 https://developer.android.com/guide/navigation/navigation-custom-back
 https://developer.android.com/training/appbar/up-action
 
@@ -89,6 +89,36 @@ TODO: TEST migrate to JUnit5 for on-device tests as well.
 
 ENHANCE: add rotating functions to the cropper activity. This would allow
 multi-rotate-undo by simply quiting the cropper.
+
+<hr style="border:1px solid black;">
+
+ENHANCE: add a UUID to bookshelves
+
+- "My Books", id=1, uuid=x1
+- "new shelf", id=2, uuid=x2
+- backup
+
+
+- restore same device
+- all shelves recognized by uuid
+- done
+
+
+- restore new device
+- "My Books", id=1, uuid=x3
+
+- "new shelf", id=2, uuid=x2 ==> x2 does not exist, import, all fine
+
+- "My Books", id=1, uuid=x1 ==> x1 does NOT exist
+    - if the name does exist, import, done
+    - name EXISTS:
+      ? merge, drop x2
+      ? rename to "bis", keep x2; user can manually merge x2->x3 or x3->x2
+
+So basically, always either matching uuid, or import as new.
+When conflict in name, auto rename and have user merge manually
+
+import old backup, so changes, just check name as we do now.
 
 <hr style="border:1px solid red;">
 Known issues:
