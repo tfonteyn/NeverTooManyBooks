@@ -23,8 +23,10 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbAuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuthorResolver;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -49,7 +52,8 @@ public final class AuthorResolverFactory {
      * Pref key.
      * "[engine].resolve.authors.[resolver]"
      */
-    private static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
+    @VisibleForTesting
+    public static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
 
     private AuthorResolverFactory() {
     }
@@ -120,10 +124,14 @@ public final class AuthorResolverFactory {
                 break;
             }
             case Goodreads: {
-                if (isEnabled(context, engineId, EngineId.OpenLibrary)) {
-                    return List.of(OpenLibraryAuthorResolver.create(context, searchEngine));
+                final List<AuthorResolver> list = new ArrayList<>();
+                if (isEnabled(context, engineId)) {
+                    list.add(GoodreadsAuthorResolver.create(context, searchEngine));
                 }
-                break;
+                if (isEnabled(context, engineId, EngineId.OpenLibrary)) {
+                    list.add(OpenLibraryAuthorResolver.create(context, searchEngine));
+                }
+                return list;
             }
             case Isfdb: {
                 if (isEnabled(context, engineId)) {
