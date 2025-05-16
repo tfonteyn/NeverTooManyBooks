@@ -42,12 +42,15 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Cleanup routines for some columns/tables which can be run at upgrades, import, startup
+ * Cleanup routines for some columns/tables which can be run at upgrades, import, startup.
  * <p>
- * Work in progress.
- * <p>
- * TODO: add a loop check for the covers cache database:
- * read all book uuid's and clean the covers.db removing non-existing uuid rows.
+ * TODO: check for orphaned images
+ *  - book covers:
+ *    - delete all [16-char uuid].ext files where there is no equivalent book
+ *  - author photos:
+ *    - delete all uuid.ext files where there is no author with the photoUuid set to that uuid
+ *    - clear authors photoUuid if set without there being an actual file
+ *  - remove rows from the cache db where the referenced book uuid does not exist
  */
 public class DBCleaner {
 
