@@ -106,6 +106,10 @@ public class AuthorParseTest
         assertEquals("49", oIv.get());
 
         assertNull(author.getRealAuthor());
+
+        final String pic = author.getTmpPictureFileSpec().orElse(null);
+        assertNotNull(pic);
+        assertTrue(pic.endsWith("_isfdb_49_0_.jpg"));
     }
 
     @Test

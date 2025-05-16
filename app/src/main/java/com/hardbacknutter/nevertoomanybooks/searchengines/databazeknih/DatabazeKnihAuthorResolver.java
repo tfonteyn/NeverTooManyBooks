@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -66,6 +67,7 @@ public final class DatabazeKnihAuthorResolver
     // <a href="/filtrovani-autoru?nationId=13">česká</a>
     private static final Pattern BIRTH_DEATH_DATE_PATTERN = Pattern.compile(
             ".*,\\s*(\\d\\d\\d\\d)\\s*(?:-\\s*|)(\\d\\d\\d\\d|)");
+    private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 
     @NonNull
     private final DatabazeKnihSearchEngine searchEngine;
@@ -138,10 +140,11 @@ public final class DatabazeKnihAuthorResolver
             return false;
         }
 
-        final String url = String.format(authorUri, oIv.get());
+        final String sid = oIv.get();
+        final String url = String.format(authorUri, sid);
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
-            final Author found = parse(document);
+            final Author found = parse(context, document, sid);
             // 2025-05-10: insist on case-sensitive name equality for now.
             // If this proves problematic, we'll change it later...
             if (found != null && author.isSameName(found)) {
@@ -161,7 +164,9 @@ public final class DatabazeKnihAuthorResolver
     }
 
     @Nullable
-    private Author parse(@NonNull final Document document) {
+    private Author parse(@NonNull final Context context,
+                         @NonNull final Document document,
+                         @NonNull final String sid) {
         final Element section = document.selectFirst("div#left_less");
         if (section == null) {
             return null;
@@ -217,6 +222,29 @@ public final class DatabazeKnihAuthorResolver
                     author.setDeathDate(deathYear);
                     if (realAuthor != null) {
                         realAuthor.setDeathDate(birthYear);
+                    }
+                }
+            }
+        }
+
+        // <div class="img_author_detail" style="background-image:url(&quot;https://www.databazeknih.cz/img/authors/17_/1787/dylan-thomas-xre-1787.jpg?v=1583567916&quot;)" title=""></div>
+        final Element picElement = section.selectFirst("div.img_author_detail");
+        if (picElement != null) {
+            // no parsing, just brute-force-match
+            final String[] parts = QUOTE_PATTERN.split(picElement.attr("style"));
+            if (parts.length == 3) {
+                final String url = parts[1];
+                if (!url.contains("empty-author") && !url.contains("antologie-kolektiv-autoru")) {
+                    try {
+                        searchEngine.saveImage(context, url, null, sid, 0, null)
+                                    .ifPresent(fileSpec -> {
+                                        author.setTmpPictureFileSpec(fileSpec);
+                                        if (realAuthor != null) {
+                                            realAuthor.setPictureUuid(fileSpec);
+                                        }
+                                    });
+                    } catch (@NonNull final StorageException ignore) {
+                        // ignore
                     }
                 }
             }

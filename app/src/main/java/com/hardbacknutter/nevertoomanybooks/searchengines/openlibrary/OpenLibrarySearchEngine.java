@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
@@ -117,15 +116,16 @@ public class OpenLibrarySearchEngine
      * <p>
      * Where:
      * <p>
-     * param 1: key can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
-     * param 2: value of the chosen key
-     * param 3: one of S, M and L for small, medium and large respectively.
+     * param 1: 'b' for books, or 'a' for authors
+     * param 2: key can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
+     * param 3: value of the chosen key
+     * param 4: one of S, M and L for small, medium and large respectively.
      * <p>
      * When there is no cover, the server returns a blank image by default.
      * Adding "?default=false": forces a 404 to be returned
      */
     private static final String COVER_BY_KEY =
-            "https://covers.openlibrary.org/b/%1$s/%2$s-%3$s.jpg?default=false";
+            "https://covers.openlibrary.org/%1$s/%2$s/%3$s-%4$s.jpg?default=false";
 
     /**
      * <a href="https://openlibrary.org/dev/docs/api/covers">Covers API</a>
@@ -162,6 +162,8 @@ public class OpenLibrarySearchEngine
     private FutureHttpGet<String> futureHttpGet;
     @Nullable
     private SiteAuthModule siteAuthModule;
+    @Nullable
+    private AuthorParser authorParser;
 
     /**
      * Constructor.
@@ -603,17 +605,22 @@ public class OpenLibrarySearchEngine
         //     "by John Miedema."
         //     "Katja Diehl, mit zahlreichen Illustrationen von Doris Reich"
         //
-        // In the above example "John Miedema." will be created WITH the "." at the end.
-        // There are just to many inconsistencies to catch them all, so we leave those
-        // to the user.
+        // We'll try and catch some of the inconsistencies, but can't catch them all,
+        // so we leave those to the user.
+        // Note we also will not try and resolve these names on purpose.
         s = document.optString("by_statement", null);
         if (s != null && !s.isEmpty()) {
-            // These are gambles.... we don't have enough data samples
+            // drop trailing '.'
+            if (s.endsWith(".")) {
+                s = s.substring(0, s.length() - 1);
+            }
+            // remove "by " from the start
             if (s.startsWith("by ") && s.length() > 3) {
                 s = s.substring(3);
                 addAuthor(Author.from(s), Author.TYPE_UNKNOWN, book);
-            }
-            if (s.contains(",")) {
+
+            } else if (s.contains(",")) {
+                // only grab the part before a comma
                 final String[] split = s.split(",");
                 if (split.length > 0) {
                     addAuthor(Author.from(split[0]), Author.TYPE_UNKNOWN, book);
@@ -693,7 +700,9 @@ public class OpenLibrarySearchEngine
             parseToc(context, a, book);
         }
 
-        AuthorResolverFactory.resolve(context, this, book);
+        // We would normally call
+        //   AuthorResolverFactory.resolve(context, this, book);
+        // at this point, but we already had to resolve the "authors" in #parseAuthors
 
         if (isCancelled()) {
             return;
@@ -740,6 +749,8 @@ public class OpenLibrarySearchEngine
      *   "revision": 2
      * }
      * </pre>
+     * <p>
+     * The authors parsed here will be fully resolved.
      *
      * @param context Current context
      * @param a       array with author elements
@@ -753,6 +764,10 @@ public class OpenLibrarySearchEngine
                               @NonNull final Book book)
             throws StorageException, SearchException {
 
+        if (authorParser == null) {
+            authorParser = new AuthorParser(context, this);
+        }
+
         JSONObject element;
         for (int ai = 0; ai < a.length(); ai++) {
             element = a.optJSONObject(ai);
@@ -761,16 +776,9 @@ public class OpenLibrarySearchEngine
                 if (key != null && !key.isEmpty()) {
                     final String authorUrl = getHostUrl(context) + key + ".json";
                     final String response = loadDocument(context, authorUrl);
-                    final JSONObject jsonObject = new JSONObject(response);
-                    final String name = jsonObject.optString("name", null);
-                    if (name != null && !name.isEmpty()) {
-                        final Author author = Author.from(name);
-                        // extract the OL id it from the key as it's not in the json
-                        // Sanity check
-                        if (key.startsWith("/authors/")) {
-                            final String iv = key.substring(9);
-                            author.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, iv);
-                        }
+                    final JSONObject document = new JSONObject(response);
+                    final Author author = authorParser.parse(context, document);
+                    if (author != null) {
                         addAuthor(author, Author.TYPE_UNKNOWN, book);
                     }
                 }
@@ -1290,7 +1298,7 @@ public class OpenLibrarySearchEngine
      * <p>
      * {@inheritDoc}
      *
-     * @see #searchCoverByKey(Context, String, String, int, Size)
+     * @see #fetchImageByKey(Context, char, String, String, int, Size)
      * @see #searchBestCover(Context, String, String, int)
      */
     @Override
@@ -1307,7 +1315,8 @@ public class OpenLibrarySearchEngine
 
             // The cover should always be valid, but paranoia...
             if (covers[cIdx] > 0) {
-                return searchCoverByKey(context, "id", String.valueOf(covers[cIdx]), cIdx, size);
+                return fetchImageByKey(context, 'b', "id", String.valueOf(covers[cIdx]), cIdx,
+                                       size);
             }
         } else if (altEdition instanceof AltEditionIsbn) {
             if (cIdx == 1) {
@@ -1323,7 +1332,7 @@ public class OpenLibrarySearchEngine
             final String isbn = edition.getIsbn();
 
             // Frontcover as usual
-            return searchCoverByKey(context, "isbn", isbn, 0, size);
+            return fetchImageByKey(context, 'b', "isbn", isbn, 0, size);
         }
 
         return Optional.empty();
@@ -1348,11 +1357,11 @@ public class OpenLibrarySearchEngine
                                              final int cIdx)
             throws StorageException {
 
-        Optional<String> oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Large);
+        Optional<String> oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, Size.Large);
         if (oFileSpec.isEmpty()) {
-            oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Medium);
+            oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, Size.Medium);
             if (oFileSpec.isEmpty()) {
-                oFileSpec = searchCoverByKey(context, key, id, cIdx, Size.Small);
+                oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, Size.Small);
             }
         }
         return oFileSpec;
@@ -1362,6 +1371,8 @@ public class OpenLibrarySearchEngine
      * Common code to do the actual cover search.
      *
      * @param context Current context
+     * @param type    'b' for books, or 'a' for authors
+     *                There is NO check!
      * @param key     to use for the search
      * @param id      value for the above key
      * @param cIdx    0..n image index
@@ -1372,11 +1383,12 @@ public class OpenLibrarySearchEngine
      * @throws StorageException on storage related failures
      */
     @NonNull
-    private Optional<String> searchCoverByKey(@NonNull final Context context,
-                                              @NonNull final String key,
-                                              @NonNull final String id,
-                                              @IntRange(from = 0, to = 1) final int cIdx,
-                                              @Nullable final Size size)
+    Optional<String> fetchImageByKey(@NonNull final Context context,
+                                     final char type,
+                                     @NonNull final String key,
+                                     @NonNull final String id,
+                                     @IntRange(from = 0, to = 1) final int cIdx,
+                                     @Nullable final Size size)
             throws StorageException {
 
         final String sizeParam;
@@ -1397,7 +1409,7 @@ public class OpenLibrarySearchEngine
             }
         }
 
-        final String url = String.format(COVER_BY_KEY, key, id, sizeParam);
+        final String url = String.format(COVER_BY_KEY, type, key, id, sizeParam);
 
         // The traffic from a simple request for a cover when using wget:
         // $ wget -d -O image.jpg https://covers.openlibrary.org/b/id/13769253-L.jpg?default=false

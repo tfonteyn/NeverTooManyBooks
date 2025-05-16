@@ -67,7 +67,7 @@ import org.jsoup.select.Elements;
  * Available:
  * - birth date (and country)
  * - death date
- * - photo
+ * - picture
  * - website(s)
  *
  * @see BedethequeCacheDao
@@ -362,6 +362,10 @@ public class BedethequeAuthorResolver
                 realAuthor.setBirthDate(birthDate);
                 realAuthor.setDeathDate(deathDate);
 
+                @Nullable
+                final String pictureFileSpec = parseImage(context, document, sid).orElse(null);
+                realAuthor.setTmpPictureFileSpec(pictureFileSpec);
+
                 if (penName == null) {
                     return realAuthor;
                 } else {
@@ -371,6 +375,7 @@ public class BedethequeAuthorResolver
                     }
                     penNameAuthor.setBirthDate(birthDate);
                     penNameAuthor.setDeathDate(deathDate);
+                    penNameAuthor.setTmpPictureFileSpec(pictureFileSpec);
 
                     penNameAuthor.setRealAuthor(realAuthor);
                     return penNameAuthor;
@@ -437,6 +442,12 @@ public class BedethequeAuthorResolver
      *     </div>
      *     }
      * </pre>
+     *
+     * @param context  Current context
+     * @param document to parse
+     * @param bdtId    used for the temp filename
+     *
+     * @return FileSpec
      */
     @WorkerThread
     @NonNull
@@ -448,8 +459,8 @@ public class BedethequeAuthorResolver
             final String url = a.attr("href");
             if (!"https://www.bdgest.com/skin/nophoto.png".equals(url)) {
                 try {
-                    return searchEngine.saveImage(context, url, null, String.valueOf(bdtId), 0,
-                                                  null);
+                    return searchEngine.saveImage(context, url, null,
+                                                  String.valueOf(bdtId), 0, null);
                 } catch (@NonNull final StorageException ignore) {
                     // ignore
                 }

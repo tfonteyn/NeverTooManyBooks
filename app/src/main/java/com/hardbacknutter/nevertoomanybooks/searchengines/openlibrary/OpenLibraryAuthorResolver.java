@@ -28,16 +28,12 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Locale;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
@@ -47,55 +43,30 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * It's a little unreliable... see comments inside {@link #parse}.
+ * It's a little unreliable... see comments inside {@link AuthorParser}.
  * <p>
  * Available:
  * - birth date
  * - death date
- * - photo
+ * - picture
  * - bio: text, or type/value(text)
  * - links to external sites
  */
 public final class OpenLibraryAuthorResolver
         implements AuthorResolver {
 
-    private static final String TAG = "OpenLibraryAuthorResolv";
     private static final String CHARSET = "UTF-8";
 
     private static final String AUTHOR_SEARCH = "https://openlibrary.org/search/authors.json?q=";
-
-    // There can be MANY different keys... sigh.
-    //  "remote_ids": {
-    //    "viaf": "97113511",
-    //    "goodreads": "3389",
-    //    "storygraph": "c4c684e1-3f2b-48e4-b9cc-e819f61e0177",
-    //    "isni": "0000000121446296",
-    //    "librarything": "kingstephen-1",
-    //    "amazon": "B000AQ0842",
-    //    "wikidata": "Q39829",
-    //    "inventaire": "wd:Q39829",
-    //    "gnd": "118813250",
-    //    "lc_naf": "n79063767",
-    //    "bookbrainz": "128d9490-ee19-4270-a070-32e0a36847f5",
-    //    "imdb": "nm0000175",
-    //    "musicbrainz": "a4ac255f-9775-4c16-8642-7f51502e45dd"
-    //  },
-    // as far as I can tell most common/reliable ones are "viaf" and "wikidata"
-    // Arbitrary decision: we're limiting us to the ISNI and these:
-    private static final String AUTHOR_SIDS =
-            "viaf|wikidata|goodreads|librarything|amazon|storygraph";
 
     @NonNull
     private final OpenLibrarySearchEngine searchEngine;
     @Nullable
     private final String authorUri;
-
-    private final PartialDateParser dateParser;
     @NonNull
-    private final Locale locale;
+    private final AuthorParser authorParser;
 
     /**
      * Private Constructor.
@@ -106,7 +77,6 @@ public final class OpenLibraryAuthorResolver
     private OpenLibraryAuthorResolver(@NonNull final Context context,
                                       @NonNull final OpenLibrarySearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        locale = searchEngine.getLocale(context);
         // The engine is hardcoded/defined with the identifier,
         // but the author-uri can be absent
         authorUri = this.searchEngine
@@ -115,7 +85,7 @@ public final class OpenLibraryAuthorResolver
                 .flatMap(identifier -> identifier.getAuthorUri(context))
                 .orElse(OpenLibrarySearchEngine.AUTHOR_URL);
 
-        dateParser = new PartialDateParser();
+        authorParser = new AuthorParser(context, searchEngine);
     }
 
     /**
@@ -167,68 +137,6 @@ public final class OpenLibraryAuthorResolver
     /**
      * As usual with OpenLibrary, the json returned here is (slightly) DIFFERENT
      * from the json returned in {@link #search(Context, Author)}. Sigh...
-     * <pre>
-     * {@code
-     * {
-     *   "name": "Isaac Asimov",
-     *   "key": "/authors/OL34221A",
-     *   "entity_type": "Pseudonym",
-     *   "birth_date": "2 January 1920",
-     *   "personal_name": "Isaac Asimov",
-     *   "remote_ids": {
-     *     "viaf": "24597135",
-     *     "wikidata": "Q34981",
-     *     "isni": "0000000122590564"
-     *   },
-     *   "source_records": [
-     *     ...SNIP...
-     *   ],
-     *   "photos": [
-     *     7425151,
-     *     7893107,
-     *     7241360,
-     *     5544324,
-     *     -1
-     *   ],
-     *   "death_date": "6 April 1992",
-     *   "type": {
-     *     "key": "/type/author"
-     *   },
-     *   "title": "Ph.D.",
-     *   "alternate_names": [
-     *     "Aximofu",
-     *     "Azimov Ayzek",
-     *     "Dr. A",
-     *     "Isaac Asimoc",
-     *     "Isaak Asimov",
-     *     "Isaak Judovič",
-     *     "Issac Azimov",
-     *     "The Good Doctor"
-     *   ],
-     *   "role": "ed",
-     *   "links": [
-     *     {
-     *       "title": "French Wikipédia Page",
-     *       "url": "http://fr.wikipedia.org/wiki/Isaac_Asimov",
-     *       "type": {
-     *         "key": "/type/link"
-     *       }
-     *     }
-     *   ],
-     *   "bio": "Asimov was born sometime between O.....",
-     *   "latest_revision": 91,
-     *   "revision": 91,
-     *   "created": {
-     *     "type": "/type/datetime",
-     *     "value": "2008-04-01T03:28:50.625462"
-     *   },
-     *   "last_modified": {
-     *     "type": "/type/datetime",
-     *     "value": "2025-01-13T16:14:01.971754"
-     *   }
-     * }
-     * }
-     * </pre>
      *
      * @param context Current context
      * @param author  to search for
@@ -252,9 +160,9 @@ public final class OpenLibraryAuthorResolver
         final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
         try {
             final String response = futureHttpGet.getAsString(url, (con, s) -> s);
-            final JSONObject jsonObject = new JSONObject(response);
+            final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
-                final Author found = parse(jsonObject);
+                final Author found = authorParser.parse(context, document);
                 // 2025-05-10: insist on case-sensitive name equality for now.
                 // If this proves problematic, we'll change it later...
                 if (found != null && author.isSameName(found)) {
@@ -270,62 +178,7 @@ public final class OpenLibraryAuthorResolver
     /**
      * As usual with OpenLibrary, the json (docs[0]) returned here is (slightly) DIFFERENT
      * from the json returned in {@link #searchBySid(Context, Author, String)}. Sigh...
-     * <pre>
-     * {@code
-     * {
-     *   "numFound": 12,
-     *   "start": 0,
-     *   "numFoundExact": true,
-     *   "docs": [
-     *     {
-     *       "alternate_names": [
-     *         "Aximofu",
-     *         "Azimov Ayzek",
-     *         "Dr. A",
-     *         "Isaac Asimoc",
-     *         "Isaak Asimov",
-     *         "Isaak Judovič",
-     *         "Issac Azimov",
-     *         "The Good Doctor"
-     *       ],
-     *       "birth_date": "2 January 1920",
-     *       "death_date": "6 April 1992",
-     *       "key": "OL34221A",
-     *       "name": "Isaac Asimov",
-     *       "top_subjects": [
-     *         "Science fiction",
-     *         "American Science fiction",
-     *         "Juvenile literature",
-     *         "Fiction",
-     *         "Science",
-     *         "Fiction, science fiction, general",
-     *         "Short stories",
-     *         "History",
-     *         "Children's fiction",
-     *         "English Science fiction"
-     *       ],
-     *       "top_work": "Foundation",
-     *       "type": "author",
-     *       "work_count": 1358,
-     *       "ratings_average": 4.118677,
-     *       "ratings_sortable": 4.076448,
-     *       "ratings_count": 1542,
-     *       "ratings_count_1": 21,
-     *       "ratings_count_2": 57,
-     *       "ratings_count_3": 270,
-     *       "ratings_count_4": 564,
-     *       "ratings_count_5": 630,
-     *       "want_to_read_count": 10311,
-     *       "already_read_count": 2988,
-     *       "currently_reading_count": 504,
-     *       "readinglog_count": 13803,
-     *       "_version_": 1828575192250580992
-     *     },
-     *     ...
-     *   ]
-     * }
-     * }
-     * </pre>
+     * <p>
      *
      * @param context Current context
      * @param author  to search for
@@ -344,24 +197,18 @@ public final class OpenLibraryAuthorResolver
                     author.getFormattedName(true), CHARSET);
 
             final String response = futureHttpGet.getAsString(url, (con, s) -> s);
-            JSONObject json = new JSONObject(response);
+            final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
-                final int numFound = json.optInt("numFound");
+                final int numFound = document.optInt("numFound");
                 if (numFound < 1) {
                     return false;
                 }
-                final JSONArray docs = json.optJSONArray("docs");
+                final JSONArray docs = document.optJSONArray("docs");
                 if (docs != null && !docs.isEmpty()) {
-                    json = docs.getJSONObject(0);
-                    final Author found = parse(json);
+                    final Author found = authorParser.parse(context, docs.getJSONObject(0));
                     // 2025-05-10: insist on case-sensitive name equality for now.
                     // If this proves problematic, we'll change it later...
                     if (found != null && author.isSameName(found)) {
-                        // the "key" is a simple string.
-                        final String sid = json.optString("key");
-                        if (!sid.isEmpty()) {
-                            found.setIdentifierValue(Identifier.SID_OPEN_LIBRARY, sid);
-                        }
                         return author.merge(found, true);
                     }
                 }
@@ -370,119 +217,5 @@ public final class OpenLibraryAuthorResolver
             throw new SearchException(searchEngine.getEngineId(), e);
         }
         return false;
-    }
-
-    @VisibleForTesting
-    @Nullable
-    Author parse(@NonNull final JSONObject document) {
-        // As so often with OpenLibrary, the confusion starts at the very start...
-
-        // This is seemingly the name as it would appear on a book
-        // 1. "James Tiptree, Jr."
-        // 2. "Kurt Vonnegut"
-        // 3. "Stephen King"
-        // 4. "Philip K. Dick"
-        //
-        // #search : present
-        // #resolve: present
-        final String name = document.optString("name");
-        // A variant of "name" ?
-        // 1. "James Tiptree"
-        // 2. "Vonnegut, Kurt."
-        // 3. "King, Stephen"
-        // 4. "Dick, Philip K."
-        //
-        // #search : absent
-        // #resolve: present
-        final String personalName = document.optString("personal_name");
-        // If the above was a pseudonym, this seems to be the real-name
-        // 1. "Alice Bradley Sheldon"
-        // 2. [absent]
-        // 3. [absent]
-        // 4. [absent]
-        //
-        // #search : absent
-        // #resolve: present
-        final String fullerName = document.optString("fuller_name");
-        // real-name(s), but not necessarily what appears on a book
-        // 1. "Alice B. Sheldon"
-        // 2. "Kurt Vonnegut, Jr."
-        // 3. "Stephen king"
-        // 4. "Philip Kindred Dick"
-        //
-        // #search : present
-        // #resolve: present
-        final JSONArray alternateNames = document.optJSONArray("alternate_names");
-
-        // We've seen, BUT not used consistently (or at all)...
-        // - "Pseudonym"  for "Isaac Asimov" ?? but his russian name is not even listed
-        // - "org" : e.g. ""James S. A. Corey""
-        //
-        // #search : absent
-        // #resolve: present
-        final String entityType = document.optString("entity_type");
-
-        if (BuildConfig.DEBUG /* always */) {
-            LoggerFactory.getLogger().d(TAG,
-                                        "name=" + name,
-                                        "personalName=" + personalName,
-                                        "fullerName=" + fullerName,
-                                        "alternateNames=" + alternateNames,
-                                        "entityType=" + entityType);
-        }
-
-        // ok... best guess/attempt here
-        final Author author;
-        if (!name.isEmpty()) {
-            author = Author.from(name);
-        } else if (!personalName.isEmpty()) {
-            author = Author.from(personalName);
-        } else {
-            return null;
-        }
-
-        // fullerName/alternateNames ...
-        // from a couple of examples, it's likely that fullerName is used
-        // when "name" is a Pseudonym.
-        // "alternateNames" is rather useless/unreliable in this context..
-        if (!fullerName.isEmpty()) {
-            final Author ps = Author.from(fullerName);
-            // there is no OL number, so we can't easily lookup identifiers...
-            author.setRealAuthor(ps);
-        }
-
-        // #search : present
-        // #resolve: present
-        dateParser.parse(document.optString("birth_date"), locale).ifPresent(
-                date -> author.setBirthDate(date.getIsoString()));
-        // #search : present
-        // #resolve: present
-        dateParser.parse(document.optString("death_date"), locale).ifPresent(
-                date -> author.setDeathDate(date.getIsoString()));
-
-        // #search : absent
-        // #resolve: present
-        final JSONObject remoteIds = document.optJSONObject("remote_ids");
-        if (remoteIds != null) {
-            for (final String key : remoteIds.keySet()) {
-                // The ISNI key is verified/normalized as needed
-                if (Identifier.SID_ISNI.equals(key)) {
-                    final String s = remoteIds.optString(Identifier.SID_ISNI);
-                    if (!s.isEmpty()) {
-                        final ISNI isni = new ISNI(s);
-                        if (isni.isValid()) {
-                            author.setIdentifierValue(Identifier.SID_ISNI, isni.getIsni());
-                        }
-                    }
-                } else if (AUTHOR_SIDS.contains(key)) {
-                    final String s = remoteIds.optString(key);
-                    if (!s.isEmpty()) {
-                        author.setIdentifierValue(key, s);
-                    }
-                }
-            }
-        }
-
-        return author;
     }
 }

@@ -153,10 +153,16 @@ public class ParseTest
         Optional<String> oIv;
 
         author = authors.get(0);
+        Log.d(TAG, author.toString());
+
         assertEquals("Springer", author.getFamilyName());
         assertEquals("Nancy", author.getGivenNames());
         assertEquals("1948", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
+
+        final String pic = author.getTmpPictureFileSpec().orElse(null);
+        assertNotNull(pic);
+        assertTrue(pic.endsWith("_databazeknih_9571_0_.jpg"));
 
         assertEquals(Author.TYPE_WRITER, author.getType());
         oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);

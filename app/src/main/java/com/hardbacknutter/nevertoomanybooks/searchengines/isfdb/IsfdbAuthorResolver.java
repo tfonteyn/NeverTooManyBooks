@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -51,7 +52,7 @@ import org.jsoup.select.Elements;
  * Available:
  * - Birthdate
  * - Deathdate
- * - photo
+ * - picture
  * - Birthplace
  * - Language
  * - Webpages
@@ -239,7 +240,7 @@ public final class IsfdbAuthorResolver
             }
         } else {
             // we're on a "real name" result page.
-            parseExtraData(root, author);
+            parseExtraData(context, root, author, sid);
         }
 
         return author;
@@ -260,15 +261,22 @@ public final class IsfdbAuthorResolver
         return null;
     }
 
-    private void parseExtraData(@NonNull final Element root,
-                                @NonNull final Author author) {
+    private void parseExtraData(@NonNull final Context context,
+                                @NonNull final Element root,
+                                @NonNull final Author author,
+                                @NonNull final String sid) {
 
         String birthPlace = null;
-        String imageUrl = null;
 
         final Element image = root.selectFirst("img[alt='Author Picture']");
         if (image != null) {
-            imageUrl = image.attr("src");
+            final String imageUrl = image.attr("src");
+            try {
+                searchEngine.saveImage(context, imageUrl, null, sid, 0, null)
+                            .ifPresent(author::setTmpPictureFileSpec);
+            } catch (@NonNull final StorageException ignore) {
+                // ignore
+            }
         }
 
         final Elements lis = root.select("li");

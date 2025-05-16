@@ -85,6 +85,7 @@ public class AuthorParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Author author = resolver.parse(context, document);
         assertNotNull(author);
+        Log.d(TAG, author.toString());
         assertEquals("Leloup", author.getFamilyName());
         assertEquals("Roger", author.getGivenNames());
         assertEquals("1933-11-17", author.getBirthDate().orElse(null));
@@ -93,6 +94,10 @@ public class AuthorParseTest
         oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
         assertTrue(oIv.isPresent());
         assertEquals("96", oIv.get());
+
+        final String pic = author.getTmpPictureFileSpec().orElse(null);
+        assertNotNull(pic);
+        assertTrue(pic.endsWith("_bedetheque_96_0_.jpg"));
     }
 
     @Test
