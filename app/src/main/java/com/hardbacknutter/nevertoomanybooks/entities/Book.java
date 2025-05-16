@@ -495,6 +495,12 @@ public class Book
 
     /**
      * Get the {@code UUID}.
+     * <p>
+     * <strong>IMPORTANT</strong> (but not really...)
+     * Yes, despite we refer to this as a UUID, this is NOT a real UUID.
+     * It's just an SQLite randomly generated 16 byte hex string.
+     * <p>
+     * Formatted as a <strong>16 character hex string</strong>, i.e. there are NO '-' separators.
      *
      * @return the uuid; can be empty but never {@code null}
      */

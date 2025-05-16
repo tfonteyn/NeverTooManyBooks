@@ -955,6 +955,9 @@ public final class DBDefinitions {
         DOM_BOOK_UUID =
                 new Domain.Builder(DBKey.BOOK_UUID, SqLiteDataType.Text)
                         .notNull()
+                        // Yes, despite we refer to this as a UUID,
+                        // this is NOT a real UUID. It's just a 16 byte hex string.
+                        // This is as-designed/fine for our purpose.
                         .withDefault("(lower(hex(randomblob(16))))")
                         .build();
 

@@ -79,6 +79,8 @@ public interface Style {
 
     /**
      * Get the UUID for this style.
+     * <p>
+     * Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
      *
      * @return the UUID
      */

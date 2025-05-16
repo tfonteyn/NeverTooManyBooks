@@ -73,6 +73,10 @@ public final class DBKey {
     public static final String DATE_ADDED__UTC = "date_added";
     public static final String DATE_LAST_UPDATED__UTC = "last_update_date";
 
+    /**
+     * {@link DBDefinitions#TBL_BOOKS}.
+     * Formatted as a <strong>16 character hex string</strong>, i.e. there are NO '-' separators.
+     */
     public static final String BOOK_UUID = "book_uuid";
     /**
      * {@link DBDefinitions#TBL_BOOKS}, {@link DBDefinitions#TBL_TOC_ENTRIES}.
@@ -252,8 +256,13 @@ public final class DBKey {
         /** The reordered name as per user preference for sorting. */
         public static final String GIVEN_NAMES_OB = GIVEN_NAMES + ORDER_BY_SUFFIX;
 
+        /** ISO (Partial) date string. */
         public static final String BIRTH_DATE = "birth_date";
+        /** ISO (Partial) date string. */
         public static final String DEATH_DATE = "death_date";
+        /**
+         * Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
+         */
         public static final String PHOTO_UUID = "photo_uuid";
 
         /** Users "author is complete" flag. */
@@ -335,6 +344,9 @@ public final class DBKey {
     public static final class STYLE {
         //NEWTHINGS: style option: add dbkey
 
+        /**
+         * Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
+         */
         public static final String UUID = "uuid";
         /**
          * The name for a user defined style.
@@ -526,9 +538,15 @@ public final class DBKey {
         public static final String CUSTOM_FIELD_NAME = "clb_cf_name";
         public static final String CUSTOM_FIELD_TYPE = "clb_cf_type";
         public static final String CUSTOM_FIELD_MAPPING = "clb_cf_mapping";
+
         /** {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}. */
         public static final String LIBRARY_LAST_SYNC_DATE__UTC = "clb_lib_last_sync";
+        /** {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}. */
         public static final String LIBRARY_STRING_ID = "clb_lib_id";
+        /**
+         * @link DBDefinitions#TBL_CALIBRE_LIBRARIES}.
+         *         Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
+         */
         public static final String LIBRARY_UUID = "clb_lib_uuid";
         /**
          * {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}
