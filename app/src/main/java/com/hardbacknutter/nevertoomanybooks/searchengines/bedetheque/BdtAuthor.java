@@ -95,6 +95,12 @@ public class BdtAuthor {
         return url;
     }
 
+    /**
+     * Get the Author SID.
+     *
+     * @return SID, should NEVER be {@code null} or {@code ""}
+     *         but we're going to be paranoid and assume it can be
+     */
     @Nullable
     String getBdtId() {
         if (bdtId != null && !bdtId.isEmpty()) {
