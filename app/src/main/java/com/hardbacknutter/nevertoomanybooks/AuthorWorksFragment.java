@@ -30,6 +30,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -42,11 +43,15 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -110,10 +115,12 @@ public class AuthorWorksFragment
     private FragmentAuthorWorksBinding vb;
     private Menu rowMenu;
     private TextView nameView;
+    private ImageView pictureView;
     private TextView birthDateView;
     private TextView bookshelfView;
     private TextView deathDateView;
     private EditParcelableLauncher<Author> editAuthorLauncher;
+    private ImageViewLoader imageLoader;
 
     private FieldFormatter<String> dff;
 
@@ -140,8 +147,15 @@ public class AuthorWorksFragment
         editAuthorLauncher.registerForFragmentResult(fm, this);
         editAuthorLauncher.setOnEditInPlaceListener(author -> vm.onAuthorUpdate(author));
 
-        dff = new DateFieldFormatter(
-                getContext().getResources().getConfiguration().getLocales().get(0), false);
+        final Resources res = getContext().getResources();
+        dff = new DateFieldFormatter(res.getConfiguration().getLocales().get(0), false);
+
+        final int width = res.getDimensionPixelSize(R.dimen.author_picture_width);
+        final int height = res.getDimensionPixelSize(R.dimen.author_picture_height);
+        imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+                                          ImageView.ScaleType.FIT_START,
+                                          ImageViewLoader.MaxSize.Enforce,
+                                          width, height);
     }
 
     @Nullable
@@ -167,6 +181,7 @@ public class AuthorWorksFragment
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         nameView = toolbar.findViewById(R.id.name);
+        pictureView = toolbar.findViewById(R.id.picture);
         birthDateView = toolbar.findViewById(R.id.birth_date);
         deathDateView = toolbar.findViewById(R.id.death_date);
         bookshelfView = toolbar.findViewById(R.id.bookshelf);
@@ -225,6 +240,13 @@ public class AuthorWorksFragment
 
         //noinspection DataFlowIssue
         nameView.setText(author.getLabel(context, Details.AutoSelect, vm.getStyle()));
+
+        final Optional<File> file = author.getPicture();
+        if (file.isPresent()) {
+            imageLoader.fromFile(pictureView, file.get(), null, null);
+        } else {
+            pictureView.setImageResource(R.drawable.person_24px);
+        }
 
         birthDateView.setText(author.getBirthDate()
                                     .map(d -> getString(R.string.name_colon_value,
