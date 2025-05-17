@@ -1075,23 +1075,27 @@ public class Author
                 uuid = UUID.randomUUID().toString();
                 destination = ServiceLocator.getInstance().getCoverStorage()
                                             .persist(file, uuid, cIdx);
-                // and update the author record
-                setImageUuid(uuid);
-                final Locale locale = context.getResources().getConfiguration().getLocales()
-                                             .get(0);
-                try {
-                    ServiceLocator.getInstance().getAuthorDao().update(context, this, locale);
-                } catch (@NonNull final DaoWriteException e) {
-                    // log, but ignore - should never happen unless disk full
-                    LoggerFactory.getLogger().e(TAG, e, this);
-                }
+                updateImageUuid(context, uuid);
             }
         } else if (uuid != null) {
             // a null file indicates we need to delete the image
             ServiceLocator.getInstance().getCoverStorage().delete(uuid, cIdx);
+            updateImageUuid(context, null);
         }
 
         return destination;
+    }
+
+    private void updateImageUuid(@NonNull final Context context,
+                                 @Nullable final String uuid) {
+        setImageUuid(uuid);
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        try {
+            ServiceLocator.getInstance().getAuthorDao().update(context, this, locale);
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            LoggerFactory.getLogger().e(TAG, e, this);
+        }
     }
 
     /**
