@@ -1040,6 +1040,60 @@ public class Author
                                             .getPersistedFile(s, 0));
     }
 
+    @Nullable
+    @Override
+    public File setImage(@NonNull final Context context,
+                         @IntRange(from = 0, to = 0) final int cIdx,
+                         @Nullable final File file)
+            throws StorageException, IOException {
+
+        String uuid = getImageUuid().orElse(null);
+        // the file to return from this method, after the incoming file has been processed
+        @Nullable
+        File destination = file;
+
+        if (file != null) {
+            if (uuid != null && file.getName().startsWith(uuid)) {
+                // No further action needed as we have the image "in-place"
+                // ... not actually sure when this would be the case; keep an eye on logs
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
+                    LoggerFactory.getLogger()
+                                 .e(TAG, new Throwable("setImage"),
+                                    "readOnly"
+                                    + "|bookId=" + getId()
+                                    + "|cIdx=" + cIdx
+                                    + "|uuid, in-place"
+                                 );
+                }
+            } else if (uuid != null) {
+                // we already have an image, just replace it
+                destination = ServiceLocator.getInstance().getCoverStorage()
+                                            .persist(file, uuid, cIdx);
+            } else {
+                // it's the first time we persist an image
+                // Rename the temp file to the uuid permanent file name
+                uuid = UUID.randomUUID().toString();
+                destination = ServiceLocator.getInstance().getCoverStorage()
+                                            .persist(file, uuid, cIdx);
+                // and update the author record
+                setImageUuid(uuid);
+                final Locale locale = context.getResources().getConfiguration().getLocales()
+                                             .get(0);
+                try {
+                    ServiceLocator.getInstance().getAuthorDao().update(context, this, locale);
+                } catch (@NonNull final DaoWriteException e) {
+                    // log, but ignore - should never happen unless disk full
+                    LoggerFactory.getLogger().e(TAG, e, this);
+                }
+            }
+        } else if (uuid != null) {
+            // a null file indicates we need to delete the image
+            ServiceLocator.getInstance().getCoverStorage().delete(uuid, cIdx);
+        }
+
+        return destination;
+    }
+
     /**
      * Get the UUID for the picture.
      * <p>

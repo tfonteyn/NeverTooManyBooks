@@ -43,6 +43,8 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +53,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
@@ -121,7 +124,8 @@ public class AuthorWorksFragment
     private TextView deathDateView;
     private EditParcelableLauncher<Author> editAuthorLauncher;
     private ImageViewLoader imageLoader;
-
+    /** Delegate to handle cover replacement, rotation, etc. */
+    private ImageHandler imageHandler;
     private FieldFormatter<String> dff;
 
     @Override
@@ -181,10 +185,11 @@ public class AuthorWorksFragment
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         nameView = toolbar.findViewById(R.id.name);
-        pictureView = toolbar.findViewById(R.id.picture);
         birthDateView = toolbar.findViewById(R.id.birth_date);
         deathDateView = toolbar.findViewById(R.id.death_date);
         bookshelfView = toolbar.findViewById(R.id.bookshelf);
+
+        setupImageView(toolbar);
 
         vm.onAuthor().observe(getViewLifecycleOwner(), this::onAuthorUpdate);
         vm.getOnBookshelf().observe(getViewLifecycleOwner(), s -> bookshelfView.setText(s));
@@ -235,18 +240,30 @@ public class AuthorWorksFragment
         }
     }
 
+    private void setupImageView(@NonNull final Toolbar toolbar) {
+        pictureView = toolbar.findViewById(R.id.picture);
+        final CircularProgressIndicator progressView =
+                toolbar.findViewById(R.id.cover_operation_progress_bar);
+        final Resources res = getResources();
+        final int width = res.getDimensionPixelSize(R.dimen.author_picture_width);
+        final int height = res.getDimensionPixelSize(R.dimen.author_picture_height);
+        imageHandler = new ImageHandler
+                .Builder(this, 0, width, height)
+                .setImageSupplier(() -> vm.getAuthor())
+                .setOnReloadConsumer(cIdx -> bindImage(vm.getAuthor()))
+                .setProgressIndicator(progressView)
+                .build();
+        imageHandler.onBindView(pictureView);
+        imageHandler.attachOnClickListeners(getChildFragmentManager(), pictureView);
+    }
+
     private void onAuthorUpdate(@NonNull final Author author) {
         final Context context = getContext();
 
         //noinspection DataFlowIssue
         nameView.setText(author.getLabel(context, Details.AutoSelect, vm.getStyle()));
 
-        final Optional<File> file = author.getImage(0);
-        if (file.isPresent()) {
-            imageLoader.fromFile(pictureView, file.get(), null, null);
-        } else {
-            pictureView.setImageResource(R.drawable.person_24px);
-        }
+        bindImage(author);
 
         birthDateView.setText(author.getBirthDate()
                                     .map(d -> getString(R.string.name_colon_value,
@@ -259,6 +276,15 @@ public class AuthorWorksFragment
                                                         getString(R.string.lbl_date_died),
                                                         dff.format(getContext(), d)))
                                     .orElse(null));
+    }
+
+    private void bindImage(@NonNull final Author author) {
+        final Optional<File> file = author.getImage(0);
+        if (file.isPresent()) {
+            imageLoader.fromFile(pictureView, file.get(), null, null);
+        } else {
+            pictureView.setImageResource(R.drawable.person_24px);
+        }
     }
 
     /**

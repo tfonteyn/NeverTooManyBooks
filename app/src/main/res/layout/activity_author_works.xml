@@ -53,6 +53,18 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="ContentDescription" />
 
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/cover_operation_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/picture"
+                    app:layout_constraintEnd_toEndOf="@id/picture"
+                    app:layout_constraintStart_toStartOf="@id/picture"
+                    app:layout_constraintTop_toTopOf="@id/picture"
+                    tools:visibility="visible"
+                    />
+
                 <TextView
                     android:id="@+id/name"
                     android:layout_width="0dp"
