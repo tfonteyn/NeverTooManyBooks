@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -82,14 +81,13 @@ public class AuthorParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
 
-        final SharedPreferences preferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        preferences.edit()
-                   .putBoolean("goodreads" + AuthorResolverFactory.PK_RESOLVE_AUTHORS
-                               + "goodreads", true)
-                   .putBoolean("goodreads" + AuthorResolverFactory.PK_RESOLVE_AUTHORS
-                               + "openlibrary", false)
-                   .apply();
+        // limit to Goodreads only
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putBoolean(AuthorResolverFactory.getKey(
+                                 EngineId.Goodreads, EngineId.Goodreads), true)
+                         .putBoolean(AuthorResolverFactory.getKey(
+                                 EngineId.Goodreads, EngineId.OpenLibrary), false)
+                         .apply();
 
         Optional<String> oIv;
         final Author author = resolver.parse(context, document);

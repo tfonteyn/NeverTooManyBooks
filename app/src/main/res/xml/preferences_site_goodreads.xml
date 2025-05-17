@@ -43,7 +43,7 @@
             android:title="@string/pt_search_resolve_authors" />
 
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:icon="@drawable/cloud_download_24px"
             android:key="goodreads.resolve.authors.openlibrary"
             android:summaryOff="@string/no"

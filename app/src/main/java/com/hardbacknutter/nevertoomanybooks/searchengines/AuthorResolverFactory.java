@@ -52,8 +52,7 @@ public final class AuthorResolverFactory {
      * Pref key.
      * "[engine].resolve.authors.[resolver]"
      */
-    @VisibleForTesting
-    public static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
+    private static final String PK_RESOLVE_AUTHORS = ".resolve.authors.";
 
     private AuthorResolverFactory() {
     }
@@ -128,7 +127,7 @@ public final class AuthorResolverFactory {
                 if (isEnabled(context, engineId)) {
                     list.add(GoodreadsAuthorResolver.create(context, searchEngine));
                 }
-                if (isEnabled(context, engineId, EngineId.OpenLibrary)) {
+                if (isEnabled(context, engineId, EngineId.OpenLibrary, false)) {
                     list.add(OpenLibraryAuthorResolver.create(context, searchEngine));
                 }
                 return list;
@@ -142,7 +141,7 @@ public final class AuthorResolverFactory {
             case LastDodoNl:
             case StripInfoBe:
             case StripWebBe: {
-                if (isEnabled(context, searchEngine.getEngineId(), EngineId.Bedetheque)) {
+                if (isEnabled(context, engineId, EngineId.Bedetheque, true)) {
                     return List.of(BedethequeAuthorResolver.create(context, searchEngine));
                 }
                 break;
@@ -168,7 +167,7 @@ public final class AuthorResolverFactory {
      */
     private static boolean isEnabled(@NonNull final Context context,
                                      @NonNull final EngineId engineId) {
-        return isEnabled(context, engineId, engineId);
+        return isEnabled(context, engineId, engineId, true);
     }
 
     /**
@@ -177,19 +176,27 @@ public final class AuthorResolverFactory {
      * @param context  Current context
      * @param engine   id
      * @param resolver id
+     * @param defValue default
      *
      * @return flag
      */
     private static boolean isEnabled(@NonNull final Context context,
                                      @NonNull final EngineId engine,
-                                     @NonNull final EngineId resolver) {
-
-        final String key = engine.getPreferenceKey()
-                           + PK_RESOLVE_AUTHORS
-                           + resolver.getPreferenceKey();
+                                     @NonNull final EngineId resolver,
+                                     final boolean defValue) {
 
         return ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
                && PreferenceManager.getDefaultSharedPreferences(context)
-                                   .getBoolean(key, true);
+                                   .getBoolean(getKey(engine, resolver), defValue);
+    }
+
+    // Allow easy use in testing
+    @VisibleForTesting
+    @NonNull
+    public static String getKey(@NonNull final EngineId engine,
+                                @NonNull final EngineId resolver) {
+        return engine.getPreferenceKey()
+               + PK_RESOLVE_AUTHORS
+               + resolver.getPreferenceKey();
     }
 }
