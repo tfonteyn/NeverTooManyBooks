@@ -862,4 +862,5 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_author_uri">Συγγραφέας URL</string>
     <string name="info_identifier_editor"><![CDATA[Διαβάστε την <a href="%1$s">τεκμηρίωση</a> για τα αναγνωριστικά πριν από την επεξεργασία.]]></string>
     <string name="lbl_date_born">Γεννήθηκε</string>
+    <string name="pt_fetch_author_info">Λήψη πληροφοριών συγγραφέα</string>
 </resources>

@@ -857,5 +857,6 @@
     <string name="lbl_author_uri">ஆசிரியர் URL</string>
     <string name="info_identifier_editor"><![CDATA[திருத்துவதற்கு முன் அடையாளங்காட்டிகளில் உள்ள <a href="%1$s">ஆவணத்தைப்</a> படிக்கவும்.]]></string>
     <string name="lbl_date_born">பிறந்தது</string>
+    <string name="pt_fetch_author_info">ஆசிரியர் தகவலைப் பெறுங்கள்</string>
 
 </resources>

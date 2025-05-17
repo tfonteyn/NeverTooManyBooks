@@ -1534,7 +1534,7 @@
          Uses a secondary website.
          Param 1: the website name.
     -->
-    <string name="pt_fetch_author_info_using_site_x">Fetch author information using the %1$s website</string>
+    <string name="pt_fetch_author_info_using_site_x">Fetch author information from %1$s</string>
 
     <!-- option to resolve author pen-names -->
     <string name="pt_search_resolve_authors">Resolve author pen-names</string>

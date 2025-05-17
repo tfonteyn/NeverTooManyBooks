@@ -868,4 +868,5 @@
     <string name="lbl_author_uri">Yazar URL\'si</string>
     <string name="info_identifier_editor"><![CDATA[Düzenlemeden önce Tanımlayıcılar hakkındaki <a href="%1$s">dokümantasyonu</a> okuyun.]]></string>
     <string name="lbl_date_born">Doğdu</string>
+    <string name="pt_fetch_author_info">Yazar bilgilerini getir</string>
 </resources>

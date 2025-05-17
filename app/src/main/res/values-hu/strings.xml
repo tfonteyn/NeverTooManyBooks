@@ -858,5 +858,6 @@
     <string name="lbl_author_uri">Szerző URL</string>
     <string name="pv_reformat_titles_prefixes">a|A|az|Az|egy|Egy</string>
     <string name="lbl_date_born">Született</string>
+    <string name="pt_fetch_author_info">Szerzői információk lekérése</string>
 
 </resources>

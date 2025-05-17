@@ -864,4 +864,5 @@
     <string name="lbl_author_uri">URL de l\'auteur</string>
     <string name="info_identifier_editor"><![CDATA[Lire la <a href="%1$s">documentation</a> sur les identificateurs avant de modifier.]]></string>
     <string name="lbl_date_born">Née</string>
+    <string name="pt_fetch_author_info">Recherche d\'informations sur l\'auteur</string>
 </resources>

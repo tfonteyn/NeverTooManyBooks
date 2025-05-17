@@ -857,4 +857,5 @@
     <string name="lbl_author_uri">Auteur URL</string>
     <string name="info_identifier_editor"><![CDATA[Lees de <a href="%1$s">documentatie</a> over Identifiers voor het bewerken.]]></string>
     <string name="lbl_date_born">Geboren</string>
+    <string name="pt_fetch_author_info">Auteursinformatie ophalen</string>
 </resources>

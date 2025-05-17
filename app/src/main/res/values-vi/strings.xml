@@ -854,4 +854,5 @@
     <string name="lbl_author_uri">URL tác giả</string>
     <string name="info_identifier_editor"><![CDATA[Đọc <a href="%1$s">tài liệu</a> về Mã định danh trước khi chỉnh sửa.]]></string>
     <string name="lbl_date_born">Sinh</string>
+    <string name="pt_fetch_author_info">Lấy thông tin tác giả</string>
 </resources>

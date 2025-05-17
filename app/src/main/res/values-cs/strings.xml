@@ -877,4 +877,5 @@
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Vyžadována prázdná hodnota nebo platná adresa URL \"https\" s jedním zástupným znakem \"%s\"</string>
     <string name="info_identifier_editor"><![CDATA[Před editaci si prosím přečtěte <a href="%1$s">dokumentaci</a> k identifikátorům.]]></string>
     <string name="lbl_date_born">Narozen</string>
+    <string name="pt_fetch_author_info">Získat informace o autorovi</string>
 </resources>

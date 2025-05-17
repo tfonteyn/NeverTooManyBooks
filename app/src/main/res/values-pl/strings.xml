@@ -868,4 +868,5 @@
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Wymagana pusta wartość lub prawidłowy adres URL \"https\" z pojedynczym identyfikatorem \"%s\"</string>
     <string name="info_identifier_editor"><![CDATA[Przed edycją zapoznaj się z <a href="%1$s">dokumentacją</a> dotyczącą identyfikatorów]]></string>
     <string name="lbl_date_born">Urodzony</string>
+    <string name="pt_fetch_author_info">Pobieranie informacji o autorze</string>
 </resources>
