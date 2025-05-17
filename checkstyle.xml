@@ -36,8 +36,8 @@
               value="UTF-8" />
 
     <!-- ========== Headers ========== -->
-    <!--<module name="Header"/>-->
-    <!--<module name="RegexpHeader"/>-->
+    <!-- <module name="Header"/>-->
+    <!-- <module name="RegexpHeader"/>-->
 
     <!-- Checks that each Java package has a package-info.java file -->
     <!--    <module name="JavadocPackage" />-->
@@ -59,7 +59,7 @@
     <!-- Checks that there are no tab characters -->
     <module name="FileTabCharacter" />
 
-    <!--<module name="RegexpMultiline" />-->
+    <!-- <module name="RegexpMultiline" />-->
     <!-- A check for detecting single lines that match a supplied regular expression. -->
     <module name="RegexpSingleline">
         <property name="severity"
@@ -69,9 +69,9 @@
         <property name="message"
                   value="Line has trailing spaces." />
     </module>
-    <!--<module name="RegexpOnFilename"/>-->
+    <!-- <module name="RegexpOnFilename"/>-->
 
-    <!--<module name="Translation" />-->
+    <!-- <module name="Translation" />-->
     <module name="UniqueProperties" />
 
     <module name="TreeWalker">
@@ -80,13 +80,13 @@
 
         <!-- ========== Annotations ========== -->
         <module name="AnnotationLocation" />
-        <!--<module name="AnnotationOnSameLine" />-->
+        <!-- <module name="AnnotationOnSameLine" />-->
         <module name="AnnotationUseStyle" />
         <module name="MissingDeprecated" />
         <module name="MissingOverride" />
         <module name="PackageAnnotation" />
         <module name="SuppressWarnings" />
-        <!--<module name="SuppressWarningsHolder" />-->
+        <!-- <module name="SuppressWarningsHolder" />-->
 
         <!-- ========== Block Checks ========== -->
         <!-- a switch with nested blocks can be collapsed/expanded in the editor. Useful. -->
@@ -98,7 +98,7 @@
         <module name="RightCurly" />
 
         <!-- ========== Class Design ========== -->
-        <!--<module name="DesignForExtension" />-->
+        <!-- <module name="DesignForExtension" />-->
         <module name="FinalClass" />
         <module name="HideUtilityClassConstructor" />
         <module name="InnerTypeLast" />
@@ -119,7 +119,7 @@
         <!--        <module name="AvoidInlineConditionals" />-->
         <module name="ConstructorsDeclarationGrouping" />
         <module name="CovariantEquals" />
-        <!--<module name="DeclarationOrder"/>-->
+        <!-- <module name="DeclarationOrder"/>-->
         <module name="DefaultComesLast" />
         <module name="EmptyStatement" />
         <module name="EqualsAvoidNull" />
@@ -131,28 +131,28 @@
             <property name="tokens"
                       value="PARAMETER_DEF" />
         </module>
-        <!--        <module name="HiddenField" />-->
+        <!-- <module name="HiddenField" />-->
         <module name="IllegalCatch" />
         <module name="IllegalInstantiation" />
         <module name="IllegalThrows" />
         <module name="IllegalToken" />
-        <!--<module name="IllegalTokenText" />-->
+        <!-- <module name="IllegalTokenText" />-->
         <module name="IllegalType" />
         <module name="InnerAssignment" />
-        <module name="MagicNumber" />
-        <!--<module name="MissingCtor" />-->
-        <!--        <module name="MissingSwitchDefault" />-->
+        <!-- <module name="MagicNumber" />-->
+        <!-- <module name="MissingCtor" />-->
+        <!-- <module name="MissingSwitchDefault" />-->
         <module name="ModifiedControlVariable" />
         <module name="MultipleStringLiterals" />
         <module name="MultipleVariableDeclarations" />
-        <!--<module name="NestedForDepth"/>-->
-        <!--<module name="NestedIfDepth"/>-->
+        <!-- <module name="NestedForDepth"/>-->
+        <!-- <module name="NestedIfDepth"/>-->
         <module name="NoClone" />
         <module name="NoFinalizer" />
         <module name="OneStatementPerLine" />
-        <!--        <module name="OverloadMethodsDeclarationOrder" />-->
+        <!-- <module name="OverloadMethodsDeclarationOrder" />-->
         <module name="ParameterAssignment" />
-        <!--<module name="RequireThis"/>-->
+        <!-- <module name="RequireThis"/>-->
         <module name="ReturnCount">
             <property name="max"
                       value="8" />
@@ -167,29 +167,29 @@
         <module name="UnnecessaryParentheses" />
         <module name="UnnecessarySemicolonInEnumeration" />
         <module name="UnnecessarySemicolonInTryWithResources" />
-        <!--<module name="VariableDeclarationUsageDistance"/>-->
+        <!-- <module name="VariableDeclarationUsageDistance"/>-->
 
         <!-- ========== Imports ========== -->
         <module name="AvoidStarImport" />
         <module name="AvoidStaticImport" />
-        <!--<module name="CustomImportOrder" />-->
+        <!-- <module name="CustomImportOrder" />-->
         <module name="IllegalImport" />
-        <!--<module name="ImportControl" />-->
-        <!--<module name="ImportOrder" />-->
+        <!-- <module name="ImportControl" />-->
+        <!-- <module name="ImportOrder" />-->
         <module name="RedundantImport" />
         <module name="UnusedImports" />
 
         <!-- ========== Javadoc Comments ========== -->
-        <!--<module name="AtclauseOrder" />-->
+        <!-- <module name="AtclauseOrder" />-->
         <module name="JavadocMethod">
             <property name="validateThrows"
                       value="true" />
         </module>
-        <!--<module name="JavadocParagraph"/>-->
-        <!--<module name="JavadocTagContinuationIndentation" />-->
-        <!--<module name="JavadocStyle" />-->
+        <!-- <module name="JavadocParagraph"/>-->
+        <!-- <module name="JavadocTagContinuationIndentation" />-->
+        <!-- <module name="JavadocStyle" />-->
         <module name="JavadocType" />
-        <!--<module name="JavadocVariable" />-->
+        <!-- <module name="JavadocVariable" />-->
         <module name="NonEmptyAtclauseDescription" />
         <module name="SingleLineJavadoc" />
         <module name="SummaryJavadocCheck" />
@@ -207,31 +207,31 @@
 
         <!-- ========== Miscellaneous ========== -->
         <module name="ArrayTypeStyle" />
-        <!--<module name="AvoidEscapedUnicodeCharacters"/>-->
+        <!-- <module name="AvoidEscapedUnicodeCharacters"/>-->
         <module name="CommentsIndentation" />
-        <!--<module name="DescendantToken" />-->
+        <!-- <module name="DescendantToken" />-->
         <module name="FinalParameters" />
         <!-- Useful, but cannot use 'align' of parameters etc when enabled -->
-        <!--<module name="Indentation" />-->
-        <!--<module name="OuterTypeFilename"/>-->
-        <!--<module name="TodoComment" />-->
+        <!-- <module name="Indentation" />-->
+        <!-- <module name="OuterTypeFilename"/>-->
+        <!-- <module name="TodoComment" />-->
         <module name="TrailingComment" />
 
         <module name="UpperEll" />
 
         <!-- ========== Modifiers ========== -->
-        <!--<module name="ClassMemberImpliedModifier" />-->
-        <!--<module name="InterfaceMemberImpliedModifier"/>-->
+        <!-- <module name="ClassMemberImpliedModifier" />-->
+        <!-- <module name="InterfaceMemberImpliedModifier"/>-->
         <module name="ModifierOrder" />
         <module name="RedundantModifier" />
 
         <!-- ========== Naming Conventions ========== -->
         <module name="AbbreviationAsWordInName" />
-        <!--<module name="AbstractClassName" />-->
-        <!--<module name="CatchParameterName" />-->
-        <!--<module name="ClassTypeParameterName" />-->
+        <!-- <module name="AbstractClassName" />-->
+        <!-- <module name="CatchParameterName" />-->
+        <!-- <module name="ClassTypeParameterName" />-->
         <module name="ConstantName" />
-        <!--<module name="InterfaceTypeParameterName" />-->
+        <!-- <module name="InterfaceTypeParameterName" />-->
         <module name="LambdaParameterName" />
         <module name="LocalFinalVariableName" />
         <module name="LocalVariableName" />
@@ -247,25 +247,25 @@
         <module name="TypeName" />
 
         <!-- ========== Regexp ========== -->
-        <!--<module name="Regexp" />-->
-        <!--<module name="RegexpSinglelineJava" />-->
+        <!-- <module name="Regexp" />-->
+        <!-- <module name="RegexpSinglelineJava" />-->
 
         <!-- ========== Size Violations ========== -->
         <module name="AnonInnerLength">
             <property name="max"
                       value="30" />
         </module>
-        <!--<module name="ExecutableStatementCount"/>-->
-        <!--<module name="FileLength" /> on top-level -->
+        <!-- <module name="ExecutableStatementCount"/>-->
+        <!-- <module name="FileLength" /> on top-level -->
         <module name="MethodCount" />
         <module name="MethodLength" />
         <module name="OuterTypeNumber" />
         <module name="ParameterNumber" />
 
         <!-- ========== Whitespace ========== -->
-        <!--<module name="EmptyForInitializerPad"/>-->
+        <!-- <module name="EmptyForInitializerPad"/>-->
         <module name="EmptyForIteratorPad" />
-        <!--<module name="EmptyLineSeparator"/>-->
+        <!-- <module name="EmptyLineSeparator"/>-->
         <module name="GenericWhitespace" />
         <module name="MethodParamPad" />
         <module name="NoLineWrap" />
