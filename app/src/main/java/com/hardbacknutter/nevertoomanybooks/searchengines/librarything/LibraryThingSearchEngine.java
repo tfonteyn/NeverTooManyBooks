@@ -179,7 +179,7 @@ public class LibraryThingSearchEngine
         // not set, quit silently
         if (apiToken == null || apiToken.isEmpty()) {
             if (BuildConfig.DEBUG /*always */) {
-                Log.d(TAG, "API TOKEN NOT SET");
+                Log.d(TAG, "LibraryThing API TOKEN NOT SET");
             }
             return List.of();
         }
