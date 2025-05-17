@@ -33,7 +33,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@SuppressWarnings("MissingJavadoc")
+@SuppressWarnings({"MissingJavadoc","LongLine"})
 public class SidTest
         extends BaseDBTest {
 

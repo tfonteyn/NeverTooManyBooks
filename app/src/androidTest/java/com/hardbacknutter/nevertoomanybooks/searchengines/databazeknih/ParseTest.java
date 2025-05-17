@@ -60,6 +60,7 @@ import static org.junit.Assert.assertTrue;
  * ebook:
  * https://www.databazeknih.cz/prehled-knihy/vecer-na-bezdezu-krivoklad-krkonosska-pout-543519
  */
+@SuppressWarnings({"MissingJavadoc","LongLine"})
 public class ParseTest
         extends BaseDBTest {
 

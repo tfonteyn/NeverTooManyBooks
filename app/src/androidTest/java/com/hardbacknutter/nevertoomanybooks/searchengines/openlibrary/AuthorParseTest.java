@@ -45,11 +45,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings({"MissingJavadoc", "FieldCanBeLocal"})
 public class AuthorParseTest
         extends BaseDBTest {
 
     private static final String TAG = "AuthorParseTest";
-    private static final String UTF_8 = "UTF-8";
 
     private OpenLibrarySearchEngine searchEngine;
     private OpenLibraryAuthorResolver resolver;

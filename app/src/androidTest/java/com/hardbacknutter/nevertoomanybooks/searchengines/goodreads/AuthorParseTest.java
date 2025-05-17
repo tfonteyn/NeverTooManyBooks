@@ -49,6 +49,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings({"MissingJavadoc", "FieldCanBeLocal"})
 public class AuthorParseTest
         extends BaseDBTest {
 
@@ -66,6 +67,7 @@ public class AuthorParseTest
         searchEngine = (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
+        //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
 
         resolver = (GoodreadsAuthorResolver) GoodreadsAuthorResolver.create(context, searchEngine);

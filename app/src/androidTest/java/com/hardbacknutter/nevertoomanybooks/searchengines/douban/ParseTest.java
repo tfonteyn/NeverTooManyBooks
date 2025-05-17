@@ -53,7 +53,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc", "UnnecessaryUnicodeEscape"})
+@SuppressWarnings({"MissingJavadoc", "LongLine",
+        "UnnecessaryUnicodeEscape", "JavadocLinkAsPlainText"})
 public class ParseTest
         extends BaseDBTest {
 
@@ -205,7 +206,6 @@ public class ParseTest
         assertFalse(book.contains(DBKey.PRICE_LISTED));
         assertFalse(book.contains(DBKey.PRICE_LISTED_CURRENCY));
 
-        //noinspection LongLine
         assertEquals(
                 "<p>文化大革命如火如荼进行的同时。军方探寻外星文明的绝秘计划“红岸工程”取得了突破性进展。但在按下发射键的那一刻，历经劫难的叶文洁没有意识到，她彻底改变了人类的命运。地球文明向宇宙发出的第一声啼鸣，以太阳为中心，以光速向宇宙深处飞驰……</p>\n" +
                 "<p>四光年外，“三体文明”正苦苦挣扎——三颗无规则运行的太阳主导下的百余次毁灭与重生逼迫他们逃离母星。而恰在此时。他们接收到了地球发来的信息。在运用超技术锁死地球人的基础科学之后。三体人庞大的宇宙舰队开始向地球进发……</p>\n" +
@@ -265,7 +265,6 @@ public class ParseTest
         assertEquals(23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        //noinspection LongLine
         assertEquals(
                 "<p>军方探寻外星文明的绝秘计划“红岸工程”取得了突破性进展。但在按下发射键的那一刻，历经劫难的叶文洁没有意识到，她彻底改变了人类的命运。地球文明向宇宙发出的第一声啼鸣，以太阳为中心，以光速向宇宙深处飞驰……</p>\n"
                 + "<p>四光年外，“三体文明”正苦苦挣扎——三颗无规则运行的太阳主导下的百余次毁灭与重生逼迫他们逃离母星。而恰在此时。他们接收到了地球发来的信息。在运用超技术锁死地球人的基础科学之后。三体人庞大的宇宙舰队开始向地球进发……</p>\n"
@@ -353,7 +352,6 @@ public class ParseTest
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        //noinspection LongLine
         assertEquals(
                 "<p>反转反转反转，再反转再反转，再神级反转的绝世推理经典!</p>\n" +
                 "<p>-----------------------------------------------------------------------------------</p>\n" +
@@ -542,7 +540,6 @@ public class ParseTest
         assertEquals(58d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        //noinspection LongLine
         assertEquals(
                 "<p>自然科学在解释意识上的失败，似乎让我们不得不在物理主义和某种二元论之间做出选择，前者意味着要否认我们的意识和主观体验的实在性，后者则带来了更多问题。作为第三种方案的“泛心论”近年来备受哲学家和神经科学家关注，不少人认为它离解决意识问题的目标更近；根据这一理论，意识是 物理世界中基本的、普遍存在的特征，我们的意识在物理世界中看起来之所以独特，是因为它是我们目前唯一拥有的通达物质内在本质的窗口。本书回顾了三种路径在解决意识问题方面的优势与缺陷，以简明扼要的哲学论证为泛心论做出了有力的辩护，是一部通达意识科学研究前沿的入门佳作。</p>\n" +
                 "<p>----------------------------</p>\n" +

@@ -47,6 +47,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings({"MissingJavadoc","LongLine","FieldCanBeLocal"})
 public class AuthorParseTest
         extends BaseDBTest {
 
@@ -72,7 +73,7 @@ public class AuthorParseTest
 
     @Test
     public void liveParse128409142()
-            throws SearchException, CredentialsException, IOException {
+            throws SearchException, CredentialsException {
 
         final Author author = new Author("Flix", "");
         author.setIdentifierValue(Identifier.SID_DNB, 128409142);

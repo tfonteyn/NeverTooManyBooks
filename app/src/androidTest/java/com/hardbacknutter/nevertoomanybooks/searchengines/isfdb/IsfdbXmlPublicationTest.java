@@ -63,7 +63,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * ENHANCE: this is experimental code. Parsing works, but reporting EOF is dodgy
  */
-@SuppressWarnings("MissingJavadoc")
+@SuppressWarnings({"MissingJavadoc","LongLine"})
 public class IsfdbXmlPublicationTest
         extends BaseDBTest {
 

@@ -58,7 +58,7 @@ import static org.junit.Assert.assertTrue;
  * <p>
  * Full network access for {@link #parseMultiResult}.
  */
-@SuppressWarnings("MissingJavadoc")
+@SuppressWarnings({"MissingJavadoc","LongLine"})
 public class ParseTest
         extends BaseDBTest {
 

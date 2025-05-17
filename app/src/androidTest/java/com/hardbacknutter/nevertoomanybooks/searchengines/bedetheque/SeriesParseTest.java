@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,6 +44,7 @@ import org.junit.runners.Parameterized;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@SuppressWarnings("MissingJavadoc")
 @RunWith(Parameterized.class)
 public class SeriesParseTest
         extends BaseDBTest {

@@ -41,6 +41,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings({"MissingJavadoc"})
 public class ParseTest
         extends BaseDBTest {
 

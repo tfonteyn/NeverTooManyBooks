@@ -54,7 +54,7 @@ import static org.junit.Assert.assertTrue;
  * as the accumulator checks for the real files (which won't be there).
  * It is assumed that if Authors/Series/etc... get processed ok, then so will the fileSpecs.
  */
-@SuppressWarnings("MissingJavadoc")
+@SuppressWarnings({"MissingJavadoc","LongLine"})
 public class ResultsAccumulatorTest
         extends BaseDBTest {
 
@@ -443,9 +443,11 @@ public class ResultsAccumulatorTest
                          @NonNull final Consumer<Book> emptyList) {
         final List<?> eList = getList.apply(expected);
         final List<?> bList = getList.apply(book);
+        assertEquals(eList.size(), bList.size());
         //noinspection SuspiciousMethodCalls
-        assertTrue(eList.size() == bList.size()
-                   && eList.containsAll(bList) && bList.containsAll(eList));
+        assertTrue(eList.containsAll(bList));
+        //noinspection SuspiciousMethodCalls
+        assertTrue(bList.containsAll(eList));
         emptyList.accept(expected);
         emptyList.accept(book);
     }

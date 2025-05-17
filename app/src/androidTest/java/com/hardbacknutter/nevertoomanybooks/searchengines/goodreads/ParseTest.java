@@ -57,7 +57,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc", "UnnecessaryUnicodeEscape"})
+@SuppressWarnings({"MissingJavadoc", "UnnecessaryUnicodeEscape", "LongLine"})
 public class ParseTest
         extends BaseDBTest {
 

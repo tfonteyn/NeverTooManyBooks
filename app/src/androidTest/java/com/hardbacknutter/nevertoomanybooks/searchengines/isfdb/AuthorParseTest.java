@@ -49,6 +49,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings({"MissingJavadoc","LongLine", "FieldCanBeLocal"})
 public class AuthorParseTest
         extends BaseDBTest {
 
@@ -65,6 +66,7 @@ public class AuthorParseTest
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
 
+        //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
 
         resolver = (IsfdbAuthorResolver) IsfdbAuthorResolver.create(context, searchEngine);
@@ -142,7 +144,6 @@ public class AuthorParseTest
             throws SearchException, CredentialsException, IOException {
 
         final String locationHeader = "https://www.isfdb.org/cgi-bin/ea.cgi?3358";
-        ;
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.isfdb_author_3358;
 
