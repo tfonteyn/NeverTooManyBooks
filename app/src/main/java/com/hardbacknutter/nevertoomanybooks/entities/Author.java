@@ -28,34 +28,43 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageOwner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Represents an Author.
@@ -77,7 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * ENHANCE: The Author Locale should be based on the main language the author writes in.
  */
 public class Author
-        implements Parcelable, Entity, Mergeable, IdentifierOwner {
+        implements Parcelable, Entity, Mergeable, IdentifierOwner, ImageOwner {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR = new Creator<>() {
@@ -167,6 +176,7 @@ public class Author
     /** Comics only. */
     public static final int TYPE_LETTERING = 1 << 17;
 
+    private static final String TAG = "Author";
     /**
      * All valid bits for the type.
      * NEWTHINGS: author type: add to the mask
@@ -309,7 +319,7 @@ public class Author
      * - set during a search/resolve
      * - read and displayed when editing the author
      * - read, file stored, and cleared.
-     * In this case the file uuid is set in {@link #pictureUuid} and stored in the database
+     * In this case the file uuid is set in {@link #imageUuid} and stored in the database
      */
     @Nullable
     private String tmpPictureFileSpec;
@@ -320,7 +330,7 @@ public class Author
      * @see #tmpPictureFileSpec
      */
     @Nullable
-    private String pictureUuid;
+    private String imageUuid;
 
     /** whether we have all we want from this Author. */
     private boolean complete;
@@ -360,7 +370,7 @@ public class Author
         givenNames = rowData.getString(DBKey.AUTHOR.GIVEN_NAMES);
         birthDate = rowData.getString(DBKey.AUTHOR.BIRTH_DATE);
         deathDate = rowData.getString(DBKey.AUTHOR.DEATH_DATE);
-        pictureUuid = rowData.getString(DBKey.AUTHOR.PICTURE_UUID);
+        imageUuid = rowData.getString(DBKey.AUTHOR.PICTURE_UUID);
         complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
 
         setIdentifiers(ServiceLocator.getInstance().getAuthorIdentifierDao().getByFkId(this.id));
@@ -403,7 +413,7 @@ public class Author
         givenNames = in.readString();
         birthDate = in.readString();
         deathDate = in.readString();
-        pictureUuid = in.readString();
+        imageUuid = in.readString();
         tmpPictureFileSpec = in.readString();
 
         complete = in.readByte() != 0;
@@ -1010,10 +1020,13 @@ public class Author
      * <p>
      * Any {@link StorageException} is <strong>IGNORED</strong>
      *
+     * @param cIdx ignored, pass in {@code 0} for future compatibility
+     *
      * @return file
      */
+    @Override
     @NonNull
-    public Optional<File> getPicture() {
+    public Optional<File> getImage(@IntRange(from = 0, to = 0) final int cIdx) {
         final Optional<String> oFileSpec = getTmpPictureFileSpec();
         if (oFileSpec.isPresent()) {
             final File file = new File(oFileSpec.get());
@@ -1022,7 +1035,7 @@ public class Author
             }
         }
 
-        return getPictureUuid()
+        return getImageUuid()
                 .flatMap(s -> ServiceLocator.getInstance().getCoverStorage()
                                             .getPersistedFile(s, 0));
     }
@@ -1034,14 +1047,15 @@ public class Author
      *
      * @return uuid
      */
+    @Override
     @NonNull
-    public Optional<String> getPictureUuid() {
-        return pictureUuid == null || pictureUuid.isEmpty()
-               ? Optional.empty() : Optional.of(pictureUuid);
+    public Optional<String> getImageUuid() {
+        return imageUuid == null || imageUuid.isEmpty()
+               ? Optional.empty() : Optional.of(imageUuid);
     }
 
-    public void setPictureUuid(@Nullable final String pictureUuid) {
-        this.pictureUuid = pictureUuid;
+    public void setImageUuid(@Nullable final String imageUuid) {
+        this.imageUuid = imageUuid;
     }
 
     @NonNull
@@ -1066,7 +1080,7 @@ public class Author
         givenNames = source.givenNames;
         birthDate = source.birthDate;
         deathDate = source.deathDate;
-        pictureUuid = source.pictureUuid;
+        imageUuid = source.imageUuid;
         tmpPictureFileSpec = source.tmpPictureFileSpec;
 
         complete = source.complete;
@@ -1125,8 +1139,8 @@ public class Author
         if (getDeathDate().isEmpty()) {
             source.getDeathDate().ifPresent(this::setDeathDate);
         }
-        if (getPictureUuid().isEmpty()) {
-            source.getPictureUuid().ifPresent(this::setPictureUuid);
+        if (getImageUuid().isEmpty()) {
+            source.getImageUuid().ifPresent(this::setImageUuid);
         }
         if (getTmpPictureFileSpec().isEmpty()) {
             source.getTmpPictureFileSpec().ifPresent(this::setTmpPictureFileSpec);
@@ -1149,7 +1163,7 @@ public class Author
         dest.writeString(givenNames);
         dest.writeString(birthDate);
         dest.writeString(deathDate);
-        dest.writeString(pictureUuid);
+        dest.writeString(imageUuid);
         dest.writeString(tmpPictureFileSpec);
 
         dest.writeByte((byte) (complete ? 1 : 0));
@@ -1222,7 +1236,7 @@ public class Author
                && Objects.equals(givenNames, that.givenNames)
                && Objects.equals(birthDate, that.birthDate)
                && Objects.equals(deathDate, that.deathDate)
-               && Objects.equals(pictureUuid, that.pictureUuid)
+               && Objects.equals(imageUuid, that.imageUuid)
                && Objects.equals(tmpPictureFileSpec, that.tmpPictureFileSpec)
                && Objects.equals(realAuthor, that.realAuthor);
     }
@@ -1296,7 +1310,7 @@ public class Author
                + ", givenNames=`" + givenNames + '`'
                + ", birthDate=`" + birthDate + '`'
                + ", deathDate=`" + deathDate + '`'
-               + ", pictureUuid=`" + pictureUuid + '`'
+               + ", pictureUuid=`" + imageUuid + '`'
                + ", tmpPictureFileSpec=`" + tmpPictureFileSpec + '`'
                + ", complete=" + complete
                + ", type=0b" + Integer.toBinaryString(type) + ": " + sj

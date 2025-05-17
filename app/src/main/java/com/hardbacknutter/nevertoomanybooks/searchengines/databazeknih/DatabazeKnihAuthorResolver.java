@@ -240,7 +240,7 @@ public final class DatabazeKnihAuthorResolver
                                     .ifPresent(fileSpec -> {
                                         author.setTmpPictureFileSpec(fileSpec);
                                         if (realAuthor != null) {
-                                            realAuthor.setPictureUuid(fileSpec);
+                                            realAuthor.setImageUuid(fileSpec);
                                         }
                                     });
                     } catch (@NonNull final StorageException ignore) {

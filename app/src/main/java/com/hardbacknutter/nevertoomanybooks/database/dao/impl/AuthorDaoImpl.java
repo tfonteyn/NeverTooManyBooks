@@ -517,7 +517,7 @@ public class AuthorDaoImpl
                 stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), locale));
                 stmt.bindString(5, author.getBirthDate().orElse(null));
                 stmt.bindString(6, author.getDeathDate().orElse(null));
-                stmt.bindString(7, author.getPictureUuid().orElse(null));
+                stmt.bindString(7, author.getImageUuid().orElse(null));
                 stmt.bindBoolean(8, author.isComplete());
                 iId = stmt.executeInsert();
             }
@@ -570,7 +570,7 @@ public class AuthorDaoImpl
                 stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), locale));
                 stmt.bindString(5, author.getBirthDate().orElse(null));
                 stmt.bindString(6, author.getDeathDate().orElse(null));
-                stmt.bindString(7, author.getPictureUuid().orElse(null));
+                stmt.bindString(7, author.getImageUuid().orElse(null));
                 stmt.bindBoolean(8, author.isComplete());
 
                 stmt.bindLong(9, author.getId());
@@ -673,7 +673,7 @@ public class AuthorDaoImpl
                 ServiceLocator.getInstance().getCoverStorage()
                               .persist(new File(fileSpec.get()), uuid, 0);
                 author.setTmpPictureFileSpec(null);
-                author.setPictureUuid(uuid);
+                author.setImageUuid(uuid);
             } catch (@NonNull final IOException | CoverStorageException e) {
                 throw new DaoCoverException(ERROR_STORING_IMAGES + author, e);
             }
@@ -698,11 +698,11 @@ public class AuthorDaoImpl
                 author.setId(0);
                 fixPositions(context);
 
-                final Optional<String> pictureUuid = author.getPictureUuid();
+                final Optional<String> pictureUuid = author.getImageUuid();
                 if (pictureUuid.isPresent()) {
                     ServiceLocator.getInstance().getCoverStorage()
                                   .delete(pictureUuid.get(), 0);
-                    author.setPictureUuid(null);
+                    author.setImageUuid(null);
                 }
 
                 if (txLock != null) {

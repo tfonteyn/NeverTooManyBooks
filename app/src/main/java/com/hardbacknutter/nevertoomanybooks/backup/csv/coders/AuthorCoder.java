@@ -81,7 +81,7 @@ public class AuthorCoder
                     author.setDeathDate(details.optString(DBKey.AUTHOR.DEATH_DATE));
                 }
                 if (details.has(DBKey.AUTHOR.PICTURE_UUID)) {
-                    author.setPictureUuid(details.optString(DBKey.AUTHOR.PICTURE_UUID));
+                    author.setImageUuid(details.optString(DBKey.AUTHOR.PICTURE_UUID));
                 }
                 if (details.has(DBKey.AUTHOR.COMPLETE)) {
                     author.setComplete(details.optBoolean(DBKey.AUTHOR.COMPLETE));

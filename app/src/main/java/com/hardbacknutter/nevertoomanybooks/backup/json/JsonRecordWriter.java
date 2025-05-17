@@ -361,7 +361,7 @@ public class JsonRecordWriter
                             // Author pictures
                             book.getAuthors()
                                 .stream()
-                                .map(Author::getPictureUuid)
+                                .map(Author::getImageUuid)
                                 .flatMap(Optional::stream)
                                 // Filter FIRST so we do not run the File() method if not
                                 // actually needed.

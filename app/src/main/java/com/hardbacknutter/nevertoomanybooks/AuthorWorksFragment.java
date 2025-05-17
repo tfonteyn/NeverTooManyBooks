@@ -241,7 +241,7 @@ public class AuthorWorksFragment
         //noinspection DataFlowIssue
         nameView.setText(author.getLabel(context, Details.AutoSelect, vm.getStyle()));
 
-        final Optional<File> file = author.getPicture();
+        final Optional<File> file = author.getImage(0);
         if (file.isPresent()) {
             imageLoader.fromFile(pictureView, file.get(), null, null);
         } else {

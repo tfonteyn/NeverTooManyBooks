@@ -47,7 +47,7 @@ public class AuthorCoder
 
         author.getBirthDate().ifPresent(s -> out.put(DBKey.AUTHOR.BIRTH_DATE, s));
         author.getDeathDate().ifPresent(s -> out.put(DBKey.AUTHOR.DEATH_DATE, s));
-        author.getPictureUuid().ifPresent(uuid -> out.put(DBKey.AUTHOR.PICTURE_UUID, uuid));
+        author.getImageUuid().ifPresent(uuid -> out.put(DBKey.AUTHOR.PICTURE_UUID, uuid));
 
         if (author.isComplete()) {
             out.put(DBKey.AUTHOR.COMPLETE, true);
@@ -80,7 +80,7 @@ public class AuthorCoder
             author.setDeathDate(data.optString(DBKey.AUTHOR.DEATH_DATE));
         }
         if (data.has(DBKey.AUTHOR.PICTURE_UUID)) {
-            author.setPictureUuid(data.optString(DBKey.AUTHOR.PICTURE_UUID));
+            author.setImageUuid(data.optString(DBKey.AUTHOR.PICTURE_UUID));
         }
         if (data.has(DBKey.AUTHOR.COMPLETE)) {
             author.setComplete(data.getBoolean(DBKey.AUTHOR.COMPLETE));
