@@ -73,7 +73,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean ON_ACTIVITY_RESULT = false;
 
     /** all things related to cover image handling. */
-    public static final boolean COVERS = false;
+    public static final boolean IMAGES = false;
 
     /** {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator}. */
     public static final boolean SEARCH_COORDINATOR = false;

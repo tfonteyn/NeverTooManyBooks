@@ -530,7 +530,7 @@ public class BookDaoHelper {
             if (book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {
                 final String fileSpec = book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                     LoggerFactory.getLogger()
                                  .d(TAG, "persistCovers",
                                     "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');

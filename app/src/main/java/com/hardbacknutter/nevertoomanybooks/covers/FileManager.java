@@ -163,7 +163,7 @@ class FileManager {
                             engineCache.put(engineId, se);
                         }
 
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                             LoggerFactory.getLogger()
                                          .d(TAG, "search|SEARCHING",
                                             "searchEngine=" + se.getName(context),
@@ -194,7 +194,7 @@ class FileManager {
 
                                 downloads.put(edition, imageFileInfo);
 
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                                     LoggerFactory.getLogger()
                                                  .d(TAG, "search|SUCCESS",
                                                     "searchEngine=" + se.getName(context),
@@ -208,14 +208,14 @@ class FileManager {
                             // but disable the engine for THIS search
                             currentSearch.remove(engineId);
 
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                                 LoggerFactory.getLogger()
                                              .d(TAG, "search|FAILED",
                                                 "searchEngine=" + se.getName(context), e);
                             }
                         }
 
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                             LoggerFactory.getLogger()
                                          .d(TAG, "search|NO FILE",
                                             "searchEngine=" + se.getName(context),
@@ -240,7 +240,7 @@ class FileManager {
             // loop for next size
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
             LoggerFactory.getLogger().d(TAG, "search|FAILED|edition=" + edition);
         }
 

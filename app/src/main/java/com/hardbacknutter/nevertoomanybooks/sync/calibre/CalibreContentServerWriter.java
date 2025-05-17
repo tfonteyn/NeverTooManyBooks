@@ -431,7 +431,7 @@ public class CalibreContentServerWriter
     private void collectCovers(@NonNull final Book localBook,
                                @NonNull final JSONObject changes)
             throws IOException {
-        final Optional<File> coverFile = localBook.getCover(0);
+        final Optional<File> coverFile = localBook.getImage(0);
         if (coverFile.isPresent()) {
             final File file = coverFile.get();
             final byte[] bFile = new byte[(int) file.length()];

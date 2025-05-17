@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -219,7 +219,7 @@ class Transformation {
             final int exifAngle = getExifAngle(pathName);
             final int angle = surfaceRotation - exifAngle;
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                 LoggerFactory.getLogger().d(TAG, "determineRotationAngle",
                                             "exif=" + exifAngle,
                                             "surfaceRotation=" + surfaceRotation,

@@ -167,7 +167,7 @@
     <string name="ok">OK</string>
     <string name="option_barcode_scan_mode_manual">Útmutató</string>
     <string name="option_bug_report">Programhiba bejelentése</string>
-    <string name="option_cover_rotate_automatic">Automatikus</string>
+    <string name="option_image_rotate_automatic">Automatikus</string>
     <string name="option_import">Importálás</string>
     <string name="option_select_all">Az összes kijelölése</string>
     <string name="option_select_none">Az összes kijelölés törlése</string>
@@ -423,13 +423,13 @@
     <string name="option_search_books_by_author_in_series">Könyvek szerző/sorozat szerint</string>
     <string name="option_author_works_book">Csak könyvek</string>
     <string name="option_author_works_toc">Csak tartalomjegyzék címek</string>
-    <string name="option_cover_replace">Csere…</string>
-    <string name="option_cover_replace_from_gallery">Galéria…</string>
+    <string name="option_image_replace">Csere…</string>
+    <string name="option_image_replace_from_gallery">Galéria…</string>
     <string name="option_cover_replace_from_alt_editions">Más kiadások…</string>
-    <string name="option_cover_rotate">Forgatás…</string>
-    <string name="option_cover_rotate_cw">Óramutató járásával megegyezően</string>
-    <string name="option_cover_rotate_ccw">Óramutató járásával ellentétesen</string>
-    <string name="option_restore_cover">Előző kép visszaállítása</string>
+    <string name="option_image_rotate">Forgatás…</string>
+    <string name="option_image_rotate_cw">Óramutató járásával megegyezően</string>
+    <string name="option_image_rotate_ccw">Óramutató járásával ellentétesen</string>
+    <string name="option_image_restore">Előző kép visszaállítása</string>
     <string name="option_fab_add_book_by_barcode_scan">Vonalkód beolvasása</string>
     <string name="option_fab_add_book_by_barcode_scan_batch">Több vonalkód beolvasása</string>
     <string name="option_fab_add_book_by_isbn">Keresés ISBN alapján</string>
@@ -453,7 +453,7 @@
     <string name="option_download_folder">Helyi letöltési mappa</string>
     <string name="option_download_ebook_format">E-könyv letöltése (%1$s)</string>
     <string name="option_enable_sync_options">Szinkronizálási beállítások engedélyezése</string>
-    <string name="option_cover_replace_from_camera">Kamera…</string>
+    <string name="option_image_replace_from_camera">Kamera…</string>
     <string name="action_clear_queue">Várólista törlése</string>
     <string name="lbl_publisher">Kiadó</string>
     <string name="confirm_unsaved_edits">Nem mentett módosításai vannak, ha most kilép, ezek elvesznek.</string>

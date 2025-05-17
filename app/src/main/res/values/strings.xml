@@ -783,26 +783,27 @@
     <string name="action_crop">Crop</string>
 
     <!-- [VERIFIED] from "platform_frameworks_base_strings.xml#replace"
-        Context menu for a cover image submenu title -->
-    <string name="option_cover_replace">Replace…</string>
-    <!-- Cover image context menu option -->
-    <string name="option_cover_replace_from_gallery">From Gallery…</string>
-    <!-- Cover image context menu option -->
-    <string name="option_cover_replace_from_camera">From Camera…</string>
-    <!-- Cover image context menu option -->
+        Image context menu option - submenu title -->
+    <string name="option_image_replace">Replace…</string>
+    <!-- Image context menu option -->
+    <string name="option_image_replace_from_gallery">From Gallery…</string>
+    <!-- Image context menu option -->
+    <string name="option_image_replace_from_camera">From Camera…</string>
+    <!-- Book cover image context menu option -->
     <string name="option_cover_replace_from_alt_editions">From Other Editions…</string>
-    <!-- Context menu for a cover image submenu title -->
-    <string name="option_cover_rotate">Rotate…</string>
-    <!-- [VERIFIED] Cover image context menu option -->
-    <string name="option_cover_rotate_automatic">Automatic</string>
-    <!-- Cover image context menu option -->
-    <string name="option_cover_rotate_cw">Clockwise</string>
-    <!-- Cover image context menu option -->
-    <string name="option_cover_rotate_ccw">Anti-Clockwise</string>
-    <!-- Cover image context menu option -->
-    <string name="option_cover_rotate_180"
+    <!-- Image context menu option - submenu title -->
+    <string name="option_image_rotate">Rotate…</string>
+    <!-- [VERIFIED] Image context menu option -->
+    <string name="option_image_rotate_automatic">Automatic</string>
+    <!-- Image context menu option -->
+    <string name="option_image_rotate_cw">Clockwise</string>
+    <!-- Image context menu option -->
+    <string name="option_image_rotate_ccw">Anti-Clockwise</string>
+    <!-- Image context menu option -->
+    <string name="option_image_rotate_180"
             translatable="false">180°</string>
-    <string name="option_restore_cover">Restore previous image</string>
+    <!-- Image context menu option -->
+    <string name="option_image_restore">Restore previous image</string>
 
     <!-- Booklist FAB menu option; Start the barcode scanner and scan a single barcode/book. -->
     <string name="option_fab_add_book_by_barcode_scan">Scan a Barcode</string>

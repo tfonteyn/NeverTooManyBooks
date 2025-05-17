@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -165,21 +165,21 @@ public class ImageFileInfo
             // But is the size we have suitable ? Bigger files are always better (we hope)...
             if (this.size != null && this.size.compareTo(size) >= 0) {
                 // YES, use the file we already have
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                     LoggerFactory.getLogger().d(TAG, "isUsable", "SUCCESS|imageFileInfo=" + this);
                 }
                 return true;
             }
 
             // else drop through and search for it.
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                 LoggerFactory.getLogger().d(TAG, "isUsable", "TO SMALL|imageFileInfo=" + this);
             }
             return false;
 
         } else {
             // a previous search failed, there simply is NO file
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                 LoggerFactory.getLogger().d(TAG, "isUsable", "NO FILE|imageFileInfo=" + this);
             }
             return true;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import java.io.File;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 
 @SuppressWarnings("WeakerAccess")
-public class CoverTransformationViewModel
+public class ImageTransformationViewModel
         extends ViewModel {
 
     private final TransformationTask transformationTask = new TransformationTask();
@@ -46,7 +46,7 @@ public class CoverTransformationViewModel
      */
     void execute(@NonNull final Transformation transformation,
                  @NonNull final File destFile) {
-        transformationTask.transform(transformation, destFile, CoverHandler.NextAction.Done);
+        transformationTask.transform(transformation, destFile, ImageHandler.NextAction.Done);
     }
 
     /**
@@ -58,7 +58,7 @@ public class CoverTransformationViewModel
      */
     void execute(@NonNull final Transformation transformation,
                  @NonNull final File destFile,
-                 @NonNull final CoverHandler.NextAction action) {
+                 @NonNull final ImageHandler.NextAction action) {
         transformationTask.transform(transformation, destFile, action);
     }
 }

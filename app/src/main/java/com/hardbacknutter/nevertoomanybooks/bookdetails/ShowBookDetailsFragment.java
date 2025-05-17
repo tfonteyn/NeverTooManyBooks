@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadStatusFragmentFac
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ViewFocusOrder;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender.EditLenderLauncher;
@@ -122,7 +122,7 @@ public class ShowBookDetailsFragment
     static final String BKEY_EMBEDDED = TAG + ":bd-embedded";
 
     /** Delegate to handle cover replacement, rotation, etc. */
-    private final CoverHandler[] coverHandler = new CoverHandler[2];
+    private final ImageHandler[] imageHandler = new ImageHandler[2];
     private ToolbarMenuProvider toolbarMenuProvider;
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
@@ -297,10 +297,10 @@ public class ShowBookDetailsFragment
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
-                    coverHandler[cIdx] = new CoverHandler
-                            .Builder(this, cIdx, this::reloadImage,
-                                     maxWidth, maxHeight)
-                            .setBookSupplier(() -> vm.getBook())
+                    imageHandler[cIdx] = new ImageHandler
+                            .Builder(this, cIdx, maxWidth, maxHeight)
+                            .setImageSupplier(() -> vm.getBook())
+                            .setOnReloadConsumer(this::reloadImage)
                             .setProgressIndicator(progressView)
                             .build();
                 }
@@ -331,7 +331,7 @@ public class ShowBookDetailsFragment
     }
 
     /**
-     * Callback passed to the {@link CoverHandler}; will be called after changing a cover image.
+     * Callback passed to the {@link ImageHandler}; will be called after changing a cover image.
      *
      * @param cIdx 0..n image index
      */
@@ -462,9 +462,9 @@ public class ShowBookDetailsFragment
             for (int cIdx = 0; cIdx < coverResIds.length(); cIdx++) {
                 //noinspection DataFlowIssue
                 final ImageView view = parentView.findViewById(coverResIds.getResourceId(cIdx, 0));
-                if (coverHandler[cIdx] != null) {
-                    coverHandler[cIdx].onBindView(view);
-                    coverHandler[cIdx].attachOnClickListeners(getChildFragmentManager(), view);
+                if (imageHandler[cIdx] != null) {
+                    imageHandler[cIdx].onBindView(view);
+                    imageHandler[cIdx].attachOnClickListeners(getChildFragmentManager(), view);
                 } else if (view != null) {
                     view.setVisibility(View.GONE);
                 }

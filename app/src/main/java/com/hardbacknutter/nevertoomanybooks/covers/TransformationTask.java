@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ public class TransformationTask
 
     private Transformation transformation;
     private File destFile;
-    private CoverHandler.NextAction nextAction;
+    private ImageHandler.NextAction nextAction;
 
     TransformationTask() {
         super(R.id.TASK_ID_IMAGE_TRANSFORMATION, TAG);
@@ -71,7 +71,7 @@ public class TransformationTask
      */
     void transform(@NonNull final Transformation transformation,
                    @NonNull final File destFile,
-                   @NonNull final CoverHandler.NextAction action) {
+                   @NonNull final ImageHandler.NextAction action) {
         this.transformation = transformation;
         this.destFile = destFile;
         nextAction = action;
@@ -92,7 +92,7 @@ public class TransformationTask
             return new TransformedData(destFile, nextAction);
         }
 
-        return new TransformedData(null, CoverHandler.NextAction.Done);
+        return new TransformedData(null, ImageHandler.NextAction.Done);
     }
 
     /**
@@ -103,7 +103,7 @@ public class TransformationTask
         @Nullable
         private final File file;
         @NonNull
-        private final CoverHandler.NextAction nextAction;
+        private final ImageHandler.NextAction nextAction;
 
         /**
          * Constructor.
@@ -112,7 +112,7 @@ public class TransformationTask
          * @param action what to do with the result.
          */
         TransformedData(@Nullable final File file,
-                        @NonNull final CoverHandler.NextAction action) {
+                        @NonNull final ImageHandler.NextAction action) {
             this.file = file;
             nextAction = action;
         }
@@ -123,7 +123,7 @@ public class TransformationTask
         }
 
         @NonNull
-        CoverHandler.NextAction getNextAction() {
+        ImageHandler.NextAction getNextAction() {
             return nextAction;
         }
 

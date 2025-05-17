@@ -649,7 +649,7 @@ public class GoogleBooksSearchEngine
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
             final String isbn = edition.getIsbn();
             return searchByIsbn(context, isbn, new boolean[]{true, false})
-                    .getCover(0)
+                    .getImage(0)
                     .map(File::getAbsolutePath);
         }
         return Optional.empty();

@@ -146,7 +146,7 @@
     <string name="notification_channel_warn">Aviso</string>
     <string name="option_bug_report">Relatório de bug</string>
     <string name="option_apply_to_this_node_only">Este nó apenas</string>
-    <string name="option_cover_replace">Substituir…</string>
+    <string name="option_image_replace">Substituir…</string>
     <string name="password">Senha</string>
     <string name="pc_advanced_options">Avançado</string>
     <string name="pc_camera">Câmera</string>
@@ -312,7 +312,7 @@
     <string name="option_author_details">Todas as obras deste autor</string>
     <string name="option_author_works_toc">Apenas títulos da Tabela de Conteúdos</string>
     <string name="action_crop">Cortar</string>
-    <string name="option_cover_replace_from_gallery">Da Galeria…</string>
+    <string name="option_image_replace_from_gallery">Da Galeria…</string>
     <string name="option_import">Importar</string>
     <string name="option_download_ebook_format">Transferir o eBook (%1$s)</string>
     <string name="option_enable_sync_options">Ativar opções de sincronização</string>
@@ -353,7 +353,7 @@
     <string name="style_builtin_author_series">Autor, Série</string>
     <string name="style_builtin_author_year">Autor, Ano</string>
     <string name="lbl_author_type_editor">Editor</string>
-    <string name="option_cover_rotate">Rodar…</string>
+    <string name="option_image_rotate">Rodar…</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” não é um código válido</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se um dia for especificado, então o mês e o ano também devem ser especificados.</string>
     <string name="progress_msg_optimizing">A optimizar…</string>
@@ -386,7 +386,7 @@
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Valor vazio ou URL “https” válido com um único marcador de posição de id “%s” obrigatório</string>
     <string name="vldt_read_start_after_end">A data de início da leitura é posterior à data de término</string>
     <string name="progress_msg_loading_page">A carregar a página %1$d…</string>
-    <string name="option_cover_rotate_automatic">Automático</string>
+    <string name="option_image_rotate_automatic">Automático</string>
     <string name="option_select_all">Selecionar tudo</string>
     <string name="confirm_delete_book">Isso excluirá completamente o livro intitulado “%1$s” por %2$s.\n\nTem certeza de que deseja continuar?</string>
     <string name="confirm_merge_authors">O autor que está a modificar já existe. Gostaria de as fundir?</string>
@@ -405,10 +405,10 @@
     <string name="option_search_books_in_series">Livros desta série</string>
     <string name="option_search_books_by_author">Livros deste autor</string>
     <string name="option_search_books_by_author_in_series">Livros por autor/séries</string>
-    <string name="option_cover_replace_from_camera">De câmera…</string>
+    <string name="option_image_replace_from_camera">De câmera…</string>
     <string name="option_cover_replace_from_alt_editions">De outras edições…</string>
-    <string name="option_cover_rotate_cw">No sentido horário</string>
-    <string name="option_cover_rotate_ccw">Anti-Horário</string>
+    <string name="option_image_rotate_cw">No sentido horário</string>
+    <string name="option_image_rotate_ccw">Anti-Horário</string>
     <string name="option_fab_add_book_by_barcode_scan">Ler um código de barras</string>
     <string name="option_fab_add_book_by_isbn">Pesquisa por ISBN</string>
     <string name="option_select_none">Desmarcar tudo</string>
@@ -779,7 +779,7 @@
     <string name="progress_msg_x_deleted">%1$d eliminado</string>
     <string name="action_undo">Desfazer</string>
     <string name="info_nothing_to_do">Não há nada a fazer.</string>
-    <string name="option_restore_cover">Restaurar imagem anterior</string>
+    <string name="option_image_restore">Restaurar imagem anterior</string>
     <string name="info_site_list">As pesquisas são limitadas a: %1$s</string>
     <string name="tip_configure_sites">Os sítios Web individuais podem ser configurados utilizando o ícone de definições na parte superior do ecrã.</string>
     <string name="lbl_sort_unsorted">Não selecionado</string>

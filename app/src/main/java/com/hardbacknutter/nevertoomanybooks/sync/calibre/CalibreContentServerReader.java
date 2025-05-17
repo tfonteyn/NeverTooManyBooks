@@ -552,7 +552,7 @@ public class CalibreContentServerReader
         }
 
         if (doCovers) {
-            convertCovers(calibreBook, book, calibreBookId);
+            convertCovers(context, calibreBook, book, calibreBookId);
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.USER_METADATA)) {
@@ -818,7 +818,8 @@ public class CalibreContentServerReader
         }
     }
 
-    private void convertCovers(@NonNull final JSONObject calibreBook,
+    private void convertCovers(@NonNull final Context context,
+                               @NonNull final JSONObject calibreBook,
                                @NonNull final Book book,
                                final int calibreBookId)
             throws StorageException, IOException {
@@ -828,7 +829,7 @@ public class CalibreContentServerReader
                 final File file = server.getCover(calibreBookId, coverUrl)
                                         .orElse(null);
                 try {
-                    book.setCover(0, file);
+                    book.setImage(context, 0, file);
                 } catch (@NonNull final IOException ignore) {
                     // ignore
                 }

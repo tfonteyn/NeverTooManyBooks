@@ -122,7 +122,7 @@ public class BookGridHolder
 
             } else {
                 // Tapping the cover image will zoom the image
-                // Do not go overkill here by adding a full CoverHandler.
+                // Do not go overkill here by adding a full ImageHandler.
                 vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
 
                 // Add an explicit 'view' button

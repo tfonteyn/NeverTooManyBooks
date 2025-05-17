@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageOwner;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -118,7 +119,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class Book
         extends DataManager
-        implements AuthorWork, Entity, IdentifierOwner {
+        implements AuthorWork, Entity, IdentifierOwner, ImageOwner {
 
     /** {@link Parcelable}. */
     public static final Creator<Book> CREATOR = new Creator<>() {
@@ -507,6 +508,13 @@ public class Book
     @NonNull
     public String getUuid() {
         return getString(DBKey.BOOK_UUID);
+    }
+
+    @NonNull
+    @Override
+    public Optional<String> getImageUuid() {
+        final String uuid = getUuid();
+        return uuid.isEmpty() ? Optional.empty() : Optional.of(uuid);
     }
 
     /**
@@ -1705,7 +1713,7 @@ public class Book
      * @return file
      */
     @NonNull
-    public Optional<File> getCover(@IntRange(from = 0, to = 1) final int cIdx) {
+    public Optional<File> getImage(@IntRange(from = 0, to = 1) final int cIdx) {
         if (contains(BKEY_TMP_FILE_SPEC[cIdx])) {
             // we have a previously set temporary cover, but it could be ""
             final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
@@ -1718,7 +1726,7 @@ public class Book
                 }
             }
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                 LoggerFactory.getLogger()
                              .e(TAG, new Throwable("getCoverFile"),
                                 "bookId=" + getId()
@@ -1741,36 +1749,26 @@ public class Book
     }
 
     /**
-     * Syntax sugar for {@link #setCover(int, File)} with a {@code null} file.
-     *
-     * @param cIdx 0..n image index
-     */
-    public void removeCover(@IntRange(from = 0, to = 1) final int cIdx) {
-        try {
-            setCover(cIdx, null);
-        } catch (@NonNull final IOException | StorageException ignore) {
-            // safe to ignore, can't happen with a 'null' input.
-        }
-    }
-
-    /**
      * Update the book cover with the given file.
      * <p>
      * Depending on the {@link #stage} this method sets a temporary cover,
      * or persists the cover to storage.
      *
-     * @param cIdx 0..n image index
-     * @param file cover file or {@code null} to delete the cover
+     * @param context Current context
+     * @param cIdx    0..n image index
+     * @param file    cover file or {@code null} to delete the cover
      *
      * @return the File after processing (either original, or a renamed/moved file)
      *
      * @throws StorageException      The covers directory is not available
      * @throws IOException           on generic/other IO failures
-     * @throws IllegalStateException if the UUID is missing
+     * @throws IllegalStateException (debug) if the UUID is missing
      */
     @SuppressWarnings({"UnusedReturnValue", "OverlyBroadThrowsClause"})
+    @Override
     @Nullable
-    public File setCover(@IntRange(from = 0, to = 1) final int cIdx,
+    public File setImage(@NonNull final Context context,
+                         @IntRange(from = 0, to = 1) final int cIdx,
                          @Nullable final File file)
             throws StorageException, IOException {
 
@@ -1779,9 +1777,9 @@ public class Book
             // We're editing, use BKEY_TMP_FILE_SPEC storage.
 
             if (file != null) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                     LoggerFactory.getLogger()
-                                 .e(TAG, new Throwable("setCover"),
+                                 .e(TAG, new Throwable("setImage"),
                                     "editing"
                                     + "|bookId=" + getId()
                                     + "|cIdx=" + cIdx
@@ -1793,9 +1791,9 @@ public class Book
                 putString(BKEY_TMP_FILE_SPEC[cIdx], file.getAbsolutePath());
 
             } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                     LoggerFactory.getLogger()
-                                 .e(TAG, new Throwable("setCover"),
+                                 .e(TAG, new Throwable("setImage"),
                                     "editing"
                                     + "|bookId=" + getId()
                                     + "|cIdx=" + cIdx
@@ -1827,11 +1825,11 @@ public class Book
             // See BookDaoHelper#persistCovers which does the same as below for BKEY_TMP_FILE_SPEC
             if (file != null) {
                 if (file.getName().startsWith(uuid)) {
-                    // No further action needed as we have the cover "in-place"
+                    // No further action needed as we have the image "in-place"
                     // ... not actually sure when this would be the case; keep an eye on logs
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                         LoggerFactory.getLogger()
-                                     .e(TAG, new Throwable("setCover"),
+                                     .e(TAG, new Throwable("setImage"),
                                         "readOnly"
                                         + "|bookId=" + getId()
                                         + "|cIdx=" + cIdx
@@ -2014,7 +2012,7 @@ public class Book
                 .setType("text/plain")
                 .putExtra(Intent.EXTRA_TEXT, text);
 
-        getCover(0).ifPresent(file -> {
+        getImage(0).ifPresent(file -> {
             try {
                 final Uri uri = GenericFileProvider.createUri(context, file, getTitle());
                 // read access to the input uri

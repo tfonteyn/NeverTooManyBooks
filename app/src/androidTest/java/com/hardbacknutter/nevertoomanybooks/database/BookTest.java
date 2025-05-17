@@ -256,7 +256,7 @@ public class BookTest
         // Test Dirty mode
         book.setStage(EntityStage.Stage.Dirty);
         // the book already has a front cover, add a back cover
-        book.setCover(1, new File(tempDir, DbPrep.COVER[1]));
+        book.setImage(context, 1, new File(tempDir, DbPrep.COVER[1]));
         // we're in 'Dirty' mode, so must be a temp file
         assertBookHasTempCover(book, 1);
 
@@ -283,7 +283,7 @@ public class BookTest
         // sanity check the cover is really there
         assertBookHasPersistedCover(book, 1);
         // remove it
-        book.removeCover(1);
+        book.removeImage(context, 1);
         // there must NOT be any temp cover fileSpecs.
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -299,7 +299,7 @@ public class BookTest
 
         assertEquals(EntityStage.Stage.Clean, book.getStage());
         // We're in Clean mode; This call will/must store the cover immediately
-        book.setCover(1, new File(tempDir, DbPrep.COVER[1]));
+        book.setImage(context, 1, new File(tempDir, DbPrep.COVER[1]));
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 
         // there must NOT be any temp cover fileSpecs.
@@ -358,7 +358,7 @@ public class BookTest
 
         // Add a front cover but no back cover
         final File tempDir = coverStorage.getTempDir();
-        book.setCover(0, new File(tempDir, DbPrep.COVER[0]));
+        book.setImage(context, 0, new File(tempDir, DbPrep.COVER[0]));
         // we're in 'Dirty' mode, so must be a temp file
         assertBookHasTempCover(book, 0);
 
@@ -435,7 +435,7 @@ public class BookTest
         // there must NOT be any temp cover fileSpecs.
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
 
-        final Optional<File> oCover = book.getCover(cIdx);
+        final Optional<File> oCover = book.getImage(cIdx);
         assertTrue(oCover.isPresent());
         final File cover = oCover.get();
         assertNotNull(cover);

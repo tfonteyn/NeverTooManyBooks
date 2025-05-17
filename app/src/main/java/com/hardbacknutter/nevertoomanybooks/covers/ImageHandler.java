@@ -81,22 +81,23 @@ import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * A delegate class for handling a displayed Cover.
- * Offers context menus and all operations applicable on a Cover image.
+ * A delegate class for handling a displayed image.
+ * Offers context menus and all operations applicable on an image.
+ * There is one instance of this class for each displayed image.
  * <p>
  * <strong>Context/View dependent!</strong>
  * <p>
- * Handles displaying and zooming for cover-images on the book-details and book-edit screens.
- * <p>
- * There is one instance of this class for each displayed cover.
- * <p>
+ * Handles displaying and zooming for images on the details and edit screens.
  * For BoB displaying,
  * see {@code com.hardbacknutter.nevertoomanybooks.booklist.adapter.CoverListHandler}
+ * <p>
+ * Dev. Note: a bit nasty: we check the type of the ImageOwner to be a Book or not...
+ * we really should split this class...
  */
-public final class CoverHandler {
+public final class ImageHandler {
 
     /** Log tag. */
-    private static final String TAG = "CoverHandler";
+    private static final String TAG = "ImageHandler";
     private static final String RK_MENU = TAG + ":rk:menu";
 
     private static final String IMAGE_MIME_TYPE = "image/*";
@@ -105,57 +106,81 @@ public final class CoverHandler {
     /** Index of the image we're handling. */
     @IntRange(from = 0, to = 1)
     private final int cIdx;
+
+    /** Our host. */
     @NonNull
     private final Fragment fragment;
+
+    /** The owner of the image. We always need the current image. */
+    private final Supplier<ImageOwner> imageSupplier;
+    /** Callback to tell the owner to reload (and redisplay) the image after a change. */
     @NonNull
-    private final Consumer<Integer> coverLoader;
-    @NonNull
-    private final CoverBrowserLauncher coverBrowserLauncher;
-    /** Main used is to run transformation tasks. Shared among all current CoverHandlers. */
-    @NonNull
-    private final CoverTransformationViewModel vm;
+    private final Consumer<Integer> ownerReloadCallback;
+    /** The local helper for loading/displaying images. */
     @NonNull
     private final ImageViewLoader imageLoader;
-    private final ExtMenuLauncher menuLauncher;
-    private final Supplier<Book> bookSupplier;
-    /** Using a Supplier so we can get the <strong>current</strong> value (e.g. when editing). */
+
+    /** Book use only; {@code null} otherwise. */
+    @Nullable
+    private final CoverBrowserLauncher coverBrowserLauncher;
+    /**
+     * Book use only; {@code null} otherwise.
+     * We always us the <strong>current</strong> value (e.g. when editing).
+     */
     @Nullable
     private final Supplier<String> coverBrowserIsbnSupplier;
-    /** Using a Supplier so we can get the <strong>current</strong> value (e.g. when editing). */
+    /**
+     * Book use only; {@code null} otherwise.
+     * We always us the <strong>current</strong> value (e.g. when editing).
+     */
     @Nullable
     private final Supplier<String> coverBrowserTitleSupplier;
+
+    /** Main used is to run transformation tasks. Shared among all current ImageHandlers. */
+    @NonNull
+    private final ImageTransformationViewModel vm;
+
+    private final ExtMenuLauncher menuLauncher;
+
     /** Optional progress bar to display during operations. */
     @Nullable
     private final CircularProgressIndicator progressIndicator;
     /** The fragment root view; used for context, resources, Snackbar. */
     private ActivityResultLauncher<String> cameraPermissionLauncher;
     private ActivityResultLauncher<TakePictureContract.Input> takePictureLauncher;
-    private ActivityResultLauncher<CropImageContract.Input> cropPictureLauncher;
-    private ActivityResultLauncher<String> getFromFileLauncher;
     private ActivityResultLauncher<EditPictureContract.Input> editPictureLauncher;
 
-    private CoverHandler(@NonNull final Builder builder) {
+    private ActivityResultLauncher<CropImageContract.Input> cropImageLauncher;
+    private ActivityResultLauncher<String> getFromFileLauncher;
+
+    private ImageHandler(@NonNull final Builder builder) {
         fragment = builder.fragment;
-        coverLoader = builder.coverLoader;
-        cIdx = builder.cIdx;
-        bookSupplier = Objects.requireNonNull(builder.bookSupplier);
-        coverBrowserTitleSupplier = builder.coverBrowserTitleSupplier;
-        coverBrowserIsbnSupplier = builder.coverBrowserIsbnSupplier;
+        ownerReloadCallback = builder.reloadConsumer;
         progressIndicator = builder.progressIndicator;
 
-        // We could store idx in the VM, but there really is no point
+        // We could store cIdx in the VM, but there really is no point
+        cIdx = builder.cIdx;
+        imageSupplier = Objects.requireNonNull(builder.imageSupplier);
+        // we distinguish multiple vm in the same fragment by cIdx as the key
         vm = new ViewModelProvider(fragment)
-                .get(String.valueOf(this.cIdx), CoverTransformationViewModel.class);
+                .get(String.valueOf(this.cIdx), ImageTransformationViewModel.class);
 
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
                                           ImageView.ScaleType.FIT_START,
                                           ImageViewLoader.MaxSize.Enforce,
                                           builder.maxWidth, builder.maxHeight);
 
-        coverBrowserLauncher = new CoverBrowserLauncher(cIdx, this::onFileSelected);
+        if (imageSupplier.get() instanceof Book) {
+            coverBrowserLauncher = new CoverBrowserLauncher(cIdx, this::onFileSelected);
+        } else {
+            coverBrowserLauncher = null;
+        }
+
+        coverBrowserTitleSupplier = builder.coverBrowserTitleSupplier;
+        coverBrowserIsbnSupplier = builder.coverBrowserIsbnSupplier;
 
         final FragmentManager fm = fragment.getChildFragmentManager();
-        // concat the RK with the cIdx as we have more than CoverHandler
+        // concat the RK with the cIdx as we have more than ImageHandler
         //noinspection StringConcatenationMissingWhitespace
         menuLauncher = new ExtMenuLauncher(RK_MENU + this.cIdx, this::onMenuItemSelected);
         menuLauncher.registerForFragmentResult(fm, fragment);
@@ -183,18 +208,20 @@ public final class CoverHandler {
         editPictureLauncher = fragment.registerForActivityResult(
                 new EditPictureContract(), o -> o.ifPresent(this::onPictureResult));
 
-        cropPictureLauncher = fragment.registerForActivityResult(
+        cropImageLauncher = fragment.registerForActivityResult(
                 new CropImageContract(), o -> o.ifPresent(this::onPictureResult));
 
 
         final LifecycleOwner viewLifecycleOwner = fragment.getViewLifecycleOwner();
 
-        // TODO: should we not just use the fragment itself as the 2nd param?
-        coverBrowserLauncher.registerForFragmentResult(fragment.getChildFragmentManager(),
-                                                       viewLifecycleOwner);
+        if (coverBrowserLauncher != null) {
+            // TODO: should we not just use the fragment itself as the 2nd param?
+            coverBrowserLauncher.registerForFragmentResult(fragment.getChildFragmentManager(),
+                                                           viewLifecycleOwner);
+        }
 
         vm.onFinished().observe(viewLifecycleOwner, message -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                 LoggerFactory.getLogger().d(TAG, "onFragmentViewCreated",
                                             "vm.onFinished()|event=" + message);
             }
@@ -210,7 +237,7 @@ public final class CoverHandler {
      */
     public void onBindView(@NonNull final ImageView view) {
         // dev warning: in NO circumstances keep a reference to the view!
-        final Optional<File> file = bookSupplier.get().getCover(cIdx);
+        final Optional<File> file = imageSupplier.get().getImage(cIdx);
         if (file.isPresent()) {
             imageLoader.fromFile(view, file.get(), null, null);
             view.setBackground(null);
@@ -231,7 +258,7 @@ public final class CoverHandler {
         // dev warning: in NO circumstances keep a reference to the view!
         view.setOnClickListener(v -> {
             // Allow zooming by clicking on the image;
-            bookSupplier.get().getCover(cIdx).ifPresent(
+            imageSupplier.get().getImage(cIdx).ifPresent(
                     file -> ZoomedImageDialogFragment.launch(fragmentManager, file));
         });
 
@@ -252,15 +279,15 @@ public final class CoverHandler {
         @NonNull
         Menu menu = MenuUtils.create(context, R.menu.image);
 
-        final Book book = bookSupplier.get();
-        final Optional<File> coverFile = book.getCover(cIdx);
+        final ImageOwner imageOwner = imageSupplier.get();
+        final Optional<File> file = imageOwner.getImage(cIdx);
 
-        if (coverFile.isPresent()) {
+        if (file.isPresent()) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
                 final BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(coverFile.get().getAbsolutePath(), opts);
+                BitmapFactory.decodeFile(file.get().getAbsolutePath(), opts);
             }
         } else {
             // there is no current image; only show the replace menu
@@ -269,13 +296,17 @@ public final class CoverHandler {
             menu = Objects.requireNonNull(menuItem.getSubMenu(), "getSubMenu");
         }
 
-        // we only support alternative edition covers for the front cover.
-        menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(cIdx == 0);
+        // we only support alternative edition covers for a Book front cover.
+        menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS)
+            .setVisible(coverBrowserLauncher != null && cIdx == 0);
 
         // Add the potential undo-menu
-        if (ServiceLocator.getInstance().getCoverStorage().isUndoEnabled(book.getUuid(), cIdx)) {
-            menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_restore_cover)
-                .setIcon(R.drawable.undo_24px);
+        if (imageOwner.getImageUuid().isPresent()) {
+            if (ServiceLocator.getInstance().getCoverStorage()
+                              .isUndoEnabled(imageOwner.getImageUuid().get(), cIdx)) {
+                menu.add(R.id.MENU_GROUP_UNDO, R.id.MENU_UNDO, 0, R.string.option_image_restore)
+                    .setIcon(R.drawable.undo_24px);
+            }
         }
 
         final MenuMode menuMode = MenuMode.getMode(context, menu);
@@ -303,12 +334,12 @@ public final class CoverHandler {
     private boolean onMenuItemSelected(@IntRange(from = 0, to = 1) final int cIdx,
                                        @IdRes final int menuItemId) {
 
-        final Book book = bookSupplier.get();
+        final ImageOwner imageOwner = imageSupplier.get();
         final Context context = fragment.requireContext();
 
         if (menuItemId == R.id.MENU_DELETE) {
-            book.removeCover(cIdx);
-            coverLoader.accept(cIdx);
+            imageOwner.removeImage(context, cIdx);
+            ownerReloadCallback.accept(cIdx);
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
@@ -328,8 +359,8 @@ public final class CoverHandler {
 
         } else if (menuItemId == R.id.MENU_THUMB_CROP) {
             try {
-                cropPictureLauncher.launch(new CropImageContract.Input(
-                        createTempCoverFile(book),
+                cropImageLauncher.launch(new CropImageContract.Input(
+                        createTempImageFile(imageOwner),
                         ServiceLocator.getInstance().getCoverStorage().getTempFile()));
 
             } catch (@NonNull final CoverStorageException e) {
@@ -341,7 +372,7 @@ public final class CoverHandler {
 
         } else if (menuItemId == R.id.MENU_EDIT) {
             try {
-                editPicture(createTempCoverFile(book));
+                editPicture(createTempImageFile(imageOwner));
 
             } catch (@NonNull final CoverStorageException e) {
                 ErrorDialog.show(context, TAG, e);
@@ -359,13 +390,16 @@ public final class CoverHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS) {
-            startCoverBrowser();
+            startBookCoverBrowser();
             return true;
 
         } else if (menuItemId == R.id.MENU_UNDO) {
             try {
-                if (ServiceLocator.getInstance().getCoverStorage().restore(book.getUuid(), cIdx)) {
-                    coverLoader.accept(cIdx);
+                if (imageOwner.getImageUuid().isPresent()) {
+                    if (ServiceLocator.getInstance().getCoverStorage()
+                                      .restore(imageOwner.getImageUuid().get(), cIdx)) {
+                        ownerReloadCallback.accept(cIdx);
+                    }
                 }
             } catch (@NonNull final IOException e) {
                 ErrorDialog.show(context, TAG, e);
@@ -376,37 +410,36 @@ public final class CoverHandler {
     }
 
     /**
-     * Create a temporary cover File for the given book.
+     * Create a temporary File for the given {@link ImageOwner}.
      * <p>
-     * If there is a permanent cover, we get a <strong>copy of that one</strong>.
-     * If there is no cover, we get a new File object.
+     * If there is a permanent image, we get a <strong>copy of that one</strong>.
+     * If there is no image, we get a new File object.
      * Either way, the File returned will have a new temporary name.
      *
-     * @param book for which we want a cover
+     * @param imageOwner for which we want a image
      *
      * @return the File
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws CoverStorageException The images directory is not available
      * @throws IOException           on failure to make a copy of the permanent file
      */
     @NonNull
-    private File createTempCoverFile(@NonNull final Book book)
+    private File createTempImageFile(@NonNull final ImageOwner imageOwner)
             throws CoverStorageException, IOException {
 
         // the temp file we'll return
-        // do NOT set BKEY_TMP_FILE_SPEC on the book in this method.
         final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
 
         // If we have a permanent file, copy it into the temp location
-        final Optional<File> uuidFile = book.getCover(cIdx);
+        final Optional<File> uuidFile = imageOwner.getImage(cIdx);
         if (uuidFile.isPresent()) {
             FileUtils.copy(uuidFile.get(), tmpFile);
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
             LoggerFactory.getLogger()
-                         .e("TAG", new Throwable("createTempCoverFile"),
-                            "bookId=" + book.getId()
+                         .e("TAG", new Throwable("createTempImageFile"),
+                            "imageOwner.id=" + imageOwner.getId()
                             + "|cIdx=" + cIdx
                             + "|exists=" + tmpFile.exists()
                             + "|file=" + tmpFile.getAbsolutePath()
@@ -422,28 +455,18 @@ public final class CoverHandler {
      * <p>
      * The results comes back in {@link #onFileSelected(String)}
      */
-    private void startCoverBrowser() {
-        final Book book = bookSupplier.get();
+    private void startBookCoverBrowser() {
+        Objects.requireNonNull(coverBrowserIsbnSupplier, "coverBrowserIsbnSupplier");
+        Objects.requireNonNull(coverBrowserTitleSupplier, "coverBrowserTitleSupplier");
 
-        final String isbnStr;
-        if (coverBrowserIsbnSupplier != null) {
-            isbnStr = coverBrowserIsbnSupplier.get();
-        } else {
-            isbnStr = book.getIsbn();
-        }
-
+        final String isbnStr = coverBrowserIsbnSupplier.get();
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = new ISBN(isbnStr, true);
             if (isbn.isValid(true)) {
-                final String bookTitle;
-                if (coverBrowserTitleSupplier != null) {
-                    bookTitle = coverBrowserTitleSupplier.get();
-                } else {
-                    bookTitle = book.getTitle();
-                }
                 //noinspection DataFlowIssue
                 coverBrowserLauncher.launch(fragment.getContext(),
-                                            bookTitle, isbn.asText(), cIdx);
+                                            coverBrowserTitleSupplier.get(),
+                                            isbn.asText(), cIdx);
                 return;
             }
         }
@@ -458,7 +481,7 @@ public final class CoverHandler {
      *
      * @param fileSpec the selected image
      *
-     * @throws IllegalArgumentException if the fileSpec is invalid
+     * @throws IllegalArgumentException (debug) if the fileSpec is invalid
      */
     private void onFileSelected(@NonNull final String fileSpec) {
         if (fileSpec.isEmpty()) {
@@ -466,17 +489,20 @@ public final class CoverHandler {
         }
 
         final File srcFile = new File(fileSpec);
+        final Context context = fragment.getContext();
         if (srcFile.exists()) {
             try {
-                bookSupplier.get().setCover(cIdx, srcFile);
+                //noinspection DataFlowIssue
+                imageSupplier.get().setImage(context, cIdx, srcFile);
             } catch (@NonNull final StorageException | IOException ignore) {
                 // safe to ignore, we just checked existence...
             }
         } else {
-            bookSupplier.get().removeCover(cIdx);
+            //noinspection DataFlowIssue
+            imageSupplier.get().removeImage(context, cIdx);
         }
 
-        coverLoader.accept(cIdx);
+        ownerReloadCallback.accept(cIdx);
     }
 
     /**
@@ -484,7 +510,7 @@ public final class CoverHandler {
      *
      * @param srcFile to edit
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws CoverStorageException The images directory is not available
      */
     private void editPicture(@NonNull final File srcFile)
             throws CoverStorageException {
@@ -632,7 +658,7 @@ public final class CoverHandler {
      */
     private void startRotation(final int angle) {
         try {
-            final File file = createTempCoverFile(bookSupplier.get());
+            final File file = createTempImageFile(imageSupplier.get());
             showProgress();
             vm.execute(new Transformation()
                                .setSource(file)
@@ -649,16 +675,18 @@ public final class CoverHandler {
     }
 
     private void onAfterTransform(@NonNull final TransformationTask.TransformedData result) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
             LoggerFactory.getLogger().d(TAG, "onAfterTransform", result);
         }
+        final Context context = fragment.getContext();
 
         final File file = result.getFile();
         if (file != null) {
+
             try {
                 switch (result.getNextAction()) {
                     case Crop: {
-                        cropPictureLauncher.launch(new CropImageContract.Input(
+                        cropImageLauncher.launch(new CropImageContract.Input(
                                 file,
                                 ServiceLocator.getInstance().getCoverStorage().getTempFile()));
                         return;
@@ -668,27 +696,28 @@ public final class CoverHandler {
                         return;
                     }
                     case Done: {
-                        bookSupplier.get().setCover(cIdx, file);
+                        //noinspection DataFlowIssue
+                        imageSupplier.get().setImage(context, cIdx, file);
                         // must use a post to force the View to update.
                         //noinspection DataFlowIssue
-                        fragment.getView().post(() -> coverLoader.accept(cIdx));
+                        fragment.getView().post(() -> ownerReloadCallback.accept(cIdx));
                         return;
                     }
                 }
             } catch (@NonNull final StorageException e) {
                 //noinspection DataFlowIssue
-                ErrorDialog.show(fragment.getContext(), TAG, e);
+                ErrorDialog.show(context, TAG, e);
             } catch (@NonNull final IOException e) {
-                //noinspection DataFlowIssue
-                ErrorDialog.show(fragment.getContext(), TAG, e);
+                ErrorDialog.show(context, TAG, e);
             }
         }
 
         // transformation failed
-        bookSupplier.get().removeCover(cIdx);
+        //noinspection DataFlowIssue
+        imageSupplier.get().removeImage(context, cIdx);
         // must use a post to force the View to update.
         //noinspection DataFlowIssue
-        fragment.getView().post(() -> coverLoader.accept(cIdx));
+        fragment.getView().post(() -> ownerReloadCallback.accept(cIdx));
     }
 
     private void showProgress() {
@@ -746,12 +775,11 @@ public final class CoverHandler {
         @NonNull
         private final Fragment fragment;
         private final int cIdx;
-        @NonNull
-        private final Consumer<Integer> coverLoader;
         private final int maxWidth;
         private final int maxHeight;
 
-        private Supplier<Book> bookSupplier;
+        private Consumer<Integer> reloadConsumer;
+        private Supplier<ImageOwner> imageSupplier;
         @Nullable
         private CircularProgressIndicator progressIndicator;
         @Nullable
@@ -763,41 +791,51 @@ public final class CoverHandler {
          * Constructor.
          * <p>
          * Dev. note: the width/height values come from device dp-dependent resource values.
-         * (and NOT from the style cover scaling factor)
+         * (and NOT from the style image scaling factor)
          *
-         * @param fragment    the hosting component
-         * @param cIdx        0..n image index
-         * @param coverLoader callback to reload the given cIdx
-         * @param maxWidth    Maximum width for a cover in pixels
-         * @param maxHeight   Maximum height for a cover in pixels
+         * @param fragment            the hosting component
+         * @param cIdx                0..n image index
+         * @param maxWidth            Maximum width for an image in pixels
+         * @param maxHeight           Maximum height for an image in pixels
          */
         public Builder(@NonNull final Fragment fragment,
                        @IntRange(from = 0, to = 1) final int cIdx,
-                       @NonNull final Consumer<Integer> coverLoader,
                        final int maxWidth,
                        final int maxHeight) {
             this.fragment = fragment;
             this.cIdx = cIdx;
-            this.coverLoader = coverLoader;
             this.maxWidth = maxWidth;
             this.maxHeight = maxHeight;
         }
 
         /**
-         * Tell the handler where it can get the current Book from.
+         * Mandatory - Tell the handler where it can get the current {@link ImageOwner} from.
          *
-         * @param supplier which can provide the current Book
+         * @param supplier which can provide the current {@link ImageOwner}
          *
          * @return {@code this} (for chaining)
          */
         @NonNull
-        public Builder setBookSupplier(final Supplier<Book> supplier) {
-            this.bookSupplier = supplier;
+        public Builder setImageSupplier(@NonNull final Supplier<ImageOwner> supplier) {
+            this.imageSupplier = supplier;
             return this;
         }
 
         /**
-         * Set the progress View to use.
+         * Mandatory - A callback to the owner telling it to reload an image.
+         *
+         * @param consumer callback to reload the image at the given cIdx
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setOnReloadConsumer(@NonNull final Consumer<Integer> consumer) {
+            this.reloadConsumer = consumer;
+            return this;
+        }
+
+        /**
+         * Optional - Set the progress View to use.
          *
          * @param view to use
          *
@@ -810,6 +848,8 @@ public final class CoverHandler {
         }
 
         /**
+         * Optional - <strong>Only set if {@link #setImageSupplier} returns a book</strong>.
+         * <p>
          * Tell the handler where it can get the current ISBN from.
          * This is normally a Supplier which reads it from a TextView on the screen.
          *
@@ -824,6 +864,8 @@ public final class CoverHandler {
         }
 
         /**
+         * Optional - <strong>Only set if {@link #setImageSupplier} returns a book</strong>.
+         * <p>
          * Tell the handler where it can get the current book-title from.
          * This is normally a Supplier which reads it from a TextView on the screen.
          *
@@ -838,16 +880,28 @@ public final class CoverHandler {
         }
 
         /**
-         * Build the CoverHandler. This may only be called after the Fragment View
+         * Build the ImageHandler. This may only be called after the Fragment View
          * is fully created.
          *
          * @return new handler
          */
         @NonNull
-        public CoverHandler build() {
-            final CoverHandler coverHandler = new CoverHandler(this);
-            coverHandler.onFragmentViewCreated();
-            return coverHandler;
+        public ImageHandler build() {
+            Objects.requireNonNull(imageSupplier, "imageSupplier");
+            Objects.requireNonNull(reloadConsumer, "ownerReloadCallback");
+
+            if (imageSupplier.get() instanceof Book) {
+                if (coverBrowserTitleSupplier == null) {
+                    coverBrowserTitleSupplier = () -> ((Book) (imageSupplier.get())).getTitle();
+                }
+                if (coverBrowserIsbnSupplier == null) {
+                    coverBrowserIsbnSupplier = () -> ((Book) (imageSupplier.get())).getIsbn();
+                }
+            }
+
+            final ImageHandler imageHandler = new ImageHandler(this);
+            imageHandler.onFragmentViewCreated();
+            return imageHandler;
         }
     }
 }

@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <resources>
     <!-- The defaults for MultiSelect fields, i.e. select nothing -->
     <string-array name="empty_array" />
@@ -159,10 +179,10 @@
 
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->
     <string-array name="pe_thumbnails_rotate_auto">
-        <item>@string/option_cover_rotate_automatic</item>
-        <item>@string/option_cover_rotate_cw</item>
-        <item>@string/option_cover_rotate_ccw</item>
-        <item>@string/option_cover_rotate_180</item>
+        <item>@string/option_image_rotate_automatic</item>
+        <item>@string/option_image_rotate_cw</item>
+        <item>@string/option_image_rotate_ccw</item>
+        <item>@string/option_image_rotate_180</item>
     </string-array>
     <string-array name="pv_thumbnails_rotate_auto">
         <item>0</item>

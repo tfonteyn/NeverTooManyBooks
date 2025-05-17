@@ -261,7 +261,7 @@ class CoverBrowserDelegate
     }
 
     private boolean saveChanges() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
             LoggerFactory.getLogger().d(TAG, "saveChanges",
                                         "filePath=" + vm.getSelectedFileAbsPath());
         }

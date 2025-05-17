@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
  * There is one instance of this class for each book-view-holder instance.
  * <p>
  * For book-detail/edit screens,
- * see {@code com.hardbacknutter.nevertoomanybooks.covers.CoverHandler}
+ * see {@code com.hardbacknutter.nevertoomanybooks.covers.ImageHandler}
  */
 class CoverHelper {
 

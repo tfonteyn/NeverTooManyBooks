@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -153,7 +153,7 @@ public class ImageDownloader {
         } catch (@NonNull final IOException e) {
             FileUtils.delete(destFile);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS || IGNORE_RENAME_FAILURE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES || IGNORE_RENAME_FAILURE) {
                 LoggerFactory.getLogger().e(TAG, e, "saveImage");
 
                 if (IGNORE_RENAME_FAILURE) {

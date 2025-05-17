@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiChoiceLauncher;
@@ -78,7 +78,7 @@ public class EditBookFieldsFragment
                     }));
 
     /** Delegate to handle cover replacement, rotation, etc. */
-    private final CoverHandler[] coverHandler = new CoverHandler[2];
+    private final ImageHandler[] imageHandler = new ImageHandler[2];
     private MultiChoiceLauncher<Bookshelf> editBookshelvesLauncher;
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
@@ -171,10 +171,10 @@ public class EditBookFieldsFragment
                     final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
                     //noinspection DataFlowIssue
-                    coverHandler[cIdx] = new CoverHandler
-                            .Builder(this, cIdx, this::reloadImage,
-                                     maxWidth, maxHeight)
-                            .setBookSupplier(() -> vm.getBook())
+                    imageHandler[cIdx] = new ImageHandler
+                            .Builder(this, cIdx, maxWidth, maxHeight)
+                            .setImageSupplier(() -> vm.getBook())
+                            .setOnReloadConsumer(this::reloadImage)
                             .setCoverBrowserTitleSupplier(() -> vb.title.getText().toString())
                             .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString())
                             .setProgressIndicator(vb.coverOperationProgressBar)
@@ -209,14 +209,14 @@ public class EditBookFieldsFragment
 
         super.onPopulateViews(fields, book);
 
-        if (coverHandler[0] != null) {
-            coverHandler[0].onBindView(vb.coverImage0);
-            coverHandler[0].attachOnClickListeners(getChildFragmentManager(), vb.coverImage0);
+        if (imageHandler[0] != null) {
+            imageHandler[0].onBindView(vb.coverImage0);
+            imageHandler[0].attachOnClickListeners(getChildFragmentManager(), vb.coverImage0);
         }
 
-        if (coverHandler[1] != null) {
-            coverHandler[1].onBindView(vb.coverImage1);
-            coverHandler[1].attachOnClickListeners(getChildFragmentManager(), vb.coverImage1);
+        if (imageHandler[1] != null) {
+            imageHandler[1].onBindView(vb.coverImage1);
+            imageHandler[1].attachOnClickListeners(getChildFragmentManager(), vb.coverImage1);
         }
 
         //noinspection DataFlowIssue
@@ -224,14 +224,14 @@ public class EditBookFieldsFragment
     }
 
     /**
-     * Callback passed to the {@link CoverHandler}; will be called after changing a cover image.
+     * Callback passed to the {@link ImageHandler}; will be called after changing a cover image.
      *
      * @param cIdx 0..n image index
      */
     private void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
-        if (coverHandler[cIdx] != null) {
+        if (imageHandler[cIdx] != null) {
             final ImageView view = cIdx == 0 ? vb.coverImage0 : vb.coverImage1;
-            coverHandler[cIdx].onBindView(view);
+            imageHandler[cIdx].onBindView(view);
         }
     }
 

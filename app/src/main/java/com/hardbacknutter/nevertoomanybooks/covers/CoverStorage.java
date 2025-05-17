@@ -319,7 +319,7 @@ public class CoverStorage {
             }
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
             LoggerFactory.getLogger()
                          .e(TAG, new Throwable("getPersistedFile"),
                             "uuid=" + uuid
