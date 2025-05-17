@@ -46,24 +46,31 @@ public class AuthorParser {
 
     private static final String TAG = "AuthorParser";
 
-    // There can be MANY different keys... sigh.
-    //  "remote_ids": {
-    //    "viaf": "97113511",
-    //    "goodreads": "3389",
-    //    "storygraph": "c4c684e1-3f2b-48e4-b9cc-e819f61e0177",
-    //    "isni": "0000000121446296",
-    //    "librarything": "kingstephen-1",
-    //    "amazon": "B000AQ0842",
-    //    "wikidata": "Q39829",
-    //    "inventaire": "wd:Q39829",
-    //    "gnd": "118813250",
-    //    "lc_naf": "n79063767",
-    //    "bookbrainz": "128d9490-ee19-4270-a070-32e0a36847f5",
-    //    "imdb": "nm0000175",
-    //    "musicbrainz": "a4ac255f-9775-4c16-8642-7f51502e45dd"
-    //  },
-    // as far as I can tell most common/reliable ones are "viaf" and "wikidata"
-    // Arbitrary decision: we're limiting us to the ISNI and these:
+    /**
+     * <a href="https://github.com/internetarchive/openlibrary/blob/master/openlibrary/plugins/openlibrary/config/author/identifiers.yml">
+     * openlibrary author/identifiers.yml</a>.
+     * <p>
+     * Example:
+     * <pre>{@code
+     *     "remote_ids": {
+     *       "viaf": "97113511",
+     *       "goodreads": "3389",
+     *       "storygraph": "c4c684e1-3f2b-48e4-b9cc-e819f61e0177",
+     *       "isni": "0000000121446296",
+     *       "librarything": "kingstephen-1",
+     *       "amazon": "B000AQ0842",
+     *       "wikidata": "Q39829",
+     *       "inventaire": "wd:Q39829",
+     *       "gnd": "118813250",
+     *       "lc_naf": "n79063767",
+     *       "bookbrainz": "128d9490-ee19-4270-a070-32e0a36847f5",
+     *       "imdb": "nm0000175",
+     *       "musicbrainz": "a4ac255f-9775-4c16-8642-7f51502e45dd"
+     *     },
+     * }</pre>
+     * As far as I can tell most common/reliable ones are "viaf" and "wikidata"
+     * Arbitrary decision: we're limiting us to the ISNI and these:
+     */
     private static final String AUTHOR_SIDS =
             "viaf|wikidata|goodreads|librarything|amazon|storygraph";
 
