@@ -44,7 +44,7 @@ public class StripWebPreferencesFragment
 
         //noinspection DataFlowIssue
         findPreference("stripweb.resolve.authors.bedetheque")
-                .setTitle(getString(R.string.pt_search_resolve_authors_using_site_x,
+                .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
                                     getString(R.string.site_bedetheque)));
 
         initSearchMenuPref(EngineId.StripWebBe);

@@ -428,6 +428,11 @@
          Not all sites will support all search-fields. -->
     <string name="info_site_search_field_optional">Optional. Not supported by all web sites.</string>
 
+    <!-- Param 1: url to the documentation.
+         HTML string, must be inside a CDATA section;
+        -->
+    <string name="info_identifier_editor"><![CDATA[Please read the <a href="%1$s">documentation</a> on Identifiers before editing.]]></string>
+
     <!-- website info: languages. -->
     <string name="site_description_various_languages">Various languages</string>
     <string name="site_description_chinese">Chinese</string>
@@ -1519,12 +1524,24 @@
     <!-- SwitchPreference title: search engines can collect Series information from the toc.
          This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from content table</string>
+
+    <!-- Option to fetch extra author information (pen-names, photo,...)
+         Uses the same website on which the book is found.
+    -->
+    <string name="pt_fetch_author_info">Fetch author information</string>
+    <!-- Option to fetch extra author information (pen-names, photo,...)
+         Uses a secondary website.
+         Param 1: the website name.
+    -->
+    <string name="pt_fetch_author_info_using_site_x">Fetch author information using the %1$s website</string>
+
     <!-- option to resolve author pen-names -->
     <string name="pt_search_resolve_authors">Resolve author pen-names</string>
     <!-- option to enable resolving author pen-names using another website.
          Param 1: a website name.
     -->
     <string name="pt_search_resolve_authors_using_site_x">Resolve author pen-names using the %1$s website</string>
+
     <!-- French users/speakers usually want to preserve the French "format" names as used by the site Bedetheque. -->
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
     <!-- MultiSelectListPreference title -->
@@ -2146,10 +2163,4 @@
     -->
     <string name="info_registration_benefits"
             translatable="false">This feature benefits from registration at %1$s.\nThis is <b>optional</b>. %2$s</string>
-
-    <!-- Param 1: url to the documentation.
-             HTML string, must be inside a CDATA section;
-            -->
-    <string name="info_identifier_editor"><![CDATA[Please read the <a href="%1$s">documentation</a> on Identifiers before editing.]]></string>
-
 </resources>

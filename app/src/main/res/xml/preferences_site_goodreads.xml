@@ -40,7 +40,7 @@
             android:key="goodreads.resolve.authors.goodreads"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/pt_search_resolve_authors" />
+            android:title="@string/pt_fetch_author_info" />
 
         <SwitchPreference
             android:defaultValue="false"
@@ -48,7 +48,7 @@
             android:key="goodreads.resolve.authors.openlibrary"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            tools:title="@string/pt_search_resolve_authors_using_site_x" />
+            tools:title="@string/pt_fetch_author_info_using_site_x" />
 
     </PreferenceCategory>
 
