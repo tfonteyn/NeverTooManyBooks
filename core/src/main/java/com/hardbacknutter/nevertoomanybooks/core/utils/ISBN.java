@@ -85,6 +85,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * (ISMN a.k.a. "MusicLand")
  * <br>The prefix 977 indicates International Standard Serial Number (ISSN).
  */
+@SuppressWarnings("MagicNumber")
 public class ISBN {
 
     @VisibleForTesting
@@ -288,11 +289,11 @@ public class ISBN {
     }
 
     /**
-     * Check the validity of an ISBN string.
+     * Check the validity of an ISBN string. THIS A MEANT FOR DEBUGGING ONLY.
      *
      * @param text to check
      *
-     * @throws IllegalArgumentException if invalid
+     * @throws IllegalArgumentException (debug) if invalid
      */
     public static void requireValidIsbn(@Nullable final String text) {
         if (text == null || text.isEmpty()
