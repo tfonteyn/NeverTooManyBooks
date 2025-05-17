@@ -6,9 +6,10 @@ NEW:
 
 - new UI language: Hungarian, kindly contributed
   by [boldizsar-nagy](https://hosted.weblate.org/user/boldizsar-nagy/)
-- Author metadata: now collect/display birth/death dates
+- Author metadata: now collecting birth/death dates and a picture;
+  these are shown on the "All works by this author" screen.
 - Bedetheque: enhancements to find/select the correct edition when searching
-  by ISBN for older comics
+  by ISBN for older comics.
 - Android 16 tested/supported.
 
 FIXES:
