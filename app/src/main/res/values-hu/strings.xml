@@ -677,6 +677,7 @@
     <string name="pt_search_reformat_format">„Könyvformátum” elnevezések egységesítése</string>
     <string name="pt_search_prefer_isbn10">ISBN-10 használata, mikor lehetséges</string>
     <string name="pt_collect_series_info_from_toc">Sorozatadatok gyűjtése a tartalomjegyzékből</string>
+    <string name="pt_fetch_author_info_using_site_x">Szerzői információk lekérése %1$s-ből</string>
     <string name="pt_search_resolve_authors">Szerzői álnevek meghatározása</string>
     <string name="pt_search_resolve_authors_using_site_x">Szerzői álnevek meghatározása a %1$s webhely segítségével</string>
     <string name="pt_bedetheque_search_resolve_formats">A Bedetheque (francia) formátum megőrzése</string>

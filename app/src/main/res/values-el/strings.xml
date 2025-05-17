@@ -739,6 +739,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_author_is_a_pen_name_of">Αυτό είναι ένα ψευδώνυμο του:</string>
     <string name="vldt_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχων Συγγραφέας</string>
     <string name="confirm_create_real_author">Το «%1$s» δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
+    <string name="pt_fetch_author_info_using_site_x">Λήψη πληροφοριών συγγραφέα από %1$s</string>
     <string name="pt_search_resolve_authors">Επίλυση ψευδώνυμων συγγραφέων</string>
     <string name="pt_search_resolve_authors_using_site_x">Επιλύστε τα ψευδώνυμα των συγγραφέων χρησιμοποιώντας τον ιστότοπο %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική)</string>

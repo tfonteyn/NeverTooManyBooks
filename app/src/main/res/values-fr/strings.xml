@@ -741,6 +741,7 @@
     <string name="lbl_author_is_a_pen_name_of">C’est un pseudonyme de :</string>
     <string name="vldt_real_author_must_be_valid">Doit être vide ou un auteur existant</string>
     <string name="confirm_create_real_author">« %1$s » n’existe pas encore. Faut-il les créer ?</string>
+    <string name="pt_fetch_author_info_using_site_x">Récupérer les informations sur l\'auteur de %1$s</string>
     <string name="pt_search_resolve_authors">Résoudre les noms de plume des auteurs</string>
     <string name="pt_search_resolve_authors_using_site_x">Résoudre les pseudonymes des auteurs à l’aide du site Web %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserver la dénomination au format Bedetheque</string>

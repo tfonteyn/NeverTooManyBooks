@@ -629,6 +629,7 @@
     <string name="pt_search_reformat_format">“புத்தக வடிவமைப்பு” பெயர்களை தரப்படுத்தவும்</string>
     <string name="pt_search_reformat_color">“புத்தக வண்ணம்” பெயர்களை தரப்படுத்தவும்</string>
     <string name="pt_search_uses_publisher">தேடல் வெளியீட்டாளரைப் பயன்படுத்துகிறது</string>
+    <string name="pt_fetch_author_info_using_site_x">%1$s இலிருந்து ஆசிரியர் தகவலைப் பெறுக</string>
     <string name="pt_search_resolve_authors">ஆசிரியர் புனைப்பெயர்களைத் தீர்க்கவும்</string>
     <string name="pt_search_resolve_authors_using_site_x">%1$s வலைத்தளத்தைப் பயன்படுத்தி ஆசிரியர் புனைப்பெயர்களைத் தீர்க்கவும்.</string>
     <string name="pt_bedetheque_search_resolve_formats">Bedetheque (பிரெஞ்சு) வடிவப் பெயரிடலைப் பாதுகாக்கவும்.</string>

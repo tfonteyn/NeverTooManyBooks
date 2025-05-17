@@ -736,6 +736,7 @@
     <string name="lbl_author_is_a_pen_name_of">Bu, takma adıdır:</string>
     <string name="vldt_real_author_must_be_valid">Boş veya mevcut bir Yazar olmalıdır</string>
     <string name="confirm_create_real_author">“%1$s” henüz mevcut değil. Yaratılmalılar mı?</string>
+    <string name="pt_fetch_author_info_using_site_x">Yazar bilgilerini %1$s\'den getir</string>
     <string name="pt_search_resolve_authors">Yazar takma adlarını çözme</string>
     <string name="pt_search_resolve_authors_using_site_x">%1$s web sitesini kullanarak yazar takma adlarını çözün</string>
     <string name="pt_bedetheque_search_resolve_formats">Bedetheque (Fransızca) biçim adlandırmasını koru</string>

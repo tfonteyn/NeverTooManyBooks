@@ -746,6 +746,7 @@
     <string name="lbl_author_is_a_pen_name_of">Toto je pseudonym:</string>
     <string name="vldt_real_author_must_be_valid">Musí být prázdné nebo existující Autor</string>
     <string name="confirm_create_real_author">„%1$s“ zatím neexistuje. Měly by být vytvořeny?</string>
+    <string name="pt_fetch_author_info_using_site_x">Získat informace o autorovi z %1$s</string>
     <string name="pt_search_resolve_authors">Řešení pseudonymů autorů</string>
     <string name="pt_search_resolve_authors_using_site_x">Řešení pseudonymů autorů pomocí webu %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovat pojmenování ve formátu Bedetheque (francouzský)</string>
