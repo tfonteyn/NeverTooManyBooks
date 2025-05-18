@@ -162,8 +162,8 @@ public enum RecordEncoding {
                 //noinspection deprecation
                 return Optional.of(new XmlRecordReader(context));
             case Cover:
-                // discourage creating a new CoverRecordReader for each cover.
-                throw new IllegalStateException("CoverRecordReader should be re-used");
+                // discourage creating a new ImageRecordReader for each file.
+                throw new IllegalStateException("ImageRecordReader should be re-used");
             default:
                 return Optional.empty();
         }

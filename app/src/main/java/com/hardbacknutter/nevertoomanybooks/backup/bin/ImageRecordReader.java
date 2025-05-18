@@ -41,17 +41,19 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * <strong>Warning:</strong> this class will be reused for reading multiple covers.
+ * <strong>Dev. note:</strong> this class will be reused for reading multiple images.
  * Do not add/use class globals.
  * <p>
- * Note we import covers without checking if we actually have the book.
- * This is on-purpose so we can import cover files without importing books,
- * as a way to add covers to existing books.
+ * We import images without checking if we actually have the book/author/...
+ * This is on-purpose so we can import images without importing books,
+ * as a way to add images to existing books.
+ * HOWEVER: this will not work for Authors, as we rely on the file-uuid being stored
+ * with the author.
  */
-public class CoverRecordReader
+public class ImageRecordReader
         implements RecordReader {
 
-    private static final String TAG = "CoverRecordReader";
+    private static final String TAG = "ImageRecordReader";
 
     /** The amount of bits we'll shift the last-modified time. (== divide by 65536) */
     private static final int FILE_LM_PRECISION = 16;
@@ -64,7 +66,7 @@ public class CoverRecordReader
      *
      * @param updateOption options
      */
-    public CoverRecordReader(@NonNull final DataReader.Updates updateOption) {
+    public ImageRecordReader(@NonNull final DataReader.Updates updateOption) {
         this.updateOption = updateOption;
     }
 
@@ -85,10 +87,9 @@ public class CoverRecordReader
                 results.coversProcessed = 1;
 
                 try {
-                    final CoverStorage coverStorage = ServiceLocator.getInstance()
-                                                                    .getCoverStorage();
+                    final CoverStorage storage = ServiceLocator.getInstance().getCoverStorage();
                     // see if we have this file already
-                    File dstFile = new File(coverStorage.getDir(), record.getName());
+                    File dstFile = new File(storage.getDir(), record.getName());
                     final boolean exists = dstFile.exists();
 
                     if (exists) {
@@ -113,7 +114,7 @@ public class CoverRecordReader
                                 break;
                             }
 
-                            // covered below
+                            // handled below
                             case Overwrite:
                             default:
                                 break;
@@ -123,9 +124,9 @@ public class CoverRecordReader
                     // Don't close this stream; Also; this comes from a zip/tar archive
                     // which will give us a buffered stream; do not buffer twice.
                     final InputStream is = record.getInputStream();
-                    dstFile = coverStorage.persist(is, dstFile);
+                    dstFile = storage.persist(is, dstFile);
 
-                    if (coverStorage.isAcceptableSize(dstFile)) {
+                    if (storage.isAcceptableSize(dstFile)) {
                         //noinspection ResultOfMethodCallIgnored
                         dstFile.setLastModified(record.getLastModifiedEpochMilli());
                         if (exists) {
@@ -142,7 +143,7 @@ public class CoverRecordReader
                     if (FileUtils.isDiskFull(e)) {
                         throw e;
                     }
-                    // we don't want to quit importing just because one cover fails.
+                    // we don't want to quit importing just because one file fails.
                     results.coversFailed++;
                 }
             }

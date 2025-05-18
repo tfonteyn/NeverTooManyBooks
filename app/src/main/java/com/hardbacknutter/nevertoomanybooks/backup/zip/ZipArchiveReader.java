@@ -44,7 +44,7 @@ import java.util.zip.ZipInputStream;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.bin.ImageRecordReader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -161,9 +161,9 @@ public class ZipArchiveReader
     @Nullable
     private ZipInputStream zipInputStream;
 
-    /** Re-usable cover reader. */
+    /** Re-usable image reader. */
     @Nullable
-    private RecordReader coverReader;
+    private RecordReader imageReader;
 
     /** The INFO data read from the start of the archive. */
     @Nullable
@@ -325,7 +325,7 @@ public class ZipArchiveReader
 
         final boolean readCovers = recordTypes.contains(RecordType.Cover);
         if (readCovers) {
-            coverReader = new CoverRecordReader(updateOption);
+            imageReader = new ImageRecordReader(updateOption);
 
             final Optional<Integer> coverCount = metaData.getCoverCount();
             if (coverCount.isPresent()) {
@@ -389,7 +389,7 @@ public class ZipArchiveReader
                         }
 
                         // there will be many covers... we're re-using a single RecordReader
-                        results.add(coverReader.read(context, record, progressListener));
+                        results.add(imageReader.read(context, record, progressListener));
 
                     } else if (type == RecordType.Books && recordTypes.contains(type)) {
                         progressListener.publishProgress(
@@ -584,8 +584,8 @@ public class ZipArchiveReader
             throws IOException {
         closeInputStream();
 
-        if (coverReader != null) {
-            coverReader.close();
+        if (imageReader != null) {
+            imageReader.close();
         }
 
         ServiceLocator.getInstance().getMaintenanceDao().purge();

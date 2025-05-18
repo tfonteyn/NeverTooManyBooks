@@ -135,8 +135,9 @@ public enum RecordType {
     Books("books"),
 
     /**
-     * A <strong>Single</strong> cover.
+     * A <strong>Single</strong> image.
      * MULTIPLE per archive.
+     * These are book covers or any other images (e.g. Author pictures).
      */
     Cover(""),
 
