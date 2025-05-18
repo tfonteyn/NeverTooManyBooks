@@ -158,9 +158,7 @@ public class BookHolder
             dbgRowIdView.setId(View.generateViewId());
             dbgRowIdView.setTextColor(Color.BLUE);
             dbgRowIdView.setBackgroundColor(Color.WHITE);
-            //noinspection CheckStyle
             dbgRowIdView.setZ(5);
-            //noinspection CheckStyle
             dbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
 
             final ConstraintLayout parentLayout = itemView.findViewById(R.id.card_frame);
