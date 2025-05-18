@@ -58,7 +58,8 @@ public class StripInfoDaoImpl
 
     @Override
     @NonNull
-    public Optional<StripInfoCollectionData> findByLocalBookId(@IntRange(from = 1) final long bookId) {
+    public Optional<StripInfoCollectionData>
+    findByLocalBookId(@IntRange(from = 1) final long bookId) {
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_LOCAL_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final CursorRow rowData = new CursorRow(cursor);
