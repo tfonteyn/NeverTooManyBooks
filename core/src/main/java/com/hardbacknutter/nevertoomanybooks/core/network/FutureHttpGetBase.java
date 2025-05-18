@@ -50,6 +50,9 @@ public class FutureHttpGetBase<R>
         extends FutureHttpBase<R> {
 
     private static final String TAG = "FutureHttpGetBase";
+    private static final String LOG_ATTEMPTS_LEFT = "attemptsLeft=";
+    private static final String LOG_REQUEST_URL = "requestUrlStr=";
+    private static final String LOG_REDIRECT_COUNT = "redirectCount=";
 
     private static final int MAX_REDIRECTS = 5;
 
@@ -110,7 +113,6 @@ public class FutureHttpGetBase<R>
         try {
             futureHttp = ASyncExecutor.SERVICE.submit(() -> {
                 HttpURLConnection request = null;
-                //noinspection CheckStyle
                 try {
                     final URL url = new URL(urlStr);
                     if (isLoggingEnabled()) {
@@ -183,8 +185,8 @@ public class FutureHttpGetBase<R>
         while (attemptsLeft > 0) {
             if (isLoggingEnabled()) {
                 LoggerFactory.getLogger().d(TAG, "connect",
-                                            "attemptsLeft=" + attemptsLeft,
-                                            "requestUrlStr=" + requestUrlStr);
+                                            LOG_ATTEMPTS_LEFT + attemptsLeft,
+                                            LOG_REQUEST_URL + requestUrlStr);
             }
 
             //noinspection OverlyBroadCatchBlock
@@ -202,9 +204,9 @@ public class FutureHttpGetBase<R>
                     if (isLoggingEnabled()) {
                         LoggerFactory.getLogger()
                                      .d(TAG, "connect|response",
-                                        "attemptsLeft=" + attemptsLeft,
-                                        "requestUrlStr=" + requestUrlStr,
-                                        "redirectCount=" + redirectCount,
+                                        LOG_ATTEMPTS_LEFT + attemptsLeft,
+                                        LOG_REQUEST_URL + requestUrlStr,
+                                        LOG_REDIRECT_COUNT + redirectCount,
                                         "responseCode=" + req.getResponseCode(),
                                         "responseUrlStr=" + responseUrlStr);
                     }
@@ -224,8 +226,8 @@ public class FutureHttpGetBase<R>
                         if (isLoggingEnabled()) {
                             LoggerFactory.getLogger()
                                          .d(TAG, "connect|redirect",
-                                            "attemptsLeft=" + attemptsLeft,
-                                            "redirectCount=" + redirectCount,
+                                            LOG_ATTEMPTS_LEFT + attemptsLeft,
+                                            LOG_REDIRECT_COUNT + redirectCount,
                                             "new requestUrlStr=" + requestUrlStr);
                         }
                         // Note we are NOT using the throttler here,
@@ -281,7 +283,7 @@ public class FutureHttpGetBase<R>
                 if (isLoggingEnabled()) {
                     LoggerFactory.getLogger()
                                  .e(TAG, e, "connect|recoverable error",
-                                    "attemptsLeft=" + attemptsLeft,
+                                    LOG_ATTEMPTS_LEFT + attemptsLeft,
                                     "requestUrlStr=`" + requestUrlStr + '`');
                 }
 
