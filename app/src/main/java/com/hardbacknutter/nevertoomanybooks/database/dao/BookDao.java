@@ -69,6 +69,9 @@ public interface BookDao {
 
     /**
      * Create a new {@link Book}.
+     * <p>
+     * ENHANCE: pass in an {@code DataReader#Updates} option to propagate to Authors
+     *  and eventually to other linked objects.
      *
      * @param context Current context
      * @param book    object to insert. Will be updated with the id.
@@ -87,6 +90,9 @@ public interface BookDao {
 
     /**
      * Create a new {@link Book}.
+     * <p>
+     * ENHANCE: pass in an {@code DataReader#Updates} option to propagate to Authors
+     *  and eventually to other linked objects.
      *
      * @param context Current context
      * @param book    object to insert. Will be updated with the id.
@@ -105,6 +111,10 @@ public interface BookDao {
 
     /**
      * Update the given {@link Book}.
+     * <p>
+     * ENHANCE: pass in an {@code DataReader#Updates} option to propagate to Authors
+     *  and eventually to other linked objects.
+     * <p>
      * This will update <strong>ONLY</strong> the fields present in the passed in Book.
      * Non-present fields will not be touched. i.e. this is a delta operation.
      * <p>
@@ -126,6 +136,10 @@ public interface BookDao {
 
     /**
      * Update the given {@link Book}.
+     * <p>
+     * ENHANCE: pass in an {@code DataReader#Updates} option to propagate to Authors
+     *  and eventually to other linked objects.
+     * <p>
      * This will update <strong>ONLY</strong> the fields present in the passed in Book.
      * Non-present fields will not be touched. i.e. this is a delta operation.
      *
