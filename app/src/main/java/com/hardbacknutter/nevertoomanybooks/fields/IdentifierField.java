@@ -27,18 +27,35 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.IdentifierOwner;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 public class IdentifierField<V extends EditText>
         extends EditTextField<String, V> {
 
+    /**
+     * Constructor.
+     *
+     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId the view id for this {@link Field}
+     * @param fieldKey    Key used to access a {@link DataManager}
+     */
     public IdentifierField(@NonNull final FragmentId fragmentId,
                            final int fieldViewId,
                            @NonNull final String fieldKey) {
         super(fragmentId, fieldViewId, fieldKey);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param fragmentId     the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId    the view id for this {@link Field}
+     * @param fieldKey       Key used to access a {@link DataManager}
+     *                       Set to {@code ""} to suppress all access.
+     * @param formatter      formatter to use
+     * @param enableReformat flag: reformat after every user-change.
+     */
     public IdentifierField(@NonNull final FragmentId fragmentId,
                            final int fieldViewId,
                            @NonNull final String fieldKey,
@@ -49,13 +66,13 @@ public class IdentifierField<V extends EditText>
 
     @Override
     void internalSave(@NonNull final DataManager target) {
-        ((Book) target).setIdentifierValue(getFieldKey(), getValue());
+        ((IdentifierOwner) target).setIdentifierValue(getFieldKey(), getValue());
     }
 
     @Override
     public void load(@NonNull final Context context,
                      @NonNull final DataManager source,
                      @NonNull final RealNumberParser realNumberParser) {
-        internalLoad(((Book) source).getIdentifierValue(getFieldKey()).orElse(null));
+        internalLoad(((IdentifierOwner) source).getIdentifierValue(getFieldKey()).orElse(null));
     }
 }
