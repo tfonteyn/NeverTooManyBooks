@@ -240,7 +240,7 @@ public class StyleBooklistBookLevelSortingFragment
             super(vb.getRoot());
             this.vb = vb;
 
-            showCheckableButton(false);
+            vb.ROWMENUBTN.setEnabled(false);
             showDragHandle(false);
         }
 
