@@ -178,7 +178,6 @@ public final class OpenLibraryAuthorResolver
     /**
      * As usual with OpenLibrary, the json (docs[0]) returned here is (slightly) DIFFERENT
      * from the json returned in {@link #searchBySid(Context, Author, String)}. Sigh...
-     * <p>
      *
      * @param context Current context
      * @param author  to search for
