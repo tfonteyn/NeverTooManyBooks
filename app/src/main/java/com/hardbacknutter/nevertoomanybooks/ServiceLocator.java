@@ -684,9 +684,8 @@ public class ServiceLocator {
     public IdentifierValueDao getAuthorIdentifierDao() {
         synchronized (this) {
             if (authorIdentifierDao == null) {
-                authorIdentifierDao = new IdentifierValueDaoImpl(getDb(),
-                                                                 DBDefinitions.TBL_AUTHOR_IDENTIFIER,
-                                                                 DBKey.FK_AUTHOR);
+                authorIdentifierDao = new IdentifierValueDaoImpl(
+                        getDb(), DBDefinitions.TBL_AUTHOR_IDENTIFIER, DBKey.FK_AUTHOR);
             }
         }
         return authorIdentifierDao;
