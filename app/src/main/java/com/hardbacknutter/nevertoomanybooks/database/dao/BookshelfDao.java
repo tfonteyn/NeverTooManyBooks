@@ -205,7 +205,8 @@ public interface BookshelfDao {
     Optional<Bookshelf> findById(@IntRange(from = 1) long id);
 
     /**
-     * Find a {@link Bookshelf} by using the <strong>name</strong> fields of the given {@link Bookshelf}.
+     * Find a {@link Bookshelf} by using the <strong>name</strong> fields
+     * of the given {@link Bookshelf}.
      * The given {@link Bookshelf} is <strong>not</strong> modified.
      *
      * @param context Current context
