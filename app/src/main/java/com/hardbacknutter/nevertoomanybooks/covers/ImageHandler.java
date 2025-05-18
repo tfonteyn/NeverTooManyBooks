@@ -120,7 +120,7 @@ public final class ImageHandler {
     private final Supplier<ImageOwner> imageSupplier;
     /** Callback to tell the owner to reload (and redisplay) the image after a change. */
     @NonNull
-    private final Consumer<Integer> ownerReloadCallback;
+    private final Consumer<Integer> reloadImageCallback;
     /** The local helper for loading/displaying images. */
     @NonNull
     private final ImageViewLoader imageLoader;
@@ -160,7 +160,7 @@ public final class ImageHandler {
 
     private ImageHandler(@NonNull final Builder builder) {
         fragment = builder.fragment;
-        ownerReloadCallback = builder.reloadConsumer;
+        reloadImageCallback = builder.reloadImage;
         progressIndicator = builder.progressIndicator;
 
         // We could store cIdx in the VM, but there really is no point
@@ -344,7 +344,7 @@ public final class ImageHandler {
 
         if (menuItemId == R.id.MENU_DELETE) {
             imageOwner.removeImage(context, cIdx);
-            ownerReloadCallback.accept(cIdx);
+            reloadImageCallback.accept(cIdx);
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
@@ -403,7 +403,7 @@ public final class ImageHandler {
                 if (imageOwner.getImageUuid().isPresent()) {
                     if (ServiceLocator.getInstance().getCoverStorage()
                                       .restore(imageOwner.getImageUuid().get(), cIdx)) {
-                        ownerReloadCallback.accept(cIdx);
+                        reloadImageCallback.accept(cIdx);
                     }
                 }
             } catch (@NonNull final IOException e) {
@@ -508,7 +508,7 @@ public final class ImageHandler {
             imageSupplier.get().removeImage(context, cIdx);
         }
 
-        ownerReloadCallback.accept(cIdx);
+        reloadImageCallback.accept(cIdx);
     }
 
     /**
@@ -706,7 +706,7 @@ public final class ImageHandler {
                         imageSupplier.get().setImage(context, cIdx, file);
                         // must use a post to force the View to update.
                         //noinspection DataFlowIssue
-                        fragment.getView().post(() -> ownerReloadCallback.accept(cIdx));
+                        fragment.getView().post(() -> reloadImageCallback.accept(cIdx));
                         return;
                     }
                 }
@@ -723,7 +723,7 @@ public final class ImageHandler {
         imageSupplier.get().removeImage(context, cIdx);
         // must use a post to force the View to update.
         //noinspection DataFlowIssue
-        fragment.getView().post(() -> ownerReloadCallback.accept(cIdx));
+        fragment.getView().post(() -> reloadImageCallback.accept(cIdx));
     }
 
     private void showProgress() {
@@ -784,7 +784,7 @@ public final class ImageHandler {
         private final int maxWidth;
         private final int maxHeight;
 
-        private Consumer<Integer> reloadConsumer;
+        private Consumer<Integer> reloadImage;
         private Supplier<ImageOwner> imageSupplier;
         @Nullable
         private CircularProgressIndicator progressIndicator;
@@ -822,21 +822,21 @@ public final class ImageHandler {
          * @return {@code this} (for chaining)
          */
         @NonNull
-        public Builder setImageSupplier(@NonNull final Supplier<ImageOwner> supplier) {
+        public Builder setImageOwner(@NonNull final Supplier<ImageOwner> supplier) {
             this.imageSupplier = supplier;
             return this;
         }
 
         /**
-         * Mandatory - A callback to the owner telling it to reload an image.
+         * Mandatory - A callback to the host telling it to reload an image.
          *
          * @param consumer callback to reload the image at the given cIdx
          *
          * @return {@code this} (for chaining)
          */
         @NonNull
-        public Builder setOnReloadConsumer(@NonNull final Consumer<Integer> consumer) {
-            this.reloadConsumer = consumer;
+        public Builder setOnReloadImage(@NonNull final Consumer<Integer> consumer) {
+            this.reloadImage = consumer;
             return this;
         }
 
@@ -854,7 +854,7 @@ public final class ImageHandler {
         }
 
         /**
-         * Optional - <strong>Only set if {@link #setImageSupplier} returns a book</strong>.
+         * Optional - <strong>Only set if {@link #setImageOwner} returns a book</strong>.
          * <p>
          * Tell the handler where it can get the current ISBN from.
          * This is normally a Supplier which reads it from a TextView on the screen.
@@ -870,7 +870,7 @@ public final class ImageHandler {
         }
 
         /**
-         * Optional - <strong>Only set if {@link #setImageSupplier} returns a book</strong>.
+         * Optional - <strong>Only set if {@link #setImageOwner} returns a book</strong>.
          * <p>
          * Tell the handler where it can get the current book-title from.
          * This is normally a Supplier which reads it from a TextView on the screen.
@@ -894,7 +894,7 @@ public final class ImageHandler {
         @NonNull
         public ImageHandler build() {
             Objects.requireNonNull(imageSupplier, "imageSupplier");
-            Objects.requireNonNull(reloadConsumer, "ownerReloadCallback");
+            Objects.requireNonNull(reloadImage, "ownerReloadCallback");
 
             if (imageSupplier.get() instanceof Book) {
                 if (coverBrowserTitleSupplier == null) {

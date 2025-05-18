@@ -33,7 +33,6 @@ import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
@@ -163,7 +162,7 @@ public class EditBookFieldsFragment
         final Resources res = getResources();
         final TypedArray width = res.obtainTypedArray(R.array.cover_edit_max_width);
         try {
-
+            final ImageView[] views = {vb.coverImage0, vb.coverImage1};
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
                 if (ServiceLocator.getInstance().isFieldEnabled(DBKey.COVER[cIdx])) {
@@ -173,8 +172,8 @@ public class EditBookFieldsFragment
                     //noinspection DataFlowIssue
                     imageHandler[cIdx] = new ImageHandler
                             .Builder(this, cIdx, maxWidth, maxHeight)
-                            .setImageSupplier(() -> vm.getBook())
-                            .setOnReloadConsumer(this::reloadImage)
+                            .setImageOwner(() -> vm.getBook())
+                            .setOnReloadImage(idx -> imageHandler[idx].onBindView(views[idx]))
                             .setCoverBrowserTitleSupplier(() -> vb.title.getText().toString())
                             .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString())
                             .setProgressIndicator(vb.coverOperationProgressBar)
@@ -221,18 +220,6 @@ public class EditBookFieldsFragment
 
         //noinspection DataFlowIssue
         fields.forEach(field -> field.setVisibility(getView(), false, false));
-    }
-
-    /**
-     * Callback passed to the {@link ImageHandler}; will be called after changing a cover image.
-     *
-     * @param cIdx 0..n image index
-     */
-    private void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
-        if (imageHandler[cIdx] != null) {
-            final ImageView view = cIdx == 0 ? vb.coverImage0 : vb.coverImage1;
-            imageHandler[cIdx].onBindView(view);
-        }
     }
 
     private void editAuthor() {

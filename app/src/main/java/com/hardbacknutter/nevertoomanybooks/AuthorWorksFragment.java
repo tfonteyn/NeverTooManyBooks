@@ -45,10 +45,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
@@ -254,8 +252,8 @@ public class AuthorWorksFragment
         final int height = res.getDimensionPixelSize(R.dimen.author_picture_height);
         imageHandler = new ImageHandler
                 .Builder(this, 0, width, height)
-                .setImageSupplier(() -> vm.getAuthor())
-                .setOnReloadConsumer(cIdx -> bindImage(vm.getAuthor()))
+                .setImageOwner(() -> vm.getAuthor())
+                .setOnReloadImage(cIdx -> imageHandler.onBindView(pictureView))
                 .setProgressIndicator(progressView)
                 .build();
         imageHandler.onBindView(pictureView);
@@ -268,7 +266,7 @@ public class AuthorWorksFragment
         //noinspection DataFlowIssue
         nameView.setText(author.getLabel(context, Details.AutoSelect, vm.getStyle()));
 
-        bindImage(author);
+        imageHandler.onBindView(pictureView);
 
         birthDateView.setText(author.getBirthDate()
                                     .map(d -> getString(R.string.name_colon_value,
@@ -281,16 +279,6 @@ public class AuthorWorksFragment
                                                         getString(R.string.lbl_date_died),
                                                         dff.format(getContext(), d)))
                                     .orElse(null));
-    }
-
-    private void bindImage(@NonNull final Author author) {
-        //noinspection DataFlowIssue
-        final Optional<File> file = author.getImage(getContext(), 0);
-        if (file.isPresent()) {
-            imageLoader.fromFile(pictureView, file.get(), null, null);
-        } else {
-            pictureView.setImageResource(R.drawable.person_24px);
-        }
     }
 
     /**

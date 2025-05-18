@@ -299,8 +299,8 @@ public class ShowBookDetailsFragment
 
                     imageHandler[cIdx] = new ImageHandler
                             .Builder(this, cIdx, maxWidth, maxHeight)
-                            .setImageSupplier(() -> vm.getBook())
-                            .setOnReloadConsumer(this::reloadImage)
+                            .setImageOwner(() -> vm.getBook())
+                            .setOnReloadImage(this::reloadImage)
                             .setProgressIndicator(progressView)
                             .build();
                 }
