@@ -27,21 +27,25 @@
     <plurals name="n_books">
         <item quantity="one">%1$d kniha</item>
         <item quantity="few">%1$d knihy</item>
+        <item quantity="many">%1$d knihy</item>
         <item quantity="other">%1$d kníh</item>
     </plurals>
     <plurals name="n_books_found">
         <item quantity="one">Nájdená %1$d kniha</item>
         <item quantity="few">Nájdené %1$d knihy</item>
+        <item quantity="many">Nájdené %1$d knihy</item>
         <item quantity="other">Nájdených %1$d kníh</item>
     </plurals>
     <plurals name="n_stars">
         <item quantity="one">%1$s hviezdička</item>
         <item quantity="few">%1$s hviezdičky</item>
+        <item quantity="many">%1$s hviezdičky</item>
         <item quantity="other">%1$s hviezdičiek</item>
     </plurals>
     <plurals name="n_tags">
         <item quantity="one">%1$d štítok</item>
         <item quantity="few">%1$d štítky</item>
+        <item quantity="many">%1$d štítky</item>
         <item quantity="other">%1$d štítkov</item>
     </plurals>
     <string name="quoted">„%1$s“</string>
