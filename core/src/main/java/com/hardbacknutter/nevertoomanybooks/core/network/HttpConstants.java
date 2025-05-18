@@ -27,10 +27,10 @@ import java.net.HttpURLConnection;
 public final class HttpConstants {
 
     /**
-     * RELEASE: BROWSER_USER_AGENT: Last updated: 2025-04-13.
+     * RELEASE: BROWSER_USER_AGENT: Last updated: 2025-05-18.
      */
     public static final String BROWSER_USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0";
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0";
 
     /**
      * HTTP Request Header.
@@ -74,7 +74,7 @@ public final class HttpConstants {
     public static final String ACCEPT = "Accept";
     /**
      * Value for {@link #ACCEPT}.
-     * RELEASE: update with the current Firefox default "Accept" header. Last updated: 2024-11-06.
+     * RELEASE: update with the current Firefox default "Accept" header. Last updated: 2025-05-18.
      */
     public static final String ACCEPT_KITCHEN_SINK =
             "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
