@@ -92,8 +92,9 @@
     </group>
 
     <!--
-    // ENHANCE: allow full bookshelf update, optionally using the EditBookOutput.BKEY_LAST_BOOK_ID_PROCESSED
-    // Disabled for now. It's a bit to easy for the user to select this from here,
+    // ENHANCE: allow full bookshelf update,
+    //  optionally using the EditBookOutput.BKEY_LAST_BOOK_ID_PROCESSED
+    // Disabled for now. It's a bit too easy for the user to select this from here,
     // with potentially huge impact.
     // This will use the currently displayed booklist (the book ID's)
     // which could potentially be a very long list
