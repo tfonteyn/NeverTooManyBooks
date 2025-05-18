@@ -951,10 +951,13 @@ public class BooksOnBookshelf
         // The problem is that the recreate happens before the rebuild is fully done,
         // which means the recreate picks up the PREVIOUS booklist table,
         // but the CURRENT style. Needs further investigation.
-        // Not recreating here is no big-deal as this is really only to apply
+        // Not recreating here is not crucial, as this is really only to apply
         // any UI setting changes coming from the imported preferences.
-        // The downside: the sync menu is not updated/visible.
-        // ... the user needs to quit the app and restart
+        // The downside:
+        // - an imported style set as the new default is not applied
+        //   => either restart or set manually
+        // - the sync menu is not updated/visible.
+        //   => restart needed
         if (result.preferences > 0) {
             //ActivityRestarter.recreate();
         }
