@@ -45,6 +45,9 @@
 
     </LinearLayout>
 
+    <!-- on purpose between the content and the drag-handle
+        because it's NOT a an action context button,
+        but a row config button menu. -->
     <com.google.android.material.button.MaterialButton
         android:id="@id/ROW_MENU_BTN"
         style="@style/RowEditor.Button.Sorting"
