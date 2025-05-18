@@ -132,8 +132,8 @@ public interface PublisherDao {
      * Insert or update a list of {@link Publisher}'s linked to a single {@link Book}.
      * <p>
      * The list is pruned before storage.
-     * New {@link Publisher}'s are added to the {@link Publisher} table, existing ones are NOT updated
-     * unless explicitly allowed by the {@code doUpdates} parameter.
+     * New {@link Publisher}'s are added to the {@link Publisher} table,
+     * existing ones are NOT updated unless explicitly allowed by the {@code doUpdates} parameter.
      * <p>
      * <strong>Transaction:</strong> required
      *
@@ -182,7 +182,8 @@ public interface PublisherDao {
     Optional<Publisher> findById(@IntRange(from = 1) long id);
 
     /**
-     * Find a {@link Publisher} by using the <strong>name</strong> fields of the given {@link Publisher}.
+     * Find a {@link Publisher} by using the <strong>name</strong> fields
+     * of the given {@link Publisher}.
      * The given {@link Publisher} is <strong>not</strong> modified.
      *
      * @param context Current context
