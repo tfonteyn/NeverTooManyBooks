@@ -46,8 +46,9 @@ import org.jsoup.nodes.Element;
 /**
  * Connects to the DatabazeKnih website to resolve author pseudonyms.
  * <p>
- * {@link AuthorResolver#resolve(Context, Author)} relies on the {@link Identifier#SID_DATABAZE_KNIH}
- * being correct to do  the lookup. It will:
+ * {@link AuthorResolver#resolve(Context, Author)} relies on the
+ * {@link Identifier#SID_DATABAZE_KNIH} being correct to do  the lookup.
+ * It will:
  * <ul>
  *     <li>add the {@link Author#setRealAuthor(Author)} if applicable</li>
  * </ul>
@@ -59,8 +60,6 @@ import org.jsoup.nodes.Element;
  */
 public final class DatabazeKnihAuthorResolver
         implements AuthorResolver {
-
-    private static final String TAG = "DatabazeKnihAuthorRes";
 
     // <a href="/filtrovani-autoru?nationId=80">britská</a><span class="gray">,</span>  1916 - 1990
     // <a href="/filtrovani-autoru?nationId=79">americká</a><span class="gray">,</span>  1948
@@ -227,10 +226,10 @@ public final class DatabazeKnihAuthorResolver
             }
         }
 
-        // <div class="img_author_detail" style="background-image:url(&quot;https://www.databazeknih.cz/img/authors/17_/1787/dylan-thomas-xre-1787.jpg?v=1583567916&quot;)" title=""></div>
         final Element picElement = section.selectFirst("div.img_author_detail");
         if (picElement != null) {
-            // no parsing, just brute-force-match
+            // style="background-image:url("https://www.databazeknih.cz/...")"
+            // no parsing, just brute-force-match to get the "middle" of this value -> url
             final String[] parts = QUOTE_PATTERN.split(picElement.attr("style"));
             if (parts.length == 3) {
                 final String url = parts[1];
