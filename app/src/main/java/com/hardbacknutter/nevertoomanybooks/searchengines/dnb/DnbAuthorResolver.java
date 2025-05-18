@@ -84,13 +84,8 @@ public final class DnbAuthorResolver
     private DnbAuthorResolver(@NonNull final Context context,
                               @NonNull final DnbSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        // hardcode the beta website
+        // hardcoded to the beta website
         authorUri = DnbSearchEngine.KATALOG_DNB_DE + "/DE/resource.html?id=%s";
-        //        authorUri = searchEngine.getEngineId()
-        //                                .getIdentifier()
-        //                                .flatMap(identifier -> identifier
-        //                                        .getAuthorUri(context))
-        //                                .orElse(null);
     }
 
     /**
