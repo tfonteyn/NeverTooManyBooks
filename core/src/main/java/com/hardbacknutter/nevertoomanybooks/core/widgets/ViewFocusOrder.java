@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -222,9 +222,12 @@ public final class ViewFocusOrder {
 
     /**
      * Dump an entire view hierarchy to the output.
+     *
+     * @param view  to dump
+     * @param depth max recursion level
      */
-    @SuppressLint("LogConditional")
-    @SuppressWarnings({"unused", "WeakerAccess"})
+    @SuppressLint({"LogConditional"})
+    @SuppressWarnings({"unused", "WeakerAccess", "MagicNumber"})
     public static void debugDumpViewTree(@Nullable final View view,
                                          final int depth) {
         if (view == null) {
