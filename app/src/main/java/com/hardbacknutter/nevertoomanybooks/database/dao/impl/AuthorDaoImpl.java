@@ -474,7 +474,7 @@ public class AuthorDaoImpl
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that author
                     // while not needed.
                     final Optional<Author> found = findById(author.getId());
-                    // Check for the name AND user fields being equals.
+                    // Check for the name AND user fields being different.
                     if (found.isPresent() && !found.get().isIdentical(author)) {
                         update(context, author, locale);
                     }
