@@ -110,8 +110,8 @@ public class ArchiveMetaData
         if (result.getBookCount() > 0) {
             data.putInt(INFO_NUMBER_OF_BOOKS, result.getBookCount());
         }
-        if (result.getCoverCount() > 0) {
-            data.putInt(INFO_NUMBER_OF_COVERS, result.getCoverCount());
+        if (result.getImageCount() > 0) {
+            data.putInt(INFO_NUMBER_OF_IMAGES, result.getImageCount());
         }
         return metaData;
     }

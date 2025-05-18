@@ -349,9 +349,9 @@ public class ImportFragment
                                            getString(R.string.lbl_books),
                                            String.valueOf(count))));
 
-                    metaData.getCoverCount().ifPresent(count -> info
+                    metaData.getImageCount().ifPresent(count -> info
                             .add(getString(R.string.name_colon_value,
-                                           getString(R.string.lbl_covers),
+                                           getString(R.string.lbl_images),
                                            String.valueOf(count))));
 
                     vb.archiveContent.setText(info.toString());

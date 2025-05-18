@@ -107,7 +107,7 @@ public class JsonArchiveWriterTest
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
         assertEquals(0, exportResults.getBookCount());
-        assertEquals(0, exportResults.getCoverCount());
+        assertEquals(0, exportResults.getImageCount());
         assertEquals(0, exportResults.preferences);
         assertEquals(nrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
@@ -148,7 +148,7 @@ public class JsonArchiveWriterTest
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
         assertEquals(bookInDb, exportResults.getBookCount());
-        assertEquals(0, exportResults.getCoverCount());
+        assertEquals(0, exportResults.getImageCount());
         assertEquals(1, exportResults.preferences);
         assertEquals(nrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);

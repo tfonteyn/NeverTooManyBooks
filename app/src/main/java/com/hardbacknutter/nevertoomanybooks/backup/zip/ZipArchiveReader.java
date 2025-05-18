@@ -327,7 +327,7 @@ public class ZipArchiveReader
         if (readCovers) {
             imageReader = new ImageRecordReader(updateOption);
 
-            final Optional<Integer> coverCount = metaData.getCoverCount();
+            final Optional<Integer> coverCount = metaData.getImageCount();
             if (coverCount.isPresent()) {
                 estimatedSteps += coverCount.get();
             } else {

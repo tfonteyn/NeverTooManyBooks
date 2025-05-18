@@ -191,7 +191,7 @@ public class ZipArchiveWriter
             // Recalculate the progress max value using the exact number of books/covers
             // which will now include the back-covers.
             progressListener.setMaxPos(results.getBookCount()
-                                       + results.getCoverCount()
+                                       + results.getImageCount()
                                        + EXTRA_STEPS);
 
             // Start with the archive header

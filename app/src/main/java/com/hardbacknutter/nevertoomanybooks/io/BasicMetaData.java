@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,11 +46,14 @@ public class BasicMetaData {
     static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
 
     /**
+     * This is now misnamed; it's the total amount of images,
+     * including book covers and author pictures.
+     * <p>
      * <strong>Optional</strong> information.
      * <p>
      * type: int
      */
-    static final String INFO_NUMBER_OF_COVERS = "NumCovers";
+    static final String INFO_NUMBER_OF_IMAGES = "NumCovers";
 
     /** Bundle retrieved from the archive for this instance. */
     @NonNull
@@ -101,14 +104,14 @@ public class BasicMetaData {
     }
 
     /**
-     * Get the number of covers.
+     * Get the number of images.
      *
-     * @return the number of covers if known
+     * @return the number of images if known
      */
     @NonNull
-    public Optional<Integer> getCoverCount() {
-        if (data.containsKey(INFO_NUMBER_OF_COVERS)) {
-            final int count = data.getInt(INFO_NUMBER_OF_COVERS);
+    public Optional<Integer> getImageCount() {
+        if (data.containsKey(INFO_NUMBER_OF_IMAGES)) {
+            final int count = data.getInt(INFO_NUMBER_OF_IMAGES);
             if (count > 0) {
                 return Optional.of(count);
             }

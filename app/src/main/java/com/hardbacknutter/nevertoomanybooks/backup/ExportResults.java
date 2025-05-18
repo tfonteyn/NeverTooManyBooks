@@ -148,7 +148,7 @@ public class ExportResults
             case Books:
                 return getBookCount() > 0;
             case Cover:
-                return getCoverCount() > 0;
+                return getImageCount() > 0;
 
             case Database:
                 return database;
@@ -176,7 +176,7 @@ public class ExportResults
                && calibreCustomFields == 0
                && deletedBooks == 0
                && getBookCount() == 0
-               && getCoverCount() == 0;
+               && getImageCount() == 0;
     }
 
     /**
@@ -240,16 +240,21 @@ public class ExportResults
         otherImages.add(name);
     }
 
-    public int getCoverCount() {
-        return coversExported.size();
+    /**
+     * Get the total count of all exported images (al types).
+     *
+     * @return count
+     */
+    public int getImageCount() {
+        return coversExported.size() + otherImages.size();
     }
 
     /**
      * Return the full list of cover filenames as collected with {@link #addCover}.
      * <p>
      * This is used/needed for the two-step backup process, where step one exports books,
-     * and collects cover filenames, and than (calling this method) in a second step exports
-     * the covers.
+     * and collects cover filenames, and than (calling this method)
+     * in a second step exports the images.
      *
      * @return list
      */
@@ -258,6 +263,15 @@ public class ExportResults
         return coversExported;
     }
 
+    /**
+     * Return the full list of cover filenames as collected with {@link #addImage}.
+     * <p>
+     * This is used/needed for the two-step backup process, where step one exports books,
+     * and collects author image filenames, and than (calling this method)
+     * in a second step exports the images.
+     *
+     * @return list
+     */
     @NonNull
     public Collection<String> getOtherImages() {
         return otherImages;

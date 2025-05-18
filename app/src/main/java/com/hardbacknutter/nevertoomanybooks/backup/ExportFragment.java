@@ -364,10 +364,10 @@ public class ExportFragment
                                 getString(R.string.lbl_books),
                                 String.valueOf(result.getBookCount())));
         }
-        if (result.getCoverCount() > 0) {
+        if (result.getImageCount() > 0) {
             items.add(getString(R.string.name_colon_value,
-                                getString(R.string.lbl_covers),
-                                String.valueOf(result.getCoverCount())));
+                                getString(R.string.lbl_images),
+                                String.valueOf(result.getImageCount())));
         }
         if (result.bookshelves > 0) {
             items.add(getString(R.string.name_colon_value,

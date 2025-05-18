@@ -104,7 +104,7 @@ public class ZipArchiveWriterTest
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
         assertEquals(bookInDb, exportResults.getBookCount());
-        assertEquals(0, exportResults.getCoverCount());
+        assertEquals(0, exportResults.getImageCount());
         assertEquals(1, exportResults.preferences);
         assertEquals(nrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
@@ -128,7 +128,7 @@ public class ZipArchiveWriterTest
         final ArchiveMetaData archiveMetaData = importHelper.readMetaData(context).orElse(null);
         assertNotNull(archiveMetaData);
         assertEquals(bookInDb, (long) archiveMetaData.getBookCount().orElse(-1));
-        assertEquals(-1, (long) archiveMetaData.getCoverCount().orElse(-1));
+        assertEquals(-1, (long) archiveMetaData.getImageCount().orElse(-1));
 
         final ImportResults importResults = importHelper.read(context, new TestProgressListener(
                 TAG + ":header"));
