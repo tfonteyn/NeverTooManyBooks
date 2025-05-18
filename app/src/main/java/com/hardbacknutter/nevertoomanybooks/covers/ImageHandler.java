@@ -103,6 +103,11 @@ public final class ImageHandler {
     private static final String IMAGE_MIME_TYPE = "image/*";
     private static final String ERROR_GENERIC_FILE_PROVIDER = "GenericFileProvider";
 
+    /** Rotate +90 or -90 degrees. */
+    private static final int TURN = 90;
+    /** Rotate upside down. */
+    private static final int FLIP = 180;
+
     /** Index of the image we're handling. */
     @IntRange(from = 0, to = 1)
     private final int cIdx;
@@ -344,17 +349,17 @@ public final class ImageHandler {
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
             TipManager.getInstance().show(context, Tip.CAMERA_AUTOROTATE_IMAGES,
-                                          () -> startRotation(90));
+                                          () -> startRotation(TURN));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CCW) {
             TipManager.getInstance().show(context, Tip.CAMERA_AUTOROTATE_IMAGES,
-                                          () -> startRotation(-90));
+                                          () -> startRotation(-TURN));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_180) {
             TipManager.getInstance().show(context, Tip.CAMERA_AUTOROTATE_IMAGES,
-                                          () -> startRotation(180));
+                                          () -> startRotation(FLIP));
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_CROP) {
