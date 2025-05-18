@@ -164,7 +164,7 @@ public class CalibreContentServerWriter
 
                 // sanity check, we only update existing books... no books -> skip library.
                 if (library.getTotalBooks() > 0) {
-                    syncLibrary(library, dateSince, progressListener);
+                    syncLibrary(context, library, dateSince, progressListener);
                 }
                 // always set the sync date!
                 library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
@@ -176,7 +176,8 @@ public class CalibreContentServerWriter
         return results;
     }
 
-    private void syncLibrary(@NonNull final CalibreLibrary library,
+    private void syncLibrary(@NonNull final Context context,
+                             @NonNull final CalibreLibrary library,
                              @Nullable final LocalDateTime dateSince,
                              @NonNull final ProgressListener progressListener)
             throws StorageException, IOException {
@@ -192,7 +193,7 @@ public class CalibreContentServerWriter
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 final Book book = Book.from(cursor);
                 try {
-                    syncBook(library, book);
+                    syncBook(context, library, book);
 
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
@@ -220,7 +221,8 @@ public class CalibreContentServerWriter
         }
     }
 
-    private void syncBook(@NonNull final CalibreLibrary library,
+    private void syncBook(@NonNull final Context context,
+                          @NonNull final CalibreLibrary library,
                           @NonNull final Book book)
             throws IOException, StorageException, JSONException {
 
@@ -251,7 +253,8 @@ public class CalibreContentServerWriter
         if (isNewer) {
             final JSONObject calibreBookIdentifiers =
                     calibreBook.optJSONObject(CalibreBookJsonKey.IDENTIFIERS);
-            final JSONObject changes = collectChanges(library, calibreBookIdentifiers, book);
+            final JSONObject changes = collectChanges(context, library, calibreBookIdentifiers,
+                                                      book);
             server.pushChanges(library.getLibraryStringId(), calibreId, changes);
             results.addBook(book.getId());
         }
@@ -263,6 +266,7 @@ public class CalibreContentServerWriter
      * Copy the wanted fields from the local {@link Book} into a {@link JSONObject}
      * with field names {@link CalibreBookJsonKey} as needed by Calibre.
      *
+     * @param context                Current context
      * @param library                the library to which the given books belongs
      * @param calibreBookIdentifiers the <strong>full</strong> list of identifiers for this
      *                               book as <strong>fetched from the Calibre server</strong>
@@ -274,7 +278,8 @@ public class CalibreContentServerWriter
      * @throws JSONException on any failure constructing JSON objects
      */
     @NonNull
-    private JSONObject collectChanges(@NonNull final CalibreLibrary library,
+    private JSONObject collectChanges(@NonNull final Context context,
+                                      @NonNull final CalibreLibrary library,
                                       @Nullable final JSONObject calibreBookIdentifiers,
                                       @NonNull final Book localBook)
             throws JSONException, IOException {
@@ -315,7 +320,7 @@ public class CalibreContentServerWriter
         collectCustomFields(library, localBook, changes);
 
         if (doCovers) {
-            collectCovers(localBook, changes);
+            collectCovers(context, localBook, changes);
         }
 
         return changes;
@@ -428,10 +433,11 @@ public class CalibreContentServerWriter
         }
     }
 
-    private void collectCovers(@NonNull final Book localBook,
+    private void collectCovers(@NonNull final Context context,
+                               @NonNull final Book localBook,
                                @NonNull final JSONObject changes)
             throws IOException {
-        final Optional<File> coverFile = localBook.getImage(0);
+        final Optional<File> coverFile = localBook.getImage(context, 0);
         if (coverFile.isPresent()) {
             final File file = coverFile.get();
             final byte[] bFile = new byte[(int) file.length()];

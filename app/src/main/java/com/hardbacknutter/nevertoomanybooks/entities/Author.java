@@ -1021,13 +1021,15 @@ public class Author
      * <p>
      * Any {@link StorageException} is <strong>IGNORED</strong>
      *
-     * @param cIdx ignored, pass in {@code 0} for future compatibility
+     * @param context Current context
+     * @param cIdx    ignored, pass in {@code 0} for future compatibility
      *
      * @return file
      */
     @Override
     @NonNull
-    public Optional<File> getImage(@IntRange(from = 0, to = 0) final int cIdx) {
+    public Optional<File> getImage(@NonNull final Context context,
+                                   @IntRange(from = 0, to = 0) final int cIdx) {
         final Optional<String> oFileSpec = getTmpPictureFileSpec();
         if (oFileSpec.isPresent()) {
             final File file = new File(oFileSpec.get());
@@ -1036,9 +1038,15 @@ public class Author
             }
         }
 
-        return getImageUuid()
+        final Optional<File> file = getImageUuid()
                 .flatMap(s -> ServiceLocator.getInstance().getCoverStorage()
                                             .getPersistedFile(s, 0));
+        if (file.isEmpty()) {
+            // we had a uuid, but no file, cleanup
+            // This could happen when the user imports authors without the images
+            updateImageUuid(context, null);
+        }
+        return file;
     }
 
     @Nullable
@@ -1100,7 +1108,7 @@ public class Author
     }
 
     /**
-     * Get the UUID for the picture.
+     * Get the UUID for the picture file.
      * <p>
      * Formatted as a 20 character UUID string, i.e. with 4 '-' separators.
      *
@@ -1113,16 +1121,31 @@ public class Author
                ? Optional.empty() : Optional.of(imageUuid);
     }
 
+    /**
+     * Set the UUID of the permanently persisted picture.
+     *
+     * @param imageUuid to set
+     */
     public void setImageUuid(@Nullable final String imageUuid) {
         this.imageUuid = imageUuid;
     }
 
+    /**
+     * Get the <strong>temporary</strong> fileSpec for a picture.
+     *
+     * @return fileSpec
+     */
     @NonNull
     public Optional<String> getTmpPictureFileSpec() {
         return tmpPictureFileSpec == null || tmpPictureFileSpec.isEmpty()
                ? Optional.empty() : Optional.of(tmpPictureFileSpec);
     }
 
+    /**
+     * Set the <strong>temporary</strong> fileSpec for a picture.
+     *
+     * @param tmpPictureFileSpec fileSpec
+     */
     public void setTmpPictureFileSpec(@Nullable final String tmpPictureFileSpec) {
         this.tmpPictureFileSpec = tmpPictureFileSpec;
     }

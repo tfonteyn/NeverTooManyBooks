@@ -124,7 +124,12 @@ public class AuthorWorksFragment
     private TextView deathDateView;
     private EditParcelableLauncher<Author> editAuthorLauncher;
     private ImageViewLoader imageLoader;
-    /** Delegate to handle cover replacement, rotation, etc. */
+    /**
+     * Delegate to handle cover replacement, rotation, etc.
+     * MUST keep a strong reference.
+     *
+     * @noinspection FieldCanBeLocal
+     */
     private ImageHandler imageHandler;
     private FieldFormatter<String> dff;
 
@@ -279,7 +284,8 @@ public class AuthorWorksFragment
     }
 
     private void bindImage(@NonNull final Author author) {
-        final Optional<File> file = author.getImage(0);
+        //noinspection DataFlowIssue
+        final Optional<File> file = author.getImage(getContext(), 0);
         if (file.isPresent()) {
             imageLoader.fromFile(pictureView, file.get(), null, null);
         } else {

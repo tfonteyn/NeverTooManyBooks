@@ -435,7 +435,7 @@ public class BookTest
         // there must NOT be any temp cover fileSpecs.
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
 
-        final Optional<File> oCover = book.getImage(cIdx);
+        final Optional<File> oCover = book.getImage(context, cIdx);
         assertTrue(oCover.isPresent());
         final File cover = oCover.get();
         assertNotNull(cover);

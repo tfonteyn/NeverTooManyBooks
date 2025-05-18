@@ -242,7 +242,7 @@ public final class ImageHandler {
      */
     public void onBindView(@NonNull final ImageView view) {
         // dev warning: in NO circumstances keep a reference to the view!
-        final Optional<File> file = imageSupplier.get().getImage(cIdx);
+        final Optional<File> file = imageSupplier.get().getImage(view.getContext(), cIdx);
         if (file.isPresent()) {
             imageLoader.fromFile(view, file.get(), null, null);
             view.setBackground(null);
@@ -263,7 +263,7 @@ public final class ImageHandler {
         // dev warning: in NO circumstances keep a reference to the view!
         view.setOnClickListener(v -> {
             // Allow zooming by clicking on the image;
-            imageSupplier.get().getImage(cIdx).ifPresent(
+            imageSupplier.get().getImage(view.getContext(), cIdx).ifPresent(
                     file -> ZoomedImageDialogFragment.launch(fragmentManager, file));
         });
 
@@ -285,7 +285,7 @@ public final class ImageHandler {
         Menu menu = MenuUtils.create(context, R.menu.image);
 
         final ImageOwner imageOwner = imageSupplier.get();
-        final Optional<File> file = imageOwner.getImage(cIdx);
+        final Optional<File> file = imageOwner.getImage(context, cIdx);
 
         if (file.isPresent()) {
             if (BuildConfig.DEBUG /* always */) {
@@ -436,7 +436,8 @@ public final class ImageHandler {
         final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
 
         // If we have a permanent file, copy it into the temp location
-        final Optional<File> uuidFile = imageOwner.getImage(cIdx);
+        //noinspection DataFlowIssue
+        final Optional<File> uuidFile = imageOwner.getImage(fragment.getContext(), cIdx);
         if (uuidFile.isPresent()) {
             FileUtils.copy(uuidFile.get(), tmpFile);
         }

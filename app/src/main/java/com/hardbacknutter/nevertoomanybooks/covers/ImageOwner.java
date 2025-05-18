@@ -55,12 +55,14 @@ public interface ImageOwner {
      * <p>
      * Any {@link StorageException} is <strong>IGNORED</strong>
      *
-     * @param cIdx 0..n image index
+     * @param context Current context
+     * @param cIdx    0..n image index
      *
      * @return file
      */
     @NonNull
-    Optional<File> getImage(@IntRange(from = 0, to = 1) int cIdx);
+    Optional<File> getImage(@NonNull Context context,
+                            @IntRange(from = 0, to = 1) int cIdx);
 
     /**
      * Update the book cover with the given file.

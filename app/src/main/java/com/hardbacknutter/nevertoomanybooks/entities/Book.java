@@ -1708,12 +1708,14 @@ public class Book
      * <p>
      * Any {@link StorageException} is <strong>IGNORED</strong>
      *
-     * @param cIdx 0..n image index
+     * @param context Current context
+     * @param cIdx    0..n image index
      *
      * @return file
      */
     @NonNull
-    public Optional<File> getImage(@IntRange(from = 0, to = 1) final int cIdx) {
+    public Optional<File> getImage(@NonNull final Context context,
+                                   @IntRange(from = 0, to = 1) final int cIdx) {
         if (contains(BKEY_TMP_FILE_SPEC[cIdx])) {
             // we have a previously set temporary cover, but it could be ""
             final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
@@ -2012,7 +2014,7 @@ public class Book
                 .setType("text/plain")
                 .putExtra(Intent.EXTRA_TEXT, text);
 
-        getImage(0).ifPresent(file -> {
+        getImage(context, 0).ifPresent(file -> {
             try {
                 final Uri uri = GenericFileProvider.createUri(context, file, getTitle());
                 // read access to the input uri
