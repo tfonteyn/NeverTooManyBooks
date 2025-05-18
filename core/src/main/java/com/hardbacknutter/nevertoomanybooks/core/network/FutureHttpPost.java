@@ -86,7 +86,6 @@ public class FutureHttpPost<R>
         try {
             futureHttp = ASyncExecutor.SERVICE.submit(() -> {
                 HttpURLConnection request = null;
-                //noinspection CheckStyle
                 try {
                     final URL url = new URL(urlStr);
                     if (isLoggingEnabled()) {
