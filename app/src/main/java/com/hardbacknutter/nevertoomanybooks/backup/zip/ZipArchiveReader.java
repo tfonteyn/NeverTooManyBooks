@@ -302,7 +302,7 @@ public class ZipArchiveReader
         if (0 < archiveVersion && archiveVersion <= ZipArchiveWriter.VERSION) {
             // The reader is flexible enough to detect the different versions for now.
             // Important: testing with v2 and up is exhaustive.
-            // v1 was the old BC format but reading books and covers from it SHOULD work fine.
+            // v1 was the old BC format but reading books and covers is supported.
             // The v1 prefs and styles are simply ignored.
             read(context, recordTypes, progressListener);
 
@@ -323,22 +323,23 @@ public class ZipArchiveReader
 
         int estimatedSteps = 1 + metaData.getBookCount().orElse(0);
 
-        final boolean readCovers = recordTypes.contains(RecordType.Cover);
-        if (readCovers) {
+        final boolean readImages = recordTypes.contains(RecordType.Cover);
+        if (readImages) {
             imageReader = new ImageRecordReader(updateOption);
 
-            final Optional<Integer> coverCount = metaData.getImageCount();
-            if (coverCount.isPresent()) {
-                estimatedSteps += coverCount.get();
+            final Optional<Integer> imageCount = metaData.getImageCount();
+            if (imageCount.isPresent()) {
+                estimatedSteps += imageCount.get();
             } else {
                 // We don't have a count, so assume each book has 1 cover.
+                // Ignore author images.
                 estimatedSteps *= 2;
             }
         }
         progressListener.setMaxPos(estimatedSteps);
 
         // On any semi-decent device the user won't see the record progress updates
-        // other than the actual books/covers but we're showing them regardless as "why-not".
+        // other than the actual books/images but we're showing them regardless as "why-not".
         // Also: show this HERE, before the json (or other readers) start reading
         // as they could take some time before the actual first entry is read.
         try {
@@ -365,8 +366,8 @@ public class ZipArchiveReader
 
             // Instance in time when we last send a progress message
             long lastUpdateTime = 0;
-            // Count the nr of covers in between progress updates.
-            int coversDelta = 0;
+            // Count the nr of images in between progress updates.
+            int imagesDelta = 0;
 
             Optional<ArchiveReaderRecord> nextRecord;
             // process each entry based on type, unless we are cancelled.
@@ -377,18 +378,18 @@ public class ZipArchiveReader
                 if (record.getType().isPresent()) {
                     final RecordType type = record.getType().get();
 
-                    if (type == RecordType.Cover && readCovers) {
-                        coversDelta++;
+                    if (type == RecordType.Cover && readImages) {
+                        imagesDelta++;
                         final long now = System.currentTimeMillis();
                         if (now - lastUpdateTime > progressListener.getUpdateIntervalInMs()) {
-                            // send accumulated progress for the total nr of covers
+                            // send accumulated progress for the total nr of images
                             progressListener.publishProgress(
-                                    coversDelta, results.createCoversSummaryLine(context));
+                                    imagesDelta, results.createImagesSummaryLine(context));
                             lastUpdateTime = now;
-                            coversDelta = 0;
+                            imagesDelta = 0;
                         }
 
-                        // there will be many covers... we're re-using a single RecordReader
+                        // there will be many images; we're re-using a single RecordReader
                         results.add(imageReader.read(context, record, progressListener));
 
                     } else if (type == RecordType.Books && recordTypes.contains(type)) {

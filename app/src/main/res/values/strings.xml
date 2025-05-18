@@ -363,13 +363,13 @@
     <string name="progress_msg_downloading">Downloading…</string>
     <!-- Progress message displayed when automatically updating book fields. Param 1: a book title  -->
     <string name="progress_msg_skip_s">Skipping “%1$s”</string>
-    <!-- Progress message displayed when importing: the number of books/covers created so far. -->
+    <!-- Progress message displayed when importing: the number of books/images created so far. -->
     <string name="progress_msg_x_created">%1$d created</string>
-    <!-- Progress message displayed when importing: the number of books/covers updated so far. -->
+    <!-- Progress message displayed when importing: the number of books/images updated so far. -->
     <string name="progress_msg_x_updated">%1$d updated</string>
-    <!-- Progress message displayed when importing: the number of books/covers skipped so far. -->
+    <!-- Progress message displayed when importing: the number of books/images skipped so far. -->
     <string name="progress_msg_x_skipped">%1$d skipped</string>
-    <!-- Progress message displayed when importing: the number of books/covers deleted so far. -->
+    <!-- Progress message displayed when importing: the number of books/images deleted so far. -->
     <string name="progress_msg_x_deleted">%1$d deleted</string>
 
     <!-- e.g. after an import -->

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * <p>
  * Backup import classes extend this class.
  * Sync import uses this class directly.
+ * <p>
+ * Note that the image counters make no distinction between covers and any other images.
  */
 public class ReaderResults
         implements Parcelable {
@@ -69,18 +71,18 @@ public class ReaderResults
     /** #books which explicitly failed. */
     public int booksFailed;
 
-    /** The total #covers that were present in the import data. */
-    public int coversProcessed;
-    /** #covers we created. */
-    public int coversCreated;
-    /** #covers we updated. */
-    public int coversUpdated;
-    /** #covers we deleted. */
-    public int coversDeleted;
-    /** #covers we skipped for NON-failure reasons. */
-    public int coversSkipped;
-    /** # covers which explicitly failed. */
-    public int coversFailed;
+    /** The total number of images that were present in the import data. */
+    public int imagesProcessed;
+    /** number of images we created. */
+    public int imagesCreated;
+    /** number of images we updated. */
+    public int imagesUpdated;
+    /** number of images we deleted. */
+    public int imagesDeleted;
+    /** number of images we skipped for NON-failure reasons. */
+    public int imagesSkipped;
+    /** number of images which explicitly failed. */
+    public int imagesFailed;
 
     /**
      * Constructor.
@@ -101,12 +103,12 @@ public class ReaderResults
         booksSkipped = in.readInt();
         booksFailed = in.readInt();
 
-        coversProcessed = in.readInt();
-        coversCreated = in.readInt();
-        coversUpdated = in.readInt();
-        coversDeleted = in.readInt();
-        coversSkipped = in.readInt();
-        coversFailed = in.readInt();
+        imagesProcessed = in.readInt();
+        imagesCreated = in.readInt();
+        imagesUpdated = in.readInt();
+        imagesDeleted = in.readInt();
+        imagesSkipped = in.readInt();
+        imagesFailed = in.readInt();
     }
 
     /**
@@ -122,12 +124,12 @@ public class ReaderResults
         booksSkipped += results.booksSkipped;
         booksFailed += results.booksFailed;
 
-        coversProcessed += results.coversProcessed;
-        coversCreated += results.coversCreated;
-        coversUpdated += results.coversUpdated;
-        coversDeleted += results.coversDeleted;
-        coversSkipped += results.coversSkipped;
-        coversFailed += results.coversFailed;
+        imagesProcessed += results.imagesProcessed;
+        imagesCreated += results.imagesCreated;
+        imagesUpdated += results.imagesUpdated;
+        imagesDeleted += results.imagesDeleted;
+        imagesSkipped += results.imagesSkipped;
+        imagesFailed += results.imagesFailed;
     }
 
     public void bookCreated(final long id) {
@@ -180,7 +182,7 @@ public class ReaderResults
     }
 
     /**
-     * Create a single String line with a report how many covers were create/updated/...
+     * Create a single String line with a report how many images were create/updated/...
      *
      * @param context Current context
      *
@@ -189,23 +191,23 @@ public class ReaderResults
      * @see #createReport(Context)
      */
     @NonNull
-    public String createCoversSummaryLine(@NonNull final Context context) {
+    public String createImagesSummaryLine(@NonNull final Context context) {
         final StringJoiner parts = new StringJoiner(", ");
-        if (coversCreated > 0) {
-            parts.add(context.getString(R.string.progress_msg_x_created, coversCreated));
+        if (imagesCreated > 0) {
+            parts.add(context.getString(R.string.progress_msg_x_created, imagesCreated));
         }
-        if (coversUpdated > 0) {
-            parts.add(context.getString(R.string.progress_msg_x_updated, coversUpdated));
+        if (imagesUpdated > 0) {
+            parts.add(context.getString(R.string.progress_msg_x_updated, imagesUpdated));
         }
-        if (coversDeleted > 0) {
-            parts.add(context.getString(R.string.progress_msg_x_deleted, coversDeleted));
+        if (imagesDeleted > 0) {
+            parts.add(context.getString(R.string.progress_msg_x_deleted, imagesDeleted));
         }
-        if (coversSkipped > 0) {
-            parts.add(context.getString(R.string.progress_msg_x_skipped, coversSkipped));
+        if (imagesSkipped > 0) {
+            parts.add(context.getString(R.string.progress_msg_x_skipped, imagesSkipped));
         }
         if (parts.length() > 0) {
             return context.getString(R.string.name_colon_value,
-                                     context.getString(R.string.lbl_covers),
+                                     context.getString(R.string.lbl_images),
                                      parts.toString());
         } else {
             return "";
@@ -213,31 +215,33 @@ public class ReaderResults
     }
 
     /**
-     * Create suitable lines/strings for book and cover results to show
+     * Create suitable lines/strings for book and image results to show
      * in a report to the user.
      * <p>
      * Example - parts which are {@code 0} are not added
      * <pre>
      *     • Books: 4 created, 78 updated, 5 deleted
-     *     • Covers: 32 created, 4 updated, 21 skipped
+     *     • Images: 32 created, 4 updated, 21 skipped
      * </pre>
      *
      * @param context Current context
      *
-     * @return 0, 1 or 2 'bullet' lines with book and cover results.
+     * @return 0, 1 or 2 'bullet' lines with book and image results.
      */
     @NonNull
     public List<String> createReport(@NonNull final Context context) {
         final List<String> lines = new ArrayList<>();
 
-        final String booksSummaryLine = createBooksSummaryLine(context);
-        if (!booksSummaryLine.isEmpty()) {
-            lines.add(context.getString(R.string.list_element, booksSummaryLine));
+        String s;
+
+        s = createBooksSummaryLine(context);
+        if (!s.isEmpty()) {
+            lines.add(context.getString(R.string.list_element, s));
         }
 
-        final String coversSummaryLine = createCoversSummaryLine(context);
-        if (!coversSummaryLine.isEmpty()) {
-            lines.add(context.getString(R.string.list_element, coversSummaryLine));
+        s = createImagesSummaryLine(context);
+        if (!s.isEmpty()) {
+            lines.add(context.getString(R.string.list_element, s));
         }
 
         return lines;
@@ -253,12 +257,12 @@ public class ReaderResults
         dest.writeInt(booksSkipped);
         dest.writeInt(booksFailed);
 
-        dest.writeInt(coversProcessed);
-        dest.writeInt(coversCreated);
-        dest.writeInt(coversUpdated);
-        dest.writeInt(coversDeleted);
-        dest.writeInt(coversSkipped);
-        dest.writeInt(coversFailed);
+        dest.writeInt(imagesProcessed);
+        dest.writeInt(imagesCreated);
+        dest.writeInt(imagesUpdated);
+        dest.writeInt(imagesDeleted);
+        dest.writeInt(imagesSkipped);
+        dest.writeInt(imagesFailed);
     }
 
     @Override
@@ -277,12 +281,12 @@ public class ReaderResults
                + ", booksSkipped=" + booksSkipped
                + ", booksFailed=" + booksFailed
 
-               + ", coversProcessed=" + coversProcessed
-               + ", coversCreated=" + coversCreated
-               + ", coversUpdated=" + coversUpdated
-               + ", coversDeleted=" + coversDeleted
-               + ", coversSkipped=" + coversSkipped
-               + ", coversFailed=" + coversFailed
+               + ", imagesProcessed=" + imagesProcessed
+               + ", imagesCreated=" + imagesCreated
+               + ", imagesUpdated=" + imagesUpdated
+               + ", imagesDeleted=" + imagesDeleted
+               + ", imagesSkipped=" + imagesSkipped
+               + ", imagesFailed=" + imagesFailed
                + '}';
     }
 }

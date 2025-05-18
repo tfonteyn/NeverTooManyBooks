@@ -84,7 +84,7 @@ public class ImageRecordReader
             final RecordType recordType = record.getType().get();
 
             if (recordType == RecordType.Cover) {
-                results.coversProcessed = 1;
+                results.imagesProcessed = 1;
 
                 try {
                     final CoverStorage storage = ServiceLocator.getInstance().getCoverStorage();
@@ -96,7 +96,7 @@ public class ImageRecordReader
                         // Are we allowed to overwrite at all ?
                         switch (updateOption) {
                             case Skip: {
-                                results.coversSkipped++;
+                                results.imagesSkipped++;
                                 return results;
                             }
                             case OnlyNewer: {
@@ -108,7 +108,7 @@ public class ImageRecordReader
                                         dstFile.lastModified() >> FILE_LM_PRECISION;
 
                                 if (existingFileDate > importFileDate) {
-                                    results.coversSkipped++;
+                                    results.imagesSkipped++;
                                     return results;
                                 }
                                 break;
@@ -130,9 +130,9 @@ public class ImageRecordReader
                         //noinspection ResultOfMethodCallIgnored
                         dstFile.setLastModified(record.getLastModifiedEpochMilli());
                         if (exists) {
-                            results.coversUpdated++;
+                            results.imagesUpdated++;
                         } else {
-                            results.coversCreated++;
+                            results.imagesCreated++;
                         }
                     }
                 } catch (@NonNull final IOException e) {
@@ -144,7 +144,7 @@ public class ImageRecordReader
                         throw e;
                     }
                     // we don't want to quit importing just because one file fails.
-                    results.coversFailed++;
+                    results.imagesFailed++;
                 }
             }
         }
