@@ -1163,9 +1163,9 @@
     <!-- Multiple book covers. Long label. -->
     <string name="lbl_covers_long">Cover images</string>
 
-    <!-- [VERIFIED] Generic image (singular); authors,...-->
+    <!-- [VERIFIED] Generic image (singular). -->
     <string name="lbl_image">Image</string>
-    <!-- [VERIFIED] Generic images (plural); authors,... -->
+    <!-- [VERIFIED] Generic images (plural). -->
     <string name="lbl_images">Images</string>
 
     <!-- number of pages; this is a field-label + also used for a radio button text. -->
@@ -1417,8 +1417,6 @@
     <string name="pc_camera">Camera</string>
     <!-- Preference option title: search websites ordering -->
     <string name="pt_website_search_order_and_enable">Priority, enable &amp; disable</string>
-    <string name="pt_covers"
-            translatable="false">@string/lbl_covers_long</string>
     <!-- Preference Category -->
     <string name="pt_barcode_scanner">Barcode scanner</string>
     <string name="pt_calibre_content_server"

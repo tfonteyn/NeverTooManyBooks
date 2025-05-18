@@ -117,7 +117,7 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferenceFragment"
             android:icon="@drawable/image_24px"
             android:key="psk_thumbnails"
-            android:title="@string/pt_covers"
+            android:title="@string/lbl_images"
             />
 
         <!-- default 1: capitalize all words. -->
