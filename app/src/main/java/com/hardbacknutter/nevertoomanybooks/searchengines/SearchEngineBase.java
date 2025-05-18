@@ -413,7 +413,6 @@ public abstract class SearchEngineBase
         // only add q if we actually added a value.
         if (addQ) {
             // use 0.5 or 0.4
-            //noinspection CheckStyle
             accept.append(";q=0.").append(4 + offset);
         }
 
