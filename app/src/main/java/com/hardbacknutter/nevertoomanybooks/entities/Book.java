@@ -263,7 +263,7 @@ public class Book
      *
      * @param in Parcel to construct the object from
      */
-    public Book(@NonNull final Parcel in) {
+    private Book(@NonNull final Parcel in) {
         super(in);
         stage = in.readParcelable(getClass().getClassLoader());
     }
