@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,12 +20,11 @@
 
 package com.hardbacknutter.util.logger;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import static com.hardbacknutter.util.logger.Logger.concat;
 
 public class LogCatLogger
         implements Logger {
@@ -34,18 +33,19 @@ public class LogCatLogger
     public void e(@NonNull final String tag,
                   @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        Log.e(tag, concat(e, params));
+        Log.e(tag, Logger.concat(e, params));
     }
 
     @Override
     public void w(@NonNull final String tag,
                   @Nullable final Object... params) {
-        Log.w(tag, concat(params));
+        Log.w(tag, Logger.concat(params));
     }
 
+    @SuppressLint("LogConditional")
     @Override
     public void d(@NonNull final String tag,
                   @Nullable final Object... params) {
-        Log.d(tag, concat(params));
+        Log.d(tag, Logger.concat(params));
     }
 }
