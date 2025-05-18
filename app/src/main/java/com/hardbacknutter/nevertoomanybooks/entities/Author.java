@@ -23,6 +23,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
@@ -452,7 +453,7 @@ public class Author
             return new Author(bracketSection, givenNames);
 
         } else {
-            return new Author(familyName + " " + bracketSection, givenNames);
+            return new Author(familyName + ' ' + bracketSection, givenNames);
         }
     }
 
@@ -527,7 +528,7 @@ public class Author
                         } else {
                             // this is far to complicated to make sense...
                             // Just concat with the name part
-                            uName += " " + group;
+                            uName += ' ' + group;
                         }
                     }
                 }
@@ -923,7 +924,7 @@ public class Author
                     String.format("%1s %2s", filteredPenName,
                                   context.getString(R.string.lbl_author_pseudonym_of_X, realName));
 
-            final SpannableString span = new SpannableString(fullName);
+            final Spannable span = new SpannableString(fullName);
             final float relSize = ResourcesCompat
                     .getFloat(context.getResources(), R.dimen.author_pseudonym_size);
             span.setSpan(new RelativeSizeSpan(relSize),
