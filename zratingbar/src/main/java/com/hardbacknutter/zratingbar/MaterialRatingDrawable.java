@@ -35,8 +35,10 @@ import android.graphics.drawable.DrawableWrapper;
 import android.graphics.drawable.LayerDrawable;
 import android.view.Gravity;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -93,10 +95,10 @@ class MaterialRatingDrawable
 
     @NonNull
     private static Drawable layerDrawableWithTintColor(@NonNull final Context context,
-                                                       @DrawableRes final int tileRes,
+                                                       @DrawableRes final int tileResId,
                                                        @ColorInt final int tintColor) {
         final TileDrawable drawable = new TileDrawable(
-                Objects.requireNonNull(AppCompatResources.getDrawable(context, tileRes)));
+                Objects.requireNonNull(AppCompatResources.getDrawable(context, tileResId)));
         drawable.mutate();
         drawable.setTint(tintColor);
         return drawable;
@@ -104,34 +106,36 @@ class MaterialRatingDrawable
 
     @NonNull
     private static Drawable layerDrawableWithTintAttrRes(@NonNull final Context context,
-                                                         @DrawableRes final int tileRes,
-                                                         final int tintAttrRes) {
-        return layerDrawableWithTintColor(context, tileRes, getTintColor(context, tintAttrRes));
+                                                         @DrawableRes final int tileResId,
+                                                         @AttrRes final int tintAttrId) {
+        return layerDrawableWithTintColor(context, tileResId, getTintColor(context, tintAttrId));
     }
 
     @SuppressLint("RtlHardcoded")
+    @SuppressWarnings("SameParameterValue")
     @NonNull
     private static Drawable clippedLayerDrawableWithTintColor(@NonNull final Context context,
-                                                              @DrawableRes final int tileRes,
+                                                              @DrawableRes final int tileResId,
                                                               @ColorInt final int tintColor) {
         return new ClipDrawable(
-                layerDrawableWithTintColor(context, tileRes, tintColor),
+                layerDrawableWithTintColor(context, tileResId, tintColor),
                 Gravity.LEFT, ClipDrawable.HORIZONTAL);
     }
 
     @SuppressLint("RtlHardcoded")
+    @SuppressWarnings("SameParameterValue")
     @NonNull
     private static Drawable clippedLayerDrawableWithTintAttrRes(@NonNull final Context context,
-                                                                @DrawableRes final int tileRes,
-                                                                final int tintAttrRes) {
+                                                                @DrawableRes final int tileResId,
+                                                                @AttrRes final int tintAttrId) {
         return new ClipDrawable(
-                layerDrawableWithTintAttrRes(context, tileRes, tintAttrRes),
+                layerDrawableWithTintAttrRes(context, tileResId, tintAttrId),
                 Gravity.LEFT, ClipDrawable.HORIZONTAL);
     }
 
     private static int getTintColor(@NonNull final Context context,
-                                    final int tintAttrRes) {
-        final TypedArray a = context.obtainStyledAttributes(new int[]{tintAttrRes});
+                                    @AttrRes final int tintAttrId) {
+        final TypedArray a = context.obtainStyledAttributes(new int[]{tintAttrId});
         try {
             return a.getColor(0, 0);
         } finally {
@@ -151,19 +155,15 @@ class MaterialRatingDrawable
     }
 
     @NonNull
-    private TileDrawable getTileDrawableByLayerId(final int id) {
+    private TileDrawable getTileDrawableByLayerId(@IdRes final int id) {
         final Drawable layerDrawable = findDrawableByLayerId(id);
-        switch (id) {
-            case android.R.id.background:
-                return (TileDrawable) layerDrawable;
-            case android.R.id.secondaryProgress:
-            case android.R.id.progress: {
-                return (TileDrawable) Objects.requireNonNull(
-                        ((DrawableWrapper) layerDrawable).getDrawable());
-            }
-            default:
-                // Should never reach here.
-                throw new RuntimeException();
+        if (id == android.R.id.background) {
+            return (TileDrawable) layerDrawable;
+        } else if (id == android.R.id.progress || id == android.R.id.secondaryProgress) {
+            return (TileDrawable) Objects.requireNonNull(
+                    ((DrawableWrapper) layerDrawable).getDrawable());
         }
+        // Should never reach here.
+        throw new RuntimeException("Invalid id");
     }
 }
