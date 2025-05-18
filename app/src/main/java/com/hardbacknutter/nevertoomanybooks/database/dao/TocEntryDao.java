@@ -173,7 +173,8 @@ public interface TocEntryDao {
     Optional<TocEntry> findById(@IntRange(from = 1) long id);
 
     /**
-     * Find a {@link TocEntry} by using the <strong>name</strong> fields of the given {@link TocEntry}.
+     * Find a {@link TocEntry} by using the <strong>name</strong> fields
+     * of the given {@link TocEntry}.
      * The given {@link TocEntry} is <strong>not</strong> modified.
      *
      * @param context Current context
