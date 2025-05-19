@@ -24,8 +24,4 @@
     <dimen name="progress_width">340dp</dimen>
 
     <dimen name="container_margin">4dp</dimen>
-
-    <!--    <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>-->
-    <!--    <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>-->
-    <!--    <dimen name="btn_open_toc_text_size">14sp</dimen>-->
 </resources>

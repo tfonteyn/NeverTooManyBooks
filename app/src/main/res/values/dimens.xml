@@ -194,8 +194,8 @@
 
 
     <integer name="span_count_edit_bookshelves">1</integer>
+    <integer name="span_count_edit_tags">1</integer>
     <integer name="span_count_update_from_internet">1</integer>
-    <integer name="fts_search_inputs_span">3</integer>
 
     <!-- See the tab adapter used in EditBookFragment -->
     <bool name="combine_book_edit_tabs">false</bool>

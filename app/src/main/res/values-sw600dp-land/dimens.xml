@@ -20,15 +20,4 @@
   -->
 
 <resources>
-    <dimen name="app_icon_size_large">64dp</dimen>
-
-    <dimen name="progress_margin_top">50dp</dimen>
-    <dimen name="progress_width">340dp</dimen>
-
-    <integer name="span_count_edit_bookshelves">3</integer>
-    <integer name="span_count_edit_tags">3</integer>
-    <integer name="span_count_update_from_internet">2</integer>
-
-    <dimen name="centered_max_width">800dp</dimen>
-
 </resources>

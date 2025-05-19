@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,8 +20,10 @@
   -->
 
 <resources>
-    <integer name="span_count_update_from_internet">3</integer>
-
     <dimen name="popup_menu_divider_width">540dp</dimen>
+
+    <integer name="span_count_edit_bookshelves">4</integer>
+    <integer name="span_count_edit_tags">4</integer>
+    <integer name="span_count_update_from_internet">3</integer>
 
 </resources>
