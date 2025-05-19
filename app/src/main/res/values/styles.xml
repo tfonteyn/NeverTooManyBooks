@@ -323,6 +323,7 @@
     <!-- ConstraintLayout as the root of a Fragment OR immediately inside a NestedScrollView
          Width restricted on larger displays!
     -->
+    <!-- BE CAREFUL... USING THIS INSIDE A VIEWPAGER2 WILL NOT CENTER THE LAYOUT -->
     <style name="FragmentRoot.ConstraintLayout"
            parent="">
         <item name="android:layout_width">match_parent</item>
