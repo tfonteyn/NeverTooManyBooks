@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookBinding;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -84,8 +83,8 @@ public class EditBookFragment
     private TabAdapter tabAdapter;
     /** View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
-    /** View Binding. */
-    private FragmentEditBookBinding vb;
+    /** View Binding with the ViewPager2. */
+    private ViewPager2 viewPager;
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
@@ -106,7 +105,7 @@ public class EditBookFragment
             new ViewPager2.OnPageChangeCallback() {
                 @Override
                 public void onPageSelected(final int position) {
-                    hideKeyboard(vb.pager);
+                    hideKeyboard(viewPager);
                 }
             };
 
@@ -138,8 +137,10 @@ public class EditBookFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = FragmentEditBookBinding.inflate(inflater, container, false);
-        return vb.getRoot();
+        final View view = inflater.inflate(R.layout.fragment_edit_book, container, false);
+        // pager == view; but keep it future-proof
+        viewPager = view.findViewById(R.id.pager);
+        return view;
     }
 
     @Override
@@ -157,11 +158,11 @@ public class EditBookFragment
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         tabAdapter = new TabAdapter(getActivity());
-        vb.pager.setAdapter(tabAdapter);
+        viewPager.setAdapter(tabAdapter);
 
-        vb.pager.registerOnPageChangeCallback(pageChange);
+        viewPager.registerOnPageChangeCallback(pageChange);
 
-        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
+        new TabLayoutMediator(tabPanel, viewPager, (tab, position) -> {
             final TabAdapter.TabInfo tabInfo = tabAdapter.getTabInfo(position);
             tab.setText(tabInfo.getTitleId());
             tab.setContentDescription(tabInfo.getContentDescriptionId());
@@ -178,21 +179,21 @@ public class EditBookFragment
             currentTab = 0;
             vm.setCurrentTab(0);
         }
-        vb.pager.setCurrentItem(currentTab);
+        viewPager.setCurrentItem(currentTab);
 
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
-        vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
+        viewPager.setOffscreenPageLimit(tabAdapter.getItemCount());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        vm.setCurrentTab(vb.pager.getCurrentItem());
+        vm.setCurrentTab(viewPager.getCurrentItem());
     }
 
     @Override
     public void onDestroyView() {
-        vb.pager.unregisterOnPageChangeCallback(pageChange);
+        viewPager.unregisterOnPageChangeCallback(pageChange);
         super.onDestroyView();
     }
 
@@ -234,7 +235,7 @@ public class EditBookFragment
                     && checkUnfinishedEdits
                     && unfinishedEdits.contains(dataEditor.getFragmentId())) {
                     // bring it to the front; i.e. resume it; the user will see it below the dialog.
-                    vb.pager.setCurrentItem(i);
+                    viewPager.setCurrentItem(i);
                     StandardDialogs.unsavedEdits(context,
                                                  () -> prepareSave(false),
                                                  this::setResultsAndFinish);
@@ -250,7 +251,7 @@ public class EditBookFragment
                 if (dataEditor.isResumed()) {
                     dataEditor.onSaveFields(book);
                     if (checkUnfinishedEdits && dataEditor.hasUnfinishedEdits()) {
-                        vb.pager.setCurrentItem(i);
+                        viewPager.setCurrentItem(i);
                         StandardDialogs.unsavedEdits(context,
                                                      () -> prepareSave(false),
                                                      this::setResultsAndFinish);
