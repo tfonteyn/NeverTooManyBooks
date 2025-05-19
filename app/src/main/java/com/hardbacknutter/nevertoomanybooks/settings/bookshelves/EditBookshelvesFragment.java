@@ -367,14 +367,6 @@ public class EditBookshelvesFragment
             return holder;
         }
 
-        private void requireValidOrThrow(final int position,
-                                         final int gridPosition) {
-            if (position == RecyclerView.NO_POSITION) {
-                // Should never get here
-                throw new IllegalStateException(ERROR_NO_LIST_INDEX_FOR_POSITION + gridPosition);
-            }
-        }
-
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {

@@ -67,13 +67,11 @@ public class SyncFieldAdapter
         final Holder holder = new Holder(vb);
 
         holder.vb.cbxUsage.setOnClickListener(v -> {
-            final int position = holder.getBindingAdapterPosition();
-            final int listIndex = transpose(position);
-            if (listIndex == RecyclerView.NO_POSITION) {
-                // Should never get here
-                throw new IllegalStateException("No ListIndex for position=" + position);
-            }
-            final SyncField fs = syncFields[listIndex];
+            final int gridPosition = holder.getBindingAdapterPosition();
+            final int position = transpose(gridPosition);
+            requireValidOrThrow(position, gridPosition);
+
+            final SyncField fs = syncFields[position];
             fs.nextState();
             holder.vb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
             holder.vb.cbxUsage.setText(fs.getActionLabel(holder.vb.cbxUsage.getContext()));

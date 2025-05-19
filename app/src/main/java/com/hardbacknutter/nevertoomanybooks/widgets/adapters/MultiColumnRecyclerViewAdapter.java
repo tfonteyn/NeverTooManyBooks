@@ -33,6 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<HOLDER> {
 
+    private static final String ERROR_NO_LIST_INDEX_FOR_POSITION = "No ListIndex for position=";
+
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
@@ -53,6 +55,14 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
     @NonNull
     protected LayoutInflater getInflater() {
         return inflater;
+    }
+
+    protected void requireValidOrThrow(final int position,
+                                       final int gridPosition) {
+        if (position == RecyclerView.NO_POSITION) {
+            // Should never get here
+            throw new IllegalStateException(ERROR_NO_LIST_INDEX_FOR_POSITION + gridPosition);
+        }
     }
 
     /**
