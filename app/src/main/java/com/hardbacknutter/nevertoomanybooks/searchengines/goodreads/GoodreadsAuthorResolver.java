@@ -174,7 +174,7 @@ public final class GoodreadsAuthorResolver
             return null;
         }
 
-        final Author author = Author.from(nameSpan.text());
+        final Author author = searchEngine.mapAuthor(context, nameSpan.text());
         author.setIdentifierValue(Identifier.SID_GOODREADS, sid);
 
         Element element;

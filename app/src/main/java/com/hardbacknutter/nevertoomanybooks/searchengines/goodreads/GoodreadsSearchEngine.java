@@ -415,12 +415,12 @@ public class GoodreadsSearchEngine
 
         final Locale locale = getLocale(context);
 
-        parseContributors(apolloState, o.optJSONObject("primaryContributorEdge"),
+        parseContributors(context, apolloState, o.optJSONObject("primaryContributorEdge"),
                           locale, book);
         final JSONArray secondary = o.optJSONArray("secondaryContributorEdges");
         if (secondary != null) {
             for (int i = 0; i < secondary.length(); i++) {
-                parseContributors(apolloState, secondary.optJSONObject(i), locale, book);
+                parseContributors(context, apolloState, secondary.optJSONObject(i), locale, book);
             }
         }
 
@@ -576,7 +576,8 @@ public class GoodreadsSearchEngine
      *     },
      * }</pre>
      */
-    private void parseContributors(@NonNull final JSONObject apolloState,
+    private void parseContributors(@NonNull final Context context,
+                                   @NonNull final JSONObject apolloState,
                                    @Nullable final JSONObject contributor,
                                    @NonNull final Locale locale,
                                    @NonNull final Book book) {
@@ -590,7 +591,7 @@ public class GoodreadsSearchEngine
                     if (refObj != null) {
                         final String name = refObj.optString("name");
                         if (!name.isEmpty()) {
-                            final Author author = Author.from(name);
+                            final Author author = mapAuthor(context, name);
                             author.setType(role);
                             // Get the legacyId as the SID_GOODREADS_BOOK.
                             // It is this one we need to construct url's.
@@ -686,6 +687,15 @@ public class GoodreadsSearchEngine
             return LANG_SPLITTER.split(s)[0];
         }
         return s;
+    }
+
+    @NonNull
+    Author mapAuthor(@NonNull final Context context,
+                     @NonNull final String s) {
+        if ("Unknown Author".equals(s)) {
+            return Author.createUnknownAuthor(context);
+        }
+        return Author.from(s);
     }
 
     @Override
