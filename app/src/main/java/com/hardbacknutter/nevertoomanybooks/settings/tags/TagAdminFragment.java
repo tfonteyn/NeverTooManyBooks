@@ -36,6 +36,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -43,16 +44,16 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminTagsBinding;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
 public class TagAdminFragment
         extends BaseFragment {
 
+    /** View Binding with the ViewPager2. */
+    private ViewPager2 viewPager;
     /** View Binding. */
-    private FragmentAdminTagsBinding vb;
-    /** View Binding. */
+    @SuppressWarnings("FieldCanBeLocal")
     private TabLayout tabPanel;
 
     private TabAdapter tabAdapter;
@@ -86,8 +87,10 @@ public class TagAdminFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = FragmentAdminTagsBinding.inflate(inflater, container, false);
-        return vb.getRoot();
+        final View view = inflater.inflate(R.layout.fragment_edit_tags, container, false);
+        // pager == view; but keep it future-proof
+        viewPager = view.findViewById(R.id.pager);
+        return view;
     }
 
     @Override
@@ -116,10 +119,10 @@ public class TagAdminFragment
         tabPanel = getActivity().findViewById(R.id.tab_panel);
 
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
-        vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
+        viewPager.setOffscreenPageLimit(tabAdapter.getItemCount());
 
-        vb.pager.setAdapter(tabAdapter);
-        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) ->
+        viewPager.setAdapter(tabAdapter);
+        new TabLayoutMediator(tabPanel, viewPager, (tab, position) ->
                 tab.setText(getString(tabAdapter.getTabTitle(position)))).attach();
 
     }
@@ -130,7 +133,7 @@ public class TagAdminFragment
      * @param tagName for we want to create a new mapping (or edit existing).
      */
     void editOrCreateMapping(@NonNull final String tagName) {
-        vb.pager.setCurrentItem(1);
+        viewPager.setCurrentItem(1);
 
         getParentFragmentManager()
                 .getFragments()
@@ -148,6 +151,8 @@ public class TagAdminFragment
      */
     private static class TabAdapter
             extends FragmentStateAdapter {
+
+        static final String ERROR_POSITION = "position=";
 
         /**
          * Constructor.
@@ -173,7 +178,7 @@ public class TagAdminFragment
                 case 1:
                     return new TagMappingEditorFragment();
             }
-            throw new IllegalArgumentException("position=" + position);
+            throw new IllegalArgumentException(ERROR_POSITION + position);
         }
 
         @StringRes
@@ -184,7 +189,7 @@ public class TagAdminFragment
                 case 1:
                     return R.string.lbl_substitutions;
             }
-            throw new IllegalArgumentException("position=" + position);
+            throw new IllegalArgumentException(ERROR_POSITION + position);
         }
     }
 }
