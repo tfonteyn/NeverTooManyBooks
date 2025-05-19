@@ -23,11 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_marginStart="@dimen/field_margin_start"
-    android:layout_marginEnd="@dimen/field_margin_end"
-    android:layout_height="wrap_content"
-    android:minHeight="?attr/listPreferredItemHeightSmall"
+    style="@style/RowEditor.Container"
     >
 
     <TextView

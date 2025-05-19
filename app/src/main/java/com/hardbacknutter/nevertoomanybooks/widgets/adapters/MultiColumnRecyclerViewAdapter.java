@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,10 +20,15 @@
 package com.hardbacknutter.nevertoomanybooks.widgets.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.hardbacknutter.nevertoomanybooks.R;
 
 public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<HOLDER> {
@@ -48,6 +53,25 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
     @NonNull
     protected LayoutInflater getInflater() {
         return inflater;
+    }
+
+    /**
+     * Optionally adjust the margins of the columns if there is more than 1.
+     * i.e. on larger displays.
+     * <p>
+     * Call from {@link #onCreateViewHolder(ViewGroup, int)}
+     *
+     * @param columnView to adjust
+     */
+    protected void adjustColumns(@NonNull final ViewGroup columnView) {
+        if (columnCount > 1) {
+            final GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams)
+                    columnView.getLayoutParams();
+            final Resources res = columnView.getContext().getResources();
+            lp.setMarginStart(res.getDimensionPixelSize(R.dimen.field_margin_start));
+            lp.setMarginEnd(res.getDimensionPixelSize(R.dimen.field_margin_end));
+            columnView.setLayoutParams(lp);
+        }
     }
 
     protected int transpose(final int position) {
@@ -101,8 +125,8 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
      */
     @Override
     public int getItemCount() {
-        final int itemCount = getRealItemCount();
-        final int rowCount = getRowCount(itemCount);
+        final int realItemCount = getRealItemCount();
+        final int rowCount = getRowCount(realItemCount);
         return rowCount * columnCount;
     }
 }

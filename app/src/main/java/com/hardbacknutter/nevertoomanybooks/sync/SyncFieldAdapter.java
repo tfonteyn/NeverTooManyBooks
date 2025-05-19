@@ -61,8 +61,10 @@ public class SyncFieldAdapter
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
 
-        final Holder holder = new Holder(
-                RowSyncfieldConfigBinding.inflate(getInflater(), parent, false));
+        final RowSyncfieldConfigBinding vb = RowSyncfieldConfigBinding
+                .inflate(getInflater(), parent, false);
+        adjustColumns(vb.getRoot());
+        final Holder holder = new Holder(vb);
 
         holder.vb.cbxUsage.setOnClickListener(v -> {
             final int position = holder.getBindingAdapterPosition();
@@ -109,11 +111,10 @@ public class SyncFieldAdapter
 
         void onBind(@Nullable final SyncField syncField) {
             if (syncField == null) {
-                vb.field.setVisibility(View.INVISIBLE);
-                vb.cbxUsage.setVisibility(View.INVISIBLE);
+                vb.getRoot().setVisibility(View.INVISIBLE);
             } else {
-                vb.field.setVisibility(View.VISIBLE);
-                vb.cbxUsage.setVisibility(View.VISIBLE);
+                vb.getRoot().setVisibility(View.VISIBLE);
+
                 vb.field.setText(Html.fromHtml(syncField.getFieldLabel(), 0));
                 vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
                 vb.cbxUsage.setText(syncField.getActionLabel(vb.cbxUsage.getContext()));

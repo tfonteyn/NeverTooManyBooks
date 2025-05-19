@@ -298,8 +298,14 @@ public class EditBookshelvesFragment
         }
 
         @Override
-        public void onBind(@NonNull final Bookshelf bookshelf) {
-            vb.bookshelfName.setText(bookshelf.getName());
+        public void onBind(@Nullable final Bookshelf bookshelf) {
+            if (bookshelf == null) {
+                vb.getRoot().setVisibility(View.INVISIBLE);
+            } else {
+                vb.getRoot().setVisibility(View.VISIBLE);
+
+                vb.bookshelfName.setText(bookshelf.getName());
+            }
         }
     }
 
@@ -332,8 +338,10 @@ public class EditBookshelvesFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final Holder holder = new Holder(
-                    RowEditBookshelfBinding.inflate(getInflater(), parent, false));
+            final RowEditBookshelfBinding vb = RowEditBookshelfBinding
+                    .inflate(getInflater(), parent, false);
+            adjustColumns(vb.getRoot());
+            final Holder holder = new Holder(vb);
 
             holder.setOnRowClickListener((v, gridPosition) -> {
                 // first update the previous, now unselected, row.
@@ -373,12 +381,9 @@ public class EditBookshelvesFragment
 
             final int listIndex = transpose(position);
             if (listIndex == RecyclerView.NO_POSITION) {
-                holder.vb.getRoot().setVisibility(View.INVISIBLE);
+                holder.onBind(null);
             } else {
-                holder.vb.getRoot().setVisibility(View.VISIBLE);
-
-                final Bookshelf bookshelf = bookshelfList.get(listIndex);
-                holder.onBind(bookshelf);
+                holder.onBind(bookshelfList.get(listIndex));
                 holder.itemView.setSelected(listIndex == positionHandler.getSelectedPosition());
             }
         }
