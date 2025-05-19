@@ -24,6 +24,7 @@
 
     <integer name="span_count_edit_bookshelves">4</integer>
     <integer name="span_count_edit_tag_names">4</integer>
+    <integer name="span_count_edit_tag_mappings">4</integer>
     <integer name="span_count_update_from_internet">3</integer>
 
 </resources>
