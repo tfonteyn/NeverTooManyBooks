@@ -30,9 +30,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_body"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/container_margin"
+        style="@style/FragmentRoot.ConstraintLayout"
         >
 
         <com.hardbacknutter.zratingbar.MaterialRatingBar

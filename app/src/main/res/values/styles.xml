@@ -311,7 +311,7 @@
 
     <!-- *************************************************************************************** -->
 
-    <!-- NestedScrollView -->
+    <!-- NestedScrollView as the root of a Fragment -->
     <style name="FragmentRoot.NestedScroller"
            parent="">
         <item name="android:layout_width">match_parent</item>
@@ -320,7 +320,7 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
-    <!-- ConstraintLayout -->
+    <!-- ConstraintLayout as the root of a Fragment OR immediately inside a NestedScrollView -->
     <style name="FragmentRoot.ConstraintLayout"
            parent="">
         <item name="android:layout_width">match_parent</item>
