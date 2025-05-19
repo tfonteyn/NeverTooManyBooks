@@ -28,7 +28,7 @@
     <integer name="span_count_edit_bookshelves">3</integer>
     <integer name="span_count_edit_tag_names">3</integer>
     <integer name="span_count_edit_tag_mappings">3</integer>
-    <integer name="span_count_update_from_internet">2</integer>
+    <integer name="span_count_syncfield_config">2</integer>
 
     <dimen name="centered_max_width">800dp</dimen>
 
