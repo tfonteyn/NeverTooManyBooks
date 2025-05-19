@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,23 +19,15 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.viewpager2.widget.ViewPager2
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/container_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".FragmentHostActivity"
-    >
-
-    <!-- Note the "center_horizontal" which is there for larger screens -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    tools:viewBindingIgnore="true"
+    />

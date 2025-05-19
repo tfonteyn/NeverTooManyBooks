@@ -41,6 +41,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -52,7 +53,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -65,8 +65,8 @@ public class SearchAdminFragment
     private TabAdapter tabAdapter;
 
     private SearchAdminViewModel vm;
-    /** View Binding. */
-    private FragmentAdminSearchBinding vb;
+    /** View Binding with the ViewPager2. */
+    private ViewPager2 viewPager;
 
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -90,7 +90,7 @@ public class SearchAdminFragment
                         getActivity().finish();
 
                     } else {
-                        Snackbar.make(vb.pager, R.string.warning_enable_at_least_1_website,
+                        Snackbar.make(viewPager, R.string.warning_enable_at_least_1_website,
                                       Snackbar.LENGTH_LONG).show();
                     }
                 }
@@ -112,8 +112,10 @@ public class SearchAdminFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        vb = FragmentAdminSearchBinding.inflate(inflater, container, false);
-        return vb.getRoot();
+        final View view = inflater.inflate(R.layout.fragment_edit_search_sites, container, false);
+        // pager == view; but keep it future-proof
+        viewPager = view.findViewById(R.id.pager);
+        return view;
     }
 
     @Override
@@ -143,10 +145,10 @@ public class SearchAdminFragment
         tabPanel = getActivity().findViewById(R.id.tab_panel);
 
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
-        vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
+        viewPager.setOffscreenPageLimit(tabAdapter.getItemCount());
 
-        vb.pager.setAdapter(tabAdapter);
-        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) -> {
+        viewPager.setAdapter(tabAdapter);
+        new TabLayoutMediator(tabPanel, viewPager, (tab, position) -> {
             if (ScreenSize.compute(getActivity()).getWidth() == ScreenSize.Value.Compact) {
                 tab.setText(getString(tabAdapter.getTabTitle(position)));
             } else {
@@ -258,13 +260,13 @@ public class SearchAdminFragment
 
             } else if (menuItemId == R.id.MENU_ACTION_CLEAR) {
                 // See TabAdapter: the position will always match the index of the type
-                final int position = vb.pager.getCurrentItem();
+                final int position = viewPager.getCurrentItem();
                 vm.clear(vm.getTypes().get(position));
                 return true;
 
             } else if (menuItemId == R.id.MENU_RESET) {
                 // See TabAdapter: the position will always match the index of the type
-                final int position = vb.pager.getCurrentItem();
+                final int position = viewPager.getCurrentItem();
                 //noinspection DataFlowIssue
                 vm.reset(getContext(), vm.getTypes().get(position));
                 return true;
