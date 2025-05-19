@@ -50,9 +50,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -121,7 +119,7 @@ public class AuthorWorksFragment
     private TextView bookshelfView;
     private TextView deathDateView;
     private EditParcelableLauncher<Author> editAuthorLauncher;
-    private ImageViewLoader imageLoader;
+
     /**
      * Delegate to handle cover replacement, rotation, etc.
      * MUST keep a strong reference.
@@ -156,13 +154,6 @@ public class AuthorWorksFragment
 
         final Resources res = getContext().getResources();
         dff = new DateFieldFormatter(res.getConfiguration().getLocales().get(0), false);
-
-        final int width = res.getDimensionPixelSize(R.dimen.author_picture_width);
-        final int height = res.getDimensionPixelSize(R.dimen.author_picture_height);
-        imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
-                                          ImageView.ScaleType.FIT_START,
-                                          ImageViewLoader.MaxSize.Enforce,
-                                          width, height);
     }
 
     @Nullable
