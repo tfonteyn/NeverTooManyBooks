@@ -28,7 +28,7 @@
 
     <item name="context_menu_button_scale"
           format="float"
-          type="dimen">0.75
+          type="dimen">0.85
     </item>
 
     <dimen name="startup_splash_min_width">300dp</dimen>

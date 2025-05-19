@@ -188,7 +188,7 @@
     <!-- the scaleX/scaleY scaling factor for the "3-dot" context menu button on a row. -->
     <item name="context_menu_button_scale"
           format="float"
-          type="dimen">0.6
+          type="dimen">0.75
     </item>
     <dimen name="context_menu_padding">16dp</dimen>
 

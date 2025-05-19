@@ -36,7 +36,7 @@
 
     <item name="context_menu_button_scale"
           format="float"
-          type="dimen">0.85
+          type="dimen">1
     </item>
 
     <bool name="combine_book_edit_tabs">true</bool>
