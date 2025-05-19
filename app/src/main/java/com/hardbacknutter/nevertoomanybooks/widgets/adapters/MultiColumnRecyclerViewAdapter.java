@@ -84,49 +84,56 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
         }
     }
 
-    protected int transpose(final int position) {
-        final int realItemCount = getRealItemCount();
-        final int rowCount = getRowCount(realItemCount);
+    /**
+     * Convert the given grid-position to the list-index (position).
+     *
+     * @param gridPosition to convert
+     *
+     * @return the index (position) into the item-list
+     */
+    protected int gridToListPosition(final int gridPosition) {
+        final int listSize = getListSize();
+        final int rowCount = getRowCount(listSize);
 
-        final int column = position % columnCount;
-        final int row = position / columnCount;
+        final int column = gridPosition % columnCount;
+        final int row = gridPosition / columnCount;
 
-        int listIndex = (column * rowCount) + row;
+        final int listIndex = row + (column * rowCount);
 
-        if (listIndex >= realItemCount) {
-            listIndex = RecyclerView.NO_POSITION;
+        if (listIndex < listSize) {
+            return listIndex;
         }
-
-        return listIndex;
+        return RecyclerView.NO_POSITION;
     }
 
-    protected int revert(final int listIndex) {
-        final int realItemCount = getRealItemCount();
-        final int rowCount = getRowCount(realItemCount);
+    /**
+     * Convert the given list-index (position) to the grid-position.
+     *
+     * @param listIndex to convert
+     *
+     * @return grid-position
+     */
+    protected int listToGridPosition(final int listIndex) {
+        final int listSize = getListSize();
+        final int rowCount = getRowCount(listSize);
 
-        final int column = listIndex % rowCount;
-        final int row = listIndex / rowCount;
+        final int column = listIndex / rowCount;
+        final int row = listIndex % rowCount;
 
-        return (column * columnCount) + row;
+        return (row * columnCount) + column;
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected int getRowCount(final int realItemCount) {
-        final int rowCount;
-        if (realItemCount % columnCount == 0) {
-            rowCount = realItemCount / columnCount;
-        } else {
-            rowCount = (realItemCount / columnCount) + 1;
-        }
-        return rowCount;
+    protected int getRowCount(final int listSize) {
+        return (int) Math.ceil((double) listSize / columnCount);
     }
 
     /**
      * Acts like the original getItemCount() method.
      *
-     * @return the actual item count
+     * @return the actual item count in the list of items
      */
-    protected abstract int getRealItemCount();
+    protected abstract int getListSize();
 
     /**
      * Return the <strong>CELL COUNT</strong> for the grid.
@@ -135,8 +142,8 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
      */
     @Override
     public int getItemCount() {
-        final int realItemCount = getRealItemCount();
-        final int rowCount = getRowCount(realItemCount);
+        final int listSize = getListSize();
+        final int rowCount = getRowCount(listSize);
         return rowCount * columnCount;
     }
 }

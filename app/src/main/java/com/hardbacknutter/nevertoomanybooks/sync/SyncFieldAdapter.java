@@ -68,10 +68,10 @@ public class SyncFieldAdapter
 
         holder.vb.cbxUsage.setOnClickListener(v -> {
             final int gridPosition = holder.getBindingAdapterPosition();
-            final int position = transpose(gridPosition);
-            requireValidOrThrow(position, gridPosition);
+            final int listIndex = gridToListPosition(gridPosition);
+            requireValidOrThrow(listIndex, gridPosition);
 
-            final SyncField fs = syncFields[position];
+            final SyncField fs = syncFields[listIndex];
             fs.nextState();
             holder.vb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
             holder.vb.cbxUsage.setText(fs.getActionLabel(holder.vb.cbxUsage.getContext()));
@@ -83,7 +83,7 @@ public class SyncFieldAdapter
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
 
-        final int listIndex = transpose(position);
+        final int listIndex = gridToListPosition(position);
         if (listIndex == RecyclerView.NO_POSITION) {
             holder.onBind(null);
         } else {
@@ -92,7 +92,7 @@ public class SyncFieldAdapter
     }
 
     @Override
-    protected int getRealItemCount() {
+    protected int getListSize() {
         return syncFields.length;
     }
 

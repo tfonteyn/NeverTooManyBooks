@@ -108,9 +108,9 @@ public class EditBookshelvesFragment
         }
 
         @Override
-        public void showContextMenu(@NonNull final View anchor,
-                                    final int position) {
-            EditBookshelvesFragment.this.showContextMenu(anchor, position);
+        public void onShowContextMenu(@NonNull final View anchor,
+                                      final int position) {
+            showContextMenu(anchor, position);
         }
     };
 
@@ -282,8 +282,8 @@ public class EditBookshelvesFragment
          * @param anchor   view
          * @param position the position (index) in the list of items.
          */
-        void showContextMenu(@NonNull View anchor,
-                             int position);
+        void onShowContextMenu(@NonNull View anchor,
+                               int position);
     }
 
     public static class Holder
@@ -346,12 +346,12 @@ public class EditBookshelvesFragment
             // click -> select the row
             holder.setOnRowClickListener((v, gridPosition) -> {
                 // first update the previous, now unselected, row.
-                notifyItemChanged(revert(positionHandler.getSelectedPosition()));
+                notifyItemChanged(listToGridPosition(positionHandler.getSelectedPosition()));
 
                 // store the newly selected row.
-                final int position = transpose(gridPosition);
-                requireValidOrThrow(position, gridPosition);
-                positionHandler.setSelectedPosition(position);
+                final int listIndex = gridToListPosition(gridPosition);
+                requireValidOrThrow(listIndex, gridPosition);
+                positionHandler.setSelectedPosition(listIndex);
 
                 // update the newly selected row.
                 notifyItemChanged(gridPosition);
@@ -360,9 +360,9 @@ public class EditBookshelvesFragment
             // long-click -> context menu
             holder.setOnRowLongClickListener(
                     ExtMenuButton.getPreferredMode(parent.getContext()), (v, gridPosition) -> {
-                        final int position = transpose(gridPosition);
-                        requireValidOrThrow(position, gridPosition);
-                        positionHandler.showContextMenu(v, position);
+                        final int listIndex = gridToListPosition(gridPosition);
+                        requireValidOrThrow(listIndex, gridPosition);
+                        positionHandler.onShowContextMenu(v, listIndex);
                     });
 
             return holder;
@@ -371,7 +371,7 @@ public class EditBookshelvesFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            final int listIndex = transpose(position);
+            final int listIndex = gridToListPosition(position);
             if (listIndex == RecyclerView.NO_POSITION) {
                 holder.onBind(null);
             } else {
@@ -381,7 +381,7 @@ public class EditBookshelvesFragment
         }
 
         @Override
-        protected int getRealItemCount() {
+        protected int getListSize() {
             return items.size();
         }
     }
