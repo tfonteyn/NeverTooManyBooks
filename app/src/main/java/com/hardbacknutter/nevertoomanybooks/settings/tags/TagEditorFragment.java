@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -48,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditTagNamesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTagNameBinding;
@@ -57,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.editstring.EditStri
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
+import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
@@ -91,6 +93,20 @@ public class TagEditorFragment
     private EditStringLauncher editLauncher;
 
     private TagAdminViewModel vm;
+
+    private final PositionHandler positionHandler = new PositionHandler() {
+
+        @Override
+        public void onEdit(final int position) {
+            editEntry(tags.get(position), position);
+        }
+
+        @Override
+        public void onShowContextMenu(@NonNull final View v,
+                                      final int position) {
+            showContextMenu(v, position);
+        }
+    };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -127,30 +143,14 @@ public class TagEditorFragment
         final Context context = getContext();
 
         tags = ServiceLocator.getInstance().getTagDao().getAll();
+
+        final GridLayoutManager layoutManager = (GridLayoutManager) vb.tagList.getLayoutManager();
         //noinspection DataFlowIssue
-        adapter = new TagAdapter(context, tags);
+        adapter = new TagAdapter(context, layoutManager.getSpanCount(), tags, positionHandler);
 
-        adapter.setOnRowClickListener((v, position) -> editEntry(tags.get(position), position));
-        adapter.setOnRowShowMenuListener(
-                ExtMenuButton.getPreferredMode(context),
-                (v, position) -> {
-                    final Menu menu = MenuUtils.createEditDeleteContextMenu(v.getContext());
-                    menu.add(Menu.NONE, R.id.MENU_ACTION_ADD, 999,
-                             R.string.lbl_add_or_edit_substitution)
-                        .setIcon(R.drawable.add_24px);
-
-                    //noinspection DataFlowIssue
-                    final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
-                    if (menuMode.isPopup()) {
-                        new ExtMenuPopupWindow(v.getContext())
-                                .setListener(this::onMenuItemSelected)
-                                .setMenuOwner(position)
-                                .setMenu(menu, true)
-                                .show(v, menuMode);
-                    } else {
-                        menuLauncher.launch(getActivity(), null, null, position, menu, true);
-                    }
-                });
+        final GridDividerItemDecoration decoration =
+                new GridDividerItemDecoration(context, false, true);
+        vb.tagList.addItemDecoration(decoration);
 
         vb.tagList.setAdapter(adapter);
     }
@@ -174,6 +174,28 @@ public class TagEditorFragment
         fab.setImageResource(R.drawable.add_24px);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> editEntry(new Tag(""), POS_NEW_ENTRY));
+    }
+
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
+    private void showContextMenu(@NonNull final View anchor,
+                                 final int position) {
+        final Context context = anchor.getContext();
+        final Menu menu = MenuUtils.createEditDeleteContextMenu(context);
+        menu.add(Menu.NONE, R.id.MENU_ACTION_ADD, 999,
+                 R.string.lbl_add_or_edit_substitution)
+            .setIcon(R.drawable.add_24px);
+
+        //noinspection DataFlowIssue
+        final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
+        if (menuMode.isPopup()) {
+            new ExtMenuPopupWindow(context)
+                    .setListener(TagEditorFragment.this::onMenuItemSelected)
+                    .setMenuOwner(position)
+                    .setMenu(menu, true)
+                    .show(anchor, menuMode);
+        } else {
+            menuLauncher.launch(getActivity(), null, null, position, menu, true);
+        }
     }
 
     /**
@@ -358,6 +380,27 @@ public class TagEditorFragment
     }
 
     /**
+     * Proxy between adapter and Fragment/ViewModel.
+     */
+    private interface PositionHandler {
+        /**
+         * Edit the given position.
+         *
+         * @param position the position (index) in the list of items.
+         */
+        void onEdit(int position);
+
+        /**
+         * Show the menu.
+         *
+         * @param anchor   view
+         * @param position the position (index) in the list of items.
+         */
+        void onShowContextMenu(@NonNull View anchor,
+                               int position);
+    }
+
+    /**
      * Holder for each row.
      */
     private static class Holder
@@ -371,53 +414,40 @@ public class TagEditorFragment
             this.vb = vb;
         }
 
-        void onBind(@NonNull final Tag tag) {
-            vb.name.setText(tag.getName());
+        void onBind(@Nullable final Tag tag) {
+            if (tag == null) {
+                vb.getRoot().setVisibility(View.INVISIBLE);
+            } else {
+                vb.getRoot().setVisibility(View.VISIBLE);
+
+                vb.name.setText(tag.getName());
+            }
         }
     }
 
     private static class TagAdapter
-            extends RecyclerView.Adapter<Holder> {
+            extends MultiColumnRecyclerViewAdapter<Holder> {
 
         @NonNull
         private final List<Tag> items;
         @NonNull
-        private final LayoutInflater inflater;
+        private final PositionHandler positionHandler;
 
-        @Nullable
-        private OnRowClickListener rowClickListener;
-        @Nullable
-        private OnRowClickListener rowShowMenuListener;
-        @Nullable
-        private ExtMenuButton contextMenuMode;
-
+        /**
+         * Constructor.
+         *
+         * @param context         Current context
+         * @param columnCount     from the grid layout
+         * @param items           to display
+         * @param positionHandler Proxy between adapter and ViewModel.
+         */
         TagAdapter(@NonNull final Context context,
-                   @NonNull final List<Tag> items) {
-            inflater = LayoutInflater.from(context);
+                   @IntRange(from = 1) final int columnCount,
+                   @NonNull final List<Tag> items,
+                   @NonNull final PositionHandler positionHandler) {
+            super(context, columnCount);
             this.items = items;
-        }
-
-        /**
-         * Set the {@link OnRowClickListener} for a click on a row.
-         * This listener will be propagated to all row ViewHolders.
-         *
-         * @param listener to set
-         */
-        void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
-            this.rowClickListener = listener;
-        }
-
-        /**
-         * Set the {@link OnRowClickListener} for showing the context menu on a row.
-         * This listener will be propagated to all row ViewHolders.
-         *
-         * @param contextMenuMode how to show context menus
-         * @param listener        to receive clicks
-         */
-        void setOnRowShowMenuListener(@NonNull final ExtMenuButton contextMenuMode,
-                                      @Nullable final OnRowClickListener listener) {
-            this.rowShowMenuListener = listener;
-            this.contextMenuMode = contextMenuMode;
+            this.positionHandler = positionHandler;
         }
 
         @NonNull
@@ -425,21 +455,41 @@ public class TagEditorFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
             final RowEditTagNameBinding vb =
-                    RowEditTagNameBinding.inflate(inflater, parent, false);
+                    RowEditTagNameBinding.inflate(getInflater(), parent, false);
+            adjustColumns(vb.getRoot());
             final Holder holder = new Holder(vb);
-            holder.setOnRowClickListener(rowClickListener);
-            holder.setOnRowLongClickListener(contextMenuMode, rowShowMenuListener);
+
+            // click -> edit
+            holder.setOnRowClickListener((v, gridPosition) -> {
+                final int listIndex = gridToListPosition(gridPosition);
+                requireValidOrThrow(listIndex, gridPosition);
+                positionHandler.onEdit(listIndex);
+            });
+
+            // long-click -> context menu
+            holder.setOnRowLongClickListener(
+                    ExtMenuButton.getPreferredMode(parent.getContext()), (v, gridPosition) -> {
+                        final int listIndex = gridToListPosition(gridPosition);
+                        requireValidOrThrow(listIndex, gridPosition);
+                        positionHandler.onShowContextMenu(v, listIndex);
+                    });
+
             return holder;
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-            holder.onBind(items.get(position));
+                                     final int gridPosition) {
+            final int listIndex = gridToListPosition(gridPosition);
+            if (listIndex == RecyclerView.NO_POSITION) {
+                holder.onBind(null);
+            } else {
+                holder.onBind(items.get(listIndex));
+            }
         }
 
         @Override
-        public int getItemCount() {
+        protected int getListSize() {
             return items.size();
         }
     }
