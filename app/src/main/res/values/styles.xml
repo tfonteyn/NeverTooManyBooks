@@ -320,7 +320,9 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
-    <!-- ConstraintLayout as the root of a Fragment OR immediately inside a NestedScrollView -->
+    <!-- ConstraintLayout as the root of a Fragment OR immediately inside a NestedScrollView
+         Width restricted on larger displays!
+    -->
     <style name="FragmentRoot.ConstraintLayout"
            parent="">
         <item name="android:layout_width">match_parent</item>
