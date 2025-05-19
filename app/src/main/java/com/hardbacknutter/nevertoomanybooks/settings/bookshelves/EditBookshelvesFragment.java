@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -312,8 +313,7 @@ public class EditBookshelvesFragment
     private static class BookshelfAdapter
             extends MultiColumnRecyclerViewAdapter<Holder> {
 
-        private static final String ERROR_NO_LIST_INDEX_FOR_POSITION = "No ListIndex for position=";
-        private final List<Bookshelf> bookshelfList;
+        private final List<Bookshelf> items;
         @NonNull
         private final PositionHandler positionHandler;
 
@@ -322,15 +322,15 @@ public class EditBookshelvesFragment
          *
          * @param context         Current context
          * @param columnCount     from the grid layout
-         * @param bookshelfList   to display
+         * @param items   to display
          * @param positionHandler Proxy between adapter and ViewModel.
          */
         BookshelfAdapter(@NonNull final Context context,
-                         final int columnCount,
-                         @NonNull final List<Bookshelf> bookshelfList,
+                         @IntRange(from = 1) final int columnCount,
+                         @NonNull final List<Bookshelf> items,
                          @NonNull final PositionHandler positionHandler) {
             super(context, columnCount);
-            this.bookshelfList = bookshelfList;
+            this.items = items;
             this.positionHandler = positionHandler;
         }
 
@@ -343,6 +343,7 @@ public class EditBookshelvesFragment
             adjustColumns(vb.getRoot());
             final Holder holder = new Holder(vb);
 
+            // click -> select the row
             holder.setOnRowClickListener((v, gridPosition) -> {
                 // first update the previous, now unselected, row.
                 notifyItemChanged(revert(positionHandler.getSelectedPosition()));
@@ -370,19 +371,18 @@ public class EditBookshelvesFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-
             final int listIndex = transpose(position);
             if (listIndex == RecyclerView.NO_POSITION) {
                 holder.onBind(null);
             } else {
-                holder.onBind(bookshelfList.get(listIndex));
+                holder.onBind(items.get(listIndex));
                 holder.itemView.setSelected(listIndex == positionHandler.getSelectedPosition());
             }
         }
 
         @Override
         protected int getRealItemCount() {
-            return bookshelfList.size();
+            return items.size();
         }
     }
 
