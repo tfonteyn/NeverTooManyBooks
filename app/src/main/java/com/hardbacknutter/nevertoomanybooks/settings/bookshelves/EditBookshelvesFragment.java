@@ -373,9 +373,9 @@ public class EditBookshelvesFragment
 
             final int listIndex = transpose(position);
             if (listIndex == RecyclerView.NO_POSITION) {
-                holder.vb.bookshelfName.setVisibility(View.INVISIBLE);
+                holder.vb.getRoot().setVisibility(View.INVISIBLE);
             } else {
-                holder.vb.bookshelfName.setVisibility(View.VISIBLE);
+                holder.vb.getRoot().setVisibility(View.VISIBLE);
 
                 final Bookshelf bookshelf = bookshelfList.get(listIndex);
                 holder.onBind(bookshelf);
