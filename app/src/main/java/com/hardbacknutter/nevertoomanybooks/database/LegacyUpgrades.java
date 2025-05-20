@@ -859,6 +859,23 @@ public final class LegacyUpgrades {
               .remove("booklist.top.offset")
               .remove("booklist..top.offset")
 
+              .remove("fields.update.usage.Book:author_array")
+              .remove("fields.update.usage.Book:author_list")
+              .remove("fields.update.usage.Book:fileSpec:0")
+              .remove("fields.update.usage.Book:fileSpec:1")
+              .remove("fields.update.usage.Book:publisher_array")
+              .remove("fields.update.usage.Book:publisher_list")
+              .remove("fields.update.usage.Book:series_array")
+              .remove("fields.update.usage.Book:series_list")
+              .remove("fields.update.usage.Book:toc_array")
+              .remove("fields.update.usage.Book:toc_list")
+              .remove("fields.update.usage.Book:toc_titles_array")
+
+              .remove("fields.update.usage.author_array")
+              .remove("fields.update.usage.publisher_array")
+              .remove("fields.update.usage.series_array")
+              .remove("fields.update.usage.toc_titles_array")
+
               .remove("calibre.last.sync.date")
               .remove("camera.id.scan.barcode")
               .remove("compat.booklist.mode")
