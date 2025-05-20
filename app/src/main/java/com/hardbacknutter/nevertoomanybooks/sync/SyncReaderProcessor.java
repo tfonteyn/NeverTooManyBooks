@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -63,8 +62,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class SyncReaderProcessor {
 
-    private static final String TAG = "SyncProcessor";
-
     /**
      * The keys which represent {@link SyncField.Type#LIST} fields.
      */
@@ -76,6 +73,8 @@ public class SyncReaderProcessor {
             Book.BKEY_SERIES_LIST,
             Book.BKEY_TAG_LIST,
             Book.BKEY_TOC_LIST);
+
+    private static final String TAG = "SyncProcessor";
 
     @NonNull
     private final Map<String, SyncField> fields;
@@ -157,11 +156,9 @@ public class SyncReaderProcessor {
                 return true;
             }
             case CopyIfBlank: {
-                // We should never have a book without authors, but be paranoid
                 if (LIST_KEYS.contains(field.getKey())) {
-                    if (localBook.contains(field.getKey())) {
-                        return localBook.getParcelableArrayList(field.getKey()).isEmpty();
-                    }
+                    // We should never get here as the list-keys should never use CopyIfBlank
+                    // but paranoia...
                     return false;
 
                 } else if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
@@ -178,7 +175,8 @@ public class SyncReaderProcessor {
                 } else {
                     // If the original was blank/zero, add to list
                     final String value = localBook.getString(field.getKey(), null);
-                    return value == null || value.isEmpty() || "0".equals(value);
+                    return value == null || value.isEmpty()
+                           || "0".equals(value) || "0.0".equals(value);
                 }
             }
             case Skip:
@@ -309,16 +307,14 @@ public class SyncReaderProcessor {
             switch (field.getAction()) {
                 case CopyIfBlank:
                     // If our local book already has this data,
-                    // remove the unneeded field from the new data (remote book)
+                    // remove the unneeded field from the delta (remote book)
                     if (hasField(localBook, field.getKey(), realNumberParser)) {
                         remoteBook.remove(field.getKey());
                     }
                     break;
 
                 case Append:
-                    if (field.getType() == SyncField.Type.LIST) {
-                        processList(context, localBook, remoteBook, field.getKey());
-                    }
+                    processAppend(context, localBook, remoteBook, field.getKey());
                     break;
 
                 case Overwrite:
@@ -351,10 +347,12 @@ public class SyncReaderProcessor {
                 return !localBook.getParcelableArrayList(key).isEmpty();
             }
         } else {
+            // paranoia? we could probably just do
+            //    return localBook.contains(key);
             final Object o = localBook.get(key, realNumberParser);
             if (o != null) {
                 final String value = o.toString().trim();
-                return !value.isEmpty() && !"0".equals(value);
+                return !value.isEmpty() && !"0".equals(value) && !"0.0".equals(value);
             }
         }
 
@@ -391,40 +389,43 @@ public class SyncReaderProcessor {
     }
 
     /**
-     * Combines two ParcelableArrayList's. The result in 'remoteBook' MAY contain duplicates.
+     * Handle the {@link SyncAction#Append}.
+     * <p>
+     * {@link SyncField.Type#LIST}: Combines two {@code ParcelableArrayList}s.
+     * The result in 'remoteBook' MAY contain duplicates.
      * These will be pruned during the save to the database.
      * <p>
-     * Handles all keys as listed in {@link #LIST_KEYS}.
+     * {@link SyncField.Type#STRING}: concatenates two {@code String}s.
      *
      * @param context    Current context
-     * @param localeBook to check; will NOT be modified.
+     * @param localBook to check; will NOT be modified.
      * @param remoteBook the data to merge with the book;
      *                   after returning, this will contain the new data AND the data we merged
-     *                   from the #book
+     *                   from the #localBook
      * @param key        into the incoming data
      *
      * @throws IllegalArgumentException if the key is not an appendable type
      */
-    private void processList(@NonNull final Context context,
-                             @NonNull final Book localeBook,
-                             @NonNull final Book remoteBook,
-                             @NonNull final String key) {
+    private void processAppend(@NonNull final Context context,
+                               @NonNull final Book localBook,
+                               @NonNull final Book remoteBook,
+                               @NonNull final String key) {
         // Add the localBook data to the remoteBook list!
         // and not the other way around! We want to collect a delta in remoteBook.
-        // Note the local list must be inserted before the remote list,
+        // Note the local data/list must be inserted BEFORE the remote data/list,
         // so we properly 'append' the new data.
         switch (key) {
             case Book.BKEY_AUTHOR_LIST: {
                 final List<Author> list = remoteBook.getAuthors();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localeBook.getAuthors());
+                    list.addAll(0, localBook.getAuthors());
                 }
                 break;
             }
             case Book.BKEY_BOOKSHELF_LIST: {
                 final List<Bookshelf> list = remoteBook.getBookshelves();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localeBook.getBookshelves());
+                    list.addAll(0, localBook.getBookshelves());
                     ServiceLocator.getInstance().getBookshelfDao().pruneList(context, list);
                 }
                 break;
@@ -432,40 +433,50 @@ public class SyncReaderProcessor {
             case Book.BKEY_IDENTIFIER_LIST: {
                 final List<Identifier.Value> list = remoteBook.getIdentifiers();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localeBook.getIdentifiers());
+                    list.addAll(0, localBook.getIdentifiers());
                 }
                 break;
             }
             case Book.BKEY_PUBLISHER_LIST: {
                 final List<Publisher> list = remoteBook.getPublishers();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localeBook.getPublishers());
+                    list.addAll(0, localBook.getPublishers());
                 }
                 break;
             }
             case Book.BKEY_SERIES_LIST: {
                 final List<Series> list = remoteBook.getSeries();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localeBook.getSeries());
+                    list.addAll(0, localBook.getSeries());
                 }
                 break;
             }
             case Book.BKEY_TAG_LIST: {
                 final List<Tag> list = remoteBook.getTags();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localeBook.getTags());
+                    list.addAll(0, localBook.getTags());
                 }
                 break;
             }
             case Book.BKEY_TOC_LIST: {
                 final List<TocEntry> list = remoteBook.getToc();
                 if (!list.isEmpty()) {
-                    list.addAll(0, localeBook.getToc());
+                    list.addAll(0, localBook.getToc());
+                }
+                break;
+            }
+            case DBKey.DESCRIPTION: {
+                final String remoteDesc = remoteBook.getDescription();
+                if (!remoteDesc.isEmpty()) {
+                    final String localDesc = localBook.getDescription();
+                    if (!localDesc.isEmpty() && !localDesc.contains(remoteDesc)) {
+                        remoteBook.setDescription(localDesc + "<br/><br/>" + remoteDesc);
+                    }
+                    // else nothing to do, just use the remote description
                 }
                 break;
             }
             default: {
-                // We currently don't 'append' String fields
                 throw new IllegalArgumentException(key);
             }
         }
@@ -605,41 +616,31 @@ public class SyncReaderProcessor {
         }
 
         /**
-         * Add a {@link SyncField} unless it has been hidden by the user.
+         * Add a {@link SyncField}.
          *
-         * @param label Field label
-         * @param keys  {Field key} OR {FieldEnabled key, Field key}
-         *
-         * @throws IllegalArgumentException if there are more then 2 keys
+         * @param label    Field label
+         * @param type     of field
+         * @param fieldKey to add
+         *                 also used as preference key to check user-enabled state
          */
         public void add(@NonNull final String label,
-                        @NonNull final String[] keys) {
-            switch (keys.length) {
-                case 1: {
-                    add(keys[0], SyncField.Type.OTHER, label, keys[0]);
-                    return;
-                }
-                case 2: {
-                    add(keys[0], SyncField.Type.LIST, label, keys[1]);
-                    return;
-                }
-                default:
-                    throw new IllegalArgumentException("To many keys: " + Arrays.toString(keys));
-            }
+                        @NonNull final SyncField.Type type,
+                        @NonNull final String fieldKey) {
+            add(label, type, fieldKey, fieldKey);
         }
 
         /**
          * Add a {@link SyncField}.
          *
-         * @param enabledKey preference key to check user-enabled state
-         * @param type       of field
          * @param label      Field label
+         * @param type       of field
          * @param fieldKey   to add
+         * @param enabledKey preference key to check user-enabled state
          */
-        private void add(@NonNull final String enabledKey,
-                         @NonNull final SyncField.Type type,
-                         @NonNull final String label,
-                         @NonNull final String fieldKey) {
+        public void add(@NonNull final String label,
+                        @NonNull final SyncField.Type type,
+                        @NonNull final String fieldKey,
+                        @NonNull final String enabledKey) {
             if (!ServiceLocator.getInstance().isFieldEnabled(enabledKey)) {
                 return;
             }

@@ -141,41 +141,46 @@ public enum SyncServer
 
             // Cover fields will be at the top of the list.
             builder.add(context.getString(R.string.lbl_cover_front),
-                        new String[]{DBKey.COVER[0]});
+                        SyncField.Type.OTHER, DBKey.COVER[0]);
             builder.add(context.getString(R.string.lbl_cover_back),
-                        new String[]{DBKey.COVER[1]});
+                        SyncField.Type.OTHER, DBKey.COVER[1]);
 
             // These fields will be locally sorted and come next on the list
-            final SortedMap<String, String[]> map = new TreeMap<>();
+            final SortedMap<String, SyncFieldDef> map = new TreeMap<>();
 
             map.put(context.getString(R.string.lbl_description),
-                    new String[]{DBKey.DESCRIPTION});
+                    new SyncFieldDef(SyncField.Type.STRING, DBKey.DESCRIPTION));
             map.put(context.getString(R.string.lbl_format),
-                    new String[]{DBKey.FORMAT});
+                    new SyncFieldDef(DBKey.FORMAT));
             map.put(context.getString(R.string.lbl_language),
-                    new String[]{DBKey.LANGUAGE});
+                    new SyncFieldDef(DBKey.LANGUAGE));
             map.put(context.getString(R.string.lbl_date_published),
-                    new String[]{DBKey.PUBLICATION_DATE});
+                    new SyncFieldDef(DBKey.PUBLICATION_DATE));
             map.put(context.getString(R.string.lbl_title),
-                    new String[]{DBKey.TITLE});
+                    new SyncFieldDef(DBKey.TITLE));
 
             map.put(context.getString(R.string.lbl_authors),
-                    new String[]{DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST});
+                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_AUTHOR_LIST,
+                                     DBKey.FK_AUTHOR));
             map.put(context.getString(R.string.lbl_identifiers),
-                    new String[]{DBKey.FK_IDENTIFIER, Book.BKEY_IDENTIFIER_LIST});
+                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_IDENTIFIER_LIST,
+                                     DBKey.FK_IDENTIFIER));
             map.put(context.getString(R.string.lbl_publishers),
-                    new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
+                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_PUBLISHER_LIST,
+                                     DBKey.FK_PUBLISHER));
             map.put(context.getString(R.string.lbl_series_multiple),
-                    new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
+                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_SERIES_LIST,
+                                     DBKey.FK_SERIES));
             map.put(context.getString(R.string.lbl_tags),
-                    new String[]{DBKey.FK_TAG, Book.BKEY_TAG_LIST});
+                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_TAG_LIST,
+                                     DBKey.FK_TAG));
 
 
             // The site specific fields
             map.put(context.getString(R.string.site_calibre),
-                    new String[]{DBKey.CALIBRE.BOOK_ID});
+                    new SyncFieldDef(DBKey.CALIBRE.BOOK_ID));
             map.put(context.getString(R.string.lbl_ebook_file_type),
-                    new String[]{DBKey.CALIBRE.BOOK_MAIN_FORMAT});
+                    new SyncFieldDef(DBKey.CALIBRE.BOOK_MAIN_FORMAT));
 
             // The site specific CustomFields
             ServiceLocator.getInstance()
@@ -184,7 +189,8 @@ public enum SyncServer
                           .map(CalibreCustomField::getDbKey)
                           .forEach(dbKey -> {
                               try {
-                                  map.put(MapDBKey.getLabel(context, dbKey), new String[]{dbKey});
+                                  map.put(MapDBKey.getLabel(context, dbKey),
+                                          new SyncFieldDef(dbKey));
                               } catch (@NonNull final IllegalArgumentException ignore) {
                                   // will currently never fail, as all custom fields are hardcoded.
                                   LoggerFactory.getLogger().w(
@@ -193,7 +199,8 @@ public enum SyncServer
                           });
 
 
-            map.forEach(builder::add);
+            map.forEach((label, def) -> builder.add(
+                    label, def.type, def.fieldKey, def.enabledKey));
 
             builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                    .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
@@ -265,33 +272,35 @@ public enum SyncServer
 
             // Cover fields will be at the top of the list.
             builder.add(context.getString(R.string.lbl_cover_front),
-                        new String[]{DBKey.COVER[0]});
+                        SyncField.Type.OTHER, DBKey.COVER[0]);
             builder.add(context.getString(R.string.lbl_cover_back),
-                        new String[]{DBKey.COVER[1]});
+                        SyncField.Type.OTHER, DBKey.COVER[1]);
 
             // These fields will be locally sorted and come next on the list
-            final SortedMap<String, String[]> map = new TreeMap<>();
+            final SortedMap<String, SyncFieldDef> map = new TreeMap<>();
 
             // the wishlist
             map.put(context.getString(R.string.lbl_bookshelves),
-                    new String[]{DBKey.FK_BOOKSHELF, Book.BKEY_BOOKSHELF_LIST});
+                    new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_BOOKSHELF_LIST,
+                                     DBKey.FK_BOOKSHELF));
             map.put(context.getString(R.string.lbl_date_acquired),
-                    new String[]{DBKey.DATE_ACQUIRED});
+                    new SyncFieldDef(DBKey.DATE_ACQUIRED));
             map.put(context.getString(R.string.lbl_location),
-                    new String[]{DBKey.LOCATION});
+                    new SyncFieldDef(DBKey.LOCATION));
             map.put(context.getString(R.string.lbl_personal_notes),
-                    new String[]{DBKey.PERSONAL_NOTES});
+                    new SyncFieldDef(DBKey.PERSONAL_NOTES));
             map.put(context.getString(R.string.lbl_read),
-                    new String[]{DBKey.READ__BOOL});
+                    new SyncFieldDef(DBKey.READ__BOOL));
             map.put(context.getString(R.string.lbl_price_paid),
-                    new String[]{DBKey.PRICE_PAID});
+                    new SyncFieldDef(DBKey.PRICE_PAID));
 
             // The collection-data: see StripInfoSyncReaderProcessor
             map.put(context.getString(R.string.site_stripinfo_be),
-                    new String[]{StripInfoCollectionData.BKEY});
+                    new SyncFieldDef(StripInfoCollectionData.BKEY));
 
             // add the sorted fields
-            map.forEach(builder::add);
+            map.forEach((label, def) -> builder.add(
+                    label, def.type, def.fieldKey, def.enabledKey));
 
             builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                    .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
@@ -299,7 +308,7 @@ public enum SyncServer
 
             // The single external-id field is added at the end of the list.
             map.put(context.getString(R.string.lbl_identifiers),
-                    new String[]{Identifier.SID_STRIP_INFO});
+                    new SyncFieldDef(Identifier.SID_STRIP_INFO));
 
             return builder;
 

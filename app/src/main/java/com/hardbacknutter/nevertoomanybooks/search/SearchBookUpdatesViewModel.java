@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncFieldDef;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -72,11 +73,10 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
 
-    /** Log tag. */
-    private static final String TAG = "SearchBookUpdatesViewModel";
-
     /** Prefix to store the settings. */
     public static final String SYNC_PREFERENCE_PREFIX = "fields.update.usage.";
+    /** Log tag. */
+    private static final String TAG = "SearchBookUpdatesViewModel";
     /** Ask confirmation if the number of covers to download exceeds this number. */
     private static final int WARN_FOR_NUMBER_OF_COVERS = 10;
 
@@ -182,12 +182,12 @@ public class SearchBookUpdatesViewModel
 
         // Cover fields will be at the top of the list.
         builder.add(context.getString(R.string.lbl_cover_front),
-                    new String[]{DBKey.COVER[0]});
+                    SyncField.Type.OTHER, DBKey.COVER[0]);
         builder.add(context.getString(R.string.lbl_cover_back),
-                    new String[]{DBKey.COVER[1]});
+                    SyncField.Type.OTHER, DBKey.COVER[1]);
 
         // These fields will be locally sorted and come next on the list
-        final SortedMap<String, String[]> map = new TreeMap<>();
+        final SortedMap<String, SyncFieldDef> map = new TreeMap<>();
 
         // Note how we do NOT add DBKey.RATING
         // Rating is taken when a book is initially added to the app,
@@ -195,48 +195,56 @@ public class SearchBookUpdatesViewModel
         // Hence we NEVER fetch it from the sites again.
 
         map.put(context.getString(R.string.lbl_color),
-                new String[]{DBKey.COLOR});
-        map.put(context.getString(R.string.lbl_table_of_content),
-                new String[]{DBKey.CONTENT_TYPE, Book.BKEY_TOC_LIST});
+                new SyncFieldDef(DBKey.COLOR));
         map.put(context.getString(R.string.lbl_description),
-                new String[]{DBKey.DESCRIPTION});
+                new SyncFieldDef(SyncField.Type.STRING, DBKey.DESCRIPTION));
         map.put(context.getString(R.string.lbl_date_first_publication),
-                new String[]{DBKey.FIRST_PUBLICATION_DATE});
+                new SyncFieldDef(DBKey.FIRST_PUBLICATION_DATE));
         map.put(context.getString(R.string.lbl_format),
-                new String[]{DBKey.FORMAT});
+                new SyncFieldDef(DBKey.FORMAT));
         map.put(context.getString(R.string.lbl_isbn),
-                new String[]{DBKey.ISBN});
+                new SyncFieldDef(DBKey.ISBN));
         map.put(context.getString(R.string.lbl_language),
-                new String[]{DBKey.LANGUAGE});
+                new SyncFieldDef(DBKey.LANGUAGE));
         map.put(context.getString(R.string.lbl_pages),
-                new String[]{DBKey.PAGES});
+                new SyncFieldDef(DBKey.PAGES));
         map.put(context.getString(R.string.lbl_price_listed),
-                new String[]{DBKey.PRICE_LISTED});
+                new SyncFieldDef(DBKey.PRICE_LISTED));
         map.put(context.getString(R.string.lbl_print_run),
-                new String[]{DBKey.PRINT_RUN});
+                new SyncFieldDef(DBKey.PRINT_RUN));
         map.put(context.getString(R.string.lbl_date_published),
-                new String[]{DBKey.PUBLICATION_DATE});
+                new SyncFieldDef(DBKey.PUBLICATION_DATE));
         map.put(context.getString(R.string.lbl_title),
-                new String[]{DBKey.TITLE});
+                new SyncFieldDef(DBKey.TITLE));
         map.put(context.getString(R.string.lbl_original_language),
-                new String[]{DBKey.TRANSLATION_ORIGINAL_LANGUAGE});
+                new SyncFieldDef(DBKey.TRANSLATION_ORIGINAL_LANGUAGE));
         map.put(context.getString(R.string.lbl_original_title),
-                new String[]{DBKey.TRANSLATION_ORIGINAL_TITLE});
+                new SyncFieldDef(DBKey.TRANSLATION_ORIGINAL_TITLE));
 
         map.put(context.getString(R.string.lbl_authors),
-                new String[]{DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST});
+                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_AUTHOR_LIST,
+                                 DBKey.FK_AUTHOR));
         map.put(context.getString(R.string.lbl_identifiers),
-                new String[]{DBKey.FK_IDENTIFIER, Book.BKEY_IDENTIFIER_LIST});
+                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_IDENTIFIER_LIST,
+                                 DBKey.FK_IDENTIFIER));
         map.put(context.getString(R.string.lbl_publishers),
-                new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
+                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_PUBLISHER_LIST,
+                                 DBKey.FK_PUBLISHER));
         map.put(context.getString(R.string.lbl_series_multiple),
-                new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
+                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_SERIES_LIST,
+                                 DBKey.FK_SERIES));
         map.put(context.getString(R.string.a_bracket_b_bracket,
                                   context.getString(R.string.lbl_tags),
                                   context.getString(R.string.lbl_genre)),
-                new String[]{DBKey.FK_TAG, Book.BKEY_TAG_LIST});
+                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_TAG_LIST,
+                                 DBKey.FK_TAG));
+        map.put(context.getString(R.string.lbl_table_of_content),
+                new SyncFieldDef(SyncField.Type.LIST, Book.BKEY_TOC_LIST,
+                                 DBKey.CONTENT_TYPE));
 
-        map.forEach(builder::add);
+
+        map.forEach((label, def) -> builder.add(
+                label, def.type, def.fieldKey, def.enabledKey));
 
         builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])

@@ -200,25 +200,36 @@ public final class SyncField
                + '}';
     }
 
+    // - uppercase names, as 'List' gets confused with 'java.util.List'
+    // - the lists MUST end with Skip, i.e. same as the first step,
+    //   to ensure a circular movement
     public enum Type
             implements Parcelable {
-        // - uppercase names, as 'List' gets confused with 'java.util.List'
-        // - the lists MUST end with Skip, i.e. same as the first step,
-        //   to ensure a circular movement
+        /**
+         * {@code List} fields.
+         */
         LIST(SyncAction.Append, List.of(
                 SyncAction.Skip,
                 SyncAction.Append,
                 SyncAction.Overwrite,
                 SyncAction.Skip
         )),
-        // ENHANCE: future use, allow strings to append data
-//        CSV_STRING(SyncAction.CopyIfBlank, List.of(
-//                SyncAction.Skip,
-//                SyncAction.CopyIfBlank,
-//                SyncAction.Append,
-//                SyncAction.Overwrite,
-//                SyncAction.Skip
-//        )),
+        /**
+         * A {@code String} for which we support {@link SyncAction#Append}.
+         * Add the key to {@link SyncReaderProcessor}#processAppend
+         * if you use this type!
+         */
+        STRING(SyncAction.CopyIfBlank, List.of(
+                SyncAction.Skip,
+                SyncAction.CopyIfBlank,
+                SyncAction.Append,
+                SyncAction.Overwrite,
+                SyncAction.Skip
+        )),
+        /**
+         * Any other type, inc. {@code String}, but excl. {@code List},
+         * which does not support {@link SyncAction#Append}.
+         */
         OTHER(SyncAction.CopyIfBlank, List.of(
                 SyncAction.Skip,
                 SyncAction.CopyIfBlank,
