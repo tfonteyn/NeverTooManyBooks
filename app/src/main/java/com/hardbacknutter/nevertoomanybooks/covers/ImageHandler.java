@@ -34,6 +34,7 @@ import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -150,6 +151,8 @@ public final class ImageHandler {
     /** Optional progress bar to display during operations. */
     @Nullable
     private final CircularProgressIndicator progressIndicator;
+    @DrawableRes
+    private final int placeholderDrawable;
     /** The fragment root view; used for context, resources, Snackbar. */
     private ActivityResultLauncher<String> cameraPermissionLauncher;
     private ActivityResultLauncher<TakePictureContract.Input> takePictureLauncher;
@@ -162,6 +165,7 @@ public final class ImageHandler {
         fragment = builder.fragment;
         reloadImageCallback = builder.reloadImage;
         progressIndicator = builder.progressIndicator;
+        placeholderDrawable = builder.placeholderDrawable;
 
         // We could store cIdx in the VM, but there really is no point
         cIdx = builder.cIdx;
@@ -247,7 +251,7 @@ public final class ImageHandler {
             imageLoader.fromFile(view, file.get(), null, null);
             view.setBackground(null);
         } else {
-            imageLoader.placeholder(view, R.drawable.add_a_photo_24px);
+            imageLoader.placeholder(view, placeholderDrawable);
             view.setBackgroundResource(R.drawable.bg_cover_not_set);
         }
     }
@@ -793,16 +797,19 @@ public final class ImageHandler {
         @Nullable
         private Supplier<String> coverBrowserTitleSupplier;
 
+        @DrawableRes
+        private int placeholderDrawable;
+
         /**
          * Constructor.
          * <p>
          * Dev. note: the width/height values come from device dp-dependent resource values.
          * (and NOT from the style image scaling factor)
          *
-         * @param fragment            the hosting component
-         * @param cIdx                0..n image index
-         * @param maxWidth            Maximum width for an image in pixels
-         * @param maxHeight           Maximum height for an image in pixels
+         * @param fragment  the hosting component
+         * @param cIdx      0..n image index
+         * @param maxWidth  Maximum width for an image in pixels
+         * @param maxHeight Maximum height for an image in pixels
          */
         public Builder(@NonNull final Fragment fragment,
                        @IntRange(from = 0, to = 1) final int cIdx,
@@ -812,6 +819,8 @@ public final class ImageHandler {
             this.cIdx = cIdx;
             this.maxWidth = maxWidth;
             this.maxHeight = maxHeight;
+
+            placeholderDrawable = R.drawable.add_a_photo_24px;
         }
 
         /**
@@ -882,6 +891,21 @@ public final class ImageHandler {
         @NonNull
         public Builder setCoverBrowserTitleSupplier(@Nullable final Supplier<String> supplier) {
             this.coverBrowserTitleSupplier = supplier;
+            return this;
+        }
+
+        /**
+         * Optional - set the drawable to use when there is no image.
+         * <p>
+         * Defaults to {@code R.drawable.add_a_photo_24px}.
+         *
+         * @param placeholderDrawable resource id
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder setPlaceholderDrawable(@DrawableRes final int placeholderDrawable) {
+            this.placeholderDrawable = placeholderDrawable;
             return this;
         }
 
