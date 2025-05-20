@@ -246,6 +246,7 @@ public class AuthorWorksFragment
                 .setImageOwner(() -> vm.getAuthor())
                 .setOnReloadImage(cIdx -> imageHandler.onBindView(pictureView))
                 .setProgressIndicator(progressView)
+                .setPlaceholderDrawable(R.drawable.person_24px)
                 .build();
         imageHandler.onBindView(pictureView);
         imageHandler.attachOnClickListeners(getChildFragmentManager(), pictureView);
