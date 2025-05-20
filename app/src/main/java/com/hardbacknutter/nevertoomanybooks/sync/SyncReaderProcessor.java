@@ -305,14 +305,17 @@ public class SyncReaderProcessor {
         } else {
             switch (field.getAction()) {
                 case CopyIfBlank:
-                    // remove unneeded fields from the new data
+                    // If our local book already has this data,
+                    // remove the unneeded field from the new data (remote book)
                     if (hasField(localBook, field.getKey(), realNumberParser)) {
                         remoteBook.remove(field.getKey());
                     }
                     break;
 
                 case Append:
-                    processList(context, localBook, remoteBook, field.getKey());
+                    if (field.getType() == SyncField.Type.LIST) {
+                        processList(context, localBook, remoteBook, field.getKey());
+                    }
                     break;
 
                 case Overwrite:
@@ -597,69 +600,48 @@ public class SyncReaderProcessor {
         }
 
         /**
-         * Convenience method wrapper for {@link #add(String, String, SyncAction)}.
-         * The default SyncAction is always {@link SyncAction#CopyIfBlank}.
+         * Add a {@link SyncField} unless it has been hidden by the user.
          *
          * @param label Field label
-         * @param keys  {Field key} OR {Preference key, Field key}
+         * @param keys  {Field key} OR {FieldEnabled key, Field key}
          *
          * @throws IllegalArgumentException if there are more then 2 keys
          */
         public void add(@NonNull final String label,
                         @NonNull final String[] keys) {
             switch (keys.length) {
-                case 1:
-                    add(label, keys[0], SyncAction.CopyIfBlank);
+                case 1: {
+                    add(keys[0], SyncField.Type.OTHER, label, keys[0]);
                     return;
-
-                case 2:
-                    addList(label, keys[0], keys[1]);
+                }
+                case 2: {
+                    add(keys[0], SyncField.Type.LIST, label, keys[1]);
                     return;
+                }
                 default:
                     throw new IllegalArgumentException("To many keys: " + Arrays.toString(keys));
             }
         }
 
         /**
-         * Add a {@link SyncField} for a <strong>simple</strong> field
-         * if it has not been hidden by the user.
+         * Add a {@link SyncField}.
          *
-         * @param label         Field label
-         * @param key           Field key
-         * @param defaultAction default Usage for this field
+         * @param enabledKey preference key to check user-enabled state
+         * @param type       of field
+         * @param label      Field label
+         * @param fieldKey   to add
          */
-        public void add(@NonNull final String label,
-                        @NonNull final String key,
-                        @NonNull final SyncAction defaultAction) {
-
-            if (ServiceLocator.getInstance().isFieldEnabled(key)) {
-                final SyncAction action = SyncAction.byId(
-                        prefs.getInt(preferencePrefix + key, defaultAction.getId()));
-                fields.put(key, new SyncField(key, label, false,
-                                              defaultAction, action));
+        private void add(@NonNull final String enabledKey,
+                         @NonNull final SyncField.Type type,
+                         @NonNull final String label,
+                         @NonNull final String fieldKey) {
+            if (!ServiceLocator.getInstance().isFieldEnabled(enabledKey)) {
+                return;
             }
-        }
-
-        /**
-         * Add a {@link SyncField} for a <strong>list</strong> field
-         * if it has not been hidden by the user.
-         * <p>
-         * The default SyncAction is always {@link SyncAction#Append}.
-         *
-         * @param label   Field label
-         * @param prefKey Field name to use for preferences.
-         * @param key     Field key
-         */
-        private void addList(@NonNull final String label,
-                             @NonNull final String prefKey,
-                             @NonNull final String key) {
-
-            if (ServiceLocator.getInstance().isFieldEnabled(prefKey)) {
-                final SyncAction action = SyncAction.byId(
-                        prefs.getInt(preferencePrefix + key, SyncAction.Append.getId()));
-                fields.put(key, new SyncField(key, label, true,
-                                              SyncAction.Append, action));
-            }
+            final SyncAction action = SyncAction.byId(
+                    prefs.getInt(preferencePrefix + fieldKey,
+                                 type.getDefaultAction().getId()));
+            fields.put(fieldKey, new SyncField(fieldKey, label, type, action));
         }
 
         /**
@@ -674,7 +656,7 @@ public class SyncReaderProcessor {
         public Builder addRelatedField(@NonNull final String key,
                                        @NonNull final String relatedKey) {
             // Don't check on key being present in the fields list. We'll do that at usage time.
-            //This allows out-of-order adding.
+            // This allows out-of-order adding.
             relatedFields.put(key, relatedKey);
             return this;
         }

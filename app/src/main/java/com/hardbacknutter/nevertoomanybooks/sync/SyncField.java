@@ -25,6 +25,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 /**
  * How to handle a data field when updating the entity it belongs to.
  * e.g. skip it, overwrite the value, etc...
@@ -52,11 +54,8 @@ public final class SyncField
     /** label to show to the user. */
     @NonNull
     private final String label;
-    /** Default usage at creation time. */
     @NonNull
-    private final SyncAction defaultAction;
-    /** Is the field capable of appending extra data. It can be a true List, or i.e a String. */
-    private final boolean canAppend;
+    private final Type type;
     /** how to use this field. */
     @NonNull
     private SyncAction syncAction;
@@ -64,21 +63,18 @@ public final class SyncField
     /**
      * Constructor.
      *
-     * @param key           Field key
-     * @param label         Field label resource id
-     * @param canAppend     {@code true} if this field is capable of appending extra data.
-     * @param defaultAction default action
-     * @param syncAction    initial action
+     * @param key        Field key
+     * @param label      Field label resource id
+     * @param type       of field
+     * @param syncAction initial action
      */
     SyncField(@NonNull final String key,
               @NonNull final String label,
-              final boolean canAppend,
-              @NonNull final SyncAction defaultAction,
+              @NonNull final Type type,
               @NonNull final SyncAction syncAction) {
         this.key = key;
         this.label = label;
-        this.canAppend = canAppend;
-        this.defaultAction = defaultAction;
+        this.type = type;
         this.syncAction = syncAction;
     }
 
@@ -87,15 +83,11 @@ public final class SyncField
      *
      * @param in Parcel to construct the object from
      */
+    @SuppressWarnings("DataFlowIssue")
     private SyncField(@NonNull final Parcel in) {
-        //noinspection DataFlowIssue
         key = in.readString();
-        //noinspection DataFlowIssue
         label = in.readString();
-        canAppend = in.readByte() != 0;
-        //noinspection DataFlowIssue
-        defaultAction = in.readParcelable(SyncAction.class.getClassLoader());
-        //noinspection DataFlowIssue
+        type = in.readParcelable(SyncAction.class.getClassLoader());
         syncAction = in.readParcelable(SyncAction.class.getClassLoader());
     }
 
@@ -104,8 +96,7 @@ public final class SyncField
                               final int flags) {
         dest.writeString(key);
         dest.writeString(label);
-        dest.writeByte((byte) (canAppend ? 1 : 0));
-        dest.writeParcelable(defaultAction, flags);
+        dest.writeParcelable(type, flags);
         dest.writeParcelable(syncAction, flags);
     }
 
@@ -123,7 +114,7 @@ public final class SyncField
      */
     @NonNull
     SyncField createRelatedField(@NonNull final String key) {
-        return new SyncField(key, label, canAppend, defaultAction, syncAction);
+        return new SyncField(key, label, type, syncAction);
     }
 
     /**
@@ -146,11 +137,11 @@ public final class SyncField
     }
 
     void setDefaultAction() {
-        syncAction = defaultAction;
+        syncAction = type.getDefaultAction();
     }
 
     /**
-     * Get the key (colum name) for the field.
+     * Get the key (colum name) for this field.
      *
      * @return key
      */
@@ -160,13 +151,23 @@ public final class SyncField
     }
 
     /**
-     * Get the label for the field.
+     * Get the label for this field.
      *
      * @return label
      */
     @NonNull
     String getFieldLabel() {
         return label;
+    }
+
+    /**
+     * Get the {@link Type} for this field.
+     *
+     * @return type
+     */
+    @NonNull
+    public Type getType() {
+        return type;
     }
 
     /**
@@ -182,13 +183,10 @@ public final class SyncField
     }
 
     /**
-     * Cycle to the next action stage.
-     * <p>
-     * if (canAppend): Skip -> CopyIfBlank -> Append -> Overwrite -> Skip
-     * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
+     * Cycle to the next action.
      */
     void nextState() {
-        syncAction = syncAction.nextState(canAppend);
+        syncAction = type.nextState(syncAction);
     }
 
     @Override
@@ -196,11 +194,97 @@ public final class SyncField
     public String toString() {
         return "SyncField{"
                + "key=`" + key + '`'
-               + ", canAppend=" + canAppend
+               + ", type=" + type
                + ", labelResId=" + label
-               + ", defaultAction=" + defaultAction
                + ", syncAction=" + syncAction
                + '}';
     }
 
+    public enum Type
+            implements Parcelable {
+        // - uppercase names, as 'List' gets confused with 'java.util.List'
+        // - the lists MUST end with Skip, i.e. same as the first step,
+        //   to ensure a circular movement
+        LIST(SyncAction.Append, List.of(
+                SyncAction.Skip,
+                SyncAction.Append,
+                SyncAction.Overwrite,
+                SyncAction.Skip
+        )),
+        // ENHANCE: future use, allow strings to append data
+//        CSV_STRING(SyncAction.CopyIfBlank, List.of(
+//                SyncAction.Skip,
+//                SyncAction.CopyIfBlank,
+//                SyncAction.Append,
+//                SyncAction.Overwrite,
+//                SyncAction.Skip
+//        )),
+        OTHER(SyncAction.CopyIfBlank, List.of(
+                SyncAction.Skip,
+                SyncAction.CopyIfBlank,
+                SyncAction.Overwrite,
+                SyncAction.Skip
+        ));
+
+        /** {@link Parcelable}. */
+        public static final Creator<Type> CREATOR = new Creator<>() {
+            @Override
+            @NonNull
+            public Type createFromParcel(@NonNull final Parcel in) {
+                return values()[in.readInt()];
+            }
+
+            @Override
+            @NonNull
+            public Type[] newArray(final int size) {
+                return new Type[size];
+            }
+        };
+
+        @NonNull
+        private final SyncAction defAction;
+        @NonNull
+        private final List<SyncAction> actions;
+
+        Type(@NonNull final SyncAction defAction,
+             @NonNull final List<SyncAction> actions) {
+            this.defAction = defAction;
+            this.actions = actions;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(ordinal());
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @NonNull
+        SyncAction getDefaultAction() {
+            return defAction;
+        }
+
+        @NonNull
+        SyncAction nextState(@NonNull final SyncAction syncAction) {
+            final int i = actions.indexOf(syncAction);
+            // Sanity check against illegal input (from prefs)
+            if (i == -1) {
+                return SyncAction.Skip;
+            }
+            return actions.get(i + 1);
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Type{"
+                   + "defAction=" + defAction
+                   + ", actions=" + actions
+                   + '}';
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,7 @@ public enum SyncAction
     Skip(0),
     /** Update the field only if the current value is blank (null/empty). */
     CopyIfBlank(1),
-    /** List fields (incl. text fields): append any new data. */
+    /** Append any (new) data. */
     Append(2),
     /** Force (over)write the field with the new data. */
     Overwrite(3);
@@ -76,28 +76,6 @@ public enum SyncAction
                      .filter(v -> v.id == id)
                      .findFirst()
                      .orElse(Skip);
-    }
-
-    @NonNull
-    SyncAction nextState(final boolean allowAppend) {
-        switch (this) {
-            case Skip:
-                return CopyIfBlank;
-
-            case CopyIfBlank:
-                if (allowAppend) {
-                    return Append;
-                } else {
-                    return Overwrite;
-                }
-
-            case Append:
-                return Overwrite;
-
-            case Overwrite:
-                return Skip;
-        }
-        return Skip;
     }
 
     /**
