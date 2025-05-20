@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Pair;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -42,8 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -71,8 +70,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
@@ -83,8 +80,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PS
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAG_MAPPINGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
@@ -506,19 +501,14 @@ public class DBHelper
 
             // DBDefinitions.DOM_STYLE_NAME
             LegacyUpgrades.v34RecreateTable(db, TBL_BOOKLIST_STYLES);
-
             // DBDefinitions.DOM_BOOKSHELF_NAME
             LegacyUpgrades.v34RecreateTable(db, TBL_BOOKSHELF);
-
             // DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB, DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB
             LegacyUpgrades.v34RecreateTable(db, TBL_AUTHORS);
-
             // DBDefinitions.DOM_SERIES_TITLE_OB
             LegacyUpgrades.v34RecreateTable(db, TBL_SERIES);
-
             // DBDefinitions.DOM_PUBLISHER_NAME_OB
             LegacyUpgrades.v34RecreateTable(db, TBL_PUBLISHERS);
-
             // DBDefinitions.DOM_TITLE_OB
             LegacyUpgrades.v34RecreateTable(db, TBL_BOOKS);
 
@@ -529,32 +519,9 @@ public class DBHelper
             db.beginTransaction();
         }
         if (oldVersion < 35) {
-            // depending on the install/upgrade path, we might already have
-            // added the CITATION_TYPE column
-            final ColumnInfo citationType = TBL_BOOKLIST_STYLES
-                    .getTableInfo(db).getColumn(DBKey.STYLE.CITATION_TYPE);
-            if (citationType == null) {
-                TBL_BOOKLIST_STYLES.alterTableAddColumns(
-                        db,
-                        DBDefinitions.DOM_STYLE_CITATION_TYPE);
-            }
-
-            TBL_IDENTIFIERS.create(db, true);
-            TBL_BOOK_IDENTIFIER.create(db, true);
-            IdentifierDaoImpl.onPostCreate(context, db);
-            LegacyUpgrades.v35migrateSids(db);
-
-            TBL_TAG_MAPPINGS.create(db, true);
-            TagMappingDaoImpl.onPostCreate(db);
-
-            TBL_TAGS.create(db, true);
-            TBL_BOOK_TAG.create(db, true);
-            LegacyUpgrades.v35migrateGenres(db);
-
-            // Override the user should they have hidden the 'genre' field
-            final FieldVisibility globalFieldVisibility = serviceLocator.getGlobalFieldVisibility();
-            globalFieldVisibility.setVisible(DBKey.FK_TAG, true);
-            globalFieldVisibility.save(PreferenceManager.getDefaultSharedPreferences(context));
+            LegacyUpgrades.v35AddCitationType(db);
+            LegacyUpgrades.v35AddIdentifiersTable(context, db);
+            LegacyUpgrades.v35AddMappingTables(context, db);
 
             // The format was changed
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
@@ -602,8 +569,6 @@ public class DBHelper
                     DBDefinitions.DOM_STYLE_SHOW_GROUP_BOOK_COUNT);
         }
         if (oldVersion < 39) {
-            // depending on the install/upgrade path, we might already have
-            // added the AUTHOR_URI column and the identifier updates.
             LegacyUpgrades.v39AddIdentifierAuthorUrl(db);
 
             // add new identifiers
@@ -619,18 +584,11 @@ public class DBHelper
             TBL_AUTHOR_IDENTIFIER.create(db, true);
         }
         if (oldVersion < 40) {
-            // fix 2 urls
-            try (SQLiteStatement stmt = db.compileStatement(
-                    "UPDATE " + TBL_IDENTIFIERS
-                    + " SET " + DBKey.IDENTIFIERS.BOOK_URI + "=?"
-                    + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
-                stmt.bindString(1, BNF.BOOK_URL);
-                stmt.bindString(2, Identifier.SID_BNF);
-                stmt.executeUpdateDelete();
-                stmt.bindString(1, Porbase.BOOK_URL);
-                stmt.bindString(2, Identifier.SID_PORBASE);
-                stmt.executeUpdateDelete();
-            }
+            // fix urls
+            updateIdentifierBookUrl(db,
+                                    new Pair<>(Identifier.SID_BNF, BNF.BOOK_URL),
+                                    new Pair<>(Identifier.SID_PORBASE, Porbase.BOOK_URL));
+
             // fix name
             try (SQLiteStatement stmt = db.compileStatement(
                     "UPDATE " + TBL_IDENTIFIERS
@@ -742,6 +700,22 @@ public class DBHelper
                 stmt.bindString(6, authorUrl);
             }
             stmt.executeInsert();
+        }
+    }
+
+    @SafeVarargs
+    private void updateIdentifierBookUrl(@NonNull final SQLiteDatabase db,
+                                         @NonNull final Pair<String, String>... keyUrlPairs) {
+        try (SQLiteStatement stmt = db.compileStatement(
+                "UPDATE " + TBL_IDENTIFIERS
+                + " SET " + DBKey.IDENTIFIERS.BOOK_URI + "=?"
+                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+
+            for (final Pair<String, String> ku : keyUrlPairs) {
+                stmt.bindString(1, ku.second);
+                stmt.bindString(2, ku.first);
+                stmt.executeUpdateDelete();
+            }
         }
     }
 

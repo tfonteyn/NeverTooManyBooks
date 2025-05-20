@@ -54,7 +54,9 @@ import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
@@ -81,11 +83,17 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAG_MAPPINGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
  * A garbage bin with code used only during upgrades.
+ *
+ * @noinspection CheckStyle
  */
 public final class LegacyUpgrades {
 
@@ -555,7 +563,27 @@ public final class LegacyUpgrades {
         db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + td.getName());
     }
 
-    static void v35migrateSids(@NonNull final SQLiteDatabase db) {
+    static void v35AddCitationType(@NonNull final SQLiteDatabase db) {
+        // depending on the install/upgrade path, we might already have
+        // added the CITATION_TYPE column
+        final ColumnInfo citationType = TBL_BOOKLIST_STYLES
+                .getTableInfo(db).getColumn(DBKey.STYLE.CITATION_TYPE);
+        if (citationType == null) {
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                    db,
+                    DBDefinitions.DOM_STYLE_CITATION_TYPE);
+        }
+    }
+
+    static void v35AddIdentifiersTable(@NonNull final Context context,
+                                       @NonNull final SQLiteDatabase db) {
+        TBL_IDENTIFIERS.create(db, true);
+        TBL_BOOK_IDENTIFIER.create(db, true);
+        IdentifierDaoImpl.onPostCreate(context, db);
+        v35migrateSids(db);
+    }
+
+    private static void v35migrateSids(@NonNull final SQLiteDatabase db) {
         final Set<String> legacyKeys = IDENTIFIERS.keySet();
         final Collection<String> legacyValues = IDENTIFIERS.values();
 
@@ -610,7 +638,24 @@ public final class LegacyUpgrades {
                                .collect(Collectors.joining(",")));
     }
 
-    static void v35migrateGenres(@NonNull final SQLiteDatabase db) {
+    static void v35AddMappingTables(@NonNull final Context context,
+                                    @NonNull final SQLiteDatabase db) {
+        TBL_TAG_MAPPINGS.create(db, true);
+        TagMappingDaoImpl.onPostCreate(db);
+
+        TBL_TAGS.create(db, true);
+        TBL_BOOK_TAG.create(db, true);
+        v35migrateGenres(db);
+
+        // Override the user should they have hidden the 'genre' field
+        final FieldVisibility globalFieldVisibility = ServiceLocator
+                .getInstance().getGlobalFieldVisibility();
+        globalFieldVisibility.setVisible(DBKey.FK_TAG, true);
+        globalFieldVisibility.save(PreferenceManager.getDefaultSharedPreferences(context));
+
+    }
+
+    private static void v35migrateGenres(@NonNull final SQLiteDatabase db) {
 
         // all books with a genre set
         final String sqlSelect = SELECT_ + DBKey.PK_ID + ',' + DBKEY_GENRE
@@ -859,5 +904,4 @@ public final class LegacyUpgrades {
         // replaced by a database table in db36
         context.deleteSharedPreferences("language2iso3");
     }
-
 }
