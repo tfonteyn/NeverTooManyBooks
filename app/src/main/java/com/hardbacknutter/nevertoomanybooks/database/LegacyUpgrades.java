@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesViewModel;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
@@ -75,6 +76,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.NooSFere;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WikiData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -776,6 +779,25 @@ public final class LegacyUpgrades {
         }
     }
 
+    private static void v41migrateSynFieldListFields(@NonNull final SharedPreferences prefs) {
+        // Note we do not migrate any SyncServer keys here:
+        // At this point (v41)
+        // - Calibre is NOT using a customizable processor
+        // - StripInfo is still not enabled in a release.
+        // So neither has any stored settings.
+        final SharedPreferences.Editor edit = prefs.edit();
+        // 'Usage' keys for the SearchBookUpdates
+        SyncReaderProcessor
+                .LIST_KEYS
+                .stream()
+                .map(s -> SearchBookUpdatesViewModel.SYNC_PREFERENCE_PREFIX + s)
+                .filter(prefs::contains)
+                // we already know the key is present, so the '-1' will never be used.
+                .filter(key -> prefs.getInt(key, -1) == SyncAction.CopyIfBlank.getId())
+                .forEach(key -> edit.putInt(key, SyncAction.Append.getId()));
+        edit.apply();
+    }
+
     static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
                                               @NonNull final SQLiteDatabase db) {
         final boolean install;
@@ -832,6 +854,9 @@ public final class LegacyUpgrades {
         // This will take care of old keys in general, but will
         // ALSO copy the FieldVisibility.PK_LOANS which is still in use.
         v24migrateGlobalFieldVisibility(prefs);
+
+        // migrate any SynField 'list' fields using 'CopyIfBlank' to 'Append'
+        v41migrateSynFieldListFields(prefs);
 
         // Now remove all obsolete keys.
         final SharedPreferences.Editor editor = prefs.edit();
