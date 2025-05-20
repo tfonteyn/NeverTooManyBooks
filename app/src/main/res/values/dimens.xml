@@ -204,6 +204,5 @@
     <dimen name="startup_splash_border">16dp</dimen>
     <dimen name="startup_splash_min_width">300dp</dimen>
     <dimen name="startup_splash_max_width">340dp</dimen>
-    <dimen name="author_picture_width">128dp</dimen>
-    <dimen name="author_picture_height">128dp</dimen>
+
 </resources>

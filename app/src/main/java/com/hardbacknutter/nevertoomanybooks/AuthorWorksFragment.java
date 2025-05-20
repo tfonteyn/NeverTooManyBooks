@@ -239,8 +239,8 @@ public class AuthorWorksFragment
         final CircularProgressIndicator progressView =
                 toolbar.findViewById(R.id.cover_operation_progress_bar);
         final Resources res = getResources();
-        final int width = res.getDimensionPixelSize(R.dimen.author_picture_width);
-        final int height = res.getDimensionPixelSize(R.dimen.author_picture_height);
+        final int width = res.getDimensionPixelSize(R.dimen.author_detail_picture_width);
+        final int height = res.getDimensionPixelSize(R.dimen.author_detail_picture_height);
         imageHandler = new ImageHandler
                 .Builder(this, 0, width, height)
                 .setImageOwner(() -> vm.getAuthor())
@@ -260,12 +260,14 @@ public class AuthorWorksFragment
 
         imageHandler.onBindView(pictureView);
 
+        // Don't hide when empty, we want the layout to be static
         birthDateView.setText(author.getBirthDate()
                                     .map(d -> getString(R.string.name_colon_value,
                                                         getString(R.string.lbl_date_born),
                                                         dff.format(getContext(), d)))
                                     .orElse(null));
 
+        // Don't hide when empty, we want the layout to be static
         deathDateView.setText(author.getDeathDate()
                                     .map(d -> getString(R.string.name_colon_value,
                                                         getString(R.string.lbl_date_died),
