@@ -79,6 +79,7 @@ public enum SyncServer
             return CalibreHandler.isSyncEnabled(context);
         }
 
+        @Override
         @WorkerThread
         @NonNull
         DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
@@ -91,8 +92,9 @@ public enum SyncServer
                                                   deleteLocalBook);
         }
 
-        @NonNull
+        @Override
         @WorkerThread
+        @NonNull
         DataReader<SyncReaderMetaData, ReaderResults> createReader(
                 @NonNull final Context context,
                 @NonNull final Set<RecordType> recordTypes,
@@ -121,6 +123,12 @@ public enum SyncServer
             return reader;
         }
 
+        @Override
+        public String getSyncPreferencePrefix() {
+            return CalibreContentServer.PREFERENCE_KEY + FIELDS_UPDATE;
+        }
+
+        @Override
         @NonNull
         public SyncReaderProcessor.Builder createSyncProcessorBuilder(
                 @NonNull final Context context) {
@@ -128,8 +136,7 @@ public enum SyncServer
             final RealNumberParser realNumberParser = new RealNumberParser(locales);
             final SyncReaderProcessor.Builder builder =
                     new SyncReaderProcessor.Builder(context,
-                                                    CalibreContentServer.PREFERENCE_KEY
-                                                    + ".fields.update.",
+                                                    getSyncPreferencePrefix(),
                                                     realNumberParser);
 
             // Cover fields will be at the top of the list.
@@ -202,6 +209,7 @@ public enum SyncServer
             return StripInfoHandler.isSyncEnabled(context);
         }
 
+        @Override
         @WorkerThread
         @NonNull
         DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
@@ -211,6 +219,7 @@ public enum SyncServer
             return new StripInfoWriter(context, incremental, deleteLocalBook);
         }
 
+        @Override
         @NonNull
         @WorkerThread
         DataReader<SyncReaderMetaData, ReaderResults> createReader(
@@ -237,6 +246,12 @@ public enum SyncServer
             return reader;
         }
 
+        @Override
+        public String getSyncPreferencePrefix() {
+            return EngineId.StripInfoBe.getPreferenceKey() + FIELDS_UPDATE;
+        }
+
+        @Override
         @NonNull
         public SyncReaderProcessor.Builder createSyncProcessorBuilder(
                 @NonNull final Context context) {
@@ -245,8 +260,7 @@ public enum SyncServer
             final RealNumberParser realNumberParser = new RealNumberParser(locales);
             final SyncReaderProcessor.Builder builder =
                     new SyncReaderProcessor.Builder(context,
-                                                    EngineId.StripInfoBe.getPreferenceKey()
-                                                    + ".fields.update.",
+                                                    getSyncPreferencePrefix(),
                                                     realNumberParser);
 
             // Cover fields will be at the top of the list.
@@ -311,6 +325,10 @@ public enum SyncServer
     private static final String TAG = "SyncServer";
     /** The (optional) preset encoding to pass to export/import. */
     public static final String BKEY_SITE = TAG + ":encoding";
+
+    /** See {@link #getSyncPreferencePrefix()}. */
+    private static final String FIELDS_UPDATE = ".fields.update.";
+
     @StringRes
     private final int labelResId;
 
@@ -422,6 +440,13 @@ public enum SyncServer
                    CertificateException,
                    CredentialsException,
                    IOException;
+
+    /**
+     * Get the preference key prefix for all sync keys for this SyncServer.
+     *
+     * @return pref prefix
+     */
+    public abstract String getSyncPreferencePrefix();
 
     /**
      * Create the default {@link SyncReaderProcessor.Builder}.
