@@ -107,9 +107,6 @@ public final class LegacyUpgrades {
             "ld_book_id", Identifier.SID_LAST_DODO_NL,
             "bdt_book_id", Identifier.SID_BEDETHEQUE
     );
-    static final Domain DOM_ESID_BEDETHEQUE =
-            new Domain.Builder("bdt_book_id", SqLiteDataType.Integer)
-                    .build();
     private static final String TAG = "LegacyUpgrades";
     private static final String DBKEY_GENRE = "genre";
 

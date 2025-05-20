@@ -43,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -453,7 +455,8 @@ public class DBHelper
             // Add pen-name support
             TBL_PSEUDONYM_AUTHOR.create(db, true);
             // new search-engine added
-            TBL_BOOKS.alterTableAddColumns(db, LegacyUpgrades.DOM_ESID_BEDETHEQUE);
+            TBL_BOOKS.alterTableAddColumns(db, new Domain.Builder(
+                    "bdt_book_id", SqLiteDataType.Integer).build());
         }
         if (oldVersion < 24) {
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TRANSLATION_ORIGINAL_TITLE);
