@@ -51,8 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
@@ -108,14 +106,8 @@ public final class LegacyUpgrades {
             "bdt_book_id", Identifier.SID_BEDETHEQUE
     );
     private static final String TAG = "LegacyUpgrades";
-    private static final String DBKEY_GENRE = "genre";
 
-    private static final String PK_SHOW_TITLE_REORDERED = "show.title.reordered";
     private static final String PK_FIELDS_VISIBILITY_KEYS = "fields.visibility.";
-    private static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST =
-            "show.author.name.given_first";
-    private static final String PK_SORT_AUTHOR_NAME_GIVEN_FIRST =
-            "sort.author.name.given_first";
     /** Genre string migration splitter characters. */
     private static final Pattern GENRE_SPLITTER_PATTERN = Pattern.compile("[/,;>]");
 
@@ -227,9 +219,9 @@ public final class LegacyUpgrades {
                 stmt.bindLong(++c, stylePrefs.getBoolean(
                         "style.booklist.group.height", true) ? 1 : 0);
                 stmt.bindLong(++c, stylePrefs.getBoolean(
-                        PK_SORT_AUTHOR_NAME_GIVEN_FIRST, false) ? 1 : 0);
+                        "sort.author.name.given_first", false) ? 1 : 0);
                 stmt.bindLong(++c, stylePrefs.getBoolean(
-                        PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false) ? 1 : 0);
+                        "show.author.name.given_first", false) ? 1 : 0);
                 stmt.bindLong(++c, stylePrefs.getInt(
                         "style.booklist.scale.font", TextScale.DEFAULT.getId()));
                 stmt.bindLong(++c, stylePrefs.getInt(
@@ -519,7 +511,7 @@ public final class LegacyUpgrades {
                                       @NonNull final SQLiteDatabase db) {
         final int value =
                 PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean(PK_SHOW_TITLE_REORDERED, false)
+                                 .getBoolean("show.title.reordered", false)
                 ? 1 : 0;
 
         // We apply the setting to ALL styles as it was the default for all.
@@ -655,9 +647,9 @@ public final class LegacyUpgrades {
     private static void v35migrateGenres(@NonNull final SQLiteDatabase db) {
 
         // all books with a genre set
-        final String sqlSelect = SELECT_ + DBKey.PK_ID + ',' + DBKEY_GENRE
+        final String sqlSelect = SELECT_ + DBKey.PK_ID + ',' + "genre"
                                  + _FROM_ + TBL_BOOKS.getName()
-                                 + _WHERE_ + DBKEY_GENRE + "<>''";
+                                 + _WHERE_ + "genre" + "<>''";
 
         final String sqlInsertTag =
                 INSERT_INTO_ + DBDefinitions.TBL_TAGS.getName()
@@ -706,11 +698,11 @@ public final class LegacyUpgrades {
         }
 
         // empty old column, we'll delete it in a future version
-        db.execSQL(UPDATE_ + TBL_BOOKS.getName() + _SET_ + DBKEY_GENRE + "=''");
+        db.execSQL(UPDATE_ + TBL_BOOKS.getName() + _SET_ + "genre" + "=''");
 
         // Remove any genre based filters, they cannot be converted to a tag filter
         db.execSQL(DELETE_FROM_ + DBDefinitions.TBL_BOOKSHELF_FILTERS.getName()
-                   + _WHERE_ + DBKey.BOOKSHELF.FILTER_NAME + "='" + DBKEY_GENRE + "'");
+                   + _WHERE_ + DBKey.BOOKSHELF.FILTER_NAME + "='" + "genre" + "'");
 
     }
 
@@ -797,9 +789,9 @@ public final class LegacyUpgrades {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             final GlobalStyle style = GlobalStyle.createDefault();
             style.setSortAuthorByGivenName(
-                    prefs.getBoolean(PK_SORT_AUTHOR_NAME_GIVEN_FIRST, false));
+                    prefs.getBoolean("sort.author.name.given_first", false));
             style.setShowAuthorByGivenName(
-                    prefs.getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false));
+                    prefs.getBoolean("show.author.name.given_first", false));
 
             StyleDaoImpl.insertGlobalDefaults(db, style);
         }
@@ -885,9 +877,9 @@ public final class LegacyUpgrades {
               .remove("search.form.advanced")
               .remove("search.site.goodreads.data.enabled")
               .remove("search.site.goodreads.covers.enabled")
-              .remove(PK_SHOW_TITLE_REORDERED)
-              .remove(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST)
-              .remove(PK_SORT_AUTHOR_NAME_GIVEN_FIRST)
+              .remove("show.title.reordered")
+              .remove("show.author.name.given_first")
+              .remove("sort.author.name.given_first")
               .remove("startup.lastVersion")
               .remove("tmp.edit.book.tab.authSer")
               .remove("ui.messages.use")
