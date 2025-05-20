@@ -40,7 +40,6 @@
     <!-- 100/60 multiplier: 4 -->
     <dimen name="cover_browser_preview_width">240dp</dimen>
 
-    <dimen name="cover_browser_gallery_text_size">18sp</dimen>
     <integer name="cover_browser_gallery_span_count">3</integer>
 
     <array name="cover_max_width">

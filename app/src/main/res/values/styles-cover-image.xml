@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -23,7 +23,8 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- ImageView -->
-    <style name="Base.CoverImage" parent="">
+    <style name="Base.CoverImage"
+           parent="">
         <!-- we'll add a context menu -->
         <item name="android:focusable">true</item>
         <item name="android:adjustViewBounds">true</item>
@@ -60,20 +61,23 @@
         <item name="android:contentDescription">@string/lbl_cover_back</item>
     </style>
 
-    <style name="CoverImage.Edit.0" parent="Base.CoverImage">
+    <style name="CoverImage.Edit.0"
+           parent="Base.CoverImage">
         <item name="android:layout_width">@dimen/cover_edit_0_width</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:contentDescription">@string/lbl_cover_front</item>
     </style>
 
-    <style name="CoverImage.Edit.1" parent="Base.CoverImage">
+    <style name="CoverImage.Edit.1"
+           parent="Base.CoverImage">
         <item name="android:layout_width">@dimen/cover_edit_1_width</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:contentDescription">@string/lbl_cover_back</item>
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
     </style>
 
-    <style name="CoverImage.Zoom" parent="Base.CoverImage">
+    <style name="CoverImage.Zoom"
+           parent="Base.CoverImage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:scaleType">fitCenter</item>
@@ -81,16 +85,25 @@
         <item name="layout_constraintVertical_bias">0.5</item>
     </style>
 
-    <style name="CoverImage.BrowserPreview" parent="Base.CoverImage">
+    <style name="CoverImage.BrowserPreview"
+           parent="Base.CoverImage">
         <item name="android:scaleType">fitCenter</item>
         <item name="android:layout_width">@dimen/cover_browser_preview_width</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="CoverImage.BrowserGallery" parent="Base.CoverImage">
+    <style name="CoverImage.BrowserGallery"
+           parent="Base.CoverImage">
         <item name="android:scaleType">fitCenter</item>
         <item name="android:layout_width">@dimen/cover_browser_gallery_width</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/cover_list_padding</item>
+    </style>
+
+    <style name="CoverImage.BrowserGallery.Label"
+           parent="">
+        <item name="android:textAppearance">?attr/textAppearanceLabelSmall</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 </resources>

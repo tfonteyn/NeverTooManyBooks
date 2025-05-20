@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -28,13 +28,10 @@
 
     <TextView
         android:id="@+id/lbl_site"
+        style="@style/CoverImage.BrowserGallery.Label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:textAppearance="?attr/textAppearanceLabelSmall"
         android:textIsSelectable="true"
-        android:textSize="@dimen/cover_browser_gallery_text_size"
-        android:textStyle="italic"
         tools:text="@sample/data.json/sites/name"
         />
 
