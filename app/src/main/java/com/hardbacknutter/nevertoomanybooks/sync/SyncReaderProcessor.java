@@ -65,7 +65,10 @@ public class SyncReaderProcessor {
 
     private static final String TAG = "SyncProcessor";
 
-    private static final Set<String> LIST_KEYS = Set.of(
+    /**
+     * The keys which represent {@link SyncField.Type#LIST} fields.
+     */
+    public static final Set<String> LIST_KEYS = Set.of(
             Book.BKEY_AUTHOR_LIST,
             Book.BKEY_BOOKSHELF_LIST,
             Book.BKEY_IDENTIFIER_LIST,
@@ -540,6 +543,8 @@ public class SyncReaderProcessor {
 
         /**
          * Reset current action back to defaults, and write to preferences.
+         * <p>
+         * This is normally a user initiated action.
          */
         public void resetPreferences() {
 
@@ -662,7 +667,7 @@ public class SyncReaderProcessor {
         }
 
         /**
-         * Build the processor.
+         * Build the default processor.
          *
          * @param context Current context
          *
