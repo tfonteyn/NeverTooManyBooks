@@ -76,7 +76,7 @@ public class SearchBookUpdatesViewModel
     private static final String TAG = "SearchBookUpdatesViewModel";
 
     /** Prefix to store the settings. */
-    private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
+    public static final String SYNC_PREFERENCE_PREFIX = "fields.update.usage.";
     /** Ask confirmation if the number of covers to download exceeds this number. */
     private static final int WARN_FOR_NUMBER_OF_COVERS = 10;
 
@@ -178,7 +178,7 @@ public class SearchBookUpdatesViewModel
         final List<Locale> locales = LocaleListUtils.asList(context);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
         final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(context, SYNC_PROCESSOR_PREFIX, realNumberParser);
+                new SyncReaderProcessor.Builder(context, SYNC_PREFERENCE_PREFIX, realNumberParser);
 
         // Cover fields will be at the top of the list.
         builder.add(context.getString(R.string.lbl_cover_front),
