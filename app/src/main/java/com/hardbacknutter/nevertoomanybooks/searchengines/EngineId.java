@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
@@ -544,6 +545,10 @@ public enum EngineId
 
     /**
      * Create a SearchEngine instance based on the registered configuration for the given id.
+     * <p>
+     * <strong>REMINDER: you usually (but not always) need to call
+     * {@link SearchEngine#setCaller(Cancellable)}.
+     * Check other places in the code to know for sure.</strong>
      *
      * @param context Application context
      *
