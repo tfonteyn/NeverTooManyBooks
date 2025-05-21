@@ -156,6 +156,8 @@ public class BedethequeAuthorResolver
             final Document document = searchEngine.loadDocument(context, url, null);
             if (!searchEngine.isCancelled()) {
                 final Author found = parse(context, document);
+                // We always check for name equality on this site to avoid mistakes
+                // from the other sites which can also use this resolver.
                 if (found != null && author.isSameName(found)) {
                     // Overwrite the original name; this will correct any diacritics
                     // We're not doing the same for the 'realAuthor' ...
