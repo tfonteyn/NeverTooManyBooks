@@ -28,7 +28,6 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
@@ -141,7 +140,7 @@ public final class IsfdbAuthorResolver
                 return modified;
             }
         } else {
-            found = searchByName(context, author.getFormattedName(true));
+            found = searchByName(context, author);
             // 2025-05-10: insist on case-sensitive name equality for now.
             // If this proves problematic, we'll change it later...
             if (found != null && author.isSameName(found)) {
@@ -163,7 +162,13 @@ public final class IsfdbAuthorResolver
         final String url = String.format(authorUri, sid);
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
-            return parse(context, document);
+            // sanity check, we SHOULD always have a single result page
+            final String pageUrl = document.location();
+            if (pageUrl.contains("ea.cgi")) {
+                return parse(context, document, sid);
+            } else {
+                LoggerFactory.getLogger().w(TAG, "parse|pageUrl=" + pageUrl);
+            }
         }
         return null;
     }
@@ -171,43 +176,87 @@ public final class IsfdbAuthorResolver
 
     @Nullable
     private Author searchByName(@NonNull final Context context,
-                                @NonNull final String names)
+                                @NonNull final Author author)
             throws SearchException, CredentialsException {
 
-        final String url = String.format(authorSearchUrl, names);
+        final String formattedName = author.getFormattedName(true);
+        final String url = String.format(authorSearchUrl, formattedName);
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
-            return parse(context, document);
-        }
-        return null;
-    }
-
-
-    @VisibleForTesting
-    @Nullable
-    Author parse(@NonNull final Context context,
-                 @NonNull final Document document)
-            throws SearchException, CredentialsException {
-        final String pageUrl = document.location();
-        if (pageUrl.contains("ea.cgi")) {
-            final String sid = getIdFromUrl(pageUrl);
-            if (sid != null) {
-                return parse(context, document, sid);
-            }
-        } else if (pageUrl.contains("se.cgi")) {
-            // multi result: cannot be handled.
-            if (BuildConfig.DEBUG /* always */) {
+            final String pageUrl = document.location();
+            if (pageUrl.contains("ea.cgi")) {
+                final String sid = getIdFromUrl(pageUrl);
+                if (sid != null) {
+                    return parse(context, document, sid);
+                }
+            } else if (pageUrl.contains("se.cgi")) {
+                return parseMultiResult(context, document, formattedName);
+            } else {
+                // dunno, let's log it
                 LoggerFactory.getLogger().w(TAG, "parse|pageUrl=" + pageUrl);
             }
-        } else {
-            // dunno, let's log it
-            LoggerFactory.getLogger().w(TAG, "parse|pageUrl=" + pageUrl);
+            return null;
         }
         return null;
     }
 
     @Nullable
+    private Author parseMultiResult(@NonNull final Context context,
+                                    @NonNull final Document document,
+                                    @NonNull final String formattedName)
+            throws SearchException, CredentialsException {
+        // <a href="https://www.isfdb.org/cgi-bin/ea.cgi?276149" dir="ltr">Брайан Олдисс</a>
+        final Elements aas = document.select("a[href^='https://www.isfdb.org/cgi-bin/ea.cgi']");
+        // try to find an exact match
+        Optional<String> url = Optional.empty();
+        for (Element a : aas) {
+            if (a.text().equals(formattedName)) {
+                String href = a.attr("href");
+                url = Optional.of(href);
+                break;
+            }
+        }
+        if (url.isPresent()) {
+            final String sid = getIdFromUrl(url.get());
+            if (sid != null) {
+                return searchBySid(context, sid);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Parse the document.
+     * This method will detect any "Alternate Name" pages automatically and use those
+     * as the 'real' author.
+     * <p>
+     * Dev. Note: following the "Alternate Name" has two outcomes:
+     * <ul>
+     *     <li>If this is a pen-name, then we'll get the real-author. GOOD</li>
+     *     <li>If this is a variant of the name, e.g. "Brian Aldiss",
+     *         we end up with "Brian W. Aldiss" as the real-author.
+     *         Technically this is 'good', but users might find this annoying (including myself)
+     *         but there is not much we can do about it.
+     *         We could add an (yet another) option in the settings to let the user
+     *         decide to ass this redirect as the real-author, or to overwrite.
+     *         But that would complicate things even more for actual pen-name handling.
+     *         Bottom-line: the site does not differentiate between an "alternative name"
+     *         and a "pen-name".
+     *         2025-05-21: Leaving as-is for now.
+     *     </li>
+     * </ul>
+     *
+     * @param context  Current context
+     * @param document to parse
+     * @param sid      of the author we searched for
+     *
+     * @return author, or {@code null} on failure
+     *
+     * @throws SearchException      on generic exceptions (wrapped) during search
+     * @throws CredentialsException on authentication/login failures
+     */
     @VisibleForTesting
+    @Nullable
     Author parse(@NonNull final Context context,
                  @NonNull final Document document,
                  @NonNull final String sid)
@@ -233,7 +282,7 @@ public final class IsfdbAuthorResolver
         if (node == null) {
             return null;
         }
-        final Author author = Author.from(node.toString());
+        final Author author = Author.from(node.toString().trim());
         author.setIdentifierValue(Identifier.SID_ISFDB, sid);
 
         // test for an "Alternate Name" or a "real name" result.
