@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -358,7 +359,8 @@ public class AuthorWorksFragment
         final Context context = getContext();
 
         //noinspection DataFlowIssue
-        nameView.setText(author.getLabel(context, Details.AutoSelect, vm.getStyle()));
+        nameView.setText(Html.fromHtml(author.getLabel(context, Details.Full, vm.getStyle()),
+                                       Html.FROM_HTML_MODE_COMPACT));
 
         imageHandler.onBindView(pictureView);
 
