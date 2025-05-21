@@ -943,6 +943,8 @@ public class Book
 
     /**
      * Update all {@link Author} details from/with the database.
+     * <p>
+     * Uses the Book or when not available, the user {@link Locale}.
      *
      * @param context Current context
      */
