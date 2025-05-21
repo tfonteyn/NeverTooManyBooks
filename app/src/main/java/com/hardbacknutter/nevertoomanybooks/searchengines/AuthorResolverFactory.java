@@ -59,32 +59,45 @@ public final class AuthorResolverFactory {
 
     /**
      * Convenience method to resolve all authors of the given book.
+     * Uses the Book or when not available, the site {@link Locale}.
+     * <p>
+     * Any {@link SearchException} will cause an abort.
      *
      * @param context      Current context
      * @param searchEngine requesting the resolve action
      * @param book         with authors
      *
+     * @return {@code true} if the any {@link Author}s were modified; {@code false} otherwise
+     *
      * @throws CredentialsException on authentication/login failures
      */
-    public static void resolve(@NonNull final Context context,
-                               @NonNull final SearchEngine searchEngine,
-                               @NonNull final Book book)
+    public static boolean resolve(@NonNull final Context context,
+                                  @NonNull final SearchEngine searchEngine,
+                                  @NonNull final Book book)
             throws CredentialsException {
+        // Note we NOT using {@link book#refreshAuthors} as we want to use the site Locale.
+        final Locale locale = book.getLocale(context)
+                                  .orElseGet(() -> searchEngine.getLocale(context));
+
+
+        final List<Author> authors = book.getAuthors();
+        final List<AuthorResolver> resolvers = getResolvers(context, searchEngine);
+        boolean result = false;
         try {
-            // Note we NOT using {@link book#refreshAuthors} as we want to use the website Locale
-            final List<AuthorResolver> authorResolvers = getResolvers(context, searchEngine);
-            final Locale locale = book.getLocale(context)
-                                      .orElseGet(() -> searchEngine.getLocale(context));
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-            for (final AuthorResolver resolver : authorResolvers) {
-                for (final Author author : book.getAuthors()) {
-                    authorDao.refresh(context, author, locale);
-                    resolver.resolve(context, author);
+            // loop Authors first, this way we don't hit a single resolver
+            // continuously (well... if we use more than one resolver at least)
+            for (final Author author : authors) {
+                authorDao.refresh(context, author, locale);
+                for (final AuthorResolver resolver : resolvers) {
+                    result = resolver.resolve(context, author) || result;
                 }
             }
         } catch (@NonNull final SearchException e) {
-            LoggerFactory.getLogger().e(TAG, e, "AuthorResolver");
+            LoggerFactory.getLogger().e(TAG, e);
         }
+
+        return result;
     }
 
     /**
