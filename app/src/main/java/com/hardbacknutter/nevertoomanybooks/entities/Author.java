@@ -369,9 +369,9 @@ public class Author
         this.id = id;
         familyName = rowData.getString(DBKey.AUTHOR.FAMILY_NAME);
         givenNames = rowData.getString(DBKey.AUTHOR.GIVEN_NAMES);
-        birthDate = rowData.getString(DBKey.AUTHOR.BIRTH_DATE);
-        deathDate = rowData.getString(DBKey.AUTHOR.DEATH_DATE);
-        imageUuid = rowData.getString(DBKey.AUTHOR.PICTURE_UUID);
+        birthDate = rowData.getString(DBKey.AUTHOR.BIRTH_DATE, null);
+        deathDate = rowData.getString(DBKey.AUTHOR.DEATH_DATE, null);
+        imageUuid = rowData.getString(DBKey.AUTHOR.PICTURE_UUID, null);
         complete = rowData.getBoolean(DBKey.AUTHOR.COMPLETE);
 
         setIdentifiers(ServiceLocator.getInstance().getAuthorIdentifierDao().getByFkId(this.id));
