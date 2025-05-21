@@ -92,12 +92,6 @@ public interface ImageOwner {
      * @param context Current context
      * @param cIdx    0..n image index
      */
-    default void removeImage(@NonNull final Context context,
-                             @IntRange(from = 0, to = 1) final int cIdx) {
-        try {
-            setImage(context, cIdx, null);
-        } catch (@NonNull final IOException | StorageException ignore) {
-            // safe to ignore, can't happen with a 'null' input.
-        }
-    }
+    void removeImage(@NonNull Context context,
+                     @IntRange(from = 0, to = 1) int cIdx);
 }

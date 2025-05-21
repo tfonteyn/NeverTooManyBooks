@@ -1035,18 +1035,46 @@ public class Author
             final File file = new File(oFileSpec.get());
             if (file.exists()) {
                 return Optional.of(file);
+            } else {
+                // we had a fileSpec but no file - should never get here
+                tmpPictureFileSpec = null;
             }
         }
 
-        final Optional<File> file = getImageUuid()
-                .flatMap(s -> ServiceLocator.getInstance().getCoverStorage()
-                                            .getPersistedFile(s, 0));
-        if (file.isEmpty()) {
-            // we had a uuid, but no file, cleanup
+        final Optional<String> uuid = getImageUuid();
+        if (uuid.isPresent()) {
+            final Optional<File> oFile = ServiceLocator.getInstance().getCoverStorage()
+                                                       .getPersistedFile(uuid.get(), 0);
+            if (oFile.isPresent()) {
+                // all done
+                return oFile;
+            }
+
+            // we had a uuid, but no file
             // This could happen when the user imports authors without the images
-            updateImageUuid(context, null);
+            this.imageUuid = null;
+            updateInDatabase(context);
         }
-        return file;
+
+        return Optional.empty();
+    }
+
+    @Override
+    public void removeImage(@NonNull final Context context,
+                            final int cIdx) {
+        // we need to delete any existing file, and remove any existing uuid.
+        final Optional<String> oUuid = getImageUuid();
+        if (oUuid.isEmpty()) {
+            // there is no UUID, hence there is no File,
+            // nothing to do,
+            return;
+        }
+        // we have a uuid, remove the physical file, if any
+        final String uuid = oUuid.get();
+        ServiceLocator.getInstance().getCoverStorage().delete(uuid, cIdx);
+        // remove the uuid
+        imageUuid = null;
+        updateInDatabase(context);
     }
 
     @Nullable
@@ -1056,48 +1084,47 @@ public class Author
                          @Nullable final File file)
             throws StorageException, IOException {
 
+        if (file == null) {
+            removeImage(context, cIdx);
+            return null;
+        }
+
+        @Nullable
         String uuid = getImageUuid().orElse(null);
         // the file to return from this method, after the incoming file has been processed
         @Nullable
         File destination = file;
 
-        if (file != null) {
-            if (uuid != null && file.getName().startsWith(uuid)) {
-                // No further action needed as we have the image "in-place"
-                // ... not actually sure when this would be the case; keep an eye on logs
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
-                    LoggerFactory.getLogger()
-                                 .e(TAG, new Throwable("setImage"),
-                                    "readOnly"
-                                    + "|bookId=" + getId()
-                                    + "|cIdx=" + cIdx
-                                    + "|uuid, in-place"
-                                 );
-                }
-            } else if (uuid != null) {
-                // we already have an image, just replace it
-                destination = ServiceLocator.getInstance().getCoverStorage()
-                                            .persist(file, uuid, cIdx);
-            } else {
-                // it's the first time we persist an image
-                // Rename the temp file to the uuid permanent file name
-                uuid = UUID.randomUUID().toString();
-                destination = ServiceLocator.getInstance().getCoverStorage()
-                                            .persist(file, uuid, cIdx);
-                updateImageUuid(context, uuid);
+        if (uuid != null && file.getName().startsWith(uuid)) {
+            // No further action needed as we have the image "in-place"
+            // ... not actually sure when this would be the case; keep an eye on logs
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
+                LoggerFactory.getLogger()
+                             .e(TAG, new Throwable("setImage"),
+                                "readOnly"
+                                + "|bookId=" + getId()
+                                + "|cIdx=" + cIdx
+                                + "|uuid, in-place"
+                             );
             }
         } else if (uuid != null) {
-            // a null file indicates we need to delete the image
-            ServiceLocator.getInstance().getCoverStorage().delete(uuid, cIdx);
-            updateImageUuid(context, null);
+            // we already had an image, just replace it with the new file
+            destination = ServiceLocator.getInstance().getCoverStorage()
+                                        .persist(file, uuid, cIdx);
+        } else {
+            // it's the first time we persist an image
+            // Rename the temp file to a new uuid based permanent file name
+            uuid = UUID.randomUUID().toString();
+            destination = ServiceLocator.getInstance().getCoverStorage()
+                                        .persist(file, uuid, cIdx);
+            imageUuid = uuid;
+            updateInDatabase(context);
         }
 
         return destination;
     }
 
-    private void updateImageUuid(@NonNull final Context context,
-                                 @Nullable final String uuid) {
-        setImageUuid(uuid);
+    private void updateInDatabase(@NonNull final Context context) {
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         try {
             ServiceLocator.getInstance().getAuthorDao().update(context, this, locale);

@@ -1856,6 +1856,16 @@ public class Book
         }
     }
 
+    @Override
+    public void removeImage(@NonNull final Context context,
+                            final int cIdx) {
+        try {
+            setImage(context, cIdx, null);
+        } catch (@NonNull final IOException | StorageException ignore) {
+            // safe to ignore, can't happen with a 'null' input.
+        }
+    }
+
     /**
      * Get the last date-time that this book was modified.
      *
