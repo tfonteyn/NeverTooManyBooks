@@ -135,6 +135,15 @@ public final class DnbAuthorResolver
         if (oIv.isEmpty()) {
             return false;
         }
+        // We investigates searching by author name, but this seems hard to achieve.
+        // e.g. a search for "Isaac Asimov" returned:
+        // Ihre Suchanfrage ergab 528 Treffer.
+        //   506 Treffer in Medien
+        //   und 22 Treffer im Wissensnetz
+        // => the Wissensnetz list of links does contain an entry "Person" as the 4th or 5th
+        // element (the link does NOT have the authro id) which we then need to follow
+        // to get to the author page. The request/response and parsing overhead is just
+        // too large.
 
         final String url = String.format(authorUri, oIv.get());
 
