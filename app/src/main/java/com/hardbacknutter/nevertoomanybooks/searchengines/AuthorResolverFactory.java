@@ -29,6 +29,8 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
@@ -169,6 +171,21 @@ public final class AuthorResolverFactory {
         return List.of();
     }
 
+    @NonNull
+    public static List<EngineId> getEnabledEngines(@NonNull final Context context) {
+
+        return Stream.of(EngineId.Bedetheque,
+                         EngineId.DatabazeKnih,
+                         EngineId.Dnb,
+                         EngineId.Goodreads,
+                         EngineId.Isfdb,
+                         EngineId.LastDodoNl,
+                         EngineId.StripInfoBe,
+                         EngineId.StripWebBe,
+                         EngineId.OpenLibrary)
+                     .filter(engineId -> isEnabled(context, engineId))
+                     .collect(Collectors.toList());
+    }
 
     /**
      * An engine using it's own resolver.
