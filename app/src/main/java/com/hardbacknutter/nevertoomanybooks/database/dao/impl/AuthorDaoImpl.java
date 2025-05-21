@@ -627,6 +627,10 @@ public class AuthorDaoImpl
             return;
         }
 
+        // URGENT: decide on copying the birth/death dates, image, ...
+        //  between pen-name-author and the real-author
+        // unless some joking author actually distributes a made-up profile for their
+        // pen-name...   thinking about Killgore Trout... maybe leave this to the user instead?
         fixId(context, realAuthor, locale);
         if (realAuthor.getId() == 0) {
             insert(context, realAuthor, locale);
@@ -668,12 +672,23 @@ public class AuthorDaoImpl
             throws DaoCoverException {
         final Optional<String> fileSpec = author.getTmpPictureFileSpec();
         if (fileSpec.isPresent()) {
-            final String uuid = UUID.randomUUID().toString();
             try {
-                ServiceLocator.getInstance().getCoverStorage()
-                              .persist(new File(fileSpec.get()), uuid, 0);
+                final File file = new File(fileSpec.get());
+                // Check existence! We can run into situations where we had a
+                // pen-name author and the real-author both having the same temp image file.
+                // The pen-name author would have stored/renamed the file,
+                // and the real-author would end up with the temp file set, but physical file
+                // already gone.
+                // This could be a bug... it's getting pretty complicated dealing with
+                // multiple resolvers and multiple sites.
+                // Call it a workaround/bug/solution/paranoia... it works.
+                if (file.exists()) {
+                    final String uuid = UUID.randomUUID().toString();
+                    ServiceLocator.getInstance().getCoverStorage()
+                                  .persist(file, uuid, 0);
+                    author.setImageUuid(uuid);
+                }
                 author.setTmpPictureFileSpec(null);
-                author.setImageUuid(uuid);
             } catch (@NonNull final IOException | CoverStorageException e) {
                 throw new DaoCoverException(ERROR_STORING_IMAGES + author, e);
             }
