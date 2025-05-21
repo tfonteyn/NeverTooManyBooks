@@ -126,33 +126,41 @@ public final class OpenLibraryAuthorResolver
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
 
+        final Author found;
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         if (oIv.isPresent()) {
-            return searchBySid(context, author, oIv.get());
+            found = searchBySid(context, oIv.get());
         } else {
-            return search(context, author);
+            found = searchByName(context, author.getFormattedName(true));
         }
+
+        // 2025-05-10: insist on case-sensitive name equality for now.
+        // If this proves problematic, we'll change it later...
+        if (found != null && author.isSameName(found)) {
+            return author.merge(found, true);
+        }
+
+        return false;
     }
 
     /**
      * As usual with OpenLibrary, the json returned here is (slightly) DIFFERENT
-     * from the json returned in {@link #search(Context, Author)}. Sigh...
+     * from the json returned in {@link #searchByName}. Sigh...
      *
      * @param context Current context
-     * @param author  to search for
      * @param sid     to search
      *
-     * @return {@code true} if the {@link Author} was modified; {@code false} otherwise
+     * @return the {@link Author}; or {@code null} if not found
      *
      * @throws SearchException on generic exceptions (wrapped) during search
      */
-    private boolean searchBySid(@NonNull final Context context,
-                                @NonNull final Author author,
-                                @NonNull final String sid)
+    @Nullable
+    private Author searchBySid(@NonNull final Context context,
+                               @NonNull final String sid)
             throws SearchException {
         // the user can delete it...
         if (authorUri == null) {
-            return false;
+            return null;
         }
 
         final String url = String.format(authorUri, sid) + ".json";
@@ -162,59 +170,49 @@ public final class OpenLibraryAuthorResolver
             final String response = futureHttpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
-                final Author found = authorParser.parse(context, document);
-                // 2025-05-10: insist on case-sensitive name equality for now.
-                // If this proves problematic, we'll change it later...
-                if (found != null && author.isSameName(found)) {
-                    return author.merge(found, true);
-                }
+                return authorParser.parse(context, document);
             }
         } catch (@NonNull final StorageException | IOException | JSONException e) {
             throw new SearchException(searchEngine.getEngineId(), e);
         }
-        return false;
+        return null;
     }
 
     /**
      * As usual with OpenLibrary, the json (docs[0]) returned here is (slightly) DIFFERENT
-     * from the json returned in {@link #searchBySid(Context, Author, String)}. Sigh...
+     * from the json returned in {@link #searchBySid}. Sigh...
      *
      * @param context Current context
-     * @param author  to search for
+     * @param names   to search for
      *
-     * @return {@code true} if the {@link Author} was modified; {@code false} otherwise
+     * @return the {@link Author}; or {@code null} if not found
      *
      * @throws SearchException on generic exceptions (wrapped) during search
      */
-    public boolean search(@NonNull final Context context,
-                          @NonNull final Author author)
+    @Nullable
+    private Author searchByName(@NonNull final Context context,
+                                @NonNull final String names)
             throws SearchException {
 
         final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
         try {
-            final String url = AUTHOR_SEARCH + URLEncoder.encode(
-                    author.getFormattedName(true), CHARSET);
+            final String url = AUTHOR_SEARCH + URLEncoder.encode(names, CHARSET);
 
             final String response = futureHttpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 final int numFound = document.optInt("numFound");
                 if (numFound < 1) {
-                    return false;
+                    return null;
                 }
                 final JSONArray docs = document.optJSONArray("docs");
                 if (docs != null && !docs.isEmpty()) {
-                    final Author found = authorParser.parse(context, docs.getJSONObject(0));
-                    // 2025-05-10: insist on case-sensitive name equality for now.
-                    // If this proves problematic, we'll change it later...
-                    if (found != null && author.isSameName(found)) {
-                        return author.merge(found, true);
-                    }
+                    return authorParser.parse(context, docs.getJSONObject(0));
                 }
             }
         } catch (@NonNull final StorageException | IOException | JSONException e) {
             throw new SearchException(searchEngine.getEngineId(), e);
         }
-        return false;
+        return null;
     }
 }

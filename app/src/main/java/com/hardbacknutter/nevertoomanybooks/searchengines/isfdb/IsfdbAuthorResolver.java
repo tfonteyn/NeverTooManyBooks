@@ -129,10 +129,10 @@ public final class IsfdbAuthorResolver
 
         final Author found;
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_ISFDB);
-        if (oIv.isEmpty()) {
-            found = searchByName(context, author.getFormattedName(true));
-        } else {
+        if (oIv.isPresent()) {
             found = searchBySid(context, oIv.get());
+        } else {
+            found = searchByName(context, author.getFormattedName(true));
         }
 
         // 2025-05-10: insist on case-sensitive name equality for now.
@@ -142,19 +142,6 @@ public final class IsfdbAuthorResolver
         }
 
         return false;
-    }
-
-    @Nullable
-    private Author searchByName(@NonNull final Context context,
-                                @NonNull final String names)
-            throws SearchException, CredentialsException {
-
-        final String url = String.format(authorSearchUrl, names);
-        final Document document = searchEngine.loadDocument(context, url, null);
-        if (!searchEngine.isCancelled()) {
-            return parse(context, document);
-        }
-        return null;
     }
 
     @Nullable
@@ -172,6 +159,21 @@ public final class IsfdbAuthorResolver
         }
         return null;
     }
+
+
+    @Nullable
+    private Author searchByName(@NonNull final Context context,
+                                @NonNull final String names)
+            throws SearchException, CredentialsException {
+
+        final String url = String.format(authorSearchUrl, names);
+        final Document document = searchEngine.loadDocument(context, url, null);
+        if (!searchEngine.isCancelled()) {
+            return parse(context, document);
+        }
+        return null;
+    }
+
 
     @VisibleForTesting
     @Nullable
