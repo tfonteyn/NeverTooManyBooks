@@ -100,7 +100,7 @@
     // which could potentially be a very long list
  -->
     <item
-        android:id="@id/MENU_UPDATE_FROM_INTERNET"
+        android:id="@id/MENU_UPDATE_BOOKS_BY_SEARCH"
         android:icon="@drawable/cloud_download_24px"
         android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
         android:title="@string/menu_update_books"

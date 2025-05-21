@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,13 +22,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@id/MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY"
+        android:id="@id/MENU_UPDATE_BOOKS_BY_SEARCH_THIS_NODE_ONLY"
         android:icon="@drawable/select_24px"
         android:orderInCategory="@integer/MENU_ORDER_EDIT"
         android:title="@string/option_apply_to_this_node_only" />
 
     <item
-        android:id="@id/MENU_UPDATE_FROM_INTERNET_ALL_SHELVES"
+        android:id="@id/MENU_UPDATE_BOOKS_BY_SEARCH_ALL_BOOKSHELVES"
         android:icon="@drawable/select_all_24px"
         android:orderInCategory="@integer/MENU_ORDER_DELETE"
         android:title="@string/option_apply_to_all_related_books" />

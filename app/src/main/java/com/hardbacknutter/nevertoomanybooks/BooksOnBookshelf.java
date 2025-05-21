@@ -1229,13 +1229,13 @@ public class BooksOnBookshelf
             startActivity(intent);
             return true;
 
-        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+        } else if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH) {
             // This is the 1st step in the updateBooksFromInternet process.
             return onRowMenuGroupUpdateFromInternet(view, adapterPosition, rowData);
 
-        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES
-                   || menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
-            // We get here after the user choose from the BottomSheet dialog.
+        } else if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH_ALL_BOOKSHELVES
+                   || menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH_THIS_NODE_ONLY) {
+            // We get here after the user choose one of these options from the dialog menu.
             return updateBooksFromInternetData(menuItemId, rowData);
 
         } else if (menuItemId == R.id.MENU_SET_BOOKSHELVES) {
@@ -1354,7 +1354,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Handle {@link R.id#MENU_UPDATE_FROM_INTERNET}.
+     * Handle {@link R.id#MENU_UPDATE_BOOKS_BY_SEARCH}.
      *
      * @param v               View clicked; the anchor for a potential popup menu
      * @param adapterPosition The {@link #adapter} position of the row menu from which
@@ -1510,8 +1510,8 @@ public class BooksOnBookshelf
      * We get here after the user has selected to update a set of books on "this bookshelf only"
      * or on all bookshelves.
      *
-     * @param menuItemId {@link R.id#MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY}
-     *                   or {@link R.id#MENU_UPDATE_FROM_INTERNET_ALL_SHELVES}
+     * @param menuItemId {@link R.id#MENU_UPDATE_BOOKS_BY_SEARCH_THIS_NODE_ONLY}
+     *                   or {@link R.id#MENU_UPDATE_BOOKS_BY_SEARCH_ALL_BOOKSHELVES}
      * @param rowData    for the row which was selected
      *
      * @return {@code true} if handled.
@@ -1522,9 +1522,9 @@ public class BooksOnBookshelf
                                                 @NonNull final DataHolder rowData) {
         Boolean onlyThisShelf = null;
 
-        if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY) {
+        if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH_THIS_NODE_ONLY) {
             onlyThisShelf = true;
-        } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
+        } else if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH_ALL_BOOKSHELVES) {
             onlyThisShelf = false;
         }
         if (onlyThisShelf != null) {
@@ -1987,25 +1987,13 @@ public class BooksOnBookshelf
                 case BooklistGroup.DATE_PUBLISHED_MONTH:
                 case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
                 case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH: {
-                    menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
-                             getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
-                             R.string.lbl_assign_bookshelves)
-                        .setIcon(R.drawable.library_books_24px);
-                    menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
-                             getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
-                             R.string.lbl_assign_location)
-                        .setIcon(R.drawable.edit_location_24px);
-
-                    menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                             getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
-                             R.string.menu_update_books)
-                        .setIcon(R.drawable.cloud_download_24px);
+                    forDate(menu);
                     break;
                 }
                 default: {
                     // For now, we do NOT provide the below options for unlisted groups.
                     // - MENU_SET_BOOKSHELVES
-                    // - MENU_UPDATE_FROM_INTERNET
+                    // - MENU_UPDATE_FIELDS_BY_SEARCH
                     break;
                 }
             }
@@ -2162,7 +2150,7 @@ public class BooksOnBookshelf
                 StandardDialogs.deleteBook(context, title, authors, () -> vm.deleteBook(bookId));
                 return true;
 
-            } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
+            } else if (menuItemId == R.id.MENU_UPDATE_ITEM_BY_SEARCH) {
                 final Book book = Book.from(bookId);
                 updateBookLauncher.launch(book);
                 return true;
@@ -2311,7 +2299,7 @@ public class BooksOnBookshelf
                          R.string.lbl_assign_location)
                     .setIcon(R.drawable.edit_location_24px);
 
-                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
                          getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                          R.string.menu_update_books)
                     .setIcon(R.drawable.cloud_download_24px);
@@ -2380,7 +2368,7 @@ public class BooksOnBookshelf
                          R.string.lbl_assign_location)
                     .setIcon(R.drawable.edit_location_24px);
 
-                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
                          getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                          R.string.menu_update_books)
                     .setIcon(R.drawable.cloud_download_24px);
@@ -2445,7 +2433,7 @@ public class BooksOnBookshelf
                          R.string.lbl_assign_location)
                     .setIcon(R.drawable.edit_location_24px);
 
-                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
                          getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                          R.string.menu_update_books)
                     .setIcon(R.drawable.cloud_download_24px);
@@ -2682,6 +2670,31 @@ public class BooksOnBookshelf
             }
             return false;
         }
+
+        /**
+         * Create the row/context menu for one of the Date based rows.
+         * <p>
+         * Note there is no equivalent "onDate" method as these are row-group independent options
+         * handled in {@link #onSomeMenuItemSelected(int, int)}
+         *
+         * @param menu to attach to
+         */
+        private void forDate(@NonNull final Menu menu) {
+            menu.add(Menu.NONE, R.id.MENU_SET_BOOKSHELVES,
+                     getResources().getInteger(R.integer.MENU_ORDER_SET_BOOKSHELVES),
+                     R.string.lbl_assign_bookshelves)
+                .setIcon(R.drawable.library_books_24px);
+            menu.add(Menu.NONE, R.id.MENU_SET_LOCATION,
+                     getResources().getInteger(R.integer.MENU_ORDER_SET_LOCATION),
+                     R.string.lbl_assign_location)
+                .setIcon(R.drawable.edit_location_24px);
+
+            menu.add(Menu.NONE, R.id.MENU_UPDATE_BOOKS_BY_SEARCH,
+                     getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                     R.string.menu_update_books)
+                .setIcon(R.drawable.cloud_download_24px);
+        }
+
     }
 
     /**
@@ -2771,7 +2784,7 @@ public class BooksOnBookshelf
                 expandAllNodes(1, false);
                 return true;
 
-            } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            } else if (menuItemId == R.id.MENU_UPDATE_BOOKS_BY_SEARCH) {
                 updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
                         BooksOnBookshelf.this));
                 return true;

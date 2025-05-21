@@ -49,7 +49,6 @@ final class IconMapper {
             Map.entry(R.id.MENU_BOOK_EDIT, R.drawable.edit_24px),
             Map.entry(R.id.MENU_BOOK_DUPLICATE, R.drawable.content_copy_24px),
             Map.entry(R.id.MENU_BOOK_DELETE, R.drawable.delete_24px),
-            Map.entry(R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK, R.drawable.cloud_download_24px),
             Map.entry(R.id.MENU_BOOK_LOAN_ADD, R.drawable.group_24px),
             Map.entry(R.id.MENU_BOOK_LOAN_DELETE, R.drawable.group_24px),
             Map.entry(R.id.MENU_SHARE, R.drawable.share_24px),
@@ -91,7 +90,8 @@ final class IconMapper {
             Map.entry(R.id.SUBMENU_SEARCH_BOOKS_ON_SITE, R.drawable.search_24px),
 
             // common to several menus
-            Map.entry(R.id.MENU_UPDATE_FROM_INTERNET, R.drawable.cloud_download_24px),
+            Map.entry(R.id.MENU_UPDATE_BOOKS_BY_SEARCH, R.drawable.cloud_download_24px),
+            Map.entry(R.id.MENU_UPDATE_ITEM_BY_SEARCH, R.drawable.cloud_download_24px),
             Map.entry(R.id.MENU_LEVEL_EXPAND, R.drawable.unfold_more_24px)
     );
 

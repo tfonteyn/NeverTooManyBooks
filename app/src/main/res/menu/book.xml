@@ -67,7 +67,7 @@
             android:title="@string/action_delete" />
 
         <item
-            android:id="@id/MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK"
+            android:id="@id/MENU_UPDATE_ITEM_BY_SEARCH"
             android:icon="@drawable/cloud_download_24px"
             android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
             android:title="@string/menu_update_fields" />

@@ -723,7 +723,7 @@ public class ShowBookDetailsFragment
                   .commit();
                 return true;
 
-            } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK) {
+            } else if (menuItemId == R.id.MENU_UPDATE_ITEM_BY_SEARCH) {
                 updateBookLauncher.launch(book);
                 return true;
 

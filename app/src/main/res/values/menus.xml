@@ -87,22 +87,23 @@
     <item name="MENU_APPLY"
           type="id" />
 
-    <!-- A SINGLE book; i.e. from the book-details screen.
-         The 10" landscape layout can display both 'node' and 'single' options
-         so we need to distinguish -->
-    <item name="MENU_UPDATE_FROM_INTERNET_SINGLE_BOOK"
+    <!-- A SINGLE item (book, author,...) - NOT applicable on nodes of the BoB. -->
+    <item name="MENU_UPDATE_ITEM_BY_SEARCH"
           type="id" />
-    <!-- A list of books (which can be a single book) specific to a node in the booklist.
-         When shown in the option menu for the BoB screen, it's implicitly for
-         the current Bookshelf.
+
+    <!-- Available on nodes in the BoB for a single or multiple books.
+         If the row refers to multiple books, a popup-menu allows
+         the choice between the options
+         - {@link #MENU_UPDATE_BOOKS_BY_SEARCH_THIS_NODE_ONLY}
+         - {@link #MENU_UPDATE_BOOKS_BY_SEARCH_ALL_BOOKSHELVES}
     -->
-    <item name="MENU_UPDATE_FROM_INTERNET"
+    <item name="MENU_UPDATE_BOOKS_BY_SEARCH"
           type="id" />
-    <!-- Submenu option for "MENU_UPDATE_FROM_INTERNET" -->
-    <item name="MENU_UPDATE_FROM_INTERNET_THIS_NODE_ONLY"
+    <!-- Submenu option for {@link #MENU_UPDATE_BOOKS_BY_SEARCH}. -->
+    <item name="MENU_UPDATE_BOOKS_BY_SEARCH_THIS_NODE_ONLY"
           type="id" />
-    <!-- Submenu option for "MENU_UPDATE_FROM_INTERNET" -->
-    <item name="MENU_UPDATE_FROM_INTERNET_ALL_SHELVES"
+    <!-- Submenu option for {@link #MENU_UPDATE_BOOKS_BY_SEARCH}. -->
+    <item name="MENU_UPDATE_BOOKS_BY_SEARCH_ALL_BOOKSHELVES"
           type="id" />
 
     <!-- An option of the SearchBookUpdatesFragment option menu to quickly
