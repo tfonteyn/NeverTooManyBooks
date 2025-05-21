@@ -144,10 +144,15 @@ public final class DatabazeKnihAuthorResolver
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             final Author found = parse(context, document, sid);
-            // 2025-05-10: insist on case-sensitive name equality for now.
-            // If this proves problematic, we'll change it later...
-            if (found != null && author.isSameName(found)) {
-                final boolean merged = author.merge(found, true);
+            if (found != null) {
+                boolean modified = author.merge(found, true);
+                if (author.isSameName(found) && !author.isIdenticalName(found)) {
+                    // correct diacritics difference
+                    author.setName(found.getFamilyName(), found.getGivenNames());
+                    modified = true;
+                }
+
+                // DatabaseKnih uses the same id for pseudonym names.
                 // force the real-author to have the same id
                 final Author realAuthor = author.getRealAuthor();
                 if (realAuthor != null) {
@@ -155,7 +160,7 @@ public final class DatabazeKnihAuthorResolver
                           .ifPresent(id -> realAuthor.setIdentifierValue(
                                   Identifier.SID_DATABAZE_KNIH, id));
                 }
-                return merged;
+                return modified;
             }
         }
 

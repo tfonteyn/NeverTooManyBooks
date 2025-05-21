@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -53,11 +52,12 @@ public interface Mergeable {
     List<String> getNameFields();
 
     /**
-     * Convenience method to <strong>case-sensitive</strong> compare two Mergeable's.
+     * Convenience method to <strong>diacritics-NOT-sensitive</strong> compare two Mergeable's.
+     * Always <strong>case-sensitive</strong>.
      *
      * @param that the one to compare with
      *
-     * @return {@code true} if its the same name
+     * @return {@code true} if its the same name (except for diacritics)
      */
     default boolean isSameName(@NonNull final Mergeable that) {
         return Objects.hash(getNameFields()
@@ -71,31 +71,15 @@ public interface Mergeable {
     }
 
     /**
-     * Convenience method to <strong>case-insensitive</strong> compare two Mergeable's.
-     * <p>
-     * Same as {@link #isSameName(Mergeable)} but lower-casing the names based
-     * on the given locales.
+     * Convenience method to <strong>diacritics-sensitive</strong> compare two Mergeable's.
+     * Always <strong>case-sensitive</strong>.
      *
-     * @param locale     the locale of the name.
-     *                   Used for case manipulation.
-     * @param that       the one to compare with
-     * @param thatLocale the locale of the one to compare with.
-     *                   Used for case manipulation.
+     * @param that the one to compare with
      *
-     * @return {@code true} if its the same name
+     * @return {@code true} if its the same name (including all diacritics)
      */
-    default boolean isSameNameIgnoreCase(@NonNull final Locale locale,
-                                         @NonNull final Mergeable that,
-                                         @NonNull final Locale thatLocale) {
-        return Objects.hash(getNameFields()
-                                    .stream()
-                                    .map(SqlEncode::normalize)
-                                    .map(name -> name.toLowerCase(locale))
-                                    .collect(Collectors.toList()))
-               == Objects.hash(that.getNameFields()
-                                   .stream()
-                                   .map(SqlEncode::normalize)
-                                   .map(name -> name.toLowerCase(thatLocale))
-                                   .collect(Collectors.toList()));
+    default boolean isIdenticalName(@NonNull final Mergeable that) {
+        return Objects.hash(getNameFields())
+               == Objects.hash(that.getNameFields());
     }
 }

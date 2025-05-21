@@ -143,10 +143,14 @@ public final class DnbAuthorResolver
 
         if (!searchEngine.isCancelled()) {
             final Author found = parse(context, document);
-            // 2025-05-10: insist on case-sensitive name equality for now.
-            // If this proves problematic, we'll change it later...
-            if (found != null && author.isSameName(found)) {
-                return author.merge(found, true);
+            if (found != null) {
+                boolean modified = author.merge(found, true);
+                if (author.isSameName(found) && !author.isIdenticalName(found)) {
+                    // correct diacritics difference
+                    author.setName(found.getFamilyName(), found.getGivenNames());
+                    modified = true;
+                }
+                return modified;
             }
         }
 

@@ -130,14 +130,22 @@ public final class OpenLibraryAuthorResolver
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         if (oIv.isPresent()) {
             found = searchBySid(context, oIv.get());
+            if (found != null) {
+                boolean modified = author.merge(found, true);
+                if (author.isSameName(found) && !author.isIdenticalName(found)) {
+                    // correct diacritics difference
+                    author.setName(found.getFamilyName(), found.getGivenNames());
+                    modified = true;
+                }
+                return modified;
+            }
         } else {
             found = searchByName(context, author.getFormattedName(true));
-        }
-
-        // 2025-05-10: insist on case-sensitive name equality for now.
-        // If this proves problematic, we'll change it later...
-        if (found != null && author.isSameName(found)) {
-            return author.merge(found, true);
+            // 2025-05-10: insist on case-sensitive name equality for now.
+            // If this proves problematic, we'll change it later...
+            if (found != null && author.isSameName(found)) {
+                return author.merge(found, true);
+            }
         }
 
         return false;
