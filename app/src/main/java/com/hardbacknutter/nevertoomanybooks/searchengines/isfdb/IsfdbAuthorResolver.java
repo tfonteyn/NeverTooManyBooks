@@ -195,7 +195,6 @@ public final class IsfdbAuthorResolver
                 // dunno, let's log it
                 LoggerFactory.getLogger().w(TAG, "parse|pageUrl=" + pageUrl);
             }
-            return null;
         }
         return null;
     }
