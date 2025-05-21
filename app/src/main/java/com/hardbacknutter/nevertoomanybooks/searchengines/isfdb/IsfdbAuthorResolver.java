@@ -217,13 +217,17 @@ public final class IsfdbAuthorResolver
         }
 
         Element element;
-        element = root.selectFirst("b:contains(Legal Name:)");
+
+        // We are disregarding the "b:contains(Legal Name:)".
+        // This typically spells out any (middle) initials which
+        // do not appear on the books.
+        // While nice to have, it complicates name comparison far too much.
+        // TODO: add a specific author field for the full/legal name
+        element = root.selectFirst("b:contains(Author:)");
         if (element == null) {
-            element = root.selectFirst("b:contains(Author:)");
-            if (element == null) {
-                return null;
-            }
+            return null;
         }
+
         final Node node = element.nextSibling();
         if (node == null) {
             return null;
