@@ -27,10 +27,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CancellationException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -45,16 +49,29 @@ public class AuthorResolverTask
     private List<AuthorResolver> resolvers;
     @Nullable
     private List<Author> authors;
+    private boolean storeModifications;
 
     public AuthorResolverTask() {
         super(R.id.TASK_ID_AUTHOR_RESOLVER, TAG);
     }
 
+    /**
+     * Start the task.
+     *
+     * @param context            Current context
+     * @param engineId           the source for the resolvers to use
+     * @param authors            to update
+     * @param storeModifications flag;
+     *                           {@code true} to write all modifications directly to the database,
+     *                           {@code false} not to.
+     */
     @UiThread
     public void start(@NonNull final Context context,
                       @NonNull final EngineId engineId,
-                      @NonNull final List<Author> authors) {
+                      @NonNull final List<Author> authors,
+                      final boolean storeModifications) {
         this.authors = authors;
+        this.storeModifications = storeModifications;
 
         final SearchEngine searchEngine = engineId.createSearchEngine(context);
         searchEngine.setCaller(this);
@@ -65,7 +82,10 @@ public class AuthorResolverTask
     /**
      * Run the resolvers.
      * <p>
-     * Any {@link SearchException} will cause an abort.
+     * Any {@link SearchException} or {@code DaoWriteException} will cause an abort.
+     * All database writes happen in a transaction which will be aborted in this case,
+     * but the authors in the list authors may have been modified!
+     * <strong>ALL results should be discarded in this case</strong>
      *
      * @return {@code true} if the any {@link Author}s were modified; {@code false} otherwise
      *
@@ -76,21 +96,41 @@ public class AuthorResolverTask
     protected Boolean doWork()
             throws CancellationException,
                    CredentialsException {
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final SynchronizedDb db = serviceLocator.getDb();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         boolean result = false;
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (storeModifications) {
+                txLock = db.beginTransaction(true);
+            }
             // loop Authors first, this way we don't hit a single resolver
             // continuously (well... if we use more than one resolver at least)
             //noinspection DataFlowIssue
             for (final Author author : authors) {
                 //noinspection DataFlowIssue
                 for (final AuthorResolver resolver : resolvers) {
-                    result = resolver.resolve(context, author) || result;
+                    final boolean modified = resolver.resolve(context, author);
+                    if (modified && storeModifications) {
+                        serviceLocator.getAuthorDao().update(context, author, locale);
+                    }
+
+                    result = modified || result;
                 }
             }
-        } catch (@NonNull final SearchException e) {
+
+            if (storeModifications) {
+                db.setTransactionSuccessful();
+            }
+        } catch (@NonNull final SearchException | DaoWriteException e) {
             LoggerFactory.getLogger().e(TAG, e);
+        } finally {
+            if (storeModifications) {
+                db.endTransaction(txLock);
+            }
         }
 
         return result;

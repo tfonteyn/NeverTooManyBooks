@@ -306,7 +306,7 @@ public class AuthorWorksViewModel
 
     void resolve(@NonNull final Context context,
                  @NonNull final EngineId engineId) {
-        authorResolverTask.start(context, engineId, List.of(author));
+        authorResolverTask.start(context, engineId, List.of(author), true);
     }
 
     void cancelResolverTask() {
