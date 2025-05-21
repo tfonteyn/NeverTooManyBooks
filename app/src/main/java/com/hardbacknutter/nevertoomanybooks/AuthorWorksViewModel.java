@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -34,6 +35,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -46,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.menus.AuthorViewAuthorOnSiteMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverTask;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 @SuppressWarnings("WeakerAccess")
 public class AuthorWorksViewModel
@@ -53,6 +57,8 @@ public class AuthorWorksViewModel
 
     private final MutableLiveData<Author> onAuthor = new MutableLiveData<>();
     private final MutableLiveData<String> onBookshelf = new MutableLiveData<>();
+
+    private final AuthorResolverTask authorResolverTask = new AuthorResolverTask();
 
     /** The list of TOC/Books we're displaying. */
     private final List<AuthorWork> works = new ArrayList<>();
@@ -82,6 +88,27 @@ public class AuthorWorksViewModel
 
     private Style style;
     private List<MenuHandler<Author>> menuHandlers;
+
+    @Override
+    protected void onCleared() {
+        authorResolverTask.cancel();
+        super.onCleared();
+    }
+
+    @NonNull
+    public LiveData<LiveDataEvent<Throwable>> onResolverFailure() {
+        return authorResolverTask.onFailure();
+    }
+
+    @NonNull
+    public LiveData<LiveDataEvent<Boolean>> onResolverCancelled() {
+        return authorResolverTask.onCancelled();
+    }
+
+    @NonNull
+    public LiveData<LiveDataEvent<Boolean>> onResolverFinished() {
+        return authorResolverTask.onFinished();
+    }
 
     @NonNull
     MutableLiveData<Author> onAuthor() {
@@ -275,5 +302,14 @@ public class AuthorWorksViewModel
     void onAuthorUpdate(@NonNull final Author author) {
         this.author = author;
         onAuthor.setValue(author);
+    }
+
+    void resolve(@NonNull final Context context,
+                 @NonNull final EngineId engineId) {
+        authorResolverTask.start(context, engineId, List.of(author));
+    }
+
+    void cancelResolverTask() {
+        authorResolverTask.cancel();
     }
 }

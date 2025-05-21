@@ -43,16 +43,20 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Collections;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -68,8 +72,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
@@ -112,6 +119,9 @@ public class AuthorWorksFragment
     private AuthorWorksAdapter adapter;
     /** View Binding. */
     private FragmentAuthorWorksBinding vb;
+    @Nullable
+    private ProgressDelegate progressDelegate;
+
     private Menu rowMenu;
     private TextView nameView;
     private ImageView pictureView;
@@ -188,6 +198,10 @@ public class AuthorWorksFragment
         vm.onAuthor().observe(getViewLifecycleOwner(), this::onAuthorUpdate);
         vm.getOnBookshelf().observe(getViewLifecycleOwner(), s -> bookshelfView.setText(s));
 
+        vm.onResolverFinished().observe(getViewLifecycleOwner(), this::onResolverFinished);
+        vm.onResolverCancelled().observe(getViewLifecycleOwner(), this::onResolverCancelled);
+        vm.onResolverFailure().observe(getViewLifecycleOwner(), this::onResolverFailure);
+
         vb.authorWorks.setHasFixedSize(true);
 
         final Context context = getContext();
@@ -250,6 +264,94 @@ public class AuthorWorksFragment
                 .build();
         imageHandler.onBindView(pictureView);
         imageHandler.attachOnClickListeners(getChildFragmentManager(), pictureView);
+    }
+
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
+    private void updateAuthorBySearch() {
+        final Context context = getContext();
+        //noinspection DataFlowIssue
+        final List<EngineId> enabledEngines = AuthorResolverFactory.getEnabledEngines(context);
+        final CharSequence[] options = enabledEngines
+                .stream()
+                .map(engineId -> engineId.getName(context))
+                .toArray(CharSequence[]::new);
+
+        new MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.lbl_select_website)
+                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                .setSingleChoiceItems(options, -1, (d, w) -> {
+                    d.dismiss();
+                    if (w >= 0) {
+                        // There will be no progress messages as reading the data itself
+                        // is very fast, but connection can take a long time,
+                        // so bring up the progress dialog now
+                        closeProgressDialog();
+                        //noinspection DataFlowIssue
+                        progressDelegate = new ProgressDelegate(getProgressFrame())
+                                .setTitle(R.string.pt_fetch_author_info)
+                                .setMessage(R.string.progress_msg_please_wait)
+                                .setPreventSleep(true)
+                                .setIndeterminate(true)
+                                .setOnCancelListener(v -> vm.cancelResolverTask())
+                                .show(() -> getActivity().getWindow());
+
+                        vm.resolve(context, enabledEngines.get(w));
+                    }
+                })
+                .create()
+                .show();
+    }
+
+
+    private void onResolverFailure(@NonNull final LiveDataEvent<Throwable> message) {
+        closeProgressDialog();
+
+        message.process(e -> {
+            //noinspection DataFlowIssue
+            ErrorDialog.show(getContext(), TAG, e, getString(R.string.error_unexpected),
+                             (d, w) -> getActivity().finish());
+        });
+    }
+
+    private void onResolverCancelled(@NonNull final LiveDataEvent<Boolean> message) {
+        closeProgressDialog();
+
+        message.process(resolved -> {
+            if (resolved != null) {
+                onResolverFinished(resolved);
+            } else {
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), getString(R.string.cancelled), Snackbar.LENGTH_SHORT)
+                        .show();
+            }
+        });
+    }
+
+    private void onResolverFinished(@NonNull final LiveDataEvent<Boolean> message) {
+        closeProgressDialog();
+
+        message.process(this::onResolverFinished);
+    }
+
+    private void onResolverFinished(@NonNull final Boolean resolved) {
+        if (resolved) {
+            onAuthorUpdate(vm.getAuthor());
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT)
+                    .show();
+        } else {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.warning_no_extra_info_found, Snackbar.LENGTH_LONG)
+                    .show();
+        }
+    }
+
+    private void closeProgressDialog() {
+        if (progressDelegate != null) {
+            //noinspection DataFlowIssue
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
+        }
     }
 
     private void onAuthorUpdate(@NonNull final Author author) {
@@ -375,6 +477,10 @@ public class AuthorWorksFragment
             if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
                 //noinspection DataFlowIssue
                 editAuthorLauncher.editInPlace(getContext(), vm.getAuthor());
+                return true;
+
+            } else if (menuItemId == R.id.MENU_UPDATE_ITEM_BY_SEARCH) {
+                updateAuthorBySearch();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_TITLE) {
