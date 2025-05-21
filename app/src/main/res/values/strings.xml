@@ -280,8 +280,10 @@
     <string name="warning_cannot_delete_1st_bs">The first bookshelf cannot be deleted.</string>
     <!-- When the user tries to add e.g. an Author which is already listed on the book -->
     <string name="warning_already_in_list">Already in the list!</string>
-    <!-- result of a search -->
+    <!-- result of a search. -->
     <string name="warning_no_matching_book_found">No matching book found</string>
+    <!-- result of a search. -->
+    <string name="warning_no_extra_info_found">No (additional) info found</string>
     <!-- the ISBN (or similar codes) entered is not valid -->
     <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
     <string name="warning_image_not_found">Image could not be found.</string>
@@ -1051,11 +1053,15 @@
     <!-- [VERIFIED] -->
     <string name="action_export">Export</string>
     <string name="action_synchronize">Synchronize</string>
-    <!-- Small screens. Ideally 3-5 characters long. -->
+    <!-- Small screens; Button text; Ideally 3-5 characters long. -->
     <string name="action_show_toc"
             translatable="false">@string/lbl_table_of_content_short</string>
-    <!-- Large screens; max 25 chars -->
+    <!-- Large screens; Button text; max 25 chars -->
     <string name="action_show_toc_long">Show Table Of Content</string>
+
+    <!-- Menu option -->
+    <string name="action_restore_default_identifiers">Restore the default Identifiers</string>
+
     <!-- endregion -->
     <!-- region ========== Toolbar, Activity and Dialog titles. -->
     <!-- Toolbar/Screen title. -->
@@ -1256,6 +1262,11 @@
          The "ID" string should be very short, maximum 3 or 4 characters.
          -->
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+
+    <string name="lbl_identifier_key"
+            translatable="false">@string/lbl_identifier</string>
+    <string name="lbl_book_uri">Book URL</string>
+    <string name="lbl_author_uri">Author URL</string>
 
     <!-- endregion -->
     <!-- region ========== All date related labels. -->
@@ -2149,13 +2160,6 @@
     <!-- NOT FINAL, DO NOT TRANSLATE YET -->
     <string name="option_tuning"
             translatable="false">Tuning</string>
-
-    <string name="action_restore_default_identifiers">Restore the default Identifiers</string>
-    <string name="lbl_identifier_key"
-            translatable="false">@string/lbl_identifier</string>
-    <string name="lbl_book_uri">Book URL</string>
-    <string name="lbl_author_uri">Author URL</string>
-
     <!-- NOT FINAL, DO NOT TRANSLATE YET
         Param 1: name of the website with a url to the registration page
         Param 2: will be set to "Learn more" with a url to the documentation;
