@@ -207,9 +207,10 @@ public final class IsfdbAuthorResolver
     }
 
     @Nullable
-    private Author parse(@NonNull final Context context,
-                         @NonNull final Document document,
-                         @NonNull final String sid)
+    @VisibleForTesting
+    Author parse(@NonNull final Context context,
+                 @NonNull final Document document,
+                 @NonNull final String sid)
             throws SearchException, CredentialsException {
         final Element root = document.selectFirst("div.ContentBox");
         if (root == null) {

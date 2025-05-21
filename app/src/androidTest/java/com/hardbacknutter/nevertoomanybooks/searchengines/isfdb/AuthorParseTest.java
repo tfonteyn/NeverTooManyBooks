@@ -91,7 +91,7 @@ public class AuthorParseTest
         final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
 
-        final Author author = resolver.parse(context, document);
+        final Author author = resolver.parse(context, document, "49");
         assertNotNull(author);
 
         Log.d(TAG, author.toString());
@@ -150,7 +150,7 @@ public class AuthorParseTest
         final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
 
-        final Author author = resolver.parse(context, document);
+        final Author author = resolver.parse(context, document, "3358");
         parsePaulFrench(author);
     }
 
