@@ -60,10 +60,14 @@ public final class AuthorResolverFactory {
     }
 
     /**
-     * Convenience method to resolve all authors of the given book.
-     * Uses the Book or when not available, the site {@link Locale}.
+     * Run the resolvers for the given engine, for all authors of the given book.
+     * Uses the Book, or when not available, the site {@link Locale}.
+     * <p>
+     * The authors are modified as needed, but <strong>NOT written</strong> to the database.
      * <p>
      * Any {@link SearchException} will cause an abort.
+     * This may result in some authors having been processed, while others have not.
+     * <strong>ALL results should be discarded in this case</strong>
      *
      * @param context      Current context
      * @param searchEngine requesting the resolve action
