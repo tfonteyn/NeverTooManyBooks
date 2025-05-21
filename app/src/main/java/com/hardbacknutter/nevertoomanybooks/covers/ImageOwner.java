@@ -65,14 +65,17 @@ public interface ImageOwner {
                             @IntRange(from = 0, to = 1) int cIdx);
 
     /**
-     * Update the book cover with the given file.
+     * Update the ImageOwner with the given {@link File}.
      * This method may set a temporary cover, or persists the cover to storage.
      *
      * @param context Current context
      * @param cIdx    0..n image index
      * @param file    cover file or {@code null} to delete the cover
+     *                The file instance passed in MUST be discarded.
+     *                If applicable, the caller can/must use the {@link File}
+     *                as returned by this method.
      *
-     * @return the File after processing (either original, or a renamed/moved file)
+     * @return the {@link File} after processing (either the original, or a renamed/moved file)
      *
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
@@ -84,7 +87,7 @@ public interface ImageOwner {
             throws StorageException, IOException;
 
     /**
-     * Convenience method for {@link #setImage(Context, int, File)} with a {@code null} file.
+     * Remove the image at the given index.
      *
      * @param context Current context
      * @param cIdx    0..n image index
