@@ -36,7 +36,11 @@ public interface AuthorResolver {
      *     <li>Resolve pen-names</li>
      *     <li>Fix author names with any missing diacritics</li>
      *     <li>Add {@code Identifier}s if possible</li>
+     *     <li>Add any fields which have no data yet (e.g. birth/death dates, picture, ...</li>
      * </ul>
+     *
+     * Implementation <strong>MUST NOT</strong> write the changes to the database.
+     * That is the responsibility of the caller.
      *
      * @param context current Context
      * @param author  to lookup
