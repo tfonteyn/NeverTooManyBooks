@@ -70,9 +70,9 @@ public class RelativeRect {
                                 ? (rtl ? insets.left : insets.right)
                                 : 0);
 
-        if (BuildConfig.DEBUG) {
-            dumpDebug(view, insets);
-        }
+//        if (BuildConfig.DEBUG) {
+//            dumpDebug(view, insets);
+//        }
 
         return new RelativeRect(nStart, nTop, nEnd, nBottom, sides);
     }
