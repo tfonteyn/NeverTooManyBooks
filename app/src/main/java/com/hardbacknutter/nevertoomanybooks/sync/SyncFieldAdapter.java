@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -113,7 +112,7 @@ public class SyncFieldAdapter
             } else {
                 vb.getRoot().setVisibility(View.VISIBLE);
 
-                vb.field.setText(Html.fromHtml(syncField.getFieldLabel(), 0));
+                vb.field.setText(syncField.getFieldLabel());
                 vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
                 vb.cbxUsage.setText(syncField.getActionLabel(vb.cbxUsage.getContext()));
             }
