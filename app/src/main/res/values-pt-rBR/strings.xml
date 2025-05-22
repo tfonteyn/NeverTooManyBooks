@@ -71,7 +71,6 @@
     <string name="warning_missing_title_or_author">O título e/ou o autor devem ser especificados.</string>
     <string name="warning_requires_isbn">Esta ação requer um ISBN válido.</string>
     <string name="warning_requires_site_and_id">Selecione um site e insira um ID.</string>
-    <string name="warning_cannot_delete_1st_bs"></string>
     <string name="warning_already_in_list">Já está na lista!</string>
     <string name="warning_no_matching_book_found">Nenhum livro correspondente encontrado</string>
     <string name="warning_image_copy_failed">A imagem não pôde ser copiada.</string>
