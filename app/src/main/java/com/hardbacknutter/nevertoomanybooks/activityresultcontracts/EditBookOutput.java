@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,6 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 //ENHANCE: embed a list of {book-id,modified} pairs instead of the single 'modified' flag
 public final class EditBookOutput {
@@ -92,18 +91,18 @@ public final class EditBookOutput {
     /**
      * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
      *
-     * @param dataHolder to repack
+     * @param modified            flag; whether ANY modifications were made
+     * @param repositionToBookId  the book to which the list should reposition.
+     *                            Pass in {@code 0} to skip repositioning.
+     * @param lastProcessedBookId the book which was last processed
      *
      * @return intent
      */
     @NonNull
-    public static Intent createResultIntent(@NonNull final DataHolder dataHolder) {
-
-        final long firstBook = dataHolder.getLong(DBKey.FK_BOOK);
-        final boolean modified = dataHolder.getBoolean(BKEY_MODIFIED);
-        final long lastProcessed = dataHolder.getLong(BKEY_LAST_BOOK_ID_PROCESSED);
-
-        return new EditBookOutput(modified, firstBook, lastProcessed)
+    public static Intent createResultIntent(final boolean modified,
+                                            final long repositionToBookId,
+                                            final long lastProcessedBookId) {
+        return new EditBookOutput(modified, repositionToBookId, lastProcessedBookId)
                 .createResultIntent();
     }
 

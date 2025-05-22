@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.adapters.GridDividerItemDecoration;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncfieldConfigBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -248,8 +249,12 @@ public class SearchBookUpdatesFragment
         closeProgressDialog();
 
         message.process(book -> {
+            final boolean modified = book.getBoolean(EditBookOutput.BKEY_MODIFIED);
+            final long firstBook = book.getLong(DBKey.FK_BOOK);
+            final long lastProcessed = book.getLong(EditBookOutput.BKEY_LAST_BOOK_ID_PROCESSED);
             //noinspection DataFlowIssue
-            getActivity().setResult(Activity.RESULT_OK, EditBookOutput.createResultIntent(book));
+            getActivity().setResult(Activity.RESULT_OK, EditBookOutput.createResultIntent(
+                    modified, firstBook, lastProcessed));
             getActivity().finish();
         });
     }
