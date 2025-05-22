@@ -57,6 +57,10 @@ import org.jsoup.nodes.Element;
  * - Birthdate
  * - Deathdate
  * - country
+ * <p>
+ * A search by name is possible.
+ * {@code "https://www.databazeknih.cz/search?in=authors&q=" + formattedName};
+ * but there is no point as a book search will always have the author sid available anyhow.
  */
 public final class DatabazeKnihAuthorResolver
         implements AuthorResolver {
@@ -128,30 +132,13 @@ public final class DatabazeKnihAuthorResolver
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
-        // the user can delete it...
-        if (authorUri == null) {
-            return false;
-        }
 
+        final Author found;
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH);
-        // no id, give up
-        if (oIv.isEmpty()) {
-            return false;
-        }
-
-        final String sid = oIv.get();
-        final String url = String.format(authorUri, sid);
-        final Document document = searchEngine.loadDocument(context, url, null);
-        if (!searchEngine.isCancelled()) {
-            final Author found = parse(context, document, sid);
+        if (oIv.isPresent()) {
+            found = searchBySid(context, oIv.get());
             if (found != null) {
                 boolean modified = author.merge(found, true);
-                if (author.isSameName(found) && !author.isIdenticalName(found)) {
-                    // correct diacritics difference
-                    author.setName(found.getFamilyName(), found.getGivenNames());
-                    modified = true;
-                }
-
                 // DatabaseKnih uses the same id for pseudonym names.
                 // force the real-author to have the same id
                 final Author realAuthor = author.getRealAuthor();
@@ -160,11 +147,32 @@ public final class DatabazeKnihAuthorResolver
                           .ifPresent(id -> realAuthor.setIdentifierValue(
                                   Identifier.SID_DATABAZE_KNIH, id));
                 }
+                if (author.isSameName(found) && !author.isIdenticalName(found)) {
+                    // correct diacritics difference
+                    author.setName(found.getFamilyName(), found.getGivenNames());
+                    modified = true;
+                }
                 return modified;
             }
         }
-
         return false;
+    }
+
+    @Nullable
+    private Author searchBySid(@NonNull final Context context,
+                               @NonNull final String sid)
+            throws SearchException, CredentialsException {
+        // the user can delete it...
+        if (authorUri == null) {
+            return null;
+        }
+
+        final String url = String.format(authorUri, sid);
+        final Document document = searchEngine.loadDocument(context, url, null);
+        if (!searchEngine.isCancelled()) {
+            return parse(context, document, sid);
+        }
+        return null;
     }
 
     @Nullable
