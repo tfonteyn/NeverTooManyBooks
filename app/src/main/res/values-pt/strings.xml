@@ -354,6 +354,7 @@
     <string name="style_builtin_author_year">Autor, Ano</string>
     <string name="lbl_author_type_editor">Editor</string>
     <string name="option_image_rotate">Rodar…</string>
+    <string name="warning_no_extra_info_found">Não foram encontradas informações (adicionais)</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” não é um código válido</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se um dia for especificado, então o mês e o ano também devem ser especificados.</string>
     <string name="progress_msg_optimizing">A optimizar…</string>

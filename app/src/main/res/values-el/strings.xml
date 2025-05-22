@@ -720,6 +720,7 @@ A question mark is written as the character semicolon: ';'
     <string name="warning_select_at_least_1_group">Επιλέξτε τουλάχιστον μία ομάδα.</string>
     <string name="warning_toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί.</string>
     <string name="warning_x_already_exists">Το %1$s υπάρχει ήδη.</string>
+    <string name="warning_no_extra_info_found">Δεν βρέθηκαν (πρόσθετες) πληροφορίες</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» δεν είναι έγκυρος κωδικός κώδικας</string>
     <string name="whichEditApplication">Επεξεργασία με</string>
     <string name="whichSendApplication">Κοινοποίηση</string>

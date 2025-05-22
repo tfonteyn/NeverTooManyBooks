@@ -100,6 +100,7 @@
     <string name="warning_requires_at_least_1_field">Aspoň jedno pole nesmie byť prázdne.</string>
     <string name="warning_missing_title_or_author">Musí byť zadaný názov a/alebo autor.</string>
     <string name="warning_requires_isbn">Táto akcia vyžaduje platné ISBN.</string>
+    <string name="warning_no_extra_info_found">Nenašli sa žiadne (dodatočné) informácie</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s“ nie je platný kód</string>
     <string name="warning_image_not_found">Obrázok sa nenašiel.</string>
     <string name="warning_image_copy_failed">Obrázok sa nepodarilo skopírovať.</string>

@@ -63,6 +63,7 @@
     <string name="ellipsize">%1$s…</string>
     <string name="list_semicolon">"; "</string>
     <string name="warning_no_matching_book_found">பொருந்தக்கூடிய நூல் எதுவும் கிடைக்கவில்லை</string>
+    <string name="warning_no_extra_info_found">(கூடுதல்) தகவல் எதுவும் கிடைக்கவில்லை.</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” சரியான குறியீடு அல்ல</string>
     <string name="warning_image_not_found">படத்தைக் கண்டுபிடிக்க முடியவில்லை.</string>
     <string name="warning_image_copy_failed">படத்தை நகலெடுக்க முடியவில்லை.</string>

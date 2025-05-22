@@ -227,6 +227,7 @@
     <string name="warning_cannot_delete_1st_bs">Az első könyvespolc nem törölhető.</string>
     <string name="warning_already_in_list">Már szerepel a listán!</string>
     <string name="warning_no_matching_book_found">Nem található egyező könyv</string>
+    <string name="warning_no_extra_info_found">Nincs (további) információ</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s” érvénytelen kód</string>
     <string name="warning_image_not_found">A kép nem található.</string>
     <string name="warning_image_copy_failed">A kép nem másolható.</string>
