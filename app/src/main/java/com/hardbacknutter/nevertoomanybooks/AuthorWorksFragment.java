@@ -50,6 +50,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.AuthorWorksAdapter;
@@ -68,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -270,8 +272,15 @@ public class AuthorWorksFragment
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void updateAuthorBySearch() {
         final Context context = getContext();
+
+        // The sids we have for the author
+        final List<String> sidKeys = vm.getAuthor()
+                                       .getIdentifiers()
+                                       .stream()
+                                       .map(Identifier.Value::getKey)
+                                       .collect(Collectors.toList());
         //noinspection DataFlowIssue
-        final List<EngineId> enabledEngines = AuthorResolverFactory.getEnabledEngines(context);
+        final List<EngineId> enabledEngines = AuthorResolverFactory.getEngines(context, sidKeys);
         final CharSequence[] options = enabledEngines
                 .stream()
                 .map(engineId -> engineId.getName(context))

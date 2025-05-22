@@ -306,7 +306,9 @@ public class AuthorWorksViewModel
 
     void resolve(@NonNull final Context context,
                  @NonNull final EngineId engineId) {
-        authorResolverTask.start(context, engineId, List.of(author), true);
+        // No need to reload the author data.
+        // Store any updates to the database.
+        authorResolverTask.start(context, engineId, List.of(author), false, true);
     }
 
     void cancelResolverTask() {
