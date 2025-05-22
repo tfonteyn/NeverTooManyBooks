@@ -368,8 +368,7 @@ public class AuthorWorksFragment
         final Context context = getContext();
 
         //noinspection DataFlowIssue
-        nameView.setText(Html.fromHtml(author.getLabel(context, Details.Full, vm.getStyle()),
-                                       Html.FROM_HTML_MODE_COMPACT));
+        nameView.setText(Html.fromHtml(author.getLabel(context, Details.Full, vm.getStyle()), 0));
 
         imageHandler.onBindView(pictureView);
 
