@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -1289,7 +1289,7 @@ public class IsfdbSearchEngine
 
         // post-process all found data.
 
-        AuthorResolverFactory.resolve(context, this, book);
+        AuthorResolverHelper.resolve(context, this, book);
 
         Series.checkForSeriesNameInTitle(book);
 

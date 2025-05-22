@@ -28,27 +28,17 @@ import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuthorResolver;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public final class AuthorResolverFactory {
-
-    private static final String TAG = "AuthorResolverFactory";
 
     /**
      * Pref key.
@@ -60,57 +50,7 @@ public final class AuthorResolverFactory {
     }
 
     /**
-     * Run the resolvers for the given engine, for all authors of the given book.
-     * Uses the Book, or when not available, the site {@link Locale}.
-     * <p>
-     * The authors are modified as needed, but <strong>NOT written</strong> to the database.
-     * <p>
-     * Any {@link SearchException} will cause an abort.
-     * This may result in some authors having been processed, while others have not.
-     * <strong>ALL results should be discarded in this case</strong>
-     *
-     * @param context      Current context
-     * @param searchEngine requesting the resolve action
-     * @param book         with authors
-     *
-     * @return {@code true} if the any {@link Author}s were modified; {@code false} otherwise
-     *
-     * @throws CredentialsException on authentication/login failures
-     */
-    public static boolean resolve(@NonNull final Context context,
-                                  @NonNull final SearchEngine searchEngine,
-                                  @NonNull final Book book)
-            throws CredentialsException {
-        // Note we NOT using {@link book#refreshAuthors} as we want to use the site Locale.
-        final Locale locale = book.getLocale(context)
-                                  .orElseGet(() -> searchEngine.getLocale(context));
-
-
-        final List<Author> authors = book.getAuthors();
-        final List<AuthorResolver> resolvers = getResolvers(context, searchEngine);
-        boolean result = false;
-        try {
-            final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-            // loop Authors first, this way we don't hit a single resolver
-            // continuously (well... if we use more than one resolver at least)
-            for (final Author author : authors) {
-                authorDao.refresh(context, author, locale);
-                for (final AuthorResolver resolver : resolvers) {
-                    result = resolver.resolve(context, author) || result;
-                }
-            }
-        } catch (@NonNull final SearchException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-        }
-
-        return result;
-    }
-
-    /**
      * Get a list of the supported resolvers for the given engine.
-     * <p>
-     * Note that {@link EngineId#KbNl} does not need a resolver as all available
-     * author data is present on a book page.
      *
      * @param context      Current context
      * @param searchEngine to use
@@ -118,8 +58,8 @@ public final class AuthorResolverFactory {
      * @return list
      */
     @NonNull
-    public static List<AuthorResolver> getResolvers(@NonNull final Context context,
-                                                    @NonNull final SearchEngine searchEngine) {
+    static List<AuthorResolver> getResolvers(@NonNull final Context context,
+                                             @NonNull final SearchEngine searchEngine) {
         final EngineId engineId = searchEngine.getEngineId();
 
         switch (engineId) {
@@ -175,19 +115,49 @@ public final class AuthorResolverFactory {
         return List.of();
     }
 
+    /**
+     * Get a list of engines whose dedicated resolver is enabled
+     * and capable of either searching an Author by name or by one of the
+     * given SID keys.
+     *
+     * @param context Current context
+     * @param sidKeys available sids
+     *
+     * @return list
+     */
     @NonNull
-    public static List<EngineId> getEnabledEngines(@NonNull final Context context) {
+    public static List<EngineId> getEngines(@NonNull final Context context,
+                                            @NonNull final List<String> sidKeys) {
 
-        return Stream.of(EngineId.Bedetheque,
-                         EngineId.DatabazeKnih,
-                         EngineId.Dnb,
-                         EngineId.Goodreads,
-                         EngineId.Isfdb,
-                         EngineId.LastDodoNl,
-                         EngineId.StripInfoBe,
-                         EngineId.StripWebBe,
-                         EngineId.OpenLibrary)
-                     .filter(engineId -> isEnabled(context, engineId))
+        // For reference: these sites don't have their own resolvers,
+        // but always use Bedetheque; so don't add them to any list her.
+        // EngineId.LastDodoNl,
+        // EngineId.StripInfoBe,
+        // EngineId.StripWebBe,
+
+        // These Engine/resolvers support searching by name;
+        // so always add them.
+        final List<EngineId> searchByName =
+                Stream.of(EngineId.Bedetheque,
+                          EngineId.Isfdb,
+                          EngineId.OpenLibrary)
+                      .filter(engineId -> isEnabled(context, engineId))
+                      .collect(Collectors.toList());
+
+        // These Engine/resolvers rely on the SID;
+        // so only add them if we actually have an available SID value.
+        final List<EngineId> searchBySid =
+                Stream.of(EngineId.DatabazeKnih,
+                          EngineId.Dnb,
+                          EngineId.Goodreads)
+                      .filter(engineId -> isEnabled(context, engineId))
+                      // Sanity check, all engines here should have keys
+                      // or we should not have added them!
+                      .filter(engineId -> engineId.getIdentifierKey() != null)
+                      .filter(engineId -> sidKeys.contains(engineId.getIdentifierKey()))
+                      .collect(Collectors.toList());
+
+        return Stream.concat(searchByName.stream(), searchBySid.stream())
                      .collect(Collectors.toList());
     }
 
@@ -219,18 +189,15 @@ public final class AuthorResolverFactory {
                                      @NonNull final EngineId resolver,
                                      final boolean defValue) {
 
-        return ServiceLocator.getInstance().isFieldEnabled(DBKey.FK_AUTHOR_REAL_AUTHOR)
-               && PreferenceManager.getDefaultSharedPreferences(context)
-                                   .getBoolean(getKey(engine, resolver), defValue);
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(getKey(engine, resolver), defValue);
     }
 
-    // Allow easy use in testing
+    // Allow easier use for testing
     @VisibleForTesting
     @NonNull
     public static String getKey(@NonNull final EngineId engine,
                                 @NonNull final EngineId resolver) {
-        return engine.getPreferenceKey()
-               + PK_RESOLVE_AUTHORS
-               + resolver.getPreferenceKey();
+        return engine.getPreferenceKey() + PK_RESOLVE_AUTHORS + resolver.getPreferenceKey();
     }
 }

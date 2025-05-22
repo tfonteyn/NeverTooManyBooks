@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverFactory;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -384,7 +384,7 @@ public class BedethequeSearchEngine
             book.setDescription(description.text());
         }
 
-        AuthorResolverFactory.resolve(context, this, book);
+        AuthorResolverHelper.resolve(context, this, book);
 
         // Unless present, add the default language
         if (!book.contains(DBKey.LANGUAGE)) {
