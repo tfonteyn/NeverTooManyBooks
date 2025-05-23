@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,7 @@ import androidx.annotation.UiThread;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
@@ -179,9 +180,8 @@ public class ImageViewLoader {
                          @Nullable final Consumer<Bitmap> onSuccess,
                          @Nullable final Runnable onFailed) {
 
-        // TODO: not 100% convinced that using 'this' is a safe approach.
-        // maybe replace with a UUID.randomUUID()
-        imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
+        final UUID taskUuid = UUID.randomUUID();
+        imageView.setTag(R.id.TAG_THUMBNAIL_TASK, taskUuid);
         final WeakReference<ImageView> viewWeakReference = new WeakReference<>(imageView);
 
         executor.execute(() -> {
@@ -189,12 +189,11 @@ public class ImageViewLoader {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the actual background work.
             final Optional<Bitmap> oBitmap = scalableImageDecoder.setSource(file).transform();
-            //TODO: use the handler from the view instead?
             // all done; back to the UI thread.
             handler.post(() -> {
                 // are we still associated with this view ? (remember: views are recycled)
                 final ImageView view = viewWeakReference.get();
-                if (view != null && this.equals(view.getTag(R.id.TAG_THUMBNAIL_TASK))) {
+                if (view != null && taskUuid.equals(view.getTag(R.id.TAG_THUMBNAIL_TASK))) {
                     // clear the association
                     view.setTag(R.id.TAG_THUMBNAIL_TASK, null);
                     if (oBitmap.isPresent()) {
