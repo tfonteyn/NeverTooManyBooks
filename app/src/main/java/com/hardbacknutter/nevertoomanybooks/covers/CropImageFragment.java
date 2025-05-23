@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,8 +105,7 @@ public class CropImageFragment
                 Snackbar.make(vb.coverImage0, R.string.error_insufficient_storage,
                               Snackbar.LENGTH_LONG).show();
             }
-
-        } catch (@NonNull final CoverStorageException | IOException e) {
+        } catch (@NonNull final IOException e) {
             // just log, do not display exception data
             LoggerFactory.getLogger().e(TAG, e);
             //noinspection DataFlowIssue
@@ -167,6 +166,7 @@ public class CropImageFragment
                 return false;
             });
         } else {
+            //noinspection DataFlowIssue
             getActivity().finish();
         }
     }
