@@ -785,6 +785,15 @@ public class BooksOnBookshelf
         fabMenu.attach(vb.content.list);
 
         vb.content.list.setItemViewCacheSize(getOffscreenCacheSize());
+        vb.content.list.setHasFixedSize(true);
+
+        // 2025-05-23: experiment for github #147; rapid scrolling.
+        // The defaults are '5' for each viewType. We may want to add other groups later.
+        final RecyclerView.RecycledViewPool pool = new RecyclerView.RecycledViewPool();
+        pool.setMaxRecycledViews(BooklistGroup.BOOK, 40);
+        pool.setMaxRecycledViews(BooklistGroup.AUTHOR, 40);
+        pool.setMaxRecycledViews(BooklistGroup.SERIES, 20);
+        vb.content.list.setRecycledViewPool(pool);
     }
 
     private void createSearchViewHelper() {
