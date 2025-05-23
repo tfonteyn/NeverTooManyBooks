@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -295,7 +292,7 @@
     <string name="lbl_color">Farbe</string>
     <string name="lbl_condition">Zustand</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Fehlend/Mäßig</string>
-    <string name="lbl_condition_dust_cover_none">Keines</string>
+    <string name="lbl_condition_dust_cover_none">Keiner</string>
     <string name="lbl_condition_fair">Akzeptabel</string>
     <string name="lbl_condition_fine">Wie neu</string>
     <string name="lbl_condition_good">Gut</string>
