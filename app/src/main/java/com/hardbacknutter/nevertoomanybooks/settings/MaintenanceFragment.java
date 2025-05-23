@@ -188,17 +188,7 @@ public class MaintenanceFragment
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final CoverStorage coverStorage = serviceLocator.getCoverStorage();
 
-        final List<String> bookUuidList = serviceLocator.getBookDao().getBookUuidList();
-
-        // Filter to check for orphaned cover files
-        final FileFilter coverFilter = file -> {
-            if (file.getName().length() > UUID_LEN) {
-                // not in the list? then we can purge it
-                return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
-            }
-            // not a uuid base filename ? be careful and leave it.
-            return false;
-        };
+        final FileFilter coverFilter = createCoverFilter();
 
         final long bytes;
         try {
@@ -244,6 +234,38 @@ public class MaintenanceFragment
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.info_nothing_to_do, Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    @NonNull
+    private FileFilter createCoverFilter() {
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final List<String> bookUuidList = serviceLocator.getBookDao().getBookUuidList();
+        final List<String> authroUuidList = serviceLocator.getAuthorDao().getImageUuidList();
+
+        // Filter to check for orphaned cover files
+        // Book cover files:
+        // 000092d32d7eb79c959821d26ab3efed.jpg
+        // 000092d32d7eb79c959821d26ab3efed_1.jpg
+        // Other images:
+        // 27a69be8-8a85-4c1a-a019-f2825cc98d7c.jpg
+        // 27a69be8-8a85-4c1a-a019-f2825cc98d7c_1.jpg
+        // not in the list? then we can purge it; i.e. return 'true'
+        // not a uuid base filename ? be careful and leave it; i.e. return 'false'
+        // Also see the docs in the DBCleaner
+        return file -> {
+            final int flen = file.getName().length();
+            // 4: ".jpg"; 2: "_1"
+            if (flen == (UUID_LEN + 4) || flen == (UUID_LEN + 4 + 2)) {
+                // not in the list? then we can purge it
+                return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
+            }
+            // extra 4: "-" in between
+            if (flen == (UUID_LEN + 4 + 4) || flen == (UUID_LEN + 4 + 4 + 2)) {
+                return !authroUuidList.contains(file.getName().substring(0, UUID_LEN + 4));
+            }
+            // not a uuid base filename ? be careful and leave it.
+            return false;
+        };
     }
 
     private void onSyncDeletedBooks(@NonNull final View v) {

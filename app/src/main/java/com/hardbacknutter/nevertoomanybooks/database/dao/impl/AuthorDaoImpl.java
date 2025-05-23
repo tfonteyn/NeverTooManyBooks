@@ -228,6 +228,12 @@ public class AuthorDaoImpl
         return list;
     }
 
+    @NonNull
+    @Override
+    public List<String> getImageUuidList() {
+        return getColumnAsStringArrayList(Sql.SELECT_ALL_IMAGE_UUID);
+    }
+
     @Override
     @NonNull
     public List<AuthorWork> getAuthorWorks(@NonNull final Author author,
@@ -1122,5 +1128,10 @@ public class AuthorDaoImpl
                 UPDATE_ + TBL_TOC_ENTRIES.getName()
                 + _SET_ + DBKey.FK_AUTHOR + "=?"
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?";
+
+        static final String SELECT_ALL_IMAGE_UUID =
+                SELECT_ + DBKey.AUTHOR.PICTURE_UUID + _FROM_ + TBL_AUTHORS.getName()
+                + _WHERE_ + DBKey.AUTHOR.PICTURE_UUID + " IS NOT NULL";
+
     }
 }
