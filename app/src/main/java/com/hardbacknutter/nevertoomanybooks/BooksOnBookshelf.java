@@ -202,9 +202,13 @@ public class BooksOnBookshelf
         implements BookChangedListener {
 
     public static final String PK_OFFSCREEN_CACHE_SIZE = "booklist.view.cache.size";
-    /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
-    public static final int DEFAULT_OFFSCREEN_CACHE_SIZE = 20;
-    public static final int MAX_OFFSCREEN_CACHE_SIZE = 50;
+    /**
+     * Number of views to cache offscreen arbitrarily set to 15 based on google "advice".
+     * The default is 2.
+     */
+    public static final int MIN_OFFSCREEN_CACHE_SIZE = 2;
+    public static final int DEFAULT_OFFSCREEN_CACHE_SIZE = 15;
+    public static final int MAX_OFFSCREEN_CACHE_SIZE = 30;
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
@@ -810,7 +814,7 @@ public class BooksOnBookshelf
         final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         // Protect against silly values
         return MathUtils.clamp(prefs.getInt(PK_OFFSCREEN_CACHE_SIZE, DEFAULT_OFFSCREEN_CACHE_SIZE),
-                               DEFAULT_OFFSCREEN_CACHE_SIZE, MAX_OFFSCREEN_CACHE_SIZE);
+                               MIN_OFFSCREEN_CACHE_SIZE, MAX_OFFSCREEN_CACHE_SIZE);
     }
 
     private void setNavIcon() {

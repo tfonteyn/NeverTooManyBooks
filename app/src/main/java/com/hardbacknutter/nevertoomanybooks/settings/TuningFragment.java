@@ -54,7 +54,7 @@ public class TuningFragment
         p.setSummary(getString(R.string.lbl_default_x,
                                String.valueOf(BooksOnBookshelf.DEFAULT_OFFSCREEN_CACHE_SIZE)));
         p.setDefaultValue(BooksOnBookshelf.DEFAULT_OFFSCREEN_CACHE_SIZE);
-        p.setMin(BooksOnBookshelf.DEFAULT_OFFSCREEN_CACHE_SIZE);
+        p.setMin(BooksOnBookshelf.MIN_OFFSCREEN_CACHE_SIZE);
         p.setMax(BooksOnBookshelf.MAX_OFFSCREEN_CACHE_SIZE);
         // because androidx.preferences is [bug]'d
         //noinspection DataFlowIssue
@@ -67,7 +67,7 @@ public class TuningFragment
         p.setSummary(getString(R.string.lbl_default_x,
                                String.valueOf(BooklistCursor.DEFAULT_PAGE_SIZE)));
         p.setDefaultValue(BooklistCursor.DEFAULT_PAGE_SIZE);
-        p.setMin(BooklistCursor.DEFAULT_PAGE_SIZE);
+        p.setMin(BooklistCursor.MIN_PAGE_SIZE);
         p.setMax(BooklistCursor.MAX_PAGE_SIZE);
         // because androidx.preferences is [bug]'d
         p.setValue(prefs.getInt(BooklistCursor.PK_PAGE_SIZE,
@@ -78,7 +78,7 @@ public class TuningFragment
         p.setSummary(getString(R.string.lbl_default_x,
                                String.valueOf(BooklistCursor.DEFAULT_LRU_LIST_SIZE)));
         p.setDefaultValue(BooklistCursor.DEFAULT_LRU_LIST_SIZE);
-        p.setMin(BooklistCursor.DEFAULT_LRU_LIST_SIZE);
+        p.setMin(BooklistCursor.MIN_LRU_LIST_SIZE);
         p.setMax(BooklistCursor.MAX_LRU_LIST_SIZE);
         // because androidx.preferences is [bug]'d
         p.setValue(prefs.getInt(BooklistCursor.PK_LRU_LIST_SIZE,
