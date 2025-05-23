@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * A delegate/wrapper for the book-list view handling all things related to positioning.
@@ -43,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
  * due to the {@link ConcatAdapter} used with the {@link HeaderAdapter}
  */
 public class PositioningHelper {
+
+    private static final String TAG = "PositioningHelper";
 
     private final int headerRowCount;
     @NonNull
@@ -192,9 +195,8 @@ public class PositioningHelper {
      * into view.
      *
      * @param targetNodes candidates to scroll to.
-     * @return the node we ended up at.
      *
-     * @throws IllegalStateException if the list is empty
+     * @return the node we ended up at.
      */
     @NonNull
     public BooklistNode scrollTo(@NonNull final List<BooklistNode> targetNodes) {
@@ -208,8 +210,14 @@ public class PositioningHelper {
 
         // Sanity check, should never happen... flw
         if (firstLayoutPos == RecyclerView.NO_POSITION) {
-            // URGENT: 2024-12-29: EMPTY LIST seen during a debug session... no clue why for now
-            throw new IllegalStateException("Empty list");
+            // URGENT: 2024-12-29: EMPTY LIST seen during a debug session
+            // 2025-05-22: seen again by an actual user.
+            // see: BooksOnBookshelf#displayList(List<BooklistNode>)
+            // As it's now clear we're not going to get more info from a stacktrace,
+            // we're now just bailing out but log it for potential frequency analysis.
+            LoggerFactory.getLogger().e(TAG, new IllegalStateException(
+                    "scrollTo, with firstLayoutPos == RecyclerView.NO_POSITION"));
+            return targetNodes.get(0);
         }
 
         // the ADAPTER positions; i.e. without the header rows
