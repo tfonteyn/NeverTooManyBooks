@@ -785,8 +785,6 @@ public class BooksOnBookshelf
         fabMenu.attach(vb.content.list);
 
         vb.content.list.setItemViewCacheSize(getOffscreenCacheSize());
-        vb.content.list.setDrawingCacheEnabled(true);
-        vb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
     }
 
     private void createSearchViewHelper() {
