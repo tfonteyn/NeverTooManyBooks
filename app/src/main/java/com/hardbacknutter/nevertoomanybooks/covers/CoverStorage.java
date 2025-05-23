@@ -27,6 +27,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.Discouraged;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -96,6 +98,10 @@ public class CoverStorage {
     private final Supplier<Context> appContextSupplier;
     @NonNull
     private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
+    /**
+     * Initialised in {@link #initDir()}.
+     */
+    private File coverDir;
 
     /**
      * Constructor.
@@ -132,7 +138,7 @@ public class CoverStorage {
     public void initDir()
             throws CoverStorageException {
 
-        final File coverDir = getDir();
+        coverDir = ensureDir();
 
         // Prevent thumbnails showing up in the device Image Gallery.
         final File mif = new File(coverDir, MediaStore.MEDIA_IGNORE_FILENAME);
@@ -222,10 +228,27 @@ public class CoverStorage {
      *
      * @return directory
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @see #initDir()
      */
     @NonNull
-    public File getDir()
+    public File getDir() {
+        return Objects.requireNonNull(coverDir);
+    }
+
+    /**
+     * Get the <strong>permanent</strong> directory where we store covers.
+     * This method will access the storage volume/directories to make
+     * sure they are available.
+     *
+     * @return directory
+     *
+     * @throws CoverStorageException The covers directory is not available
+     * @see #initDir()
+     * @see #getDir()
+     */
+    @Discouraged(message = "Avoid using this method if possible to avoid overhead")
+    @NonNull
+    public File ensureDir()
             throws CoverStorageException {
 
         final Context context = appContextSupplier.get();
@@ -289,13 +312,6 @@ public class CoverStorage {
             return Optional.empty();
         }
 
-        final File coverDir;
-        try {
-            coverDir = getDir();
-        } catch (@NonNull final CoverStorageException e) {
-            return Optional.empty();
-        }
-
         final String name = createName(uuid, cIdx);
 
         @Nullable
@@ -356,7 +372,6 @@ public class CoverStorage {
             throws IOException, CoverStorageException {
 
         final String name = createName(uuid, cIdx) + EXT_JPG;
-        final File coverDir = getDir();
         final File destination = new File(coverDir, name);
 
         return persist(source, destination);
@@ -503,13 +518,6 @@ public class CoverStorage {
             return false;
         }
 
-        final File coverDir;
-        try {
-            coverDir = getDir();
-        } catch (@NonNull final CoverStorageException e) {
-            return false;
-        }
-
         // We're relying on the fact that #getPersistedFile
         // would have renamed any remaining png files to jpg by now.
         final String name = createName(uuid, cIdx) + EXT_JPG;
@@ -533,13 +541,6 @@ public class CoverStorage {
     boolean isUndoEnabled(@NonNull final String uuid,
                           @IntRange(from = 0, to = 1) final int cIdx) {
         if (!isUndoEnabled()) {
-            return false;
-        }
-
-        final File coverDir;
-        try {
-            coverDir = getDir();
-        } catch (@NonNull final CoverStorageException e) {
             return false;
         }
 
