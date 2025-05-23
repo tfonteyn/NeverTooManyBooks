@@ -44,13 +44,16 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Cleanup routines for some columns/tables which can be run at upgrades, import, startup.
  * <p>
- * TODO: check for orphaned images
+ *  FIXME: implement proper cleaning of ALL orphaned images in the cleaner
  *  - book covers:
  *    - delete all [16-char uuid].ext files where there is no equivalent book
  *  - author pictures:
  *    - delete all uuid.ext files where there is no author with the pictureUuid set to that uuid
  *    - clear authors pictureUuid if set without there being an actual file
  *  - remove rows from the cache db where the referenced book uuid does not exist
+ *
+ *  HOWEVER: SEE {@link com.hardbacknutter.nevertoomanybooks.settings.MaintenanceFragment}
+ *  where we offer a cleanup of orphaned book covers.
  */
 public class DBCleaner {
 
