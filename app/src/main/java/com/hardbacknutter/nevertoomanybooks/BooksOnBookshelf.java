@@ -1663,8 +1663,26 @@ public class BooksOnBookshelf
         vb.bookshelfSpinner.setEnabled(true);
 
         if (adapter.getItemCount() > 0) {
-            // Scrolling will finish asynchronously using post()
-            scrollToTarget(targetNodes);
+            // Make SURE the RecyclerView has populated at least one child view
+            // before we start scrolling to the target-nodes
+            vb.content.list.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(@NonNull final View v,
+                                           final int left,
+                                           final int top,
+                                           final int right,
+                                           final int bottom,
+                                           final int oldLeft,
+                                           final int oldTop,
+                                           final int oldRight,
+                                           final int oldBottom) {
+                    if (vb.content.list.getChildCount() > 0) {
+                        scrollToTarget(targetNodes);
+                        // remove the now unneeded listener
+                        vb.content.list.removeOnLayoutChangeListener(this);
+                    }
+                }
+            });
         }
     }
 
