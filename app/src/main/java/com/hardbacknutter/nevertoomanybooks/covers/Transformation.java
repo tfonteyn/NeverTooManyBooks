@@ -21,12 +21,15 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
+import android.os.Build;
 import android.view.Surface;
 
 import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
 import androidx.exifinterface.media.ExifInterface;
 
@@ -186,20 +189,28 @@ class Transformation {
             throw new IllegalArgumentException("No file");
         }
 
-        final String pathName = srcFile.getAbsolutePath();
-
-        // Read either a scaled down version (but NOT exact dimensions),
-        // or the original version.
         final Bitmap bitmap;
-        if (scale) {
-            bitmap = decodeAndScale(pathName);
-        } else {
-            bitmap = BitmapFactory.decodeFile(pathName);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (scale) {
+                    bitmap = decodeAndScaleApi28(srcFile);
+                } else {
+                    bitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(srcFile));
+                }
+            } else {
+                if (scale) {
+                    bitmap = decodeAndScaleApi26(srcFile.getAbsolutePath());
+                } else {
+                    bitmap = BitmapFactory.decodeFile(srcFile.getAbsolutePath());
+                }
+            }
+        } catch (final IOException e) {
+            return Optional.empty();
         }
 
         if (bitmap != null) {
             if (rotate) {
-                final int angle = determineRotationAngle(pathName);
+                final int angle = determineRotationAngle(srcFile);
                 if (angle != 0) {
                     final Optional<Bitmap> rotatedBitmap = rotate(bitmap, angle);
                     if (rotatedBitmap.isPresent()) {
@@ -213,10 +224,10 @@ class Transformation {
         return Optional.empty();
     }
 
-    private int determineRotationAngle(@NonNull final String pathName) {
+    private int determineRotationAngle(@NonNull final File file) {
         if (explicitRotation == 0) {
             // Try to adjust the rotation automatically:
-            final int exifAngle = getExifAngle(pathName);
+            final int exifAngle = getExifAngle(file);
             final int angle = surfaceRotation - exifAngle;
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
@@ -237,14 +248,14 @@ class Transformation {
     /**
      * Get the rotation angle from the EXIF information.
      *
-     * @param pathName complete path name for the file to be decoded.
+     * @param file to be decoded.
      *
      * @return angle; or {@code 0} on any failure
      */
-    private int getExifAngle(@NonNull final String pathName) {
+    private int getExifAngle(@NonNull final File file) {
         final ExifInterface exif;
         try {
-            exif = new ExifInterface(pathName);
+            exif = new ExifInterface(file);
         } catch (@NonNull final IOException ignore) {
             return 0;
         }
@@ -275,9 +286,6 @@ class Transformation {
     }
 
     /**
-     * <a href="https://developer.android.com/about/versions/pie/android-9.0#decoding-images">
-     *     ENHANCE: Android 9 introduces android.graphics.ImageDecoder</a>
-     * <p>
      * Decode a file path into a bitmap and scale it to fit the given bounds
      * while preserving the aspect ratio.
      * <p>
@@ -285,12 +293,37 @@ class Transformation {
      * the smallest possible larger than the requested dimensions.
      * or i.o.w this is NOT an exact scaling!
      *
-     * @param pathName complete path name for the file to be decoded.
+     * @param file to be decoded.
      *
-     * @return the resulting decoded bitmap, or {@code null} if it could not be decoded.
+     * @return the decoded bitmap
+     *
+     * @throws IOException on decoding failures
      */
+    @RequiresApi(Build.VERSION_CODES.P)
+    @NonNull
+    private Bitmap decodeAndScaleApi28(@NonNull final File file)
+            throws IOException {
+        final ImageDecoder.Source source = ImageDecoder.createSource(file);
+
+        return ImageDecoder.decodeBitmap(source, (decoder, info, src) -> {
+            final int originalWidth = info.getSize().getWidth();
+            final int originalHeight = info.getSize().getHeight();
+
+            // Calculate the scale factor to just exceed the target dimensions
+            final float scaleX = (float) maxWidth / originalWidth;
+            final float scaleY = (float) maxHeight / originalHeight;
+            // Scale up to exceed both dimensions
+            final float scaleUp = Math.max(scaleX, scaleY);
+
+            final int targetWidth = (int) Math.ceil(originalWidth * scaleUp);
+            final int targetHeight = (int) Math.ceil(originalHeight * scaleUp);
+
+            decoder.setTargetSize(targetWidth, targetHeight);
+        });
+    }
+
     @Nullable
-    private Bitmap decodeAndScale(@NonNull final String pathName) {
+    private Bitmap decodeAndScaleApi26(@NonNull final String pathName) {
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
