@@ -126,15 +126,21 @@ class CoverHelper {
 
         // 1. If caching is used, check it.
         if (imageCachingEnabled) {
+            // BAD: database access on UI thread
+            // Problem: we need to report back whether we have an image or not.
             final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, 0, maxWidthInPixels);
             if (bitmap != null) {
+                // GOOD: displaying must be done on the UI thread
                 imageLoader.fromBitmap(coverView, bitmap);
                 return true;
             }
         }
 
-        // 2. Cache did not have it, or we were not allowed to check.
+        // 2. Cache did not have it, or it was busy.
+        //    (the cache does not allow read-access while it is doing a write)
         // Check on the file system for the original image file.
+        // BAD: file-system access on UI thread
+        // Problem: we need to report back whether we have an image or not.
         final Optional<File> file = coverStorage.getPersistedFile(uuid, 0);
         if (file.isEmpty()) {
             // let the caller deal with a non-existing image-file
@@ -142,6 +148,7 @@ class CoverHelper {
         }
 
         // 3. We have a file.
+        // GOOD: uses a background thread (UI thread for final step of displaying)
         if (imageCachingEnabled) {
             // 1. Gets the image from the file system and display it.
             // 2. Start a subsequent task to send it to the cache.
