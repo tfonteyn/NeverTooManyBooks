@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,9 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageExcepti
 
 /**
  * Common base for MutableLiveData / TaskListener driven tasks.
+ * <p>
+ * By default, all tasks are executed on the {@link ASyncExecutor#SERIAL}.
+ * Override with {@link #setExecutor(Executor)} as needed.
  *
  * @param <Result> the type of the result of the background computation.
  */
