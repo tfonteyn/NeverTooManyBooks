@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 class CoverHelper {
 
     @Dimension
-    private final int maxWidthInPixels;
+    private final int cachedImageWidth;
     private final boolean imageCachingEnabled;
 
     @NonNull
@@ -77,7 +77,7 @@ class CoverHelper {
                 @Dimension final int maxHeight) {
 
         // In THIS class only used for the image-caching "filename"
-        this.maxWidthInPixels = maxWidth;
+        cachedImageWidth = maxWidth;
 
         coverStorage = ServiceLocator.getInstance().getCoverStorage();
 
@@ -128,7 +128,7 @@ class CoverHelper {
         if (imageCachingEnabled) {
             // BAD: database access on UI thread
             // Problem: we need to report back whether we have an image or not.
-            final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, 0, maxWidthInPixels);
+            final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, 0, cachedImageWidth);
             if (bitmap != null) {
                 // GOOD: displaying must be done on the UI thread
                 imageLoader.fromBitmap(coverView, bitmap);
@@ -141,8 +141,8 @@ class CoverHelper {
         // Check on the file system for the original image file.
         // BAD: file-system access on UI thread
         // Problem: we need to report back whether we have an image or not.
-        final Optional<File> file = coverStorage.getPersistedFile(uuid, 0);
-        if (file.isEmpty()) {
+        final Optional<File> oFile = coverStorage.getPersistedFile(uuid, 0);
+        if (oFile.isEmpty()) {
             // let the caller deal with a non-existing image-file
             return false;
         }
@@ -152,14 +152,11 @@ class CoverHelper {
         if (imageCachingEnabled) {
             // 1. Gets the image from the file system and display it.
             // 2. Start a subsequent task to send it to the cache.
-            imageLoader.fromFile(coverView, file.get(), bitmap -> {
-                if (bitmap != null) {
-                    coverStorage.saveToCache(uuid, 0, bitmap, maxWidthInPixels);
-                }
-            }, null);
+            imageLoader.fromFile(coverView, oFile.get(), bitmap ->
+                    coverStorage.saveToCache(uuid, 0, bitmap, cachedImageWidth), null);
         } else {
             // Get the image from the file system and display it.
-            imageLoader.fromFile(coverView, file.get(), null, null);
+            imageLoader.fromFile(coverView, oFile.get(), null, null);
         }
         return true;
     }
