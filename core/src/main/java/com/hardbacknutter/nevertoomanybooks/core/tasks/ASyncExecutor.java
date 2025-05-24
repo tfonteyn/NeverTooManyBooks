@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,17 +35,21 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.hardbacknutter.util.logger.BuildConfig;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public final class ASyncExecutor {
 
+    /**
+     * Used for submitting tasks which will return a {@code Future} result.
+     */
     public static final ExecutorService SERVICE;
 
     /**
      * An {@link Executor} that can be used to execute tasks in parallel.
      * This is also where the serialized tasks run.
      * <p>
-     * <strong>Note:</strong> this executor uses an unbounded {@link LinkedBlockingQueue}.
+     * <strong>Note:</strong> this executor uses an unbounded {@link BlockingQueue}.
      */
     @NonNull
     public static final Executor MAIN;
@@ -54,12 +59,15 @@ public final class ASyncExecutor {
      * Actual execution is done on {@link #MAIN}.
      */
     @SuppressWarnings("WeakerAccess")
-    public static final Executor SERIAL = new SerialExecutor();
+    public static final Executor SERIAL;
+
     /** Log tag. */
     private static final String TAG = "ASyncExecutor";
+    // Some docs and the original values copied from the android.os.ASyncTask code
+    //
     // We keep only a single pool thread around all the time.
     // We let the pool grow to a fairly large number of threads if necessary,
-    // but let them time out quickly. In the unlikely case that we run out of threads,
+    // but let them time out quickly. In the event that we run out of threads,
     // we fall back to a simple unbounded-queue executor.
     // This combination ensures that:
     // 1. We normally keep few threads (1) around.
@@ -72,14 +80,7 @@ public final class ASyncExecutor {
 
     private static final int BACKUP_POOL_SIZE = 5;
 
-    private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
-        private final AtomicInteger threadIdCounter = new AtomicInteger(1);
-
-        @NonNull
-        public Thread newThread(@NonNull final Runnable r) {
-            return new Thread(r, "CustomTask #" + threadIdCounter.getAndIncrement());
-        }
-    };
+    private static final ThreadFactory THREAD_FACTORY;
 
     /** Used for rejected executions. Initialization protected by sRunOnSerialPolicy lock. */
     private static ThreadPoolExecutor sBackupExecutor;
@@ -87,7 +88,9 @@ public final class ASyncExecutor {
             new RejectedExecutionHandler() {
                 public void rejectedExecution(@NonNull final Runnable r,
                                               @NonNull final ThreadPoolExecutor e) {
-                    LoggerFactory.getLogger().w(TAG, "Exceeded ThreadPoolExecutor pool size");
+                    if (BuildConfig.DEBUG /* always */) {
+                        LoggerFactory.getLogger().w(TAG, "Exceeded ThreadPoolExecutor pool size");
+                    }
                     // As a last ditch fallback, run it on an executor with an unbounded queue.
                     // Create this executor lazily, hopefully almost never.
                     synchronized (this) {
@@ -104,14 +107,20 @@ public final class ASyncExecutor {
             };
 
     static {
-        // Values copied from the android.os.ASyncTask code
-        final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+        THREAD_FACTORY = createThreadFactory("CustomTask");
+
+        final ThreadPoolExecutor main = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
                 new SynchronousQueue<>(), THREAD_FACTORY);
-        threadPoolExecutor.setRejectedExecutionHandler(REJECTED_EXECUTION_HANDLER);
-        MAIN = threadPoolExecutor;
+        main.setRejectedExecutionHandler(REJECTED_EXECUTION_HANDLER);
+        MAIN = main;
 
+        SERIAL = new SerialExecutor(MAIN);
+
+        // core-pool-size: 0
+        // max unlimited
+        // keep-alive: 60 seconds
         SERVICE = Executors.newCachedThreadPool(THREAD_FACTORY);
     }
 
@@ -119,13 +128,32 @@ public final class ASyncExecutor {
     }
 
     /**
+     * Create a <strong>new</strong> ThreadFactory.
+     *
+     * @param threadName to use for the base thread names
+     *
+     * @return a new ThreadFactory
+     */
+    @NonNull
+    private static ThreadFactory createThreadFactory(@NonNull final String threadName) {
+        return new ThreadFactory() {
+            private final AtomicInteger threadIdCounter = new AtomicInteger();
+
+            @NonNull
+            public Thread newThread(@NonNull final Runnable r) {
+                return new Thread(r, threadName + "#" + threadIdCounter.incrementAndGet());
+            }
+        };
+    }
+
+    /**
      * Create a <strong>new</strong> Executor.
      * This allows to run specific tasks that we don't want to submit (and wait on) the
      * shared one.
      * <p>
-     * <strong>Note:</strong> this executor uses a {@link SynchronousQueue}.
+     * <strong>Note:</strong> this executor uses a {@link BlockingQueue}.
      *
-     * @param threadName to use for the ThreadFactory
+     * @param threadName to use for the ThreadFactory base thread names
      *
      * @return a new Executor
      */
@@ -134,14 +162,8 @@ public final class ASyncExecutor {
         final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(), new ThreadFactory() {
-            private final AtomicInteger threadIdCounter = new AtomicInteger(1);
-
-            @NonNull
-            public Thread newThread(@NonNull final Runnable r) {
-                return new Thread(r, threadName + '#' + threadIdCounter.getAndIncrement());
-            }
-        });
+                new LinkedBlockingQueue<>(),
+                createThreadFactory(threadName));
         executor.allowCoreThreadTimeOut(true);
         return executor;
     }
@@ -150,8 +172,14 @@ public final class ASyncExecutor {
             implements Executor {
 
         private final ArrayDeque<Runnable> tasks = new ArrayDeque<>();
+        @NonNull
+        private final Executor executor;
         @Nullable
         private Runnable active;
+
+        SerialExecutor(@NonNull final Executor executor) {
+            this.executor = executor;
+        }
 
         public synchronized void execute(@NonNull final Runnable r) {
             tasks.offer(() -> {
@@ -169,7 +197,7 @@ public final class ASyncExecutor {
         synchronized void scheduleNext() {
             active = tasks.poll();
             if (active != null) {
-                MAIN.execute(active);
+                executor.execute(active);
             }
         }
     }
