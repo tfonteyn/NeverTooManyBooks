@@ -633,10 +633,9 @@ public class AuthorDaoImpl
             return;
         }
 
-        // URGENT: decide on copying the birth/death dates, image, ...
-        //  between pen-name-author and the real-author
-        // unless some joking author actually distributes a made-up profile for their
-        // pen-name...   thinking about Killgore Trout... maybe leave this to the user instead?
+        // We're not copying the birth/death dates, image, ...
+        // between pen-name-author and the real-author.
+        // There are/were some authors who use(d) pen-names with a made-up profile/picture.
         fixId(context, realAuthor, locale);
         if (realAuthor.getId() == 0) {
             insert(context, realAuthor, locale);
