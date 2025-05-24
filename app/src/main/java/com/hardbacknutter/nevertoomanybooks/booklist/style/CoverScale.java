@@ -230,14 +230,18 @@ public enum CoverScale {
 
         final int coverWidthPx = lookup(context);
 
+        // The multiplier used here is NOT related to HW_RATIO!
+        //
         // Multiply the cover-width by 0.6 as the values in the resource are
         // optimized for list-mode where we aim to fill up 1/3 of the width
         // with the image, and 2/3 with text.
-        // The 0.6 could likely be tuned on a screen size basis... but the differences
+        // This could likely be tuned on a screen size basis... but the differences
         // will be minimal hence not bothering for now.
-        // This is NOT related to HW_RATIO!
-
-        return (int) Math.floor(0.6 * getWindowWidthInPx(context) / coverWidthPx);
+        //
+        // We experimented with values 1.0, 0.8, 0.7, 0.6, 0.5...
+        // Using 0.6 gives the "nicest" spread of the number of pictures on a row
+        // depending on scale setting.
+        return (int) Math.floor(0.6 * (double) getWindowWidthInPx(context) / coverWidthPx);
     }
 
     /*  Multiplication of 0.6
