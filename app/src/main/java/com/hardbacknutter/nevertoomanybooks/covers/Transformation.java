@@ -289,9 +289,9 @@ class Transformation {
      * Decode a file path into a bitmap and scale it to fit the given bounds
      * while preserving the aspect ratio.
      * <p>
-     * The image is certain to fill the box, with its exact dimensions
-     * the smallest possible larger than the requested dimensions.
-     * or i.o.w this is NOT an exact scaling!
+     * This is slightly different from the API-26 logic, where the calculation
+     * was the smallest possible larger than the requested dimensions
+     * and to leave the last step to the ImageView scaler.
      *
      * @param file to be decoded.
      *
@@ -306,17 +306,16 @@ class Transformation {
         final ImageDecoder.Source source = ImageDecoder.createSource(file);
 
         return ImageDecoder.decodeBitmap(source, (decoder, info, src) -> {
-            final int originalWidth = info.getSize().getWidth();
-            final int originalHeight = info.getSize().getHeight();
+            final int srcWidth = info.getSize().getWidth();
+            final int srcHeight = info.getSize().getHeight();
 
-            // Calculate the scale factor to just exceed the target dimensions
-            final float scaleX = (float) maxWidth / originalWidth;
-            final float scaleY = (float) maxHeight / originalHeight;
-            // Scale up to exceed both dimensions
-            final float scaleUp = Math.max(scaleX, scaleY);
+            // Calculate scale to fit
+            final float scaleX = (float) maxWidth / srcWidth;
+            final float scaleY = (float) maxHeight / srcHeight;
+            final float scaling = Math.min(scaleX, scaleY);
 
-            final int targetWidth = (int) Math.ceil(originalWidth * scaleUp);
-            final int targetHeight = (int) Math.ceil(originalHeight * scaleUp);
+            final int targetWidth = (int) Math.ceil(srcWidth * scaling);
+            final int targetHeight = (int) Math.ceil(srcHeight * scaling);
 
             decoder.setTargetSize(targetWidth, targetHeight);
         });
