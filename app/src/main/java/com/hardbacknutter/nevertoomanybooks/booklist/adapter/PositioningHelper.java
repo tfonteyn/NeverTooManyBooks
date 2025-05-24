@@ -210,7 +210,7 @@ public class PositioningHelper {
 
         // Sanity check, should never happen... flw
         if (firstLayoutPos == RecyclerView.NO_POSITION) {
-            // URGENT: 2024-12-29: EMPTY LIST seen during a debug session
+            // 2024-12-29: seen during a debug session only.
             // 2025-05-22: seen again by an actual user.
             // see: BooksOnBookshelf#displayList(List<BooklistNode>)
             // As it's now clear we're not going to get more info from a stacktrace,
