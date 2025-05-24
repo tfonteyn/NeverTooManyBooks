@@ -211,6 +211,9 @@ public class ImageViewLoader {
                             placeholder(view, R.drawable.broken_image_24px);
                         }
                     }
+                } else {
+                    // The view was already scrolled away, discard the bitmap immediately.
+                    oBitmap.ifPresent(Bitmap::recycle);
                 }
             });
         });
