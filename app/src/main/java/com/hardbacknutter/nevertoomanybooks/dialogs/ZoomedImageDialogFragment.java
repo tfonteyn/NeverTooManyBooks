@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,11 +30,9 @@ import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import java.io.File;
@@ -117,26 +114,21 @@ public class ZoomedImageDialogFragment
     public void onResume() {
         super.onResume();
 
-        @Dimension
-        final float windowWidthInPx;
-        @Dimension
-        final float windowHeightInPx;
+        // androidx.windows 1.4.0:
+        // WindowMetricsCalculator no longer provides insets (it did in 1.3.0...)
+        // So back to old behaviour for calculating the windowWidthInPx/windowHeightInPx
+        // In portrait mode, the below is perfectly fine.
+        // In Landscape mode, we overlap the bottom-navigation bar. Oh well...
 
         //noinspection DataFlowIssue
-        final WindowMetrics windowMetrics = WindowMetricsCalculator
+        final Rect bounds = WindowMetricsCalculator
                 .getOrCreate()
-                .computeCurrentWindowMetrics(getContext());
-        final Rect bounds = windowMetrics.getBounds();
-
-        // The WindowMetricsCalculator only provides insets when API >= 30
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            final Insets insets = windowMetrics.getWindowInsets().getInsets(INSETS_TYPE_MASK);
-            windowWidthInPx = bounds.width() - (insets.left + insets.right);
-            windowHeightInPx = bounds.height() - (insets.top + insets.bottom);
-        } else {
-            windowWidthInPx = bounds.width();
-            windowHeightInPx = bounds.height();
-        }
+                .computeCurrentWindowMetrics(getContext())
+                .getBounds();
+        @Dimension
+        final float windowWidthInPx = bounds.width();
+        @Dimension
+        final float windowHeightInPx = bounds.height();
 
         final double screenHwRatio = windowHeightInPx / windowWidthInPx;
 
