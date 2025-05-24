@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
-import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
@@ -279,7 +278,7 @@ public class DBCleaner {
     private void toLog(@NonNull final String state,
                        @NonNull final String query) {
         if (BuildConfig.DEBUG /* always */) {
-            try (SynchronizedCursor cursor = db.rawQuery(query, null)) {
+            try (Cursor cursor = db.rawQuery(query, null)) {
                 LoggerFactory.getLogger().d(TAG, state, "row count=" + cursor.getCount());
                 while (cursor.moveToNext()) {
                     final String field = cursor.getColumnName(0);
