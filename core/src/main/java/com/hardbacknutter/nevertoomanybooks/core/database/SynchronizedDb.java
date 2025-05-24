@@ -575,8 +575,8 @@ public class SynchronizedDb
             // So what is this 'editTable' ? Google has almost no info on it, and
             // all code-paths lead to android.database.sqlite.SQLiteCursor
             // which in fact does NOT use the parameter at all (and it's private).
-            // The only place where it could be used, is when using a a cursory factory,
-            // which is our case means the typedCursorFactory -> TypedCursor
+            // The only place where it could be used, is when using a cursory factory,
+            // which in our case means the typedCursorFactory -> TypedCursor
             // and we don't use it.... so passing in null is no issue.
             // If the SQLiteCursor ever starts using.. we might crash... that'll be the day...
             //noinspection DataFlowIssue
