@@ -157,6 +157,10 @@ class CoverHelper {
         } else {
             // Get the image from the file system and display it.
             imageLoader.fromFile(coverView, oFile.get(), null, null);
+            // 2025-05-25: we did extensive tests using Glide 5.0rc1 library.
+            // Neither during normal scrolling, fling-scrolling nor fast-scrolling
+            // was there any difference. The most extreme test with 7000 books/covers
+            // all visible/expanded, and Glide made no difference whatsoever.
         }
         return true;
     }
