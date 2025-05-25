@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -139,7 +140,8 @@ public class BookHolder
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
             final int maxWidth = coverScale.getMaxWidthInPixels(context, Style.Layout.List);
             final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
-            coverHelper = new CoverHelper(ImageView.ScaleType.FIT_START,
+            coverHelper = new CoverHelper(ASyncExecutor.MAIN,
+                                          ImageView.ScaleType.FIT_START,
                                           ImageViewLoader.MaxSize.Enforce,
                                           maxWidth, maxHeight);
         } else {

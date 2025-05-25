@@ -30,10 +30,10 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -64,6 +64,7 @@ class CoverHelper {
      * <p>
      * Dev. note: the width comes from the style scaling factor.
      *
+     * @param executor    to use
      * @param scaleType   to use for images
      *                    (ignored for placeholders)
      * @param maxSizeType how to adjust the size, see {@link ImageViewLoader.MaxSize}
@@ -71,7 +72,8 @@ class CoverHelper {
      * @param maxWidth    Maximum width for a cover in pixels
      * @param maxHeight   Maximum height for a cover in pixels
      */
-    CoverHelper(@NonNull final ImageView.ScaleType scaleType,
+    CoverHelper(@NonNull final Executor executor,
+                @NonNull final ImageView.ScaleType scaleType,
                 @NonNull final ImageViewLoader.MaxSize maxSizeType,
                 @Dimension final int maxWidth,
                 @Dimension final int maxHeight) {
@@ -83,7 +85,7 @@ class CoverHelper {
 
         imageCachingEnabled = coverStorage.isImageCachingEnabled();
 
-        imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+        imageLoader = new ImageViewLoader(executor,
                                           scaleType, maxSizeType,
                                           maxWidth, maxHeight);
     }

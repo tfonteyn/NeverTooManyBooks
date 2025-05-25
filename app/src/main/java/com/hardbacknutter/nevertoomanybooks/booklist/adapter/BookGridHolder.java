@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfGridBookBinding;
@@ -93,7 +94,8 @@ public class BookGridHolder
 
         // We're using MaxSize.Constrained, so the maxWidth/maxHeight will in fact be IGNORED
         // except when displaying a placeholder
-        coverHelper = new CoverHelper(ImageView.ScaleType.FIT_CENTER,
+        coverHelper = new CoverHelper(ASyncExecutor.MAIN,
+                                      ImageView.ScaleType.FIT_CENTER,
                                       ImageViewLoader.MaxSize.Constrained,
                                       maxWidth, maxHeight);
 
