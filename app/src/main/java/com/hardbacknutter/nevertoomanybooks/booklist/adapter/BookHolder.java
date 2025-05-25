@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,8 +29,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 
 import java.util.Locale;
 import java.util.Set;
@@ -104,7 +100,7 @@ public class BookHolder
     private final Locale locale;
     /** Only active when running in debug mode; displays the "position/rowId" for a book. */
     @Nullable
-    private TextView dbgRowIdView;
+    private BookDebugRowIdView dbgRowIdView;
     @Nullable
     private Set<String> use;
 
@@ -152,27 +148,7 @@ public class BookHolder
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
-            // Add a text view to display the "position/rowId" for a book.
-            // Displayed on top of the image so the layout is not changed.
-            dbgRowIdView = new TextView(context);
-            dbgRowIdView.setId(View.generateViewId());
-            dbgRowIdView.setTextColor(Color.BLUE);
-            dbgRowIdView.setBackgroundColor(Color.WHITE);
-            dbgRowIdView.setZ(5);
-            dbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
-
-            final ConstraintLayout parentLayout = itemView.findViewById(R.id.card_frame);
-            parentLayout.addView(dbgRowIdView, 0);
-
-            final ConstraintSet set = new ConstraintSet();
-            set.clone(parentLayout);
-            set.connect(dbgRowIdView.getId(), ConstraintSet.TOP,
-                        R.id.cover_image_0, ConstraintSet.TOP);
-            set.connect(dbgRowIdView.getId(), ConstraintSet.START,
-                        R.id.cover_image_0, ConstraintSet.START);
-            set.setVerticalBias(dbgRowIdView.getId(), 1.0f);
-
-            set.applyTo(parentLayout);
+            dbgRowIdView = new BookDebugRowIdView(itemView.findViewById(R.id.card_frame));
         }
     }
 
@@ -346,9 +322,8 @@ public class BookHolder
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
             if (dbgRowIdView != null) {
-                final String txt = String.valueOf(getBindingAdapterPosition()) + '/'
-                                   + rowData.getLong(DBKey.BL_NODE.ROW_ID);
-                dbgRowIdView.setText(txt);
+                dbgRowIdView.onBind(getBindingAdapterPosition(),
+                                    rowData.getLong(DBKey.BL_NODE.ROW_ID));
             }
         }
     }
