@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -36,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.util.logger.BuildConfig;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 public final class ASyncExecutor {
 
@@ -89,7 +90,7 @@ public final class ASyncExecutor {
                 public void rejectedExecution(@NonNull final Runnable r,
                                               @NonNull final ThreadPoolExecutor e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        LoggerFactory.getLogger().w(TAG, "Exceeded ThreadPoolExecutor pool size");
+                        Log.w(TAG, "Exceeded ThreadPoolExecutor pool size");
                     }
                     // As a last ditch fallback, run it on an executor with an unbounded queue.
                     // Create this executor lazily, hopefully almost never.
