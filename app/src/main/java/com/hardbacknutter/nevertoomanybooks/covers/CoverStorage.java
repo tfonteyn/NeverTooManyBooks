@@ -316,22 +316,39 @@ public class CoverStorage {
 
         @Nullable
         File coverFile;
+
         // Try finding a jpg
         coverFile = new File(coverDir, name + EXT_JPG);
-        if (!coverFile.exists()) {
+        if (coverFile.exists()) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
+                LoggerFactory.getLogger()
+                             .e(TAG, new Throwable("getPersistedFile:"),
+                                "uuid=" + uuid
+                                + "|cIdx=" + cIdx
+                                + "|file=" + coverFile.getAbsolutePath());
+            }
+            return Optional.of(coverFile);
+
+        } else {
             // not found, try finding a png
             coverFile = new File(coverDir, name + EXT_PNG);
             if (coverFile.exists()) {
                 // rename it to the standard extension regardless of type
-                // #isUndoEnabled(String,int) relies on this
+                // #isUndoEnabled(String,int) relies on the jpg extension
                 try {
                     FileUtils.rename(coverFile, new File(coverDir, name + EXT_JPG));
                     coverFile = new File(coverDir, name + EXT_JPG);
                 } catch (@NonNull final IOException ignore) {
-                    // ignore
+                    // ignore a rename failure, and return the png file regardless
                 }
-            } else {
-                coverFile = null;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
+                    LoggerFactory.getLogger()
+                                 .e(TAG, new Throwable("getPersistedFile:"),
+                                    "uuid=" + uuid
+                                    + "|cIdx=" + cIdx
+                                    + "|file=" + coverFile.getAbsolutePath());
+                }
+                return Optional.of(coverFile);
             }
         }
 
@@ -340,12 +357,7 @@ public class CoverStorage {
                          .e(TAG, new Throwable("getPersistedFile"),
                             "uuid=" + uuid
                             + "|cIdx=" + cIdx
-                            + "|file="
-                            + (coverFile == null ? "null" : coverFile.getAbsolutePath()));
-        }
-
-        if (coverFile != null && coverFile.exists()) {
-            return Optional.of(coverFile);
+                            + "|file not found");
         }
         return Optional.empty();
     }
