@@ -28,6 +28,8 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -64,6 +66,10 @@ public class BookGridHolder
 
     private final boolean useAuthor;
 
+    /** Only active when running in debug mode; displays the "position/rowId" for a book. */
+    @Nullable
+    private BookDebugRowIdView dbgRowIdView;
+
     /**
      * Constructor.
      *
@@ -97,6 +103,10 @@ public class BookGridHolder
         // Note that Integer.MAX_VALUE is in fact the default for this View.
         // but Android "logic" works in mysterious ways...
         vb.gridCell.setMaxWidth(Integer.MAX_VALUE);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+            dbgRowIdView = new BookDebugRowIdView(vb.gridCell);
+        }
     }
 
     @Override
@@ -196,6 +206,13 @@ public class BookGridHolder
             } else {
                 vb.author.setText(null);
                 vb.author.setVisibility(View.GONE);
+            }
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+            if (dbgRowIdView != null) {
+                dbgRowIdView.onBind(getBindingAdapterPosition(),
+                                    rowData.getLong(DBKey.BL_NODE.ROW_ID));
             }
         }
     }
