@@ -157,9 +157,8 @@ public enum CoverScale {
     }
 
     // Use an indexed lookup to fixed values depending on "sw" device width.
-    private int lookup(@NonNull final Context context) {
-        final TypedArray coverSizes = context
-                .getResources().obtainTypedArray(R.array.cover_max_width);
+    private int lookup(@NonNull final Resources res) {
+        final TypedArray coverSizes = res.obtainTypedArray(R.array.cover_max_width);
         try {
             return coverSizes.getDimensionPixelSize(id, 0);
         } finally {
@@ -182,20 +181,20 @@ public enum CoverScale {
             return 0;
         }
 
-        if (this == Maximum && layout == Style.Layout.Grid) {
-            final int windowWidthInPx = getWindowWidthInPx(context);
+        final Resources res = context.getResources();
 
-            if (context.getResources().getConfiguration().orientation
+        if (this == Maximum && layout == Style.Layout.Grid) {
+            if (res.getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE) {
                 // In landscape, half.
-                return windowWidthInPx / 2;
+                return getWindowWidthInPx(context) / 2;
             } else {
                 // In portrait, the entire screen width
-                return windowWidthInPx;
+                return getWindowWidthInPx(context);
             }
         }
 
-        return lookup(context);
+        return lookup(res);
     }
 
     /**
@@ -228,7 +227,7 @@ public enum CoverScale {
             }
         }
 
-        final int coverWidthPx = lookup(context);
+        final int coverWidthPx = lookup(res);
 
         // The multiplier used here is NOT related to HW_RATIO!
         //
@@ -244,52 +243,92 @@ public enum CoverScale {
         return (int) Math.floor(0.6 * (double) getWindowWidthInPx(context) / coverWidthPx);
     }
 
-    /*  Multiplication of 0.6
+    /*  Grid span count, multiplication of 0.6
 
     Pixel 8 Pro
+        Resolution (px) 1344 x 2992
+        Resolution (dp)  448 x 998
+        Density 480 dpi
 
     Portrait:
     - Small:  5
     - Medium: 3
     - Large : 2
-    - Max     1
+    - Max:    1
 
     Landscape
     - Small: 12
     - Medium: 8
     - Large:  6
-    - Max     3
+    - Max:    3
 
     ===========================================
     Pixel 2
+        Resolution (px) 1080 x 1920
+        Resolution (dp) 412 x 732
+        Density 420 dpi
 
     Portrait:
     - Small:  5
     - Medium: 3
     - Large : 2
-    - Max     1
+    - Max:    1
 
     Landscape
     - Small:  9
     - Medium: 6
     - Large:  4
-    - Max     2
+    - Max:    2
 
     ===========================================
     Small Phone
+        Resolution (px) 720 x 1280
+        Resolution (dp) 360 x 640
+        Density 320 dpi
 
     Portrait:
     - Small:  4
     - Medium: 3
     - Large : 2
-    - Max     1
+    - Max:    1
 
     Landscape
     - Small:  8
     - Medium: 5
     - Large:  4
-    - Max     2
+    - Max:    2
+
     ===========================================
+    WSVGA Tablet (7")
+        Resolution (px) 1024 x 600
+        Resolution (dp) 1024 x 600
+        Density 160 dpi
+
+    Portrait:
+    - Small:  5
+    - Medium: 3
+    - Large : 2
+    - Max:    1
+
+    Landscape
+    - Small:  8
+    - Medium: 6
+    - Large:  4
+    - Max:    3
+
+    ===========================================
+    Medium Tablet (10")
+        Resolution (px) 2560 x 1600
+        Resolution (dp) 1280 x 800
+        Density 320 dpi
+
+    Portrait:
+    - Small:  5
+    - Medium: 4
+    - Large : 3
+    - Max:    1
+
+    Landscape: n/a; embedded view is list-only
 
      */
 }
