@@ -8,13 +8,15 @@ NEW:
   by [boldizsar-nagy](https://hosted.weblate.org/user/boldizsar-nagy/)
 - Author metadata: now collecting birth/death dates and a picture;
   these are shown on the "All works by this author" screen.
-- Bedetheque: enhancements to find/select the correct edition when searching
-- improvements in "Update books": the description field can now append text from multiple sites.
-  by ISBN for older comics.
+- Bedetheque: enhancements to find/select the correct edition when searching by ISBN for older
+  comics.
+- "Update books": the description field can now append text from multiple sites.
 - Android 16 tested/supported.
 
 FIXES:
 
+- improved scrollbar accessibility
+- improved drag-scrolling performance
 - optimizations in loading and displaying images
 
 REMOVED:
