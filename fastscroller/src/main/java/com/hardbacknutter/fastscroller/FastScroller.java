@@ -101,8 +101,6 @@ public class FastScroller {
     @NonNull
     private StateListDrawable thumb;
 
-    private boolean smoothScrolling = true;
-
     @OverlayProviderFactory.OverlayType
     private int overlayType = OverlayProviderFactory.TYPE_MD2;
 
@@ -180,13 +178,13 @@ public class FastScroller {
      * Set the scrollbar thumb expanded touch-area.
      * This is basically an invisible padding around the thumb for easir grabbing.
      *
-     * @param expandedTouchArea in dp
+     * @param padding in dp
      *
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public FastScroller setExpandedTouchArea(@Dimension(unit = Dimension.DP) final int expandedTouchArea) {
-        this.expandedTouchArea = dp2px(expandedTouchArea);
+    public FastScroller setExpandedTouchArea(@Dimension(unit = Dimension.DP) final int padding) {
+        this.expandedTouchArea = dp2px(padding);
         return this;
     }
 
@@ -232,12 +230,6 @@ public class FastScroller {
         return this;
     }
 
-    @NonNull
-    public FastScroller setSmoothScrolling(final boolean smoothScrolling) {
-        this.smoothScrolling = smoothScrolling;
-        return this;
-    }
-
     /**
      * Attach this FastScroller to the given {@link RecyclerView}.
      *
@@ -260,8 +252,7 @@ public class FastScroller {
                 recyclerView, thumb, track, thumb, track,
                 thumbThickness, minimumRange, margin,
                 thumbMinSize,
-                expandedTouchArea,
-                smoothScrolling);
+                expandedTouchArea);
 
         @Nullable
         final OverlayProvider overlayProvider = OverlayProviderFactory

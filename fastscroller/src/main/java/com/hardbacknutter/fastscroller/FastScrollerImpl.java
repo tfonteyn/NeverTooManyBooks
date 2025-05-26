@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
@@ -51,7 +50,6 @@ import java.lang.annotation.RetentionPolicy;
  * <ul>
  *     <li>Allow setting a minimum size for the thumb.</li>
  *     <li>Allow setting an expanded touch area for the thumb</li>
- *     <li>Allow disabling smooth-scrolling (slow) and use positional scrolling (fast) instead</li>
  *     <li>Option to add an index-overlay VERTICAL SCROLL ONLY</li>
  * </ul>
  */
@@ -128,7 +126,6 @@ public class FastScrollerImpl
     private final int mMinimalThumbSize;
     @Px
     private final int mExpandedTouchArea;
-    private final boolean mSmoothScrolling;
     @Nullable
     private OverlayProvider mOverlayProvider;
     // HARDBACKNUTTER - END
@@ -172,8 +169,6 @@ public class FastScrollerImpl
      *                                In pixels.
      * @param expandedTouchArea       the padding to add to the thumb to use as touch area.
      *                                In pixels.
-     * @param smoothScrolling         flag: {@code true} to use the original smooth/slower scrolling
-     *                                or {@code false} to use positional/faster sroller/
      */
     public FastScrollerImpl(RecyclerView recyclerView,
                             StateListDrawable verticalThumbDrawable,
@@ -186,8 +181,7 @@ public class FastScrollerImpl
                             // HARDBACKNUTTER - BEGIN
                             @Px
                             final int minimalThumbSize,
-                            @Px final int expandedTouchArea,
-                            final boolean smoothScrolling
+                            @Px final int expandedTouchArea
                             // HARDBACKNUTTER - END
     ) {
 
@@ -198,7 +192,6 @@ public class FastScrollerImpl
         // HARDBACKNUTTER - BEGIN
         mMinimalThumbSize = minimalThumbSize;
         mExpandedTouchArea = expandedTouchArea;
-        mSmoothScrolling = smoothScrolling;
         // HARDBACKNUTTER - END
 
         mVerticalThumbWidth = Math.max(defaultWidth, verticalThumbDrawable.getIntrinsicWidth());
@@ -519,51 +512,18 @@ public class FastScrollerImpl
             mDragState = DRAG_NONE;
         } else if (me.getAction() == MotionEvent.ACTION_MOVE && mState == STATE_DRAGGING) {
             show();
-            // HARDBACKNUTTER - BEGIN
-            if (mSmoothScrolling) {
-                // original smooth scrolling
-                if (mDragState == DRAG_X) {
-                    horizontalScrollTo(me.getX());
-                }
-                if (mDragState == DRAG_Y) {
-                    verticalScrollTo(me.getY());
-                }
-            } else {
-                // positional
-                if (mDragState == DRAG_X) {
-                    horizontalScrollToPosition(me.getX());
-                }
-                if (mDragState == DRAG_Y) {
-                    verticalScrollToPosition(me.getY());
-                }
+            if (mDragState == DRAG_X) {
+                horizontalScrollTo(me.getX());
             }
-            // HARDBACKNUTTER - END
+            if (mDragState == DRAG_Y) {
+                verticalScrollTo(me.getY());
+            }
         }
     }
 
     @Override
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
     }
-
-    // HARDBACKNUTTER - BEGIN
-    private void verticalScrollToPosition(final float y) {
-        final int itemCount = mRecyclerView.getAdapter().getItemCount();
-        final int recyclerHeight = mRecyclerView.getHeight();
-
-        // Clamp y within valid range
-        final float clampedY = Math.max(0, Math.min(y, recyclerHeight));
-        // Map y to position
-        final int position = (int) ((clampedY / recyclerHeight) * itemCount);
-
-        final LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-        // Sanity check
-        if (layoutManager != null) {
-            layoutManager.scrollToPositionWithOffset(position, 0);
-        }
-
-        mVerticalDragY = y;
-    }
-    // HARDBACKNUTTER - END
 
     private void verticalScrollTo(float y) {
         final int[] scrollbarRange = getVerticalRange();
@@ -580,27 +540,6 @@ public class FastScrollerImpl
         }
         mVerticalDragY = y;
     }
-
-    // HARDBACKNUTTER - BEGIN
-    private void horizontalScrollToPosition(final float x) {
-        final int itemCount = mRecyclerView.getAdapter().getItemCount();
-        final int recyclerWidth = mRecyclerView.getWidth();
-
-        // Clamp x within valid range
-        final float clampedX = Math.max(0, Math.min(x, recyclerWidth));
-        // Map x to position
-        final int position = (int) ((clampedX / recyclerWidth) * itemCount);
-
-        final LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-        // Sanity check
-        if (layoutManager != null) {
-            layoutManager.scrollToPositionWithOffset(position, 0);
-        }
-
-        mHorizontalDragX = x;
-    }
-    // HARDBACKNUTTER - END
-
 
     private void horizontalScrollTo(float x) {
         final int[] scrollbarRange = getHorizontalRange();

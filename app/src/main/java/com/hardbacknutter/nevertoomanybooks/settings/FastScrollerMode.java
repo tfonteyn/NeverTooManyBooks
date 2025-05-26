@@ -57,7 +57,6 @@ public final class FastScrollerMode {
                                                    OverlayProviderFactory.TYPE_MD2);
 
         return new FastScroller(context)
-                .setSmoothScrolling(false)
                 .setExpandedTouchArea(24)
                 .setOverlayType(overlayType);
     }
