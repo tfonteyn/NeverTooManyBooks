@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
@@ -49,8 +50,13 @@ import java.lang.annotation.RetentionPolicy;
  * Search for 'HARDBACKNUTTER' to see modifications done.
  * <ul>
  *     <li>Allow setting a minimum size for the thumb.</li>
- *     <li>Allow setting an expanded touch area for the thumb</li>
- *     <li>Option to add an index-overlay VERTICAL SCROLL ONLY</li>
+ *     <li>Allow setting an expanded touch area for the thumb.
+ *         VERTICAL SCROLL ONLY</li>
+ *     <li>Added support for tapping inside the track, and jump to a position.
+ *         Calculation of the position is approximate only.
+ *         VERTICAL SCROLL ONLY</li>
+ *     <li>Option to add an index-overlay.
+ *         VERTICAL SCROLL ONLY</li>
  * </ul>
  */
 @SuppressWarnings("ALL")
@@ -477,6 +483,11 @@ public class FastScrollerImpl
                 }
                 setState(STATE_DRAGGING);
                 handled = true;
+                // HARDBACKNUTTER - BEGIN
+            } else if (isPointInsideTrack(ev.getX(), ev.getY())) {
+                jumpToPositionFromTrack(ev.getY());
+                handled = true;
+                // HARDBACKNUTTER - END
             } else {
                 handled = false;
             }
@@ -520,6 +531,29 @@ public class FastScrollerImpl
             }
         }
     }
+
+    // HARDBACKNUTTER - BEGIN
+    private void jumpToPositionFromTrack(final float y) {
+        RecyclerView.Adapter adapter = mRecyclerView.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+
+        int itemCount = adapter.getItemCount();
+        int viewHeight = mRecyclerViewHeight;
+
+        float scrollRatio = y / (float) viewHeight;
+        int targetPosition = (int) (scrollRatio * itemCount);
+        targetPosition = Math.max(0, Math.min(targetPosition, itemCount - 1));
+
+        if (mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+            ((LinearLayoutManager) mRecyclerView.getLayoutManager())
+                    .scrollToPositionWithOffset(targetPosition, 0);
+        } else {
+            mRecyclerView.scrollToPosition(targetPosition);
+        }
+    }
+    // HARDBACKNUTTER - END
 
     @Override
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
@@ -615,6 +649,16 @@ public class FastScrollerImpl
                && x >= mHorizontalThumbCenterX - mHorizontalThumbWidth / 2
                && x <= mHorizontalThumbCenterX + mHorizontalThumbWidth / 2;
     }
+
+    // HARDBACKNUTTER - BEGIN
+    private boolean isPointInsideTrack(final float x,
+                                       final float y) {
+
+        return (y >= 0 && y <= mRecyclerViewHeight)
+               && (x >= (mRecyclerViewWidth - mVerticalTrackWidth)
+                   && x <= mRecyclerViewWidth);
+    }
+    // HARDBACKNUTTER - END
 
     @VisibleForTesting
     Drawable getHorizontalTrackDrawable() {
