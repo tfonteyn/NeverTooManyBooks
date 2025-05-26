@@ -851,6 +851,7 @@
     <string name="lbl_identifiers">Identificatoren</string>
     <string name="confirm_apply_substitutions">De substitutieregels toepassen? Alle toepasselijke boeken worden bijgewerkt.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Tags samenvoegen die alleen verschillen in hoofdletters en kleine letters</string>
+    <string name="lbl_default">Standaard</string>
     <string name="lbl_default_x">Standaard: %1$s</string>
     <string name="info_partial_date_picker">Tik op een eerder geselecteerde maand of dag om de selectie ongedaan te maken.</string>
     <string name="action_restore_default_identifiers">De standaard Identifiers herstellen</string>
@@ -864,4 +865,5 @@
     <string name="lbl_author_type_foreword">Voorwoord</string>
     <string name="lbl_author_type_afterword">Nawoord</string>
     <string name="lbl_image_2">Afbeelding 3</string>
+    <string name="lbl_fastscroller_draghandle">Schuifknopgrootte</string>
 </resources>

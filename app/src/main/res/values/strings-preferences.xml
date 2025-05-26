@@ -177,6 +177,16 @@
         <item>0</item>
     </string-array>
 
+    <!-- ListPreference - fastscroller text overlay. -->
+    <string-array name="pe_fastscroller_drag_handle">
+        <item>@string/pe_fast_scroller_drag_handle_default</item>
+        <item>@string/pe_fast_scroller_drag_handle_large</item>
+    </string-array>
+    <string-array name="pv_fastscroller_drag_handle">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->
     <string-array name="pe_thumbnails_rotate_auto">
         <item>@string/option_image_rotate_automatic</item>

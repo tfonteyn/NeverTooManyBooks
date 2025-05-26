@@ -847,6 +847,7 @@
     <string name="lbl_identifier">Mã định danh</string>
     <string name="lbl_identifiers">Mã định danh</string>
     <string name="lbl_tag_mapper_apply_merge_case">Hợp nhất các thẻ chỉ khác nhau ở chữ hoa và chữ thường</string>
+    <string name="lbl_default">Mặc định</string>
     <string name="lbl_default_x">Mặc định: %1$s</string>
     <string name="info_partial_date_picker">Nhấn vào tháng hoặc ngày đã chọn trước đó để bỏ chọn.</string>
     <string name="action_restore_default_identifiers">Khôi phục lại Mã định danh mặc định</string>
@@ -860,4 +861,5 @@
         <item quantity="other">Có %1$d mã ISBN đã nhập trước đó. Bạn có muốn bắt đầu tìm kiếm chúng hay nên xóa chúng?</item>
     </plurals>
     <string name="lbl_image_2">Hình ảnh 3</string>
+    <string name="lbl_fastscroller_draghandle">Kích thước thanh kéo cuộn</string>
 </resources>

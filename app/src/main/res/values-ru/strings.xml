@@ -865,6 +865,7 @@
     <string name="lbl_identifiers">Идентификаторы</string>
     <string name="confirm_apply_substitutions">Применить правила замены? Все применимые книги будут обновлены.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Объединяйте теги, которые отличаются только верхним и нижним регистром</string>
+    <string name="lbl_default">По умолчанию</string>
     <string name="lbl_default_x">По умолчанию: %1$s</string>
     <string name="info_partial_date_picker">Нажмите на ранее выбранный месяц или день, чтобы снять выделение.</string>
     <string name="action_restore_default_identifiers">Восстановите идентификаторы по умолчанию</string>
@@ -885,4 +886,5 @@
     </plurals>
     <string name="lbl_author_type_foreword">Предисловие</string>
     <string name="lbl_image_2">Изображение 3</string>
+    <string name="lbl_fastscroller_draghandle">азмер ползунка полосы прокрутки</string>
 </resources>

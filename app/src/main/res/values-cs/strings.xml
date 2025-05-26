@@ -865,6 +865,7 @@
     <string name="lbl_identifiers">Identifikátory</string>
     <string name="confirm_apply_substitutions">Použít pravidla substituce? Všechny příslušné knihy budou aktualizovány.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Sloučení štítků, které se liší pouze velkými a malými písmeny</string>
+    <string name="lbl_default">Výchozí</string>
     <string name="lbl_default_x">Výchozí: %1$s</string>
     <string name="info_partial_date_picker">Klepnutím na dříve vybraný měsíc nebo den zrušíte jeho výběr.</string>
     <string name="action_restore_default_identifiers">Obnovení výchozích identifikátorů</string>
@@ -885,4 +886,5 @@
     </plurals>
     <string name="lbl_author_type_foreword">Předmluva</string>
     <string name="lbl_image_2">Obrázek 3</string>
+    <string name="lbl_fastscroller_draghandle">Velikost posuvníku</string>
 </resources>

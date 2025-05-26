@@ -856,6 +856,7 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_identifiers">Αναγνωριστικά</string>
     <string name="confirm_apply_substitutions">Εφαρμόζετε τους κανόνες υποκατάστασης; Όλα τα ισχύοντα βιβλία θα ενημερωθούν.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Συγχώνευση ετικετών που διαφέρουν μόνο σε κεφαλαία και πεζά γράμματα</string>
+    <string name="lbl_default">Προεπιλογή</string>
     <string name="lbl_default_x">Προεπιλογή: %1$s</string>
     <string name="info_partial_date_picker">Πατήστε σε έναν προηγουμένως επιλεγμένο μήνα ή ημέρα για να καταργήσετε την επιλογή του.</string>
     <string name="action_restore_default_identifiers">Επαναφορά των προεπιλεγμένων αναγνωριστικών</string>
@@ -868,4 +869,5 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_fetch_author_info">Λήψη πληροφοριών συγγραφέα</string>
     <string name="lbl_author_type_foreword">Πρόλογος</string>
     <string name="lbl_image_2">Εικόνα 3</string>
+    <string name="lbl_fastscroller_draghandle">Μέγεθος ρυθμιστικού γραμμής κύλισης»</string>
 </resources>

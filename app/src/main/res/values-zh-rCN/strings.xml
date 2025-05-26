@@ -836,6 +836,7 @@
     <string name="lbl_tag_mapper_apply_merge_case_result">大/小写合并</string>
     <string name="lbl_tag_mapper_apply_merge_case">合并只有字母大小写不同的标签</string>
     <string name="lbl_tag_mapper_apply_purge_unused">删除未使用的标签</string>
+    <string name="lbl_default">默认</string>
     <string name="lbl_default_x">默认：%1$s</string>
     <string name="info_partial_date_picker">轻按之前选中的月份或天来取消选中。</string>
     <string name="lbl_original_language">原始语言</string>

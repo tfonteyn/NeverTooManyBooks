@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,15 @@ public final class FastScrollerMode {
      */
     public static final String PK_OVERLAY = "booklist.fastscroller.overlay";
 
+    /**
+     * {@code int}
+     */
+    public static final String PK_DRAG_HANDLE = "ui.fastscroller.draghandle";
+    /** default. */
+    private static final int DRAG_HANDLE_SYSTEM = 0;
+    /** Thicker and longer. */
+    private static final int DRAG_HANDLE_LARGE = 1;
+
     private FastScrollerMode() {
     }
 
@@ -51,13 +61,30 @@ public final class FastScrollerMode {
      *
      * @return new unattached {@link FastScroller} instance
      */
+    @SuppressLint("UseCompatLoadingForDrawables")
     @NonNull
     public static FastScroller create(@NonNull final Context context) {
         final int overlayType = IntListPref.getInt(context, PK_OVERLAY,
                                                    OverlayProviderFactory.TYPE_MD2);
 
-        return new FastScroller(context)
-                .setExpandedTouchArea(24)
-                .setOverlayType(overlayType);
+        final int mode = IntListPref.getInt(context, PK_DRAG_HANDLE, DRAG_HANDLE_SYSTEM);
+
+        switch (mode) {
+            case DRAG_HANDLE_LARGE: {
+                return new FastScroller(context)
+                        .setExpandedTouchArea(24)
+                        .setOverlayType(overlayType)
+                        // default: 8
+                        .setThumbThickness(12)
+                        // default: 48
+                        .setThumbMinSize(96);
+            }
+            case DRAG_HANDLE_SYSTEM:
+            default: {
+                return new FastScroller(context)
+                        .setExpandedTouchArea(24)
+                        .setOverlayType(overlayType);
+            }
+        }
     }
 }

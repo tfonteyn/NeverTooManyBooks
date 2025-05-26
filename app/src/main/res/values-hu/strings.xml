@@ -841,6 +841,7 @@
     <string name="lbl_sort_descending">Csökkenő</string>
     <string name="lbl_read">Olvasva</string>
     <string name="lbl_reading">Olvasás alatt</string>
+    <string name="lbl_default">Alapértelmezett</string>
     <string name="lbl_default_x">Alapértelmezett: %1$s</string>
     <string name="X_action_customize">Testreszabás…</string>
     <string name="X_action_use_default_setting">Alapértelmezett értékek használata</string>

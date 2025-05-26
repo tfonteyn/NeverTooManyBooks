@@ -852,6 +852,7 @@
     <string name="lbl_identifiers">Identificadores</string>
     <string name="confirm_apply_substitutions">Aplicar as regras de substituição? Todos os livros aplicáveis serão actualizados.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Fundir etiquetas que apenas diferem em maiúsculas e minúsculas</string>
+    <string name="lbl_default">Padrão</string>
     <string name="lbl_default_x">Padrão: %1$s</string>
     <string name="info_partial_date_picker">Toque num mês ou dia previamente selecionado para o anular.</string>
     <string name="action_restore_default_identifiers">Repor os identificadores predefinidos</string>
@@ -869,4 +870,5 @@
         <item quantity="other">Existem %1$d códigos ISBN previamente introduzidos. Gostaria de iniciar a pesquisa dos mesmos ou devem ser removidos?</item>
     </plurals>
     <string name="lbl_image_2">Imagem 3</string>
+    <string name="lbl_fastscroller_draghandle">Tamanho do controle de rolagem</string>
 </resources>

@@ -65,6 +65,15 @@ public class UserInterfacePreferenceFragment
         initLanguage();
         initThemeMode();
         initThemeColors();
+
+        final Preference p = findPreference(FastScrollerMode.PK_DRAG_HANDLE);
+        //noinspection DataFlowIssue
+        p.setOnPreferenceChangeListener((preference, newValue) -> {
+            // Set the activity result so our caller will recreate itself
+            vm.setOnBackRequiresActivityRecreation();
+            return true;
+        });
+
     }
 
     private void initLanguage() {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2024 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -73,6 +73,16 @@
             android:icon="@drawable/menu_24px"
             android:key="ui.menu.context.mode"
             android:title="@string/pc_context_menus"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_fastscroller_drag_handle"
+            android:entryValues="@array/pv_fastscroller_drag_handle"
+            android:icon="@drawable/menu_24px"
+            android:key="ui.fastscroller.draghandle"
+            android:singleLineTitle="false"
+            android:title="@string/lbl_fastscroller_draghandle"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 

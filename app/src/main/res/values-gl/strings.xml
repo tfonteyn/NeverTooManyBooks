@@ -823,6 +823,7 @@
     <string name="lbl_sort_descending">Descendente</string>
     <string name="lbl_read">Lido</string>
     <string name="lbl_reading">A ler</string>
+    <string name="lbl_default">Predefinido</string>
     <string name="lbl_default_x">Predefinido: %1$s</string>
     <string name="X_action_customize">Personalizar…</string>
     <string name="X_action_use_default_setting">Usar valores predefinidos</string>

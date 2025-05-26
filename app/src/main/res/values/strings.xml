@@ -1667,6 +1667,16 @@
     <string name="pe_fast_scroller_overlay_static">Static</string>
     <!-- ListPreference value: Type of Text bubble on the booklist scroller -->
     <string name="pe_fast_scroller_overlay_dynamic">Dynamic</string>
+
+    <!-- ListPreference title: the size of the scrollbar thumb/handle. -->
+    <string name="lbl_fastscroller_draghandle">Scrollbar thumb</string>
+    <!-- ListPreference value: the size of the scrollbar thumb/handle: the system default. -->
+    <string name="pe_fast_scroller_drag_handle_default"
+            translatable="false">@string/lbl_default</string>
+    <!-- ListPreference value: the size of the scrollbar thumb/handle: larger, easier to grab. . -->
+    <string name="pe_fast_scroller_drag_handle_large"
+            translatable="false">@string/size_large</string>
+
     <!-- ListPreference title: Degrees by which to rotate camera pictures automatically -->
     <string name="pt_thumbnails_rotate_auto">Rotate pictures</string>
     <!-- ListPreference title: the user can choose which action to take after taking a picture -->
@@ -2186,6 +2196,7 @@
 
     <!-- [VERIFIED] -->
     <string name="lbl_settings">Settings</string>
+    <string name="lbl_default">Default</string>
     <!-- Show the user what the default value is -->
     <string name="lbl_default_x">Default: %1$s</string>
     <!-- endregion -->

@@ -852,6 +852,7 @@
     <string name="lbl_identifiers">Identificadores</string>
     <string name="confirm_apply_substitutions">¿Aplicar las normas de sustitución? Se actualizarán todos los libros aplicables.</string>
     <string name="lbl_tag_mapper_apply_merge_case">Fusionar etiquetas que sólo difieren en mayúsculas y minúsculas</string>
+    <string name="lbl_default">Predeterminado</string>
     <string name="lbl_default_x">Predeterminado: %1$s</string>
     <string name="info_partial_date_picker">Pulse sobre un mes o día previamente seleccionado para deseleccionarlo.</string>
     <string name="action_restore_default_identifiers">Restablecer los identificadores por defecto</string>
@@ -869,4 +870,5 @@
     </plurals>
     <string name="lbl_author_type_foreword">Prólogo</string>
     <string name="lbl_image_2">Imagen 3</string>
+    <string name="lbl_fastscroller_draghandle">Tamaño del control deslizante de la barra de desplazamiento</string>
 </resources>
