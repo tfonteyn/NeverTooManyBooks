@@ -49,7 +49,7 @@ public final class FastScrollerMode {
      *
      * @param context Current context
      *
-     * @return new instance
+     * @return new unattached {@link FastScroller} instance
      */
     @NonNull
     public static FastScroller create(@NonNull final Context context) {
@@ -57,6 +57,8 @@ public final class FastScrollerMode {
                                                    OverlayProviderFactory.TYPE_MD2);
 
         return new FastScroller(context)
+                .setSmoothScrolling(false)
+                .setExpandedTouchArea(24)
                 .setOverlayType(overlayType);
     }
 }
