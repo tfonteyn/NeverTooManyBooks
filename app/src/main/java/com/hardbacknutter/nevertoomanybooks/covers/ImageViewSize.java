@@ -22,15 +22,17 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import androidx.annotation.Px;
 
-// Just a pair of int's. We could have used a Rect as well.
-public class ImageSize {
+/**
+ * Size for the {@code ImageView}.
+ */
+public class ImageViewSize {
     @Px
     public final int width;
     @Px
     public final int height;
 
-    public ImageSize(@Px final int width,
-                     @Px final int height) {
+    public ImageViewSize(@Px final int width,
+                         @Px final int height) {
         this.width = width;
         this.height = height;
     }

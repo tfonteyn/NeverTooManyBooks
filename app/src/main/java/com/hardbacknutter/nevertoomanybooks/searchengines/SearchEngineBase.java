@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -448,7 +448,7 @@ public abstract class SearchEngineBase
                                       @Nullable final Map<String, String> requestProperties,
                                       @Nullable final String bookId,
                                       @IntRange(from = 0, to = 1) final int cIdx,
-                                      @Nullable final Size size)
+                                      @Nullable final ImageWebSize size)
             throws StorageException {
 
         synchronized (this) {

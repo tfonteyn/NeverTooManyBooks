@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -1298,7 +1298,7 @@ public class OpenLibrarySearchEngine
      * <p>
      * {@inheritDoc}
      *
-     * @see #fetchImageByKey(Context, char, String, String, int, Size)
+     * @see #fetchImageByKey(Context, char, String, String, int, ImageWebSize)
      * @see #searchBestCover(Context, String, String, int)
      */
     @Override
@@ -1306,7 +1306,7 @@ public class OpenLibrarySearchEngine
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 1) final int cIdx,
-                                                 @Nullable final Size size)
+                                                 @Nullable final ImageWebSize size)
             throws StorageException {
 
         if (altEdition instanceof AltEditionOpenLibrary) {
@@ -1357,11 +1357,11 @@ public class OpenLibrarySearchEngine
                                              final int cIdx)
             throws StorageException {
 
-        Optional<String> oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, Size.Large);
+        Optional<String> oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, ImageWebSize.Large);
         if (oFileSpec.isEmpty()) {
-            oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, Size.Medium);
+            oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, ImageWebSize.Medium);
             if (oFileSpec.isEmpty()) {
-                oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, Size.Small);
+                oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, ImageWebSize.Small);
             }
         }
         return oFileSpec;
@@ -1388,7 +1388,7 @@ public class OpenLibrarySearchEngine
                                      @NonNull final String key,
                                      @NonNull final String id,
                                      @IntRange(from = 0, to = 1) final int cIdx,
-                                     @Nullable final Size size)
+                                     @Nullable final ImageWebSize size)
             throws StorageException {
 
         final String sizeParam;

@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -399,7 +399,7 @@ public class AmazonSearchEngine
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 1) final int cIdx,
-                                                 @Nullable final Size size)
+                                                 @Nullable final ImageWebSize size)
             throws StorageException, SearchException, CredentialsException {
         if (altEdition instanceof AltEditionIsbn) {
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;

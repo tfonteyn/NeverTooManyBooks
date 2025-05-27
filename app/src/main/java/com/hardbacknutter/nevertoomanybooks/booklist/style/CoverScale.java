@@ -35,7 +35,7 @@ import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
 
 /**
  * Cover Scaling.
@@ -74,7 +74,7 @@ public enum CoverScale {
      */
     public static final float HW_RATIO = 0.6f;
 
-    private static final ImageSize HIDDEN = new ImageSize(0, 0);
+    private static final ImageViewSize HIDDEN = new ImageViewSize(0, 0);
 
     private final int id;
 
@@ -211,8 +211,8 @@ public enum CoverScale {
      * @return max size in pixels
      */
     @NonNull
-    public ImageSize getMaxSizeInPixels(@NonNull final Context context,
-                                        @NonNull final Style.Layout layout) {
+    public ImageViewSize getMaxSizeInPixels(@NonNull final Context context,
+                                            @NonNull final Style.Layout layout) {
         if (this == Hidden) {
             return HIDDEN;
         }
@@ -233,7 +233,7 @@ public enum CoverScale {
             width = lookup(res, layout);
         }
 
-        return new ImageSize(width, (int) (width / CoverScale.HW_RATIO));
+        return new ImageViewSize(width, (int) (width / CoverScale.HW_RATIO));
     }
 
     /**

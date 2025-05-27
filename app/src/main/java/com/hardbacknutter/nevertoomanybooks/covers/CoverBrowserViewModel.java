@@ -323,7 +323,7 @@ public class CoverBrowserViewModel
                 final FetchImageTask task =
                         new FetchImageTask(taskIdCounter.getAndIncrement(), edition, cIdx,
                                            fileManager, taskListener,
-                                           Size.SMALL_FIRST);
+                                           ImageWebSize.SMALL_FIRST);
                 task.setExecutor(galleryNetworkExecutor);
 
                 galleryTasks.put(edition, task);
@@ -374,7 +374,7 @@ public class CoverBrowserViewModel
         selectedImageTask = new FetchImageTask(R.id.TASK_ID_PREVIEW_IMAGE,
                                                imageFileInfo.getEdition(), cIdx,
                                                fileManager, taskListener,
-                                               Size.LARGE_FIRST);
+                                               ImageWebSize.LARGE_FIRST);
 
         selectedImageTask.setExecutor(previewNetworkExecutor);
         selectedImageTask.start();

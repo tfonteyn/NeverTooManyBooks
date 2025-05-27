@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,29 +32,29 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
  * <p>
  * The order must be from Small to Large so we can use {@link Enum#compareTo(Enum)}.
  */
-public enum Size
+public enum ImageWebSize
         implements Parcelable {
     Small,
     Medium,
     Large;
 
     /** {@link Parcelable}. */
-    public static final Creator<Size> CREATOR = new Creator<>() {
+    public static final Creator<ImageWebSize> CREATOR = new Creator<>() {
         @Override
         @NonNull
-        public Size createFromParcel(@NonNull final Parcel in) {
+        public ImageWebSize createFromParcel(@NonNull final Parcel in) {
             return values()[in.readInt()];
         }
 
         @Override
         @NonNull
-        public Size[] newArray(final int size) {
-            return new Size[size];
+        public ImageWebSize[] newArray(final int size) {
+            return new ImageWebSize[size];
         }
     };
 
-    static final Size[] SMALL_FIRST = {Small, Medium, Large};
-    static final Size[] LARGE_FIRST = {Large, Medium, Small};
+    static final ImageWebSize[] SMALL_FIRST = {Small, Medium, Large};
+    static final ImageWebSize[] LARGE_FIRST = {Large, Medium, Small};
 
     @Override
     public int describeContents() {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ class FetchImageTask
     @IntRange(from = 0, to = 1)
     private final int cIdx;
     @NonNull
-    private final Size[] sizes;
+    private final ImageWebSize[] sizes;
 
     /**
      * Constructor.
@@ -68,7 +68,7 @@ class FetchImageTask
                    @IntRange(from = 0, to = 1) final int cIdx,
                    @NonNull final FileManager fileManager,
                    @NonNull final TaskListener<ImageFileInfo> taskListener,
-                   @NonNull final Size... sizes) {
+                   @NonNull final ImageWebSize... sizes) {
         super(taskId, TAG, taskListener);
         this.edition = edition;
         this.cIdx = cIdx;

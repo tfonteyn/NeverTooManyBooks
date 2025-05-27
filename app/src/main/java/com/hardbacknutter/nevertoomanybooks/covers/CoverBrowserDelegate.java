@@ -373,7 +373,7 @@ class CoverBrowserDelegate
             // start a task to fetch a larger image.
             //noinspection DataFlowIssue
             if (imageFileInfo.getEngineId().hasMultipleCoverSizes()
-                && Size.Large != imageFileInfo.getSize()) {
+                && ImageWebSize.Large != imageFileInfo.getSize()) {
                 vb.lblPreview.setVisibility(View.INVISIBLE);
                 vb.preview.setVisibility(View.INVISIBLE);
                 vb.previewProgressBar.show();

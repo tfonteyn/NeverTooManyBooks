@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -523,7 +523,7 @@ public class KbNlHtmlSearchEngine
 
 
     /**
-     * Wrapper for {@link #searchCoverByEdition(Context, AltEdition, int, Size)}.
+     * Wrapper for {@link #searchCoverByEdition(Context, AltEdition, int, ImageWebSize)}.
      * <p>
      * Try to get an image in order of large, medium, small.
      * i.e. the 'best' image being the largest we can find.
@@ -543,11 +543,11 @@ public class KbNlHtmlSearchEngine
                                                       @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
-        Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Large);
+        Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, ImageWebSize.Large);
         if (oFileSpec.isEmpty()) {
-            oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Medium);
+            oFileSpec = searchCoverByEdition(context, edition, cIdx, ImageWebSize.Medium);
             if (oFileSpec.isEmpty()) {
-                oFileSpec = searchCoverByEdition(context, edition, cIdx, Size.Small);
+                oFileSpec = searchCoverByEdition(context, edition, cIdx, ImageWebSize.Small);
             }
         }
         return oFileSpec;
@@ -567,7 +567,7 @@ public class KbNlHtmlSearchEngine
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 1) final int cIdx,
-                                                 @Nullable final Size size)
+                                                 @Nullable final ImageWebSize size)
             throws StorageException {
 
         if (altEdition instanceof AltEditionIsbn) {

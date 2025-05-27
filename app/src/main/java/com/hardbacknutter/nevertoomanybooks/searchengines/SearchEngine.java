@@ -39,7 +39,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -492,7 +492,7 @@ public interface SearchEngine
         Optional<String> searchCoverByEdition(@NonNull Context context,
                                               @NonNull AltEdition edition,
                                               @IntRange(from = 0, to = 1) int cIdx,
-                                              @Nullable Size size)
+                                              @Nullable ImageWebSize size)
                 throws StorageException,
                        SearchException,
                        CredentialsException;

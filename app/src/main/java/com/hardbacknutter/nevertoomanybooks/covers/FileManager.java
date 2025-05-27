@@ -95,11 +95,11 @@ class FileManager {
     }
 
     /**
-     * Search for a file according to preference of {@link Size} and {@link EngineId}.
+     * Search for a file according to preference of {@link ImageWebSize} and {@link EngineId}.
      * <p>
      * First checks the cache. If we already have a good image, abort the search and use it.
      * <p>
-     * We loop on {@link Size} first, and for each, loop again on {@link EngineId}.
+     * We loop on {@link ImageWebSize} first, and for each, loop again on {@link EngineId}.
      * The for() loop will break/return <strong>as soon as a cover file is found.</strong>
      * The first Site which has an image is accepted.
      *
@@ -120,7 +120,7 @@ class FileManager {
                                 @NonNull final ProgressListener progressListener,
                                 @NonNull final AltEdition edition,
                                 @IntRange(from = 0, to = 1) final int cIdx,
-                                @NonNull final Size... sizes)
+                                @NonNull final ImageWebSize... sizes)
             throws StorageException, CredentialsException {
 
         // We need to disable sites on the fly for the *current* search without modifying the list
@@ -132,7 +132,7 @@ class FileManager {
         // We need to use the size as the outer loop.
         // The idea is to check all sites for the same size first.
         // If none respond with that size, try the next size inline.
-        for (final Size size : sizes) {
+        for (final ImageWebSize size : sizes) {
             if (progressListener.isCancelled()) {
                 return new ImageFileInfo(edition);
             }

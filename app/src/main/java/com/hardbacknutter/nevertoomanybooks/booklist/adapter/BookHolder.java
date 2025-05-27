@@ -50,8 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -140,7 +140,7 @@ public class BookHolder
         locale = res.getConfiguration().getLocales().get(0);
 
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
-            final ImageSize size = coverScale.getMaxSizeInPixels(context, Style.Layout.List);
+            final ImageViewSize size = coverScale.getMaxSizeInPixels(context, Style.Layout.List);
 
             // Enforce the width/height of the image itself.
             final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();

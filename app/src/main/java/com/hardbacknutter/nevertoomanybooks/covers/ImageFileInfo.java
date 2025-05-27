@@ -59,7 +59,7 @@ public class ImageFileInfo
     @NonNull
     private final AltEdition edition;
     @Nullable
-    private final Size size;
+    private final ImageWebSize size;
     @Nullable
     private final String fileSpec;
     @Nullable
@@ -87,7 +87,7 @@ public class ImageFileInfo
      */
     ImageFileInfo(@NonNull final AltEdition edition,
                   @Nullable final String fileSpec,
-                  @Nullable final Size size,
+                  @Nullable final ImageWebSize size,
                   @NonNull final EngineId engineId) {
         this.edition = edition;
         this.fileSpec = fileSpec;
@@ -123,7 +123,7 @@ public class ImageFileInfo
     }
 
     @Nullable
-    public Size getSize() {
+    public ImageWebSize getSize() {
         return size;
     }
 
@@ -158,7 +158,7 @@ public class ImageFileInfo
      *
      * @return {@code true} if the image is usable
      */
-    boolean isUsable(@NonNull final Size size) {
+    boolean isUsable(@NonNull final ImageWebSize size) {
         // Does it have an actual file ?
         if (fileSpec != null) {
             // There is a file and it is good (as determined at download time)

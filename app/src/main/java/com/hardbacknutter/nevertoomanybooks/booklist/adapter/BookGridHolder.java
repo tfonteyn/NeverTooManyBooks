@@ -35,8 +35,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfGridBookBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -95,8 +95,8 @@ public class BookGridHolder
         // i.e. if we don't set/force it here, it will not be the default (huh?)
         vb.gridCell.setMaxWidth(Integer.MAX_VALUE);
 
-        final ImageSize size = coverScale.getMaxSizeInPixels(itemView.getContext(),
-                                                             Style.Layout.Grid);
+        final ImageViewSize size = coverScale.getMaxSizeInPixels(itemView.getContext(),
+                                                                 Style.Layout.Grid);
         // Note: we COULD reserve the space for an image.
         // pro: ensures cells without an image are still the same height
         // con: a row without images takes a lot of white space.

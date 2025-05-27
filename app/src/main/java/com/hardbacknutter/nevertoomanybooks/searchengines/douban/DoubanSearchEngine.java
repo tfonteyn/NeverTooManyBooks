@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -780,7 +780,7 @@ public class DoubanSearchEngine
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
                                                  @IntRange(from = 0, to = 1) final int cIdx,
-                                                 @Nullable final Size size)
+                                                 @Nullable final ImageWebSize size)
             throws SearchException, CredentialsException, StorageException {
 
         if (altEdition instanceof AltEditionDouban) {

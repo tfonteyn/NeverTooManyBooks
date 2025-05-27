@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -533,11 +533,11 @@ public class GoogleBooksSearchEngine
                                              @NonNull final String isbn)
             throws StorageException {
 
-        Optional<String> oFileSpec = searchCover(context, imageLinks, Size.Large, isbn);
+        Optional<String> oFileSpec = searchCover(context, imageLinks, ImageWebSize.Large, isbn);
         if (oFileSpec.isEmpty()) {
-            oFileSpec = searchCover(context, imageLinks, Size.Medium, isbn);
+            oFileSpec = searchCover(context, imageLinks, ImageWebSize.Medium, isbn);
             if (oFileSpec.isEmpty()) {
-                oFileSpec = searchCover(context, imageLinks, Size.Small, isbn);
+                oFileSpec = searchCover(context, imageLinks, ImageWebSize.Small, isbn);
             }
         }
         return oFileSpec;
@@ -558,7 +558,7 @@ public class GoogleBooksSearchEngine
     @NonNull
     private Optional<String> searchCover(@NonNull final Context context,
                                          @NonNull final JSONObject imageLinks,
-                                         @NonNull final Size size,
+                                         @NonNull final ImageWebSize size,
                                          @NonNull final String isbn)
             throws StorageException {
 
@@ -643,7 +643,7 @@ public class GoogleBooksSearchEngine
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
                                                  final int cIdx,
-                                                 @Nullable final Size size)
+                                                 @Nullable final ImageWebSize size)
             throws StorageException, SearchException {
         if (altEdition instanceof AltEditionIsbn) {
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
