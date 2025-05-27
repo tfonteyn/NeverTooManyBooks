@@ -1,2 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<!--
+  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  --><!--
+    Reference sites:
+    https://www.abbreviations.com/
+
+     Some linguists, especially in British English, believe that "loan" should only
+     be used as a noun, while the correct verb is only "lend."
+
+
+    ENTITY:
+    Define entities that can be used inside of other string (not possible with standard Android
+    resources e.g. the entities file define APP_NAME; use it in another string with: &APP_NAME;
+    cannot put these into an external file: https://issuetracker.google.com/issues/68434088
+
+    Each language string.xml file uses localized quotes as per
+    https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
+    See top of each language resource file for the "quotes" comment.
+
+    Plurals:
+    http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+        cardinal
+
+    https://www.omniglot.com/language/numerals.htm
+--><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<resources>
+    <string name="brackets">(%1$s)</string>
+    <plurals name="n_books">
+        <item quantity="one">%1$d libro</item>
+        <item quantity="other">%1$d libros</item>
+    </plurals>
+    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="a_b">%1$s%2$s</string>
+    <string name="ellipsize">%1$s…</string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
+    <string name="error_updates_aborted">Actualizacións canceladas</string>
+    <string name="error_storage_not_accessible">Por favor, comproba que o almacenamento sexa accesible.</string>
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d libro atopado</item>
+        <item quantity="other">%1$d libros atopados</item>
+    </plurals>
+    <plurals name="n_stars">
+        <item quantity="one">%1$s estrela</item>
+        <item quantity="other">%1$s estrelas</item>
+    </plurals>
+    <plurals name="n_tags">
+        <item quantity="one">%1$d etiqueta</item>
+        <item quantity="other">%1$d etiquetas</item>
+    </plurals>
+    <string name="a_space_b">%1$s %2$s</string>
+    <string name="name_colon_value">%1$s: %2$s</string>
+    <string name="quoted">«%1$s»</string>
+    <string name="list_semicolon">"; "</string>
+    <string name="list_element">• %s</string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <string name="x_of_y">%1$d de %2$d</string>
+    <string name="and_others_textual">%1$s et al.</string>
+    <string name="notification_channel_warn">Aviso</string>
+    <string name="notification_channel_info">Información</string>
+    <string name="debug_select_items">Escolle o que che gustaría incluír:</string>
+    <string name="acra_dialog_message">Parece que &APP_NAME; bloqueouse. Preme «%1$s» para gardar un informe no destino que queiras. Podes utilizalo para comunicar a incidencia na páxina web do proxecto.</string>
+    <string name="httpErrorTimeout">Esgotouse o tempo de espera de conexión co servidor.</string>
+    <string name="httpErrorAuth">Non se puido autenticar.</string>
+    <string name="httpError">Produciuse un erro de rede.</string>
+    <string name="httpErrorFile">Non se puido acceder ao ficheiro.</string>
+    <string name="httpErrorFileNotFound">Non se puido atopar o ficheiro solicitado.</string>
+    <string name="error_invalid_url">Enderezo non válido (URL)</string>
+    <string name="error_upgrade_not_supported">Non se pode actualizar desde versións anteriores á %1$s.</string>
+    <string name="error_network_please_connect">Por favor, conecta a internet.</string>
+    <string name="error_network_failed_try_again">Comproba a conexión e téntao de novo.</string>
+    <string name="error_site_authentication_failed">Fallou a autenticación en %1$s</string>
+    <string name="error_http_403_site_forbidden">%1$s bloqueou o acceso.</string>
+    <string name="error_storage_not_writable">Por favor, comproba se o soporte ten permiso de escritura e espazo abondo.</string>
+    <string name="error_insufficient_storage">Non hai espazo abondo.</string>
+    <string name="error_search_x_failed_y">Fallou a busca en %1$s: %2$s</string>
+    <string name="error_search_could_not_be_started">Fallou a busca do libro.</string>
+    <string name="error_unknown_host">Houbo un problema de conexión ao servizo en «%1$s».</string>
+    <string name="error_no_image_editor">Non se atopou editor de imaxes.</string>
+    <string name="error_unsupported_version_v">Versión non compatible: %1$d</string>
+    <string name="error_import_archive_invalid">O ficheiro de arquivo non é válido ou ten danos.</string>
+    <string name="error_import_failed">Fallo na importación</string>
+    <string name="error_import_csv_line">Erro descoñecido na fila %1$d</string>
+    <string name="error_import_csv_line_to_long">Liña longa de máis (fila=%1$d, lonxitude=%2$d)</string>
+    <string name="error_import_csv_column_count_mismatch">Non coincide o reconto de columnas na fila %1$d</string>
+    <string name="error_record_must_contain_column">O rexistro ten que conter un campo chamado «%1$s».</string>
+    <string name="error_backup_failed">Fallou a copia de seguridade.</string>
+    <string name="error_export_failed">Fallou a exportación.</string>
+    <string name="warning_import_csv_unescaped_quote">Comiñas sen maiúsculas na fila %1$d, posición %2$d</string>
+    <string name="warning_export_contains_no_data">Non había nada que exportar.</string>
+    <string name="warning_book_not_always_found">Non todos os sitios proporcionaron datos válidos.</string>
+    <string name="warning_no_search_data_for_active_sites">Non hai datos de busca válidos para os sitios activos.</string>
+    <string name="warning_immediate_global_changes">AVISO: Os cambios gardados aplícanse instantaneamente a todos os libros.</string>
+    <string name="warning_x_already_exists">%1$s xa existe.</string>
+    <string name="warning_select_at_least_1_group">Selecciona un grupo polo menos.</string>
+    <string name="warning_nothing_selected">Nada seleccionado</string>
+    <string name="warning_requires_at_least_1_field">Polo menos un campo non debe ficar en branco.</string>
+    <string name="warning_missing_title_or_author">Hai que especificar título e/ou autor.</string>
+    <string name="warning_cannot_delete_1st_bs">O primeiro andel non se pode borrar.</string>
+    <string name="warning_already_in_list">Xa na lista!</string>
+    <string name="warning_no_matching_book_found">Non se atopou ningún libro</string>
+    <string name="fallback_currency_format">%2$.2f %1$s</string>
+    <string name="notification_channel_error">Erro</string>
+    <string name="error_import_file_not_supported">Non se pode importar o ficheiro seleccionado.</string>
+    <string name="httpErrorFailedSslHandshake">Non se puido establecer unha conexión segura.</string>
+    <string name="error_certificate_invalid">O certificado non é válido ou accesible.</string>
+    <string name="error_email_failed">Fallou o envío do correo electrónico.</string>
+    <string name="acra_report_saved">Xa podes visitar a páxina do proxecto en Github e engadir unha nova incidencia. Adxunta o informe que gardaches antes. Se non tes conta en Github, terás que crear unha.</string>
+    <string name="X_httpErrorIO">Non se puido conectar co servidor. Téntao máis tarde.</string>
+    <string name="error_unexpected">Produciuse un erro inesperado.</string>
+    <string name="error_import_csv_missing_columns_x">O ficheiro debe conter unha columna cun destes nomes: %1$s</string>
+    <string name="error_http_401_authorization_failed">Fallou a autorización</string>
+    <string name="error_http_403_forbidden">O sitio web bloqueou o acceso.</string>
+    <string name="error_network_site_access_failed">Houbo un problema de rede accedendo a %1$s. Comproba se o sitio web está activo e, se o problema persiste, contacta coa asistencia.</string>
+    <string name="error_unexpected_long">Ocorreu un erro inesperado. Se persiste o problema, contacta coa asistencia mediante a opción «%1$s» na parte inferior da páxina de configuración.</string>
+    <string name="error_http_401_site_authorization_failed">Erro de autorización en %1$s.</string>
+    <string name="error_site_access_blocked">O acceso foi bloqueado polo sitio web.</string>
+    <string name="error_search_failed_network">Por favor, abre Axustes e comproba as preferencias de rede e da páxina de busca.\nComproba tamén a configuración de rede do teu dispositivo.</string>
+    <string name="and_others">%1$s…</string>
+    <string name="error_auto_toc_population_failed">Fallou a actualización automática de títulos.</string>
+    <string name="error_file_not_found">Non se atopou o ficheiro: %1$s</string>
+    <string name="error_import_failed_for_record">Fallo na importación (%1$s)</string>
+    <string name="error_type_not_supported">Tipo non admitido: %1$s…</string>
+    <string name="error_file_not_recognized">Non se recoñece o ficheiro seleccionado.</string>
+    <string name="warning_enable_at_least_1_website">Habilita cando menos un sitio web para cada categoría.</string>
+    <string name="warning_select_at_least_1_field">Escolle un campo para actualizar polo menos.</string>
+    <string name="warning_requires_isbn">Esta acción require dun ISBN válido.</string>
+    <string name="warning_book_not_found">Non se puido atopar o libro especificado.</string>
+    <string name="warning_import_csv">ADVERTENCIA: A importación de datos pode actualizar os rexistros de libros existentes con nova información se a columna UUID non está presente e o ID no ficheiro de importación é o mesmo que un ID existente. Isto adoita ser correcto se mudaches un campo nun ficheiro exportado. Se creaches un novo rexistro de libros, ou estás a importar os libros doutra persoa, asegúrate de que o campo UUID está presente ou de que o campo ID está en branco.</string>
+    <string name="warning_import_failed_for_these_books">Fallou a importación destes libros/filas:</string>
+    <string name="warning_import_failed_for_these_books_and_more">e %1$d máis.</string>
+    <string name="warning_requires_site_and_id">Escolle un sitio e introduce unha identificación.</string>
+</resources>
