@@ -92,11 +92,9 @@ public class BookGridHolder
                                                             Style.Layout.Grid);
         final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
-        // We're using MaxSize.Constrained, so the maxWidth/maxHeight will in fact be IGNORED
-        // except when displaying a placeholder
         coverHelper = new CoverHelper(ASyncExecutor.MAIN,
                                       ImageView.ScaleType.FIT_CENTER,
-                                      ImageViewLoader.MaxSize.Constrained,
+                                      ImageViewLoader.MaxSize.Enforce,
                                       maxWidth, maxHeight);
 
         // This is needed to allow taking up the entire width of the screen

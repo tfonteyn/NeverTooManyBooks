@@ -129,18 +129,32 @@ public class ImageViewLoader {
      *
      * @param imageView View to populate
      * @param bitmap    The Bitmap of the image
+     *
+     * @throws IllegalArgumentException (debug)
      */
     @UiThread
     public void fromBitmap(@NonNull final ImageView imageView,
                            @NonNull final Bitmap bitmap) {
         switch (maxSize) {
-            case Enforce: {
-                // Calculate the maximum ALLOWABLE size
-                adjustLayoutParameters(imageView, bitmap);
+            case Constrained: {
+                final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+                if (bitmap.getWidth() < bitmap.getHeight()) {
+                    // image is portrait; limit the height
+                    lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
+                } else {
+                    // image is landscape; limit the width
+                    lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
+                    lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                }
+                imageView.setLayoutParams(lp);
                 break;
             }
-            case Constrained:
+            case Enforce: {
+                break;
+            }
             default:
+                throw new IllegalArgumentException(maxSize.toString());
         }
 
         // essential, so lets not rely on it having been set in xml
@@ -148,22 +162,6 @@ public class ImageViewLoader {
 
         imageView.setScaleType(scaleType);
         imageView.setImageBitmap(bitmap);
-    }
-
-    private void adjustLayoutParameters(@NonNull final ImageView imageView,
-                                        @NonNull final Bitmap bitmap) {
-
-        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        if (bitmap.getWidth() < bitmap.getHeight()) {
-            // image is portrait; limit the height
-            lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
-        } else {
-            // image is landscape; limit the width
-            lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
-            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
-        imageView.setLayoutParams(lp);
     }
 
     /**
@@ -220,12 +218,9 @@ public class ImageViewLoader {
     }
 
     public enum MaxSize {
-        /** Enforce the desired size as the maximum size. */
-        Enforce,
-        /**
-         * Don't change, let the xml constraint settings rule.
-         * Used for grid-mode where the grid layout will control the available space.
-         */
-        Constrained
+        /** Use constraint settings. */
+        Constrained,
+        /** Use a fixed width and height. */
+        Enforce
     }
 }

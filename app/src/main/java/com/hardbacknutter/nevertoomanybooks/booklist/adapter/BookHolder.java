@@ -142,7 +142,7 @@ public class BookHolder
             final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
             coverHelper = new CoverHelper(ASyncExecutor.MAIN,
                                           ImageView.ScaleType.FIT_START,
-                                          ImageViewLoader.MaxSize.Enforce,
+                                          ImageViewLoader.MaxSize.Constrained,
                                           maxWidth, maxHeight);
         } else {
             coverHelper = null;
