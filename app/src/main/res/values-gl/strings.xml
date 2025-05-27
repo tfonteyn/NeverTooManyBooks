@@ -17,14 +17,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
---><!--suppress LongLine -->
-<resources>
+--><!--suppress LongLine --><resources>
     <string name="brackets">(%1$s)</string>
     <plurals name="n_books">
         <item quantity="one">%1$d libro</item>
@@ -220,5 +217,86 @@
     <string name="whichSendApplication">Compartir</string>
     <string name="whichViewApplication">Abrir con</string>
     <string name="yes">Si</string>
-
+    <string name="warning_no_extra_info_found">Non se atopou información (adicional)</string>
+    <string name="warning_x_is_not_a_valid_code">«%1$s» non é un código válido</string>
+    <string name="warning_image_copy_failed">Non se puido copiar a imaxe.</string>
+    <string name="warning_if_day_set_month_and_year_must_be">De especificarse un día, tamén debe facerse co mes e o ano.</string>
+    <string name="warning_backup_request">Queres facer una copia da base de datos á tarxeta SD?</string>
+    <string name="warning_restart_required">A aplicación precisa reiniciarse</string>
+    <string name="warning_requires_android_x">Require Android %1$d ou superior</string>
+    <string name="vldt_failure">Fallo de validación</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
+    <string name="vldt_integer_expected_for_x">«%1$s» debe ser un enteiro</string>
+    <string name="vldt_real_expected_for_x">«%1$s» debe ser numérico</string>
+    <string name="vldt_date_expected_for_x">«%1$s» debe ser unha data</string>
+    <string name="vldt_non_blank_required">Non pode estar baleiro</string>
+    <string name="vldt_blank_required_for_x">«%1$s» debe estar baleiro</string>
+    <string name="vldt_read_start_after_end">A data de inicio da lectura é posterior á do remate</string>
+    <string name="vldt_real_author_must_be_valid">Debe ficar en branco ou ser dunha autoría existente</string>
+    <string name="progress_msg_please_wait">Por favor, agarda…</string>
+    <string name="progress_msg_loading">Cargando…</string>
+    <string name="progress_msg_loading_page">Cargando páxina %1$d…</string>
+    <string name="progress_msg_starting_up">Comezando…</string>
+    <string name="progress_msg_upgrading">Actualizando…</string>
+    <string name="progress_msg_searching">Buscando…</string>
+    <string name="progress_msg_searching_site">Buscando en %1$s</string>
+    <string name="progress_msg_searching_editions">Buscando edicións…</string>
+    <string name="progress_msg_downloading">Descargando…</string>
+    <string name="progress_msg_x_created">%1$d creados</string>
+    <string name="progress_msg_x_skipped">%1$d omitidos</string>
+    <string name="progress_msg_x_deleted">%1$d borrados</string>
+    <string name="progress_msg_cleaning_up">Limpando…</string>
+    <string name="info_authorized">Autorizada</string>
+    <string name="info_nothing_to_do">Nada que facer.</string>
+    <string name="info_story_in_multiple_books">«%1$s» está presente en varios libros:\n\n%2$s</string>
+    <string name="info_all_books_have_covers">Todos os libros deste andel teñen cubertas</string>
+    <string name="info_displaying_n_books_in_m_entries">%1$d libros, en %2$d entradas</string>
+    <string name="info_tap_to_select">Toca para seleccionar.</string>
+    <string name="info_tap_to_move_tag">Preme unha etiqueta para movela a/desde o libro.</string>
+    <string name="lbl_add_or_edit_substitution">Engadir/Editar unha regra de substitución</string>
+    <string name="info_substitutions_one_per_line">Engadir unha substitución por liña</string>
+    <string name="info_download_successful">Descarga con éxito</string>
+    <string name="cd_btn_drag_handle">Arrastra para reordenar esta lista</string>
+    <string name="cd_clear_text_end_icon">Borrar texto</string>
+    <string name="info_isfdb_warning_limited_to">(soportado só polo sitio web da ISFDB)</string>
+    <string name="info_site_list">As buscas limítanse a: %1$s</string>
+    <string name="info_site_search_field_optional">Opcional. Non todos os sitios web son compatibles con isto.</string>
+    <string name="info_identifier_editor"><![CDATA[Por favor, le a <a href="%1$s">documentación</a> sobre identificadores antes de editar.]]></string>
+    <string name="site_description_various_languages">Varios idiomas</string>
+    <string name="site_description_chinese">Chinés</string>
+    <string name="site_description_czech">Checo e máis</string>
+    <string name="site_description_french">Francés</string>
+    <string name="site_description_german">Alemán</string>
+    <string name="site_description_shop">Tenda</string>
+    <string name="site_description_catalog">Catálogo</string>
+    <string name="site_description_comics">Banda deseñada</string>
+    <string name="site_description_eu_comics">Banda deseñada europea</string>
+    <string name="site_description_fsf">Fantasía e Ciencia Ficción</string>
+    <string name="lbl_tip">Consello</string>
+    <string name="option_reset_all_tips">Repoñer consellos</string>
+    <string name="info_tip_reset_done">Consellos repostos</string>
+    <string name="site_description_dutch_and_more">Neerlandés e outros</string>
+    <string name="site_description_french_and_more">Francés e outros</string>
+    <string name="site_description_portuguese_and_more">Portugués e outros</string>
+    <string name="warning_image_not_found">No se puido atopar a imaxe.</string>
+    <string name="warning_if_month_set_year_must_be">De especificarse un mes, tamén debe facerse co ano.</string>
+    <string name="warning_no_editions">Non se dispón de información adicional da edición.</string>
+    <string name="warning_toc_confirm">Por favor, confirma que os títulos (na súa maioría) son correctos.</string>
+    <string name="vldt_non_blank_required_for_x">«%1$s» non pode estar baleiro</string>
+    <string name="warning_no_site_supports_this_method">ADVERTENCIA: ningún dos sitios seleccionados actualmente admite a busca por %1$s. Usa o menú do sitio para activar sitios alternativos ou un método de procura diferente.</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">Require dun valor baleiro ou dun URL «https» válido cun único marcador de posición «%s»</string>
+    <string name="progress_msg_skip_s">Excluíndo «%1$s»</string>
+    <string name="vldt_boolean_expected_for_x">«%1$s» debe ser un valor booleano (0,1,t,f,true,false)</string>
+    <string name="progress_msg_x_updated">%1$d actualizados</string>
+    <string name="vldt_blank_or_valid_url_required">Require dun valor baleiro ou dun URL válido</string>
+    <string name="progress_msg_rebuilding_search_index">Reconstruíndo índices…</string>
+    <string name="info_story_in_single_book">«%1$s» está presente nun só libro:\n\n%2$s</string>
+    <string name="progress_msg_connecting">Conectando…</string>
+    <string name="info_tap_on_thumbnail_to_zoom">Toca nunha miniatura para ver unha imaxe máis grande.</string>
+    <string name="progress_msg_optimizing">Optimizando…</string>
+    <string name="progress_msg_authenticating_to_site">Autenticándose en %1$s</string>
+    <string name="info_calibre_content_server_extension">A extensión Calibre Content Server non está instalada. As librarías virtuais no estarán dispoñibles.</string>
+    <string name="info_partial_date_picker">Preme sobre un mes ou día previamente seleccionado para quitalo.</string>
+    <string name="site_description_english_and_more">Inglés e outros</string>
+    <string name="tip_book_search_by_text">Engadir libros por ISBN é moito máis preciso que facelo por autoría e título e, en xeral, preferible. Lembra que ás veces pódese atopar o código de barras correcto no interior da cuberta.</string>
 </resources>
