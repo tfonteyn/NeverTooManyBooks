@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookBinding;
@@ -138,12 +140,19 @@ public class BookHolder
         locale = res.getConfiguration().getLocales().get(0);
 
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
-            final int maxWidth = coverScale.getMaxWidthInPixels(context, Style.Layout.List);
-            final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
-            coverHelper = new CoverHelper(ASyncExecutor.MAIN,
-                                          ImageView.ScaleType.FIT_START,
-                                          ImageViewLoader.MaxSize.Constrained,
-                                          maxWidth, maxHeight);
+            final ImageSize size = coverScale.getMaxSizeInPixels(context, Style.Layout.List);
+
+            // Enforce the width/height of the image itself.
+            final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
+            lp.width = size.width;
+            lp.height = size.height;
+
+            // we fixed the LayoutParams already, so pass in 'null' for Sizing
+            coverHelper = new CoverHelper(new ImageViewLoader(ASyncExecutor.MAIN,
+                                                              ImageView.ScaleType.FIT_START,
+                                                              null,
+                                                              size.width, size.height),
+                                          size.width);
         } else {
             coverHelper = null;
             vb.coverImage0.setVisibility(View.GONE);

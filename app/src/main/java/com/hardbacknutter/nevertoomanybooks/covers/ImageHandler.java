@@ -176,7 +176,7 @@ public final class ImageHandler {
 
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
                                           ImageView.ScaleType.FIT_START,
-                                          ImageViewLoader.MaxSize.Constrained,
+                                          ImageViewLoader.Sizing.Constrained,
                                           builder.maxWidth, builder.maxHeight);
 
         if (imageSupplier.get() instanceof Book) {

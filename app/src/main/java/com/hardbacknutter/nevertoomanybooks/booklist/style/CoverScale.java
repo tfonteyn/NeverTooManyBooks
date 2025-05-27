@@ -25,9 +25,9 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 
-import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 import androidx.core.math.MathUtils;
 import androidx.window.layout.WindowMetricsCalculator;
 
@@ -35,6 +35,7 @@ import java.util.Arrays;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
 
 /**
  * Cover Scaling.
@@ -73,6 +74,8 @@ public enum CoverScale {
      */
     public static final float HW_RATIO = 0.6f;
 
+    private static final ImageSize HIDDEN = new ImageSize(0, 0);
+
     private final int id;
 
     CoverScale(final int id) {
@@ -102,7 +105,7 @@ public enum CoverScale {
         }
     }
 
-    @Dimension
+    @Px
     private static int getWindowWidthInPx(@NonNull final Context context) {
         return WindowMetricsCalculator
                 .getOrCreate()
@@ -156,13 +159,46 @@ public enum CoverScale {
         return values()[next];
     }
 
-    // Use an indexed lookup to fixed values depending on "sw" device width.
-    private int lookup(@NonNull final Resources res) {
+    /**
+     * Use an indexed lookup to fixed values depending on "sw" device width
+     * and the given layout.
+     *
+     * @param res    for lookups
+     * @param layout for auto-sizing
+     *
+     * @return width in pixels
+     *
+     * @throws IllegalArgumentException (debug)
+     */
+    @Px
+    private int lookup(@NonNull final Resources res,
+                       @NonNull final Style.Layout layout) {
+
+        final int width;
         final TypedArray coverSizes = res.obtainTypedArray(R.array.cover_max_width);
         try {
-            return coverSizes.getDimensionPixelSize(id, 0);
+            width = coverSizes.getDimensionPixelSize(id, 0);
         } finally {
             coverSizes.recycle();
+        }
+        switch (layout) {
+            case List:
+                return width;
+            case Grid:
+                // The multiplier used here is NOT related to HW_RATIO!
+                //
+                // Multiply the cover-width by 0.6 as the values in the resource are
+                // optimized for list-mode where we aim to fill up 1/3 of the width
+                // with the image, and 2/3 with text.
+                // This could likely be tuned on a screen size basis... but the differences
+                // will be minimal hence not bothering for now.
+                //
+                // We experimented with values 1.0, 0.8, 0.7, 0.6, 0.5...
+                // Using 0.6 gives the "nicest" spread of the number of pictures on a row
+                // depending on scale setting. See end of class for examples.
+                return width * 10 / 6;
+            default:
+                throw new IllegalArgumentException(layout.toString());
         }
     }
 
@@ -172,29 +208,32 @@ public enum CoverScale {
      * @param context Current context
      * @param layout  mode for which to lookup the width
      *
-     * @return max width in pixels
+     * @return max size in pixels
      */
-    @Dimension
-    public int getMaxWidthInPixels(@NonNull final Context context,
-                                   @NonNull final Style.Layout layout) {
+    @NonNull
+    public ImageSize getMaxSizeInPixels(@NonNull final Context context,
+                                        @NonNull final Style.Layout layout) {
         if (this == Hidden) {
-            return 0;
+            return HIDDEN;
         }
 
         final Resources res = context.getResources();
 
+        final int width;
         if (this == Maximum && layout == Style.Layout.Grid) {
             if (res.getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE) {
                 // In landscape, half.
-                return getWindowWidthInPx(context) / 2;
+                width = getWindowWidthInPx(context) / 2;
             } else {
                 // In portrait, the entire screen width
-                return getWindowWidthInPx(context);
+                width = getWindowWidthInPx(context);
             }
+        } else {
+            width = lookup(res, layout);
         }
 
-        return lookup(res);
+        return new ImageSize(width, (int) (width / CoverScale.HW_RATIO));
     }
 
     /**
@@ -227,20 +266,8 @@ public enum CoverScale {
             }
         }
 
-        final int coverWidthPx = lookup(res);
-
-        // The multiplier used here is NOT related to HW_RATIO!
-        //
-        // Multiply the cover-width by 0.6 as the values in the resource are
-        // optimized for list-mode where we aim to fill up 1/3 of the width
-        // with the image, and 2/3 with text.
-        // This could likely be tuned on a screen size basis... but the differences
-        // will be minimal hence not bothering for now.
-        //
-        // We experimented with values 1.0, 0.8, 0.7, 0.6, 0.5...
-        // Using 0.6 gives the "nicest" spread of the number of pictures on a row
-        // depending on scale setting.
-        return (int) Math.floor(0.6 * (double) getWindowWidthInPx(context) / coverWidthPx);
+        final float coverWidthPx = lookup(res, Style.Layout.Grid);
+        return (int) Math.floor((float) getWindowWidthInPx(context) / coverWidthPx);
     }
 
     /*  Grid span count, multiplication of 0.6

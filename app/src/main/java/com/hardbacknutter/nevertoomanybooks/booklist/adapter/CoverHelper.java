@@ -30,7 +30,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -64,30 +63,17 @@ class CoverHelper {
      * <p>
      * Dev. note: the width comes from the style scaling factor.
      *
-     * @param executor    to use
-     * @param scaleType   to use for images
-     *                    (ignored for placeholders)
-     * @param maxSizeType how to adjust the size, see {@link ImageViewLoader.MaxSize}
-     *                    (ignored for placeholders)
-     * @param maxWidth    Maximum width for a cover in pixels
-     * @param maxHeight   Maximum height for a cover in pixels
+     * @param imageLoader      to use
+     * @param cachedImageWidth used for the image-caching "filename"
      */
-    CoverHelper(@NonNull final Executor executor,
-                @NonNull final ImageView.ScaleType scaleType,
-                @NonNull final ImageViewLoader.MaxSize maxSizeType,
-                @Dimension final int maxWidth,
-                @Dimension final int maxHeight) {
+    CoverHelper(@NonNull final ImageViewLoader imageLoader,
+                @Dimension final int cachedImageWidth) {
 
-        // In THIS class only used for the image-caching "filename"
-        cachedImageWidth = maxWidth;
+        this.imageLoader = imageLoader;
+        this.cachedImageWidth = cachedImageWidth;
 
         coverStorage = ServiceLocator.getInstance().getCoverStorage();
-
         imageCachingEnabled = coverStorage.isImageCachingEnabled();
-
-        imageLoader = new ImageViewLoader(executor,
-                                          scaleType, maxSizeType,
-                                          maxWidth, maxHeight);
     }
 
     /**

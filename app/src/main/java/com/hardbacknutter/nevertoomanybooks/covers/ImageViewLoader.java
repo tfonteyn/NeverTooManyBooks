@@ -62,8 +62,8 @@ public class ImageViewLoader {
     @NonNull
     private final ImageView.ScaleType scaleType;
 
-    @NonNull
-    private final MaxSize maxSize;
+    @Nullable
+    private final Sizing sizing;
     private final Transformation scalableImageDecoder;
 
     /**
@@ -72,7 +72,7 @@ public class ImageViewLoader {
      * @param executor  to use
      * @param scaleType to use for images
      *                  (ignored for placeholders)
-     * @param maxSize   how to adjust the size, see {@link MaxSize}
+     * @param sizing    (optional) how to adjust the size, see {@link Sizing}
      *                  (ignored for placeholders)
      * @param width     Desired/Maximum width for a cover in pixels
      * @param height    Desired/Maximum height for a cover in pixels
@@ -80,7 +80,7 @@ public class ImageViewLoader {
     @UiThread
     public ImageViewLoader(@NonNull final Executor executor,
                            @NonNull final ImageView.ScaleType scaleType,
-                           @NonNull final MaxSize maxSize,
+                           @Nullable final Sizing sizing,
                            @Px final int width,
                            @Px final int height) {
 
@@ -89,7 +89,7 @@ public class ImageViewLoader {
         this.executor = executor;
 
         this.scaleType = scaleType;
-        this.maxSize = maxSize;
+        this.sizing = sizing;
         this.width = width;
         this.height = height;
 
@@ -135,26 +135,32 @@ public class ImageViewLoader {
     @UiThread
     public void fromBitmap(@NonNull final ImageView imageView,
                            @NonNull final Bitmap bitmap) {
-        switch (maxSize) {
-            case Constrained: {
-                final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-                if (bitmap.getWidth() < bitmap.getHeight()) {
-                    // image is portrait; limit the height
-                    lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
-                } else {
-                    // image is landscape; limit the width
-                    lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
-                    lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        if (sizing != null) {
+            switch (sizing) {
+                case Constrained: {
+                    final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+                    if (bitmap.getWidth() < bitmap.getHeight()) {
+                        // image is portrait; limit the height
+                        lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
+                    } else {
+                        // image is landscape; limit the width
+                        lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
+                        lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    }
+                    imageView.setLayoutParams(lp);
+                    break;
                 }
-                imageView.setLayoutParams(lp);
-                break;
+                case Enforce: {
+                    final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+                    lp.width = width;
+                    lp.height = height;
+                    imageView.setLayoutParams(lp);
+                    break;
+                }
+                default:
+                    throw new IllegalArgumentException(sizing.toString());
             }
-            case Enforce: {
-                break;
-            }
-            default:
-                throw new IllegalArgumentException(maxSize.toString());
         }
 
         // essential, so lets not rely on it having been set in xml
@@ -217,7 +223,7 @@ public class ImageViewLoader {
         });
     }
 
-    public enum MaxSize {
+    public enum Sizing {
         /** Use constraint settings. */
         Constrained,
         /** Use a fixed width and height. */

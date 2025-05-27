@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfGridBookBinding;
@@ -88,21 +89,30 @@ public class BookGridHolder
         this.style = style;
         useAuthor = style.isShowField(FieldVisibility.Screen.List, DBKey.FK_AUTHOR);
 
-        final int maxWidth = coverScale.getMaxWidthInPixels(itemView.getContext(),
-                                                            Style.Layout.Grid);
-        final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
-
-        coverHelper = new CoverHelper(ASyncExecutor.MAIN,
-                                      ImageView.ScaleType.FIT_CENTER,
-                                      ImageViewLoader.MaxSize.Enforce,
-                                      maxWidth, maxHeight);
-
-        // This is needed to allow taking up the entire width of the screen
-        // when the cover-scale maxWidthInPixels exceeds the actual image width.
-        // i.e. when scaling UP images.
+        // This is needed to allow the cells taking up the entire width of the screen.
         // Note that Integer.MAX_VALUE is in fact the default for this View.
         // but Android "logic" works in mysterious ways...
+        // i.e. if we don't set/force it here, it will not be the default (huh?)
         vb.gridCell.setMaxWidth(Integer.MAX_VALUE);
+
+        final ImageSize size = coverScale.getMaxSizeInPixels(itemView.getContext(),
+                                                             Style.Layout.Grid);
+        // Note: we COULD reserve the space for an image.
+        // pro: ensures cells without an image are still the same height
+        // con: a row without images takes a lot of white space.
+        //    vb.gridCell.setMinHeight(maxHeight);
+
+        // Enforce the width/height of the image itself.
+        final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
+        lp.width = size.width;
+        lp.height = size.height;
+
+        // we fixed the LayoutParams already, so pass in 'null' for Sizing
+        coverHelper = new CoverHelper(new ImageViewLoader(ASyncExecutor.MAIN,
+                                                          ImageView.ScaleType.FIT_CENTER,
+                                                          null,
+                                                          size.width, size.height),
+                                      size.width);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
             dbgRowIdView = new BookDebugRowIdView(vb.gridCell);
