@@ -79,7 +79,7 @@
     <string name="error_record_must_contain_column">O rexistro ten que conter un campo chamado «%1$s».</string>
     <string name="error_backup_failed">Fallou a copia de seguridade.</string>
     <string name="error_export_failed">Fallou a exportación.</string>
-    <string name="warning_import_csv_unescaped_quote">Comiñas sen maiúsculas na fila %1$d, posición %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Comiñas sen pechar na fila %1$d, posición %2$d</string>
     <string name="warning_export_contains_no_data">Non había nada que exportar.</string>
     <string name="warning_book_not_always_found">Non todos os sitios proporcionaron datos válidos.</string>
     <string name="warning_no_search_data_for_active_sites">Non hai datos de busca válidos para os sitios activos.</string>
@@ -109,7 +109,7 @@
     <string name="error_site_access_blocked">O acceso foi bloqueado polo sitio web.</string>
     <string name="error_search_failed_network">Por favor, abre Axustes e comproba as preferencias de rede e da páxina de busca.\nComproba tamén a configuración de rede do teu dispositivo.</string>
     <string name="and_others">%1$s…</string>
-    <string name="error_auto_toc_population_failed">Fallou a actualización automática de títulos.</string>
+    <string name="error_auto_toc_population_failed">Fallou o enchido automático de títulos.</string>
     <string name="error_file_not_found">Non se atopou o ficheiro: %1$s</string>
     <string name="error_import_failed_for_record">Fallo na importación (%1$s)</string>
     <string name="error_type_not_supported">Tipo non admitido: %1$s…</string>
@@ -299,4 +299,14 @@
     <string name="info_partial_date_picker">Preme sobre un mes ou día previamente seleccionado para quitalo.</string>
     <string name="site_description_english_and_more">Inglés e outros</string>
     <string name="tip_book_search_by_text">Engadir libros por ISBN é moito máis preciso que facelo por autoría e título e, en xeral, preferible. Lembra que ás veces pódese atopar o código de barras correcto no interior da cuberta.</string>
+    <string name="tip_booklist_style_defaults">Usa esta pantalla para establecer as características predefinidas de todos os estilos. Serán utilizadas por todos os estilos incorporados e como base para calquera estilo definido por ti.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">Se os libros con máis dunha autoría son amosados para cada unha delas, aparecerán varias veces na lista. Eliminar un deles ten o efecto de borrar todas as copias da lista.</string>
+    <string name="tip_autorotate_camera_images">Se estás sempre a virar as imaxes da cámara na mesma dirección, tenta mudar as preferencias da aplicación para especificar unha rotación automática.</string>
+    <string name="tip_view_only_help">Desliza cara esquerda ou dereita para ver outros libros.</string>
+    <string name="tip_book_list">Tocar nun libro mostrará os seus detalles. Premer longo darache máis opcións.</string>
+    <string name="tip_import_isbn_list">Importa un ficheiro de texto con números ISBN. O ficheiro debe ter un único ISBN por liña. Os resultados colocaranse na cola.</string>
+    <string name="tip_booklist_styles_editor">Utiliza esta pantalla para personalizar a lista de estilos que se van amosar no teu menú de estilos por defecto. Coa caixa de selección escolle os estilos que queres que saian na lista. Se non escolles ningún, mostraranse todos. Podes reordenar a xerarquía arrastrando a icona do extremo dereito de cada fila cara arriba ou abaixo. Se premes longamente en calquera outro lugar dunha fila, poderás editar ou clonar os detalles dun estilo específico. Se clonas un estilo e cambias de opinión, só tes que borralo.</string>
+    <string name="tip_booklist_style_groups">Usa esta pantalla para modificar a xerarquía de grupos dun estilo concreto. Coa caixa de selección escolle os grupos que queres amosar na lista e reordena arrastrando a icona do final de cada liña cara arriba ou abaixo.</string>
+    <string name="tip_booklist_style_properties">Utiliza esta pantalla para definir as características dun estilo concreto. Podes mudar o nome, editar os agrupamentos para alterar a xerarquía e axustar outras preferencias para xerar un estilo que consideres útil.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Se os libros se mostran en todas as series ás que pertencen, poden aparecer varias veces na lista. A eliminación dunha desas copias ten o efecto de borrar todos os exemplares da lista.</string>
 </resources>
