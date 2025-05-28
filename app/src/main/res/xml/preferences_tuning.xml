@@ -41,7 +41,7 @@
 
         <SeekBarPreference
             android:key="booklist.cursor.lru.size"
-            android:title="Cursor cache size"
+            android:title="Cursor cache multiplier"
             app:showSeekBarValue="true"
             />
 

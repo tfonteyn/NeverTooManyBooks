@@ -65,23 +65,23 @@ public class TuningFragment
         p = findPreference(BooklistCursor.PK_PAGE_SIZE);
         //noinspection DataFlowIssue
         p.setSummary(getString(R.string.lbl_default_x,
-                               String.valueOf(BooklistCursor.DEFAULT_PAGE_SIZE)));
-        p.setDefaultValue(BooklistCursor.DEFAULT_PAGE_SIZE);
-        p.setMin(BooklistCursor.MIN_PAGE_SIZE);
-        p.setMax(BooklistCursor.MAX_PAGE_SIZE);
+                               String.valueOf(BooklistCursor.PAGE_SIZE_DEFAULT)));
+        p.setDefaultValue(BooklistCursor.PAGE_SIZE_DEFAULT);
+        p.setMin(BooklistCursor.PAGE_SIZE_MIN);
+        p.setMax(BooklistCursor.PAGE_SIZE_MAX);
         // because androidx.preferences is [bug]'d
         p.setValue(prefs.getInt(BooklistCursor.PK_PAGE_SIZE,
-                                BooklistCursor.DEFAULT_PAGE_SIZE));
+                                BooklistCursor.PAGE_SIZE_DEFAULT));
 
-        p = findPreference(BooklistCursor.PK_LRU_LIST_SIZE);
+        p = findPreference(BooklistCursor.PK_LRU_LIST_MULTIPLIER);
         //noinspection DataFlowIssue
         p.setSummary(getString(R.string.lbl_default_x,
-                               String.valueOf(BooklistCursor.DEFAULT_LRU_LIST_SIZE)));
-        p.setDefaultValue(BooklistCursor.DEFAULT_LRU_LIST_SIZE);
-        p.setMin(BooklistCursor.MIN_LRU_LIST_SIZE);
-        p.setMax(BooklistCursor.MAX_LRU_LIST_SIZE);
+                               String.valueOf(BooklistCursor.LRU_LIST_MULTIPLIER_DEFAULT)));
+        p.setDefaultValue(BooklistCursor.LRU_LIST_MULTIPLIER_DEFAULT);
+        p.setMin(BooklistCursor.LRU_LIST_MULTIPLIER_MIN);
+        p.setMax(BooklistCursor.LRU_LIST_MULTIPLIER_MAX);
         // because androidx.preferences is [bug]'d
-        p.setValue(prefs.getInt(BooklistCursor.PK_LRU_LIST_SIZE,
-                                BooklistCursor.DEFAULT_LRU_LIST_SIZE));
+        p.setValue(prefs.getInt(BooklistCursor.PK_LRU_LIST_MULTIPLIER,
+                                BooklistCursor.LRU_LIST_MULTIPLIER_DEFAULT));
     }
 }

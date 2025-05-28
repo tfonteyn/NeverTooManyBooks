@@ -34,23 +34,23 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
- * TODO: https://developer.android.com/topic/libraries/architecture/paging.html
+ * TODO: https://developer.android.com/topic/libraries/architecture/paging/v3-overview
  */
 public class BooklistCursor
         extends AbstractCursor {
 
     public static final String PK_PAGE_SIZE = "booklist.cursor.page.size";
-    public static final String PK_LRU_LIST_SIZE = "booklist.cursor.lru.size";
+    public static final String PK_LRU_LIST_MULTIPLIER = "booklist.cursor.lru.size";
 
     /** Number of rows to return in each cursor. */
-    public static final int MIN_PAGE_SIZE = 16;
-    public static final int DEFAULT_PAGE_SIZE = 32;
-    public static final int MAX_PAGE_SIZE = 64;
+    public static final int PAGE_SIZE_MIN = 16;
+    public static final int PAGE_SIZE_DEFAULT = 32;
+    public static final int PAGE_SIZE_MAX = 64;
 
-    /** Size of {@link CursorCache}. */
-    public static final int MIN_LRU_LIST_SIZE = 4;
-    public static final int DEFAULT_LRU_LIST_SIZE = 8;
-    public static final int MAX_LRU_LIST_SIZE = 12;
+    /** Multiplier for the {@link CursorCache}; multiplies with the pageSize. */
+    public static final int LRU_LIST_MULTIPLIER_MIN = 4;
+    public static final int LRU_LIST_MULTIPLIER_DEFAULT = 8;
+    public static final int LRU_LIST_MULTIPLIER_MAX = 16;
 
     /** Back reference to the builder which produced this cursor. */
     @NonNull
@@ -76,12 +76,13 @@ public class BooklistCursor
 
         final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         // Protect against silly values
-        pageSize = MathUtils.clamp(prefs.getInt(PK_PAGE_SIZE, DEFAULT_PAGE_SIZE),
-                                   MIN_PAGE_SIZE, MAX_PAGE_SIZE);
+        pageSize = MathUtils.clamp(prefs.getInt(PK_PAGE_SIZE, PAGE_SIZE_DEFAULT),
+                                   PAGE_SIZE_MIN, PAGE_SIZE_MAX);
 
         // Protect against silly values
-        final int lruSize = MathUtils.clamp(prefs.getInt(PK_LRU_LIST_SIZE, DEFAULT_LRU_LIST_SIZE),
-                                            MIN_LRU_LIST_SIZE, MAX_LRU_LIST_SIZE);
+        final int lruSize = pageSize * MathUtils.clamp(
+                prefs.getInt(PK_LRU_LIST_MULTIPLIER, LRU_LIST_MULTIPLIER_DEFAULT),
+                LRU_LIST_MULTIPLIER_MIN, LRU_LIST_MULTIPLIER_MAX);
 
         cursorCache = new CursorCache(lruSize, cursorId -> {
             // Determine the actual start position offset.
