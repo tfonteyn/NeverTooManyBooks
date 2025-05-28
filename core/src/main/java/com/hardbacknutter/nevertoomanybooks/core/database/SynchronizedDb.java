@@ -527,19 +527,23 @@ public class SynchronizedDb
      * @return the cursor
      */
     @NonNull
-    public SynchronizedCursor rawQuery(@NonNull final String sql,
-                                       @Nullable final String[] selectionArgs) {
+    public Cursor rawQuery(@NonNull final String sql,
+                           @Nullable final String[] selectionArgs) {
         Synchronizer.SyncLock txLock = null;
         if (currentTxLock == null) {
             txLock = synchronizer.getSharedLock();
         }
 
         try {
-            // lint says this cursor is not always closed.
-            // 2019-01-14: the only place it's not closed is in {@link SearchSuggestionProvider}
-            // where it seems not possible to close it ourselves.
-            return (SynchronizedCursor)
-                    sqLiteDatabase.rawQuery(sql, selectionArgs, null);
+            // URGENT: lint says this cursor is not always closed.
+            // All usage is with "try (Cursor....)" EXCEPT:
+            // {@link FtsDaoImp#querySearchSuggestions} as used by {@link SearchSuggestionProvider}
+            // ==> where it seems not possible to close it ourselves.
+            // and:
+            // {@link Booklist#getOffsetCursor} for the paging.
+            // ==> leak MUST be there
+            //
+            return sqLiteDatabase.rawQuery(sql, selectionArgs, null);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
