@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -207,26 +207,26 @@ public class CursorRow
         return cursor.getFloat(col);
     }
 
-//    /**
-//     * Returns the value associated with the given key.
-//     * @param key to get
-//     *
-//     * @return the byte array (blob) of the column
-//     *
-//     * @throws ColumnNotPresentException if the column was not present.
-//     */
-//    public byte[] getBlob(@NonNull final String key)
-//            throws ColumnNotPresentException {
-//
-//        final int col = cursor.getColumnIndex(key);
-//        if (col == -1) {
-//            throw new ColumnNotPresentException(key);
-//        }
-//        // if (cursor.isNull(col)) {
-//        //     return null;
-//        // }
-//        return cursor.getBlob(col);
-//    }
+    //    /**
+    //     * Returns the value associated with the given key.
+    //     * @param key to get
+    //     *
+    //     * @return the byte array (blob) of the column
+    //     *
+    //     * @throws ColumnNotPresentException if the column was not present.
+    //     */
+    //    public byte[] getBlob(@NonNull final String key)
+    //            throws ColumnNotPresentException {
+    //
+    //        final int col = cursor.getColumnIndex(key);
+    //        if (col == -1) {
+    //            throw new ColumnNotPresentException(key);
+    //        }
+    //        // if (cursor.isNull(col)) {
+    //        //     return null;
+    //        // }
+    //        return cursor.getBlob(col);
+    //    }
 
     // Provide consistence with the other DataHolder methods in this class
     // which will throw.
@@ -250,4 +250,5 @@ public class CursorRow
 
         return "CursorRow{" + obj + "}";
     }
+
 }

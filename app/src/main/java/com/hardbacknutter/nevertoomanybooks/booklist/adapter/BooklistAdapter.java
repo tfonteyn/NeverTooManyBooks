@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -46,6 +45,7 @@ import com.hardbacknutter.fastscroller.OverlayProvider;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -92,14 +91,11 @@ public class BooklistAdapter
     private final ScreenLayout layout;
     @NonNull
     private final CoverScale coverScale;
-    /** The cursor is the equivalent of the 'list of items'. */
-    @Nullable
-    private Cursor cursor;
     @Nullable
     private Booklist booklist;
-    /** provides read only access to the row data. */
+    /** The 'list of items'. */
     @Nullable
-    private DataHolder rowData;
+    private BooklistCursor rowData;
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
@@ -154,12 +150,10 @@ public class BooklistAdapter
     public void setBooklist(@Nullable final Booklist booklist) {
         if (booklist == null) {
             this.booklist = null;
-            cursor = null;
             rowData = null;
         } else {
             this.booklist = booklist;
-            cursor = booklist.getNewListCursor();
-            rowData = new CursorRow(cursor);
+            rowData = booklist.getNewCursorRow();
         }
         notifyDataSetChanged();
     }
@@ -195,7 +189,7 @@ public class BooklistAdapter
     @Nullable
     public DataHolder readDataAt(final int position) {
         //noinspection DataFlowIssue
-        if (!cursor.moveToPosition(position)) {
+        if (!rowData.moveToPosition(position)) {
             // We should never get here... flw
             return null;
         }
@@ -223,9 +217,8 @@ public class BooklistAdapter
      * @param positions to refresh
      */
     public void requery(@NonNull final int[] positions) {
-        // Yes, requery() is deprecated but see BooklistCursor were we do the right thing.
-        //noinspection deprecation,DataFlowIssue
-        cursor.requery();
+        //noinspection DataFlowIssue
+        rowData.reload();
 
         for (final int pos : positions) {
             notifyItemChanged(pos);
@@ -234,9 +227,8 @@ public class BooklistAdapter
 
     @Override
     public long getItemId(final int position) {
-        if (cursor != null && cursor.moveToPosition(position)) {
+        if (rowData != null && rowData.moveToPosition(position)) {
             // return the rowId of the list-table
-            //noinspection DataFlowIssue
             return rowData.getLong(DBKey.PK_ID);
         } else {
             return RecyclerView.NO_ID;
@@ -245,7 +237,7 @@ public class BooklistAdapter
 
     @Override
     public int getItemCount() {
-        return cursor != null ? cursor.getCount() : 0;
+        return rowData != null ? rowData.getCount() : 0;
     }
 
     /**
@@ -258,8 +250,7 @@ public class BooklistAdapter
     @Override
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
-        if (cursor != null && cursor.moveToPosition(position)) {
-            //noinspection DataFlowIssue
+        if (rowData != null && rowData.moveToPosition(position)) {
             return rowData.getInt(DBKey.BL_NODE.GROUP);
         } else {
             // bogus, should not happen
@@ -377,9 +368,9 @@ public class BooklistAdapter
                                  final int position) {
 
         //noinspection DataFlowIssue
-        cursor.moveToPosition(position);
+        rowData.moveToPosition(position);
 
-        //noinspection unchecked,DataFlowIssue
+        //noinspection unchecked
         ((BindableViewHolder<DataHolder>) holder).onBind(rowData);
     }
 
@@ -467,14 +458,13 @@ public class BooklistAdapter
 
         // make sure it's still in range.
         final int clampedPosition = MathUtils.clamp(position, 0, getItemCount() - 1);
-        if (cursor == null || !cursor.moveToPosition(clampedPosition)) {
+        if (rowData == null || !rowData.moveToPosition(clampedPosition)) {
             return null;
         }
 
         try {
             if (level > (style.getGroupCount())) {
                 // it's a book; use the title (no need to take the group.format round-trip).
-                //noinspection DataFlowIssue
                 return rowData.getString(DBKey.TITLE);
 
             } else {
@@ -483,7 +473,6 @@ public class BooklistAdapter
                 final String key = group.getDisplayDomainExpression()
                                         .getDomain()
                                         .getName();
-                //noinspection DataFlowIssue
                 return formatter.format(group.getId(), rowData, key);
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {

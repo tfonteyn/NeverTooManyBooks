@@ -20,24 +20,33 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.SharedPreferences;
-import android.database.AbstractCursor;
 import android.database.Cursor;
+import android.os.Parcelable;
+import android.util.Log;
 import android.util.LruCache;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.function.Function;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.database.ColumnNotPresentException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 /**
+ * A wrapper for a cached collection of cursors.
+ * <p>
  * TODO: https://developer.android.com/topic/libraries/architecture/paging/v3-overview
  */
 public class BooklistCursor
-        extends AbstractCursor {
+        implements DataHolder {
 
     public static final String PK_PAGE_SIZE = "booklist.cursor.page.size";
     public static final String PK_LRU_LIST_MULTIPLIER = "booklist.cursor.lru.size";
@@ -65,6 +74,9 @@ public class BooklistCursor
     /** Pseudo-count obtained from the {@link Booklist}. */
     @Nullable
     private Integer pseudoCount;
+    /** Absolute position in the list (as opposed to position in the {@link #currentCursor}). */
+    private int absPosition = -1;
+
 
     /**
      * Constructor.
@@ -91,8 +103,11 @@ public class BooklistCursor
         });
     }
 
-
-    @Override
+    /**
+     * Get the count of all visible rows.
+     *
+     * @return visible row count
+     */
     public int getCount() {
         if (pseudoCount == null) {
             pseudoCount = booklist.countVisibleRows();
@@ -102,80 +117,230 @@ public class BooklistCursor
 
     @Override
     @NonNull
-    public String[] getColumnNames() {
-        return booklist.getListColumnNames();
+    public Set<String> keySet() {
+        return Set.copyOf(Arrays.asList(getCurrentCursor().getColumnNames()));
+    }
+
+    /**
+     * Returns {@code true} if the given key is contained in the mapping
+     * of this DataHolder.
+     *
+     * @param key the domain to get
+     *
+     * @return {@code true} if this cursor contains the specified domain.
+     */
+    @Override
+    public boolean contains(@NonNull final String key) {
+        return getCurrentCursor().getColumnIndex(key) > -1;
     }
 
     @Override
     @Nullable
-    public String getString(final int column) {
-        return getCurrentCursor().getString(column);
+    public String getString(@NonNull final String key,
+                            @Nullable final String defValue)
+            throws ColumnNotPresentException {
+        final Cursor cursor = getCurrentCursor();
+        final int col = cursor.getColumnIndex(key);
+        if (col == -1) {
+            throw new ColumnNotPresentException(key);
+        }
+        if (cursor.isNull(col)) {
+            return defValue;
+        }
+        return cursor.getString(col);
     }
 
+    /**
+     * Returns the value associated with the given key.
+     *
+     * @param key to get
+     *
+     * @return the boolean value of the column ({@code null} comes back as false).
+     *
+     * @throws ColumnNotPresentException if the column was not present.
+     */
     @Override
-    public short getShort(final int column) {
-        return getCurrentCursor().getShort(column);
+    public boolean getBoolean(@NonNull final String key)
+            throws ColumnNotPresentException {
+        return getInt(key) == 1;
     }
 
+    /**
+     * Returns the value associated with the given key.
+     *
+     * @param key to get
+     *
+     * @return the int value of the column ({@code null} comes back as 0)
+     *
+     * @throws ColumnNotPresentException if the column was not present.
+     */
     @Override
-    public int getInt(final int column) {
-        return getCurrentCursor().getInt(column);
+    public int getInt(@NonNull final String key)
+            throws ColumnNotPresentException {
+
+        final Cursor cursor = getCurrentCursor();
+        final int col = cursor.getColumnIndex(key);
+        if (col == -1) {
+            throw new ColumnNotPresentException(key);
+        }
+        // if (cursor.isNull(col)) {
+        //     return 0;
+        // }
+        return cursor.getInt(col);
     }
 
+    /**
+     * Returns the value associated with the given key.
+     *
+     * @param key to get
+     *
+     * @return the long value of the column ({@code null} comes back as 0)
+     *
+     * @throws ColumnNotPresentException if the column was not present.
+     */
     @Override
-    public long getLong(final int column) {
-        return getCurrentCursor().getLong(column);
+    public long getLong(@NonNull final String key)
+            throws ColumnNotPresentException {
+
+        final Cursor cursor = getCurrentCursor();
+        final int col = cursor.getColumnIndex(key);
+        if (col == -1) {
+            throw new ColumnNotPresentException(key);
+        }
+        // if (cursor.isNull(col)) {
+        //     return 0;
+        // }
+        return cursor.getLong(col);
     }
 
+    /**
+     * Returns the value associated with the given key.
+     *
+     * @param parser to use for number parsing
+     * @param key    to get
+     *
+     * @return the double value of the column ({@code null} comes back as 0)
+     *
+     * @throws ColumnNotPresentException if the column was not present.
+     * @throws NumberFormatException     if the value could not be parsed.
+     */
     @Override
-    public float getFloat(final int column) {
-        return getCurrentCursor().getFloat(column);
+    public float getFloat(@NonNull final String key,
+                          @NonNull final RealNumberParser parser)
+            throws NumberFormatException {
+
+        final Cursor cursor = getCurrentCursor();
+        final int col = cursor.getColumnIndex(key);
+        if (col == -1) {
+            throw new ColumnNotPresentException(key);
+        }
+        // if (cursor.isNull(col)) {
+        //     return 0;
+        // }
+        return cursor.getFloat(col);
     }
 
+    /**
+     * Returns the value associated with the given key.
+     *
+     * @param key to get
+     *
+     * @return the double value of the column ({@code null} comes back as 0)
+     *
+     * @throws ColumnNotPresentException if the column was not present.
+     * @throws NumberFormatException     if the value could not be parsed.
+     */
     @Override
-    public double getDouble(final int column) {
-        return getCurrentCursor().getDouble(column);
+    public double getDouble(@NonNull final String key,
+                            @NonNull final RealNumberParser parser)
+            throws NumberFormatException {
+
+        final Cursor cursor = getCurrentCursor();
+        final int col = cursor.getColumnIndex(key);
+        if (col == -1) {
+            throw new ColumnNotPresentException(key);
+        }
+        // if (cursor.isNull(col)) {
+        //     return 0;
+        // }
+        return cursor.getDouble(col);
     }
 
-    @Override
-    public boolean isNull(final int column) {
-        return getCurrentCursor().isNull(column);
+    @NonNull
+    public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key)
+            throws ColumnNotPresentException {
+        throw new ColumnNotPresentException(key);
     }
 
     @NonNull
     private Cursor getCurrentCursor() {
         synchronized (cursorCache) {
             if (currentCursor == null) {
-                currentCursor = cursorCache.get(getPosition() / pageSize);
+                currentCursor = cursorCache.get(absPosition / pageSize);
             }
         }
         return currentCursor;
     }
 
-    @Override
-    @CallSuper
-    public boolean requery() {
-        final int newPos = getPosition();
-        close();
-        pseudoCount = null;
-        // create our new cursor, reposition, and update the super
-        return onMove(newPos, newPos) && super.requery();
+    /**
+     * Move to the given absolute Booklist position.
+     *
+     * @param position to move to
+     *
+     * @return {@code true} if the move succeeded
+     */
+    public final boolean moveToPosition(final int position) {
+        // Make sure position isn't past the end of the cursor
+        final int count = getCount();
+        if (position >= count) {
+            absPosition = count;
+            return false;
+        }
+
+        // Make sure position isn't before the beginning of the cursor
+        if (position < 0) {
+            absPosition = -1;
+            return false;
+        }
+
+        // Check for no-op moves, and skip the rest of the work for them
+        if (position == absPosition) {
+            return true;
+        }
+
+        final boolean result = onMove(position);
+        if (result) {
+            absPosition = position;
+        } else {
+            absPosition = -1;
+        }
+
+        return result;
     }
 
-    @Override
-    public boolean onMove(final int oldPosition,
-                          final int newPosition) {
+    /**
+     * Close all existing underlying cursors and start over fetching all data from the database.
+     *
+     * @return whether the requested reload succeeded to reposition
+     */
+    public boolean reload() {
+        close();
+        pseudoCount = null;
+        return onMove(absPosition);
+    }
+
+    private boolean onMove(final int newPosition) {
         synchronized (cursorCache) {
             currentCursor = cursorCache.get(newPosition / pageSize);
             return currentCursor.moveToPosition(newPosition % pageSize);
         }
     }
 
-    @Override
-    @CallSuper
+    /**
+     * Close all existing underlying cursors.
+     */
     public void close() {
         cursorCache.evictAll();
-        super.close();
     }
 
     @Override
@@ -183,6 +348,7 @@ public class BooklistCursor
     public String toString() {
         return "BooklistCursor{"
                + "booklist=" + booklist
+               + ", pos=" + absPosition
                + ", pseudoCount=" + pseudoCount
                + ", pageSize=" + pageSize
                + ", cursorCache=" + cursorCache
@@ -191,7 +357,7 @@ public class BooklistCursor
 
     private static class CursorCache
             extends LruCache<Integer, Cursor> {
-
+        private static final String TAG = "CursorCache";
         @NonNull
         private final Function<Integer, Cursor> cursorSupplier;
 
@@ -203,6 +369,9 @@ public class BooklistCursor
 
         @Override
         protected Cursor create(@NonNull final Integer key) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "create: " + key + ", createCount=" + createCount());
+            }
             return cursorSupplier.apply(key);
         }
 
@@ -211,6 +380,9 @@ public class BooklistCursor
                                     @NonNull final Integer key,
                                     @NonNull final Cursor oldValue,
                                     @Nullable final Cursor newValue) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "remove: " + key + ", evictionCount=" + evictionCount());
+            }
             oldValue.close();
         }
     }
