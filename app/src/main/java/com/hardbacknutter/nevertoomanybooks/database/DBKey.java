@@ -21,6 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
+
 /**
  * Keys used as domain names / Bundle keys.
  */
@@ -366,7 +368,7 @@ public final class DBKey {
         public static final String IS_PREFERRED = "preferred";
         public static final String MENU_POSITION = "menu_order";
         /**
-         * @see com.hardbacknutter.nevertoomanybooks.booklist.style.Style.Layout
+         * @see ScreenLayout
          */
         public static final String LAYOUT = "layout";
         /**

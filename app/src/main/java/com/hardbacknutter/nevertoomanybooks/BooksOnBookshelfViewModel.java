@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.grouping.ReadStatus;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -234,7 +235,7 @@ public class BooksOnBookshelfViewModel
      * even when the type itself happens to be the same between 2 bookshelves or styles.
      */
     @Nullable
-    private Style.Layout currentLayout;
+    private ScreenLayout currentLayout;
     /**
      * The book id we want the new list to display more-or-less in the center.
      */
@@ -595,7 +596,7 @@ public class BooksOnBookshelfViewModel
      * @see #hasLayoutChanged(boolean)
      */
     @NonNull
-    Style.Layout getNewLayout(final boolean hasEmbeddedDetailsFrame) {
+    ScreenLayout getNewLayout(final boolean hasEmbeddedDetailsFrame) {
         // remember it for use from #onResume where we need to check/compare it again
         currentLayout = getStyle().getLayout(hasEmbeddedDetailsFrame);
         return currentLayout;
@@ -628,7 +629,7 @@ public class BooksOnBookshelfViewModel
     BooklistAdapter createBooklistAdapter(@NonNull final Context context,
                                           final boolean hasEmbeddedDetailsFrame) {
         final Style style = getStyle();
-        final Style.Layout layout = style.getLayout(hasEmbeddedDetailsFrame);
+        final ScreenLayout layout = style.getLayout(hasEmbeddedDetailsFrame);
 
 
         final CoverScale coverScale;
@@ -1559,7 +1560,7 @@ public class BooksOnBookshelfViewModel
      * @param layout  to set
      */
     void setStyleLayout(@NonNull final Context context,
-                        @NonNull final Style.Layout layout) {
+                        @NonNull final ScreenLayout layout) {
         final Style style = getStyle();
         style.setLayout(layout);
         ServiceLocator.getInstance().getStyles().update(context, style);

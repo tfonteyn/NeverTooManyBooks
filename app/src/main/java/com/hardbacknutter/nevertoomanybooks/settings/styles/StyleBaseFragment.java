@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupPrefs;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
@@ -258,12 +259,12 @@ public abstract class StyleBaseFragment
     }
 
     /**
-     * Use the given {@link Style.Layout} to show/hide the applicable preferences.
+     * Use the given {@link ScreenLayout} to show/hide the applicable preferences.
      *
      * @throws IllegalArgumentException when there is a bug with the enums
      */
     private void updateLayoutPrefs() {
-        final Style.Layout layout = vm.getStyle().getLayout();
+        final ScreenLayout layout = vm.getStyle().getLayout();
         switch (layout) {
             case List: {
                 pShowCovers.setVisible(true);

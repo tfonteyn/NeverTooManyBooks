@@ -138,7 +138,7 @@ public abstract class BaseStyle
     private long id;
 
     @NonNull
-    private Layout layout = Layout.List;
+    private ScreenLayout layout = ScreenLayout.List;
 
     /**
      * Tapping a cover image in the BoB list-mode/grid-mode.
@@ -237,7 +237,7 @@ public abstract class BaseStyle
         //NEWTHINGS: style option: read from rowData
 
         // 'simple' options
-        setLayout(Style.Layout.byId(rowData.getInt(DBKey.STYLE.LAYOUT)));
+        setLayout(ScreenLayout.byId(rowData.getInt(DBKey.STYLE.LAYOUT)));
         setCoverClickAction(Style.CoverClickAction.byId(
                 rowData.getInt(DBKey.STYLE.COVER_CLICK_ACTION)));
         setCoverLongClickAction(Style.CoverLongClickAction.byId(
@@ -411,12 +411,12 @@ public abstract class BaseStyle
 
     @Override
     @NonNull
-    public Layout getLayout() {
+    public ScreenLayout getLayout() {
         return layout;
     }
 
     @Override
-    public void setLayout(@NonNull final Layout layout) {
+    public void setLayout(@NonNull final ScreenLayout layout) {
         this.layout = layout;
     }
 

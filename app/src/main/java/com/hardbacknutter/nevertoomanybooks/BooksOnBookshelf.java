@@ -94,6 +94,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.adapter.PositioningHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.HeaderAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.SpinnerInteractionListener;
@@ -719,7 +720,7 @@ public class BooksOnBookshelf
     private void createLayoutManager() {
         //TODO: show a 'tip' when running in grid-mode + embedded-frame
         // and explain that embedded mode forces list-mode
-        final Style.Layout layout = vm.getNewLayout(hasEmbeddedDetailsFrame());
+        final ScreenLayout layout = vm.getNewLayout(hasEmbeddedDetailsFrame());
         final RecyclerView.LayoutManager layoutManager;
         switch (layout) {
             case List: {
@@ -2757,7 +2758,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_STYLE_SHORTCUT_LAYOUT_LIST).setVisible(false);
                 menu.findItem(R.id.MENU_STYLE_SHORTCUT_LAYOUT_GRID).setVisible(false);
             } else {
-                final boolean isListLayout = vm.getStyle().getLayout() == Style.Layout.List;
+                final boolean isListLayout = vm.getStyle().getLayout() == ScreenLayout.List;
                 menu.findItem(R.id.MENU_STYLE_SHORTCUT_LAYOUT_LIST).setVisible(!isListLayout);
                 menu.findItem(R.id.MENU_STYLE_SHORTCUT_LAYOUT_GRID).setVisible(isListLayout);
             }
@@ -2779,12 +2780,12 @@ public class BooksOnBookshelf
                 return true;
 
             } else if (menuItemId == R.id.MENU_STYLE_SHORTCUT_LAYOUT_LIST) {
-                vm.setStyleLayout(BooksOnBookshelf.this, Style.Layout.List);
+                vm.setStyleLayout(BooksOnBookshelf.this, ScreenLayout.List);
                 onPrepareMenu(menu);
                 return true;
 
             } else if (menuItemId == R.id.MENU_STYLE_SHORTCUT_LAYOUT_GRID) {
-                vm.setStyleLayout(BooksOnBookshelf.this, Style.Layout.Grid);
+                vm.setStyleLayout(BooksOnBookshelf.this, ScreenLayout.Grid);
                 onPrepareMenu(menu);
                 return true;
 

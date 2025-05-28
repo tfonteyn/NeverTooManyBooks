@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
@@ -140,7 +141,7 @@ public class BookHolder
         locale = res.getConfiguration().getLocales().get(0);
 
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
-            final ImageViewSize size = coverScale.getMaxSizeInPixels(context, Style.Layout.List);
+            final ImageViewSize size = coverScale.getMaxSizeInPixels(context, ScreenLayout.List);
 
             // Enforce the width/height of the image itself.
             final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();

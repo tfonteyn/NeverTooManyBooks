@@ -150,14 +150,14 @@ public interface Style {
      * @return layout
      */
     @NonNull
-    Layout getLayout();
+    ScreenLayout getLayout();
 
     /**
      * Set the layout.
      *
      * @param layout to set
      */
-    void setLayout(@NonNull Layout layout);
+    void setLayout(@NonNull ScreenLayout layout);
 
     /**
      * Get the layout as set on the style, potentially overriding it
@@ -171,12 +171,12 @@ public interface Style {
      * @return layout
      */
     @NonNull
-    default Layout getLayout(final boolean hasEmbeddedDetailsFrame) {
+    default ScreenLayout getLayout(final boolean hasEmbeddedDetailsFrame) {
         if (hasEmbeddedDetailsFrame) {
             // We tested with using the grid when having the embedded frame,
             // but it was just to confusing and a mess to look at.
             // Hence just use the list layout in this setup.
-            return Style.Layout.List;
+            return ScreenLayout.List;
         } else {
             return getLayout();
         }
@@ -488,47 +488,6 @@ public interface Style {
         @NonNull
         public String getLabel(@NonNull final Context context) {
             return context.getResources().getStringArray(R.array.lbl_style_type)[id];
-        }
-    }
-
-    enum Layout {
-        /** Original list-style. */
-        List(0),
-        /** New for 5.0 release. */
-        Grid(1);
-
-        private final int id;
-
-        Layout(final int id) {
-            this.id = id;
-        }
-
-        /**
-         * Lookup by id.
-         * <p>
-         * Import/Export and database usage only.
-         *
-         * @param id to lookup
-         *
-         * @return type; or {@link #List} for any invalid id.
-         */
-        @NonNull
-        public static Layout byId(final int id) {
-            if (id == 1) {
-                return Grid;
-            }
-            return List;
-        }
-
-        /**
-         * Get the internal id.
-         * <p>
-         * Import/Export and database usage only.
-         *
-         * @return id
-         */
-        public int getId() {
-            return id;
         }
     }
 

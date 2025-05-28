@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BookLevelFieldVisibil
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.citations.CitationType;
@@ -1359,7 +1360,7 @@ public final class DBDefinitions {
         DOM_STYLE_LAYOUT =
                 new Domain.Builder(DBKey.STYLE.LAYOUT, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(Style.Layout.List.getId())
+                        .withDefault(ScreenLayout.List.getId())
                         .build();
 
         DOM_STYLE_COVER_CLICK_ACTION =

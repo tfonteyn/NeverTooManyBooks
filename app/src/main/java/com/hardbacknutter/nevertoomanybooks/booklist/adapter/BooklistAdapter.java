@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -88,7 +89,7 @@ public class BooklistAdapter
     /** Shared across all {@link BookHolder}s. */
     private final RealNumberParser realNumberParser;
     @NonNull
-    private final Style.Layout layout;
+    private final ScreenLayout layout;
     @NonNull
     private final CoverScale coverScale;
     /** The cursor is the equivalent of the 'list of items'. */
@@ -116,7 +117,7 @@ public class BooklistAdapter
      */
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final Style style,
-                           @NonNull final Style.Layout layout,
+                           @NonNull final ScreenLayout layout,
                            @NonNull final CoverScale coverScale) {
         this.inflater = LayoutInflater.from(context);
         this.style = style;
@@ -275,7 +276,7 @@ public class BooklistAdapter
         final int layoutId;
         switch (groupId) {
             case BooklistGroup.BOOK:
-                if (layout == Style.Layout.List) {
+                if (layout == ScreenLayout.List) {
                     layoutId = R.layout.booksonbookshelf_row_book;
                 } else {
                     layoutId = R.layout.booksonbookshelf_grid_book;

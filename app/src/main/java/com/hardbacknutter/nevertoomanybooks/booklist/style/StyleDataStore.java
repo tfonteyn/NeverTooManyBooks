@@ -433,7 +433,7 @@ public class StyleDataStore
                 break;
             }
             case PK_LAYOUT: {
-                style.setLayout(Style.Layout.byId(Integer.parseInt(value)));
+                style.setLayout(ScreenLayout.byId(Integer.parseInt(value)));
                 break;
             }
             case PK_COVER_CLICK_ACTION: {

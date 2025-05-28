@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
@@ -279,7 +280,7 @@ public class StyleCoder
                                 @NonNull final WritableStyle style) {
 
         if (source.has(StyleDataStore.PK_LAYOUT)) {
-            style.setLayout(Style.Layout.byId(source.getInt(StyleDataStore.PK_LAYOUT)));
+            style.setLayout(ScreenLayout.byId(source.getInt(StyleDataStore.PK_LAYOUT)));
         }
         if (source.has(StyleDataStore.PK_COVER_CLICK_ACTION)) {
             style.setCoverClickAction(Style.CoverClickAction.byId(source.getInt(

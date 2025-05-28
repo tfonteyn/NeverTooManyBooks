@@ -57,7 +57,7 @@ public enum CoverScale {
     /**
      * Represented to the user (in preferences screen) as X-large.
      * <p>
-     * In {@link Style.Layout#Grid} mode this will result in:
+     * In {@link ScreenLayout#Grid} mode this will result in:
      * <ul>
      *     <li>portrait : 1 image fills up the entire screen width.</li>
      *     <li>landscape: 2 images side by side fills up the entire screen width</li>
@@ -172,7 +172,7 @@ public enum CoverScale {
      */
     @Px
     private int lookup(@NonNull final Resources res,
-                       @NonNull final Style.Layout layout) {
+                       @NonNull final ScreenLayout layout) {
 
         final int width;
         final TypedArray coverSizes = res.obtainTypedArray(R.array.cover_max_width);
@@ -212,7 +212,7 @@ public enum CoverScale {
      */
     @NonNull
     public ImageViewSize getMaxSizeInPixels(@NonNull final Context context,
-                                            @NonNull final Style.Layout layout) {
+                                            @NonNull final ScreenLayout layout) {
         if (this == Hidden) {
             return HIDDEN;
         }
@@ -220,7 +220,7 @@ public enum CoverScale {
         final Resources res = context.getResources();
 
         final int width;
-        if (this == Maximum && layout == Style.Layout.Grid) {
+        if (this == Maximum && layout == ScreenLayout.Grid) {
             if (res.getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE) {
                 // In landscape, half.
@@ -238,7 +238,7 @@ public enum CoverScale {
 
     /**
      * Use the available screen width and the scale to calculate the optimal
-     * span-count for use by the BoB {@link Style.Layout#Grid} mode.
+     * span-count for use by the BoB {@link ScreenLayout#Grid} mode.
      *
      * @param context Current context
      *
@@ -266,7 +266,7 @@ public enum CoverScale {
             }
         }
 
-        final float coverWidthPx = lookup(res, Style.Layout.Grid);
+        final float coverWidthPx = lookup(res, ScreenLayout.Grid);
         return (int) Math.floor((float) getWindowWidthInPx(context) / coverWidthPx);
     }
 
