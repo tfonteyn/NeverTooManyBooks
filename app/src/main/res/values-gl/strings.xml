@@ -439,4 +439,17 @@
     <string name="option_isbn_strict">ISBN estrito</string>
     <string name="option_barcode_scan_mode_continuous">Escanear continuamente</string>
     <string name="option_search_books_by_author_in_series">Libros por autoría/serie</string>
+    <string name="pt_search_result_order">As buscas devolven o libro máis recente ou o primeiro atopado.</string>
+    <string name="pe_search_result_order_most_recent">Atopado o libro máis recente</string>
+    <string name="pe_search_result_order_first_found">Primeiro libro atopado</string>
+    <string name="option_toc_list_update_with_main_author">Actualizar autorías</string>
+    <string name="option_auto_updates">Permitir actualizacións automáticas da internet.</string>
+    <string name="option_download_set_folder">Establecer o cartafol de descargas</string>
+    <string name="option_download_folder">Cartafol de descargas local</string>
+    <string name="option_download_ebook_format">Descargar eBook (%1$s)</string>
+    <string name="confirm_continue">Queres continuar?</string>
+    <string name="confirm_unsaved_edits">Hai mudanzas sen gardar, se saes agora perderanse.</string>
+    <string name="confirm_remove_toc_entry">Eliminar o título “%1$s” de %2$s deste libro?</string>
+    <string name="confirm_scope_for_delete">Excluír o título “%1$s” de %2$s\n\nComo queres aplicar este cambio?\nNota: A escolla “%3$s” non se pode desfacer!</string>
+    <string name="option_enable_sync_options">Activar opcións de sincronización</string>
 </resources>
