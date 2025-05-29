@@ -226,7 +226,7 @@ public final class ViewFocusOrder {
      * @param view  to dump
      * @param depth max recursion level
      */
-    @SuppressLint({"LogConditional"})
+    @SuppressLint("LogConditional")
     @SuppressWarnings({"unused", "WeakerAccess", "MagicNumber"})
     public static void debugDumpViewTree(@Nullable final View view,
                                          final int depth) {
