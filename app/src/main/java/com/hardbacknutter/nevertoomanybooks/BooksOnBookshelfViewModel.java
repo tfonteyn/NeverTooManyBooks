@@ -631,19 +631,28 @@ public class BooksOnBookshelfViewModel
         final Style style = getStyle();
         final ScreenLayout layout = style.getLayout(hasEmbeddedDetailsFrame);
 
-
         final CoverScale coverScale;
-        if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
-            if (hasEmbeddedDetailsFrame) {
-                coverScale = style.getCoverScale().smaller();
-                // use a scale one smaller than on the non-embedded view.
-            } else {
+        switch (layout) {
+            case Grid: {
+                // always show a cover on ScreenLayout.Grid
                 coverScale = style.getCoverScale();
+                break;
             }
-        } else {
-            coverScale = CoverScale.Hidden;
+            case List:
+            default: {
+                if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
+                    if (hasEmbeddedDetailsFrame) {
+                        // use a scale one smaller than on the non-embedded view.
+                        coverScale = style.getCoverScale().smaller();
+                    } else {
+                        coverScale = style.getCoverScale();
+                    }
+                } else {
+                    coverScale = CoverScale.Hidden;
+                }
+                break;
+            }
         }
-
 
         final BooklistAdapter adapter = new BooklistAdapter(context, style, layout, coverScale);
         adapter.setBooklist(booklist);

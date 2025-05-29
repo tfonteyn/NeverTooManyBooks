@@ -413,12 +413,17 @@ class BooklistBuilder {
             //TODO: define a FieldVisibility.Screen.Grid, and do this in style.isShowField(...)
             // or do all in style.isShowField(...) where we can check the layout in use ?
             // or maybe merge the FieldVisibility.Screen and ScreenLayout enums
-            final List<String> wantedFields = List.of(DBKey.TITLE, DBKey.FK_AUTHOR, DBKey.COVER[0]);
-
             style.getBookLevelFieldsOrderBy().entrySet()
                  .stream()
-                 .filter(field -> wantedFields.contains(field.getKey())
-                                  && style.isShowField(FieldVisibility.Screen.List, field.getKey()))
+                 .filter(field -> {
+                     final String key = field.getKey();
+                     if (key.equals(DBKey.TITLE) || key.equals(DBKey.COVER[0])) {
+                         return true;
+                     } else if (key.equals(DBKey.FK_AUTHOR)) {
+                         return style.isShowField(FieldVisibility.Screen.List, field.getKey());
+                     }
+                     return false;
+                 })
                  .map(field -> DBExpr.forBookLevelField(field.getKey(),
                                                         field.getValue(),
                                                         style))
