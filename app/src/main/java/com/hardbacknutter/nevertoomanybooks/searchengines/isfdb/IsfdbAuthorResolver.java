@@ -207,14 +207,10 @@ public final class IsfdbAuthorResolver
         // <a href="https://www.isfdb.org/cgi-bin/ea.cgi?276149" dir="ltr">Брайан Олдисс</a>
         final Elements aas = document.select("a[href^='https://www.isfdb.org/cgi-bin/ea.cgi']");
         // try to find an exact match
-        Optional<String> url = Optional.empty();
-        for (Element a : aas) {
-            if (a.text().equals(formattedName)) {
-                String href = a.attr("href");
-                url = Optional.of(href);
-                break;
-            }
-        }
+        final Optional<String> url = aas.stream()
+                                        .filter(a -> a.text().equals(formattedName))
+                                        .map(a -> a.attr("href"))
+                                        .findFirst();
         if (url.isPresent()) {
             final String sid = getIdFromUrl(url.get());
             if (sid != null) {
