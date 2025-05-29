@@ -10,11 +10,12 @@ NEW:
   these are shown on the "All works by this author" screen.
 - Bedetheque: find the correct edition when searching by ISBN for older comics.
 - "Update books": the description field can now append text from multiple sites.
-- improved scrollbar accessibility + tap to jump
+- improved scrollbar accessibility + added tap-to-jump functionality
 - Android 16 tested/supported.
 
 FIXES:
-- optimizations in loading and displaying images
+
+- internal optimizations for memory handling and in loading images
 
 REMOVED:
 
