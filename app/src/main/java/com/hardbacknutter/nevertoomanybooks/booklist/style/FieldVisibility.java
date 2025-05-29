@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * There are two sets of field-visibilities:
  * <br/>{@link Screen#List} decides if certain fields are displayed on the book-level in the list.
  * <br/>{@link Screen#Detail} does the same for the (read-only) book-details screen.
+ * There is one exception on the detail screen: visibility of the TOC is taken from Screen#List.
  * <br/>For fields which are not configurable on these levels,
  * <strong>The GLOBAL visibility</strong> is used.
  * <br/>These settings are stored as bitmasks on the individual styles in the database Styles table.

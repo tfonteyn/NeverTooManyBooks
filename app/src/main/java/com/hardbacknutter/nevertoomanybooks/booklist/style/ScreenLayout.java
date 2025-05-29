@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import androidx.annotation.NonNull;
 
-// URGENT: COMBINE THIS WITH FieldVisibility.Screen ??
 public enum ScreenLayout {
     /** BoB: one book/row; show full details. */
     List(0),

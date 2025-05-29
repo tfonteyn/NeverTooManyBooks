@@ -412,7 +412,6 @@ class BooklistBuilder {
         if (style.getLayout() == ScreenLayout.Grid) {
             //TODO: define a FieldVisibility.Screen.Grid, and do this in style.isShowField(...)
             // or do all in style.isShowField(...) where we can check the layout in use ?
-            // or maybe merge the FieldVisibility.Screen and ScreenLayout enums
             style.getBookLevelFieldsOrderBy().entrySet()
                  .stream()
                  .filter(field -> {
