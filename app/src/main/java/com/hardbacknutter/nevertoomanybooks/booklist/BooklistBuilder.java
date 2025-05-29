@@ -419,7 +419,7 @@ class BooklistBuilder {
                      if (key.equals(DBKey.TITLE) || key.equals(DBKey.COVER[0])) {
                          return true;
                      } else if (key.equals(DBKey.FK_AUTHOR)) {
-                         return style.isShowField(FieldVisibility.Screen.List, field.getKey());
+                         return style.isShowField(FieldVisibility.Screen.List, key);
                      }
                      return false;
                  })
