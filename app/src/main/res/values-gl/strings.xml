@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -163,7 +160,7 @@
     <string name="action_show_options">Opcións</string>
     <string name="action_skip">Omitir</string>
     <string name="action_undo">Desfacer</string>
-    <string name="book_format_other">Outros</string>
+    <string name="book_format_other">Outro</string>
     <string name="cancel">Cancelar</string>
     <string name="cancelled">Cancelada</string>
     <string name="dialog_alert_title">Atención</string>
@@ -173,7 +170,7 @@
     <string name="httpError">Produciuse un erro na rede.</string>
     <string name="httpErrorTimeout">A conexión co servidor superou o tempo de espera.</string>
     <string name="lbl_about">Acerca de</string>
-    <string name="lbl_archive_format">Formatar</string>
+    <string name="lbl_archive_format">Formato</string>
     <string name="lbl_available">Dispoñible</string>
     <string name="lbl_backup">Copia de seguranza</string>
     <string name="lbl_color">Cor</string>
@@ -182,7 +179,7 @@
     <string name="lbl_credentials">Credenciais do usuario</string>
     <string name="lbl_defaults">Valores predeterminados</string>
     <string name="lbl_filter">Filtro</string>
-    <string name="lbl_format">Formatar</string>
+    <string name="lbl_format">Formato</string>
     <string name="lbl_image">Imaxe</string>
     <string name="lbl_images">Imaxes</string>
     <string name="lbl_import">Importar</string>
@@ -193,15 +190,15 @@
     <string name="lbl_storage_settings">Almacenamento</string>
     <string name="lbl_system_default">(Opción predeterminada do sistema)</string>
     <string name="lbl_tab_notes">Notas</string>
-    <string name="lbl_title">Cargo</string>
+    <string name="lbl_title">Título</string>
     <string name="lbl_unread">Non lido</string>
     <string name="no">Non</string>
-    <string name="none">Ningún</string>
+    <string name="none">Nada</string>
     <string name="notification_channel_warn">Advertencia</string>
     <string name="ok">Aceptar</string>
     <string name="option_barcode_scan_mode_manual">Manual</string>
     <string name="option_bug_report">Informe de erros</string>
-    <string name="option_image_rotate_automatic">Automática</string>
+    <string name="option_image_rotate_automatic">Automático</string>
     <string name="option_import">Importar</string>
     <string name="option_select_all">Seleccionar todo</string>
     <string name="password">Contrasinal</string>
@@ -213,7 +210,7 @@
     <string name="pt_layout">Deseño</string>
     <string name="pt_ui_language">Idioma</string>
     <string name="pt_ui_system_locale">Idioma do sistema</string>
-    <string name="size_medium">Medio</string>
+    <string name="size_medium">Mediano</string>
     <string name="unknown">Nome descoñecido</string>
     <string name="username">Nome de usuario</string>
     <string name="whichEditApplication">Editar con</string>
@@ -225,7 +222,7 @@
     <string name="warning_image_copy_failed">Non se puido copiar a imaxe.</string>
     <string name="warning_if_day_set_month_and_year_must_be">De especificarse un día, tamén debe facerse co mes e o ano.</string>
     <string name="warning_backup_request">Queres facer una copia da base de datos á tarxeta SD?</string>
-    <string name="warning_restart_required">A aplicación precisa reiniciarse</string>
+    <string name="warning_restart_required">A aplicación precisa reiniciar</string>
     <string name="warning_requires_android_x">Require Android %1$d ou superior</string>
     <string name="vldt_failure">Fallo de validación</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
@@ -267,7 +264,7 @@
     <string name="info_identifier_editor"><![CDATA[Por favor, le a <a href="%1$s">documentación</a> sobre identificadores antes de editar.]]></string>
     <string name="site_description_various_languages">Varios idiomas</string>
     <string name="site_description_chinese">Chinés</string>
-    <string name="site_description_czech">Checo e máis</string>
+    <string name="site_description_czech">Checo e outros</string>
     <string name="site_description_french">Francés</string>
     <string name="site_description_german">Alemán</string>
     <string name="site_description_shop">Tenda</string>
@@ -308,11 +305,11 @@
     <string name="tip_view_only_help">Desliza cara esquerda ou dereita para ver outros libros.</string>
     <string name="tip_book_list">Tocar nun libro mostrará os seus detalles. Premer longo darache máis opcións.</string>
     <string name="tip_import_isbn_list">Importa un ficheiro de texto con números ISBN. O ficheiro debe ter un único ISBN por liña. Os resultados colocaranse na cola.</string>
-    <string name="tip_booklist_styles_editor">Utiliza esta pantalla para personalizar a lista de estilos que se van amosar no teu menú de estilos por defecto. Coa caixa de selección escolle os estilos que queres que saian na lista. Se non escolles ningún, mostraranse todos. Podes reordenar a xerarquía arrastrando a icona do extremo dereito de cada fila cara arriba ou abaixo. Se premes longamente en calquera outro lugar dunha fila, poderás editar ou clonar os detalles dun estilo específico. Se clonas un estilo e cambias de opinión, só tes que borralo.</string>
+    <string name="tip_booklist_styles_editor">Utiliza esta pantalla para personalizar a lista de estilos que se van amosar no teu menú de estilos por defecto. Coa caixa de selección escolle os que queres que saian na lista. Se non escolles ningún, mostraranse todos. Podes reordenar a xerarquía arrastrando a icona (=) do extremo dereito de cada fila cara arriba ou abaixo. Se premes longamente en calquera outro lugar dunha fila, poderás editar ou clonar os detalles dun estilo específico. Se clonas un estilo e cambias de opinión, só tes que borralo.</string>
     <string name="tip_booklist_style_groups">Usa esta pantalla para modificar a xerarquía de grupos dun estilo concreto. Coa caixa de selección escolle os grupos que queres amosar na lista e reordena arrastrando a icona do final de cada liña cara arriba ou abaixo.</string>
     <string name="tip_booklist_style_properties">Utiliza esta pantalla para definir as características dun estilo concreto. Podes mudar o nome, editar os agrupamentos para alterar a xerarquía e axustar outras preferencias para xerar un estilo que consideres útil.</string>
     <string name="tip_series_book_may_appear_more_than_once">Se os libros se mostran en todas as series ás que pertencen, poden aparecer varias veces na lista. A eliminación dunha desas copias ten o efecto de borrar todos os exemplares da lista.</string>
-    <string name="tip_configure_sites">Os sitios web individuais pódense configurar utilizando a icona da parte superior da pantalla.</string>
+    <string name="tip_configure_sites">Os sitios web individuais poden configurarse utilizando a icona de roda dentada da parte superior da pantalla.</string>
     <string name="tip_authors_works">Iconas usadas</string>
     <string name="tip_authors_works_single_book">O título está presente nun só libro.</string>
     <string name="bob_empty_field">(Baleiro)</string>
@@ -327,10 +324,10 @@
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="size_bytes">%1$.0fB</string>
     <string name="size_hidden">Agochado</string>
-    <string name="size_x_small">Moi pequenas</string>
-    <string name="size_small">Pequenas</string>
-    <string name="size_x_large">Moi grandes</string>
-    <string name="size_large">Grandes</string>
+    <string name="size_x_small">Moi pequeno</string>
+    <string name="size_small">Pequeno</string>
+    <string name="size_x_large">Moi grande</string>
+    <string name="size_large">Grande</string>
     <string name="book_format_paperback">Rústica de bolso</string>
     <string name="book_format_hardcover_oblong">Cartoné apaisado</string>
     <string name="book_format_softcover_oblong">Rústica apaisada</string>
@@ -341,7 +338,7 @@
     <string name="book_color_support_color">Bicolor</string>
     <string name="style_builtin_author_series">Autoría, Serie</string>
     <string name="style_builtin_author_year">Autoría, Ano</string>
-    <string name="lbl_styles_long">Estilo andeis</string>
+    <string name="lbl_styles_long">Estilo dos andeis</string>
     <string name="style_type_builtin">Integrado</string>
     <string name="style_type_user_defined">Definido por ti</string>
     <string name="lbl_group_1st_char_series_title">1º carácter do título da serie</string>
@@ -359,13 +356,13 @@
     <string name="lbl_condition_good">Bo</string>
     <string name="lbl_condition_fair">Aceptable</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Ausente/Mal</string>
-    <string name="lbl_author_type_writer">Escritor/a/e</string>
-    <string name="lbl_author_type_translator">Tradutor/a/e</string>
-    <string name="lbl_author_type_contributor">Contribuínte</string>
+    <string name="lbl_author_type_writer">Manuscrito</string>
+    <string name="lbl_author_type_translator">Tradución</string>
+    <string name="lbl_author_type_contributor">Contribución</string>
     <string name="lbl_author_type_intro">Introdución etc.</string>
-    <string name="lbl_author_type_narrator">Narrador</string>
+    <string name="lbl_author_type_narrator">Narración</string>
     <string name="lbl_author_type_artist">Ilustracións</string>
-    <string name="lbl_author_type_colorist">Colorista</string>
+    <string name="lbl_author_type_colorist">Cor</string>
     <string name="lbl_author_type_storyboard">Guión</string>
     <string name="lbl_author_type_cover_inking">Tinta da cuberta</string>
     <string name="option_storage_select">Usar «%1$s»</string>
@@ -431,11 +428,11 @@
     <string name="lbl_group_1st_char_author_family_name">1º carácter do apelido</string>
     <string name="lbl_assign_bookshelves">Asignar andeis</string>
     <string name="lbl_condition_reading_copy">Copia de lectura</string>
-    <string name="lbl_author_type_editor">Editor/a/e</string>
+    <string name="lbl_author_type_editor">Edición</string>
     <string name="lbl_author_type_lettering">Rotulación</string>
     <string name="lbl_author_type_cover_artist">Deseño de cuberta</string>
     <string name="lbl_author_type_inking">Tinta</string>
-    <string name="lbl_author_type_cover_colorist">Colorista da cuberta</string>
+    <string name="lbl_author_type_cover_colorist">Cor da cuberta</string>
     <string name="option_moving_covers_from_x_to_y">Mover todas as cubertas de «%1$s» a «%2$s»</string>
     <string name="option_book_sync_list_with_details">Sincronizar/posicionar a lista</string>
     <string name="option_search_books_on">Buscar en…</string>
@@ -565,8 +562,8 @@
     <string name="lbl_date_published_month">Mes da publicación</string>
     <string name="lbl_date_first_publication">Primeira publicación</string>
     <string name="lbl_date_first_publication_as_single_char">1️⃣</string>
-    <string name="lbl_date_first_publication_year">Ano da 1ª pub.</string>
-    <string name="lbl_date_first_publication_month">Mes da 1ª pub.</string>
+    <string name="lbl_date_first_publication_year">Ano da 1ª publicación</string>
+    <string name="lbl_date_first_publication_month">Mes da 1ª publicación</string>
     <string name="lbl_date_born">Nacido</string>
     <string name="lbl_date_died">Finado</string>
     <string name="title_backup_and_export">Copia de seguridade e exportación</string>
@@ -628,7 +625,7 @@
     <string name="option_info_delete_removed_books">Os libros eliminados no outro dispositivo tamén van ser excluídos neste.</string>
     <string name="info_import_complete">Importación finalizada</string>
     <string name="info_books_deleted">Libros eliminados: %1$d</string>
-    <string name="pc_formatting">Formato</string>
+    <string name="pc_formatting">Formatando</string>
     <string name="pc_lists">Listas</string>
     <string name="pt_website_search_order_and_enable">Prioridade, activar e desactivar</string>
     <string name="pt_barcode_scanner">Lector de códigos de barras</string>
@@ -642,7 +639,7 @@
     <string name="lbl_capitalize_words">Comezo das palabras</string>
     <string name="lbl_capitalize_sentence">Comezo das frases</string>
     <string name="lbl_capitalize_full">Todo en maiúsculas</string>
-    <string name="pt_scanning_beep_on_barcode_found">Asubía cando se atopa un código de barras</string>
+    <string name="pt_scanning_beep_on_barcode_found">Asubía se atopa un código de barras</string>
     <string name="pt_scanning_beep_on_valid">Asubía se o ISBN escaneado é válido</string>
     <string name="pt_scanning_beep_on_invalid">Asubía se o ISBN escaneado non é válido</string>
     <string name="pt_cover_undo_enabled">Desfacer operacións nas cubertas dos libros</string>
@@ -704,7 +701,7 @@
     <string name="pt_fetch_author_info">Obter información sobre a autoría</string>
     <string name="pt_fetch_author_info_using_site_x">Obter información da autoría de %1$s</string>
     <string name="pt_search_resolve_authors">Resolver pseudónimos das autorías</string>
-    <string name="pt_search_reformat_format">Estandarizar nomes dos «formatos dos libros»</string>
+    <string name="pt_search_reformat_format">Estandarizar nomes do «formato de libro»</string>
     <string name="pt_search_uses_publisher">A busca usa a editorial</string>
     <string name="pt_search_reformat_color">Estandarizar nomes das «cores dos libros»</string>
     <string name="pt_search_prefer_isbn10">Usar o ISBN-10 cando sexa posible</string>
@@ -719,7 +716,7 @@
     <string name="pt_ui_theme_colors">Cores</string>
     <string name="X_pt_dialog_and_menu_popup_tuning">Diálogos e menús</string>
     <string name="pe_ui_dialog_mode_classic">Sempre como unha caixa de diálogo clásica</string>
-    <string name="pe_ui_dialog_mode_by_screen_size">As pantallas máis pequenas amosan as caixas de diálogo na parte inferior.\nAs máis grandes, coma as tabletas, usan sempre caixas de diálogo clásicas.</string>
+    <string name="pe_ui_dialog_mode_by_screen_size">As pantallas máis pequenas amosan as caixas de diálogo na parte inferior.\nAs máis grandes, como as tabletas, usan sempre caixas de diálogo clásicas.</string>
     <string name="pe_bob_list_rebuild_state_preserve">Preservar o estado actual</string>
     <string name="pe_ui_context_menu_mode_by_size">As pantallas máis pequenas amosan os menús longos na parte inferior e os curtos coma menús contextuais clásicos.\nAs máis grandes, como as tabletas, sempre usan menús contextuais clásicos.</string>
     <string name="option_clear_deleted_book_records">Limpar o histórico de libros eliminados</string>
@@ -750,7 +747,7 @@
     <string name="pt_bob_cover_click">Tocar nunha imaxe de cuberta.</string>
     <string name="pe_bob_cover_click_zoom">Amplía a imaxe.</string>
     <string name="pe_bob_cover_click_details">Abre os detalles do libro.</string>
-    <string name="lbl_citation_type">Formato para citar/compartir</string>
+    <string name="lbl_citation_type">Forma para citar/compartir</string>
     <string name="lbl_citation_type_default">Estou a ler…</string>
     <string name="pt_bob_cover_long_click">Abre o menú do libro.</string>
     <string name="pe_bob_cover_long_click_ignore">Tocando un botón.</string>
@@ -831,7 +828,7 @@
     <string name="lbl_default_x">Predefinido: %1$s</string>
     <string name="X_action_customize">Personalizar…</string>
     <string name="X_action_use_default_setting">Usar valores predefinidos</string>
-    <string name="X_neither">Ningún</string>
+    <string name="X_neither">Ningunha</string>
     <string name="X_lbl_thumbnails">Miniaturas</string>
     <string name="X_lbl_anthologies">Antoloxías</string>
     <string name="X_option_bob_filter_read_yes">Libros lidos</string>
