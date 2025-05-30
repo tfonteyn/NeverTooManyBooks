@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -365,7 +368,7 @@
     <string name="lbl_author_type_colorist">Colorista</string>
     <string name="lbl_author_type_storyboard">Guión</string>
     <string name="lbl_author_type_cover_inking">Tinta da cuberta</string>
-    <string name="option_storage_select">Usar “%1$s”</string>
+    <string name="option_storage_select">Usar «%1$s»</string>
     <string name="option_storage_edit_settings">Editar configuración</string>
     <string name="option_storage_quit_and_reinsert_sdcard">Saír e reinserir a tarxeta SD correcta</string>
     <string name="option_sort_and_style_ellipsis">Ordenación e Estilos…</string>
@@ -378,8 +381,8 @@
     <string name="option_lend_out_book">Emprestar a…</string>
     <string name="option_lend_return_book">Devolto o libro emprestado</string>
     <string name="option_goto_next_book_without_cover">Pasar ao seguinte libro sen cuberta</string>
-    <string name="option_set_complete">Marcar coma \"completo\"</string>
-    <string name="option_set_incomplete">Marcar coma \"incompleto\"</string>
+    <string name="option_set_complete">Marcar coma completo</string>
+    <string name="option_set_incomplete">Marcar coma incompleto</string>
     <string name="option_author_details">Todas as obras desta autoría</string>
     <string name="option_view_book_at">Ver en…</string>
     <string name="option_search_books_in_series">Libros desta serie</string>
@@ -433,7 +436,7 @@
     <string name="lbl_author_type_cover_artist">Deseño de cuberta</string>
     <string name="lbl_author_type_inking">Tinta</string>
     <string name="lbl_author_type_cover_colorist">Colorista da cuberta</string>
-    <string name="option_moving_covers_from_x_to_y">Mover todas as cubertas de “%1$s” a “%2$s”</string>
+    <string name="option_moving_covers_from_x_to_y">Mover todas as cubertas de «%1$s» a «%2$s»</string>
     <string name="option_book_sync_list_with_details">Sincronizar/posicionar a lista</string>
     <string name="option_search_books_on">Buscar en…</string>
     <string name="option_isbn_strict">ISBN estrito</string>
@@ -449,7 +452,7 @@
     <string name="option_download_ebook_format">Descargar eBook (%1$s)</string>
     <string name="confirm_continue">Queres continuar?</string>
     <string name="confirm_unsaved_edits">Hai mudanzas sen gardar, se saes agora perderanse.</string>
-    <string name="confirm_remove_toc_entry">Eliminar o título “%1$s” de %2$s deste libro?</string>
+    <string name="confirm_remove_toc_entry">Eliminar o título «%1$s» de %2$s deste libro?</string>
     <string name="confirm_scope_for_delete">Excluír o título «%1$s» de %2$s\n\nComo queres aplicar este cambio?\nNota: A escolla «%3$s» non se pode desfacer!</string>
     <string name="option_enable_sync_options">Activar opcións de sincronización</string>
     <string name="confirm_delete_publisher_from_x_books">Excluír a editorial «%1$s»?\n\nVaise borrar de %2$s. Os libros en si non se eliminarán. Considera cambiar o nome polo de outra editorial para conservar estes datos.</string>
@@ -692,7 +695,7 @@
     <string name="pt_allow_metered_network_data">Permitir o uso de datos móbiles</string>
     <string name="ps_manage_fields">Os campos escollidos estarán visibles nas pantallas engadir/editar libros. Os que non, agóchanse.</string>
     <string name="ps_show_titles_reordered_off">Mostrar como se indica,\npor exemplo: «O Señor dos Aneis»</string>
-    <string name="ps_show_titles_reordered_on">Move o artigo no inicio dun título cara o final,\npor exemplo: \"Señor dos Aneis, O\"</string>
+    <string name="ps_show_titles_reordered_on">Move o artigo no inicio dun título cara o final,\npor exemplo: «Señor dos Aneis, O»</string>
     <string name="pt_allow_editing_external_id">Permitir a edición do identificador do libro no sitio web</string>
     <string name="ps_cover_undo_enabled">A edición ou substitución de cubertas pode desfacerse (utiliza máis almacenamento)</string>
     <string name="pt_thumbnails_cache_resized">As imaxes redimensionadas almacénanse na caché</string>
@@ -839,7 +842,7 @@
     <string name="X_info_not_authorized">Non autorizado</string>
     <string name="X_info_site_authorization_successful">Autorización concedida en %1$s</string>
     <string name="X_info_tap_on_image_to_select">Toca na imaxe ampliada para escollela.</string>
-    <string name="X_tip_update_fields_from_internet">As ligazóns a sitios externos só se procesan se hai contacto real co sitio. En consecuencia, o menú «Ver en...» só mostrará o que estea dispoñible.</string>
+    <string name="X_tip_update_fields_from_internet">As ligazóns a sitios externos só se procesan se hai contacto real co sitio. En consecuencia, o menú «Ver en…» só mostrará o que estea dispoñible.</string>
     <string name="lbl_website_address">Enderezo do sitio (URL)</string>
     <string name="lbl_certificate_issued_by">Emitido por: %1$s</string>
     <string name="pt_bob_show_group_book_count">Amosar o número de libros en cada grupo.</string>
