@@ -114,15 +114,16 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 ## Thanks
 
-- Slovak translation + major improvements to the Czech translation
-  by [Milan](https://hosted.weblate.org/user/Milan/)
+- Slovak translation + major improvements to the Czech
+  translation: [Milan](https://hosted.weblate.org/user/Milan/)
 - Tamil translation: [தமிழ்நேரம்](https://hosted.weblate.org/user/TamilNeram/)
 - Portuguese(Brazil) translation: [Suburbanno](https://github.com/Suburbanno)
 - Chinese (Simplified) translation: [CloneWith](https://github.com/CloneWith)
   and [evoke322](https://github.com/evoke322)
 - Vietnamese translation: [ngocanhtve](https://github.com/ngocanhtve).
 - Portuguese translation: [maverick74](https://github.com/maverick74).
-- All other volunteers on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/).
+- All other volunteers
+  on [Weblate](https://hosted.weblate.org/user/?q=%20contributes:nevertoomanybooks).
 
 In August 2018, this project was forked from:
 _Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn._
