@@ -18,7 +18,8 @@ NEW:
 
 FIXES:
 
-- internal optimizations for memory handling and in loading images
+- internal optimizations for memory handling and loading images; which should result in faster
+  scrolling
 
 REMOVED:
 
