@@ -92,10 +92,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *                     @NonNull
  *                     public static Builder init()
  *                 }
- *                 Create the {@link Builder} using it a unique string-id:
+ *                 Create the {@link Builder} using a unique string-id:
  *                 must be all lowercase, no-spaces; this becomes the {@link #key} field.
  *                 This key will be used in preferences, database settings,...
- *                 See existing engines for examples on the other parameters.
+ *                 See existing engines for examples of the other parameters.
  *              </li>
  *              <li>If needed, add a preference fragment for the user to configure the engine.
  *                  The class MUST be annotated with {@code @Keep}.
