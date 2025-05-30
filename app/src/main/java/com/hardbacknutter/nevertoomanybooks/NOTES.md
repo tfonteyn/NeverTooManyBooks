@@ -1,25 +1,12 @@
 Draft notes for next version:
 
-### 7.4.0
+### 7.4.1
 
 NEW:
 
-- new UI languages:
-    - Hungarian, kindly contributed
-      by [boldizsar-nagy](https://hosted.weblate.org/user/boldizsar-nagy/)
-    - Galician, kindly contributed
-      by [Vaicheboa O'Loubam](https://hosted.weblate.org/user/vaicheboa/)
-- Author metadata: now collecting birth/death dates and a picture;
-  these are shown on the "All works by this author" screen.
-- Bedetheque: find the correct edition when searching by ISBN for older comics.
-- "Update books": the description field can now append text from multiple sites.
-- improved scrollbar accessibility + added tap-to-jump functionality
-- Android 16 tested/supported.
 
 FIXES:
 
-- internal optimizations for memory handling and loading images; which should result in faster
-  scrolling
 
 REMOVED:
 

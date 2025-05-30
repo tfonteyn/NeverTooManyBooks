@@ -1,0 +1,11 @@
+NEW:
+- new UI languages:
+    - Hungarian, [boldizsar-nagy](https://hosted.weblate.org/user/boldizsar-nagy/)
+    - Galician, [Vaicheboa O'Loubam](https://hosted.weblate.org/user/vaicheboa/)
+- Author metadata: now collecting birth/death dates and a picture; shown on the "All works by this author" screen.
+- Bedetheque: find the correct edition for older comics.
+- "Update books": the description field can now append text.
+- improved scrollbar accessibility + added tap-to-jump
+
+FIXES:
+- performance

@@ -27,9 +27,9 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 If you're migrating from the app "Book Catalogue", please
 see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
 
-### Download the latest release: 7.3.2
+### Download the latest release: 7.4.0
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.3.2/NeverTooManyBooks-7.3.2.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.4.0/NeverTooManyBooks-7.4.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
@@ -41,9 +41,8 @@ df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
 ## User Interface languages:
 
 - Chinese Simplified(CN), Chinese Traditional(TW),
-  Czech, Dutch, English, French, German, Italian,
-  Portuguese, Portuguese(Brazil),
-  Slovak, Spanish, Tamil, Turkish, Vietnamese.
+  Czech, Dutch, English, French, Galician, German, Hungarian, Italian,
+  Portuguese, Portuguese(Brazil), Slovak, Spanish, Tamil, Turkish, Vietnamese.
 - Mostly machine translated, but being improved: Polish, Russian.
 - Machine translated, no guarantees for quality: Greek.
 
@@ -93,7 +92,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 ## Device support:
 
 - Requires minimal Android 8.0 (API 26)
-- Supported/tested up to Android 15 (API 35).
+- Supported/tested up to Android 16 (API 36).
 
 ## Android Permissions:
 
@@ -114,6 +113,8 @@ Please see the [CHANGELOG](/CHANGELOG.md)
 
 ## Thanks
 
+- Hungarian translation: [boldizsar-nagy](https://hosted.weblate.org/user/boldizsar-nagy/)
+- Galician translation: [Vaicheboa O'Loubam](https://hosted.weblate.org/user/vaicheboa/)
 - Slovak translation + major improvements to the Czech
   translation: [Milan](https://hosted.weblate.org/user/Milan/)
 - Tamil translation: [தமிழ்நேரம்](https://hosted.weblate.org/user/TamilNeram/)
