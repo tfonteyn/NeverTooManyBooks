@@ -42,21 +42,29 @@ import com.hardbacknutter.util.logger.BuildConfig;
 public final class ASyncExecutor {
 
     /**
-     * Used for submitting tasks which will return a {@code Future} result.
+     * Dedicated {@link ExecutorService} for accessing the network.
+     * <p>
+     * <strong>Note:</strong> this executor uses an unbounded
+     * <strong>FIFO</strong> {@link BlockingQueue}.
      */
-    public static final ExecutorService SERVICE;
+    public static final ExecutorService NETWORK;
 
     /**
-     * An {@link Executor} that can be used to execute tasks in parallel.
+     * General purpose {@link ExecutorService} that can be used to execute tasks in parallel.
      * This is also where the serialized tasks run.
      * <p>
-     * <strong>Note:</strong> this executor uses an unbounded {@link BlockingQueue}.
+     * <strong>Note:</strong> this executor uses a bounded
+     * <strong>FIFO</strong> {@link BlockingQueue}.
+     * <p>
+     * Dev. note: it's configured identical to the deprecated {@code android.os.ASyncTask}
+     * including a backup-executor for rejections.
      */
     @NonNull
-    public static final Executor MAIN;
+    public static final ExecutorService MAIN;
+
     /**
-     * An {@link Executor} that executes tasks one at a time in serial
-     * order.  This serialization is global to a particular process.
+     * An {@link Executor} that executes tasks one at a time in serial order.
+     * This serialization is global to the app.
      * Actual execution is done on {@link #MAIN}.
      */
     @SuppressWarnings("WeakerAccess")
@@ -64,26 +72,16 @@ public final class ASyncExecutor {
 
     /** Log tag. */
     private static final String TAG = "ASyncExecutor";
-    // Some docs and the original values copied from the android.os.ASyncTask code
-    //
-    // We keep only a single pool thread around all the time.
-    // We let the pool grow to a fairly large number of threads if necessary,
-    // but let them time out quickly. In the event that we run out of threads,
-    // we fall back to a simple unbounded-queue executor.
-    // This combination ensures that:
-    // 1. We normally keep few threads (1) around.
-    // 2. We queue only after launching a significantly larger, but still bounded, set of threads.
-    // 3. We keep the total number of threads bounded, but still allow an unbounded set
-    //    of tasks to be queued.
+
+    // These values copied from the android.os.ASyncTask code
     private static final int CORE_POOL_SIZE = 1;
     private static final int MAXIMUM_POOL_SIZE = 20;
     private static final int KEEP_ALIVE_SECONDS = 3;
-
     private static final int BACKUP_POOL_SIZE = 5;
 
-    private static final ThreadFactory THREAD_FACTORY;
-
-    /** Used for rejected executions. Initialization protected by sRunOnSerialPolicy lock. */
+    /**
+     * Used for rejected executions from the {@link #MAIN} service.
+     */
     private static ThreadPoolExecutor sBackupExecutor;
     private static final RejectedExecutionHandler REJECTED_EXECUTION_HANDLER =
             new RejectedExecutionHandler() {
@@ -99,7 +97,8 @@ public final class ASyncExecutor {
                             sBackupExecutor = new ThreadPoolExecutor(
                                     BACKUP_POOL_SIZE, BACKUP_POOL_SIZE,
                                     KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
-                                    new LinkedBlockingQueue<>(), THREAD_FACTORY);
+                                    new LinkedBlockingQueue<>(),
+                                    createThreadFactory("BACKUP_EXECUTOR"));
                             sBackupExecutor.allowCoreThreadTimeOut(true);
                         }
                     }
@@ -108,21 +107,17 @@ public final class ASyncExecutor {
             };
 
     static {
-        THREAD_FACTORY = createThreadFactory("CustomTask");
-
         final ThreadPoolExecutor main = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
-                new SynchronousQueue<>(), THREAD_FACTORY);
+                new SynchronousQueue<>(),
+                createThreadFactory("MAIN"));
         main.setRejectedExecutionHandler(REJECTED_EXECUTION_HANDLER);
         MAIN = main;
 
         SERIAL = new SerialExecutor(MAIN);
 
-        // core-pool-size: 0
-        // max unlimited
-        // keep-alive: 60 seconds
-        SERVICE = Executors.newCachedThreadPool(THREAD_FACTORY);
+        NETWORK = Executors.newCachedThreadPool(createThreadFactory("NETWORK"));
     }
 
     private ASyncExecutor() {
@@ -148,18 +143,17 @@ public final class ASyncExecutor {
     }
 
     /**
-     * Create a <strong>new</strong> Executor.
-     * This allows to run specific tasks that we don't want to submit (and wait on) the
-     * shared one.
+     * Create a <strong>new</strong> ExecutorService.
+     * This allows to run specific tasks separate from any shared/preconfigured executor.
      * <p>
-     * <strong>Note:</strong> this executor uses a {@link BlockingQueue}.
+     * <strong>Note:</strong> this ExecutorService uses a bound {@link BlockingQueue}.
      *
      * @param threadName to use for the ThreadFactory base thread names
      *
-     * @return a new Executor
+     * @return a new ExecutorService
      */
     @NonNull
-    public static Executor create(@NonNull final String threadName) {
+    public static ExecutorService create(@NonNull final String threadName) {
         final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,

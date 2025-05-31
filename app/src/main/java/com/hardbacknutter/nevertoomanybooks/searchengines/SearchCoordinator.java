@@ -711,7 +711,7 @@ public class SearchCoordinator
 
         final SearchTask task = new SearchTask(context, TASK_ID.getAndIncrement(),
                                                searchEngine, searchTaskListener);
-        task.setExecutor(ASyncExecutor.MAIN);
+        task.setExecutor(ASyncExecutor.NETWORK);
 
         task.setFetchCovers(fetchCovers);
 

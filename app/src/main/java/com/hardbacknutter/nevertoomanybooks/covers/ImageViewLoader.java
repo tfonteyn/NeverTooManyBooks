@@ -26,6 +26,7 @@ import android.os.Process;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +37,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -52,7 +53,7 @@ public class ImageViewLoader {
     @NonNull
     private final Handler handler;
     @NonNull
-    private final Executor executor;
+    private final ExecutorService executor;
 
     @Px
     private final int width;
@@ -78,8 +79,8 @@ public class ImageViewLoader {
      * @param width       Desired/Maximum width for a cover in pixels
      * @param height      Desired/Maximum height for a cover in pixels
      */
-    @UiThread
-    public ImageViewLoader(@NonNull final Executor executor,
+    @AnyThread
+    public ImageViewLoader(@NonNull final ExecutorService executor,
                            @NonNull final ImageView.ScaleType scaleType,
                            @NonNull final ApplySizing applySizing,
                            @Px final int width,
@@ -191,7 +192,6 @@ public class ImageViewLoader {
         final WeakReference<ImageView> viewWeakReference = new WeakReference<>(imageView);
 
         executor.execute(() -> {
-            Thread.currentThread().setName(TAG);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the loading/scaling as background work.
             final Optional<Bitmap> oBitmap = scalableImageDecoder.setSource(file).transform();

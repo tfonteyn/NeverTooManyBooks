@@ -111,7 +111,7 @@ public class FutureHttpGetBase<R>
                    SocketTimeoutException,
                    IOException {
         try {
-            futureHttp = ASyncExecutor.SERVICE.submit(() -> {
+            futureHttp = ASyncExecutor.NETWORK.submit(() -> {
                 HttpURLConnection request = null;
                 try {
                     final URL url = new URL(urlStr);

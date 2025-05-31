@@ -45,7 +45,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -488,12 +488,13 @@ class CoverBrowserDelegate
         GalleryAdapter(@NonNull final Context context,
                        @NonNull final List<AltEdition> items,
                        @NonNull final PositionHandler positionHandler,
-                       @NonNull final Executor executor) {
+                       @NonNull final ExecutorService executor) {
             inflater = LayoutInflater.from(context);
             this.items = items;
             this.positionHandler = positionHandler;
-            final Resources res = context.getResources();
-            maxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
+
+            maxWidth = context.getResources().getDimensionPixelSize(
+                    R.dimen.cover_browser_gallery_width);
             maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
 
             imageLoader = new ImageViewLoader(executor,

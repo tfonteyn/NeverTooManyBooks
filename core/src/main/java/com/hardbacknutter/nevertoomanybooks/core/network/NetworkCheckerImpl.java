@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -175,15 +175,15 @@ public class NetworkCheckerImpl
         //FIXME: there are issues with this Socket connect call lately (2022-09)
         // not sure yet if it's related to the emulator or to Android 12 (13?)
         // For now, pretend that if the DNS lookup went ok... it's all ok...
-//        final Socket sock = new Socket();
-//        sock.connect(new InetSocketAddress(inetAddress, port), timeoutInMs);
-//        sock.close();
+        //        final Socket sock = new Socket();
+        //        sock.connect(new InetSocketAddress(inetAddress, port), timeoutInMs);
+        //        sock.close();
     }
 
     /**
      * Workaround for {@link InetAddress#getByName(String)} which does not support a timeout.
      */
-    private static class DNSService {
+    private static final class DNSService {
 
         @NonNull
         InetAddress lookup(@NonNull final String host,
@@ -195,7 +195,7 @@ public class NetworkCheckerImpl
 
             Future<InetAddress> future = null;
             try {
-                future = ASyncExecutor.SERVICE.submit(() -> InetAddress.getByName(host));
+                future = ASyncExecutor.NETWORK.submit(() -> InetAddress.getByName(host));
 
                 final InetAddress inetAddress = future.get(timeoutMs, TimeUnit.MILLISECONDS);
                 // sanity check

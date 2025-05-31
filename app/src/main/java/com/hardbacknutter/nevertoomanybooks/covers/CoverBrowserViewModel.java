@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -60,7 +60,7 @@ public class CoverBrowserViewModel
     /** Log tag. */
     private static final String TAG = "CoverBrowserViewModel";
 
-    /** int 0..1 */
+    /** int 0..1. */
     static final String BKEY_FILE_INDEX = TAG + ":cIdx";
     /** Progressbar for the gallery. */
     private final MutableLiveData<Boolean> showGalleryProgress = new MutableLiveData<>();
@@ -70,14 +70,24 @@ public class CoverBrowserViewModel
     private final MutableLiveData<ImageFileInfo> selectedImage = new MutableLiveData<>();
     /** Unique identifier generator for all tasks. */
     private final AtomicInteger taskIdCounter = new AtomicInteger();
-    /** Executor for displaying gallery images. */
-    private final Executor galleryDisplayExecutor = ASyncExecutor.create("gallery/d");
-    /** Executor for fetching gallery images. */
-    private final Executor galleryNetworkExecutor = ASyncExecutor.create("gallery/n");
+
+    /**
+     * Executor for displaying gallery images.
+     * We want a separate executor from the 'preview' one.
+     */
+    private final ExecutorService galleryDisplayExecutor = ASyncExecutor.create("gallery/d");
+    /**
+     * Executor for fetching gallery images.
+     * We want a separate executor from the 'preview' one.
+     */
+    private final ExecutorService galleryNetworkExecutor = ASyncExecutor.create("gallery/n");
+
     /** Executor for displaying preview images. */
-    private final Executor previewDisplayExecutor = ASyncExecutor.MAIN;
+    private final ExecutorService previewDisplayExecutor = ASyncExecutor.MAIN;
+
     /** Executor for fetching preview images. */
-    private final Executor previewNetworkExecutor = ASyncExecutor.MAIN;
+    private final ExecutorService previewNetworkExecutor = ASyncExecutor.NETWORK;
+
     /**
      * Holder for all active tasks, so we can cancel them if needed.
      * key: isbn.
@@ -88,6 +98,9 @@ public class CoverBrowserViewModel
     /** List of alternative editions. The base list for the gallery adapter. */
     @NonNull
     private final List<AltEdition> editions = new ArrayList<>();
+
+    /** Indicates cancel has been requested (user dismissed the dialog). */
+    private final AtomicBoolean cancelled = new AtomicBoolean();
 
     /** SelectedImage. */
     @Nullable
@@ -130,9 +143,6 @@ public class CoverBrowserViewModel
             }
         }
     };
-    /** Indicates cancel has been requested (user dismissed the dialog). */
-    private final AtomicBoolean cancelled = new AtomicBoolean();
-
     /**
      * The selected (i.e. displayed in the preview) file.
      * This is the absolute/resolved path for the file
@@ -227,7 +237,7 @@ public class CoverBrowserViewModel
      * @return executor
      */
     @NonNull
-    Executor getPreviewDisplayExecutor() {
+    ExecutorService getPreviewDisplayExecutor() {
         return previewDisplayExecutor;
     }
 
@@ -237,7 +247,7 @@ public class CoverBrowserViewModel
      * @return executor
      */
     @NonNull
-    Executor getGalleryDisplayExecutor() {
+    ExecutorService getGalleryDisplayExecutor() {
         return galleryDisplayExecutor;
     }
 
