@@ -1,3 +1,11 @@
+### 7.4.1
+
+FIXES:
+
+- fix duplicate images during backup
+
+---
+
 ### 7.4.0
 
 NEW:
