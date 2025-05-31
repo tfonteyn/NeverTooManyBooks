@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE resources [
+    <!ENTITY APP_NAME "NeverTooManyBooks">
+    ]>
+<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
 <resources>
-    <string name="option_import">Ievietot</string>
     <string name="action_crop">Apgriezt</string>
     <string name="lbl_publisher">Izdevējs</string>
     <string name="list_and">un</string>
@@ -27,11 +50,8 @@
     <string name="option_image_rotate_cw">Pulksteņrādītāja virzienā</string>
     <string name="btn_show_list">Rādīt sarakstu</string>
     <string name="action_delete">Dzēst</string>
-    <string name="action_add">Pievienot</string>
     <string name="action_search">Meklēt</string>
     <string name="X_action_move">Pārvietot</string>
-    <string name="action_export">Izgūt</string>
-    <string name="lbl_import">Ievietot</string>
     <string name="lbl_storage_settings">Krātuve</string>
     <string name="lbl_bookshelves">Grāmatu plaukti</string>
     <string name="lbl_bookshelf">Grāmatu plaukts</string>
@@ -45,13 +65,11 @@
     <string name="lbl_language">Valoda</string>
     <string name="lbl_color">Krāsa</string>
     <string name="lbl_genre">Žanrs</string>
-    <string name="lbl_about">Par lietotni</string>
     <string name="X_action_update">Atjaunināt</string>
     <string name="X_option_bob_filter_read_no">Nelasītās grāmatas</string>
     <string name="lbl_book">Grāmata</string>
     <string name="option_image_rotate_ccw">Pretēji pulksteņrādītāja virzienam</string>
     <string name="lbl_author_type_translator">Tulkotājs</string>
-    <string name="action_import">Ievietot</string>
     <string name="action_create">Izveidot</string>
     <string name="lbl_importing">Ievieto…</string>
     <string name="lbl_author">Autors</string>
@@ -84,4 +102,94 @@
     <string name="book_color_support_color">Divkrāsains, divtoņu</string>
     <string name="option_image_restore">Atjaunot iepriekšējo attēlu</string>
     <string name="option_level_collapse">Sakļaut visu</string>
+
+    <string name="X_action_clear_credentials">Notīrīt akreditācijas datus</string>
+    <string name="X_action_execute">Izpildīt</string>
+    <string name="X_action_go">Doties uz</string>
+    <string name="X_action_next">Tālāk</string>
+    <string name="X_action_previous">Iepr.</string>
+    <string name="X_action_reset">Atiestatīt</string>
+    <string name="X_action_send">Sūtīt</string>
+    <string name="X_action_try_again">Mēģināt vēlreiz</string>
+    <string name="X_lbl_general">Vispārīgi</string>
+    <string name="X_lbl_system">(Sistēma)</string>
+    <string name="X_whichImageCaptureApplication">Attēla uzņemšana, izmantojot lietotni</string>
+    <string name="X_whichSendToApplication">Sūtīšana, izmantojot…</string>
+    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="a_space_b">%1$s %2$s</string>
+    <string name="action_add">Pievienot</string>
+    <string name="action_apply">Lietot</string>
+    <string name="action_clear">Notīrīt</string>
+    <string name="action_discard">Atmest</string>
+    <string name="action_done">Gatavs</string>
+    <string name="action_edit">Rediģēt</string>
+    <string name="action_email">E-pasts</string>
+    <string name="action_export">Eksportēt</string>
+    <string name="action_help">Palīdzība</string>
+    <string name="action_import">Importēt</string>
+    <string name="action_learn_more">Uzzināt vairāk</string>
+    <string name="action_not_now">Ne tagad</string>
+    <string name="action_report">Pārskats</string>
+    <string name="action_reset_to_default">Atiestatīt noklusējuma vērtības</string>
+    <string name="action_retry">Mēģināt vēlreiz</string>
+    <string name="action_select">Atlasīt</string>
+    <string name="action_show_all">Rādīt visu</string>
+    <string name="action_show_options">Opcijas</string>
+    <string name="action_skip">Izlaist</string>
+    <string name="action_undo">Atsaukt</string>
+    <string name="book_format_other">Citi</string>
+    <string name="cancel">Atcelt</string>
+    <string name="cancelled">Atcelts</string>
+    <string name="dialog_alert_title">Uzmanību!</string>
+    <string name="disabled">Atspējots</string>
+    <string name="error_certificate_invalid">Sertifikāts nav derīgs vai nav pieejams.</string>
+    <string name="error_import_failed">Neveiksmīga importēšana</string>
+    <string name="error_insufficient_storage">Atmiņā nepietiek vietas.</string>
+    <string name="httpError">Radās tīkla kļūda.</string>
+    <string name="httpErrorTimeout">Savienojumam ar serveri radās noildze.</string>
+    <string name="info_import_complete">Importēš. pabeigta.</string>
+    <string name="lbl_about">Par</string>
+    <string name="lbl_archive_format">Formatēt</string>
+    <string name="lbl_available">Pieejama</string>
+    <string name="lbl_backup">Dublēšana</string>
+    <string name="lbl_condition_dust_cover_none">Nav darbību</string>
+    <string name="lbl_credentials">Lietotāja akreditācijas dati</string>
+    <string name="lbl_defaults">Noklusējuma iestatījumi</string>
+    <string name="lbl_description">Apraksts</string>
+    <string name="lbl_filter">Filtrs</string>
+    <string name="lbl_format">Formatēt</string>
+    <string name="lbl_import">Importēt</string>
+    <string name="lbl_location">Atrašanās vieta</string>
+    <string name="lbl_moving_data">Notiek datu pārvietošana</string>
+    <string name="lbl_name">Nosaukums</string>
+    <string name="lbl_system_default">(Sistēmas noklusējums)</string>
+    <string name="lbl_tab_details">Detalizēta informācija</string>
+    <string name="lbl_tab_notes">Piezīmes</string>
+    <string name="lbl_title">Nosaukums</string>
+    <string name="lbl_unread">Nelasīti</string>
+    <string name="name_colon_value">%1$s: %2$s</string>
+    <string name="no">Nē</string>
+    <string name="none">Nav darbību</string>
+    <string name="ok">Labi</string>
+    <string name="option_barcode_scan_mode_manual">Rokasgrāmata</string>
+    <string name="option_bug_report">Kļūdu ziņojums</string>
+    <string name="option_import">Importēt</string>
+    <string name="option_select_none">Atcelt visu atlasi</string>
+    <string name="password">Parole</string>
+    <string name="pc_advanced_options">Papildu</string>
+    <string name="pc_camera">Kamera</string>
+    <string name="pe_camera_other">Citi</string>
+    <string name="pe_ui_theme_from_device">Ierīces motīvs</string>
+    <string name="pt_bob_font_size">Fonta lielums</string>
+    <string name="pt_layout">Izkārtojums</string>
+    <string name="pt_ui_language">Valoda</string>
+    <string name="pt_ui_system_locale">Sistēmas valoda</string>
+    <string name="size_medium">Vidējs</string>
+    <string name="unknown">Nezināma</string>
+    <string name="username">Lietotājvārds</string>
+    <string name="whichEditApplication">Rediģēt, izmantojot</string>
+    <string name="whichSendApplication">Kopīgot</string>
+    <string name="whichViewApplication">Atvērt, izmantojot</string>
+    <string name="yes">Jā</string>
+
 </resources>
