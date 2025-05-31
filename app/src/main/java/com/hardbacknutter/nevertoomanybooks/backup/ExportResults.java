@@ -29,7 +29,9 @@ import androidx.annotation.VisibleForTesting;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -62,9 +64,10 @@ public class ExportResults
     private final List<Long> booksExported = new ArrayList<>();
     /** filenames of covers exported. */
     private final List<String> coversExported = new ArrayList<>();
-    /** Authors, ... */
-    private final List<String> otherImages = new ArrayList<>();
-
+    /**
+     * Authors, ... <strong>MUST</strong> be a {@code Set} to eliminate duplicates.
+     */
+    private final Set<String> otherImages = new HashSet<>();
     /** #styles we exported. */
     public int styles;
     /** #preferences we exported. */
@@ -102,7 +105,9 @@ public class ExportResults
     private ExportResults(@NonNull final Parcel in) {
         in.readList(booksExported, getClass().getClassLoader());
         in.readStringList(coversExported);
-        in.readStringList(otherImages);
+        final List<String> tmp = new ArrayList<>();
+        in.readStringList(tmp);
+        otherImages.addAll(tmp);
 
         bookshelves = in.readInt();
         calibreLibraries = in.readInt();
@@ -282,7 +287,7 @@ public class ExportResults
                               final int flags) {
         dest.writeList(booksExported);
         dest.writeStringList(coversExported);
-        dest.writeStringList(otherImages);
+        dest.writeStringList(new ArrayList<>(otherImages));
 
         dest.writeInt(bookshelves);
         dest.writeInt(calibreLibraries);
