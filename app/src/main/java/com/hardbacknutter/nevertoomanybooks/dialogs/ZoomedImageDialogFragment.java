@@ -30,7 +30,6 @@ import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.window.layout.WindowMetricsCalculator;
@@ -53,8 +52,6 @@ public class ZoomedImageDialogFragment
     /** Log tag. */
     private static final String TAG = "ZoomedImageDialogFrag";
     private static final String BKEY_IMAGE_PATH = TAG + ":path";
-    private static final int INSETS_TYPE_MASK = WindowInsetsCompat.Type.statusBars()
-                                                | WindowInsetsCompat.Type.displayCutout();
 
     /** File to display. */
     private File imageFile;
