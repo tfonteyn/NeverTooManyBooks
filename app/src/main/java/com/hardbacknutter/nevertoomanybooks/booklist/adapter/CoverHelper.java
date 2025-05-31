@@ -54,7 +54,6 @@ class CoverHelper {
     @NonNull
     private final CoverStorage coverStorage;
 
-    /** each holder has its own loader - the more cores the cpu has, the faster we load. */
     @NonNull
     private final ImageViewLoader imageLoader;
 
