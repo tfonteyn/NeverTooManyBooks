@@ -27,10 +27,10 @@ import java.net.HttpURLConnection;
 public final class HttpConstants {
 
     /**
-     * RELEASE: BROWSER_USER_AGENT: Last updated: 2025-05-18.
+     * RELEASE: BROWSER_USER_AGENT: Last updated: 2025-05-31.
      */
     public static final String BROWSER_USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0";
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0";
 
     /**
      * HTTP Request Header.
