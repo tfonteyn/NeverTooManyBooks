@@ -90,7 +90,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * Handles displaying and zooming for images on the details and edit screens.
  * For BoB displaying,
- * see {@code com.hardbacknutter.nevertoomanybooks.booklist.adapter.CoverListHandler}
+ * see {@code com.hardbacknutter.nevertoomanybooks.booklist.adapter.CoverHelper}
  * <p>
  * Dev. Note: a bit nasty: we check the type of the ImageOwner to be a Book or not...
  * we really should split this class...
@@ -176,7 +176,7 @@ public final class ImageHandler {
 
         imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
                                           ImageView.ScaleType.FIT_START,
-                                          ImageViewLoader.Sizing.Constrained,
+                                          ImageViewLoader.ApplySizing.Constrained,
                                           builder.maxWidth, builder.maxHeight);
 
         if (imageSupplier.get() instanceof Book) {

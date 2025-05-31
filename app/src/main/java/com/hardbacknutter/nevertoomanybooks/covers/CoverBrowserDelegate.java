@@ -205,7 +205,7 @@ class CoverBrowserDelegate
                                      imageFileInfo -> setSelectedImage(imageFileInfo, false));
         previewLoader = new ImageViewLoader(vm.getPreviewDisplayExecutor(),
                                             ImageView.ScaleType.FIT_START,
-                                            ImageViewLoader.Sizing.Constrained,
+                                            ImageViewLoader.ApplySizing.Constrained,
                                             previewMaxWidth, previewMaxHeight);
 
         // When the preview image is clicked, send the fileSpec back to the caller and terminate.
@@ -498,7 +498,7 @@ class CoverBrowserDelegate
 
             imageLoader = new ImageViewLoader(executor,
                                               ImageView.ScaleType.FIT_START,
-                                              ImageViewLoader.Sizing.Constrained,
+                                              ImageViewLoader.ApplySizing.Constrained,
                                               maxWidth, maxHeight);
         }
 

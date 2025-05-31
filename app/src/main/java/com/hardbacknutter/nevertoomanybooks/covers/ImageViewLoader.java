@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * Load a Bitmap from a file, and populate the view.
+ * Load & scale a Bitmap from a file; and populate the view.
  */
 public class ImageViewLoader {
 
@@ -62,25 +62,26 @@ public class ImageViewLoader {
     @NonNull
     private final ImageView.ScaleType scaleType;
 
-    @Nullable
-    private final Sizing sizing;
+    @NonNull
+    private final ApplySizing applySizing;
+    @NonNull
     private final Transformation scalableImageDecoder;
 
     /**
      * Constructor.
      *
-     * @param executor  to use
-     * @param scaleType to use for images
-     *                  (ignored for placeholders)
-     * @param sizing    (optional) how to adjust the size, see {@link Sizing}
-     *                  (ignored for placeholders)
-     * @param width     Desired/Maximum width for a cover in pixels
-     * @param height    Desired/Maximum height for a cover in pixels
+     * @param executor    to use
+     * @param scaleType   to use for images
+     *                    (ignored for placeholders)
+     * @param applySizing how to adjust the size, see {@link ApplySizing}
+     *                    (ignored for placeholders)
+     * @param width       Desired/Maximum width for a cover in pixels
+     * @param height      Desired/Maximum height for a cover in pixels
      */
     @UiThread
     public ImageViewLoader(@NonNull final Executor executor,
                            @NonNull final ImageView.ScaleType scaleType,
-                           @Nullable final Sizing sizing,
+                           @NonNull final ApplySizing applySizing,
                            @Px final int width,
                            @Px final int height) {
 
@@ -89,7 +90,7 @@ public class ImageViewLoader {
         this.executor = executor;
 
         this.scaleType = scaleType;
-        this.sizing = sizing;
+        this.applySizing = applySizing;
         this.width = width;
         this.height = height;
 
@@ -135,32 +136,33 @@ public class ImageViewLoader {
     @UiThread
     public void fromBitmap(@NonNull final ImageView imageView,
                            @NonNull final Bitmap bitmap) {
-        if (sizing != null) {
-            switch (sizing) {
-                case Constrained: {
-                    final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-                    if (bitmap.getWidth() < bitmap.getHeight()) {
-                        // image is portrait; limit the height
-                        lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                        lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
-                    } else {
-                        // image is landscape; limit the width
-                        lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
-                        lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    }
-                    imageView.setLayoutParams(lp);
-                    break;
+        switch (applySizing) {
+            case Constrained: {
+                final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+                if (bitmap.getWidth() < bitmap.getHeight()) {
+                    // image is portrait; limit the height
+                    lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
+                } else {
+                    // image is landscape; limit the width
+                    lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
+                    lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 }
-                case Enforce: {
-                    final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-                    lp.width = width;
-                    lp.height = height;
-                    imageView.setLayoutParams(lp);
-                    break;
-                }
-                default:
-                    throw new IllegalArgumentException(sizing.toString());
+                imageView.setLayoutParams(lp);
+                break;
             }
+            case Enforce: {
+                final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+                lp.width = width;
+                lp.height = height;
+                imageView.setLayoutParams(lp);
+                break;
+            }
+            case None: {
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(applySizing.toString());
         }
 
         // essential, so lets not rely on it having been set in xml
@@ -191,9 +193,10 @@ public class ImageViewLoader {
         executor.execute(() -> {
             Thread.currentThread().setName(TAG);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-            // do the actual background work.
+            // do the loading/scaling as background work.
             final Optional<Bitmap> oBitmap = scalableImageDecoder.setSource(file).transform();
-            // all done; back to the UI thread.
+
+            // back to the UI thread to display the bitmap
             handler.post(() -> {
                 // are we still associated with this view ? (remember: views are recycled)
                 final ImageView view = viewWeakReference.get();
@@ -223,10 +226,12 @@ public class ImageViewLoader {
         });
     }
 
-    public enum Sizing {
+    public enum ApplySizing {
         /** Use constraint settings. */
         Constrained,
         /** Use a fixed width and height. */
-        Enforce
+        Enforce,
+        /** Don't apply any (avoids null-usage). */
+        None
     }
 }
