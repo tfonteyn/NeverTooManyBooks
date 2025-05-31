@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.BooleanParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
@@ -91,11 +92,18 @@ public class DataManager
     private final Bundle rawData;
 
     /**
+     * Constructor.
+     */
+    public DataManager() {
+        this.rawData = ServiceLocator.getInstance().newBundle();
+    }
+
+    /**
      * Constructor. Loads the data <strong>without</strong> type checks.
      *
      * @param rawData to use as-is
      */
-    protected DataManager(@NonNull final Bundle rawData) {
+    public DataManager(@NonNull final Bundle rawData) {
         this.rawData = rawData;
     }
 
@@ -197,7 +205,7 @@ public class DataManager
      *
      * @throws IllegalArgumentException for unsupported types.
      */
-    protected void putAll(@NonNull final Cursor cursor) {
+    public void putAll(@NonNull final Cursor cursor) {
         for (int i = 0; i < cursor.getColumnCount(); i++) {
             final String name = cursor.getColumnName(i);
             switch (cursor.getType(i)) {

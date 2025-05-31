@@ -95,7 +95,7 @@ public class BooklistAdapter
     private Booklist booklist;
     /** The 'list of items'. */
     @Nullable
-    private BooklistCursor rowData;
+    private BooklistCursor booklistCursor;
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
@@ -150,10 +150,10 @@ public class BooklistAdapter
     public void setBooklist(@Nullable final Booklist booklist) {
         if (booklist == null) {
             this.booklist = null;
-            rowData = null;
+            booklistCursor = null;
         } else {
             this.booklist = booklist;
-            rowData = booklist.getNewCursorRow();
+            booklistCursor = booklist.getBooklistCursor();
         }
         notifyDataSetChanged();
     }
@@ -189,11 +189,11 @@ public class BooklistAdapter
     @Nullable
     public DataHolder readDataAt(final int position) {
         //noinspection DataFlowIssue
-        if (!rowData.moveToPosition(position)) {
+        if (!booklistCursor.moveToPosition(position)) {
             // We should never get here... flw
             return null;
         }
-        return rowData;
+        return booklistCursor;
     }
 
     /**
@@ -218,7 +218,7 @@ public class BooklistAdapter
      */
     public void requery(@NonNull final int[] positions) {
         //noinspection DataFlowIssue
-        rowData.reload();
+        booklistCursor.reload();
 
         for (final int pos : positions) {
             notifyItemChanged(pos);
@@ -227,9 +227,9 @@ public class BooklistAdapter
 
     @Override
     public long getItemId(final int position) {
-        if (rowData != null && rowData.moveToPosition(position)) {
+        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
             // return the rowId of the list-table
-            return rowData.getLong(DBKey.PK_ID);
+            return booklistCursor.getLong(DBKey.PK_ID);
         } else {
             return RecyclerView.NO_ID;
         }
@@ -237,7 +237,7 @@ public class BooklistAdapter
 
     @Override
     public int getItemCount() {
-        return rowData != null ? rowData.getCount() : 0;
+        return booklistCursor != null ? booklistCursor.getCount() : 0;
     }
 
     /**
@@ -250,8 +250,8 @@ public class BooklistAdapter
     @Override
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
-        if (rowData != null && rowData.moveToPosition(position)) {
-            return rowData.getInt(DBKey.BL_NODE.GROUP);
+        if (booklistCursor != null && booklistCursor.moveToPosition(position)) {
+            return booklistCursor.getInt(DBKey.BL_NODE.GROUP);
         } else {
             // bogus, should not happen
             return BooklistGroup.BOOK;
@@ -286,7 +286,7 @@ public class BooklistAdapter
         final View itemView = inflater.inflate(layoutId, parent, false);
 
         //noinspection DataFlowIssue
-        final int level = rowData.getInt(DBKey.BL_NODE.LEVEL);
+        final int level = booklistCursor.getInt(DBKey.BL_NODE.LEVEL);
 
         if (groupId != BooklistGroup.BOOK) {
             // set an indentation depending on level (2..)
@@ -368,10 +368,10 @@ public class BooklistAdapter
                                  final int position) {
 
         //noinspection DataFlowIssue
-        rowData.moveToPosition(position);
+        booklistCursor.moveToPosition(position);
 
         //noinspection unchecked
-        ((BindableViewHolder<DataHolder>) holder).onBind(rowData);
+        ((BindableViewHolder<DataHolder>) holder).onBind(booklistCursor);
     }
 
     private void scaleTextViews(@NonNull final View view,
@@ -458,14 +458,14 @@ public class BooklistAdapter
 
         // make sure it's still in range.
         final int clampedPosition = MathUtils.clamp(position, 0, getItemCount() - 1);
-        if (rowData == null || !rowData.moveToPosition(clampedPosition)) {
+        if (booklistCursor == null || !booklistCursor.moveToPosition(clampedPosition)) {
             return null;
         }
 
         try {
             if (level > (style.getGroupCount())) {
                 // it's a book; use the title (no need to take the group.format round-trip).
-                return rowData.getString(DBKey.TITLE);
+                return booklistCursor.getString(DBKey.TITLE);
 
             } else {
                 // it's a group; use the display domain as the text
@@ -473,7 +473,7 @@ public class BooklistAdapter
                 final String key = group.getDisplayDomainExpression()
                                         .getDomain()
                                         .getName();
-                return formatter.format(group.getId(), rowData, key);
+                return formatter.format(group.getId(), booklistCursor, key);
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             // Seen a number of times. No longer reproducible, but paranoia...

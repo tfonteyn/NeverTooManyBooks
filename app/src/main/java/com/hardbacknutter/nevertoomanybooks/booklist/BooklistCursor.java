@@ -25,58 +25,65 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.util.LruCache;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.database.ColumnNotPresentException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 /**
- * A wrapper for a cached collection of cursors.
- * <p>
+ * The glue between the adapter and the OffsetCursor/DataCursor from the {@link Booklist}.
+ * <ul>
+ * <li>{@link #booklist}: the table structure, from which OffsetCursor/DataCursor are produced.</li>
+ * <li>{@link #dataCursorCache}: the cache where the above DataCursors are held.</li>
+ * <li>{@link #currentCursor}: the current active window of rows.</li>
+ * </ul>
  * TODO: https://developer.android.com/topic/libraries/architecture/paging/v3-overview
  */
 public class BooklistCursor
         implements DataHolder {
 
+    /** Number of rows to return in each cursor. */
     public static final String PK_PAGE_SIZE = "booklist.cursor.page.size";
+    /** Multiplier for the {@link DataCursorCache}; multiplies with the pageSize. */
     public static final String PK_LRU_LIST_MULTIPLIER = "booklist.cursor.lru.size";
 
-    /** Number of rows to return in each cursor. */
     public static final int PAGE_SIZE_MIN = 16;
     public static final int PAGE_SIZE_DEFAULT = 32;
     public static final int PAGE_SIZE_MAX = 64;
 
-    /** Multiplier for the {@link CursorCache}; multiplies with the pageSize. */
     public static final int LRU_LIST_MULTIPLIER_MIN = 4;
     public static final int LRU_LIST_MULTIPLIER_DEFAULT = 8;
     public static final int LRU_LIST_MULTIPLIER_MAX = 16;
+
+    /** Cursor position. */
+    private static final int BEFORE_FIRST = -1;
 
     /** Back reference to the builder which produced this cursor. */
     @NonNull
     private final Booklist booklist;
     @NonNull
-    private final CursorCache cursorCache;
+    private final DataCursorCache dataCursorCache;
     private final int pageSize;
     /** The Currently active cursor. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private Cursor currentCursor;
+    private DataCursor currentCursor;
     /** Pseudo-count obtained from the {@link Booklist}. */
     @Nullable
     private Integer pseudoCount;
     /** Absolute position in the list (as opposed to position in the {@link #currentCursor}). */
-    private int absPosition = -1;
-
+    private int absPosition = BEFORE_FIRST;
 
     /**
      * Constructor.
@@ -96,10 +103,11 @@ public class BooklistCursor
                 prefs.getInt(PK_LRU_LIST_MULTIPLIER, LRU_LIST_MULTIPLIER_DEFAULT),
                 LRU_LIST_MULTIPLIER_MIN, LRU_LIST_MULTIPLIER_MAX);
 
-        cursorCache = new CursorCache(lruSize, cursorId -> {
-            // Determine the actual start position offset.
-            final int offset = cursorId * pageSize;
-            return this.booklist.getOffsetCursor(offset, pageSize);
+        dataCursorCache = new DataCursorCache(lruSize, pageNum -> {
+            try (Cursor offsetCursor = this.booklist
+                    .getOffsetCursor(pageNum * pageSize, pageSize)) {
+                return new DataCursor(offsetCursor);
+            }
         });
     }
 
@@ -118,7 +126,7 @@ public class BooklistCursor
     @Override
     @NonNull
     public Set<String> keySet() {
-        return Set.copyOf(Arrays.asList(getCurrentCursor().getColumnNames()));
+        return Set.copyOf(getCurrentCursor().getRow().keySet());
     }
 
     /**
@@ -131,23 +139,18 @@ public class BooklistCursor
      */
     @Override
     public boolean contains(@NonNull final String key) {
-        return getCurrentCursor().getColumnIndex(key) > -1;
+        return getCurrentCursor().getRow().contains(key);
     }
 
     @Override
     @Nullable
     public String getString(@NonNull final String key,
-                            @Nullable final String defValue)
-            throws ColumnNotPresentException {
-        final Cursor cursor = getCurrentCursor();
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
-            throw new ColumnNotPresentException(key);
-        }
-        if (cursor.isNull(col)) {
+                            @Nullable final String defValue) {
+        final DataManager data = getCurrentCursor().getRow();
+        if (!data.contains(key)) {
             return defValue;
         }
-        return cursor.getString(col);
+        return data.getString(key, defValue);
     }
 
     /**
@@ -156,12 +159,9 @@ public class BooklistCursor
      * @param key to get
      *
      * @return the boolean value of the column ({@code null} comes back as false).
-     *
-     * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
-    public boolean getBoolean(@NonNull final String key)
-            throws ColumnNotPresentException {
+    public boolean getBoolean(@NonNull final String key) {
         return getInt(key) == 1;
     }
 
@@ -171,22 +171,14 @@ public class BooklistCursor
      * @param key to get
      *
      * @return the int value of the column ({@code null} comes back as 0)
-     *
-     * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
-    public int getInt(@NonNull final String key)
-            throws ColumnNotPresentException {
-
-        final Cursor cursor = getCurrentCursor();
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
-            throw new ColumnNotPresentException(key);
+    public int getInt(@NonNull final String key) {
+        final DataManager data = getCurrentCursor().getRow();
+        if (!data.contains(key)) {
+            return 0;
         }
-        // if (cursor.isNull(col)) {
-        //     return 0;
-        // }
-        return cursor.getInt(col);
+        return data.getInt(key);
     }
 
     /**
@@ -195,22 +187,14 @@ public class BooklistCursor
      * @param key to get
      *
      * @return the long value of the column ({@code null} comes back as 0)
-     *
-     * @throws ColumnNotPresentException if the column was not present.
      */
     @Override
-    public long getLong(@NonNull final String key)
-            throws ColumnNotPresentException {
-
-        final Cursor cursor = getCurrentCursor();
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
-            throw new ColumnNotPresentException(key);
+    public long getLong(@NonNull final String key) {
+        final DataManager data = getCurrentCursor().getRow();
+        if (!data.contains(key)) {
+            return 0;
         }
-        // if (cursor.isNull(col)) {
-        //     return 0;
-        // }
-        return cursor.getLong(col);
+        return data.getLong(key);
     }
 
     /**
@@ -221,23 +205,17 @@ public class BooklistCursor
      *
      * @return the double value of the column ({@code null} comes back as 0)
      *
-     * @throws ColumnNotPresentException if the column was not present.
-     * @throws NumberFormatException     if the value could not be parsed.
+     * @throws NumberFormatException if the value could not be parsed.
      */
     @Override
     public float getFloat(@NonNull final String key,
                           @NonNull final RealNumberParser parser)
             throws NumberFormatException {
-
-        final Cursor cursor = getCurrentCursor();
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
-            throw new ColumnNotPresentException(key);
+        final DataManager data = getCurrentCursor().getRow();
+        if (!data.contains(key)) {
+            return 0;
         }
-        // if (cursor.isNull(col)) {
-        //     return 0;
-        // }
-        return cursor.getFloat(col);
+        return data.getFloat(key, parser);
     }
 
     /**
@@ -247,43 +225,37 @@ public class BooklistCursor
      *
      * @return the double value of the column ({@code null} comes back as 0)
      *
-     * @throws ColumnNotPresentException if the column was not present.
-     * @throws NumberFormatException     if the value could not be parsed.
+     * @throws NumberFormatException if the value could not be parsed.
      */
     @Override
     public double getDouble(@NonNull final String key,
                             @NonNull final RealNumberParser parser)
             throws NumberFormatException {
-
-        final Cursor cursor = getCurrentCursor();
-        final int col = cursor.getColumnIndex(key);
-        if (col == -1) {
-            throw new ColumnNotPresentException(key);
+        final DataManager data = getCurrentCursor().getRow();
+        if (!data.contains(key)) {
+            return 0;
         }
-        // if (cursor.isNull(col)) {
-        //     return 0;
-        // }
-        return cursor.getDouble(col);
+        return data.getDouble(key, parser);
     }
 
     @NonNull
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key)
-            throws ColumnNotPresentException {
-        throw new ColumnNotPresentException(key);
+            throws UnsupportedOperationException {
+        throw new UnsupportedOperationException(key);
     }
 
     @NonNull
-    private Cursor getCurrentCursor() {
-        synchronized (cursorCache) {
+    private DataCursor getCurrentCursor() {
+        synchronized (dataCursorCache) {
             if (currentCursor == null) {
-                currentCursor = cursorCache.get(absPosition / pageSize);
+                currentCursor = dataCursorCache.get(absPosition / pageSize);
             }
         }
         return currentCursor;
     }
 
     /**
-     * Move to the given absolute Booklist position.
+     * Move to the given <strong>absolute</strong> Booklist position.
      *
      * @param position to move to
      *
@@ -299,7 +271,7 @@ public class BooklistCursor
 
         // Make sure position isn't before the beginning of the cursor
         if (position < 0) {
-            absPosition = -1;
+            absPosition = BEFORE_FIRST;
             return false;
         }
 
@@ -312,7 +284,7 @@ public class BooklistCursor
         if (result) {
             absPosition = position;
         } else {
-            absPosition = -1;
+            absPosition = BEFORE_FIRST;
         }
 
         return result;
@@ -330,8 +302,8 @@ public class BooklistCursor
     }
 
     private boolean onMove(final int newPosition) {
-        synchronized (cursorCache) {
-            currentCursor = cursorCache.get(newPosition / pageSize);
+        synchronized (dataCursorCache) {
+            currentCursor = dataCursorCache.get(newPosition / pageSize);
             return currentCursor.moveToPosition(newPosition % pageSize);
         }
     }
@@ -340,7 +312,7 @@ public class BooklistCursor
      * Close all existing underlying cursors.
      */
     public void close() {
-        cursorCache.evictAll();
+        dataCursorCache.evictAll();
     }
 
     @Override
@@ -351,24 +323,24 @@ public class BooklistCursor
                + ", pos=" + absPosition
                + ", pseudoCount=" + pseudoCount
                + ", pageSize=" + pageSize
-               + ", cursorCache=" + cursorCache
+               + ", dataCursorCache=" + dataCursorCache
                + '}';
     }
 
-    private static class CursorCache
-            extends LruCache<Integer, Cursor> {
-        private static final String TAG = "CursorCache";
+    private static class DataCursorCache
+            extends LruCache<Integer, DataCursor> {
+        private static final String TAG = "DataCursorCache";
         @NonNull
-        private final Function<Integer, Cursor> cursorSupplier;
+        private final Function<Integer, DataCursor> cursorSupplier;
 
-        CursorCache(final int maxSize,
-                    @NonNull final Function<Integer, Cursor> cursorSupplier) {
+        DataCursorCache(final int maxSize,
+                        @NonNull final Function<Integer, DataCursor> cursorSupplier) {
             super(maxSize);
             this.cursorSupplier = cursorSupplier;
         }
 
         @Override
-        protected Cursor create(@NonNull final Integer key) {
+        protected DataCursor create(@NonNull final Integer key) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "create: " + key + ", createCount=" + createCount());
             }
@@ -377,13 +349,72 @@ public class BooklistCursor
 
         @Override
         protected void entryRemoved(final boolean evicted,
-                                    @NonNull final Integer key,
-                                    @NonNull final Cursor oldValue,
-                                    @Nullable final Cursor newValue) {
+                                    final Integer key,
+                                    final DataCursor oldValue,
+                                    final DataCursor newValue) {
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "remove: " + key + ", evictionCount=" + evictionCount());
+                Log.d(TAG, "entryRemoved: " + key + ", evictionCount=" + evictionCount());
             }
-            oldValue.close();
+        }
+    }
+
+    /**
+     * This class takes a {@link Cursor} and converts it to a {@code List<DataManager>}.
+     * It then acts as minimalistic cursor, keeping tracks of the current position/row
+     * and allowing a client to move up/down in the list and retrieve the current row.
+     */
+    private static class DataCursor {
+
+        private final List<DataManager> list = new ArrayList<>();
+
+        private int currentPosition = BEFORE_FIRST;
+
+        /**
+         * Constructor.
+         *
+         * @param cursor to load. It's up to the caller to close this cursor.
+         */
+        DataCursor(@NonNull final Cursor cursor) {
+            while (cursor.moveToNext()) {
+                final DataManager rowData = new DataManager();
+                rowData.putAll(cursor);
+                list.add(rowData);
+            }
+        }
+
+        /**
+         * Move to the given position.
+         *
+         * @param position to move to
+         *
+         * @return {@code true} if successful; {@code false} if the move failed.
+         */
+        boolean moveToPosition(@IntRange(from = BEFORE_FIRST) final int position) {
+            // Make sure position isn't past the end of the cursor
+            final int count = list.size();
+            if (position >= count) {
+                currentPosition = count;
+                return false;
+            }
+
+            // Make sure position isn't before the beginning of the cursor
+            if (position < 0) {
+                currentPosition = BEFORE_FIRST;
+                return false;
+            }
+
+            currentPosition = position;
+            return true;
+        }
+
+        /**
+         * Get the row at the current position.
+         *
+         * @return row
+         */
+        @NonNull
+        DataManager getRow() {
+            return list.get(currentPosition);
         }
     }
 }

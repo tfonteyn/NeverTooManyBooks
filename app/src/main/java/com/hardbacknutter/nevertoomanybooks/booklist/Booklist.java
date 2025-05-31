@@ -267,10 +267,10 @@ public class Booklist
     /**
      * Get the list cursor.
      *
-     * @return CursorRow
+     * @return cursor
      */
     @NonNull
-    public BooklistCursor getNewCursorRow() {
+    public BooklistCursor getBooklistCursor() {
         if (listCursor != null) {
             listCursor.close();
         }
