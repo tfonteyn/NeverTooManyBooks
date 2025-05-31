@@ -31,9 +31,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
@@ -76,14 +74,14 @@ public class BookGridHolder
     /**
      * Constructor.
      *
-     * @param itemView   the view specific for this holder
-     * @param style      to use
-     * @param coverScale to use
+     * @param itemView      the view specific for this holder
+     * @param style         to use
+     * @param imageViewSize to use
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     BookGridHolder(@NonNull final View itemView,
                    @NonNull final Style style,
-                   @NonNull final CoverScale coverScale) {
+                   @NonNull final ImageViewSize imageViewSize) {
         super(itemView);
         vb = BooksonbookshelfGridBookBinding.bind(itemView);
 
@@ -96,8 +94,6 @@ public class BookGridHolder
         // i.e. if we don't set/force it here, it will not be the default (huh?)
         vb.gridCell.setMaxWidth(Integer.MAX_VALUE);
 
-        final ImageViewSize size = coverScale.getMaxSizeInPixels(itemView.getContext(),
-                                                                 ScreenLayout.Grid);
         // Note: we COULD reserve the space for an image.
         // pro: ensures cells without an image are still the same height
         // con: a row without images takes a lot of white space.
@@ -105,15 +101,16 @@ public class BookGridHolder
 
         // Enforce the width/height of the image itself.
         final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
-        lp.width = size.width;
-        lp.height = size.height;
+        lp.width = imageViewSize.width;
+        lp.height = imageViewSize.height;
 
-        // we fixed the LayoutParams already, so pass in 'null' for Sizing
-        coverHelper = new CoverHelper(new ImageViewLoader(ASyncExecutor.MAIN,
-                                                          ImageView.ScaleType.FIT_CENTER,
-                                                          null,
-                                                          size.width, size.height),
-                                      size.width);
+        // we fixed the LayoutParams already, so pass in 'None' for Sizing
+        coverHelper = new CoverHelper(
+                new ImageViewLoader(ASyncExecutor.MAIN,
+                                    ImageView.ScaleType.FIT_CENTER,
+                                    ImageViewLoader.ApplySizing.None,
+                                    imageViewSize.width, imageViewSize.height),
+                imageViewSize.width);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
             dbgRowIdView = new BookDebugRowIdView(vb.gridCell);

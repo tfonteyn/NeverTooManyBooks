@@ -40,10 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
@@ -117,12 +115,12 @@ public class BookHolder
      *
      * @param itemView         the view specific for this holder
      * @param style            to use
-     * @param coverScale       to use
+     * @param imageViewSize    to use
      * @param realNumberParser the shared parser
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
-               @NonNull final CoverScale coverScale,
+               @NonNull final ImageViewSize imageViewSize,
                @NonNull final RealNumberParser realNumberParser) {
         super(itemView);
         vb = BooksonbookshelfRowBookBinding.bind(itemView);
@@ -141,19 +139,18 @@ public class BookHolder
         locale = res.getConfiguration().getLocales().get(0);
 
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.COVER[0])) {
-            final ImageViewSize size = coverScale.getMaxSizeInPixels(context, ScreenLayout.List);
-
             // Enforce the width/height of the image itself.
             final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
-            lp.width = size.width;
-            lp.height = size.height;
+            lp.width = imageViewSize.width;
+            lp.height = imageViewSize.height;
 
-            // we fixed the LayoutParams already, so pass in 'null' for Sizing
-            coverHelper = new CoverHelper(new ImageViewLoader(ASyncExecutor.MAIN,
-                                                              ImageView.ScaleType.FIT_START,
-                                                              null,
-                                                              size.width, size.height),
-                                          size.width);
+            // we fixed the LayoutParams already, so pass in 'None' for Sizing
+            coverHelper = new CoverHelper(
+                    new ImageViewLoader(ASyncExecutor.MAIN,
+                                        ImageView.ScaleType.FIT_START,
+                                        ImageViewLoader.ApplySizing.None,
+                                        imageViewSize.width, imageViewSize.height),
+                    imageViewSize.width);
         } else {
             coverHelper = null;
             vb.coverImage0.setVisibility(View.GONE);

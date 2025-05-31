@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -90,7 +91,7 @@ public class BooklistAdapter
     @NonNull
     private final ScreenLayout layout;
     @NonNull
-    private final CoverScale coverScale;
+    private final ImageViewSize imageViewSize;
     @Nullable
     private Booklist booklist;
     /** The 'list of items'. */
@@ -110,6 +111,8 @@ public class BooklistAdapter
      * @param style      to use
      * @param layout     to use
      * @param coverScale to use
+     *
+     * @throws IllegalArgumentException (debug)
      */
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final Style style,
@@ -118,7 +121,6 @@ public class BooklistAdapter
         this.inflater = LayoutInflater.from(context);
         this.style = style;
         this.layout = layout;
-        this.coverScale = coverScale;
 
         final List<Locale> locales = LocaleListUtils.asList(context);
         realNumberParser = new RealNumberParser(locales);
@@ -134,6 +136,8 @@ public class BooklistAdapter
         } else {
             groupRowHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
+
+        imageViewSize = coverScale.getMaxSizeInPixels(context, layout);
 
         // getItemId returns the rowId
         setHasStableIds(true);
@@ -321,11 +325,11 @@ public class BooklistAdapter
             case BooklistGroup.BOOK:
                 switch (layout) {
                     case List:
-                        holder = new BookHolder(itemView, style, coverScale,
+                        holder = new BookHolder(itemView, style, imageViewSize,
                                                 realNumberParser);
                         break;
                     case Grid:
-                        holder = new BookGridHolder(itemView, style, coverScale);
+                        holder = new BookGridHolder(itemView, style, imageViewSize);
                         break;
                     default:
                         throw new IllegalArgumentException(layout.toString());
