@@ -31,6 +31,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_body"
         style="@style/FragmentRoot.ConstraintLayout"
+        android:maxWidth="700dp"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -169,6 +170,7 @@
             android:id="@+id/lbl_price_listed"
             style="@style/TIL.Text.Price"
             android:hint="@string/lbl_price_listed"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toEndOf="@id/lbl_price_listed_currency"
             app:layout_constraintTop_toBottomOf="@id/lbl_pages"
             >
@@ -207,8 +209,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/field_margin_top"
             android:text="@string/lbl_signed"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
             tools:checked="true"
             />
@@ -257,8 +259,8 @@
         <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
             style="@style/Field.ZRatingBar.Editable"
-            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SpeakableTextPresentCheck"
             tools:rating="2.5"
@@ -268,8 +270,8 @@
             android:id="@+id/fragment_read"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/rating"
             tools:layout="@layout/fragment_read_progress"
             />

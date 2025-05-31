@@ -31,6 +31,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_body"
         style="@style/FragmentRoot.ConstraintLayout"
+        android:maxWidth="1000dp"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -179,6 +180,7 @@
             android:id="@+id/lbl_price_listed"
             style="@style/TIL.Text.Price"
             android:hint="@string/lbl_price_listed"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toEndOf="@id/lbl_price_listed_currency"
             app:layout_constraintTop_toBottomOf="@id/lbl_pages"
             >
@@ -214,8 +216,8 @@
         <com.hardbacknutter.zratingbar.MaterialRatingBar
             android:id="@+id/rating"
             style="@style/Field.ZRatingBar.Editable"
-            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintEnd_toStartOf="@id/col2"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SpeakableTextPresentCheck"
             tools:rating="2.5"
@@ -225,8 +227,8 @@
             android:id="@+id/fragment_read"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintEnd_toStartOf="@id/col2"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/rating"
             tools:layout="@layout/fragment_read_progress"
             />
@@ -303,6 +305,7 @@
             android:id="@+id/lbl_price_paid"
             style="@style/TIL.Text.Price"
             android:hint="@string/lbl_price_paid"
+            app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
             >
@@ -363,8 +366,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/field_margin_top"
             android:text="@string/lbl_signed"
-            app:layout_constraintStart_toEndOf="@id/col2"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col2"
             app:layout_constraintTop_toTopOf="parent"
             tools:checked="true"
             />
@@ -442,8 +445,8 @@
                 style="@style/TIE.Notes"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
-                tools:text="@tools:sample/lorem/random"
                 tools:maxLines="5"
+                tools:text="@tools:sample/lorem/random"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
