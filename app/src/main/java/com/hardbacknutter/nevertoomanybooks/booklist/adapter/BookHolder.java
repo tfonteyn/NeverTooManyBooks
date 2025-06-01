@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
@@ -116,11 +115,13 @@ public class BookHolder
      * @param itemView         the view specific for this holder
      * @param style            to use
      * @param imageViewSize    to use
+     * @param imageLoader      to use
      * @param realNumberParser the shared parser
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
                @NonNull final ImageViewSize imageViewSize,
+               @NonNull final ImageViewLoader imageLoader,
                @NonNull final RealNumberParser realNumberParser) {
         super(itemView);
         vb = BooksonbookshelfRowBookBinding.bind(itemView);
@@ -144,13 +145,7 @@ public class BookHolder
             lp.width = imageViewSize.width;
             lp.height = imageViewSize.height;
 
-            // we fixed the LayoutParams already, so pass in 'None' for Sizing
-            coverHelper = new CoverHelper(
-                    new ImageViewLoader(ASyncExecutor.MAIN,
-                                        ImageView.ScaleType.FIT_START,
-                                        ImageViewLoader.ApplySizing.None,
-                                        imageViewSize.width, imageViewSize.height),
-                    imageViewSize.width);
+            coverHelper = new CoverHelper(imageLoader, imageViewSize.width);
         } else {
             coverHelper = null;
             vb.coverImage0.setVisibility(View.GONE);

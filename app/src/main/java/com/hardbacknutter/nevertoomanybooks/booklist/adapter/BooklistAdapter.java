@@ -27,6 +27,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Dimension;
@@ -52,7 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -91,6 +94,7 @@ public class BooklistAdapter
     @NonNull
     private final ScreenLayout layout;
     @NonNull
+    private final ImageViewLoader imageLoader;
     private final ImageViewSize imageViewSize;
     @Nullable
     private Booklist booklist;
@@ -137,7 +141,26 @@ public class BooklistAdapter
             groupRowHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
 
+        // we are going to set the LayoutParams manually: use ImageViewLoader.ApplySizing.None
         imageViewSize = coverScale.getMaxSizeInPixels(context, layout);
+        switch (layout) {
+            case List: {
+                imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+                                                  ImageView.ScaleType.FIT_START,
+                                                  ImageViewLoader.ApplySizing.None,
+                                                  imageViewSize.width, imageViewSize.height);
+                break;
+            }
+            case Grid: {
+                imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+                                                  ImageView.ScaleType.FIT_CENTER,
+                                                  ImageViewLoader.ApplySizing.None,
+                                                  imageViewSize.width, imageViewSize.height);
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(layout.toString());
+        }
 
         // getItemId returns the rowId
         setHasStableIds(true);
@@ -325,11 +348,11 @@ public class BooklistAdapter
             case BooklistGroup.BOOK:
                 switch (layout) {
                     case List:
-                        holder = new BookHolder(itemView, style, imageViewSize,
+                        holder = new BookHolder(itemView, style, imageViewSize, imageLoader,
                                                 realNumberParser);
                         break;
                     case Grid:
-                        holder = new BookGridHolder(itemView, style, imageViewSize);
+                        holder = new BookGridHolder(itemView, style, imageViewSize, imageLoader);
                         break;
                     default:
                         throw new IllegalArgumentException(layout.toString());

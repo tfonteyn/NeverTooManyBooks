@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.adapter;
 import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -77,11 +75,13 @@ public class BookGridHolder
      * @param itemView      the view specific for this holder
      * @param style         to use
      * @param imageViewSize to use
+     * @param imageLoader   to use
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     BookGridHolder(@NonNull final View itemView,
                    @NonNull final Style style,
-                   @NonNull final ImageViewSize imageViewSize) {
+                   @NonNull final ImageViewSize imageViewSize,
+                   @NonNull final ImageViewLoader imageLoader) {
         super(itemView);
         vb = BooksonbookshelfGridBookBinding.bind(itemView);
 
@@ -104,13 +104,7 @@ public class BookGridHolder
         lp.width = imageViewSize.width;
         lp.height = imageViewSize.height;
 
-        // we fixed the LayoutParams already, so pass in 'None' for Sizing
-        coverHelper = new CoverHelper(
-                new ImageViewLoader(ASyncExecutor.MAIN,
-                                    ImageView.ScaleType.FIT_CENTER,
-                                    ImageViewLoader.ApplySizing.None,
-                                    imageViewSize.width, imageViewSize.height),
-                imageViewSize.width);
+        coverHelper = new CoverHelper(imageLoader, imageViewSize.width);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
             dbgRowIdView = new BookDebugRowIdView(vb.gridCell);
