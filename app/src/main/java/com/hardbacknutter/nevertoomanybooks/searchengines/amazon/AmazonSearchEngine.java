@@ -146,6 +146,8 @@ public class AmazonSearchEngine
     private static final String ADV_SEARCH_BOOKS = "/gp/search?index=books";
 
     /**
+     * 2025-06-01: this may be irrelevant now as the date seems to have its own label now.
+     * <p>
      * Parse "some text; more text (some more text)" into "some text" and "some more text".
      * <p>
      * Also: we want a "some text" that does not START with a '('.
@@ -166,46 +168,77 @@ public class AmazonSearchEngine
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** Depending on the specific site, the labels translations we check for. */
-    private static final String LABEL_FORMAT =
-            // English, Dutch
-            "hardcover,paperback"
+    private static final List<String> LABEL_FORMAT = List.of(
+            // English AND Dutch
+            "hardcover", "paperback",
             // French
-            + ",relié,broché"
+            "relié", "broché",
             // German
-            + ",taschenbuch,gebundene ausgabe"
+            "taschenbuch", "gebundene ausgabe",
             // Spanish; bolsillo==paperback... but more correctly a "boxset"
             // leave the latter to the user, don't add it to the format mapper
-            + ",tapa dura,tapa blanda,libro de bolsillo"
+            "tapa dura", "tapa blanda", "libro de bolsillo",
             // Portuguese
-            + ",capa dura,capa blanda";
+            "capa dura", "capa blanda"
+    );
 
-    private static final String LABEL_LANGUAGE =
+    private static final List<String> LABEL_PAGES = List.of(
             // English
-            "language"
+            "print length",
             // French
-            + ",langue"
+            "nombre de pages de l'édition imprimée",
             // German
-            + ",sprache"
+            "seitenzahl der print-ausgabe",
             // Dutch
-            + ",taal"
+            "printlengte",
             // Spanish/Portuguese
-            + ",idioma";
+            "longitud de impresión"
+    );
 
-    private static final String LABEL_PUBLISHER =
+    private static final List<String> LABEL_LANGUAGE = List.of(
             // English
-            "publisher"
+            "language",
             // French
-            + ",editeur,éditeur"
+            "langue",
+            // German
+            "sprache",
+            // Dutch
+            "taal",
+            // Spanish/Portuguese
+            "idioma"
+    );
+
+    private static final List<String> LABEL_PUBLISHER = List.of(
+            // English
+            "publisher",
+            // French
+            "editeur", "éditeur",
             // German: note that "Herausgeber" (==editor) is an Amazon translation error.
             // They use it as a synonym for "Verlag".
-            + ",verlag,herausgeber"
+            "verlag", "herausgeber",
             // Dutch
-            + ",uitgever"
+            "uitgever",
             // Spanish/Portuguese
-            + ",editor,editorial";
+            "editor", "editorial"
+    );
 
-    private static final String LABEL_SERIES =
-            "series,collection";
+    private static final List<String> LABEL_PUBLICATION_DATE = List.of(
+            // English
+            "publication date",
+            // French
+            "date de publication",
+            // German
+            "erscheinungstermin",
+            // Dutch
+            "publicatiedatum",
+            // Spanish
+            "fecha de publicación"
+    );
+
+    private static final List<String> LABEL_SERIES = List.of(
+            "series",
+            "collection"
+    );
 
     // These labels are ignored, but listed as an indication we know them.
     private static final String LABEL_IGNORED =
@@ -259,13 +292,16 @@ public class AmazonSearchEngine
             "desde "};
 
     private static final String SPANISH = "es";
-    private static final String GERMAN = "de";
-    private static final String DUTCH = "nl";
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
-    /** Parse the "x pages" string. */
-    @Nullable
-    private Pattern pagesPattern;
+    /**
+     * Parse the "x pages" string.
+     * English/French,German,Dutch,Spanish/Portuguese
+     */
+    private static final Pattern PAGES_PATTERN =
+            Pattern.compile("(\\d+) (?:pages|Seiten|pagina's|páginas)",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    ;
 
     /**
      * Constructor.
@@ -577,26 +613,32 @@ public class AmazonSearchEngine
                 .forEach(text -> {
 
                     final String label = SearchEngineUtils.cleanText(text[0]);
-                    final String data = SearchEngineUtils.cleanName(text[1]);
-
                     final String lcLabel = label.toLowerCase(siteLocale);
 
                     if (LABEL_ISBN_13.equals(lcLabel)) {
-                        book.setIsbn(data);
+                        book.setIsbn(ISBN.cleanText(text[1]));
 
                     } else if (LABEL_ISBN_10.equals(lcLabel) && !book.hasIsbn()) {
-                        book.setIsbn(data);
+                        book.setIsbn(ISBN.cleanText(text[1]));
 
                     } else if (LABEL_FORMAT.contains(lcLabel)) {
                         // we might already have the format, but we'll overwrite it - that's ok.
                         book.setFormat(label);
-                        book.setPages(extractPages(context, data));
+                        // 2025-06-01: we can likely remove this, as there is now LABEL_PAGES
+                        final String data = SearchEngineUtils.cleanName(text[1]);
+                        parsePages(data, book);
+
+                    } else if (LABEL_PAGES.contains(lcLabel)) {
+                        final String data = SearchEngineUtils.cleanName(text[1]);
+                        parsePages(data, book);
 
                     } else if (LABEL_LANGUAGE.contains(lcLabel)) {
+                        final String data = SearchEngineUtils.cleanName(text[1]);
                         book.setLanguage(data);
 
                     } else if (LABEL_PUBLISHER.contains(lcLabel)) {
                         boolean publisherWasAdded = false;
+                        final String data = SearchEngineUtils.cleanName(text[1]);
                         final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
                         if (matcher.find()) {
                             final String pubName = matcher.group(1);
@@ -616,8 +658,12 @@ public class AmazonSearchEngine
                             final Publisher publisher = Publisher.from(data);
                             book.add(publisher);
                         }
+                    } else if (LABEL_PUBLICATION_DATE.contains(lcLabel)) {
+                        final String data = SearchEngineUtils.cleanName(text[1]);
+                        addPublicationDate(context, siteLocale, data, book);
 
                     } else if (LABEL_SERIES.contains(lcLabel)) {
+                        final String data = SearchEngineUtils.cleanName(text[1]);
                         book.add(Series.from(data));
 
                     } else {
@@ -628,6 +674,17 @@ public class AmazonSearchEngine
                         }
                     }
                 });
+    }
+
+    private void parsePages(@NonNull final CharSequence data,
+                            @NonNull final Book book) {
+        final Matcher matcher = PAGES_PATTERN.matcher(data);
+        if (matcher.find()) {
+            final String pages = matcher.group(1);
+            if (pages != null && !pages.isEmpty()) {
+                book.setPages(pages);
+            }
+        }
     }
 
     @NonNull
@@ -719,7 +776,7 @@ public class AmazonSearchEngine
                                         @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException {
 
-        final Element img = document.selectFirst("img#imgBlkFront");
+        final Element img = document.selectFirst("img#landingImage");
         if (img == null) {
             return Optional.empty();
         }
@@ -733,9 +790,9 @@ public class AmazonSearchEngine
             url = json.keys().next();
 
         } catch (@NonNull final JSONException e) {
-            // the src attribute contains a low quality picture in base64 format.
+            // fallback to the src attribute
             String srcUrl = img.attr("src");
-            // annoying... the url seems to start with a \n. Cut it off.
+            // annoying... the url may start with a \n. Cut it off.
             if (srcUrl.startsWith("\n")) {
                 srcUrl = srcUrl.substring(1);
             }
@@ -743,39 +800,6 @@ public class AmazonSearchEngine
         }
 
         return saveImage(context, url, null, bookId, cIdx, null);
-    }
-
-    @NonNull
-    private String extractPages(@NonNull final Context context,
-                                @NonNull final CharSequence data) {
-        if (pagesPattern == null) {
-            final String baseUrl = getHostUrl(context);
-            // check the domain name to determine the language of the site
-            final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
-            final String pagesStr;
-            // These are string from the actual website; hence not from resources
-            switch (root) {
-                case GERMAN:
-                    pagesStr = "Seiten";
-                    break;
-
-                case DUTCH:
-                    pagesStr = "pagina's";
-                    break;
-
-                case SPANISH:
-                    pagesStr = "páginas";
-                    break;
-
-                default:
-                    // English, French
-                    pagesStr = "pages";
-                    break;
-            }
-            pagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
-        }
-
-        return pagesPattern.matcher(data).replaceAll("").strip();
     }
 
     @Override
