@@ -93,6 +93,11 @@ public class ImageViewLoader {
         this.height = height;
     }
 
+    private static boolean isAssociated(@Nullable final ImageView view,
+                                        @NonNull final UUID taskUuid) {
+        return view != null && taskUuid.equals(view.getTag(R.id.TAG_THUMBNAIL_TASK));
+    }
+
     /**
      * Load a placeholder drawable in the given view.
      *
@@ -190,39 +195,54 @@ public class ImageViewLoader {
         final WeakReference<ImageView> viewWeakReference = new WeakReference<>(imageView);
 
         executor.execute(() -> {
-            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+            if (!isAssociated(viewWeakReference.get(), taskUuid)) {
+                return;
+            }
 
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the loading/scaling as background work.
             final Optional<Bitmap> oBitmap = new Transformation()
                     .setScale(this.width, this.height)
                     .setSource(file)
                     .transform();
+            // do NOT quit if oBitmap.isEmpty() as we'll load a placeholder further down if so.
 
-            // back to the UI thread to display the bitmap
+            if (!isAssociated(viewWeakReference.get(), taskUuid)) {
+                // We're not sending it to onSuccess.
+                // In practice this means sending it to the file-based caching.
+                // But if we're scrolling too fast to stay associated, then
+                // we can assume the cache-writer is already busy anyhow, so the returned
+                // bitmap would get dropped anyhow, and NOT recycled. i.e. a worse situation
+                // we must avoid.
+                oBitmap.ifPresent(Bitmap::recycle);
+                return;
+            }
+
+            // back to the UI thread to display the bitmap or placeholder
             handler.post(() -> {
-                // are we still associated with this view ? (remember: views are recycled)
                 final ImageView view = viewWeakReference.get();
-                if (view != null && taskUuid.equals(view.getTag(R.id.TAG_THUMBNAIL_TASK))) {
-                    // clear the association
-                    view.setTag(R.id.TAG_THUMBNAIL_TASK, null);
-                    if (oBitmap.isPresent()) {
-                        fromBitmap(view, oBitmap.get());
-                        if (onSuccess != null) {
-                            onSuccess.accept(oBitmap.get());
-                        }
-                    } else {
-                        // We only get here if we found the image-file, but we failed to
-                        // load/decode it.
-                        if (onFailed != null) {
-                            onFailed.run();
-                        } else {
-                            // So use 'broken-image' icon and preserve the space.
-                            placeholder(view, R.drawable.broken_image_24px);
-                        }
+                if (!isAssociated(view, taskUuid)) {
+                    oBitmap.ifPresent(Bitmap::recycle);
+                    return;
+                }
+
+                // clear the association
+                view.setTag(R.id.TAG_THUMBNAIL_TASK, null);
+
+                if (oBitmap.isPresent()) {
+                    // Finally, load it into the View
+                    fromBitmap(view, oBitmap.get());
+                    if (onSuccess != null) {
+                        onSuccess.accept(oBitmap.get());
                     }
                 } else {
-                    // The view was already scrolled away, discard the bitmap immediately.
-                    oBitmap.ifPresent(Bitmap::recycle);
+                    // Found the image-file, but failed to load/decode it.
+                    if (onFailed != null) {
+                        onFailed.run();
+                    } else {
+                        // Use 'broken-image' icon and preserve the space.
+                        placeholder(view, R.drawable.broken_image_24px);
+                    }
                 }
             });
         });
@@ -233,7 +253,7 @@ public class ImageViewLoader {
         Constrained,
         /** Use a fixed width and height. */
         Enforce,
-        /** Don't apply any (avoids null-usage). */
+        /** Don't apply any (avoids {@code null}-usage). */
         None
     }
 }
