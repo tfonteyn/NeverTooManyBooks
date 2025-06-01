@@ -628,6 +628,29 @@ public class DataManager
     }
 
     /**
+     * Get a {@link Parcelable} {@link ArrayList} from the collection.
+     *
+     * @param key Key of data object
+     * @param <T> type of objects in the list
+     *
+     * @return The list, can be empty
+     */
+    @NonNull
+    public <T extends Parcelable> Optional<ArrayList<T>> optParcelableArrayList(
+            @NonNull final String key) {
+        if (rawData.containsKey(key)) {
+            final ArrayList<T> list = rawData.getParcelableArrayList(key);
+            // paranoia
+            if (list != null) {
+                return Optional.of(list);
+            }
+            // the key was present but its value was null
+            rawData.remove(key);
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Store a {@link Parcelable} {@link Collection}.
      * <p>
      * An {@link ArrayList} value is stored as-is,
