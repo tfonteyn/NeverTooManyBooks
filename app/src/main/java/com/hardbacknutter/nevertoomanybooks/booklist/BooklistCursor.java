@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Parcelable;
-import android.util.Log;
 import android.util.LruCache;
 
 import androidx.annotation.IntRange;
@@ -35,7 +34,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -329,7 +327,6 @@ public class BooklistCursor
 
     private static class DataCursorCache
             extends LruCache<Integer, DataCursor> {
-        private static final String TAG = "DataCursorCache";
         @NonNull
         private final Function<Integer, DataCursor> cursorSupplier;
 
@@ -341,20 +338,7 @@ public class BooklistCursor
 
         @Override
         protected DataCursor create(@NonNull final Integer key) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "create: " + key + ", createCount=" + createCount());
-            }
             return cursorSupplier.apply(key);
-        }
-
-        @Override
-        protected void entryRemoved(final boolean evicted,
-                                    final Integer key,
-                                    final DataCursor oldValue,
-                                    final DataCursor newValue) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "entryRemoved: " + key + ", evictionCount=" + evictionCount());
-            }
         }
     }
 
