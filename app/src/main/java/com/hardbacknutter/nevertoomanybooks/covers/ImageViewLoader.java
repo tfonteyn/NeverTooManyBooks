@@ -65,8 +65,6 @@ public class ImageViewLoader {
 
     @NonNull
     private final ApplySizing applySizing;
-    @NonNull
-    private final Transformation scalableImageDecoder;
 
     /**
      * Constructor.
@@ -89,14 +87,10 @@ public class ImageViewLoader {
         handler = new Handler(Looper.getMainLooper());
 
         this.executor = executor;
-
         this.scaleType = scaleType;
         this.applySizing = applySizing;
         this.width = width;
         this.height = height;
-
-        scalableImageDecoder = new Transformation()
-                .setScale(this.width, this.height);
     }
 
     /**
@@ -122,6 +116,10 @@ public class ImageViewLoader {
         // essential, so lets not rely on it having been set in xml
         imageView.setAdjustViewBounds(true);
 
+        // theoretically not needed as we've already scaled
+        // the image to fit.
+        // Except on Android 8.x! So until we drop 8x, this IS NEEDED.
+        // See {@link Transformation#transform()}
         imageView.setScaleType(ImageView.ScaleType.CENTER);
         imageView.setImageResource(drawable);
     }
@@ -193,8 +191,12 @@ public class ImageViewLoader {
 
         executor.execute(() -> {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             // do the loading/scaling as background work.
-            final Optional<Bitmap> oBitmap = scalableImageDecoder.setSource(file).transform();
+            final Optional<Bitmap> oBitmap = new Transformation()
+                    .setScale(this.width, this.height)
+                    .setSource(file)
+                    .transform();
 
             // back to the UI thread to display the bitmap
             handler.post(() -> {
