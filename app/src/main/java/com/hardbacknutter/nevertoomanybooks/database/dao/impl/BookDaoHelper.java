@@ -166,7 +166,9 @@ public class BookDaoHelper {
         processDates();
 
         // make sure there are only valid external id's present
-        processExternalIds();
+        if (book.contains(Book.BKEY_IDENTIFIER_LIST)) {
+            processExternalIds();
+        }
 
         // lastly, cleanup null and blank fields as needed.
         processNullsAndBlanks();
@@ -359,6 +361,8 @@ public class BookDaoHelper {
              })
              .forEach(ivsOut::add);
 
+        // always write, even when empty. The latter would be the result
+        // of the above code and means we want to delete all identifiers.
         book.setIdentifiers(ivsOut);
     }
 
