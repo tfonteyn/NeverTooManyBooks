@@ -210,6 +210,7 @@ public final class SyncField
          */
         LIST(SyncAction.Append, List.of(
                 SyncAction.Skip,
+                SyncAction.CopyIfBlank,
                 SyncAction.Append,
                 SyncAction.Overwrite,
                 SyncAction.Skip

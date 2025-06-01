@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -61,18 +60,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Handles importing data with each field controlled by a {@link SyncAction}.
  */
 public class SyncReaderProcessor {
-
-    /**
-     * The keys which represent {@link SyncField.Type#LIST} fields.
-     */
-    public static final Set<String> LIST_KEYS = Set.of(
-            Book.BKEY_AUTHOR_LIST,
-            Book.BKEY_BOOKSHELF_LIST,
-            Book.BKEY_IDENTIFIER_LIST,
-            Book.BKEY_PUBLISHER_LIST,
-            Book.BKEY_SERIES_LIST,
-            Book.BKEY_TAG_LIST,
-            Book.BKEY_TOC_LIST);
 
     private static final String TAG = "SyncProcessor";
 
@@ -156,24 +143,24 @@ public class SyncReaderProcessor {
                 return true;
             }
             case CopyIfBlank: {
-                if (LIST_KEYS.contains(field.getKey())) {
-                    // We should never get here as the list-keys should never use CopyIfBlank
-                    // but paranoia...
-                    return false;
+                if (field.getType() == SyncField.Type.LIST) {
+                    // If the local data is absent or empty, add the field
+                    return !localBook.contains(field.getKey())
+                           || localBook.getParcelableArrayList(field.getKey()).isEmpty();
 
                 } else if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
-                    // check if it's missing or empty.
+                    // check if we have a valid image
                     return ServiceLocator.getInstance().getCoverStorage()
                                          .getPersistedFile(localBook.getUuid(), 0)
                                          .isEmpty();
 
                 } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
-                    // check if it's missing or empty.
+                    // check if we have a valid image
                     return ServiceLocator.getInstance().getCoverStorage()
                                          .getPersistedFile(localBook.getUuid(), 1)
                                          .isEmpty();
                 } else {
-                    // If the original was blank/zero, add to list
+                    // If the local data is blank or numerical zero, add the field
                     final String value = localBook.getString(field.getKey(), null);
                     return value == null || value.isEmpty()
                            || "0".equals(value) || "0.0".equals(value);
@@ -308,7 +295,7 @@ public class SyncReaderProcessor {
                 case CopyIfBlank:
                     // If our local book already has this data,
                     // remove the unneeded field from the delta (remote book)
-                    if (hasField(localBook, field.getKey(), realNumberParser)) {
+                    if (hasField(localBook, field, realNumberParser)) {
                         remoteBook.remove(field.getKey());
                     }
                     break;
@@ -334,22 +321,26 @@ public class SyncReaderProcessor {
      * Check if we already have this field (with content) in the original data.
      *
      * @param localBook        to check
-     * @param key              to test for
+     * @param field            to test
      * @param realNumberParser to use for number parsing
      *
      * @return {@code true} if already present
      */
     private boolean hasField(@NonNull final Book localBook,
-                             @NonNull final String key,
+                             @NonNull final SyncField field,
                              @NonNull final RealNumberParser realNumberParser) {
-        if (LIST_KEYS.contains(key)) {
-            if (localBook.contains(key)) {
-                return !localBook.getParcelableArrayList(key).isEmpty();
+        if (field.getType() == SyncField.Type.LIST) {
+            if (localBook.contains(field.getKey())) {
+                return !localBook.getParcelableArrayList(field.getKey()).isEmpty();
             }
         } else {
-            // paranoia? we could probably just do
+            // Non-list fields: we want a delta.
+            // If our local book already has this data,
+            // remove the unneeded field from the delta (remote book)
+            // paranoia: check for keys present but considered 'empty'
+            // we could probably just do
             //    return localBook.contains(key);
-            final Object o = localBook.get(key, realNumberParser);
+            final Object o = localBook.get(field.getKey(), realNumberParser);
             if (o != null) {
                 final String value = o.toString().trim();
                 return !value.isEmpty() && !"0".equals(value) && !"0.0".equals(value);
