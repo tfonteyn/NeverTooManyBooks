@@ -25,10 +25,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
@@ -69,6 +71,16 @@ public final class ASyncExecutor {
      */
     @SuppressWarnings("WeakerAccess")
     public static final Executor SERIAL;
+
+    /**
+     * Dedicated {@link ExecutorService} for loading & scaling images
+     * from the file-system or database.
+     * <p>
+     * <strong>Note:</strong> this executor uses an unbounded
+     * <strong>LIFO</strong> {@link BlockingDeque}.
+     */
+    @NonNull
+    public static final ExecutorService IMAGES;
 
     /** Log tag. */
     private static final String TAG = "ASyncExecutor";
@@ -118,6 +130,12 @@ public final class ASyncExecutor {
         SERIAL = new SerialExecutor(MAIN);
 
         NETWORK = Executors.newCachedThreadPool(createThreadFactory("NETWORK"));
+
+        final int corePoolSize = Runtime.getRuntime().availableProcessors();
+        IMAGES = new LifoThreadPoolExecutor(corePoolSize, corePoolSize * 2,
+                                            1, TimeUnit.SECONDS,
+                                            new LinkedBlockingDeque<>(),
+                                            createThreadFactory("IMAGES"));
     }
 
     private ASyncExecutor() {
