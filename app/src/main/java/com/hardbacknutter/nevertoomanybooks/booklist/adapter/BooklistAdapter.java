@@ -145,14 +145,14 @@ public class BooklistAdapter
         imageViewSize = coverScale.getMaxSizeInPixels(context, layout);
         switch (layout) {
             case List: {
-                imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+                imageLoader = new ImageViewLoader(ASyncExecutor.IMAGES,
                                                   ImageView.ScaleType.FIT_START,
                                                   ImageViewLoader.ApplySizing.None,
                                                   imageViewSize.width, imageViewSize.height);
                 break;
             }
             case Grid: {
-                imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+                imageLoader = new ImageViewLoader(ASyncExecutor.IMAGES,
                                                   ImageView.ScaleType.FIT_CENTER,
                                                   ImageViewLoader.ApplySizing.None,
                                                   imageViewSize.width, imageViewSize.height);

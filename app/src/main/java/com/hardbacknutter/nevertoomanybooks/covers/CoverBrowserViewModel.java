@@ -83,7 +83,7 @@ public class CoverBrowserViewModel
     private final ExecutorService galleryNetworkExecutor = ASyncExecutor.create("gallery/n");
 
     /** Executor for displaying preview images. */
-    private final ExecutorService previewDisplayExecutor = ASyncExecutor.MAIN;
+    private final ExecutorService previewDisplayExecutor = ASyncExecutor.IMAGES;
 
     /** Executor for fetching preview images. */
     private final ExecutorService previewNetworkExecutor = ASyncExecutor.NETWORK;

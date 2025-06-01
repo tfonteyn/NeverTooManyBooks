@@ -155,7 +155,7 @@ public class ZoomedImageDialogFragment
         getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         // load and resize as needed.
-        new ImageViewLoader(ASyncExecutor.MAIN,
+        new ImageViewLoader(ASyncExecutor.IMAGES,
                             ImageView.ScaleType.FIT_CENTER,
                             ImageViewLoader.ApplySizing.Constrained,
                             maxWidth, maxHeight)

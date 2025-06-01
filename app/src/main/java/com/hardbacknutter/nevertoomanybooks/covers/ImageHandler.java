@@ -174,7 +174,7 @@ public final class ImageHandler {
         vm = new ViewModelProvider(fragment)
                 .get(String.valueOf(this.cIdx), ImageTransformationViewModel.class);
 
-        imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+        imageLoader = new ImageViewLoader(ASyncExecutor.IMAGES,
                                           ImageView.ScaleType.FIT_START,
                                           ImageViewLoader.ApplySizing.Constrained,
                                           builder.maxWidth, builder.maxHeight);
