@@ -1,12 +1,15 @@
 Draft notes for next version:
 
-### 7.4.1
+### 7.4.2
 
 NEW:
 
+- Amazon parsing updated: images works again + publication data parsing.
 
 FIXES:
 
+- Performance improvements for image loading
+- #146: second fix: it's now again possible to use "Copy if blank" on list-fields.
 
 REMOVED:
 
