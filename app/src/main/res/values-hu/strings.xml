@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|«|“|»|‘|’)
@@ -160,7 +157,7 @@
     <string name="lbl_tab_details">Részletek</string>
     <string name="lbl_tab_notes">Jegyzetek</string>
     <string name="lbl_tags">Címkék</string>
-    <string name="lbl_title">Beosztás</string>
+    <string name="lbl_title">Cím</string>
     <string name="lbl_unread">Olvasatlan</string>
     <string name="no">Nem</string>
     <string name="none">Nincs</string>
@@ -861,5 +858,4 @@
     <string name="pv_reformat_titles_prefixes">a|A|az|Az|egy|Egy</string>
     <string name="lbl_date_born">Született</string>
     <string name="pt_fetch_author_info">Szerzői információk lekérése</string>
-
 </resources>
