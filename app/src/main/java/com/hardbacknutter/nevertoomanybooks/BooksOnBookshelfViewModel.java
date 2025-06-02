@@ -358,7 +358,7 @@ public class BooksOnBookshelfViewModel
                 if (args.containsKey(DBKey.FK_BOOKSHELF)) {
                     // might be null, that's ok.
                     bookshelf = bookshelfDao
-                            .getBookshelf(context, args.getInt(DBKey.FK_BOOKSHELF))
+                            .getBookshelf(context, args.getLong(DBKey.FK_BOOKSHELF))
                             .orElse(null);
                 }
             }
