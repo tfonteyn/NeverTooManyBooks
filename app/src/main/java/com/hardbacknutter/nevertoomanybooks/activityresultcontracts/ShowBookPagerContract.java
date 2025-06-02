@@ -36,8 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerViewModel;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class ShowBookPagerContract
@@ -51,7 +51,9 @@ public class ShowBookPagerContract
                                @NonNull final Input input) {
         return FragmentHostActivity
                 .createIntent(context, R.layout.activity_book_details, ShowBookPagerFragment.class)
-                .putExtra(Style.BKEY_UUID, input.styleUuid)
+                // book-details page
+                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf)
+                // Pager
                 .putExtra(DBKey.FK_BOOK, input.bookId)
                 .putExtra(ShowBookPagerViewModel.BKEY_NAV_TABLE_NAME, input.navTableName)
                 .putExtra(ShowBookPagerViewModel.BKEY_LIST_TABLE_ROW_ID, input.listTableRowId);
@@ -77,43 +79,49 @@ public class ShowBookPagerContract
 
         @IntRange(from = 1)
         final long bookId;
-        @NonNull
-        final String styleUuid;
         @Nullable
         final String navTableName;
         /** Ignore if navTableName is null. */
         final long listTableRowId;
+        @NonNull
+        private Bookshelf bookshelf;
 
         /**
          * Constructor.
          *
-         * @param bookId    the book id
-         * @param styleUuid to use
+         * @param bookId    Initial book id to show.
+         *                  Used by the pager.
+         * @param bookshelf current Bookshelf displayed by the BoB
+         *                  Used by the book-details.
          */
         public Input(@IntRange(from = 1) final long bookId,
-                     @NonNull final String styleUuid) {
-            this(bookId, styleUuid, null, 0);
+                     @NonNull final Bookshelf bookshelf) {
+            this(bookId, bookshelf, null, 0);
         }
 
         /**
          * Constructor.
          *
-         * @param bookId         the book id
-         * @param styleUuid      to use
+         * @param bookId         Initial book id to show.
+         *                       Used by the pager.
+         * @param bookshelf      current Bookshelf displayed by the BoB
+         *                       Used by the book-details.
          * @param navTableName   (Optional) The name of the current list-navigation table,
          *                       which will be used by the pager to allow
-         *                       the user to swipe to the next/previous book
+         *                       the user to swipe to the next/previous book.
+         *                       Used by the pager.
          * @param listTableRowId The row id in the list table of the given book.
          *                       Keep in mind a book can occur multiple times,
          *                       so we need to pass the specific one.
          *                       Ignored if navTableName is {@code null}.
+         *                       Used by the pager.
          */
         public Input(@IntRange(from = 1) final long bookId,
-                     @NonNull final String styleUuid,
+                     @NonNull final Bookshelf bookshelf,
                      @Nullable final String navTableName,
                      @IntRange(from = 0) final long listTableRowId) {
             this.bookId = bookId;
-            this.styleUuid = styleUuid;
+            this.bookshelf = bookshelf;
             this.navTableName = navTableName;
             this.listTableRowId = listTableRowId;
         }

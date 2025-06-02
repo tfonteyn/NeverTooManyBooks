@@ -175,7 +175,7 @@ public class TocFragment
             final AuthorWork work = vm.getWorks().get(position);
             if (work.getBookCount() > 1) {
                 // TODO: allBookshelves see AuthorWorksFragment
-                displayBookLauncher.launch(this, work, aVm.getStyle(), false);
+                displayBookLauncher.launch(this, work, aVm.getBookshelf(), false);
             }
         });
 

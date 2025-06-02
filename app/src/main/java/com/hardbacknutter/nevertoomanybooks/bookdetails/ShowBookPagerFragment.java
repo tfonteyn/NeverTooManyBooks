@@ -128,7 +128,8 @@ public class ShowBookPagerFragment
         @Override
         public Fragment createFragment(final int position) {
             return ShowBookDetailsFragment.create(vm.getBookIdAtPosition(position),
-                                                  aVm.getStyle().getUuid(), false);
+                                                  aVm.getBookshelf(),
+                                                  false);
         }
 
         @Override

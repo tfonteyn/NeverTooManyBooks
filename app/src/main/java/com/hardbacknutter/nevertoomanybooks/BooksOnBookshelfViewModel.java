@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
 
@@ -29,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -318,7 +316,11 @@ public class BooksOnBookshelfViewModel
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args    (optional) {@link #BKEY_PROPOSE_BACKUP} flag
+     *                (optional) {@link SearchCriteria#BKEY} for filtering
+     *                (optional) {@link Book#BKEY_BOOK_ID_LIST} list of book ids
+     *                (optional) {@link #BKEY_LIST_STATE} override the user preference
+     *                (optional) {@link DBKey#FK_BOOKSHELF} the Bookshelf id
      */
     void init(@NonNull final Context context,
               @Nullable final Bundle args) {

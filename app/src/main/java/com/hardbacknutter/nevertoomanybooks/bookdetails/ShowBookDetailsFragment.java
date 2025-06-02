@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.lender.EditLenderLauncher;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -141,22 +142,10 @@ public class ShowBookDetailsFragment
     private BookChangedListener bookChangedListener;
 
     /** User edits a book. */
-    private final ActivityResultLauncher<EditBookContract.Input> editBookLauncher =
-            registerForActivityResult(
-                    new EditBookContract(), o -> o.ifPresent(data -> {
-                        if (data.isModified()) {
-                            onBookEditFinished((String) null);
-                        }
-                    }));
+    private ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
 
     /** User updates a book with internet data. */
-    private final ActivityResultLauncher<Book> updateBookLauncher =
-            registerForActivityResult(
-                    new UpdateSingleBookContract(), o -> o.ifPresent(data -> {
-                        if (data.isModified()) {
-                            onBookEditFinished((String) null);
-                        }
-                    }));
+    private ActivityResultLauncher<Book> updateBookLauncher;
 
     /** Handle the edit-lender dialog. */
     private EditLenderLauncher editLenderLauncher;
@@ -165,20 +154,23 @@ public class ShowBookDetailsFragment
      * Constructor.
      *
      * @param bookId    to open
-     * @param styleUuid to use
+     * @param bookshelf current Bookshelf displayed by the BoB
      * @param embedded  flag, whether we're running in tablet-landscape (embedded).
      *
      * @return new instance
      */
     @NonNull
     public static Fragment create(@IntRange(from = 1) final long bookId,
-                                  @NonNull final String styleUuid,
+                                  @NonNull final Bookshelf bookshelf,
                                   final boolean embedded) {
         final Fragment fragment = new ShowBookDetailsFragment();
         final Bundle args = new Bundle(3);
-        args.putLong(DBKey.FK_BOOK, bookId);
-        args.putString(Style.BKEY_UUID, styleUuid);
+        // aVm
+        args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
+        // onCreate + vm
         args.putBoolean(BKEY_EMBEDDED, embedded);
+        // vm
+        args.putLong(DBKey.FK_BOOK, bookId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -217,10 +209,28 @@ public class ShowBookDetailsFragment
         //noinspection DataFlowIssue
         vm.init(getContext(), args, aVm.getStyle());
 
-        createFragmentResultListeners();
+        createActivityLaunchers();
+        createFragmentLaunchers();
     }
 
-    private void createFragmentResultListeners() {
+    private void createActivityLaunchers() {
+
+        editBookLauncher = registerForActivityResult(
+                new EditBookContract(), o -> o.ifPresent(data -> {
+                    if (data.isModified()) {
+                        onBookEditFinished((String) null);
+                    }
+                }));
+
+        updateBookLauncher = registerForActivityResult(
+                new UpdateSingleBookContract(), o -> o.ifPresent(data -> {
+                    if (data.isModified()) {
+                        onBookEditFinished((String) null);
+                    }
+                }));
+    }
+
+    private void createFragmentLaunchers() {
         final FragmentManager fm = getChildFragmentManager();
 
         editLenderLauncher = new EditLenderLauncher(
@@ -482,7 +492,7 @@ public class ShowBookDetailsFragment
     private void bindLoanee(@NonNull final Book book) {
         //noinspection DataFlowIssue
         final TextView lendTo = getView().findViewById(R.id.lend_to);
-        // Use the global setting! The user may disabled the field on the list screen,
+        // Use the global setting! The user may have disabled the field on the list screen,
         // but if lending is enabled globally, we MUST display the status on the details screen.
         if (ServiceLocator.getInstance().isFieldEnabled(DBKey.LOANEE_NAME)) {
             final Optional<String> loanee =

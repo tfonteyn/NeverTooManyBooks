@@ -219,7 +219,7 @@ public class AuthorWorksFragment
                 (v, position) -> displayBookLauncher.launch(
                         this,
                         vm.getWorks().get(position),
-                        vm.getStyle(),
+                        vm.getBookshelf(),
                         vm.isAllBookshelves()));
 
         final Resources res = getResources();
@@ -470,7 +470,7 @@ public class AuthorWorksFragment
             // show if we got here with a specific bookshelf selected.
             // hide if the bookshelf was set to Bookshelf.ALL_BOOKS.
             menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES)
-                .setVisible(vm.getBookshelfId() != Bookshelf.ALL_BOOKS)
+                .setVisible(vm.getBookshelf().getId() != Bookshelf.ALL_BOOKS)
                 .setChecked(vm.isAllBookshelves());
 
             //noinspection DataFlowIssue

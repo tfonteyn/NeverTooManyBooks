@@ -32,9 +32,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsSearchResult;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 @SuppressWarnings("WeakerAccess")
 public class SearchFtsViewModel
@@ -53,7 +54,7 @@ public class SearchFtsViewModel
     private FtsDao dao;
     @Nullable
     private SearchCriteria criteria;
-    private String styleUuid;
+    private Bookshelf bookshelf;
 
     @Override
     protected void onCleared() {
@@ -69,7 +70,8 @@ public class SearchFtsViewModel
     void init(@NonNull final Bundle args) {
         if (dao == null) {
             dao = ServiceLocator.getInstance().getFtsDao();
-            styleUuid = Objects.requireNonNull(args.getString(Style.BKEY_UUID));
+            bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
+                                               DBKey.FK_BOOKSHELF);
             criteria = args.getParcelable(SearchCriteria.BKEY);
             if (criteria == null) {
                 criteria = new SearchCriteria();
@@ -97,8 +99,8 @@ public class SearchFtsViewModel
     }
 
     @NonNull
-    String getStyleUuid() {
-        return styleUuid;
+    public Bookshelf getBookshelf() {
+        return bookshelf;
     }
 
     /**

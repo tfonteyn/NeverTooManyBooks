@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,9 +24,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 
 /**
@@ -41,6 +43,7 @@ public class ShowBookDetailsActivityViewModel
 
     private boolean modified;
 
+    private Bookshelf bookshelf;
     private Style style;
 
     /**
@@ -63,15 +66,19 @@ public class ShowBookDetailsActivityViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args Bundle with arguments
+     * @param args {@link DBKey#FK_BOOKSHELF} the parceled Bookshelf
      */
     void init(@NonNull final Bundle args) {
         if (style == null) {
-            // Lookup the provided style or use the default if not found.
-            final String styleUuid = args.getString(Style.BKEY_UUID);
-            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-            style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
+            bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
+                                               DBKey.FK_BOOKSHELF);
+            style = bookshelf.getStyle();
         }
+    }
+
+    @NonNull
+    Bookshelf getBookshelf() {
+        return bookshelf;
     }
 
     @NonNull

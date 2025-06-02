@@ -122,7 +122,7 @@ public class SearchFtsFragment
 
         //noinspection DataFlowIssue
         searchAdapter = new SearchAdapter(getContext(), vm.getSearchResults(), id ->
-                displayBookLauncher.launch(new ShowBookPagerContract.Input(id, vm.getStyleUuid())));
+                displayBookLauncher.launch(new ShowBookPagerContract.Input(id, vm.getBookshelf())));
         vb.searchResults.setAdapter(searchAdapter);
         // Timer will be started in OnResume().
     }

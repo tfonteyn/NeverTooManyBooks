@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -55,23 +54,33 @@ public class DisplayBookLauncher {
                                                            optionalActivityResultCallback);
     }
 
+    /**
+     * Launch either the ShowBookPagerFragment for the given {@link AuthorWork} if it's a book,
+     * or start a NEW BooksOnBookshelf Activity if the work is a TocEntry.
+     *
+     * @param fragment       hosting fragment
+     * @param work           to open
+     * @param bookshelf      current Bookshelf displayed by the BoB
+     * @param allBookshelves flag
+     *
+     * @throws IllegalArgumentException (debug)
+     */
     public void launch(@NonNull final Fragment fragment,
                        @NonNull final AuthorWork work,
-                       @NonNull final Style style,
+                       @NonNull final Bookshelf bookshelf,
                        final boolean allBookshelves) {
 
         switch (work.getWorkType()) {
             case Book:
             case BookLight: {
-                launcher.launch(new ShowBookPagerContract.Input(work.getId(), style.getUuid()));
+                launcher.launch(new ShowBookPagerContract.Input(work.getId(), bookshelf));
                 break;
             }
             case TocEntry: {
                 final List<Long> bookIdList = ServiceLocator
                         .getInstance().getTocEntryDao().getBookIds(work.getId());
                 if (bookIdList.size() == 1) {
-                    launcher.launch(new ShowBookPagerContract.Input(
-                            bookIdList.get(0), style.getUuid()));
+                    launcher.launch(new ShowBookPagerContract.Input(bookIdList.get(0), bookshelf));
 
                 } else {
                     // multiple books, open the list as a NEW ACTIVITY
@@ -81,11 +90,11 @@ public class DisplayBookLauncher {
                             // the author as a single line, and no books shown at all,
                             // which can be quite confusing to the user.
                             .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
-                                      (Parcelable) RebuildBooklist.Expanded);
+                                      (Parcelable) RebuildBooklist.Expanded)
+                            // The Bookshelf id!
+                            .putExtra(DBKey.FK_BOOKSHELF,
+                                      allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId());
 
-                    if (allBookshelves) {
-                        intent.putExtra(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
-                    }
                     fragment.startActivity(intent);
                 }
                 break;

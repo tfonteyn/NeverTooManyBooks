@@ -801,7 +801,7 @@ public class BooksOnBookshelf
         searchViewHelper = new SearchViewHelper(
                 vb.searchView, vb.searchResults,
                 id -> displayBookLauncher.launch(new ShowBookPagerContract.Input(
-                        id, vm.getStyle().getUuid())),
+                        id, vm.getBookshelf())),
                 query -> {
                     vm.onFtsSearch(query);
                     buildBookList();
@@ -847,7 +847,8 @@ public class BooksOnBookshelf
     @Override
     protected void onNewIntent(@NonNull final Intent intent) {
         super.onNewIntent(intent);
-        // make this the Activity intent.
+        // {@link #getIntent} would still return the original Intent.
+        // Update it to this new Intent.
         setIntent(intent);
 
         handleStandardSearchIntent(intent);
@@ -900,8 +901,8 @@ public class BooksOnBookshelf
         navDrawer.close();
 
         if (menuItemId == R.id.MENU_ADVANCED_SEARCH) {
-            ftsSearchLauncher.launch(new SearchFtsContract.Input(vm.getSearchCriteria(),
-                                                                 vm.getStyle()));
+            ftsSearchLauncher.launch(new SearchFtsContract.Input(vm.getBookshelf(),
+                                                                 vm.getSearchCriteria()));
             return true;
 
         } else if (menuItemId == R.id.MENU_MANAGE_LIST_STYLES) {
@@ -1102,7 +1103,7 @@ public class BooksOnBookshelf
                 //  and swipe prev/next functionality.
                 displayBookLauncher.launch(new ShowBookPagerContract.Input(
                         bookId,
-                        vm.getStyle().getUuid(),
+                        vm.getBookshelf(),
                         vm.getBookNavigationTableName(),
                         rowData.getLong(DBKey.PK_ID)));
             }
@@ -1821,7 +1822,7 @@ public class BooksOnBookshelf
 
         Fragment fragment = fm.findFragmentByTag(ShowBookDetailsFragment.TAG);
         if (fragment == null) {
-            fragment = ShowBookDetailsFragment.create(bookId, vm.getStyle().getUuid(), true);
+            fragment = ShowBookDetailsFragment.create(bookId, vm.getBookshelf(), true);
             fm.beginTransaction()
               .setReorderingAllowed(true)
               .replace(R.id.details_frame, fragment, ShowBookDetailsFragment.TAG)

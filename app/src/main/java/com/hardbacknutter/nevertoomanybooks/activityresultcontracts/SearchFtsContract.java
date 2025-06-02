@@ -32,7 +32,8 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -48,7 +49,7 @@ public class SearchFtsContract
                                @NonNull final SearchFtsContract.Input input) {
         final Intent intent = FragmentHostActivity
                 .createIntent(context, SearchFtsFragment.class)
-                .putExtra(Style.BKEY_UUID, input.styleUuid);
+                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf);
         if (input.criteria != null && !input.criteria.isEmpty()) {
             intent.putExtra(SearchCriteria.BKEY, input.criteria);
         }
@@ -78,15 +79,15 @@ public class SearchFtsContract
     }
 
     public static final class Input {
+        @NonNull
+        final Bookshelf bookshelf;
         @Nullable
         final SearchCriteria criteria;
-        @NonNull
-        final String styleUuid;
 
-        public Input(@Nullable final SearchCriteria criteria,
-                     @NonNull final Style style) {
+        public Input(@NonNull final Bookshelf bookshelf,
+                     @Nullable final SearchCriteria criteria) {
             this.criteria = criteria;
-            this.styleUuid = style.getUuid();
+            this.bookshelf = bookshelf;
         }
 
     }
