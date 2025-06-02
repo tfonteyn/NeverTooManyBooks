@@ -1463,14 +1463,33 @@ public class BooksOnBookshelfViewModel
         }
     }
 
-    // ENHANCE: fts searches are always across all bookshelves,
-    //  It might be better to switch to the "All Books" bookshelf.
-    void onFtsSearch(@NonNull final SearchCriteria criteria) {
-        searchCriteria = criteria;
-        searchCriteriaAreActive.setValue(!searchCriteria.isEmpty());
+    /**
+     * Display the results from an FTS search after using
+     * the "Advanced Local Search" Activity.
+     * <p>
+     * Results are displayed on the "All Books" Bookshelf.
+     *
+     * @param context  Current context
+     * @param criteria to construct the booklist with
+     */
+    void onFtsSearch(@NonNull final Context context,
+                     @NonNull final SearchCriteria criteria) {
         forceRebuildInOnResume = true;
+
+        searchCriteria = criteria;
+        selectBookshelf(context, Bookshelf.ALL_BOOKS);
+
+        searchCriteriaAreActive.setValue(!searchCriteria.isEmpty());
     }
 
+    /**
+     * Display the results from an FTS search after using
+     * the local Search View.
+     * <p>
+     * Results are displayed on the current Bookshelf.
+     *
+     * @param query the ftp keywords
+     */
     void onFtsSearch(@Nullable final String query) {
         Objects.requireNonNull(searchCriteria);
 

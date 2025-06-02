@@ -486,7 +486,7 @@ public class BooksOnBookshelf
 
         ftsSearchLauncher = registerForActivityResult(
                 new SearchFtsContract(), o -> o.ifPresent(
-                        criteria -> vm.onFtsSearch(criteria)));
+                        criteria -> vm.onFtsSearch(this, criteria)));
     }
 
     private void createFragmentLaunchers() {
