@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -45,7 +48,7 @@
     <string name="X_action_clear_credentials">Cancella credenziali</string>
     <string name="X_action_execute">Esegui</string>
     <string name="X_action_move">Sposta</string>
-    <string name="X_action_next">Succ.</string>
+    <string name="X_action_next">Avanti</string>
     <string name="X_action_previous">Prec.</string>
     <string name="X_action_reset">Reimposta</string>
     <string name="X_action_send">Invia</string>
@@ -65,21 +68,21 @@
     <string name="X_lbl_thumbnails">Miniature</string>
     <string name="X_neither">Nessuno dei due</string>
     <string name="X_lbl_anthologies">Antologie</string>
-    <string name="X_lbl_general">Generale</string>
+    <string name="X_lbl_general">Generali</string>
     <string name="tip_booklist_style_defaults">Questa schermata consente di impostare le caratteristiche predefinite di tutti gli stili. Queste vengono utilizzate da tutti gli stili incorporati e come punto di partenza per qualsiasi stile definito dall’utente.</string>
     <string name="X_action_use_default_setting">Utilizza le impostazioni predefinite</string>
     <string name="X_whichImageCaptureApplication">Acquisisci immagine con</string>
     <string name="X_whichSendToApplication">Invia tramite</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="action_add">Ora è possibile visitare la pagina del progetto  su Github e registrare un nuovo problema. Allegare il report precedentemente salvato al problema. Se non si dispone ancora di un account Github, è necessario crearne uno.</string>
+    <string name="action_add">Aggiungi</string>
     <string name="action_add_with_details">Aggiungi con i dettagli</string>
     <string name="action_clear">Cancella</string>
     <string name="action_create">Crea</string>
     <string name="action_apply">Applica</string>
     <string name="action_delete">Elimina</string>
     <string name="action_discard">Ignora</string>
-    <string name="action_done">Fatto</string>
+    <string name="action_done">Fine</string>
     <string name="action_duplicate">Duplica</string>
     <string name="action_edit">Modifica</string>
     <string name="action_edit_ellipsis">Modifica…</string>
@@ -97,7 +100,7 @@
     <string name="option_select_all">Seleziona tutti</string>
     <string name="option_select_none">Deseleziona tutto</string>
     <string name="action_show_all">Mostra tutte</string>
-    <string name="action_skip">Ignora</string>
+    <string name="action_skip">Salta</string>
     <string name="action_synchronize">Sincronizzare</string>
     <string name="and_others">%1$s…</string>
     <string name="and_others_textual">%1$s e altri</string>
@@ -130,9 +133,9 @@
     <string name="btn_all_books">Tutti i libri</string>
     <string name="action_clear_queue">Cancella coda</string>
     <string name="action_disable_message">Disattiva messaggio</string>
-    <string name="action_email">e-mail</string>
+    <string name="action_email">Email</string>
     <string name="btn_just_this_shelf">Solo questa libreria</string>
-    <string name="action_learn_more">Ulteriori informazioni</string>
+    <string name="action_learn_more">Scopri di più</string>
     <string name="action_less_ellipsis">Di meno…</string>
     <string name="action_more_ellipsis">Altro…</string>
     <string name="action_show_options">Opzioni</string>
@@ -179,7 +182,7 @@
     <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
     <string name="acra_dialog_message">Sembra che &APP_NAME; si sia bloccato. Tocca «%1$s» per salvare un rapporto in una posizione a scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
-    <string name="disabled">Spento</string>
+    <string name="disabled">Disattivata</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamico</string>
     <string name="enabled">Abilitato</string>
     <string name="error_http_401_authorization_failed">Autorizzazione fallita</string>
@@ -229,13 +232,13 @@
     <string name="httpErrorFailedSslHandshake">Impossibile stabilire una connessione sicura.</string>
     <string name="httpErrorFile">Accesso al file non riuscito.</string>
     <string name="httpErrorFileNotFound">Impossibile trovare il file richiesto.</string>
-    <string name="httpErrorTimeout">Tempo per la connessione al server scaduto.</string>
+    <string name="httpErrorTimeout">Tempo esaurito per la connessione al server.</string>
     <string name="info_authorized">Autorizzato</string>
     <string name="option_moving_covers_from_x_to_y">Sposta tutte le copertine da «%1$s» a «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Inserisci titoli automaticamente (ISFDB)</string>
     <string name="info_isfdb_warning_limited_to">(supportato solo dal sito Web ISFDB)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
-    <string name="lbl_about">Riguardo questa app</string>
+    <string name="lbl_about">Informazioni</string>
     <string name="lbl_about_contact">Contatti:</string>
     <string name="lbl_add_book">Aggiungi libro</string>
     <string name="lbl_add_filter">Aggiungi filtro</string>
@@ -247,7 +250,7 @@
     <string name="pc_advanced_options">Avanzate</string>
     <string name="lbl_all_bookshelves">Tutte le librerie</string>
     <string name="lbl_book_type_anthology">Antologia</string>
-    <string name="lbl_archive_format">Formato</string>
+    <string name="lbl_archive_format">Formatta</string>
     <string name="option_info_archive_format_db">Il database SQLite.</string>
     <string name="option_info_archive_format_json">Tutti i dati in formato JSON.</string>
     <string name="option_info_lbl_archive_is_export_only">Questo è solo per l’esportazione dei dati; l’importazione non è supportata.</string>
@@ -341,12 +344,12 @@
     <string name="option_field_usage_append">Aggiungi altri dati</string>
     <string name="option_field_usage_copy_if_blank">Copia se vuoto</string>
     <string name="option_field_usage_overwrite">Sovrascrivi dati esistenti</string>
-    <string name="lbl_filter">Filtro</string>
+    <string name="lbl_filter">Filtra</string>
     <string name="lbl_date_first_publication_month">Primo mese di pubblicazione</string>
     <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
     <string name="lbl_date_first_publication_year">Primo anno di pubblicazione</string>
     <string name="lbl_date_first_publication">Prima pubblicazione</string>
-    <string name="lbl_format">Formato</string>
+    <string name="lbl_format">Formatta</string>
     <string name="pc_formatting">Formattazione</string>
     <string name="lbl_genre">Genere</string>
     <string name="lbl_given_names">Nome</string>
@@ -509,8 +512,8 @@
     <string name="none">Nessuno</string>
     <string name="notification_channel_error">Errore</string>
     <string name="notification_channel_info">Informazione</string>
-    <string name="notification_channel_warn">Attenzione</string>
-    <string name="password">password</string>
+    <string name="notification_channel_warn">Avviso</string>
+    <string name="password">Password</string>
     <string name="option_bob_filter_isbn_no">Senza codice ISBN</string>
     <string name="option_bob_filter_isbn_yes">Con ISBN</string>
     <string name="option_bob_filter_lend_out_no">Libri disponibili</string>
@@ -640,7 +643,7 @@
     <string name="style_type_builtin">Predefinito</string>
     <string name="style_type_user_defined">Definito dall’utente</string>
     <string name="X_lbl_system">(Sistema)</string>
-    <string name="lbl_system_default">(Predefinito)</string>
+    <string name="lbl_system_default">(Predefinita)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Se i libri sono mostrati per ogni autore del libro, possono comparire più volte nell’elenco. L’eliminazione di uno di questi libri ha l’effetto di rimuovere tutte le copie dall’elenco.</string>
     <string name="tip_authors_works">Icone utilizzate</string>
     <string name="tip_authors_works_book">Libro.</string>
@@ -677,7 +680,7 @@
     <string name="unknown">Sconosciuto</string>
     <string name="unknown_author">[Autore sconosciuto]</string>
     <string name="unknown_title">[Titolo sconosciuto]</string>
-    <string name="username">nome utente</string>
+    <string name="username">Nome utente</string>
     <string name="vldt_blank_required_for_x">È richiesto un valore vuoto per «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">È previsto un valore booleano (0,1,t,f,true,false) for «%1$s»</string>
     <string name="vldt_date_expected_for_x">È prevista una data per «%1$s»</string>
@@ -786,7 +789,7 @@
     <string name="lbl_sort_ascending">Ascendente</string>
     <string name="lbl_sort_descending">Discendente</string>
     <string name="lbl_group">Gruppo</string>
-    <string name="pt_layout">Disposizione</string>
+    <string name="pt_layout">Layout</string>
     <string name="pe_list">Elenco</string>
     <string name="pe_grid">Griglia</string>
     <string name="pt_bob_cover_click">Toccare l’immagine di copertina.</string>
