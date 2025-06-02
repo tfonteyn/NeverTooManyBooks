@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -46,12 +43,12 @@
     </plurals>
     <string name="quoted">«%1$s»</string>
     <string name="X_action_clear_credentials">Cancella credenziali</string>
-    <string name="X_action_execute">Vykdyti</string>
+    <string name="X_action_execute">Esegui</string>
     <string name="X_action_move">Sposta</string>
-    <string name="X_action_next">Kitas</string>
-    <string name="X_action_previous">Perž.</string>
+    <string name="X_action_next">Succ.</string>
+    <string name="X_action_previous">Prec.</string>
     <string name="X_action_reset">Reimposta</string>
-    <string name="X_action_send">Siųsti</string>
+    <string name="X_action_send">Invia</string>
     <string name="X_action_try_again">Riprova</string>
     <string name="X_action_update">Aggiorna</string>
     <string name="X_action_customize">Personalizza…</string>
@@ -82,12 +79,12 @@
     <string name="action_apply">Applica</string>
     <string name="action_delete">Elimina</string>
     <string name="action_discard">Ignora</string>
-    <string name="action_done">Atlikta</string>
-    <string name="action_duplicate">Duplicare</string>
+    <string name="action_done">Fatto</string>
+    <string name="action_duplicate">Duplica</string>
     <string name="action_edit">Modifica</string>
     <string name="action_edit_ellipsis">Modifica…</string>
     <string name="action_export">Esporta</string>
-    <string name="X_action_go">Pradėti</string>
+    <string name="X_action_go">Vai</string>
     <string name="action_help">Guida</string>
     <string name="action_import">Importa</string>
     <string name="action_merge">Unire</string>
@@ -95,7 +92,7 @@
     <string name="action_reset_to_default">Ripristina impostazioni predefinite</string>
     <string name="action_retry">Riprova</string>
     <string name="action_save">Salva</string>
-    <string name="action_search">Ieškoti</string>
+    <string name="action_search">Cerca</string>
     <string name="action_select">Seleziona</string>
     <string name="option_select_all">Seleziona tutti</string>
     <string name="option_select_none">Deseleziona tutto</string>
@@ -103,7 +100,7 @@
     <string name="action_skip">Ignora</string>
     <string name="action_synchronize">Sincronizzare</string>
     <string name="and_others">%1$s…</string>
-    <string name="and_others_textual">%1$s ed altri</string>
+    <string name="and_others_textual">%1$s e altri</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(L’autore è mancante)</string>
     <string name="bob_empty_day">(Giorno non impostato)</string>
@@ -140,7 +137,7 @@
     <string name="action_more_ellipsis">Altro…</string>
     <string name="action_show_options">Opzioni</string>
     <string name="action_show_toc_long">Mostra sommario</string>
-    <string name="action_stop_scanning">Interrompere la scansione</string>
+    <string name="action_stop_scanning">Interrompi la scansione</string>
     <string name="btn_this_book">Questo libro</string>
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Fotocamera</string>
@@ -181,7 +178,7 @@
     <string name="confirm_scope_for_delete">Elimina il titolo «%1$s» di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta «%3$s» non può essere annullata!</string>
     <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
-    <string name="acra_dialog_message">Sembra che &APP_NAME; si sia bloccato. Toccare «%1$s» per salvare un rapporto in una posizione a scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
+    <string name="acra_dialog_message">Sembra che &APP_NAME; si sia bloccato. Tocca «%1$s» per salvare un rapporto in una posizione a scelta. È possibile utilizzare questo rapporto per segnalare un nuovo problema sul sito web del progetto.</string>
     <string name="disabled">Spento</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dinamico</string>
     <string name="enabled">Abilitato</string>
@@ -203,7 +200,7 @@
     <string name="error_import_file_not_supported">Il file selezionato non può essere importato.</string>
     <string name="error_network_failed_try_again">Controlla la connessione e riprova.</string>
     <string name="error_network_please_connect">Connettiti a Internet.</string>
-    <string name="error_network_site_access_failed">Si è verificato un problema di rete durante l’accesso a %1$s. Verifica se il sito Web è attivo e se il problema persiste, contatta l’assistenza.</string>
+    <string name="error_network_site_access_failed">Si è verificato un problema di rete durante l’accesso a %1$s. Verifica se il sito web è attivo e se il problema persiste, contatta l’assistenza.</string>
     <string name="error_no_image_editor">Nessun editor di immagini trovato.</string>
     <string name="error_search_could_not_be_started">Ricerca del libro fallita.</string>
     <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo.</string>
@@ -232,7 +229,7 @@
     <string name="httpErrorFailedSslHandshake">Impossibile stabilire una connessione sicura.</string>
     <string name="httpErrorFile">Accesso al file non riuscito.</string>
     <string name="httpErrorFileNotFound">Impossibile trovare il file richiesto.</string>
-    <string name="httpErrorTimeout">Tempo esaurito per la connessione al server.</string>
+    <string name="httpErrorTimeout">Tempo per la connessione al server scaduto.</string>
     <string name="info_authorized">Autorizzato</string>
     <string name="option_moving_covers_from_x_to_y">Sposta tutte le copertine da «%1$s» a «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Inserisci titoli automaticamente (ISFDB)</string>
@@ -454,7 +451,7 @@
     <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_last_updated_year">Anno di aggiornamento</string>
     <string name="lbl_virtual_libraries">Biblioteche virtuali in questa libreria</string>
-    <string name="lbl_website_address">Διεύθυνση ιστότοπου (URL)</string>
+    <string name="lbl_website_address">Indirizzo sito web (URL)</string>
     <string name="lbl_websites">Siti web</string>
     <string name="bookshelf_my_wishlist">Lista dei desideri</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
@@ -550,7 +547,7 @@
     <string name="option_info_delete_removed_books">I libri eliminati sull’altro dispositivo saranno eliminati anche su questo dispositivo.</string>
     <string name="info_import_complete">Importazione completata</string>
     <string name="info_import_partially_complete">Importazione parziale eseguita</string>
-    <string name="progress_msg_cleaning_up">Pulire…</string>
+    <string name="progress_msg_cleaning_up">Pulizia…</string>
     <string name="progress_msg_connecting">Connessione…</string>
     <string name="progress_msg_downloading">Download in corso…</string>
     <string name="progress_msg_loading">Caricamento…</string>
@@ -690,7 +687,7 @@
     <string name="vldt_non_blank_required">È richiesto un valore</string>
     <string name="vldt_non_blank_required_for_x">È richiesto un valore per «%1$s»</string>
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Valore vuoto o URL «https» valido con un singolo segnaposto id «%s» richiesto</string>
-    <string name="vldt_read_start_after_end">Data di inizio lettura posteriore alla data di fine lettura</string>
+    <string name="vldt_read_start_after_end">Data di inizio lettura successiva alla data di fine lettura</string>
     <string name="vldt_real_expected_for_x">È previsto un valore reale per «%1$s»</string>
     <string name="warning_already_in_list">Già nella lista!</string>
     <string name="warning_backup_request">Vuoi effettuare il backup del database nella scheda SD?</string>
@@ -796,7 +793,7 @@
     <string name="pe_bob_cover_click_zoom">Ingrandisce l’immagine della copertina.</string>
     <string name="pe_bob_cover_click_details">Apre la pagina dei dettagli del libro.</string>
     <string name="X_style_type_defaults">Impostazioni predefinite degli stili</string>
-    <string name="acra_report_saved">Ora è possibile visitare la pagina del progetto su Github e creare un nuovo problema. Si prega di allegare al problema il rapporto precedentemente salvato. Se non si dispone ancora di un account Github, è necessario crearne uno.</string>
+    <string name="acra_report_saved">Ora è possibile visitare la pagina del progetto su Github e creare una nuova segnalazione. Si prega di allegare alla segnalazione il rapporto precedentemente salvato. Se non si dispone di un account Github, è necessario crearne uno.</string>
     <string name="action_report">Segnala</string>
     <string name="error_invalid_url">Indirizzo (URL) non valido</string>
     <string name="lbl_certificate_validity_period">Validità: %1$s - %2$s</string>
