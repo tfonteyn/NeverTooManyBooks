@@ -32,6 +32,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -143,11 +144,9 @@ public class AuthorWorksViewModel
             author = ServiceLocator.getInstance().getAuthorDao()
                                    .findById(authorId)
                                    .orElseThrow();
-            final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
 
-            bookshelf = ServiceLocator.getInstance().getBookshelfDao()
-                                      .getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS)
-                                      .orElseThrow();
+            bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
+                                               DBKey.FK_BOOKSHELF);
             style = bookshelf.getStyle();
 
             allBookshelves = bookshelf.getId() == Bookshelf.ALL_BOOKS;
@@ -190,8 +189,9 @@ public class AuthorWorksViewModel
         return style;
     }
 
-    long getBookshelfId() {
-        return bookshelf.getId();
+    @NonNull
+    Bookshelf getBookshelf() {
+        return bookshelf;
     }
 
     /**

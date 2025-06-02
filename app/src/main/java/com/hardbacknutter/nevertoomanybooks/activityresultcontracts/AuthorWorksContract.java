@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class AuthorWorksContract
@@ -49,7 +50,7 @@ public class AuthorWorksContract
         return FragmentHostActivity.createIntent(context, R.layout.activity_author_works,
                                                  AuthorWorksFragment.class)
                                    .putExtra(DBKey.FK_AUTHOR, input.authorId)
-                                   .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId);
+                                   .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf);
     }
 
     @Override
@@ -71,12 +72,13 @@ public class AuthorWorksContract
     public static class Input {
 
         final long authorId;
-        final long bookshelfId;
+        @NonNull
+        final Bookshelf bookshelf;
 
         public Input(final long authorId,
-                     final long bookshelfId) {
+                     @NonNull final Bookshelf bookshelf) {
             this.authorId = authorId;
-            this.bookshelfId = bookshelfId;
+            this.bookshelf = bookshelf;
         }
     }
 }
