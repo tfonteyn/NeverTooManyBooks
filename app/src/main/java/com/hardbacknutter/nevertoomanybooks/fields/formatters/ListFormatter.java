@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,35 +53,34 @@ public class ListFormatter<T extends Entity>
     private final Details details;
 
     @NonNull
-    private final String delimiter;
-    @NonNull
     private final Style style;
+
+    @NonNull
+    private String delimiter = DEFAULT_DELIMITER;
 
     /**
      * Constructor.
      *
      * @param details how much details to show
-     * @param style   (optional) to use
+     * @param style   to use
      */
     public ListFormatter(@NonNull final Details details,
                          @NonNull final Style style) {
-        this(details, DEFAULT_DELIMITER, style);
+        this.details = details;
+        this.style = style;
     }
 
     /**
-     * Constructor.
+     * Set the delimiter to use. Only used by {@link Details#Normal}; ignored otherwise
      *
-     * @param details   how much details to show
-     * @param delimiter to use if details is {@link Details#Normal}
-     * @param style     to use
+     * @param delimiter to use
+     *
+     * @return {@code this} (for chaining)
      */
-    @SuppressWarnings("WeakerAccess")
-    public ListFormatter(@NonNull final Details details,
-                         @NonNull final String delimiter,
-                         @NonNull final Style style) {
-        this.details = details;
+    @NonNull
+    public ListFormatter<T> setDelimiter(@NonNull final String delimiter) {
         this.delimiter = delimiter;
-        this.style = style;
+        return this;
     }
 
     @Override
