@@ -21,14 +21,15 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,13 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 public class AuthorWorksViewModel
         extends ViewModel {
 
+    private static final String PK_PREFIX = "author.works.";
+    private static final String PK_ORDER_BY_COLUMN = PK_PREFIX + "orderby";
+    /** Show the TOCEntries. Defaults to {@code true}. */
+    private static final String PK_SHOW_TOC_ENTRIES = PK_PREFIX + "show.tocs";
+    /** Show the Books. Defaults to {@code true}. */
+    private static final String PK_SHOW_BOOKS = PK_PREFIX + "show.books";
+
     private final MutableLiveData<Author> onAuthor = new MutableLiveData<>();
     private final MutableLiveData<String> onBookshelf = new MutableLiveData<>();
 
@@ -70,18 +78,18 @@ public class AuthorWorksViewModel
     /** Initial Bookshelf is set in {@link #init}. */
     private Bookshelf bookshelf;
     /** Initially we get toc entries and books. */
-    private boolean withTocEntries = true;
+    private boolean showTocEntries = true;
     /** Initially we get toc entries and books. */
-    private boolean withBooks = true;
+    private boolean showBooks = true;
     /** Show all shelves, or only the initially selected shelf. */
     private boolean allBookshelves;
     /**
-     * Order the list by...  initially always {@code null}, i.e. sort by the default column.
+     * Order the list by...
      * For all allowed values, see {@link AuthorDao.WorksOrderBy}
      */
     @AuthorDao.WorksOrderBy
-    @Nullable
-    private String orderByColumn;
+    @NonNull
+    private String orderByColumn = DBKey.TITLE_OB;
 
     /** Set to {@code true} when ... used to report back to BoB to decide rebuilding BoB list. */
     private boolean dataModified;
@@ -151,8 +159,12 @@ public class AuthorWorksViewModel
 
             allBookshelves = bookshelf.getId() == Bookshelf.ALL_BOOKS;
 
-            withTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, withTocEntries);
-            withBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, withBooks);
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+            orderByColumn = prefs.getString(PK_ORDER_BY_COLUMN, DBKey.TITLE_OB);
+            showTocEntries = prefs.getBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries);
+            showBooks = prefs.getBoolean(PK_SHOW_BOOKS, showBooks);
+
             reloadWorkList();
         }
 
@@ -165,10 +177,23 @@ public class AuthorWorksViewModel
         return menuHandlers;
     }
 
-    void setFilter(final boolean withTocEntries,
-                   final boolean withBooks) {
-        this.withTocEntries = withTocEntries;
-        this.withBooks = withBooks;
+    void setFilter(@NonNull final Context context,
+                   final boolean showTocEntries,
+                   final boolean showBooks) {
+        this.showTocEntries = showTocEntries;
+        this.showBooks = showBooks;
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries)
+                         .putBoolean(PK_SHOW_BOOKS, showBooks)
+                         .apply();
+    }
+
+    public boolean isShowBooks() {
+        return showBooks;
+    }
+
+    public boolean isShowTocEntries() {
+        return showTocEntries;
     }
 
     void reloadWorkList() {
@@ -178,7 +203,7 @@ public class AuthorWorksViewModel
         final List<AuthorWork> authorWorks =
                 ServiceLocator.getInstance().getAuthorDao()
                               .getAuthorWorks(author, bookshelfId,
-                                              withTocEntries, withBooks,
+                                              showTocEntries, showBooks,
                                               orderByColumn);
 
         works.addAll(authorWorks);
@@ -210,8 +235,18 @@ public class AuthorWorksViewModel
         onBookshelf.setValue(getBookshelfAndNrOfEntries(context));
     }
 
-    void setOrderByColumn(@AuthorDao.WorksOrderBy @Nullable final String orderByColumn) {
+    @NonNull
+    public String getOrderByColumn() {
+        return orderByColumn;
+    }
+
+    void setOrderByColumn(@NonNull final Context context,
+                          @AuthorDao.WorksOrderBy @NonNull final String orderByColumn) {
         this.orderByColumn = orderByColumn;
+
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putString(PK_ORDER_BY_COLUMN, orderByColumn)
+                         .apply();
     }
 
     /**

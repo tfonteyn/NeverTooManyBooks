@@ -98,10 +98,6 @@ public class AuthorWorksFragment
 
     /** Log tag. */
     private static final String TAG = "AuthorWorksFragment";
-    /** Optional. Show the TOC. Defaults to {@code true}. */
-    static final String BKEY_WITH_TOC = TAG + ":tocs";
-    /** Optional. Show the books. Defaults to {@code true}. */
-    static final String BKEY_WITH_BOOKS = TAG + ":books";
     private static final String RK_MENU = TAG + ":rk:menu";
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel vm;
@@ -467,8 +463,29 @@ public class AuthorWorksFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
+            // Sorting
+            switch (vm.getOrderByColumn()) {
+                case DBKey.TITLE_OB:
+                    menu.findItem(R.id.MENU_AUTHOR_WORKS_SORT_TITLE)
+                        .setChecked(true);
+                    break;
+                case DBKey.FIRST_PUBLICATION_DATE:
+                    menu.findItem(R.id.MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE)
+                        .setChecked(true);
+                    break;
+            }
+
+            // Filter
+            if (vm.isShowTocEntries() && !vm.isShowBooks()) {
+                menu.findItem(R.id.MENU_AUTHOR_WORKS_FILTER_TOC).setChecked(true);
+            } else if (!vm.isShowTocEntries() && vm.isShowBooks()) {
+                menu.findItem(R.id.MENU_AUTHOR_WORKS_FILTER_BOOKS).setChecked(true);
+            } else {
+                menu.findItem(R.id.MENU_AUTHOR_WORKS_FILTER_ALL).setChecked(true);
+            }
+
             // show if we got here with a specific bookshelf selected.
-            // hide if the bookshelf was set to Bookshelf.ALL_BOOKS.
+            // hide if the bookshelf was already set to Bookshelf.ALL_BOOKS.
             menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES)
                 .setVisible(vm.getBookshelf().getId() != Bookshelf.ALL_BOOKS)
                 .setChecked(vm.isAllBookshelves());
@@ -495,35 +512,40 @@ public class AuthorWorksFragment
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_TITLE) {
                 menuItem.setChecked(true);
-                vm.setOrderByColumn(DBKey.TITLE_OB);
+                //noinspection DataFlowIssue
+                vm.setOrderByColumn(getContext(), DBKey.TITLE_OB);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE) {
                 menuItem.setChecked(true);
-                vm.setOrderByColumn(DBKey.FIRST_PUBLICATION_DATE);
+                //noinspection DataFlowIssue
+                vm.setOrderByColumn(getContext(), DBKey.FIRST_PUBLICATION_DATE);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_ALL) {
                 menuItem.setChecked(true);
-                vm.setFilter(true, true);
+                //noinspection DataFlowIssue
+                vm.setFilter(getContext(), true, true);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_TOC) {
                 menuItem.setChecked(true);
-                vm.setFilter(true, false);
+                //noinspection DataFlowIssue
+                vm.setFilter(getContext(), true, false);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_BOOKS) {
                 menuItem.setChecked(true);
-                vm.setFilter(false, true);
+                //noinspection DataFlowIssue
+                vm.setFilter(getContext(), false, true);
                 vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
