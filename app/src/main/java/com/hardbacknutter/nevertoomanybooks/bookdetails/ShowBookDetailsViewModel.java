@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.fields.RatingBarField;
 import com.hardbacknutter.nevertoomanybooks.fields.TextViewField;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.BitmaskFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.ClickableListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
@@ -277,6 +278,8 @@ public class ShowBookDetailsViewModel
                 new ListFormatter<>(Details.Normal, style);
         final ListFormatter<Entity> fullDetailListFormatter =
                 new ListFormatter<>(Details.Full, style);
+        final ClickableListFormatter<Entity> authorFormatter =
+                new ClickableListFormatter<>(context, Details.Full, style);
 
         // book fields
         fields.add(new TextViewField<>(FragmentId.Main, R.id.title, DBKey.TITLE));
@@ -288,8 +291,7 @@ public class ShowBookDetailsViewModel
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,
-                                       fullDetailListFormatter)
-                           .addRelatedViews(R.id.lbl_author));
+                                       authorFormatter));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.series_title, Book.BKEY_SERIES_LIST,
                                        DBKey.FK_SERIES,

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -61,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
@@ -140,6 +143,9 @@ public class ShowBookDetailsFragment
      */
     @Nullable
     private BookChangedListener bookChangedListener;
+
+    /** View all works of an Author. */
+    private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
 
     /** User edits a book. */
     private ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
@@ -228,6 +234,13 @@ public class ShowBookDetailsFragment
                         onBookEditFinished((String) null);
                     }
                 }));
+
+        authorWorksLauncher = registerForActivityResult(
+                new AuthorWorksContract(), o -> o.ifPresent(data -> {
+                    if (data.isModified()) {
+                        onBookEditFinished((String) null);
+                    }
+                }));
     }
 
     private void createFragmentLaunchers() {
@@ -249,6 +262,7 @@ public class ShowBookDetailsFragment
         return inflater.inflate(R.layout.fragment_book_details, container, false);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -269,6 +283,32 @@ public class ShowBookDetailsFragment
 
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
         vm.onUpdateReadStatus().observe(getViewLifecycleOwner(), this::onUpdateReadStatus);
+
+
+        final TextView authorsView = view.findViewById(R.id.author);
+
+        authorsView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                onAuthorClicked((TextView) v, event);
+            }
+            return true;
+        });
+    }
+
+    private void onAuthorClicked(@NonNull final TextView v,
+                                 @NonNull final MotionEvent event) {
+        final android.text.Layout layout = v.getLayout();
+        if (layout != null) {
+            final int line = layout.getLineForVertical((int) event.getY());
+            final List<Author> authors = vm.getBook().getAuthors();
+            if (line < authors.size()) {
+                final Author author = authors.get(line);
+
+                authorWorksLauncher.launch(new AuthorWorksContract.Input(
+                        author.getId(),
+                        aVm.getBookshelf()));
+            }
+        }
     }
 
     /**
