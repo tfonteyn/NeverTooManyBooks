@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -107,21 +107,21 @@ public interface PFilter<T>
      * @param context Current context
      * @param value   to stringify
      *
-     * @return string
+     * @return CharSequence
      */
     @Nullable
-    String getValueText(@NonNull Context context,
-                        @Nullable T value);
+    CharSequence getValueText(@NonNull Context context,
+                              @Nullable T value);
 
     /**
      * UI usage: get the text to show the user representing the current value.
      *
      * @param context Current context
      *
-     * @return string
+     * @return CharSequence
      */
     @Nullable
-    default String getValueText(@NonNull final Context context) {
+    default CharSequence getValueText(@NonNull final Context context) {
         return getValueText(context, getValue());
     }
 

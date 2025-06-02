@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -183,7 +183,7 @@ public class EditTextField<T, V extends EditText>
         final V view = getView();
         if (view != null) {
             // We need to do this in two steps.
-            String text = null;
+            CharSequence text = null;
             try {
                 //  First format the value as normal.
                 text = formatter.format(view.getContext(), rawValue);
@@ -258,7 +258,7 @@ public class EditTextField<T, V extends EditText>
 
         if (enableReformat) {
             if (System.currentTimeMillis() - lastChange > REFORMAT_DELAY_MS) {
-                final String formatted = formatter.format(context, rawValue);
+                final String formatted = formatter.format(context, rawValue).toString();
                 // If different, replace the encoded value with the formatted value.
                 if (!text.equalsIgnoreCase(formatted)) {
                     view.removeTextChangedListener(this);

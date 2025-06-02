@@ -189,8 +189,8 @@ public class PStringEqualityFilter
 
     @Nullable
     @Override
-    public String getValueText(@NonNull final Context context,
-                               @Nullable final String value) {
+    public CharSequence getValueText(@NonNull final Context context,
+                                     @Nullable final String value) {
         if (value == null || value.isBlank()) {
             return null;
         } else {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,8 +44,8 @@ public interface FieldFormatter<T> {
      * @return formatted value
      */
     @NonNull
-    String format(@NonNull Context context,
-                  @Nullable T rawValue);
+    CharSequence format(@NonNull Context context,
+                        @Nullable T rawValue);
 
     /**
      * Apply a value to a View.

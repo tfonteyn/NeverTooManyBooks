@@ -372,7 +372,7 @@ class EditAuthorDelegate
         final Author currentEdit = vm.getCurrentEdit();
         final String isoString = currentSelection.getIsoString();
         //noinspection DataFlowIssue
-        final String display = dateFieldFormatter.format(context, isoString);
+        final CharSequence display = dateFieldFormatter.format(context, isoString);
         if (fieldId == vb.birthDate.getId()) {
             currentEdit.setBirthDate(isoString);
             vb.birthDate.setText(display);
