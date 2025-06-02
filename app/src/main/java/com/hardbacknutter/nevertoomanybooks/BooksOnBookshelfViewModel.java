@@ -355,6 +355,9 @@ public class BooksOnBookshelfViewModel
                 }
 
                 // check for an explicit bookshelf set
+                // 2025-06-02: currently this is only used by {@link DisplayBookLauncher}
+                // when we want to show a list of books retrieved from a TocEntry.
+                // (reminder: this comment might not be updated lately and hence incorrect)
                 if (args.containsKey(DBKey.FK_BOOKSHELF)) {
                     // might be null, that's ok.
                     bookshelf = bookshelfDao

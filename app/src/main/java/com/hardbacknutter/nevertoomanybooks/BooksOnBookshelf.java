@@ -2239,8 +2239,7 @@ public class BooksOnBookshelf
             if (menuItemId == R.id.MENU_AUTHOR_WORKS_LIST) {
                 authorWorksLauncher.launch(new AuthorWorksContract.Input(
                         rowData.getLong(DBKey.FK_AUTHOR),
-                        vm.getBookshelf().getId(),
-                        vm.getStyle().getUuid()));
+                        vm.getBookshelf().getId()));
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_SET_COMPLETE

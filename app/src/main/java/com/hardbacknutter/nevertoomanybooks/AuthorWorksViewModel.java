@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -136,11 +135,6 @@ public class AuthorWorksViewModel
 
             menuHandlers = List.of(new AuthorViewAuthorOnSiteMenuHandler());
 
-            // Lookup the provided style or use the default if not found.
-            final String styleUuid = args.getString(Style.BKEY_UUID);
-            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
-            style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
-
             final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
             if (authorId <= 0) {
                 throw new IllegalArgumentException(DBKey.FK_AUTHOR);
@@ -154,6 +148,8 @@ public class AuthorWorksViewModel
             bookshelf = ServiceLocator.getInstance().getBookshelfDao()
                                       .getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS)
                                       .orElseThrow();
+            style = bookshelf.getStyle();
+
             allBookshelves = bookshelf.getId() == Bookshelf.ALL_BOOKS;
 
             withTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, withTocEntries);
@@ -198,6 +194,12 @@ public class AuthorWorksViewModel
         return bookshelf.getId();
     }
 
+    /**
+     * Are we / should we display the list for 'All Bookshelves' or only for the
+     * previously set single Bookshelf.
+     *
+     * @return {@code true} for all shelves.
+     */
     boolean isAllBookshelves() {
         return allBookshelves;
     }

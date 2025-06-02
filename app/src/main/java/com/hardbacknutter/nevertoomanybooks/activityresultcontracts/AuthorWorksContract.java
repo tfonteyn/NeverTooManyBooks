@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -49,7 +48,6 @@ public class AuthorWorksContract
                                @NonNull final Input input) {
         return FragmentHostActivity.createIntent(context, R.layout.activity_author_works,
                                                  AuthorWorksFragment.class)
-                                   .putExtra(Style.BKEY_UUID, input.styleUuid)
                                    .putExtra(DBKey.FK_AUTHOR, input.authorId)
                                    .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId);
     }
@@ -60,7 +58,7 @@ public class AuthorWorksContract
                                                 @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
-                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+                         .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
@@ -74,15 +72,11 @@ public class AuthorWorksContract
 
         final long authorId;
         final long bookshelfId;
-        @NonNull
-        final String styleUuid;
 
         public Input(final long authorId,
-                     final long bookshelfId,
-                     @NonNull final String styleUuid) {
+                     final long bookshelfId) {
             this.authorId = authorId;
             this.bookshelfId = bookshelfId;
-            this.styleUuid = styleUuid;
         }
     }
 }
