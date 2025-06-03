@@ -159,7 +159,7 @@ public class AuthorWorksFragment
                 EditAuthorDialogFragment::new,
                 EditAuthorBottomSheet::new);
         editAuthorLauncher.registerForFragmentResult(fm, this);
-        editAuthorLauncher.setOnEditInPlaceListener(author -> vm.onAuthorUpdate(author));
+        editAuthorLauncher.setOnEditInPlaceListener(author -> vm.onAuthorEditDone(author));
 
         final Resources res = getContext().getResources();
         dff = new DateFieldFormatter(res.getConfiguration().getLocales().get(0), false);
@@ -174,6 +174,7 @@ public class AuthorWorksFragment
         return vb.getRoot();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -194,8 +195,9 @@ public class AuthorWorksFragment
 
         setupImageView(toolbar);
 
-        vm.onAuthor().observe(getViewLifecycleOwner(), this::onAuthorUpdate);
-        vm.getOnBookshelf().observe(getViewLifecycleOwner(), s -> bookshelfView.setText(s));
+        vm.onAuthor().observe(getViewLifecycleOwner(), this::onAuthorDetailsUpdate);
+        vm.onWorks().observe(getViewLifecycleOwner(), aVoid -> adapter.notifyDataSetChanged());
+        vm.onBookshelf().observe(getViewLifecycleOwner(), s -> bookshelfView.setText(s));
 
         vm.onResolverFinished().observe(getViewLifecycleOwner(), this::onResolverFinished);
         vm.onResolverCancelled().observe(getViewLifecycleOwner(), this::onResolverCancelled);
@@ -245,6 +247,12 @@ public class AuthorWorksFragment
         if (savedInstanceState == null) {
             TipManager.getInstance().show(context, Tip.AUTHORS_WORKS);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        vm.onResume();
     }
 
     private void setupImageView(@NonNull final Toolbar toolbar) {
@@ -341,7 +349,7 @@ public class AuthorWorksFragment
 
     private void onResolverFinished(@NonNull final Boolean resolved) {
         if (resolved) {
-            onAuthorUpdate(vm.getAuthor());
+            onAuthorDetailsUpdate(vm.getAuthor());
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT)
                     .show();
@@ -360,7 +368,7 @@ public class AuthorWorksFragment
         }
     }
 
-    private void onAuthorUpdate(@NonNull final Author author) {
+    private void onAuthorDetailsUpdate(@NonNull final Author author) {
         final Context context = getContext();
 
         //noinspection DataFlowIssue
@@ -514,40 +522,30 @@ public class AuthorWorksFragment
                 menuItem.setChecked(true);
                 //noinspection DataFlowIssue
                 vm.setOrderByColumn(getContext(), DBKey.TITLE_OB);
-                vm.reloadWorkList();
-                adapter.notifyDataSetChanged();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE) {
                 menuItem.setChecked(true);
                 //noinspection DataFlowIssue
                 vm.setOrderByColumn(getContext(), DBKey.FIRST_PUBLICATION_DATE);
-                vm.reloadWorkList();
-                adapter.notifyDataSetChanged();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_ALL) {
                 menuItem.setChecked(true);
                 //noinspection DataFlowIssue
                 vm.setFilter(getContext(), true, true);
-                vm.reloadWorkList();
-                adapter.notifyDataSetChanged();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_TOC) {
                 menuItem.setChecked(true);
                 //noinspection DataFlowIssue
                 vm.setFilter(getContext(), true, false);
-                vm.reloadWorkList();
-                adapter.notifyDataSetChanged();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_FILTER_BOOKS) {
                 menuItem.setChecked(true);
                 //noinspection DataFlowIssue
                 vm.setFilter(getContext(), false, true);
-                vm.reloadWorkList();
-                adapter.notifyDataSetChanged();
                 return true;
 
             } else if (menuItemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
@@ -555,8 +553,6 @@ public class AuthorWorksFragment
                 menuItem.setChecked(checked);
                 //noinspection DataFlowIssue
                 vm.setAllBookshelves(getContext(), checked);
-                vm.reloadWorkList();
-                adapter.notifyDataSetChanged();
                 return true;
             }
 

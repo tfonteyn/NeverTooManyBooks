@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
@@ -63,7 +64,17 @@ public class AuthorWorksViewModel
     /** Show the Books. Defaults to {@code true}. */
     private static final String PK_SHOW_BOOKS = PK_PREFIX + "show.books";
 
+    /**
+     * Update the author details (name, dates, etc...).
+     */
     private final MutableLiveData<Author> onAuthor = new MutableLiveData<>();
+    /**
+     * Update the works list.
+     */
+    private final MutableLiveData<Void> onWorks = new MutableLiveData<>();
+    /**
+     * Update the name of the bookshelf + number of items.
+     */
     private final MutableLiveData<String> onBookshelf = new MutableLiveData<>();
 
     private final AuthorResolverTask authorResolverTask = new AuthorResolverTask();
@@ -124,7 +135,12 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
-    MutableLiveData<String> getOnBookshelf() {
+    public MutableLiveData<Void> onWorks() {
+        return onWorks;
+    }
+
+    @NonNull
+    MutableLiveData<String> onBookshelf() {
         return onBookshelf;
     }
 
@@ -177,25 +193,6 @@ public class AuthorWorksViewModel
         return menuHandlers;
     }
 
-    void setFilter(@NonNull final Context context,
-                   final boolean showTocEntries,
-                   final boolean showBooks) {
-        this.showTocEntries = showTocEntries;
-        this.showBooks = showBooks;
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries)
-                         .putBoolean(PK_SHOW_BOOKS, showBooks)
-                         .apply();
-    }
-
-    public boolean isShowBooks() {
-        return showBooks;
-    }
-
-    public boolean isShowTocEntries() {
-        return showTocEntries;
-    }
-
     void reloadWorkList() {
         works.clear();
         final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
@@ -214,9 +211,43 @@ public class AuthorWorksViewModel
         return style;
     }
 
+    void setFilter(@NonNull final Context context,
+                   final boolean showTocEntries,
+                   final boolean showBooks) {
+        this.showTocEntries = showTocEntries;
+        this.showBooks = showBooks;
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries)
+                         .putBoolean(PK_SHOW_BOOKS, showBooks)
+                         .apply();
+
+        reloadWorkList();
+        onWorks.setValue(null);
+    }
+
+    public boolean isShowBooks() {
+        return showBooks;
+    }
+
+    public boolean isShowTocEntries() {
+        return showTocEntries;
+    }
+
     @NonNull
-    Bookshelf getBookshelf() {
-        return bookshelf;
+    public String getOrderByColumn() {
+        return orderByColumn;
+    }
+
+    void setOrderByColumn(@NonNull final Context context,
+                          @AuthorDao.WorksOrderBy @NonNull final String orderByColumn) {
+        this.orderByColumn = orderByColumn;
+
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putString(PK_ORDER_BY_COLUMN, orderByColumn)
+                         .apply();
+
+        reloadWorkList();
+        onWorks.setValue(null);
     }
 
     /**
@@ -233,20 +264,21 @@ public class AuthorWorksViewModel
                            final boolean all) {
         allBookshelves = all;
         onBookshelf.setValue(getBookshelfAndNrOfEntries(context));
+        reloadWorkList();
+        onWorks.setValue(null);
     }
 
-    @NonNull
-    public String getOrderByColumn() {
-        return orderByColumn;
-    }
-
-    void setOrderByColumn(@NonNull final Context context,
-                          @AuthorDao.WorksOrderBy @NonNull final String orderByColumn) {
-        this.orderByColumn = orderByColumn;
-
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putString(PK_ORDER_BY_COLUMN, orderByColumn)
-                         .apply();
+    void onResume() {
+        final Author tmp = ServiceLocator.getInstance().getAuthorDao()
+                                         .findById(author.getId())
+                                         .orElseThrow();
+        if (!tmp.equals(author)) {
+            author = tmp;
+            // the works might not have changed, but reload them anyhow
+            reloadWorkList();
+            onAuthor.setValue(author);
+            onWorks.setValue(null);
+        }
     }
 
     /**
@@ -259,6 +291,42 @@ public class AuthorWorksViewModel
         return author;
     }
 
+    /**
+     * Set a new author, reload the works, and trigger UI updates.
+     *
+     * @param id author id to load
+     */
+    void setAuthor(@IntRange(from = 1) final long id) {
+        author = ServiceLocator.getInstance().getAuthorDao()
+                               .findById(id)
+                               .orElseThrow();
+        reloadWorkList();
+        onAuthor.setValue(this.author);
+        onWorks.setValue(null);
+    }
+
+    /**
+     * The author was edited by the user.
+     * Update the author, and trigger UI updates.
+     * The works list is presumed not the have changed, and NOT reloaded!
+     *
+     * @param author to update
+     */
+    void onAuthorEditDone(@NonNull final Author author) {
+        this.author = author;
+        onAuthor.setValue(author);
+    }
+
+    @NonNull
+    Bookshelf getBookshelf() {
+        return bookshelf;
+    }
+
+    /**
+     * Get the works list.
+     *
+     * @return list
+     */
     @NonNull
     List<AuthorWork> getWorks() {
         // used directly by the adapter
@@ -267,6 +335,8 @@ public class AuthorWorksViewModel
 
     /**
      * Delete the given {@link AuthorWork}.
+     * <p>
+     * The caller must update the adapter manually.
      *
      * @param context Current context
      * @param work    to delete
@@ -334,11 +404,6 @@ public class AuthorWorksViewModel
         if (data.isModified()) {
             dataModified = true;
         }
-    }
-
-    void onAuthorUpdate(@NonNull final Author author) {
-        this.author = author;
-        onAuthor.setValue(author);
     }
 
     void resolve(@NonNull final Context context,
