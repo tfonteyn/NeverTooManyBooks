@@ -61,14 +61,16 @@ public class TocViewModel
      * but rely on {@link #reloadBook(Book)} being called.
      *
      * @param args Bundle with arguments
+     *
+     * @throws IllegalArgumentException (debug) missing book id
      */
     void init(@NonNull final Bundle args) {
         if (works.isEmpty()) {
             embedded = args.getBoolean(TocFragment.BKEY_EMBEDDED, false);
 
             final long bookId = args.getLong(DBKey.FK_BOOK, 0);
-            if (bookId == 0) {
-                throw new IllegalArgumentException("No bookId?");
+            if (bookId <= 0) {
+                throw new IllegalArgumentException(DBKey.FK_BOOK);
             }
 
             book = Book.from(bookId);
