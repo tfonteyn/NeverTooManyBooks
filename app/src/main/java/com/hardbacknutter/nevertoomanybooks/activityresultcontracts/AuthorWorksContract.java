@@ -70,6 +70,9 @@ public class AuthorWorksContract
             return Optional.empty();
         }
 
+        // We're cascading the result from a potential book-edit.
+        // i.e. if the user, from the AuthorWorks screen opened/edited a book,
+        // then back to AuthorWorks screen, then back.. and we get here
         return Optional.of(EditBookOutput.parseResult(intent));
     }
 
