@@ -19,25 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 @SuppressWarnings("WeakerAccess")
 public class TocViewModel
@@ -45,26 +40,16 @@ public class TocViewModel
 
     private final MutableLiveData<Long> onReloadBook = new MutableLiveData<>();
 
+    /** The book to display. */
+    private Book book;
+
     /**
      * The list of TOC entries we're displaying.
-     * Permanent reference; the adapter will not need refreshing.
+     * This is a copy of {@link Book#getToc()} but cast to {@link AuthorWork} items.
      */
     @NonNull
     private final List<AuthorWork> works = new ArrayList<>();
 
-    private long bookId;
-    /**
-     * The list of Author. We normally only use the first one as primary-author.
-     * But a side effect is that this forms a permanent reference;
-     * the adapter will not need refreshing.
-     * <p>
-     * Also used as the screen title.
-     */
-    @NonNull
-    private final List<Author> authors = new ArrayList<>();
-    /** Used as the screen sub title. */
-    @Nullable
-    private String bookTitle;
     /** Whether the fragment is running in embedded mode. */
     private boolean embedded;
 
@@ -81,18 +66,13 @@ public class TocViewModel
         if (works.isEmpty()) {
             embedded = args.getBoolean(TocFragment.BKEY_EMBEDDED, false);
 
-            bookId = args.getLong(DBKey.FK_BOOK, 0);
-            // optional, display purpose only
-            bookTitle = args.getString(DBKey.TITLE);
-
-            final List<TocEntry> tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
-            Objects.requireNonNull(tocList, Book.BKEY_TOC_LIST);
-            works.addAll(tocList);
-
-            final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-            if (authorList != null && !authorList.isEmpty()) {
-                authors.addAll(authorList);
+            final long bookId = args.getLong(DBKey.FK_BOOK, 0);
+            if (bookId == 0) {
+                throw new IllegalArgumentException("No bookId?");
             }
+
+            book = Book.from(bookId);
+            works.addAll(book.getToc());
         }
     }
 
@@ -110,32 +90,34 @@ public class TocViewModel
         return onReloadBook;
     }
 
+    void reloadBook() {
+        reloadBook(Book.from(this.book.getId()));
+    }
+
     void reloadBook(@NonNull final Book book) {
         // All fragments in the ViewPager might/will be called,
-        // only update if the incoming data is OUR book.
-        // If we're in embedded mode, skip this test as we always need to reload.
-        if (!embedded && book.getId() != bookId) {
+        // If we're in embedded mode, we always need to reload.
+        // Otherwise only continue with the reload if the incoming data is OUR book.
+        if (!embedded && book.getId() != this.book.getId()) {
             return;
         }
 
-        bookTitle = book.getTitle();
+        this.book = book;
 
         works.clear();
-        works.addAll(book.getToc());
+        works.addAll(this.book.getToc());
 
-        authors.clear();
-        authors.addAll(book.getAuthors());
-
-        onReloadBook.setValue(bookId);
+        onReloadBook.setValue(this.book.getId());
     }
 
-    long getBookId() {
-        return bookId;
+    @NonNull
+    Book getBook() {
+        return book;
     }
 
     @NonNull
     List<Author> getAuthors() {
-        return authors;
+        return book.getAuthors();
     }
 
     @NonNull
@@ -144,24 +126,11 @@ public class TocViewModel
     }
 
     @NonNull
-    Optional<String> getScreenTitle(@NonNull final Context context) {
-        if (authors.isEmpty()) {
-            return Optional.empty();
+    String getScreenSubtitle() {
+        if (BuildConfig.DEBUG /* always */) {
+            return "[" + book.getId() + "] " + book.getTitle();
         } else {
-            return Optional.of(Author.getLabel(context, authors));
-        }
-    }
-
-    @NonNull
-    Optional<String> getScreenSubtitle() {
-        if (bookTitle != null && !bookTitle.isEmpty()) {
-            if (BuildConfig.DEBUG /* always */) {
-                return Optional.of("[" + bookId + "] " + bookTitle);
-            } else {
-                return Optional.of(bookTitle);
-            }
-        } else {
-            return Optional.empty();
+            return book.getTitle();
         }
     }
 }

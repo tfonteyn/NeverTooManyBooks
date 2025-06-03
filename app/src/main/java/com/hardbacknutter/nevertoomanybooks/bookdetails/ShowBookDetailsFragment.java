@@ -600,7 +600,7 @@ public class ShowBookDetailsFragment
         } else {
             showTocBtn.setVisibility(View.VISIBLE);
             showTocBtn.setOnClickListener(v -> {
-                final Fragment fragment = TocFragment.create(book, false, aVm.getStyle());
+                final Fragment fragment = TocFragment.create(book, false, aVm.getBookshelf());
                 // yes, it must be the Activity FragmentManager,
                 // as that is where the R.id.main_fragment View is located.
                 // This also means the TocFragment is replacing the ViewPager!
@@ -632,7 +632,7 @@ public class ShowBookDetailsFragment
 
             Fragment fragment = fm.findFragmentByTag(TocFragment.TAG);
             if (fragment == null) {
-                fragment = TocFragment.create(book, true, aVm.getStyle());
+                fragment = TocFragment.create(book, true, aVm.getBookshelf());
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
                   .replace(R.id.toc_frame, fragment, TocFragment.TAG)

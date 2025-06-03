@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,16 +34,17 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -69,6 +71,8 @@ public class TocFragment
 
     /** Display a Book. From there the user could edit it... so we must propagate the result. */
     private DisplayBookLauncher displayBookLauncher;
+    /** View all works of an Author. */
+    private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
 
     /** The Adapter. */
     private AuthorWorksAdapter adapter;
@@ -76,26 +80,22 @@ public class TocFragment
     /**
      * Constructor.
      *
-     * @param book     to display
-     * @param embedded {@code true} when we're running embedded in the book-details fragment
-     *                 or {@code false} as standalone.
-     * @param style    to use
+     * @param book      to display
+     * @param embedded  {@code true} when we're running embedded in the book-details fragment
+     *                  or {@code false} as standalone.
+     * @param bookshelf current Bookshelf displayed by the BoB
      *
      * @return instance
      */
     @NonNull
     public static Fragment create(@NonNull final Book book,
                                   final boolean embedded,
-                                  @NonNull final Style style) {
+                                  @NonNull final Bookshelf bookshelf) {
         final Fragment fragment = new TocFragment();
         final Bundle args = new Bundle(6);
         args.putBoolean(BKEY_EMBEDDED, embedded);
-        args.putString(DBKey.STYLE.UUID, style.getUuid());
+        args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
         args.putLong(DBKey.FK_BOOK, book.getId());
-        // TODO: maybe don't bother... and just load the Book again in the vm.init() call?
-        args.putString(DBKey.TITLE, book.getTitle());
-        args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(book.getToc()));
-        args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, new ArrayList<>(book.getAuthors()));
         fragment.setArguments(args);
         return fragment;
     }
@@ -120,11 +120,20 @@ public class TocFragment
                 aVm.setDataModified();
                 // when running in embedded mode, update the BoB list
                 if (bookChangedListener != null) {
-                    final Book book = Book.from(vm.getBookId());
-                    bookChangedListener.onBookUpdated(book, (String) null);
+                    bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
                 }
             }
         }));
+
+        authorWorksLauncher = registerForActivityResult(
+                new AuthorWorksContract(), o -> o.ifPresent(data -> {
+                    if (data.isModified()) {
+                        // cascade back to our own parent
+                        aVm.setDataModified();
+                    }
+                    // always reload, easier and foolproof
+                    vm.reloadBook();
+                }));
 
         final Bundle args = requireArguments();
 
@@ -170,12 +179,23 @@ public class TocFragment
 
         adapter = new AuthorWorksAdapter(context, aVm.getStyle(), vm.getAuthors(), vm.getWorks());
         adapter.setOnRowClickListener((v, position) -> {
-            // If there's only one book, there is no point doing this
-            // as we're already on the book.
             final AuthorWork work = vm.getWorks().get(position);
-            if (work.getBookCount() > 1) {
-                // TODO: allBookshelves see AuthorWorksFragment
-                displayBookLauncher.launch(this, work, aVm.getBookshelf(), false);
+
+            if (v.getId() == R.id.author) {
+                final Author primaryAuthor = work.getPrimaryAuthor();
+                if (primaryAuthor != null) {
+                    authorWorksLauncher.launch(new AuthorWorksContract.Input(
+                            primaryAuthor.getId(),
+                            aVm.getBookshelf()));
+                }
+            } else {
+                // row/background: open the book
+                // If there's only one book, there is no point doing this
+                // as we're already on the book.
+                if (work.getBookCount() > 1) {
+                    // TODO: allBookshelves see AuthorWorksFragment
+                    displayBookLauncher.launch(this, work, aVm.getBookshelf(), false);
+                }
             }
         });
 
@@ -194,8 +214,8 @@ public class TocFragment
         if (!vm.isEmbedded()) {
             final Toolbar toolbar = getToolbar();
             //noinspection DataFlowIssue
-            vm.getScreenTitle(getContext()).ifPresent(toolbar::setTitle);
-            vm.getScreenSubtitle().ifPresent(toolbar::setSubtitle);
+            toolbar.setTitle(Author.getLabel(getContext(), vm.getAuthors()));
+            toolbar.setSubtitle(vm.getScreenSubtitle());
         }
     }
 }

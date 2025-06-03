@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.InfoPopup;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.ClickableListFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.OnRowClickListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
@@ -66,6 +67,8 @@ public class AuthorWorksAdapter
     private final Style style;
     @NonNull
     private final List<Author> authors;
+    @NonNull
+    private final ClickableListFormatter<Author> authorFormatter;
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
@@ -79,6 +82,8 @@ public class AuthorWorksAdapter
      * @param context Current context
      * @param style   to use
      * @param authors the author who 'owns' the works list
+     *                (passing in a list for ease of use / future use,
+     *                but we only use the primary-author for now)
      * @param works   to show
      */
     public AuthorWorksAdapter(@NonNull final Context context,
@@ -90,6 +95,8 @@ public class AuthorWorksAdapter
         this.style = style;
         this.authors = authors;
         this.works = works;
+
+        authorFormatter = new ClickableListFormatter<>(context, Details.AutoSelect, style);
     }
 
     /**
@@ -121,15 +128,15 @@ public class AuthorWorksAdapter
         final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(inflater, parent, false);
         switch (AuthorWork.Type.getType((char) viewType)) {
             case TocEntry: {
-                holder = new TocEntryHolder(vb, style);
+                holder = new TocEntryHolder(vb, style, authorFormatter);
                 break;
             }
             case BookLight: {
-                holder = new BookLightHolder(vb, style);
+                holder = new BookLightHolder(vb, style, authorFormatter);
                 break;
             }
             case Book: {
-                holder = new BookHolder(vb, style);
+                holder = new BookHolder(vb, style, authorFormatter);
                 break;
             }
             default:
@@ -189,8 +196,9 @@ public class AuthorWorksAdapter
         private final Drawable multipleBooksIcon;
 
         TocEntryHolder(@NonNull final RowAuthorWorkBinding vb,
-                       @NonNull final Style style) {
-            super(vb, style);
+                       @NonNull final Style style,
+                       @NonNull final ClickableListFormatter<Author> authorFormatter) {
+            super(vb, style, authorFormatter);
             final Context context = itemView.getContext();
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
@@ -227,8 +235,9 @@ public class AuthorWorksAdapter
         private final Drawable typeIcon;
 
         BookLightHolder(@NonNull final RowAuthorWorkBinding vb,
-                        @NonNull final Style style) {
-            super(vb, style);
+                        @NonNull final Style style,
+                        @NonNull final ClickableListFormatter<Author> authorFormatter) {
+            super(vb, style, authorFormatter);
             final Context context = itemView.getContext();
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
@@ -256,8 +265,9 @@ public class AuthorWorksAdapter
         private final Drawable typeIcon;
 
         BookHolder(@NonNull final RowAuthorWorkBinding vb,
-                   @NonNull final Style style) {
-            super(vb, style);
+                   @NonNull final Style style,
+                   @NonNull final ClickableListFormatter<Author> authorFormatter) {
+            super(vb, style, authorFormatter);
             final Context context = itemView.getContext();
             final Resources.Theme theme = context.getTheme();
             final Resources res = context.getResources();
@@ -282,11 +292,28 @@ public class AuthorWorksAdapter
         @NonNull
         private final Style style;
 
+        @NonNull
+        private final ClickableListFormatter<Author> authorFormatter;
+
         AuthorWorkHolder(@NonNull final RowAuthorWorkBinding vb,
-                         @NonNull final Style style) {
+                         @NonNull final Style style,
+                         @NonNull final ClickableListFormatter<Author> authorFormatter) {
             super(vb.getRoot());
             this.vb = vb;
             this.style = style;
+            this.authorFormatter = authorFormatter;
+        }
+
+        @Override
+        public void setOnRowClickListener(@Nullable final OnRowClickListener listener) {
+            super.setOnRowClickListener(listener);
+
+            if (listener != null) {
+                vb.author.setOnClickListener(v -> listener
+                        .onClick(v, getBindingAdapterPosition()));
+            } else {
+                vb.author.setOnClickListener(null);
+            }
         }
 
         @Override
@@ -308,9 +335,7 @@ public class AuthorWorksAdapter
 
             final Author primaryAuthor = work.getPrimaryAuthor();
             vb.author.setText(primaryAuthor != null
-                              //TODO: maybe add support for real-name by using Details.Full
-                              // however... screen space is at a premium: use Details.Normal
-                              ? primaryAuthor.getLabel(context, Details.Normal, style)
+                              ? authorFormatter.format(context, List.of(primaryAuthor))
                               : null);
 
             vb.btnType.setOnClickListener(anchor -> {
