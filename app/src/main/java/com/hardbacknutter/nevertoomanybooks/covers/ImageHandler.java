@@ -528,7 +528,7 @@ public final class ImageHandler {
         try {
             final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
             final EditPictureContract.Input input =
-                    EditPictureContract.createInput(context, srcFile, tempFile);
+                    EditPictureContract.Input.create(context, srcFile, tempFile);
             editPictureLauncher.launch(input);
 
         } catch (@NonNull final IllegalArgumentException e) {

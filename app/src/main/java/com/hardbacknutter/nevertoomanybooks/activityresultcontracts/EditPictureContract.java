@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,28 +54,6 @@ public class EditPictureContract
      * returning in {@link #parseResult(int, Intent)}.
      */
     private File dstFile;
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     * @param srcFile the input file
-     * @param dstFile the output file (name)
-     *
-     * @return instance
-     *
-     * @throws IllegalArgumentException When a given {@link File} is outside
-     *                                  the paths supported by the provider.
-     */
-    @NonNull
-    public static Input createInput(@NonNull final Context context,
-                                    @NonNull final File srcFile,
-                                    @NonNull final File dstFile) {
-        final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
-        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
-
-        return new Input(srcUri, dstUri, dstFile);
-    }
 
     @NonNull
     @Override
@@ -141,6 +119,28 @@ public class EditPictureContract
             this.srcUri = srcUri;
             this.dstUri = dstUri;
             this.dstFile = dstFile;
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         * @param srcFile the input file
+         * @param dstFile the output file (name)
+         *
+         * @return instance
+         *
+         * @throws IllegalArgumentException When a given {@link File} is outside
+         *                                  the paths supported by the provider.
+         */
+        @NonNull
+        public static Input create(@NonNull final Context context,
+                                   @NonNull final File srcFile,
+                                   @NonNull final File dstFile) {
+            final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
+            final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+
+            return new Input(srcUri, dstUri, dstFile);
         }
     }
 }
