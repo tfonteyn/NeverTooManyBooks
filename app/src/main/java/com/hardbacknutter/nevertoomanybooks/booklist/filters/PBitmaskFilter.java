@@ -52,10 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
  *      (i.e. at least one element in the Set),
  *      the filter looks for values having <strong>those</strong> bits set;
  *      other bits are <strong>ignored</strong></li>
+ * <li>Persisted in the database as a single {@code long} bitmask.</li>
  * </ul>
  * Note 1: we store ONE bit in an Integer - memory waste is huge! But considering we only
  * have something like 8 bits maximum... not a real problem for now.<br/>
- * Note 2: maybe we should wrap a BitSet is a custom (real) Set.
+ * Note 2: maybe we should wrap a {@code BitSet} as a custom (real) Set.
  */
 public class PBitmaskFilter
         implements PFilter<Set<Integer>> {
@@ -99,8 +100,7 @@ public class PBitmaskFilter
 
     @Override
     public boolean isActive() {
-        final String dbdKey = domain.getName();
-        if (ServiceLocator.getInstance().isFieldEnabled(dbdKey)) {
+        if (ServiceLocator.getInstance().isFieldEnabled(domain.getName())) {
             return value != null;
         }
         return false;

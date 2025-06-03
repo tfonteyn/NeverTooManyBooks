@@ -69,7 +69,7 @@ public interface PFilter<T>
     /**
      * Get the typed value.
      * <p>
-     * Implementations <strong>MUST</strong> return a copy of the internal value.
+     * Implementations <strong>MUST return a copy</strong> of the internal value.
      *
      * @return value or {@code null}
      */
@@ -89,7 +89,7 @@ public interface PFilter<T>
     /**
      * UI usage: get a human readable name for this filter.
      * <p>
-     * Returns "Filter" for generic/dynamic filters.
+     * Returns the localized text "Filter" for generic/dynamic filters.
      *
      * @param context Current context
      *

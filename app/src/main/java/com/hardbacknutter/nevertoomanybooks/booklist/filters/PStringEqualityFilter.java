@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * <ul>
  * <li>The value is a {@code String}.</li>
  * <li>A {@code null} value indicates an inactive filter.</li>
+ * <li>Persisted in the database as a {@code String}.</li>
  * </ul>
  */
 public class PStringEqualityFilter
@@ -88,8 +89,7 @@ public class PStringEqualityFilter
 
     @Override
     public boolean isActive() {
-        final String dbdKey = domain.getName();
-        if (ServiceLocator.getInstance().isFieldEnabled(dbdKey)) {
+        if (ServiceLocator.getInstance().isFieldEnabled(domain.getName())) {
             return value != null;
         } else {
             return false;

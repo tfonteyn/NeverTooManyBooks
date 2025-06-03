@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * <li>The value is a {@code Set<Long>} with the key being the entity id.</li>
  * <li>The Set is never {@code null}.</li>
  * <li>An empty Set indicates an inactive filter.</li>
+ * <li>Persisted in the database as a single CSV {@code String} with the ids.</li>
  * </ul>
  *
  * <strong>IMPORTANT</strong>: there <strong>may</strong> be invalid/deleted ids
@@ -63,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public class PEntityListFilter<T extends Entity>
         implements PFilter<Set<Long>> {
 
+    private static final String PERSISTENCE_DELIMITER = ",";
     protected final Set<Long> value = new HashSet<>();
     @SuppressWarnings("FieldNotUsedInToString")
     @StringRes
@@ -103,8 +105,7 @@ public class PEntityListFilter<T extends Entity>
 
     @Override
     public boolean isActive() {
-        final String dbdKey = domain.getName();
-        if (ServiceLocator.getInstance().isFieldEnabled(dbdKey)) {
+        if (ServiceLocator.getInstance().isFieldEnabled(domain.getName())) {
             return !value.isEmpty();
         }
         return false;
@@ -144,7 +145,7 @@ public class PEntityListFilter<T extends Entity>
         // deleted ids will be included
         return value.stream()
                     .map(String::valueOf)
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.joining(PERSISTENCE_DELIMITER));
     }
 
     @Override
@@ -152,7 +153,7 @@ public class PEntityListFilter<T extends Entity>
         value.clear();
         if (csvString != null && !csvString.isEmpty()) {
             // deleted ids will be included
-            value.addAll(Arrays.stream(csvString.split(","))
+            value.addAll(Arrays.stream(csvString.split(PERSISTENCE_DELIMITER))
                                .map(Long::parseLong)
                                .collect(Collectors.toList()));
         }

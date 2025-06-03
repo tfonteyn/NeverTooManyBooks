@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
  * <ul>
  * <li>The value is a {@code Boolean}.</li>
  * <li>A {@code null} value indicates an inactive filter.</li>
+ * <li>Persisted in the database as a {@code "0"}=={@code false} or {@code "1"}=={@code true}.</li>
  * </ul>
  */
 public class PBooleanFilter
@@ -82,8 +83,7 @@ public class PBooleanFilter
 
     @Override
     public boolean isActive() {
-        final String dbdKey = domain.getName();
-        if (ServiceLocator.getInstance().isFieldEnabled(dbdKey)) {
+        if (ServiceLocator.getInstance().isFieldEnabled(domain.getName())) {
             return value != null;
         }
         return false;
