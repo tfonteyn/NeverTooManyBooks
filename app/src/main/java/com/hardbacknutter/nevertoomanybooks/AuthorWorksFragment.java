@@ -252,7 +252,7 @@ public class AuthorWorksFragment
     @Override
     public void onResume() {
         super.onResume();
-        vm.onResume();
+        vm.reloadAuthorIfChanged();
     }
 
     private void setupImageView(@NonNull final Toolbar toolbar) {

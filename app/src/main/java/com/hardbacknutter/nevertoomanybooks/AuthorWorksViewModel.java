@@ -268,7 +268,7 @@ public class AuthorWorksViewModel
         onWorks.setValue(null);
     }
 
-    void onResume() {
+    void reloadAuthorIfChanged() {
         final Author tmp = ServiceLocator.getInstance().getAuthorDao()
                                          .findById(author.getId())
                                          .orElseThrow();
