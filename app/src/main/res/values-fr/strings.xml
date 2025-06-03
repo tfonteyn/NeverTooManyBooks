@@ -672,6 +672,7 @@
     <string name="option_info_import_books_option_new_only">Importez uniquement les nouveaux livres. Toutes les mises à jour des livres existants seront ignorées.</string>
     <string name="ps_manage_fields">Les champs sélectionnés sont visibles dans les écrans d’ajout et d’édition des livres. Les champs non sélectionnés sont cachés.</string>
     <string name="info_rebuild_scheduled">Reconstruction planifiée</string>
+    <string name="menu_search_updates">Recherche de mises à jour</string>
     <string name="info_select_fields_to_update">Les champs sélectionnés vont être mis à jour à partir d’Internet. Les champs non sélectionnés ne seront pas modifiés.</string>
     <string name="lbl_citation_type">Format de citation/partage</string>
     <string name="lbl_citation_type_default">Je lis…</string>

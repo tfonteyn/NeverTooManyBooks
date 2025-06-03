@@ -667,6 +667,7 @@
     <string name="option_info_import_books_option_new_only">Yalnızca yeni kitapları içe aktarın. Mevcut kitaplara yapılan herhangi bir güncelleme göz ardı edilecektir.</string>
     <string name="ps_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="info_rebuild_scheduled">Yeniden planlandı</string>
+    <string name="menu_search_updates">Güncellemeleri arayın</string>
     <string name="info_select_fields_to_update">Seçilen alanlar İnternet’ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
     <string name="lbl_citation_type">Alıntı/Paylaşım formatı</string>
     <string name="lbl_citation_type_default">Okuyorum…</string>

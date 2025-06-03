@@ -756,6 +756,7 @@
     <string name="info_bulk_set_location">தேர்ந்தெடுக்கப்பட்ட முனையின் கீழ் பட்டியலிடப்பட்ட அனைத்து புத்தகங்களுக்கும் நீங்கள் ஒதுக்க விரும்பும் இடத்தைத் தேர்ந்தெடுக்கவும்.</string>
     <string name="menu_update_fields">புலங்களைப் புதுப்பிக்கவும்</string>
     <string name="menu_update_books">புத்தகங்களைப் புதுப்பிக்கவும்</string>
+    <string name="menu_search_updates">புதுப்பிப்புகளைத் தேடு</string>
     <string name="info_select_fields_to_update">தேர்ந்தெடுக்கப்பட்ட புலங்கள் இணையத்திலிருந்து புதுப்பிக்கப்படும். தேர்வு செய்யப்படாத புலங்கள் மாறாமல் இருக்கும்.</string>
     <string name="lbl_select_fields">புலங்களைத் தேர்ந்தெடுக்கவும்</string>
     <string name="option_field_usage_copy_if_blank">காலியாக இருந்தால் நகலெடுக்கவும்</string>

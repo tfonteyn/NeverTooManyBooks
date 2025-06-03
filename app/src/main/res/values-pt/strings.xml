@@ -487,6 +487,7 @@
     <string name="lbl_purge_blns">Limpar o estado do nó</string>
     <string name="info_purge_blns_all">Limpar o estado do nó de todas as listas</string>
     <string name="ps_bob_books_under_multiple_authors_main_only">apenas sob o seu autor principal</string>
+    <string name="menu_search_updates">Procurar actualizações</string>
     <string name="info_select_fields_to_update">Os campos selecionados serão atualizados a partir da internet. Os campos não selecionados permanecerão inalterados.</string>
     <string name="option_bob_filter_lend_out_no">Livros disponíveis</string>
     <string name="X_lbl_anthologies">Antologias</string>

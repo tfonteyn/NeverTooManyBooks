@@ -261,6 +261,7 @@
     <string name="info_purge_blns_all">清除所有清單的節點狀態</string>
     <string name="info_purge_blns_item_name">要清除 %1$s 「%2$s」的節點狀態嗎？</string>
     <string name="info_rebuild_scheduled">已計劃重建</string>
+    <string name="menu_search_updates">搜尋更新</string>
     <string name="info_select_fields_to_update">將從互聯網更新選取的欄位。將不會更改未選取欄位。</string>
     <string name="lbl_citation_type">引用/分享格式</string>
     <string name="lbl_citation_type_default">我正在閱讀……</string>

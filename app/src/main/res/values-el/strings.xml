@@ -669,6 +669,7 @@ A question mark is written as the character semicolon: ';'
     <string name="option_info_import_books_option_new_only">Εισαγωγή μόνο νέων βιβλίων. Τυχόν ενημερώσεις σε υπάρχοντα βιβλία θα αγνοηθούν.</string>
     <string name="ps_manage_fields">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
     <string name="info_rebuild_scheduled">Ανακατασκευή προγραμματισμένη</string>
+    <string name="menu_search_updates">Αναζήτηση για ενημερώσεις</string>
     <string name="info_select_fields_to_update">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχει.</string>
     <string name="lbl_citation_type">Μορφή αναφοράς/ κοινής χρήσης</string>
     <string name="lbl_citation_type_default">Διαβάζω…</string>

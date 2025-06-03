@@ -267,6 +267,7 @@
     <string name="info_purge_blns_all">Xóa trạng thái nút cho tất cả danh sách</string>
     <string name="info_purge_blns_item_name">Xóa trạng thái nút cho %1$s “%2$s”?</string>
     <string name="info_rebuild_scheduled">Xây dựng lại theo lịch trình</string>
+    <string name="menu_search_updates">Tìm kiếm cập nhật</string>
     <string name="info_select_fields_to_update">Các trường được chọn sẽ được cập nhật từ internet. Các trường không được chọn sẽ không thay đổi.</string>
     <string name="lbl_citation_type">Định dạng trích dẫn/Chia sẻ</string>
     <string name="lbl_citation_type_default">Tôi đang đọc…</string>

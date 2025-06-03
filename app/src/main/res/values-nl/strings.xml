@@ -242,6 +242,7 @@
     <string name="info_purge_blns_all">Wis de node status van alle lijsten</string>
     <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s”?</string>
     <string name="info_rebuild_scheduled">Herbouw gepland</string>
+    <string name="menu_search_updates">Zoek naar updates</string>
     <string name="info_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
     <string name="lbl_citation_type">Opmaak citatie/delen</string>
     <string name="lbl_citation_type_default">Ik lees…</string>

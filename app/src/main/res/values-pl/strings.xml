@@ -669,6 +669,7 @@
     <string name="option_info_import_books_option_new_only">Importuj tylko nowe książki. Wszelkie aktualizacje istniejących książek będą ignorowane.</string>
     <string name="ps_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="info_rebuild_scheduled">Odbudowanie zaplanowano</string>
+    <string name="menu_search_updates">Wyszukiwanie aktualizacji</string>
     <string name="info_select_fields_to_update">Wybrane pola będą zaktualizowane wg danych z sieci. Pozostałe nie zostaną zmienione.</string>
     <string name="lbl_citation_type">Format cytowania/udostępniania</string>
     <string name="lbl_citation_type_default">Czytam…</string>
