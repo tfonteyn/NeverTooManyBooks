@@ -857,4 +857,5 @@
     <string name="option_field_usage_append">Engadir datos adicionais</string>
     <string name="lbl_tab_details">Detalles</string>
     <string name="unknown_author">[Autoría descoñecida]</string>
+    <string name="menu_search_updates">Buscar actualizacións</string>
 </resources>
