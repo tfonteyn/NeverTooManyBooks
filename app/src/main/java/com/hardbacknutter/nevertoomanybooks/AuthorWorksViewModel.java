@@ -313,6 +313,7 @@ public class AuthorWorksViewModel
      * @param author to update
      */
     void onAuthorEditDone(@NonNull final Author author) {
+        dataModified = !author.equals(this.author);
         this.author = author;
         onAuthor.setValue(author);
     }
