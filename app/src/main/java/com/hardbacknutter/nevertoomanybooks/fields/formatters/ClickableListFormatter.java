@@ -93,7 +93,8 @@ public class ClickableListFormatter<T extends Entity>
         }
 
         final SpannableStringBuilder builder = new SpannableStringBuilder();
-        for (final T entity : rawValue) {
+        for (int i = 0; i < rawValue.size(); i++) {
+            final T entity = rawValue.get(i);
             final ImageSpan imageSpan = new ImageSpan(icon, ImageSpan.ALIGN_BOTTOM);
 
             final Spanned text = Html.fromHtml(entity.getLabel(context, details, style),
@@ -112,8 +113,10 @@ public class ClickableListFormatter<T extends Entity>
                 builder.setSpan(imageSpan, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 builder.append(text);
             }
-            // spacing so tapping is easier
-            builder.append("\n");
+            // add spacing so tapping is easier (but not after the last row)
+            if (i + 1 != rawValue.size()) {
+                builder.append("\n");
+            }
 
         }
         return builder;
