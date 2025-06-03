@@ -327,6 +327,10 @@ public final class IsfdbAuthorResolver
 
         String birthPlace = null;
 
+        // 2025-06-03: if the image is hosted elsewhere, e.g. Fantascienza,
+        // the download might fail due to that site blocking direct url requests.
+        // There are too many 3rd party sites to try fixing this.
+        // Only direct ISFDB downloads are considered "supported"
         final Element image = root.selectFirst("img[alt='Author Picture']");
         if (image != null) {
             final String imageUrl = image.attr("src");
