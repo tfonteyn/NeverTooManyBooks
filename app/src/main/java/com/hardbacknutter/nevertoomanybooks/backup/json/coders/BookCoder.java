@@ -74,7 +74,7 @@ public class BookCoder
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
     private final JsonCoder<Tag> tagCoder = new TagCoder();
-    private final JsonCoder<Identifier.Value> identifierCoder = new IdentifierValueCoder();
+    private final JsonCoder<Identifier.Value> identifierValueCoder = new IdentifierValueCoder();
     @NonNull
     private final RealNumberParser realNumberParser;
     @NonNull
@@ -162,7 +162,7 @@ public class BookCoder
             case Book.BKEY_IDENTIFIER_LIST: {
                 final List<Identifier.Value> list = book.getIdentifiers();
                 if (!list.isEmpty()) {
-                    out.put(key, identifierCoder.encode(list));
+                    out.put(key, identifierValueCoder.encode(list));
                 }
                 return;
             }
@@ -236,7 +236,7 @@ public class BookCoder
                     break;
                 }
                 case Book.BKEY_IDENTIFIER_LIST: {
-                    book.setIdentifiers(identifierCoder.decode(data.getJSONArray(key)));
+                    book.setIdentifiers(identifierValueCoder.decode(data.getJSONArray(key)));
                     break;
                 }
                 case Book.BKEY_PUBLISHER_LIST: {
