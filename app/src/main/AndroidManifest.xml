@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -157,12 +157,23 @@
             android:name=".FragmentHostActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
+        <!-- MUST have "singleTask" to avoid the user going in circles
+             from AuthorWorks -1-> book -2-> AuthorWorks.
+             With this flag, step 2 will automatically go back to the first/only
+             AuthorWorks.
+             -->
+        <activity
+            android:name=".AuthorWorksActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            />
+
         <activity
             android:name=".debug.AcraCustomDialog"
-            android:process=":acra"
             android:excludeFromRecents="true"
             android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleInstance"
+            android:process=":acra" />
     </application>
 
 </manifest>

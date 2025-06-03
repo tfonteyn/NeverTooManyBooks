@@ -29,10 +29,11 @@ import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity;
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -47,10 +48,13 @@ public class AuthorWorksContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        return FragmentHostActivity.createIntent(context, R.layout.activity_author_works,
-                                                 AuthorWorksFragment.class)
-                                   .putExtra(DBKey.FK_AUTHOR, input.authorId)
-                                   .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf);
+        return FragmentHostActivityLauncher
+                .createIntent(context,
+                              AuthorWorksFragment.class,
+                              R.layout.activity_author_works,
+                              AuthorWorksActivity.class)
+                .putExtra(DBKey.FK_AUTHOR, input.authorId)
+                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf);
     }
 
     @Override
