@@ -603,7 +603,7 @@ public final class ImageHandler {
             try {
                 final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
                 final TakePictureContract.Input input =
-                        TakePictureContract.createInput(context, tempFile);
+                        TakePictureContract.Input.create(context, tempFile);
                 takePictureLauncher.launch(input);
 
             } catch (@NonNull final CoverStorageException e) {

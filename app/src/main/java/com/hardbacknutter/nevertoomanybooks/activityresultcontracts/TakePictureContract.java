@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,25 +58,6 @@ public class TakePictureContract
      */
     private File dstFile;
 
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     * @param dstFile the output file (name)
-     *
-     * @return instance
-     *
-     * @throws IllegalArgumentException When a given {@link File} is outside
-     *                                  the paths supported by the provider.
-     */
-    @NonNull
-    public static Input createInput(@NonNull final Context context,
-                                    @NonNull final File dstFile) {
-        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
-
-        return new Input(dstUri, dstFile);
-    }
-
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
@@ -117,6 +98,25 @@ public class TakePictureContract
                       @NonNull final File dstFile) {
             this.dstUri = dstUri;
             this.dstFile = dstFile;
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         * @param dstFile the output file (name)
+         *
+         * @return instance
+         *
+         * @throws IllegalArgumentException When a given {@link File} is outside
+         *                                  the paths supported by the provider.
+         */
+        @NonNull
+        public static Input create(@NonNull final Context context,
+                                   @NonNull final File dstFile) {
+            final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+
+            return new Input(dstUri, dstFile);
         }
     }
 }
