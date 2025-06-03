@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
@@ -64,17 +63,11 @@ public class AuthorWorksViewModel
     /** Show the Books. Defaults to {@code true}. */
     private static final String PK_SHOW_BOOKS = PK_PREFIX + "show.books";
 
-    /**
-     * Update the author details (name, dates, etc...).
-     */
+    /** Update the author details (name, dates, etc...). */
     private final MutableLiveData<Author> onAuthor = new MutableLiveData<>();
-    /**
-     * Update the works list.
-     */
+    /** Update the works list. */
     private final MutableLiveData<Void> onWorks = new MutableLiveData<>();
-    /**
-     * Update the name of the bookshelf + number of items.
-     */
+    /** Update the name of the bookshelf + number of items. */
     private final MutableLiveData<String> onBookshelf = new MutableLiveData<>();
 
     private final AuthorResolverTask authorResolverTask = new AuthorResolverTask();
@@ -94,10 +87,7 @@ public class AuthorWorksViewModel
     private boolean showBooks = true;
     /** Show all shelves, or only the initially selected shelf. */
     private boolean allBookshelves;
-    /**
-     * Order the list by...
-     * For all allowed values, see {@link AuthorDao.WorksOrderBy}
-     */
+    /** Order the list by... */
     @AuthorDao.WorksOrderBy
     @NonNull
     private String orderByColumn = DBKey.TITLE_OB;
@@ -115,17 +105,17 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<Throwable>> onResolverFailure() {
+    LiveData<LiveDataEvent<Throwable>> onResolverFailure() {
         return authorResolverTask.onFailure();
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<Boolean>> onResolverCancelled() {
+    LiveData<LiveDataEvent<Boolean>> onResolverCancelled() {
         return authorResolverTask.onCancelled();
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<Boolean>> onResolverFinished() {
+    LiveData<LiveDataEvent<Boolean>> onResolverFinished() {
         return authorResolverTask.onFinished();
     }
 
@@ -135,7 +125,7 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
-    public MutableLiveData<Void> onWorks() {
+    MutableLiveData<Void> onWorks() {
         return onWorks;
     }
 
@@ -157,14 +147,15 @@ public class AuthorWorksViewModel
 
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
-
             menuHandlers = List.of(new AuthorViewAuthorOnSiteMenuHandler());
+        }
 
-            final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
-            if (authorId <= 0) {
-                throw new IllegalArgumentException(DBKey.FK_AUTHOR);
-            }
+        final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
+        if (authorId <= 0) {
+            throw new IllegalArgumentException(DBKey.FK_AUTHOR);
+        }
 
+        if (author == null || author.getId() != authorId) {
             author = ServiceLocator.getInstance().getAuthorDao()
                                    .findById(authorId)
                                    .orElseThrow();
@@ -181,11 +172,11 @@ public class AuthorWorksViewModel
             showTocEntries = prefs.getBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries);
             showBooks = prefs.getBoolean(PK_SHOW_BOOKS, showBooks);
 
+
+            onAuthor.setValue(author);
+            onBookshelf.setValue(getBookshelfAndNrOfEntries(context));
             reloadWorkList();
         }
-
-        onAuthor.setValue(author);
-        onBookshelf.setValue(getBookshelfAndNrOfEntries(context));
     }
 
     @NonNull
@@ -193,7 +184,7 @@ public class AuthorWorksViewModel
         return menuHandlers;
     }
 
-    void reloadWorkList() {
+    private void reloadWorkList() {
         works.clear();
         final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
 
@@ -204,6 +195,7 @@ public class AuthorWorksViewModel
                                               orderByColumn);
 
         works.addAll(authorWorks);
+        onWorks.setValue(null);
     }
 
     @NonNull
@@ -222,7 +214,6 @@ public class AuthorWorksViewModel
                          .apply();
 
         reloadWorkList();
-        onWorks.setValue(null);
     }
 
     public boolean isShowBooks() {
@@ -247,7 +238,6 @@ public class AuthorWorksViewModel
                          .apply();
 
         reloadWorkList();
-        onWorks.setValue(null);
     }
 
     /**
@@ -265,7 +255,6 @@ public class AuthorWorksViewModel
         allBookshelves = all;
         onBookshelf.setValue(getBookshelfAndNrOfEntries(context));
         reloadWorkList();
-        onWorks.setValue(null);
     }
 
     void reloadAuthorIfChanged() {
@@ -273,11 +262,8 @@ public class AuthorWorksViewModel
                                          .findById(author.getId())
                                          .orElseThrow();
         if (!tmp.equals(author)) {
-            author = tmp;
-            // the works might not have changed, but reload them anyhow
-            reloadWorkList();
-            onAuthor.setValue(author);
-            onWorks.setValue(null);
+            // the works might not have changed, but we need to be sure here.
+            setAuthor(tmp, true);
         }
     }
 
@@ -292,30 +278,20 @@ public class AuthorWorksViewModel
     }
 
     /**
-     * Set a new author, reload the works, and trigger UI updates.
-     *
-     * @param id author id to load
-     */
-    void setAuthor(@IntRange(from = 1) final long id) {
-        author = ServiceLocator.getInstance().getAuthorDao()
-                               .findById(id)
-                               .orElseThrow();
-        reloadWorkList();
-        onAuthor.setValue(this.author);
-        onWorks.setValue(null);
-    }
-
-    /**
      * The author was edited by the user.
      * Update the author, and trigger UI updates.
-     * The works list is presumed not the have changed, and NOT reloaded!
      *
-     * @param author to update
+     * @param author      to update
+     * @param reloadWorks whether to reload the works as well
      */
-    void onAuthorEditDone(@NonNull final Author author) {
+    void setAuthor(@NonNull final Author author,
+                   final boolean reloadWorks) {
         dataModified = !author.equals(this.author);
         this.author = author;
         onAuthor.setValue(author);
+        if (reloadWorks) {
+            reloadWorkList();
+        }
     }
 
     @NonNull

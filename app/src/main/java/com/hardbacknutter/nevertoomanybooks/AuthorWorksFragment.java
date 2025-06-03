@@ -142,7 +142,8 @@ public class AuthorWorksFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        vm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
+        //noinspection DataFlowIssue
+        vm = new ViewModelProvider(getActivity()).get(AuthorWorksViewModel.class);
         //noinspection DataFlowIssue
         vm.init(getContext(), requireArguments());
 
@@ -159,7 +160,9 @@ public class AuthorWorksFragment
                 EditAuthorDialogFragment::new,
                 EditAuthorBottomSheet::new);
         editAuthorLauncher.registerForFragmentResult(fm, this);
-        editAuthorLauncher.setOnEditInPlaceListener(author -> vm.onAuthorEditDone(author));
+        // We're editing the Author fields only.
+        // The works list is presumed not to have changed, and NOT reloaded!
+        editAuthorLauncher.setOnEditInPlaceListener(author -> vm.setAuthor(author, false));
 
         final Resources res = getContext().getResources();
         dff = new DateFieldFormatter(res.getConfiguration().getLocales().get(0), false);

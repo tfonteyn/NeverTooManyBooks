@@ -20,6 +20,15 @@
 
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Intent;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+
+import java.util.Objects;
+
 /**
  * Needs MANIFEST setup to set launchMode="singleTask".
  * <pre>{@code
@@ -34,4 +43,24 @@ package com.hardbacknutter.nevertoomanybooks;
 public class AuthorWorksActivity
         extends FragmentHostActivity {
 
+    private AuthorWorksViewModel vm;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        vm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
+        vm.init(this, Objects.requireNonNull(getIntent().getExtras()));
+    }
+
+    /**
+     * Called when the user opens this Activity a second time.
+     *
+     * @param intent The new intent that was used to start the activity
+     */
+    @Override
+    protected void onNewIntent(@NonNull final Intent intent) {
+        super.onNewIntent(intent);
+        vm.init(this, Objects.requireNonNull(intent.getExtras()));
+    }
 }
