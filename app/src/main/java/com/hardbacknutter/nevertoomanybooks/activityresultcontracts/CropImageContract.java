@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.CropImageFragment;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -66,9 +66,8 @@ public class CropImageContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
 
-        return FragmentHostActivity
-                .createIntent(context, R.layout.activity_fullscreen,
-                              CropImageFragment.class)
+        return FragmentHostActivityLauncher
+                .createIntent(context, CropImageFragment.class, R.layout.activity_fullscreen)
                 .putExtra(BKEY_SOURCE, input.srcFile.getAbsolutePath())
                 .putExtra(BKEY_DESTINATION, input.dstFile.getAbsolutePath());
     }

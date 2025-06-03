@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncFragment;
 
 public class CalibreSyncContract
@@ -35,6 +35,6 @@ public class CalibreSyncContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return FragmentHostActivity.createIntent(context, CalibreSyncFragment.class);
+        return FragmentHostActivityLauncher.createIntent(context, CalibreSyncFragment.class);
     }
 }

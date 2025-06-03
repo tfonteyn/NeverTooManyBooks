@@ -31,7 +31,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesFragment;
@@ -58,7 +58,7 @@ public class EditBookshelvesContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Long id) {
-        return FragmentHostActivity
+        return FragmentHostActivityLauncher
                 .createIntent(context, EditBookshelvesFragment.class)
                 .putExtra(DBKey.FK_BOOKSHELF, (long) id);
     }

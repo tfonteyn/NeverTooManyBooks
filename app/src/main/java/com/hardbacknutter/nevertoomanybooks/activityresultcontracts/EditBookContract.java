@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -48,8 +48,8 @@ public class EditBookContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        final Intent intent = FragmentHostActivity
-                .createIntent(context, R.layout.activity_edit_book, EditBookFragment.class)
+        final Intent intent = FragmentHostActivityLauncher
+                .createIntent(context, EditBookFragment.class, R.layout.activity_edit_book)
                 .putExtra(Style.BKEY_UUID, input.styleUuid);
 
         if (input.book != null) {

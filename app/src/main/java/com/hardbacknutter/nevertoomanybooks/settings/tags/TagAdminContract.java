@@ -33,7 +33,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsOutput;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -50,8 +50,8 @@ public class TagAdminContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                final Void unused) {
-        return FragmentHostActivity.createIntent(context, R.layout.activity_main_tabbar,
-                                                 TagAdminFragment.class);
+        return FragmentHostActivityLauncher
+                .createIntent(context, TagAdminFragment.class, R.layout.activity_main_tabbar);
     }
 
     @Override

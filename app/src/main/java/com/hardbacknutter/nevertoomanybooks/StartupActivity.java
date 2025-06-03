@@ -280,7 +280,7 @@ public class StartupActivity
                         case 2 /* R.string.option_storage_edit_settings */:
                         default: {
                             // take user to the settings screen
-                            final Intent intent = FragmentHostActivity
+                            final Intent intent = FragmentHostActivityLauncher
                                     .createIntent(this, SettingsFragment.class)
                                     .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                               CoverVolume.PK_VOLUME_INDEX)

@@ -938,7 +938,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_ABOUT) {
-            startActivity(FragmentHostActivity.createIntent(this, AboutFragment.class));
+            startActivity(FragmentHostActivityLauncher.createIntent(this, AboutFragment.class));
             return true;
         }
 
@@ -1235,7 +1235,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (menuItemId == R.id.MENU_CALIBRE_SETTINGS) {
-            final Intent intent = FragmentHostActivity
+            final Intent intent = FragmentHostActivityLauncher
                     .createIntent(this, CalibrePreferencesFragment.class);
             startActivity(intent);
             return true;

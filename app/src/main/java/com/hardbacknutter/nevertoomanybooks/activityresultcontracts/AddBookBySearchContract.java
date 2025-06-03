@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.search.Scanning;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
@@ -52,31 +52,31 @@ public class AddBookBySearchContract
                                @NonNull final Input input) {
         switch (input.by) {
             case Isbn:
-                return FragmentHostActivity
+                return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(Style.BKEY_UUID, input.styleUuid);
 
             case Scan:
-                return FragmentHostActivity
+                return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(Style.BKEY_UUID, input.styleUuid)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCANNER_MODE,
                                   (Parcelable) Scanning.getScannerModeSingle(context));
 
             case ScanBatch:
-                return FragmentHostActivity
+                return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(Style.BKEY_UUID, input.styleUuid)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCANNER_MODE,
                                   (Parcelable) Scanning.Batch);
 
             case ExternalId:
-                return FragmentHostActivity
+                return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByExternalIdFragment.class)
                         .putExtra(Style.BKEY_UUID, input.styleUuid);
 
             case Text:
-                return FragmentHostActivity
+                return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByTextFragment.class)
                         .putExtra(Style.BKEY_UUID, input.styleUuid);
             default:

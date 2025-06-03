@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -60,11 +58,6 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 public class FragmentHostActivity
         extends BaseActivity {
 
-    private static final String TAG = "FragmentHostActivity";
-
-    private static final String BKEY_ACTIVITY = TAG + ":a";
-    private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
-
     @Nullable
     private ActivityResultLauncher<String> editSettingsLauncher;
     @Nullable
@@ -76,27 +69,13 @@ public class FragmentHostActivity
 
     private OnBackPressedCallback backClosesNavDrawer;
 
-    @NonNull
-    public static Intent createIntent(@NonNull final Context context,
-                                      @NonNull final Class<? extends Fragment> fragmentClass) {
-        return createIntent(context, R.layout.activity_main, fragmentClass);
-    }
-
-    @NonNull
-    public static Intent createIntent(@NonNull final Context context,
-                                      @LayoutRes final int activityLayoutId,
-                                      @NonNull final Class<? extends Fragment> fragmentClass) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(BKEY_ACTIVITY, activityLayoutId)
-                .putExtra(BKEY_FRAGMENT_CLASS, fragmentClass.getName());
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         @LayoutRes
-        final int activityResId = getIntent().getIntExtra(BKEY_ACTIVITY, 0);
+        final int activityResId = getIntent().getIntExtra(
+                FragmentHostActivityLauncher.BKEY_ACTIVITY, 0);
         setContentView(activityResId);
 
         final DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
@@ -110,7 +89,8 @@ public class FragmentHostActivity
         initToolbar(toolbar);
 
         final String classname = Objects.requireNonNull(
-                getIntent().getStringExtra(BKEY_FRAGMENT_CLASS), "fragment class");
+                getIntent().getStringExtra(FragmentHostActivityLauncher.BKEY_FRAGMENT_CLASS),
+                "fragment class");
 
         final Class<? extends Fragment> fragmentClass;
         try {
@@ -249,7 +229,7 @@ public class FragmentHostActivity
             return true;
 
         } else if (menuItemId == R.id.MENU_ABOUT) {
-            startActivity(createIntent(this, AboutFragment.class));
+            startActivity(FragmentHostActivityLauncher.createIntent(this, AboutFragment.class));
             return true;
         }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,7 @@ import androidx.preference.PreferenceManager;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -254,7 +254,7 @@ public class SqliteShellFragment
 
             } else if (menuItemId == R.id.MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES) {
                 //noinspection DataFlowIssue
-                final Intent intent = FragmentHostActivity
+                final Intent intent = FragmentHostActivityLauncher
                         .createIntent(getContext(), SqlitePreferenceFragment.class);
                 startActivity(intent);
                 return true;

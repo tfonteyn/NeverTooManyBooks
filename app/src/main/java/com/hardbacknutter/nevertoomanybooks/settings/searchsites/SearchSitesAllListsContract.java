@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -42,8 +42,8 @@ public class SearchSitesAllListsContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return FragmentHostActivity
-                .createIntent(context, R.layout.activity_main_tabbar, SearchAdminFragment.class);
+        return FragmentHostActivityLauncher
+                .createIntent(context, SearchAdminFragment.class, R.layout.activity_main_tabbar);
     }
 
     @NonNull

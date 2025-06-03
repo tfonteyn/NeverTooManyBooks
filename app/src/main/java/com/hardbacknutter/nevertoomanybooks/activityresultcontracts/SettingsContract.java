@@ -32,7 +32,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -49,7 +49,8 @@ public class SettingsContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final String scrollToKey) {
-        final Intent intent = FragmentHostActivity.createIntent(context, SettingsFragment.class);
+        final Intent intent = FragmentHostActivityLauncher
+                .createIntent(context, SettingsFragment.class);
         if (scrollToKey != null) {
             intent.putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY, scrollToKey);
         }

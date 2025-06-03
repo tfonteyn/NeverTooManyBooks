@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -56,7 +56,7 @@ public class UpdateSingleBookContract
         final List<Long> bookIdList = new ArrayList<>();
         bookIdList.add(book.getId());
 
-        final Intent intent = FragmentHostActivity
+        final Intent intent = FragmentHostActivityLauncher
                 .createIntent(context, SearchBookUpdatesFragment.class)
                 .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(bookIdList))
                 .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, book.getTitle());

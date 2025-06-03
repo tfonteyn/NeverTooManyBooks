@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
@@ -75,24 +75,22 @@ public class MaintenanceFragment
 
     private SettingsViewModel settingsViewModel;
     private MaintenanceViewModel vm;
-    private SettingsViewModel settingsVm;
-
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<GetContentUriForWritingContract.Input>
             createDocumentLauncher =
             registerForActivityResult(new GetContentUriForWritingContract(),
                                       o -> o.ifPresent(this::createBugReport));
+    private SettingsViewModel settingsVm;
     /** View Binding. */
     private FragmentMaintenanceBinding vb;
 
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public static Intent createDebugReportIntent(@NonNull final Context context) {
-        final Intent intent = FragmentHostActivity
-                .createIntent(context, MaintenanceFragment.class);
-        intent.putExtra(MaintenanceViewModel.BKEY_CREATE_REPORT,
-                        new ArrayList<>(MaintenanceViewModel.BUG_REPORT_OPTIONS_ALL));
-        return intent;
+        return FragmentHostActivityLauncher
+                .createIntent(context, MaintenanceFragment.class)
+                .putExtra(MaintenanceViewModel.BKEY_CREATE_REPORT,
+                          new ArrayList<>(MaintenanceViewModel.BUG_REPORT_OPTIONS_ALL));
     }
 
     @Override

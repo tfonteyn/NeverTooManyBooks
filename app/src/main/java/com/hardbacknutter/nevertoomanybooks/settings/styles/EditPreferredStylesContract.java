@@ -31,7 +31,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class EditPreferredStylesContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final String styleUuid) {
-        return FragmentHostActivity
+        return FragmentHostActivityLauncher
                 .createIntent(context, PreferredStylesFragment.class)
                 .putExtra(Style.BKEY_UUID, styleUuid);
     }

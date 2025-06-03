@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.widget.TextView;
@@ -39,7 +40,7 @@ import java.util.Deque;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 public class EngineRegistration {
@@ -93,8 +94,9 @@ public class EngineRegistration {
             showRegistrationDialog(context, searchEngine, action -> {
                 switch (action) {
                     case Register:
-                        context.startActivity(FragmentHostActivity.createIntent(
-                                context, searchEngine.getPreferenceFragmentClass()));
+                        final Intent intent = FragmentHostActivityLauncher.createIntent(
+                                context, searchEngine.getPreferenceFragmentClass());
+                        context.startActivity(intent);
                         return;
 
                     case NotNow:

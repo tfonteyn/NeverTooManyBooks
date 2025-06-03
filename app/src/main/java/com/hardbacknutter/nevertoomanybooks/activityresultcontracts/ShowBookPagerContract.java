@@ -32,7 +32,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerViewModel;
@@ -49,8 +49,8 @@ public class ShowBookPagerContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        return FragmentHostActivity
-                .createIntent(context, R.layout.activity_book_details, ShowBookPagerFragment.class)
+        return FragmentHostActivityLauncher
+                .createIntent(context, ShowBookPagerFragment.class, R.layout.activity_book_details)
                 // book-details page
                 .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf)
                 // Pager
