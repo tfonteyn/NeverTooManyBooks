@@ -172,10 +172,8 @@ public class AuthorWorksViewModel
             showTocEntries = prefs.getBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries);
             showBooks = prefs.getBoolean(PK_SHOW_BOOKS, showBooks);
 
-
             onAuthor.setValue(author);
-            onBookshelf.setValue(getBookshelfAndNrOfEntries(context));
-            reloadWorkList();
+            reloadWorkList(context);
         }
     }
 
@@ -184,7 +182,7 @@ public class AuthorWorksViewModel
         return menuHandlers;
     }
 
-    private void reloadWorkList() {
+    private void reloadWorkList(@NonNull final Context context) {
         works.clear();
         final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
 
@@ -196,6 +194,11 @@ public class AuthorWorksViewModel
 
         works.addAll(authorWorks);
         onWorks.setValue(null);
+        // Activity subtitle will show the bookshelf name (or empty for all-shelves)
+        // + the number of works shown.
+        onBookshelf.setValue(context.getString(R.string.name_hash_nr,
+                                               allBookshelves ? "" : bookshelf.getName(),
+                                               works.size()));
     }
 
     @NonNull
@@ -213,7 +216,7 @@ public class AuthorWorksViewModel
                          .putBoolean(PK_SHOW_BOOKS, showBooks)
                          .apply();
 
-        reloadWorkList();
+        reloadWorkList(context);
     }
 
     public boolean isShowBooks() {
@@ -237,7 +240,7 @@ public class AuthorWorksViewModel
                          .putString(PK_ORDER_BY_COLUMN, orderByColumn)
                          .apply();
 
-        reloadWorkList();
+        reloadWorkList(context);
     }
 
     /**
@@ -253,17 +256,16 @@ public class AuthorWorksViewModel
     void setAllBookshelves(@NonNull final Context context,
                            final boolean all) {
         allBookshelves = all;
-        onBookshelf.setValue(getBookshelfAndNrOfEntries(context));
-        reloadWorkList();
+        reloadWorkList(context);
     }
 
-    void reloadAuthorIfChanged() {
+    void reloadAuthorIfChanged(@NonNull final Context context) {
         final Author tmp = ServiceLocator.getInstance().getAuthorDao()
                                          .findById(author.getId())
                                          .orElseThrow();
         if (!tmp.equals(author)) {
             // the works might not have changed, but we need to be sure here.
-            setAuthor(tmp, true);
+            setAuthor(context, tmp, true);
         }
     }
 
@@ -281,16 +283,18 @@ public class AuthorWorksViewModel
      * The author was edited by the user.
      * Update the author, and trigger UI updates.
      *
+     * @param context     Current context
      * @param author      to update
      * @param reloadWorks whether to reload the works as well
      */
-    void setAuthor(@NonNull final Author author,
+    void setAuthor(@NonNull final Context context,
+                   @NonNull final Author author,
                    final boolean reloadWorks) {
         dataModified = !author.equals(this.author);
         this.author = author;
         onAuthor.setValue(author);
         if (reloadWorks) {
-            reloadWorkList();
+            reloadWorkList(context);
         }
     }
 
@@ -354,21 +358,6 @@ public class AuthorWorksViewModel
             works.remove(work);
         }
         return success;
-    }
-
-    /**
-     * Activity subtitle will show the bookshelf name (or empty for all-shelves)
-     * + the number of entries shown.
-     *
-     * @param context Current context
-     *
-     * @return subtitle
-     */
-    @NonNull
-    private String getBookshelfAndNrOfEntries(@NonNull final Context context) {
-        return context.getString(R.string.name_hash_nr,
-                                 allBookshelves ? "" : bookshelf.getName(),
-                                 works.size());
     }
 
     @NonNull

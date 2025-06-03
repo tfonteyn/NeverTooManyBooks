@@ -142,10 +142,12 @@ public class AuthorWorksFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Context context = getContext();
+
         //noinspection DataFlowIssue
         vm = new ViewModelProvider(getActivity()).get(AuthorWorksViewModel.class);
         //noinspection DataFlowIssue
-        vm.init(getContext(), requireArguments());
+        vm.init(context, requireArguments());
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -162,9 +164,11 @@ public class AuthorWorksFragment
         editAuthorLauncher.registerForFragmentResult(fm, this);
         // We're editing the Author fields only.
         // The works list is presumed not to have changed, and NOT reloaded!
-        editAuthorLauncher.setOnEditInPlaceListener(author -> vm.setAuthor(author, false));
+        //noinspection DataFlowIssue
+        editAuthorLauncher.setOnEditInPlaceListener(
+                author -> vm.setAuthor(getContext(), author, false));
 
-        final Resources res = getContext().getResources();
+        final Resources res = context.getResources();
         dff = new DateFieldFormatter(res.getConfiguration().getLocales().get(0), false);
     }
 
@@ -255,7 +259,7 @@ public class AuthorWorksFragment
     @Override
     public void onResume() {
         super.onResume();
-        vm.reloadAuthorIfChanged();
+        vm.reloadAuthorIfChanged(getContext());
     }
 
     private void setupImageView(@NonNull final Toolbar toolbar) {
