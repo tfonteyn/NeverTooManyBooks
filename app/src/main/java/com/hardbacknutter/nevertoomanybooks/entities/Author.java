@@ -1251,7 +1251,7 @@ public class Author
         if (getImageUuid().isEmpty()) {
             source.getImageUuid().ifPresent(this::setImageUuid);
         }
-        if (getTmpPictureFileSpec().isEmpty()) {
+        if (getTmpPictureFileSpec().isEmpty() && getImageUuid().isEmpty()) {
             source.getTmpPictureFileSpec().ifPresent(this::setTmpPictureFileSpec);
         }
         if (source.isComplete()) {
