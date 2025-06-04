@@ -54,6 +54,15 @@ public final class FilterFactory {
             Map.entry(DBKey.FK_TAG, context -> context.getString(R.string.lbl_tag)),
             Map.entry(DBKey.FK_TOC_ENTRY, context -> context.getString(R.string.lbl_book_type)),
 
+            Map.entry(DBKey.AUTHOR.FAMILY_NAME, context -> context.getString(
+                    R.string.a_bracket_b_bracket,
+                    context.getString(R.string.lbl_author),
+                    context.getString(R.string.lbl_family_name))),
+            Map.entry(DBKey.AUTHOR.GIVEN_NAMES, context -> context.getString(
+                    R.string.a_bracket_b_bracket,
+                    context.getString(R.string.lbl_author),
+                    context.getString(R.string.lbl_given_names))),
+
             Map.entry(DBKey.COLOR, context -> context.getString(R.string.lbl_color)),
             Map.entry(DBKey.EDITION, context -> context.getString(R.string.lbl_edition)),
             Map.entry(DBKey.FORMAT, context -> context.getString(R.string.lbl_format)),
@@ -153,6 +162,28 @@ public final class FilterFactory {
                         Book.ContentType::getAll);
             }
 
+            case DBKey.AUTHOR.FAMILY_NAME: {
+                return new PStringEqualityFilter(
+                        dbKey, DBDefinitions.TBL_AUTHORS, DBDefinitions.DOM_AUTHOR_FAMILY_NAME,
+                        // full join, books always have authors
+                        // Added here for future compatibility.
+                        // When used in the BoB, we already link with the authors.
+                        new Pair<>(DBDefinitions.TBL_BOOK_AUTHOR.getName(),
+                                   DBDefinitions.TBL_BOOKS.startJoin(DBDefinitions.TBL_BOOK_AUTHOR,
+                                                                     DBDefinitions.TBL_AUTHORS)))
+                        .setWildcards(true);
+            }
+            case DBKey.AUTHOR.GIVEN_NAMES: {
+                return new PStringEqualityFilter(
+                        dbKey, DBDefinitions.TBL_AUTHORS, DBDefinitions.DOM_AUTHOR_GIVEN_NAMES,
+                        // full join, books always have authors
+                        // Added here for future compatibility.
+                        // When used in the BoB, we already link with the authors.
+                        new Pair<>(DBDefinitions.TBL_BOOK_AUTHOR.getName(),
+                                   DBDefinitions.TBL_BOOKS.startJoin(DBDefinitions.TBL_BOOK_AUTHOR,
+                                                                     DBDefinitions.TBL_AUTHORS)))
+                        .setWildcards(true);
+            }
             case DBKey.COLOR: {
                 return new PStringEqualityFilter(
                         dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_COLOR);
