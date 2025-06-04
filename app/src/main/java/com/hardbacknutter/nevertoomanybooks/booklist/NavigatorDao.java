@@ -31,9 +31,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 /**
  * Provide a simple API to move around from book to book in the {@link Booklist} table
  * using the navigation peer-table.
- * Keeps track of current position and bookId.
  */
-public final class BooklistNavigatorDao {
+public final class NavigatorDao
+        implements Navigator {
 
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
@@ -42,31 +42,24 @@ public final class BooklistNavigatorDao {
     @NonNull
     private final SynchronizedStatement bookStmt;
     private final int rowCount;
-    @NonNull
-    private final SynchronizedDb db;
-    @NonNull
-    private final String listTableName;
 
     /**
      * Constructor.
      *
-     * @param db            Underlying database
-     * @param listTableName Name of underlying and <strong>existing</strong> table
+     * @param db           Underlying database
+     * @param tableName Name of underlying and <strong>existing</strong> table
      */
-    public BooklistNavigatorDao(@NonNull final SynchronizedDb db,
-                                @NonNull final String listTableName) {
-        this.db = db;
-
-        this.listTableName = listTableName;
+    public NavigatorDao(@NonNull final SynchronizedDb db,
+                        @NonNull final String tableName) {
 
         try (SynchronizedStatement stmt = db.compileStatement(
-                "SELECT COUNT(*) FROM " + this.listTableName)) {
+                "SELECT COUNT(*) FROM " + tableName)) {
             rowCount = (int) stmt.simpleQueryForLongOrZero();
         }
 
         bookStmt = db.compileStatement(
                 SELECT_ + DBKey.FK_BOOK
-                + _FROM_ + this.listTableName + _WHERE_ + DBKey.PK_ID + "=?");
+                + _FROM_ + tableName + _WHERE_ + DBKey.PK_ID + "=?");
     }
 
     /**
@@ -80,39 +73,23 @@ public final class BooklistNavigatorDao {
     }
 
     /**
-     * Get the row number in the navigation table for the given list table row id.
-     * This is {@code 1} based.
+     * Get the book id to load for the given position.
      *
-     * @param listTableRowId the Booklist table rowId to find
-     *
-     * @return row number
-     */
-    @IntRange(from = 1)
-    public int getRowNumber(final long listTableRowId) {
-        // This method is only called once to get the initial row number
-        try (SynchronizedStatement stmt = db.compileStatement(
-                SELECT_ + DBKey.PK_ID + _FROM_ + listTableName
-                + _WHERE_ + BooklistBuilder.FK_ROW_ID + "=?")) {
-            stmt.bindLong(1, listTableRowId);
-            return (int) stmt.simpleQueryForLongOrZero();
-        }
-    }
-
-    /**
-     * Reposition and get the book id to load.
-     *
-     * @param rowNumber the ROW number in the table
+     * @param position of the book, {@code 0..}
      *
      * @return book id
      *
      * @throws SQLiteDoneException which should NEVER happen... flw
      */
-    public long getBookIdAtRow(@IntRange(from = 1) final int rowNumber)
+    @Override
+    public long getBookId(@IntRange(from = 0) final int position)
             throws SQLiteDoneException {
-        bookStmt.bindLong(1, rowNumber);
+        // positions are 0-based, but the table row is 1-based
+        bookStmt.bindLong(1, position + 1);
         return bookStmt.simpleQueryForLong();
     }
 
+    @Override
     public void close() {
         bookStmt.close();
     }

@@ -28,6 +28,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -36,7 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerViewModel;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -49,14 +52,23 @@ public class ShowBookPagerContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        return FragmentHostActivityLauncher
+        final Intent intent = FragmentHostActivityLauncher
                 .createIntent(context, ShowBookPagerFragment.class, R.layout.activity_book_details)
                 // book-details page
                 .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf)
                 // Pager
                 .putExtra(DBKey.FK_BOOK, input.bookId)
-                .putExtra(ShowBookPagerViewModel.BKEY_NAV_TABLE_NAME, input.navTableName)
-                .putExtra(ShowBookPagerViewModel.BKEY_LIST_TABLE_ROW_ID, input.listTableRowId);
+                .putExtra(ShowBookPagerViewModel.BKEY_NAV_POSITION, input.position);
+
+        if (input.navTableName != null) {
+            // Pager
+            intent.putExtra(ShowBookPagerViewModel.BKEY_NAV_TABLE_NAME, input.navTableName);
+        }
+        if (input.bookIdList != null && !input.bookIdList.isEmpty()) {
+            // Pager
+            intent.putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(input.bookIdList));
+        }
+        return intent;
     }
 
     @Override
@@ -79,12 +91,14 @@ public class ShowBookPagerContract
 
         @IntRange(from = 1)
         final long bookId;
+        @NonNull
+        final Bookshelf bookshelf;
+        final int position;
+
         @Nullable
         final String navTableName;
-        /** Ignore if navTableName is null. */
-        final long listTableRowId;
-        @NonNull
-        private Bookshelf bookshelf;
+        @Nullable
+        final List<Long> bookIdList;
 
         /**
          * Constructor.
@@ -96,34 +110,62 @@ public class ShowBookPagerContract
          */
         public Input(@IntRange(from = 1) final long bookId,
                      @NonNull final Bookshelf bookshelf) {
-            this(bookId, bookshelf, null, 0);
+            this.bookId = bookId;
+            this.bookshelf = bookshelf;
+            this.position = 0;
+            this.navTableName = null;
+            this.bookIdList = null;
         }
 
         /**
          * Constructor.
          *
-         * @param bookId         Initial book id to show.
-         *                       Used by the pager.
-         * @param bookshelf      current Bookshelf displayed by the BoB
-         *                       Used by the book-details.
-         * @param navTableName   (Optional) The name of the current list-navigation table,
-         *                       which will be used by the pager to allow
-         *                       the user to swipe to the next/previous book.
-         *                       Used by the pager.
-         * @param listTableRowId The row id in the list table of the given book.
-         *                       Keep in mind a book can occur multiple times,
-         *                       so we need to pass the specific one.
-         *                       Ignored if navTableName is {@code null}.
-         *                       Used by the pager.
+         * @param bookId     Initial book id to show.
+         *                   Used by the pager.
+         * @param bookshelf  current Bookshelf displayed by the BoB
+         *                   Used by the book-details.
+         * @param position   The position of the given book.
+         *                   Keep in mind a book can occur multiple times,
+         *                   so we need to pass the specific position.
+         *                   Ignored if navTableName is {@code null}.
+         *                   Used by the pager.
+         * @param bookIdList The list of book ids to display.
+         *                   Used by the pager.
          */
         public Input(@IntRange(from = 1) final long bookId,
                      @NonNull final Bookshelf bookshelf,
-                     @Nullable final String navTableName,
-                     @IntRange(from = 0) final long listTableRowId) {
+                     @IntRange(from = 0) final int position,
+                     @NonNull final List<Long> bookIdList) {
             this.bookId = bookId;
             this.bookshelf = bookshelf;
+            this.position = position;
+            this.bookIdList = bookIdList;
+            this.navTableName = null;
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param bookId       Initial book id to show.
+         *                     Used by the pager.
+         * @param bookshelf    current Bookshelf displayed by the BoB
+         *                     Used by the book-details.
+         * @param position     The position of the given book.
+         *                     Keep in mind a book can occur multiple times,
+         *                     so we need to pass the specific position.
+         *                     Used by the pager.
+         * @param navTableName The name of the current list-navigation table.
+         *                     Used by the pager.
+         */
+        public Input(@IntRange(from = 1) final long bookId,
+                     @NonNull final Bookshelf bookshelf,
+                     @IntRange(from = 0) final int position,
+                     @NonNull final String navTableName) {
+            this.bookId = bookId;
+            this.bookshelf = bookshelf;
+            this.position = position;
             this.navTableName = navTableName;
-            this.listTableRowId = listTableRowId;
+            this.bookIdList = null;
         }
     }
 }

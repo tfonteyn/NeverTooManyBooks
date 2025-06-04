@@ -1104,8 +1104,9 @@ public class BooksOnBookshelf
                 displayBookLauncher.launch(new ShowBookPagerContract.Input(
                         bookId,
                         vm.getBookshelf(),
-                        vm.getBookNavigationTableName(),
-                        rowData.getLong(DBKey.PK_ID)));
+                        vm.getNavigationTablePosition(rowData.getLong(DBKey.PK_ID)),
+                        vm.getNavigationTableName()
+                ));
             }
         } else {
             // it's a level, expand/collapse

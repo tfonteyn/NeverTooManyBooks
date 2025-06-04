@@ -864,9 +864,15 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    String getBookNavigationTableName() {
+    String getNavigationTableName() {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         return booklist.getNavigationTableName();
+    }
+
+    @IntRange(from = 0)
+    int getNavigationTablePosition(final long listTableRowId) {
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist.getNavigationTablePosition(listTableRowId);
     }
 
     /**

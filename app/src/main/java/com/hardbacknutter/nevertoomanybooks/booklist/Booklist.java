@@ -210,11 +210,33 @@ public class Booklist
         return navTable;
     }
 
+    /**
+     * Get the table name of for the current navigation table.
+     *
+     * @return name
+     */
     @NonNull
     public String getNavigationTableName() {
         return navTable.getName();
     }
 
+    /**
+     * Get the position for the given book rowId in the current navigation table.
+     *
+     * @param listTableRowId the Booklist table rowId to find
+     *
+     * @return position
+     */
+    @IntRange(from = 0)
+    public int getNavigationTablePosition(final long listTableRowId) {
+        try (SynchronizedStatement stmt = db.compileStatement(
+                SELECT_ + DBKey.PK_ID + _FROM_ + navTable.getName()
+                + _WHERE_ + BooklistBuilder.FK_ROW_ID + "=?")) {
+            stmt.bindLong(1, listTableRowId);
+            // rows are 1.., we want position, so subtract 1
+            return (int) stmt.simpleQueryForLongOrZero() - 1;
+        }
+    }
     /**
      * Count the total number of book records in the list.
      *

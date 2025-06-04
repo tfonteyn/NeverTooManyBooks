@@ -29,25 +29,32 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
+import com.hardbacknutter.nevertoomanybooks.booklist.Navigator;
+import com.hardbacknutter.nevertoomanybooks.booklist.NavigatorDao;
+import com.hardbacknutter.nevertoomanybooks.booklist.NavigatorList;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public class ShowBookPagerViewModel
         extends ViewModel {
 
     private static final String TAG = "ShowBookPagerViewModel";
 
-    /** Table name of the {@link Booklist} table. */
-    public static final String BKEY_NAV_TABLE_NAME = TAG + ":LTName";
-    /** The row id in the list table for the initial book to show. */
-    public static final String BKEY_LIST_TABLE_ROW_ID = TAG + ":LTRow";
+    /** Table name of the {@link Booklist} navigator table. */
+    public static final String BKEY_NAV_TABLE_NAME = TAG + ":tableName";
+    /** The position (int) in the navigator list for the initial book to show. */
+    public static final String BKEY_NAV_POSITION = TAG + ":pos";
 
     /** <strong>Optionally</strong> passed. */
     @Nullable
-    private BooklistNavigatorDao navHelper;
+    private Navigator navHelper;
 
     /**
      * The <strong>initial</strong> pager position being displayed.
@@ -85,9 +92,11 @@ public class ShowBookPagerViewModel
                 throw new IllegalArgumentException(DBKey.FK_BOOK);
             }
 
+            initialPagerPosition = args.getInt(BKEY_NAV_POSITION, 0);
+
             // the navTable is optional
             // If present, the user can swipe to the next/previous book in the list.
-            final String navTableName = args.getString(BKEY_NAV_TABLE_NAME);
+            final String navTableName = args.getString(BKEY_NAV_TABLE_NAME, null);
             if (navTableName != null && !navTableName.isEmpty()) {
                 // github #90 + #140
                 // When the app was displaying a book-detail, and the user switched to other apps,
@@ -104,26 +113,34 @@ public class ShowBookPagerViewModel
                 final SynchronizedDb db = ServiceLocator.getInstance().getDb();
                 if (db.tableExists(navTableName)) {
                     // we have a navTable, init and display as normal
-                    navHelper = new BooklistNavigatorDao(db, navTableName);
-                    final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
-                    initialPagerPosition = navHelper.getRowNumber(rowId) - 1;
+                    navHelper = new NavigatorDao(db, navTableName);
+                    return true;
                 } else {
                     // navTable expected but not there; we must have done a "warm start".
                     // ABORT!
                     return false;
                 }
-            } else {
-                // no navTable given, that's ok, just display the single book.
-                initialPagerPosition = 0;
             }
+
+            if (args.containsKey(Book.BKEY_BOOK_ID_LIST)) {
+                final List<Long> idList = Objects.requireNonNull(
+                        ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST));
+                if (!idList.isEmpty()) {
+                    navHelper = new NavigatorList(idList);
+                    return true;
+                }
+            }
+
+            // no navTable given, and no explicit id list.
+            // Just display the single book.
         }
-        // init success
         return true;
     }
 
     /**
      * Get the initial position of the pager.
-     * <strong>Use only to set {@link androidx.viewpager2.widget.ViewPager2#setCurrentItem}</strong>
+     * <strong>Used only to set
+     * {@link androidx.viewpager2.widget.ViewPager2#setCurrentItem}</strong>
      *
      * @return pager position
      */
@@ -156,7 +173,7 @@ public class ShowBookPagerViewModel
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     long getBookIdAtPosition(@IntRange(from = 0) final int position) {
         if (navHelper != null) {
-            return navHelper.getBookIdAtRow(position + 1);
+            return navHelper.getBookId(position);
         }
         return initialBookId;
     }
