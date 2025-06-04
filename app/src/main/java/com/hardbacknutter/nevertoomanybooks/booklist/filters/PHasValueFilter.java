@@ -48,7 +48,7 @@ public class PHasValueFilter
                     @NonNull final TableDefinition table,
                     @NonNull final Domain domain,
                     @ArrayRes final int acEntries) {
-        super(dbKey, acEntries, table, domain);
+        super(dbKey, table, domain, acEntries);
     }
 
     @NonNull

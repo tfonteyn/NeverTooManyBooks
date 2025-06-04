@@ -20,13 +20,14 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
-import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -62,8 +63,9 @@ public class LoaneeFilter
 
     @NonNull
     @Override
-    public Optional<TableDefinition> getLeftOuterJoinTable() {
-        return Optional.of(TBL_BOOK_LOANEE);
+    public Optional<Pair<String, String>> getJoinExpression() {
+        return Optional.of(new Pair<>(TBL_BOOK_LOANEE.getName(),
+                                      TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)));
     }
 
     @Override

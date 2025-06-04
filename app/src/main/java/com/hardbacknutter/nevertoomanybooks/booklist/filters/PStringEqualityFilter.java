@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
+import android.util.Pair;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -35,6 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * A persistable {@link Filter}.
@@ -53,6 +56,8 @@ public class PStringEqualityFilter
     private final TableDefinition table;
     @NonNull
     private final Domain domain;
+    @Nullable
+    private final Pair<String, String> join;
 
     @Nullable
     private String value;
@@ -68,9 +73,9 @@ public class PStringEqualityFilter
     /**
      * Constructor.
      *
-     * @param dbKey      the field we're filtering on
-     * @param table      the table with the field
-     * @param domain     the domain representing the field
+     * @param dbKey  the field we're filtering on
+     * @param table  the table with the field
+     * @param domain the domain representing the field
      */
     PStringEqualityFilter(@NonNull final String dbKey,
                           @NonNull final TableDefinition table,
@@ -78,6 +83,31 @@ public class PStringEqualityFilter
         this.dbKey = dbKey;
         this.table = table;
         this.domain = domain;
+
+        if (table == TBL_BOOKS) {
+            join = null;
+        } else {
+            join = new Pair<>(table.getName(), TBL_BOOKS.leftOuterJoin(table));
+        }
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param dbKey          the field we're filtering on
+     * @param table          the table with the field
+     * @param domain         the domain representing the field
+     * @param joinExpression custom JOIN expression, see {@link Filter#getJoinExpression()}
+     */
+    PStringEqualityFilter(@NonNull final String dbKey,
+                          @NonNull final TableDefinition table,
+                          @NonNull final Domain domain,
+                          @NonNull final Pair<String, String> joinExpression) {
+        this.dbKey = dbKey;
+        this.table = table;
+        this.domain = domain;
+
+        join = joinExpression;
     }
 
     @Override
@@ -100,8 +130,8 @@ public class PStringEqualityFilter
 
     @NonNull
     @Override
-    public Optional<TableDefinition> getLeftOuterJoinTable() {
-        return Optional.of(table);
+    public Optional<Pair<String, String>> getJoinExpression() {
+        return join == null ? Optional.empty() : Optional.of(join);
     }
 
     @Override
@@ -217,6 +247,7 @@ public class PStringEqualityFilter
                + "dbKey=" + dbKey
                + ", table=" + table.getName()
                + ", domain=" + domain.getName()
+               + ", join=" + join
                + ", value='" + value + '\''
                + '}';
     }

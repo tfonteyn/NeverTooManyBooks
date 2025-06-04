@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -185,9 +186,17 @@ class BooklistBuilder {
      */
     private final Collection<DomainExpression> domainExpressions = new ArrayList<>();
 
-    /** Any LEFT OUTER JOIN's that needs adding. */
+    /**
+     * Any JOIN's that needs adding.
+     * <p>
+     * key: the name of the table (if double join, then name of the final table).
+     * value: an SQL JOIN expression.
+     * <p>
+     * Dev. note: LinkedHashMap to keep the order when adding.
+     * Likely not needed, but easy for debugging.
+     */
     @NonNull
-    private final Set<TableDefinition> leftOuterJoins = new HashSet<>();
+    private final Map<String, String> extraJoins = new LinkedHashMap<>();
 
     /** the list of Filters. */
     private final Collection<Filter> filters = new ArrayList<>();
@@ -443,12 +452,14 @@ class BooklistBuilder {
         // If we're showing {@link DBKey#LOANEE_NAME} on the book level, we require
         // a {@code LEFT JOIN} {@link DBDefinitions#TBL_BOOK_LOANEE}.
         if (style.isShowField(FieldVisibility.Screen.List, DBKey.LOANEE_NAME)) {
-            leftOuterJoins.add(TBL_BOOK_LOANEE);
+            extraJoins.put(TBL_BOOK_LOANEE.getName(),
+                           TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE));
         }
 
         if (CalibreHandler.isSyncEnabled(context)) {
             DBExpr.CALIBRE.forEach(this::addDomainExpression);
-            leftOuterJoins.add(TBL_CALIBRE_BOOKS);
+            extraJoins.put(TBL_CALIBRE_BOOKS.getName(),
+                           TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS));
         }
     }
 
@@ -682,21 +693,20 @@ class BooklistBuilder {
     private String buildFrom(@NonNull final Context context) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            LoggerFactory.getLogger().d(TAG, "build|leftOuterJoins=" + leftOuterJoins);
+            LoggerFactory.getLogger().d(TAG, "build|joins=" + extraJoins);
             LoggerFactory.getLogger().d(TAG, "build|filters=" + filters);
         }
 
-        // Add any LEFT OUTER JOINS the filters ask for, but leave the BOOKS table out.
-        // Others will be removed if/when we're already using them for grouping,
+        // Add any JOINS the filters need.
+        // If there are duplicates as used by grouping, they will be removed before use.
         // see below.
         filters.stream()
-               .map(Filter::getLeftOuterJoinTable)
+               .map(Filter::getJoinExpression)
                .flatMap(Optional::stream)
-               .filter(tableDefinition -> !TBL_BOOKS.equals(tableDefinition))
-               .forEach(leftOuterJoins::add);
+               .forEach(p -> extraJoins.put(p.first, p.second));
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            LoggerFactory.getLogger().d(TAG, "build|leftOuterJoins+filters=" + leftOuterJoins);
+            LoggerFactory.getLogger().d(TAG, "build|joins+filters=" + extraJoins);
         }
 
         final StringBuilder sb = new StringBuilder();
@@ -705,7 +715,7 @@ class BooklistBuilder {
         // we start the join there.
         if (style.hasGroup(BooklistGroup.BOOKSHELF) || filteredOnBookshelf) {
             sb.append(TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF, TBL_BOOKS));
-            leftOuterJoins.remove(TBL_BOOK_BOOKSHELF);
+            extraJoins.remove(TBL_BOOK_BOOKSHELF.getName());
         } else {
             // Otherwise, we start with the BOOKS table.
             sb.append(TBL_BOOKS.ref());
@@ -714,7 +724,7 @@ class BooklistBuilder {
         // We always want the primary author id in the cursor.
         // We add that id in {@link #addBookLevelDomains} see comments there
         joinWithAuthors(sb);
-        leftOuterJoins.remove(TBL_BOOK_AUTHOR);
+        extraJoins.remove(TBL_BOOK_AUTHOR.getName());
 
         // URGENT: BooklistGroup joins need to be done via callbacks.
         //  i.e. config the join on the BooklistGroup so it won't drop through
@@ -722,13 +732,13 @@ class BooklistBuilder {
         if (style.hasGroup(BooklistGroup.SERIES)
             || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_SERIES)) {
             joinWithSeries(sb);
-            leftOuterJoins.remove(TBL_BOOK_SERIES);
+            extraJoins.remove(TBL_BOOK_SERIES.getName());
         }
 
         if (style.hasGroup(BooklistGroup.PUBLISHER)
             || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_PUBLISHER)) {
             joinWithPublishers(sb);
-            leftOuterJoins.remove(TBL_BOOK_PUBLISHER);
+            extraJoins.remove(TBL_BOOK_PUBLISHER.getName());
         }
 
         if (style.hasGroup(BooklistGroup.LANGUAGE)
@@ -751,24 +761,24 @@ class BooklistBuilder {
             // book-level not supported
             // || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_TAG)
             joinWithTags(sb);
-            leftOuterJoins.remove(TBL_BOOK_TAG);
+            extraJoins.remove(TBL_BOOK_TAG.getName());
         }
 
         if (style.hasGroup(BooklistGroup.IDENTIFIER)) {
             // book-level not supported
             // || style.isShowField(FieldVisibility.Screen.List, DBKey.FK_IDENTIFIER)
             joinWithIdentifiers(sb);
-            leftOuterJoins.remove(TBL_BOOK_IDENTIFIER);
+            extraJoins.remove(TBL_BOOK_IDENTIFIER.getName());
         }
 
         // NEWTHINGS: BooklistGroup: add joins if needed
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            LoggerFactory.getLogger().d(TAG, "build|leftOuterJoins final=" + leftOuterJoins);
+            LoggerFactory.getLogger().d(TAG, "build|joins final=" + extraJoins);
         }
-        // Add LEFT OUTER JOIN tables as needed
-        // (it's a Set, no duplicates to check)
-        leftOuterJoins.forEach(table -> sb.append(TBL_BOOKS.leftOuterJoin(table)));
+
+        // Add JOIN expressions as needed
+        extraJoins.values().forEach(sb::append);
 
         return sb.toString();
     }

@@ -39,12 +39,12 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * <li>An empty Set indicates an inactive filter.</li>
  * </ul>
  */
-public class ReadStatusFilter
+class ReadStatusFilter
         extends PEntityListFilter<ReadStatus> {
 
     ReadStatusFilter() {
-        super(DBKey.READ__BOOL, DBDefinitions.TBL_BOOKS,
-              DBDefinitions.DOM_BOOK_READ, ReadStatus::getAll);
+        super(DBKey.READ__BOOL, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_READ,
+              ReadStatus::getAll);
     }
 
     @NonNull

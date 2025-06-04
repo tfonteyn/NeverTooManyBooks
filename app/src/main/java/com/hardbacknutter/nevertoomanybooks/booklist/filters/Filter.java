@@ -20,12 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Optional;
-
-import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 
 /**
  * A generic SQL expression filter for use in {@code WHERE} clauses.
@@ -42,15 +42,20 @@ public interface Filter {
     String getExpression();
 
     /**
-     * If the expression requires a LEFT OUTER JOIN, this method should provide
-     * the table to join with.
-     * <p>
-     * TODO: left outer for now until we need something better...
+     * If the expression requires a JOIN, this method should provide
+     * the expression to join with.
+     * <ol>
+     * <li>The name of the FIRST join table.
+     *     <br/>This is used as a key to eliminate duplicates from the BoB grouping.</li>
+     * <li>An SQL JOIN expression; must start with {@code TBL_BOOKS}</li>
+     * </ol>
      *
-     * @return table
+     * URGENT: getJoinExpression works but the implementation is rather awkward, needs refactoring
+     *
+     * @return table name + expression
      */
     @NonNull
-    default Optional<TableDefinition> getLeftOuterJoinTable() {
+    default Optional<Pair<String, String>> getJoinExpression() {
         return Optional.empty();
     }
 

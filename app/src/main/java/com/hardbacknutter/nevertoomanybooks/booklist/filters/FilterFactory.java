@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -126,6 +127,10 @@ public final class FilterFactory {
     public static PFilter<?> createFilter(@NonNull final String dbKey) {
         switch (dbKey) {
             case DBKey.FK_BOOKSHELF: {
+                // Reminder: the BooklistBuilder#createBookshelfFilters
+                // will always add the current Bookshelf to the existing filter
+                // if the user is viewing an actual Bookshelf.
+                // Hence this filter should be seen as "show books from ADDITIONAL bookshelves.
                 return new PEntityListFilter<>(
                         dbKey, DBDefinitions.TBL_BOOK_BOOKSHELF, DBDefinitions.DOM_FK_BOOKSHELF,
                         () -> ServiceLocator.getInstance().getBookshelfDao().getAll());
@@ -165,8 +170,7 @@ public final class FilterFactory {
                 // Does the book have an ISBN (or any other code) or none.
                 return new PHasValueFilter(
                         dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN,
-                        R.array.lbl_bob_filter_isbn
-                );
+                        R.array.lbl_bob_filter_isbn);
             }
             case DBKey.LANGUAGE: {
                 return new PStringEqualityFilter(
@@ -185,8 +189,7 @@ public final class FilterFactory {
                 //  This is not filtering on the name but on the book being lend-out or not.
                 return new PHasValueFilter(
                         dbKey, DBDefinitions.TBL_BOOK_LOANEE, DBDefinitions.DOM_LOANEE,
-                        R.array.lbl_bob_filter_lending
-                );
+                        R.array.lbl_bob_filter_lending);
             }
             case DBKey.READ__BOOL: {
                 return new ReadStatusFilter();
@@ -194,8 +197,8 @@ public final class FilterFactory {
             case DBKey.SIGNED__BOOL: {
                 return new PBooleanFilter(
                         dbKey,
-                        R.array.lbl_bob_filter_signed,
-                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_SIGNED);
+                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_SIGNED,
+                        R.array.lbl_bob_filter_signed);
             }
 
             default:

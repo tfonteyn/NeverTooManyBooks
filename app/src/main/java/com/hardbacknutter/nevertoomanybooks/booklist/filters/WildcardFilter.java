@@ -19,13 +19,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * An SQL WHERE clause  (column LIKE '%text%').
@@ -42,6 +47,8 @@ public class WildcardFilter
     private final TableDefinition table;
     @NonNull
     private final Domain domain;
+    @Nullable
+    private final Pair<String, String> join;
 
     @NonNull
     private final String criteria;
@@ -59,6 +66,12 @@ public class WildcardFilter
         this.domain = domain;
         this.table = table;
         this.criteria = criteria;
+
+        if (table == TBL_BOOKS) {
+            join = null;
+        } else {
+            join = new Pair<>(table.getName(), TBL_BOOKS.leftOuterJoin(table));
+        }
     }
 
     @Override
@@ -71,8 +84,8 @@ public class WildcardFilter
 
     @NonNull
     @Override
-    public Optional<TableDefinition> getLeftOuterJoinTable() {
-        return Optional.of(table);
+    public Optional<Pair<String, String>> getJoinExpression() {
+        return join == null ? Optional.empty() : Optional.of(join);
     }
 
     @Override
@@ -86,6 +99,7 @@ public class WildcardFilter
         return "WildcardFilter{"
                + "table=" + table.getName()
                + ", domain=" + domain.getName()
+               + ", join=" + join
                + ", criteria='" + criteria + '\''
                + '}';
     }

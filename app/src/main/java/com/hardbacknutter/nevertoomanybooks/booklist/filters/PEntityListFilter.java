@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
+import android.util.Pair;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -40,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * A persistable {@link Filter}.
@@ -71,6 +74,8 @@ public class PEntityListFilter<T extends Entity>
     private final TableDefinition table;
     @NonNull
     private final Domain domain;
+    @Nullable
+    private final Pair<String, String> join;
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Supplier<List<T>> listSupplier;
@@ -94,6 +99,12 @@ public class PEntityListFilter<T extends Entity>
         this.table = table;
         this.domain = domain;
         this.listSupplier = listSupplier;
+
+        if (table == TBL_BOOKS) {
+            join = null;
+        } else {
+            join = new Pair<>(table.getName(), TBL_BOOKS.leftOuterJoin(table));
+        }
     }
 
     @Override
@@ -122,8 +133,8 @@ public class PEntityListFilter<T extends Entity>
 
     @NonNull
     @Override
-    public Optional<TableDefinition> getLeftOuterJoinTable() {
-        return Optional.of(table);
+    public Optional<Pair<String, String>> getJoinExpression() {
+        return join == null ? Optional.empty() : Optional.of(join);
     }
 
     @Override
@@ -217,6 +228,7 @@ public class PEntityListFilter<T extends Entity>
                + "dbKey=" + dbKey
                + ", table=" + table.getName()
                + ", domain=" + domain.getName()
+               + ", join=" + join
                + ", value=" + value
                + ", entityMap=" + entityMap
                + '}';

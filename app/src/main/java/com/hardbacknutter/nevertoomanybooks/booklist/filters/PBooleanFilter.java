@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Pair;
 
 import androidx.annotation.ArrayRes;
 import androidx.annotation.LayoutRes;
@@ -33,6 +34,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * A persistable {@link Filter}.
@@ -49,6 +52,8 @@ public class PBooleanFilter
     protected final TableDefinition table;
     @NonNull
     protected final Domain domain;
+    @Nullable
+    private final Pair<String, String> join;
     @ArrayRes
     private final int acEntries;
     @NonNull
@@ -59,19 +64,25 @@ public class PBooleanFilter
     /**
      * Constructor.
      *
-     * @param dbKey      the field we're filtering on
-     * @param acEntries  resource id for the labels array
-     * @param table      the table with the field
-     * @param domain     the domain representing the field
+     * @param dbKey     the field we're filtering on
+     * @param table     the table with the field
+     * @param domain    the domain representing the field
+     * @param acEntries resource id for the labels array
      */
     PBooleanFilter(@NonNull final String dbKey,
-                   @ArrayRes final int acEntries,
                    @NonNull final TableDefinition table,
-                   @NonNull final Domain domain) {
+                   @NonNull final Domain domain,
+                   @ArrayRes final int acEntries) {
         this.dbKey = dbKey;
-        this.acEntries = acEntries;
         this.table = table;
         this.domain = domain;
+        this.acEntries = acEntries;
+
+        if (table == TBL_BOOKS) {
+            join = null;
+        } else {
+            join = new Pair<>(table.getName(), TBL_BOOKS.leftOuterJoin(table));
+        }
     }
 
     @Override
@@ -92,8 +103,8 @@ public class PBooleanFilter
 
     @NonNull
     @Override
-    public Optional<TableDefinition> getLeftOuterJoinTable() {
-        return Optional.of(table);
+    public Optional<Pair<String, String>> getJoinExpression() {
+        return join == null ? Optional.empty() : Optional.of(join);
     }
 
     @Override
@@ -157,6 +168,7 @@ public class PBooleanFilter
                + "dbKey=" + dbKey
                + ", table=" + table.getName()
                + ", domain=" + domain.getName()
+               + ", join=" + join
                + ", acEntries=" + acEntries
                + ", value=" + value
                + '}';
