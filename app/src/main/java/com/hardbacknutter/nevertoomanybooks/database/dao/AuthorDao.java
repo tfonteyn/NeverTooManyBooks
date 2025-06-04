@@ -175,7 +175,6 @@ public interface AuthorDao {
      * @param bookId         of the book
      * @param doUpdates      set to {@code true} to force each {@link Author} to be updated.
      *                       <strong>ONLY</strong> set this when actually needed.
-     *                       Do not set this during for example an import.
      * @param list           the list of {@link Author}'s
      * @param localeSupplier a supplier to get the Locale; called for each item in the list
      *

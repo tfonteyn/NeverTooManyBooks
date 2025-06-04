@@ -499,10 +499,6 @@ public class BookDaoImpl
         // when we're NOT in batch mode (i.e. NOT doing an import)
         final boolean lookupLocale = !flags.contains(BookFlag.RunInBatch);
 
-        // Only update individual Author, Series, Publisher
-        // when we're NOT in batch mode (i.e. NOT doing an import)
-        final boolean doUpdates = !flags.contains(BookFlag.RunInBatch);
-
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocaleOrUserLocale(context);
 
@@ -514,8 +510,7 @@ public class BookDaoImpl
         }
 
         if (book.contains(Book.BKEY_AUTHOR_LIST)) {
-            // Authors will be inserted if new, but only updated if allowed
-            authorDaoSupplier.get().insertOrUpdate(context, book.getId(), doUpdates,
+            authorDaoSupplier.get().insertOrUpdate(context, book.getId(), true,
                                                    book.getAuthors(),
                                                    author -> bookLocale);
         }
@@ -528,15 +523,13 @@ public class BookDaoImpl
                     return bookLocale;
                 }
             };
-            // Series will be inserted if new, but only updated if allowed
-            seriesDaoSupplier.get().insertOrUpdate(context, book.getId(), doUpdates,
+            seriesDaoSupplier.get().insertOrUpdate(context, book.getId(), true,
                                                    book.getSeries(),
                                                    localeSupplier);
         }
 
         if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
-            // Publishers will be inserted if new, but only updated if allowed
-            publisherDaoSupplier.get().insertOrUpdate(context, book.getId(), doUpdates,
+            publisherDaoSupplier.get().insertOrUpdate(context, book.getId(), true,
                                                       book.getPublishers(),
                                                       publisher -> bookLocale);
         }
