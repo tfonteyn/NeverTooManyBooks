@@ -25,7 +25,6 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 /**
@@ -97,7 +96,8 @@ public interface PFilter<T>
      */
     @NonNull
     default String getLabel(@NonNull final Context context) {
-        return context.getString(R.string.lbl_filter);
+        // this is a convenience method which just delegates to the factory
+        return FilterFactory.getLabel(context, getDBKey());
     }
 
     /**

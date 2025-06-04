@@ -24,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -61,9 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 public class PBitmaskFilter
         implements PFilter<Set<Integer>> {
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    @StringRes
-    private final int labelResId;
     @NonNull
     private final String dbKey;
     @NonNull
@@ -81,18 +77,15 @@ public class PBitmaskFilter
      * Constructor.
      *
      * @param dbKey       the field we're filtering on
-     * @param labelResId  label string resource id for the name of the filter as shown to the user
      * @param table       the table with the field
      * @param domain      the domain representing the field
      * @param mapSupplier bit/label-res-id
      */
     PBitmaskFilter(@NonNull final String dbKey,
-                   @StringRes final int labelResId,
                    @NonNull final TableDefinition table,
                    @NonNull final Domain domain,
                    @NonNull final Supplier<Map<Integer, Integer>> mapSupplier) {
         this.dbKey = dbKey;
-        this.labelResId = labelResId;
         this.table = table;
         this.domain = domain;
         this.mapSupplier = mapSupplier;
@@ -204,12 +197,6 @@ public class PBitmaskFilter
                               .map(context::getString)
                               .collect(Collectors.joining("; "));
         }
-    }
-
-    @NonNull
-    @Override
-    public String getLabel(@NonNull final Context context) {
-        return context.getString(labelResId);
     }
 
     @LayoutRes

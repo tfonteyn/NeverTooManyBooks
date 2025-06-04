@@ -29,9 +29,8 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
@@ -94,21 +93,9 @@ public class BookshelfFiltersViewModel
      */
     @NonNull
     private Pair<String[], String[]> createFilterChoiceItems(@NonNull final Context context) {
-        // key: the label, value: the DBKey
-        // The map will be automatically sorted alphabetically
-        // on the labels according to to the Locale
-        final SortedMap<String, String> map = new TreeMap<>();
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        FilterFactory.SUPPORTED
-                .entrySet()
-                .stream()
-                .filter(entry -> serviceLocator.isFieldEnabled(entry.getKey()))
-                .forEach(entry -> map.put(context.getString(entry.getValue()), entry.getKey()));
-
+        final Map<String, String> map = FilterFactory.getLabels(context);
         return new Pair<>(map.keySet().toArray(Z_ARRAY_STRING),
-                          map.values().toArray(Z_ARRAY_STRING)
-        );
+                          map.values().toArray(Z_ARRAY_STRING));
     }
 
     @NonNull

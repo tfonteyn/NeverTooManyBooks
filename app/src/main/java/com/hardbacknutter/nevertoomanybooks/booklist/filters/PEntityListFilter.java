@@ -24,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -66,9 +65,6 @@ public class PEntityListFilter<T extends Entity>
 
     private static final String PERSISTENCE_DELIMITER = ",";
     protected final Set<Long> value = new HashSet<>();
-    @SuppressWarnings("FieldNotUsedInToString")
-    @StringRes
-    private final int labelResId;
     @NonNull
     private final String dbKey;
     @NonNull
@@ -85,19 +81,16 @@ public class PEntityListFilter<T extends Entity>
      * Constructor.
      *
      * @param dbKey        the field we're filtering on
-     * @param labelResId   label string resource id for the name of the filter as shown to the user
      * @param table        the table with the field
      * @param domain       the domain representing the field
      * @param listSupplier a supplier of <strong>all</strong> possible values.
      *                     Typically {@code () -> dao.getAll()} or similar
      */
     PEntityListFilter(@NonNull final String dbKey,
-                      @StringRes final int labelResId,
                       @NonNull final TableDefinition table,
                       @NonNull final Domain domain,
                       @NonNull final Supplier<List<T>> listSupplier) {
         this.dbKey = dbKey;
-        this.labelResId = labelResId;
         this.table = table;
         this.domain = domain;
         this.listSupplier = listSupplier;
@@ -209,12 +202,6 @@ public class PEntityListFilter<T extends Entity>
                         .map(entity -> entity.getLabel(context))
                         .collect(Collectors.joining("; "));
         }
-    }
-
-    @Override
-    @NonNull
-    public String getLabel(@NonNull final Context context) {
-        return context.getString(labelResId);
     }
 
     @LayoutRes

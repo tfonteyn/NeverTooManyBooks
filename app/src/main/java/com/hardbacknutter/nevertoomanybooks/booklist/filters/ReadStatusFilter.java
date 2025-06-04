@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 
 import java.util.StringJoiner;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.ReadStatus;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -44,7 +43,7 @@ public class ReadStatusFilter
         extends PEntityListFilter<ReadStatus> {
 
     ReadStatusFilter() {
-        super(DBKey.READ__BOOL, R.string.lbl_read, DBDefinitions.TBL_BOOKS,
+        super(DBKey.READ__BOOL, DBDefinitions.TBL_BOOKS,
               DBDefinitions.DOM_BOOK_READ, ReadStatus::getAll);
     }
 
