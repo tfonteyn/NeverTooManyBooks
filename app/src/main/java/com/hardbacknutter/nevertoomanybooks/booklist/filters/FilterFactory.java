@@ -127,76 +127,66 @@ public final class FilterFactory {
         switch (dbKey) {
             case DBKey.FK_BOOKSHELF: {
                 return new PEntityListFilter<>(
-                        dbKey,
-                        DBDefinitions.TBL_BOOK_BOOKSHELF, DBDefinitions.DOM_FK_BOOKSHELF,
+                        dbKey, DBDefinitions.TBL_BOOK_BOOKSHELF, DBDefinitions.DOM_FK_BOOKSHELF,
                         () -> ServiceLocator.getInstance().getBookshelfDao().getAll());
             }
             case DBKey.FK_IDENTIFIER: {
                 return new PEntityListFilter<>(
-                        dbKey,
-                        DBDefinitions.TBL_BOOK_IDENTIFIER, DBDefinitions.DOM_FK_IDENTIFIER,
+                        dbKey, DBDefinitions.TBL_BOOK_IDENTIFIER, DBDefinitions.DOM_FK_IDENTIFIER,
                         () -> ServiceLocator.getInstance().getIdentifierDao().getAll());
             }
             case DBKey.FK_TAG: {
                 return new PEntityListFilter<>(
-                        dbKey,
-                        DBDefinitions.TBL_BOOK_TAG, DBDefinitions.DOM_FK_TAG,
+                        dbKey, DBDefinitions.TBL_BOOK_TAG, DBDefinitions.DOM_FK_TAG,
                         () -> ServiceLocator.getInstance().getTagDao().getAll());
             }
             case DBKey.FK_TOC_ENTRY: {
                 // FIXME: the dbKey name is a mistake, but makes no difference in functionality.
                 //  It should have been DBKey.BOOK_CONTENT_TYPE
                 return new PEntityListFilter<>(
-                        dbKey,
-                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_CONTENT_TYPE,
+                        dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_CONTENT_TYPE,
                         Book.ContentType::getAll);
             }
 
             case DBKey.COLOR: {
                 return new PStringEqualityFilter(
-                        dbKey,
-                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_COLOR);
+                        dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_COLOR);
             }
             case DBKey.EDITION: {
                 return new PBitmaskFilter(
-                        dbKey,
-                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_EDITION,
+                        dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_EDITION,
                         Book.Edition::getAll);
             }
             case DBKey.FORMAT: {
                 return new PStringEqualityFilter(
-                        dbKey,
-                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_FORMAT);
+                        dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_FORMAT);
             }
             case DBKey.ISBN: {
                 // Does the book have an ISBN (or any other code) or none.
                 return new PHasValueFilter(
-                        dbKey, R.array.lbl_bob_filter_isbn,
-                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN);
+                        dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN,
+                        R.array.lbl_bob_filter_isbn
+                );
             }
             case DBKey.LANGUAGE: {
-                final PStringEqualityFilter filter = new PStringEqualityFilter(
-                        dbKey,
-                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_LANGUAGE);
-
-                filter.setFormatter(context -> new LanguageFormatter(
-                        context.getResources().getConfiguration().getLocales().get(0),
-                        ServiceLocator.getInstance().getLanguages()));
-                return filter;
+                return new PStringEqualityFilter(
+                        dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_LANGUAGE)
+                        .setFormatter(context -> new LanguageFormatter(
+                                context.getResources().getConfiguration().getLocales().get(0),
+                                ServiceLocator.getInstance().getLanguages()));
             }
             case DBKey.LOCATION: {
                 return new PStringEqualityFilter(
-                        dbKey,
-                        DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_LOCATION);
+                        dbKey, DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_LOCATION);
             }
             case DBKey.LOANEE_NAME: {
                 // Is the book lend out or not.
                 // FIXME: The dbKey name is a mistake, but makes no difference in functionality.
                 //  This is not filtering on the name but on the book being lend-out or not.
                 return new PHasValueFilter(
-                        dbKey,
-                        R.array.lbl_bob_filter_lending,
-                        DBDefinitions.TBL_BOOK_LOANEE, DBDefinitions.DOM_LOANEE);
+                        dbKey, DBDefinitions.TBL_BOOK_LOANEE, DBDefinitions.DOM_LOANEE,
+                        R.array.lbl_bob_filter_lending
+                );
             }
             case DBKey.READ__BOOL: {
                 return new ReadStatusFilter();

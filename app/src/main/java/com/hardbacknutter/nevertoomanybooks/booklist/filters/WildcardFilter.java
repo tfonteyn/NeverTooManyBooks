@@ -31,8 +31,9 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
  * An SQL WHERE clause  (column LIKE '%text%').
  * Note that the LIKE usage means this is case insensitive.
  * <p>
- * If we ever use this class... sql concat with user-entered strings is a security issue.
- * MUST use PreparedStatements instead !
+ * Yes, this is a security risk. We ARE aware that concatenation with a user-entered
+ * value should never be done. Given the nature of this app, oh well...
+ * ... if a user deliberately wants to destroy their data, let them :)
  */
 public class WildcardFilter
         implements Filter {
@@ -65,9 +66,7 @@ public class WildcardFilter
     public String getExpression() {
         // We want to use the exact string, so do not normalize the value,
         // but we do need to handle single quotes as we are concatenating.
-        return '(' + table.dot(domain)
-               + " LIKE '%" + SqlEncode.singleQuotes(criteria) + "%'"
-               + ')';
+        return table.dot(domain) + " LIKE '%" + SqlEncode.singleQuotes(criteria) + "%'";
     }
 
     @NonNull

@@ -158,9 +158,14 @@ public class PStringEqualityFilter
      * UI support.
      *
      * @param supplier optional formatter supplier
+     *
+     * @return {@code this} for chaining
      */
-    public void setFormatter(@Nullable final Function<Context, FieldFormatter<String>> supplier) {
+    @NonNull
+    public PStringEqualityFilter setFormatter(
+            @Nullable final Function<Context, FieldFormatter<String>> supplier) {
         this.formatterSupplier = supplier;
+        return this;
     }
 
     /**

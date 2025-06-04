@@ -39,15 +39,15 @@ public class PHasValueFilter
     /**
      * Constructor.
      *
-     * @param dbKey      the field we're filtering on
-     * @param acEntries  resource id for the labels array
-     * @param table      the table with the field
-     * @param domain     the domain representing the field
+     * @param dbKey     the field we're filtering on
+     * @param table     the table with the field
+     * @param domain    the domain representing the field
+     * @param acEntries resource id for the labels array
      */
     PHasValueFilter(@NonNull final String dbKey,
-                    @ArrayRes final int acEntries,
                     @NonNull final TableDefinition table,
-                    @NonNull final Domain domain) {
+                    @NonNull final Domain domain,
+                    @ArrayRes final int acEntries) {
         super(dbKey, acEntries, table, domain);
     }
 
