@@ -59,6 +59,8 @@ public class PStringEqualityFilter
     @Nullable
     private final Pair<String, String> join;
 
+    private boolean wildcards;
+
     @Nullable
     private String value;
 
@@ -110,6 +112,24 @@ public class PStringEqualityFilter
         join = joinExpression;
     }
 
+    /**
+     * Use wildcards to search. The Expression will be surrounded with '%'.
+     * The user can embed '%' and '?' as wanted.
+     * Note that enabling this also enables case-insensitive searches.
+     * <p>
+     * TODO: maybe allow the user to use '*' instead of '%'  but handle that in UI code
+     *
+     * @param wildcards flag
+     *
+     * @return {@code this} for chaining
+     */
+    @SuppressWarnings("SameParameterValue")
+    @NonNull
+    PStringEqualityFilter setWildcards(final boolean wildcards) {
+        this.wildcards = wildcards;
+        return this;
+    }
+
     @Override
     public boolean isActive() {
         if (ServiceLocator.getInstance().isFieldEnabled(domain.getName())) {
@@ -125,7 +145,16 @@ public class PStringEqualityFilter
         // We want to use the exact string, so do not normalize the value,
         // but we do need to handle single quotes as we are concatenating.
         //noinspection DataFlowIssue
-        return table.dot(domain) + "='" + SqlEncode.singleQuotes(value) + '\'';
+        final String s = SqlEncode.singleQuotes(value);
+
+        // Yes, this is a security risk. We ARE aware that concatenation with a user-entered
+        // value should never be done. Given the nature of this app, oh well...
+        // ... if a user deliberately wants to destroy their data, let them :)
+        if (wildcards) {
+            return table.dot(domain) + " LIKE '%" + s + "%'";
+        } else {
+            return table.dot(domain) + "='" + s + '\'';
+        }
     }
 
     @NonNull
@@ -247,6 +276,7 @@ public class PStringEqualityFilter
                + "dbKey=" + dbKey
                + ", table=" + table.getName()
                + ", domain=" + domain.getName()
+               + ", wildcards=" + wildcards
                + ", join=" + join
                + ", value='" + value + '\''
                + '}';
