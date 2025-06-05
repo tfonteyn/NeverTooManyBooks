@@ -60,7 +60,7 @@ public interface TocEntryDao {
      *
      * @param tocId id of the entry (story)
      *
-     * @return list with book ID's
+     * @return list with book ID's, can be empty if the TOCEntry is orphaned
      */
     @NonNull
     List<Long> getBookIds(long tocId);
