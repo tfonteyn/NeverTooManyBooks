@@ -5,11 +5,19 @@ Draft notes for next version:
 NEW:
 
 - Amazon parsing updated: images works again + publication data parsing.
+- #149: click on author names in the book-details and book-content screens to open the author-works
+  screen
+- #150: remember the setting for sorting+filter on the author-works screen
+- #153: new filters for authors names
 
 FIXES:
 
-- Performance improvements for image loading
+- Performance improvements for image loading.
 - #146: second fix: it's now again possible to use "Copy if blank" on list-fields.
+- #153: don't overwrite an author picture when doing an update
+- #154: always refresh the author data when coming 'back' to the author-works screen
+- #155: Backup was missing the author identifiers.
+  Importing an existing author was not updating its metadata.
 
 REMOVED:
 
