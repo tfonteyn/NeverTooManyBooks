@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryTh
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikiData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Audible;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BL;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
@@ -65,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Porbase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WikiData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
 
 /**

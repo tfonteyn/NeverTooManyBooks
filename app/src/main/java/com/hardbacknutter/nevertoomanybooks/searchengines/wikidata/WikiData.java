@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.searchengines.zzz;
+package com.hardbacknutter.nevertoomanybooks.searchengines.wikidata;
 
 public final class WikiData {
 
