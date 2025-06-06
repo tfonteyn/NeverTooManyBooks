@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -113,6 +114,7 @@ public class BookCoder {
     private final FullDateParser dateParser;
     private final RatingParser ratingParser;
     private final TagMapper tagMapper;
+    private final RealNumberParser realNumberParser;
     @Nullable
     private CsvGoodreads goodreads;
     @Nullable
@@ -122,7 +124,7 @@ public class BookCoder {
      * Constructor.
      *
      * @param context      Current context
-     * @param csvFormat       type/origin of the input data to decode
+     * @param csvFormat    type/origin of the input data to decode
      * @param defaultStyle the default style to use for {@link Bookshelf}s
      */
     public BookCoder(@NonNull final Context context,
@@ -143,7 +145,20 @@ public class BookCoder {
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context);
         dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
-        ratingParser = csvFormat.createRatingParser(locales);
+
+        // Make sure US is added so we can parse "dot" decimal-separator
+        // even when the user Locale is a comma decimal-separator.
+        // FIXME LOCALE: this does NOT support the case where a user's Locales only
+        //  use "dot" decimal-separator and they are importing a number with a comma!
+        if (locales.contains(Locale.US)) {
+            realNumberParser = new RealNumberParser(locales);
+            ratingParser = csvFormat.createRatingParser(locales);
+        } else {
+            final List<Locale> tmp = new ArrayList<>(locales);
+            tmp.add(Locale.US);
+            realNumberParser = new RealNumberParser(tmp);
+            ratingParser = csvFormat.createRatingParser(tmp);
+        }
 
         tagMapper = new TagMapper(context);
     }
@@ -195,6 +210,7 @@ public class BookCoder {
         processBookshelves(book);
         processCalibreData(book);
         processRating(book);
+        processPrice(book);
         processDescriptionAndNotes(book);
         processGenre(context, book);
         processExternalIds(book);
@@ -542,17 +558,39 @@ public class BookCoder {
     }
 
     private void processRating(@NonNull final Book book) {
-        if (!book.contains(DBKey.RATING) && book.contains(CsvGoodreads.MY_RATING)) {
+        // The order of the if's is important!
+        if (book.contains(DBKey.RATING)) {
+            // parse to verify it's valid, and normalize.
+            ratingParser.parse(book.getString(DBKey.RATING))
+                        .ifPresent(book::setRating);
+        } else if (book.contains(CsvGoodreads.MY_RATING)) {
             ratingParser.parse(book.getString(CsvGoodreads.MY_RATING))
                         .ifPresent(book::setRating);
-        }
-        book.remove(CsvGoodreads.MY_RATING);
-
-        if (!book.contains(DBKey.RATING) && book.contains(CsvGoodreads.AVERAGE_RATING)) {
+        } else if (book.contains(CsvGoodreads.AVERAGE_RATING)) {
             ratingParser.parse(book.getString(CsvGoodreads.AVERAGE_RATING))
                         .ifPresent(book::setRating);
         }
+        // no need to keep these now
+        book.remove(CsvGoodreads.MY_RATING);
         book.remove(CsvGoodreads.AVERAGE_RATING);
+    }
+
+    private void processPrice(@NonNull final Book book) {
+        if (book.contains(DBKey.PRICE_LISTED)) {
+            final String s = book.getString(DBKey.PRICE_LISTED);
+            if (s.isEmpty()) {
+                // might as well remove empty values
+                book.remove(DBKey.PRICE_LISTED);
+            } else {
+                try {
+                    final double v = realNumberParser.parseDouble(s);
+                    book.putDouble(DBKey.PRICE_LISTED, v);
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore, drop the field
+                    book.remove(DBKey.PRICE_LISTED);
+                }
+            }
+        }
     }
 
     private void processDescriptionAndNotes(@NonNull final Book book) {

@@ -482,10 +482,6 @@ public class BookDaoHelper {
                                     // Log, but skip this field.
                                     // This does mean that sentiments like:
                                     // list_price="a lot of money" will NOT be preserved!
-                                    //
-                                    // FIXME: we also loose price data when we're running
-                                    //  with Locales which use "." as decimal sep and
-                                    //  the CSV file contains prices like "12,95"
                                     LoggerFactory.getLogger()
                                                  .w(TAG, "columnName(float)=" + columnName,
                                                     "entry=" + entry,
