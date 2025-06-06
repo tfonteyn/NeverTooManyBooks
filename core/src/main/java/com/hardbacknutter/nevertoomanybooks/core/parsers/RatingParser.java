@@ -78,7 +78,7 @@ public class RatingParser {
      */
     @NonNull
     public Optional<Float> parse(@Nullable final String s) {
-        if (s == null || s.isBlank() || "0".equals(s) || "0.0".equals(s)) {
+        if (NumberParser.isZero(s)) {
             return Optional.empty();
         }
 
