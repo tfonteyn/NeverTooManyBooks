@@ -236,6 +236,8 @@ class CollectionFormUploader {
     @AnyThread
     @NonNull
     private String ratingToSite(@NonNull final Book book) {
+        // The Book rating runs from 0.0 to 5.0; multiply by 2 for the site 1..10.
+        // We clamp due to paranoia
         return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.RATING, realNumberParser) * 2,
                                               0, 10));
     }
