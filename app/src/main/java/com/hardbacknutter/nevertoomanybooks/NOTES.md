@@ -1,6 +1,6 @@
 Draft notes for next version:
 
-### 7.4.2
+### 7.5.0
 
 NEW:
 
@@ -18,6 +18,9 @@ FIXES:
 - #154: always refresh the author data when coming 'back' to the author-works screen
 - #155: Backup was missing the author identifiers.
   Importing an existing author was not updating its metadata.
+- #159: csv import: ratings and prices with both comma/dot on devices with a comma-only locale
+  language are now imported properly.
+- #159: grouping by rating was rounding rating down to whole number instead of x.y format.
 
 REMOVED:
 
