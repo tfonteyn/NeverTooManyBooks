@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,7 @@ public final class NumberParser {
      *
      * @return {@code true} if the value was a zero in some form or another
      */
-    static boolean isZero(@Nullable final String stringValue) {
+    public static boolean isZero(@Nullable final String stringValue) {
         if (stringValue == null) {
             return true;
         }
