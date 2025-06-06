@@ -347,7 +347,7 @@ public class ParseTest
         assertEquals("2024-04-30", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("288", book.getString(DBKey.PAGES, null));
         assertEquals("平装", book.getString(DBKey.FORMAT, null));
-        assertEquals(4f, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
         assertEquals(MoneyParser.CNY, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));

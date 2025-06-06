@@ -149,7 +149,7 @@ public class ParseTest
         assertEquals("Português", book.getString(DBKey.LANGUAGE, null));
 
         // test is a dynamic download, can fail / needs updating
-        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser));
+        assertEquals(5.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 //        assertEquals(new Money(BigDecimal.valueOf(17.91d), Money.EURO),
 //                     book.getMoney(DBKey.PRICE_LISTED, realNumberParser));
 

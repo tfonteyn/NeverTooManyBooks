@@ -93,7 +93,7 @@ public class ParseTest
         assertEquals("2011", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
         assertEquals(
                 "<b>\"The most spectacular science fiction writer of recent years\" (Vernor Vinge, author of <i>Rainbows End</i>) presents a near-future thriller. \n"

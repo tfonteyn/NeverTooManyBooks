@@ -185,7 +185,7 @@ public class ParseTest
         assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
         assertEquals("<p>met tekeningen van Philippe Xavier, Iouri Jigounov, Joël Callède," +
                      " Gontran Toussaint, Mikaël, Alain Henriet. *een extra katern leveren" +
@@ -305,7 +305,7 @@ public class ParseTest
         assertEquals("48 x 3", book.getString(DBKey.PAGES, null));
         assertEquals("hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(0, book.getLong(DBKey.RATING));
+        assertEquals(0.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
         assertEquals("De albums van deze reeks verschenen enkel in softcover." +
                      " Nu verschijnt een luxe stripbox met de delen 1-3 in hardcover." +
@@ -359,11 +359,11 @@ public class ParseTest
         assertEquals(Author.TYPE_ARTIST, author.getType());
         author = allAuthors.get(4);
         assertEquals("Henninot", author.getFamilyName());
-        assertEquals("Eric", author.getGivenNames());
+        assertEquals("Éric", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
         author = allAuthors.get(5);
         assertEquals("Corbeyran", author.getFamilyName());
-        assertEquals("Eric", author.getGivenNames());
+        assertEquals("Éric", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
         author = allAuthors.get(6);
         assertEquals("Dorison", author.getFamilyName());
