@@ -553,21 +553,21 @@ public abstract class SearchEngineBase
      * Process the price-listed field according to the given site locale.
      *
      * @param context     Current context
-     * @param locale      for parsing
+     * @param siteLocale  for parsing
      * @param priceStr    the field as retrieved with or without currency embedded
      * @param currencyStr optional default currency string to use
      *                    when the priceStr does not have one
      * @param book        Bundle to update
      */
     public void addPriceListed(@NonNull final Context context,
-                               @NonNull final Locale locale,
+                               @NonNull final Locale siteLocale,
                                @NonNull final String priceStr,
                                @Nullable final String currencyStr,
                                @NonNull final Book book) {
 
-        final List<Locale> locales = LocaleListUtils.asList(context, locale);
+        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
-        final MoneyParser parser = new MoneyParser(locale, realNumberParser);
+        final MoneyParser parser = new MoneyParser(siteLocale, realNumberParser);
 
         // TODO: maybe move this logic to the MoneyParser class ?
         // First ignore the given currency string (if any) and try parsing

@@ -392,8 +392,8 @@ public class BolSearchEngine
             return;
         }
 
-        final Locale locale = getLocale(context);
-        final List<Locale> locales = LocaleListUtils.asList(context, locale);
+        final Locale siteLocale = getLocale(context);
+        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         final RealNumberParser realNumberParser = new RealNumberParser(locales);
 
         for (final Element specRow : specs.select("div.specs__row")) {
@@ -421,7 +421,7 @@ public class BolSearchEngine
                     case "Date de sortie initiale": {
                         final String text = SearchEngineUtils.cleanText(value.text());
                         if (!text.isEmpty()) {
-                            addPublicationDate(context, locale, text, book);
+                            addPublicationDate(context, siteLocale, text, book);
                         }
                         break;
                     }
