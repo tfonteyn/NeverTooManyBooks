@@ -153,7 +153,7 @@ class ResultsAccumulator {
 
                 } else if (DBKey.RATING.equals(key)) {
                     //ENHANCE: don't take first rating, but calc the average
-                    processDouble(key, result, book, realNumberParser);
+                    processRating(key, result, book, realNumberParser);
 
                 } else {
                     // when we get here, we should only have String, int, or long data
@@ -363,14 +363,16 @@ class ResultsAccumulator {
     }
 
     /**
-     * Accumulate {@code double} or {@code float} data.
+     * Accumulate {@code double} or {@code float} rating data.
+     * <p>
+     * The result is <strong>ALWAYS stored as a {@code float}</strong>
      *
      * @param key              Key of data
      * @param siteData         Source Bundle
      * @param book             Destination bundle
      * @param realNumberParser shared for the current site
      */
-    private void processDouble(@NonNull final String key,
+    private void processRating(@NonNull final String key,
                                @NonNull final Book siteData,
                                @NonNull final Book book,
                                @NonNull final RealNumberParser realNumberParser) {
@@ -385,17 +387,25 @@ class ResultsAccumulator {
         final String previous = book.getString(key, null);
         if (previous != null && !previous.isEmpty()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                dbgLogValueSkipped("processDouble", key, dataToAdd);
+                dbgLogValueSkipped("processRealNumberToFloat", key, dataToAdd);
             }
             return;
         }
 
         // double or float ? Just copy the new data.
-        if (dataToAdd instanceof Float || dataToAdd instanceof Double) {
+        if (dataToAdd instanceof Float) {
             book.putFloat(key, (float) dataToAdd);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                dbgLogValueCopied("processDouble", key, dataToAdd);
+                dbgLogValueCopied("processRealNumberToFloat", key, dataToAdd);
+            }
+            return;
+        }
+        if (dataToAdd instanceof Double) {
+            book.putFloat(key, ((Double) dataToAdd).floatValue());
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                dbgLogValueCopied("processRealNumberToFloat", key, dataToAdd);
             }
             return;
         }
@@ -403,16 +413,15 @@ class ResultsAccumulator {
         //noinspection OverlyBroadCatchBlock
         try {
             // this is a fallback in case the SearchEngine has not already parsed the data!
-            final float rating = realNumberParser.toFloat(dataToAdd);
-            book.putFloat(key, rating);
+            book.putFloat(key, realNumberParser.toFloat(dataToAdd));
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                dbgLogValueCopied("processRating", key, dataToAdd);
+                dbgLogValueCopied("processRealNumberToFloat", key, dataToAdd);
             }
         } catch (@NonNull final IllegalArgumentException e) {
             // covers NumberFormatException
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "processDouble", e,
+                LoggerFactory.getLogger().d(TAG, "processRealNumberToFloat", e,
                                             "key=" + key,
                                             "data=`" + dataToAdd + '`');
             }
