@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,23 +82,25 @@ public interface DataHolder {
      * Returns the value associated with the given key.
      *
      * @param key    Key of data object
-     * @param parser to use
+     * @param parser (optional) to use for number parsing.
+     *               WARNING: make sure you know what you're doing when not providing a parser.
      *
      * @return a double value
      */
     double getDouble(@NonNull String key,
-                     @NonNull RealNumberParser parser);
+                     @Nullable RealNumberParser parser);
 
     /**
      * Returns the value associated with the given key.
      *
      * @param key    Key of data object
-     * @param parser to use for number parsing
+     * @param parser (optional) to use for number parsing.
+     *               WARNING: make sure you know what you're doing when not providing a parser.
      *
      * @return a float value
      */
     float getFloat(@NonNull String key,
-                   @NonNull RealNumberParser parser);
+                   @Nullable RealNumberParser parser);
 
     /**
      * Returns the value associated with the given key.

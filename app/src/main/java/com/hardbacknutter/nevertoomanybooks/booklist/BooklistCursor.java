@@ -156,7 +156,7 @@ public class BooklistCursor
      *
      * @param key to get
      *
-     * @return the boolean value of the column ({@code null} comes back as false).
+     * @return the boolean value of the column; {@code null} becomes {@code false}
      */
     @Override
     public boolean getBoolean(@NonNull final String key) {
@@ -168,7 +168,7 @@ public class BooklistCursor
      *
      * @param key to get
      *
-     * @return the int value of the column ({@code null} comes back as 0)
+     * @return the int value of the column; {@code null} becomes {@code 0}
      */
     @Override
     public int getInt(@NonNull final String key) {
@@ -184,7 +184,7 @@ public class BooklistCursor
      *
      * @param key to get
      *
-     * @return the long value of the column ({@code null} comes back as 0)
+     * @return the long value of the column; {@code null} becomes {@code 0}
      */
     @Override
     public long getLong(@NonNull final String key) {
@@ -201,13 +201,15 @@ public class BooklistCursor
      * @param parser to use for number parsing
      * @param key    to get
      *
-     * @return the double value of the column ({@code null} comes back as 0)
+     * @return the float value of the column; {@code null} becomes {@code 0}
+     *         If no parser was used, then any non-compatible data becomes {@code 0}
+     *         without an error being thrown.
      *
-     * @throws NumberFormatException if the value could not be parsed.
+     * @throws NumberFormatException if the parser was used and the source was not compatible.
      */
     @Override
     public float getFloat(@NonNull final String key,
-                          @NonNull final RealNumberParser parser)
+                          @Nullable final RealNumberParser parser)
             throws NumberFormatException {
         final DataManager data = getCurrentCursor().getRow();
         if (!data.contains(key)) {
@@ -221,13 +223,15 @@ public class BooklistCursor
      *
      * @param key to get
      *
-     * @return the double value of the column ({@code null} comes back as 0)
+     * @return the double value of the column; {@code null} becomes {@code 0}
+     *         If no parser was used, then any non-compatible data becomes {@code 0}
+     *         without an error being thrown.
      *
-     * @throws NumberFormatException if the value could not be parsed.
+     * @throws NumberFormatException if the parser was used and the source was not compatible.
      */
     @Override
     public double getDouble(@NonNull final String key,
-                            @NonNull final RealNumberParser parser)
+                            @Nullable final RealNumberParser parser)
             throws NumberFormatException {
         final DataManager data = getCurrentCursor().getRow();
         if (!data.contains(key)) {

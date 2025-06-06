@@ -37,7 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 /**
  * A handy wrapper allowing to fetch columns by name.
  * <p>
- * <strong>Note:</strong> converts {@code null} Strings to an empty String.
+ * <strong>Note:</strong> converts {@code null} Strings to an empty String
+ * and {@code null} numbers to {@code 0}.
  * <p>
  * Tip: when using a CursorRow as a parameter to a constructor, e.g.
  * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, DataHolder)}
@@ -100,7 +101,7 @@ public class CursorRow
      *
      * @param key to get
      *
-     * @return the boolean value of the column ({@code null} comes back as false).
+     * @return the boolean value of the column; ({@code null} becomes {code false}.
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -115,7 +116,7 @@ public class CursorRow
      *
      * @param key to get
      *
-     * @return the int value of the column ({@code null} comes back as 0)
+     * @return the int value of the column; {@code null} becomes {@code 0}
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -138,7 +139,7 @@ public class CursorRow
      *
      * @param key to get
      *
-     * @return the long value of the column ({@code null} comes back as 0)
+     * @return the long value of the column; {@code null} becomes {@code 0}
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -159,16 +160,17 @@ public class CursorRow
     /**
      * Returns the value associated with the given key.
      *
-     * @param key to get
+     * @param key    to get
+     * @param unused values from the database do not need parsing
      *
-     * @return the double value of the column ({@code null} comes back as 0)
+     * @return the double value of the column; {@code null} becomes {@code 0}
      *
      * @throws ColumnNotPresentException if the column was not present.
      * @throws NumberFormatException     if the value could not be parsed.
      */
     @Override
     public double getDouble(@NonNull final String key,
-                            @NonNull final RealNumberParser parser)
+                            @Nullable final RealNumberParser unused)
             throws NumberFormatException {
 
         final int col = cursor.getColumnIndex(key);
@@ -184,17 +186,17 @@ public class CursorRow
     /**
      * Returns the value associated with the given key.
      *
-     * @param parser to use for number parsing
      * @param key    to get
+     * @param unused values from the database do not need parsing
      *
-     * @return the double value of the column ({@code null} comes back as 0)
+     * @return the float value of the column; {@code null} becomes {@code 0}
      *
      * @throws ColumnNotPresentException if the column was not present.
      * @throws NumberFormatException     if the value could not be parsed.
      */
     @Override
     public float getFloat(@NonNull final String key,
-                          @NonNull final RealNumberParser parser)
+                          @Nullable final RealNumberParser unused)
             throws NumberFormatException {
 
         final int col = cursor.getColumnIndex(key);

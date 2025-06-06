@@ -421,14 +421,16 @@ public class DataManager
      * @param key Key of data object
      *
      * @return a double value; {@code null} or empty becomes {@code 0}
+     *         If no parser was used, then any non-compatible data becomes {@code 0}
+     *         without an error being thrown
      *
-     * @throws NumberFormatException if the source was not compatible.
+     * @throws NumberFormatException if the parser was used and the source was not compatible.
      */
     @Override
     public double getDouble(@NonNull final String key,
-                            @NonNull final RealNumberParser parser)
+                            @Nullable final RealNumberParser parser)
             throws NumberFormatException {
-        return parser.toDouble(rawData.get(key));
+        return parser != null ? parser.toDouble(rawData.get(key)) : rawData.getDouble(key, 0);
     }
 
     /**
@@ -449,14 +451,16 @@ public class DataManager
      * @param parser to use for number parsing
      *
      * @return a float value {@code null} or empty becomes {@code 0}
+     *         If no parser was used, then any non-compatible data becomes {@code 0}
+     *         without an error being thrown
      *
-     * @throws NumberFormatException if the source was not compatible.
+     * @throws NumberFormatException if the parser was used and the source was not compatible.
      */
     @Override
     public float getFloat(@NonNull final String key,
-                          @NonNull final RealNumberParser parser)
+                          @Nullable final RealNumberParser parser)
             throws NumberFormatException {
-        return parser.toFloat(rawData.get(key));
+        return parser != null ? parser.toFloat(rawData.get(key)) : rawData.getFloat(key, 0);
     }
 
     /**
