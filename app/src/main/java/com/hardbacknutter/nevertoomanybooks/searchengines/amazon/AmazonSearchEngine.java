@@ -301,7 +301,6 @@ public class AmazonSearchEngine
     private static final Pattern PAGES_PATTERN =
             Pattern.compile("(\\d+) (?:pages|Seiten|pagina's|páginas)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-    ;
 
     /**
      * Constructor.
