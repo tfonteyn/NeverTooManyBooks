@@ -233,13 +233,12 @@ public class CsvArchiveReaderTest
         assertEquals("0486224309", book.getString(DBKey.ISBN, null));
         // "1975-06-01" => day will be dropped
         assertEquals("1975-06", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
+        assertEquals(0.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
         assertFalse(book.isRead());
         assertEquals("272", book.getString(DBKey.PAGES, null));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
 
-        // URGENT: price was "12,95" ... see BookDaoHelper#filterValues
-        assertEquals("0.0", book.getString(DBKey.PRICE_LISTED, null));
+        assertEquals("12.95", book.getString(DBKey.PRICE_LISTED, null));
 
         assertEquals(Book.ContentType.Book, book.getContentType());
         assertEquals("", book.getString(DBKey.LOCATION, null));
@@ -289,13 +288,12 @@ public class CsvArchiveReaderTest
         assertEquals("Dracula", book.getString(DBKey.TITLE, null));
         assertEquals("9780141439846", book.getString(DBKey.ISBN, null));
         assertEquals("2003-04-29", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
+        assertEquals(0.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
         assertFalse(book.isRead());
         assertEquals("454", book.getString(DBKey.PAGES, null));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
 
-        // URGENT: price was "11,00" ... see BookDaoHelper#filterValues
-        assertEquals("0.0", book.getString(DBKey.PRICE_LISTED, null));
+        assertEquals("11.0", book.getString(DBKey.PRICE_LISTED, null));
 
         assertEquals(Book.ContentType.Book, book.getContentType());
         assertEquals("", book.getString(DBKey.LOCATION, null));
@@ -349,6 +347,6 @@ public class CsvArchiveReaderTest
 
         final Book book = Book.from(666000003);
         // "3,55"
-        assertEquals(3.5, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
+        assertEquals(3.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
     }
 }
