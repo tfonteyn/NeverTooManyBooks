@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
@@ -28,6 +29,10 @@ import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -63,7 +68,9 @@ public class DBCleaner {
     private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
+    private static final String _IN_ = " IN ";
     private static final String _IS_NULL = " IS NULL";
+    private static final String _IS_NOT_NULL = " IS NOT NULL";
     private static final String UPDATE_ = "UPDATE ";
     private static final String _SET_ = " SET ";
     private static final String DELETE_FROM_ = "DELETE FROM ";
@@ -104,6 +111,8 @@ public class DBCleaner {
                        DBDefinitions.TBL_AUTHORS,
                        DBDefinitions.TBL_SERIES);
 
+        //ratingColumn();
+
         // Validate styles and filters.
         serviceLocator.getBookshelfDao().validate(context);
 
@@ -119,6 +128,58 @@ public class DBCleaner {
         modified += serviceLocator.getTocEntryDao().fixPositions(context);
         if (modified > 0) {
             LoggerFactory.getLogger().w(TAG, "reposition modified=" + modified);
+        }
+    }
+
+    private void ratingColumn() {
+        final String valid = "^\\s*\\d*\\.?\\d*\\s*$";
+        final Pattern validPattern = Pattern.compile(valid);
+        final List<Long> toDelete = new ArrayList<>();
+        final Map<Long, String> toUpdate = new ArrayMap<>();
+
+        try (Cursor cursor = db.rawQuery(
+                SELECT_ + DBKey.PK_ID + ',' + DBKey.RATING
+                + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
+                + _WHERE_ + DBKey.RATING + _IS_NOT_NULL, null)) {
+            while (cursor.moveToNext()) {
+                boolean modified = false;
+                final long id = cursor.getLong(0);
+                String s = cursor.getString(1);
+                if (s.contains(",")) {
+                    s = s.replace(',', '.');
+                    modified = true;
+                }
+                final Matcher matcher = validPattern.matcher(s);
+                if (matcher.find()) {
+                    if (modified) {
+                        toUpdate.put(id, s);
+                    }
+                } else {
+                    toDelete.add(id);
+                }
+            }
+        }
+
+        if (!toDelete.isEmpty()) {
+            final StringJoiner sj = new StringJoiner(",", "(", ")");
+            toDelete.forEach(id -> sj.add(String.valueOf(id)));
+            // just the one execute for performance
+            db.execSQL(UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
+                       + _SET_ + DBKey.RATING + "=null"
+                       + _WHERE_ + DBKey.PK_ID + _IN_ + sj);
+        }
+        if (!toUpdate.isEmpty()) {
+            try (SynchronizedStatement stmt = db.compileStatement(
+                    UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
+                    + _SET_ + DBKey.RATING + "=?"
+                    + _WHERE_ + DBKey.PK_ID + "=?")) {
+
+                for (final Map.Entry<Long, String> entry : toUpdate.entrySet()) {
+                    stmt.bindLong(1, entry.getKey());
+                    stmt.bindString(2, entry.getValue());
+                    stmt.executeUpdateDelete();
+                }
+            }
         }
     }
 
