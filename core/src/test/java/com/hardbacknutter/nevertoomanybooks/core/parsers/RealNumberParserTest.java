@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.core.parsers;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -135,6 +136,27 @@ class RealNumberParserTest {
 
         assertThrows(NumberFormatException.class, () -> parser.parseDouble(DEC_DOT_NO_GROUPING));
         assertThrows(NumberFormatException.class, () -> parser.parseDouble(DEC_DOT_GROUPING_COMMA));
+
+        assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_NO_GROUPING));
+        assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_GROUPING_DOT));
+    }
+
+    @ParameterizedTest
+    @MethodSource("decCommaGrpDot")
+    void parseFloat30_US(@NonNull final List<Locale> testLocales) {
+
+        final ArrayList<Locale> locales = new ArrayList<>(testLocales);
+        locales.add(Locale.US);
+        final RealNumberParser parser = new RealNumberParser(locales);
+
+        assertEquals(FLOAT, parser.parseFloat(DEC_DOT_NO_GROUPING));
+        assertEquals(FLOAT, parser.parseFloat(DEC_DOT_GROUPING_COMMA));
+
+        assertEquals(FLOAT, parser.parseFloat(DEC_COMMA_NO_GROUPING));
+        assertEquals(FLOAT, parser.parseFloat(DEC_COMMA_GROUPING_DOT));
+
+        assertEquals(DOUBLE, parser.parseDouble(DEC_DOT_NO_GROUPING));
+        assertEquals(DOUBLE, parser.parseDouble(DEC_DOT_GROUPING_COMMA));
 
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_NO_GROUPING));
         assertEquals(DOUBLE, parser.parseDouble(DEC_COMMA_GROUPING_DOT));
