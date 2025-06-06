@@ -142,7 +142,7 @@ public class CsvArchiveReaderTest
 
         checkBook1();
         checkBook2();
-
+        checkBook3Rating();
 
         // Delete 1 book; then re-import using "Overwrite"
         bookDao.delete(666000002);
@@ -233,7 +233,7 @@ public class CsvArchiveReaderTest
         assertEquals("0486224309", book.getString(DBKey.ISBN, null));
         // "1975-06-01" => day will be dropped
         assertEquals("1975-06", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0);
+        assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
         assertFalse(book.isRead());
         assertEquals("272", book.getString(DBKey.PAGES, null));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
@@ -289,7 +289,7 @@ public class CsvArchiveReaderTest
         assertEquals("Dracula", book.getString(DBKey.TITLE, null));
         assertEquals("9780141439846", book.getString(DBKey.ISBN, null));
         assertEquals("2003-04-29", book.getString(DBKey.PUBLICATION_DATE, null));
-        assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0);
+        assertEquals(0, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
         assertFalse(book.isRead());
         assertEquals("454", book.getString(DBKey.PAGES, null));
         assertEquals("", book.getString(DBKey.PERSONAL_NOTES, null));
@@ -342,5 +342,13 @@ public class CsvArchiveReaderTest
         assertEquals("Penguin Classics", series.get(0).getTitle());
 
         assertEquals(0, book.getToc().size());
+    }
+
+    private void checkBook3Rating() {
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
+
+        final Book book = Book.from(666000003);
+        // "3,55"
+        assertEquals(3.5, book.getFloat(DBKey.RATING, realNumberParser), 0.1);
     }
 }

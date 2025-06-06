@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,9 +20,12 @@
 
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 
 import org.junit.Test;
 
@@ -35,85 +38,143 @@ public class RatingParserTest {
 
     @Test
     public void v5() {
-        final RatingParser equalizer = new RatingParser(5);
+        final RatingParser parser = new RatingParser(5);
+        parse5withDots(parser);
+    }
+
+    @Test
+    public void v10() {
+        final RatingParser parser = new RatingParser(10);
+        parse10withDots(parser);
+    }
+
+    private void parse5withDots(final RatingParser parser) {
         Optional<Float> convert;
 
         // Anything less than 0.251 becomes 0, which we reject
-        convert = equalizer.parse("0.1");
+        convert = parser.parse("0.1");
         assertFalse(convert.isPresent());
 
-        convert = equalizer.parse("0.4");
+        convert = parser.parse("0.4");
         assertTrue(convert.isPresent());
         assertEquals(0.5, convert.get(), 0.1);
 
-        convert = equalizer.parse("3");
+        convert = parser.parse("3");
         assertTrue(convert.isPresent());
         assertEquals(3, convert.get(), 0.1);
 
-        convert = equalizer.parse("3.1");
+        convert = parser.parse("3.1");
         assertTrue(convert.isPresent());
         assertEquals(3, convert.get(), 0.1);
 
-        convert = equalizer.parse("3.4");
+        convert = parser.parse("3.4");
         assertTrue(convert.isPresent());
         assertEquals(3.5, convert.get(), 0.1);
 
-        convert = equalizer.parse("3.5");
+        convert = parser.parse("3.5");
         assertTrue(convert.isPresent());
         assertEquals(3.5, convert.get(), 0.1);
 
-        convert = equalizer.parse("3.6");
+        convert = parser.parse("3.6");
         assertTrue(convert.isPresent());
         assertEquals(3.5, convert.get(), 0.1);
 
-        convert = equalizer.parse("3.9");
+        convert = parser.parse("3.9");
         assertTrue(convert.isPresent());
         assertEquals(4, convert.get(), 0.1);
 
-        convert = equalizer.parse("5.0");
+        convert = parser.parse("5.0");
+        assertTrue(convert.isPresent());
+        assertEquals(5, convert.get(), 0.1);
+    }
+
+    private void parse5withCommas(final RatingParser parser) {
+        Optional<Float> convert;
+
+        // Anything less than 0.251 becomes 0, which we reject
+        convert = parser.parse("0,1");
+        assertFalse(convert.isPresent());
+
+        convert = parser.parse("0,4");
+        assertTrue(convert.isPresent());
+        assertEquals(0.5, convert.get(), 0.1);
+
+        convert = parser.parse("3");
+        assertTrue(convert.isPresent());
+        assertEquals(3, convert.get(), 0.1);
+
+        convert = parser.parse("3,1");
+        assertTrue(convert.isPresent());
+        assertEquals(3, convert.get(), 0.1);
+
+        convert = parser.parse("3,4");
+        assertTrue(convert.isPresent());
+        assertEquals(3.5, convert.get(), 0.1);
+
+        convert = parser.parse("3,5");
+        assertTrue(convert.isPresent());
+        assertEquals(3.5, convert.get(), 0.1);
+
+        convert = parser.parse("3,6");
+        assertTrue(convert.isPresent());
+        assertEquals(3.5, convert.get(), 0.1);
+
+        convert = parser.parse("3,9");
+        assertTrue(convert.isPresent());
+        assertEquals(4, convert.get(), 0.1);
+
+        convert = parser.parse("5,0");
+        assertTrue(convert.isPresent());
+        assertEquals(5, convert.get(), 0.1);
+    }
+
+    private void parse10withDots(final RatingParser parser) {
+        Optional<Float> convert;
+
+        // Anything less than 0.5 becomes 0, which we reject
+        convert = parser.parse("0.1");
+        assertFalse(convert.isPresent());
+
+        convert = parser.parse("0.6");
+        assertTrue(convert.isPresent());
+        assertEquals(0.5, convert.get(), 0.1);
+
+        convert = parser.parse("6");
+        assertTrue(convert.isPresent());
+        assertEquals(3, convert.get(), 0.1);
+
+        convert = parser.parse("6.1");
+        assertTrue(convert.isPresent());
+        assertEquals(3, convert.get(), 0.1);
+
+        convert = parser.parse("6.4");
+        assertTrue(convert.isPresent());
+        assertEquals(3.0, convert.get(), 0.1);
+
+        convert = parser.parse("6.5");
+        assertTrue(convert.isPresent());
+        assertEquals(3.5, convert.get(), 0.1);
+
+        convert = parser.parse("6.6");
+        assertTrue(convert.isPresent());
+        assertEquals(3.5, convert.get(), 0.1);
+
+        convert = parser.parse("6.9");
+        assertTrue(convert.isPresent());
+        assertEquals(3.5, convert.get(), 0.1);
+
+        convert = parser.parse("10.0");
         assertTrue(convert.isPresent());
         assertEquals(5, convert.get(), 0.1);
     }
 
     @Test
-    public void v10() {
-        final RatingParser equalizer = new RatingParser(10);
-        Optional<Float> convert;
-
-        // Anything less than 0.5 becomes 0, which we reject
-        convert = equalizer.parse("0.1");
-        assertFalse(convert.isPresent());
-
-        convert = equalizer.parse("0.6");
-        assertTrue(convert.isPresent());
-        assertEquals(0.5, convert.get(), 0.1);
-
-        convert = equalizer.parse("6");
-        assertTrue(convert.isPresent());
-        assertEquals(3, convert.get(), 0.1);
-
-        convert = equalizer.parse("6.1");
-        assertTrue(convert.isPresent());
-        assertEquals(3, convert.get(), 0.1);
-
-        convert = equalizer.parse("6.4");
-        assertTrue(convert.isPresent());
-        assertEquals(3.0, convert.get(), 0.1);
-
-        convert = equalizer.parse("6.5");
-        assertTrue(convert.isPresent());
-        assertEquals(3.5, convert.get(), 0.1);
-
-        convert = equalizer.parse("6.6");
-        assertTrue(convert.isPresent());
-        assertEquals(3.5, convert.get(), 0.1);
-
-        convert = equalizer.parse("6.9");
-        assertTrue(convert.isPresent());
-        assertEquals(3.5, convert.get(), 0.1);
-
-        convert = equalizer.parse("10.0");
-        assertTrue(convert.isPresent());
-        assertEquals(5, convert.get(), 0.1);
+    public void v5withLocales() {
+        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.GERMANY,
+                                                                               Locale.FRANCE,
+                                                                               Locale.US));
+        final RatingParser parser = new RatingParser(realNumberParser, 5);
+        parse5withDots(parser);
+        parse5withCommas(parser);
     }
 }
