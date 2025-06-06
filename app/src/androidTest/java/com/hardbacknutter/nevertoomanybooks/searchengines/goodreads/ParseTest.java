@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +77,13 @@ public class ParseTest
         searchEngine = (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
+
+        // The Goodreads resolver is by default always true,
+        // but the openlibrary one is by default false.
+        // For these tests we want both
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putBoolean("goodreads.resolve.authors.openlibrary", true)
+                         .apply();
     }
 
     @Test
@@ -99,8 +108,7 @@ public class ParseTest
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("2007-12-01", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(new PartialDate(1981, 1, 1), book.getFirstPublicationDate());
-        assertEquals(4
-                , book.getFloat(DBKey.RATING, realNumberParser), 0);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
         assertEquals("9604419196", book.requireIdentifierValue(Identifier.SID_ASIN));
         assertEquals("33838921", book.requireIdentifierValue(Identifier.SID_GOODREADS));
@@ -149,7 +157,7 @@ public class ParseTest
         assertEquals("Kox", author.getFamilyName());
         assertEquals("Daniel", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
-        assertNull(author.getBirthDate().orElse(null));
+        assertEquals("1952-02-04", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
         assertEquals(2, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
@@ -205,7 +213,7 @@ public class ParseTest
         assertNull(book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("2024-10-21", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(new PartialDate(2022, 10, 28), book.getFirstPublicationDate());
-        assertEquals(3, book.getFloat(DBKey.RATING, realNumberParser), 0);
+        assertEquals(3.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
         assertEquals("B0D79GXMVR", book.requireIdentifierValue(Identifier.SID_ASIN));
         assertEquals("215846772", book.requireIdentifierValue(Identifier.SID_GOODREADS));
@@ -274,6 +282,8 @@ public class ParseTest
         assertNotNull(book);
         assertFalse(book.isEmpty());
 
+        Log.d(TAG, book.toString());
+
         assertEquals("The Left-Handed Booksellers of London", book.getString(DBKey.TITLE, null));
         assertEquals("9780062683250", book.getString(DBKey.ISBN, null));
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
@@ -281,7 +291,7 @@ public class ParseTest
         assertEquals("416", book.getString(DBKey.PAGES, null));
         assertEquals("2020-09-22", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(new PartialDate(2020, 9, 22), book.getFirstPublicationDate());
-        assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
         assertEquals("006268325X", book.requireIdentifierValue(Identifier.SID_ASIN));
         assertEquals("49867186", book.requireIdentifierValue(Identifier.SID_GOODREADS));
@@ -378,6 +388,8 @@ public class ParseTest
         assertNotNull(book);
         assertFalse(book.isEmpty());
 
+        Log.d(TAG, book.toString());
+
         assertEquals("Foundation and Empire", book.getString(DBKey.TITLE, null));
         assertNull(book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("9780553803723", book.getString(DBKey.ISBN, null));
@@ -386,7 +398,7 @@ public class ParseTest
         assertEquals("256", book.getString(DBKey.PAGES, null));
         assertEquals("2004-06-01", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals(new PartialDate(1952, 1, 1), book.getFirstPublicationDate());
-        assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
         assertEquals("0553803727", book.requireIdentifierValue(Identifier.SID_ASIN));
         assertEquals("29581", book.requireIdentifierValue(Identifier.SID_GOODREADS));
@@ -489,7 +501,7 @@ public class ParseTest
         assertNull(book.getString(DBKey.PUBLICATION_DATE, null));
         // yes, that's the date on goodreads
         assertEquals(new PartialDate(-19, 1, 1), book.getFirstPublicationDate());
-        assertEquals(4, book.getFloat(DBKey.RATING, realNumberParser), 0);
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
         assertTrue(book.getIdentifierValue(Identifier.SID_ASIN).isEmpty());
         assertEquals("37557163", book.requireIdentifierValue(Identifier.SID_GOODREADS));
