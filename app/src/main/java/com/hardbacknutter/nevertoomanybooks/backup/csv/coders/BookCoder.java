@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -557,18 +558,30 @@ public class BookCoder {
         }
     }
 
+    @SuppressWarnings("IfStatementWithNegatedCondition")
     private void processRating(@NonNull final Book book) {
+        // Read the values as String and parse to verify they are valid.
         // The order of the if's is important!
+
         if (book.contains(DBKey.RATING)) {
-            // parse to verify it's valid, and normalize.
-            ratingParser.parse(book.getString(DBKey.RATING))
-                        .ifPresent(book::setRating);
-        } else if (book.contains(CsvGoodreads.MY_RATING)) {
-            ratingParser.parse(book.getString(CsvGoodreads.MY_RATING))
-                        .ifPresent(book::setRating);
-        } else if (book.contains(CsvGoodreads.AVERAGE_RATING)) {
-            ratingParser.parse(book.getString(CsvGoodreads.AVERAGE_RATING))
-                        .ifPresent(book::setRating);
+            // If the key DBKey.RATING is present, we ALWAYS use it even if it's 0/empty
+            ratingParser.parse(book.getString(DBKey.RATING)).ifPresent(book::setRating);
+        } else {
+            // Goodreads imports:
+            // Try MY_RATING first
+            String s = book.getString(CsvGoodreads.MY_RATING);
+            if (!NumberParser.isZero(s)) {
+                // if we have a non-zero, we use it.
+                ratingParser.parse(s).ifPresent(book::setRating);
+            } else {
+                // otherwise try AVERAGE_RATING
+                s = book.getString(CsvGoodreads.AVERAGE_RATING);
+                if (!NumberParser.isZero(s)) {
+                    // if we have a non-zero, we use it.
+                    ratingParser.parse(book.getString(CsvGoodreads.AVERAGE_RATING))
+                                .ifPresent(book::setRating);
+                }
+            }
         }
         // no need to keep these now
         book.remove(CsvGoodreads.MY_RATING);
