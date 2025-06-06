@@ -59,7 +59,7 @@ public class RatingHolder
      * @param style    to use
      */
     RatingHolder(@NonNull final View itemView,
-                 final Style style) {
+                 @NonNull final Style style) {
         super(itemView);
         key = style.requireGroupById(BooklistGroup.RATING)
                    .getDisplayDomainExpression()
@@ -74,7 +74,8 @@ public class RatingHolder
 
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
-        ratingBar.setRating(rowData.getInt(key));
+        // No parser, database values are normalized
+        ratingBar.setRating(rowData.getFloat(key, null));
         if (showGroupBookCount) {
             bookCountView.setText(String.valueOf(rowData.getLong(DBKey.FK_BOOK)));
         }
