@@ -143,7 +143,7 @@ public class BookCoder {
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context);
         dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
-        ratingParser = csvFormat.createRatingParser();
+        ratingParser = csvFormat.createRatingParser(locales);
 
         tagMapper = new TagMapper(context);
     }

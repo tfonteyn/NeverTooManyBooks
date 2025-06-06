@@ -27,8 +27,12 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import java.util.List;
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -119,9 +123,10 @@ public enum CsvFormat
             }
         }
 
+        // The locales are ignored as not needed for Goodreads
         @Override
         @NonNull
-        public RatingParser createRatingParser() {
+        public RatingParser createRatingParser(@NonNull final List<Locale> ignored) {
             return new RatingParser(5);
         }
     },
@@ -135,8 +140,8 @@ public enum CsvFormat
 
         @Override
         @NonNull
-        public RatingParser createRatingParser() {
-            return new RatingParser(5);
+        public RatingParser createRatingParser(@NonNull final List<Locale> locales) {
+            return new RatingParser(new RealNumberParser(locales), 5);
         }
     },
     /** Anything not explicitly recognized. */
@@ -148,8 +153,8 @@ public enum CsvFormat
 
         @Override
         @NonNull
-        public RatingParser createRatingParser() {
-            return new RatingParser(5);
+        public RatingParser createRatingParser(@NonNull final List<Locale> locales) {
+            return new RatingParser(new RealNumberParser(locales), 5);
         }
     };
 
@@ -220,10 +225,12 @@ public enum CsvFormat
     /**
      * Create a {@link RatingParser} suitable for this format.
      *
+     * @param locales to use
+     *
      * @return new instance
      */
     @NonNull
-    public abstract RatingParser createRatingParser();
+    public abstract RatingParser createRatingParser(@NonNull List<Locale> locales);
 
     @Override
     public int describeContents() {
