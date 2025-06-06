@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -76,6 +78,8 @@ public class DBCleaner {
     private static final String DELETE_FROM_ = "DELETE FROM ";
 
     private static final Pattern T = Pattern.compile("T");
+    static final Pattern RATING_PATTERN = Pattern.compile("^\\s*\\d*\\.?\\d*\\s*$");
+    static final float FLOAT_EPSILON = 0.1f;
 
     /** Database Access. */
     @NonNull
@@ -132,10 +136,9 @@ public class DBCleaner {
     }
 
     private void ratingColumn() {
-        final String valid = "^\\s*\\d*\\.?\\d*\\s*$";
-        final Pattern validPattern = Pattern.compile(valid);
         final List<Long> toDelete = new ArrayList<>();
         final Map<Long, String> toUpdate = new ArrayMap<>();
+        final RatingParser ratingParser = new RatingParser(5);
 
         try (Cursor cursor = db.rawQuery(
                 SELECT_ + DBKey.PK_ID + ',' + DBKey.RATING
@@ -144,15 +147,34 @@ public class DBCleaner {
             while (cursor.moveToNext()) {
                 boolean modified = false;
                 final long id = cursor.getLong(0);
+                // Read as String!
                 String s = cursor.getString(1);
                 if (s.contains(",")) {
+                    // simply substitute the decimal separator as needed
                     s = s.replace(',', '.');
                     modified = true;
                 }
-                final Matcher matcher = validPattern.matcher(s);
+                // Now validate it's a an actual floating point.
+                final Matcher matcher = RATING_PATTERN.matcher(s);
                 if (matcher.find()) {
-                    if (modified) {
-                        toUpdate.put(id, s);
+                    try {
+                        final float v = Float.parseFloat(matcher.group());
+                        final Optional<Float> v2 = ratingParser.normalize(v);
+                        if (v2.isPresent()) {
+                            final float normalized = v2.get();
+                            // If they differ with a difference equal or larger than the epsilon
+                            // OR we previously substituted the decimal separator,
+                            // we need to update the database with the new value
+                            if (Math.abs(v - normalized) >= FLOAT_EPSILON) {
+                                if (modified) {
+                                    toUpdate.put(id, String.valueOf(normalized));
+                                }
+                            }
+                        } else {
+                            toDelete.add(id);
+                        }
+                    } catch (@NonNull final NumberFormatException ignore) {
+                        toDelete.add(id);
                     }
                 } else {
                     toDelete.add(id);
