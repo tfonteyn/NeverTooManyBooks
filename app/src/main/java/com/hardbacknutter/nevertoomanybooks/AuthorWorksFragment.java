@@ -132,8 +132,6 @@ public class AuthorWorksFragment
     /**
      * Delegate to handle cover replacement, rotation, etc.
      * MUST keep a strong reference.
-     *
-     * @noinspection FieldCanBeLocal
      */
     private ImageHandler imageHandler;
     private FieldFormatter<String> dff;
@@ -259,6 +257,7 @@ public class AuthorWorksFragment
     @Override
     public void onResume() {
         super.onResume();
+        //noinspection DataFlowIssue
         vm.reloadAuthorIfChanged(getContext());
     }
 
