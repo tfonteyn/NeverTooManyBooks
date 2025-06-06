@@ -126,8 +126,8 @@ public class DecimalEditTextField
         //                        new DecimalFormatSymbols(AppLocale.getUserLocale(context));
         //                String s = "\\\\" + d.getDecimalSeparator();
         //                pattern = Pattern.compile(
-        //                        "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
-        //                        + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
+        //                        "\\d{0," + (digitsBeforeZero - 1) + "}+"
+        //                        + "((" + s + "\\d{0," + (digitsAfterZero - 1) + "})?)"
         //                        + ""
         //                        + "|(" + s + ")?");
         //            }
