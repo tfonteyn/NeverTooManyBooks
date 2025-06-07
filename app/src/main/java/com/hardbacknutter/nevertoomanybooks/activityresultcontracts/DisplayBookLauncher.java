@@ -65,6 +65,9 @@ public class DisplayBookLauncher {
     }
 
     /**
+     * ENHANCE: github #151 potential replacement for {@link #launcher}
+     *  when we decided on inconsistencies between TocFragment/AuthorWorksFragment
+     * <p>
      * Launch the Book pager screen with the list of books derived
      * from the actual books and the books from TOCEntries.
      *
@@ -137,9 +140,6 @@ public class DisplayBookLauncher {
                        @NonNull final Bookshelf bookshelf,
                        final boolean allBookshelves) {
 
-        // github #151
-        // launchBookPager(works, workPosition, bookshelf);
-
         final AuthorWork work = works.get(workPosition);
         switch (work.getWorkType()) {
             case Book:
@@ -168,10 +168,10 @@ public class DisplayBookLauncher {
      * @param bookshelf      current Bookshelf displayed by the BoB
      * @param allBookshelves flag
      */
-    public void launchTocEntry(@NonNull final Fragment fragment,
-                               @NonNull final TocEntry tocEntry,
-                               @NonNull final Bookshelf bookshelf,
-                               final boolean allBookshelves) {
+    private void launchTocEntry(@NonNull final Fragment fragment,
+                                @NonNull final TocEntry tocEntry,
+                                @NonNull final Bookshelf bookshelf,
+                                final boolean allBookshelves) {
 
         final List<Long> bookIdList = ServiceLocator
                 .getInstance().getTocEntryDao().getBookIds(tocEntry.getId());
