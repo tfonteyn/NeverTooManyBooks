@@ -409,12 +409,10 @@ public final class GroupKeyFactory {
             }
             case BooklistGroup.RATING: {
                 // Formatting is done after fetching; sort with highest rated first.
-                // The data is cast to an integer as a precaution/paranoia,
-                // but also to avoid having to post-process every row in code.
                 return new GroupKey(id, R.string.lbl_rating, "rt",
                                     new DomainExpression(
                                             DOM_BOOK_RATING,
-                                            "CAST(" + TBL_BOOKS.dot(DBKey.RATING) + " AS INTEGER)",
+                                            TBL_BOOKS.dot(DBKey.RATING),
                                             Sort.Desc));
             }
             case BooklistGroup.LENDING: {
