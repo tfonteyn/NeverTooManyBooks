@@ -67,12 +67,33 @@ public enum CoverScale {
 
     public static final CoverScale DEFAULT = Medium;
     /**
-     * A standard paperback measures 17.5cm x 10.6cm,
-     * which gives us a 5/3 ratio between height and width.
+     * Paperback & Hardback of UK/US publishers.
+     * (no text or art-books, too much variation)
+     * 11.2 x 17.8     0.63
+     * 14.5 x 20       0.73
+     * 14   x 22.4     0.63
+     * 15   x 22.4     0.67
+     * 12.6 x 19.8     0.64
+     * 16.5 x 24.6     0.67
+     * 13.5 x 20.5     0.66
+     * 16   x 24       0.67
+     * 10.5 x 17.2     0.61  (US paperback)
+     *                 0.65
      * <p>
-     * i.e.: height = width / 0.6
+     *  European comics.
+     * 22   x 29       0.76
+     * 21   x 28       0.75
+     * 20.5 x 29       0.71
+     * 21.7 x 30       0.72
+     * 20.8 x 26.3     0.79
+     * 23.5 x 31       0.76
+     * 23.5 x 31.5     0.75
+     * 22.5 x 30.5     0.74
+     *                 0.75
+     * <p>
+     * Settling on 0.7 for now.
      */
-    public static final float HW_RATIO = 0.6f;
+    public static final float HW_RATIO = 0.7f;
 
     private static final ImageViewSize HIDDEN = new ImageViewSize(0, 0);
 
