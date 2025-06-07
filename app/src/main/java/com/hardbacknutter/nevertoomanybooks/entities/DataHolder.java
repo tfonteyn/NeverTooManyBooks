@@ -65,51 +65,64 @@ public interface DataHolder {
      *
      * @param key Key of data object
      *
-     * @return an int value
+     * @return value; {@code null} or empty becomes {@code 0}
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
-    int getInt(@NonNull String key);
+    int getInt(@NonNull String key)
+            throws NumberFormatException;
 
     /**
      * Returns the value associated with the given key.
      *
      * @param key Key of data object
      *
-     * @return a long value
+     * @return value; {@code null} or empty becomes {@code 0}
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
-    long getLong(@NonNull String key);
+    long getLong(@NonNull String key)
+            throws NumberFormatException;
 
     /**
      * Returns the value associated with the given key.
      *
      * @param key    Key of data object
-     * @param parser (optional) to use for number parsing.
-     *               WARNING: make sure you know what you're doing when not providing a parser.
+     * @param parser to use for number parsing.
      *
-     * @return a double value
+     * @return value; {@code null} becomes {@code 0}
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
     double getDouble(@NonNull String key,
-                     @Nullable RealNumberParser parser);
+                     @NonNull RealNumberParser parser)
+            throws NumberFormatException;
 
     /**
      * Returns the value associated with the given key.
      *
      * @param key    Key of data object
-     * @param parser (optional) to use for number parsing.
-     *               WARNING: make sure you know what you're doing when not providing a parser.
+     * @param parser to use for number parsing.
      *
-     * @return a float value
+     * @return value; {@code null} becomes {@code 0}
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
     float getFloat(@NonNull String key,
-                   @Nullable RealNumberParser parser);
+                   @NonNull RealNumberParser parser)
+            throws NumberFormatException;
 
     /**
      * Returns the value associated with the given key.
      *
      * @param key Key of data object
      *
-     * @return a boolean value
+     * @return value; {@code null} or empty becomes {@code false}
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
-    boolean getBoolean(@NonNull String key);
+    boolean getBoolean(@NonNull String key)
+            throws NumberFormatException;
 
     /**
      * Returns the value associated with the given key.

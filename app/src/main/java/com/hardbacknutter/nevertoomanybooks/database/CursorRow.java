@@ -97,11 +97,11 @@ public class CursorRow
     }
 
     /**
-     * Returns the value associated with the given key.
+     * {@inheritDoc}
      *
-     * @param key to get
+     * @param key {@inheritDoc}
      *
-     * @return the boolean value of the column; ({@code null} becomes {code false}.
+     * @return {@inheritDoc}
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -112,11 +112,11 @@ public class CursorRow
     }
 
     /**
-     * Returns the value associated with the given key.
+     * {@inheritDoc}
      *
-     * @param key to get
+     * @param key {@inheritDoc}
      *
-     * @return the int value of the column; {@code null} becomes {@code 0}
+     * @return {@inheritDoc}
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -135,11 +135,11 @@ public class CursorRow
     }
 
     /**
-     * Returns the value associated with the given key.
+     * {@inheritDoc}
      *
-     * @param key to get
+     * @param key {@inheritDoc}
      *
-     * @return the long value of the column; {@code null} becomes {@code 0}
+     * @return {@inheritDoc}
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -158,19 +158,18 @@ public class CursorRow
     }
 
     /**
-     * Returns the value associated with the given key.
+     * {@inheritDoc}
      *
-     * @param key    to get
+     * @param key    {@inheritDoc}
      * @param unused values from the database do not need parsing
      *
-     * @return the double value of the column; {@code null} becomes {@code 0}
+     * @return {@inheritDoc}
      *
      * @throws ColumnNotPresentException if the column was not present.
-     * @throws NumberFormatException     if the value could not be parsed.
      */
     @Override
     public double getDouble(@NonNull final String key,
-                            @Nullable final RealNumberParser unused)
+                            @NonNull final RealNumberParser unused)
             throws NumberFormatException {
 
         final int col = cursor.getColumnIndex(key);
@@ -184,19 +183,18 @@ public class CursorRow
     }
 
     /**
-     * Returns the value associated with the given key.
+     * {@inheritDoc}
      *
-     * @param key    to get
+     * @param key   {@inheritDoc}
      * @param unused values from the database do not need parsing
      *
-     * @return the float value of the column; {@code null} becomes {@code 0}
+     * @return {@inheritDoc}
      *
      * @throws ColumnNotPresentException if the column was not present.
-     * @throws NumberFormatException     if the value could not be parsed.
      */
     @Override
     public float getFloat(@NonNull final String key,
-                          @Nullable final RealNumberParser unused)
+                          @NonNull final RealNumberParser unused)
             throws NumberFormatException {
 
         final int col = cursor.getColumnIndex(key);
@@ -232,6 +230,7 @@ public class CursorRow
 
     // Provide consistence with the other DataHolder methods in this class
     // which will throw.
+    @Override
     @NonNull
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key)
             throws ColumnNotPresentException {

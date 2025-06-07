@@ -151,27 +151,15 @@ public class BooklistCursor
         return data.getString(key, defValue);
     }
 
-    /**
-     * Returns the value associated with the given key.
-     *
-     * @param key to get
-     *
-     * @return the boolean value of the column; {@code null} becomes {@code false}
-     */
     @Override
-    public boolean getBoolean(@NonNull final String key) {
+    public boolean getBoolean(@NonNull final String key)
+            throws NumberFormatException {
         return getInt(key) == 1;
     }
 
-    /**
-     * Returns the value associated with the given key.
-     *
-     * @param key to get
-     *
-     * @return the int value of the column; {@code null} becomes {@code 0}
-     */
     @Override
-    public int getInt(@NonNull final String key) {
+    public int getInt(@NonNull final String key)
+            throws NumberFormatException {
         final DataManager data = getCurrentCursor().getRow();
         if (!data.contains(key)) {
             return 0;
@@ -179,15 +167,9 @@ public class BooklistCursor
         return data.getInt(key);
     }
 
-    /**
-     * Returns the value associated with the given key.
-     *
-     * @param key to get
-     *
-     * @return the long value of the column; {@code null} becomes {@code 0}
-     */
     @Override
-    public long getLong(@NonNull final String key) {
+    public long getLong(@NonNull final String key)
+            throws NumberFormatException {
         final DataManager data = getCurrentCursor().getRow();
         if (!data.contains(key)) {
             return 0;
@@ -195,21 +177,9 @@ public class BooklistCursor
         return data.getLong(key);
     }
 
-    /**
-     * Returns the value associated with the given key.
-     *
-     * @param parser to use for number parsing
-     * @param key    to get
-     *
-     * @return the float value of the column; {@code null} becomes {@code 0}
-     *         If no parser was used, then any non-compatible data becomes {@code 0}
-     *         without an error being thrown.
-     *
-     * @throws NumberFormatException if the parser was used and the source was not compatible.
-     */
     @Override
     public float getFloat(@NonNull final String key,
-                          @Nullable final RealNumberParser parser)
+                          @NonNull final RealNumberParser parser)
             throws NumberFormatException {
         final DataManager data = getCurrentCursor().getRow();
         if (!data.contains(key)) {
@@ -218,20 +188,9 @@ public class BooklistCursor
         return data.getFloat(key, parser);
     }
 
-    /**
-     * Returns the value associated with the given key.
-     *
-     * @param key to get
-     *
-     * @return the double value of the column; {@code null} becomes {@code 0}
-     *         If no parser was used, then any non-compatible data becomes {@code 0}
-     *         without an error being thrown.
-     *
-     * @throws NumberFormatException if the parser was used and the source was not compatible.
-     */
     @Override
     public double getDouble(@NonNull final String key,
-                            @Nullable final RealNumberParser parser)
+                            @NonNull final RealNumberParser parser)
             throws NumberFormatException {
         final DataManager data = getCurrentCursor().getRow();
         if (!data.contains(key)) {

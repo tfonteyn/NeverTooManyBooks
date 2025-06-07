@@ -338,15 +338,7 @@ public class DataManager
         return rawData.get(key);
     }
 
-    /**
-     * Get a boolean value.
-     *
-     * @param key Key of data object
-     *
-     * @return a boolean value {@code null} or empty becomes {@code false}
-     *
-     * @throws NumberFormatException if the source was not compatible.
-     */
+    @Override
     public boolean getBoolean(@NonNull final String key)
             throws NumberFormatException {
         return BooleanParser.toBoolean(rawData.get(key));
@@ -363,15 +355,6 @@ public class DataManager
         rawData.putBoolean(key, value);
     }
 
-    /**
-     * Get an int value.
-     *
-     * @param key Key of data object
-     *
-     * @return an int value; {@code null} or empty becomes {@code 0}
-     *
-     * @throws NumberFormatException if the source was not compatible.
-     */
     @Override
     public int getInt(@NonNull final String key)
             throws NumberFormatException {
@@ -389,15 +372,6 @@ public class DataManager
         rawData.putInt(key, value);
     }
 
-    /**
-     * Get a long value.
-     *
-     * @param key Key of data object
-     *
-     * @return a long value; {@code null} or empty becomes {@code 0}
-     *
-     * @throws NumberFormatException if the source was not compatible.
-     */
     @Override
     public long getLong(@NonNull final String key)
             throws NumberFormatException {
@@ -415,22 +389,12 @@ public class DataManager
         rawData.putLong(key, value);
     }
 
-    /**
-     * Get a double value.
-     *
-     * @param key Key of data object
-     *
-     * @return a double value; {@code null} or empty becomes {@code 0}
-     *         If no parser was used, then any non-compatible data becomes {@code 0}
-     *         without an error being thrown
-     *
-     * @throws NumberFormatException if the parser was used and the source was not compatible.
-     */
     @Override
     public double getDouble(@NonNull final String key,
-                            @Nullable final RealNumberParser parser)
+                            @NonNull final RealNumberParser parser)
             throws NumberFormatException {
-        return parser != null ? parser.toDouble(rawData.get(key)) : rawData.getDouble(key, 0);
+        // always use a parser. The Bundle#getDouble/getFloat cannot cast between Double and Float.
+        return parser.toDouble(rawData.get(key));
     }
 
     /**
@@ -444,23 +408,12 @@ public class DataManager
         rawData.putDouble(key, value);
     }
 
-    /**
-     * Get a float value.
-     *
-     * @param key    Key of data object
-     * @param parser to use for number parsing
-     *
-     * @return a float value {@code null} or empty becomes {@code 0}
-     *         If no parser was used, then any non-compatible data becomes {@code 0}
-     *         without an error being thrown
-     *
-     * @throws NumberFormatException if the parser was used and the source was not compatible.
-     */
     @Override
     public float getFloat(@NonNull final String key,
-                          @Nullable final RealNumberParser parser)
+                          @NonNull final RealNumberParser parser)
             throws NumberFormatException {
-        return parser != null ? parser.toFloat(rawData.get(key)) : rawData.getFloat(key, 0);
+        // always use a parser. The Bundle#getDouble/getFloat cannot cast between Double and Float.
+        return parser.toFloat(rawData.get(key));
     }
 
     /**
