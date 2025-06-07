@@ -104,12 +104,12 @@ public class ClickableListFormatter<T extends Entity>
                 builder.append(text);
                 final int start = builder.length();
                 // placeholder text, will be replaced with imageSpan
-                builder.append("X");
+                builder.append(" ");
                 builder.setSpan(imageSpan, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
                 // Icon first, then text
                 final int start = builder.length();
-                builder.append("X");
+                builder.append(" ");
                 builder.setSpan(imageSpan, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 builder.append(text);
             }
