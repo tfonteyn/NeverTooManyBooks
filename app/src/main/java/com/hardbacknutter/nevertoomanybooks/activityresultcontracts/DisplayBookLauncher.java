@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class DisplayBookLauncher {
 
@@ -77,30 +78,51 @@ public class DisplayBookLauncher {
                 break;
             }
             case TocEntry: {
-                final List<Long> bookIdList = ServiceLocator
-                        .getInstance().getTocEntryDao().getBookIds(work.getId());
-                if (bookIdList.size() == 1) {
-                    launcher.launch(new ShowBookPagerContract.Input(bookIdList.get(0), bookshelf));
-
-                } else {
-                    // multiple books, open the list as a NEW ACTIVITY
-                    final Intent intent = new Intent(fragment.getContext(), BooksOnBookshelf.class)
-                            .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(bookIdList))
-                            // Open the list expanded, as otherwise you end up with
-                            // the author as a single line, and no books shown at all,
-                            // which can be quite confusing to the user.
-                            .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
-                                      (Parcelable) RebuildBooklist.Expanded)
-                            // The Bookshelf id!
-                            .putExtra(DBKey.FK_BOOKSHELF,
-                                      allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId());
-
-                    fragment.startActivity(intent);
-                }
+                launchTocEntry(fragment, (TocEntry) work, bookshelf, allBookshelves);
                 break;
             }
             default:
                 throw new IllegalArgumentException(String.valueOf(work));
+        }
+    }
+
+    /**
+     * When the user clicks on a {@link TocEntry}.
+     * <ul>
+     * <li>If the entry belongs to a single Book, just display that Book.</li>
+     * <li>If the entry is present in multiple books, open a new BoB with the list of books.</li>
+     * </ul>
+     *
+     * @param fragment       hosting fragment
+     * @param tocEntry       to open
+     * @param bookshelf      current Bookshelf displayed by the BoB
+     * @param allBookshelves flag
+     */
+    public void launchTocEntry(@NonNull final Fragment fragment,
+                               @NonNull final TocEntry tocEntry,
+                               @NonNull final Bookshelf bookshelf,
+                               final boolean allBookshelves) {
+
+        final List<Long> bookIdList = ServiceLocator
+                .getInstance().getTocEntryDao().getBookIds(tocEntry.getId());
+        if (bookIdList.size() == 1) {
+            launcher.launch(new ShowBookPagerContract.Input(bookIdList.get(0), bookshelf));
+
+        } else {
+            final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
+            // multiple books, open a new BooksOnBookshelf instance
+            // (it will have a 'back' button)
+            final Intent intent = new Intent(fragment.getContext(), BooksOnBookshelf.class)
+                    .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(bookIdList))
+                    // Open the list expanded, as otherwise you end up with
+                    // the author as a single line, and no books shown at all,
+                    // which can be quite confusing to the user.
+                    .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
+                              (Parcelable) RebuildBooklist.Expanded)
+                    // The Bookshelf id! NOT the parceled Bookshelf object!
+                    .putExtra(DBKey.FK_BOOKSHELF, bookshelfId);
+
+            fragment.startActivity(intent);
         }
     }
 }
