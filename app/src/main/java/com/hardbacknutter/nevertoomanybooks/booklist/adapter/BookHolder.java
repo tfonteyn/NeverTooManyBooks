@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
@@ -88,6 +89,8 @@ public class BookHolder
     @NonNull
     private final String[] conditionDescriptions;
     @NonNull
+    private final RealNumberParser realNumberParser;
+    @NonNull
     private final DateParser<PartialDate> partialDateParser;
 
     @NonNull
@@ -109,21 +112,24 @@ public class BookHolder
     /**
      * Constructor.
      *
-     * @param itemView      the view specific for this holder
-     * @param style         to use
-     * @param imageViewSize to use
-     * @param imageLoader   to use
+     * @param itemView         the view specific for this holder
+     * @param style            to use
+     * @param imageViewSize    to use
+     * @param imageLoader      to use
+     * @param realNumberParser the shared parser
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
                @NonNull final ImageViewSize imageViewSize,
-               @NonNull final ImageViewLoader imageLoader) {
+               @NonNull final ImageViewLoader imageLoader,
+               @NonNull final RealNumberParser realNumberParser) {
         super(itemView);
         vb = BooksonbookshelfRowBookBinding.bind(itemView);
 
         final Context context = itemView.getContext();
 
         this.style = style;
+        this.realNumberParser = realNumberParser;
         this.partialDateParser = new PartialDateParser();
 
         final Resources res = context.getResources();
@@ -292,8 +298,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.RATING)) {
-            // No parser, database values are normalized
-            final float rating = rowData.getFloat(DBKey.RATING, null);
+            final float rating = rowData.getFloat(DBKey.RATING, realNumberParser);
             if (rating > 0) {
                 vb.rating.setRating(rating);
                 vb.rating.setVisibility(View.VISIBLE);

@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
@@ -50,17 +51,23 @@ public class RatingHolder
     private final RatingBar ratingBar;
     @NonNull
     private final TextView bookCountView;
+    @NonNull
+    private final RealNumberParser realNumberParser;
     private final boolean showGroupBookCount;
 
     /**
      * Constructor.
      *
-     * @param itemView the view specific for this holder
-     * @param style    to use
+     * @param itemView         the view specific for this holder
+     * @param style            to use
+     * @param realNumberParser the shared parser
      */
     RatingHolder(@NonNull final View itemView,
-                 @NonNull final Style style) {
+                 @NonNull final Style style,
+                 @NonNull final RealNumberParser realNumberParser) {
         super(itemView);
+        this.realNumberParser = realNumberParser;
+
         key = style.requireGroupById(BooklistGroup.RATING)
                    .getDisplayDomainExpression()
                    .getDomain()
@@ -74,8 +81,7 @@ public class RatingHolder
 
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
-        // No parser, database values are normalized
-        ratingBar.setRating(rowData.getFloat(key, null));
+        ratingBar.setRating(rowData.getFloat(key, realNumberParser));
         if (showGroupBookCount) {
             bookCountView.setText(String.valueOf(rowData.getLong(DBKey.FK_BOOK)));
         }

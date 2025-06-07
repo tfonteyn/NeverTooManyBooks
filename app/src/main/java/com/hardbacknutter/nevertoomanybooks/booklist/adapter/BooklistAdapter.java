@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
@@ -87,6 +88,9 @@ public class BooklistAdapter
     private final int groupRowHeight;
     @NonNull
     private final Formatter formatter;
+
+    /** Shared across all {@link BookHolder}s. */
+    private final RealNumberParser realNumberParser;
     @NonNull
     private final ScreenLayout layout;
     @NonNull
@@ -123,6 +127,7 @@ public class BooklistAdapter
         this.layout = layout;
 
         final List<Locale> locales = LocaleListUtils.asList(context);
+        realNumberParser = new RealNumberParser(locales);
         formatter = new Formatter(context, style, locales);
 
         final Resources res = context.getResources();
@@ -343,7 +348,8 @@ public class BooklistAdapter
             case BooklistGroup.BOOK:
                 switch (layout) {
                     case List:
-                        holder = new BookHolder(itemView, style, imageViewSize, imageLoader);
+                        holder = new BookHolder(itemView, style, imageViewSize, imageLoader,
+                                                realNumberParser);
                         break;
                     case Grid:
                         holder = new BookGridHolder(itemView, style, imageViewSize, imageLoader);
@@ -362,7 +368,7 @@ public class BooklistAdapter
                 break;
 
             case BooklistGroup.RATING:
-                holder = new RatingHolder(itemView, style);
+                holder = new RatingHolder(itemView, style, realNumberParser);
                 break;
 
             default:
