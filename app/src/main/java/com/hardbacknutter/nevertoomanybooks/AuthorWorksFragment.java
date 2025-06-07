@@ -225,9 +225,9 @@ public class AuthorWorksFragment
                         vm.getBookshelf(),
                         vm.isAllBookshelves()));
 
-        final Resources res = getResources();
         rowMenu = MenuUtils.create(context);
-        rowMenu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+        rowMenu.add(Menu.NONE, R.id.MENU_DELETE,
+                    getResources().getInteger(R.integer.MENU_ORDER_DELETE),
                     R.string.action_delete)
                .setIcon(R.drawable.delete_24px);
 
