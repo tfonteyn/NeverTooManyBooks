@@ -27,6 +27,7 @@
     <string name="action_crop">Apgriezt</string>
     <string name="lbl_publisher">Izdevējs</string>
     <string name="list_and">un</string>
+    <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Kļūda</string>
     <string name="list_element">• %s</string>
     <plurals name="n_books">

@@ -512,6 +512,7 @@
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Hayır</string>
     <string name="none">hiçbiri</string>
+    <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Hata</string>
     <string name="notification_channel_info">Bilgi</string>
     <string name="notification_channel_warn">Uyarı</string>

@@ -98,6 +98,7 @@
     <string name="x_of_y">%1$d av %2$d</string>
     <string name="and_others">%1$s…</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
+    <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Villa</string>
     <string name="notification_channel_warn">Ávaring</string>
     <string name="btn_all_books">Allar bøkur</string>

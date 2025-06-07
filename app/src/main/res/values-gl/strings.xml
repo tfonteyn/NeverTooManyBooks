@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -93,6 +96,7 @@
     <string name="warning_already_in_list">Xa na lista!</string>
     <string name="warning_no_matching_book_found">Non se atopou ningún libro</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
+    <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Erro</string>
     <string name="error_import_file_not_supported">Non se pode importar o ficheiro seleccionado.</string>
     <string name="httpErrorFailedSslHandshake">Non se puido establecer unha conexión segura.</string>
@@ -691,6 +695,7 @@
     <string name="pt_search_resolve_authors_using_site_x">Resolver pseudónimos das autorías usando o sitio %1$s</string>
     <string name="pt_allow_metered_network_data">Permitir o uso de datos móbiles</string>
     <string name="ps_manage_fields">Os campos escollidos estarán visibles nas pantallas engadir/editar libros. Os que non, agóchanse.</string>
+    <string name="pv_reformat_titles_prefixes">|</string>
     <string name="ps_show_titles_reordered_off">Mostrar como se indica,\npor exemplo: «O Señor dos Aneis»</string>
     <string name="ps_show_titles_reordered_on">Move o artigo no inicio dun título cara o final,\npor exemplo: «Señor dos Aneis, O»</string>
     <string name="pt_allow_editing_external_id">Permitir a edición do identificador do libro no sitio web</string>

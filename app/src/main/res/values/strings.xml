@@ -125,12 +125,20 @@
     <!-- Should internal formatting of price/currency fail, then this fallback format is used.
 
          Currency: %1$s
-         Value: %2$.2f
+         Value: %2$.2f, translators should adjust/remove the decimal part (.2) as needed.
 
         English: "[currency] [value]" with 2 decimal digits.
         Most other languages: "[value] [currency]" with 2 decimal digits.
     -->
     <string name="fallback_currency_format">%1$s %2$.2f</string>
+    <!-- Short notation for prices when there is no known currency.
+         This symbol is a standard placeholder symbol for an unspecified or unknown currency.
+         Support for RTL languages.
+
+          Param 1: the price, translators should adjust/remove the decimal part as needed.
+    -->
+    <string name="unknown_currency">¤%1$.2f</string>
+
     <!-- endregion -->
     <!-- region ========== System Notification channel names. -->
     <!-- [VERIFIED] -->
