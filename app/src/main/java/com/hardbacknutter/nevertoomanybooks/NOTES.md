@@ -4,7 +4,7 @@ Draft notes for next version:
 
 NEW:
 
-- Amazon parsing updated: images works again + publication data parsing.
+- Amazon parsing updated due to site changes
 - #149: click on author names in the book-details and book-content screens to open the author-works
   screen
 - #150: remember the setting for sorting+filter on the author-works screen
@@ -12,15 +12,14 @@ NEW:
 
 FIXES:
 
-- Performance improvements for image loading.
+- Performance improvements: image loading / memory usage reduced in the booklist
 - #146: second fix: it's now again possible to use "Copy if blank" on list-fields.
 - #153: don't overwrite an author picture when doing an update
-- #154: always refresh the author data when coming 'back' to the author-works screen
-- #155: Backup was missing the author identifiers.
-  Importing an existing author was not updating its metadata.
-- #159: csv import: ratings and prices with both comma/dot on devices with a comma-only locale
-  language are now imported properly.
-- #159: grouping by rating was rounding rating down to whole number instead of x.y format.
+- #154: always refresh the author data when coming back to the author-works screen
+- #155: Backup was missing the author identifiers. Importing an existing author was not updating its
+  metadata.
+- #159: CSV import: ratings and prices with a comma decimal separator failed to import. In some
+  places the rating was rounded down to a whole number
 
 REMOVED:
 
