@@ -62,7 +62,7 @@ public class AuthorWorksAdapter
     @NonNull
     private final LayoutInflater inflater;
     @NonNull
-    private final List<AuthorWork> works;
+    private final List<? extends AuthorWork> works;
     @NonNull
     private final Style style;
     @NonNull
@@ -89,7 +89,7 @@ public class AuthorWorksAdapter
     public AuthorWorksAdapter(@NonNull final Context context,
                               @NonNull final Style style,
                               @NonNull final List<Author> authors,
-                              @NonNull final List<AuthorWork> works) {
+                              @NonNull final List<? extends AuthorWork> works) {
         inflater = LayoutInflater.from(context);
         this.contextMenuMode = ExtMenuButton.getPreferredMode(context);
         this.style = style;

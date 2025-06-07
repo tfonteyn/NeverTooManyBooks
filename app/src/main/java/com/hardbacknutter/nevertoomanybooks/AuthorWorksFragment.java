@@ -221,9 +221,8 @@ public class AuthorWorksFragment
         adapter.setOnRowClickListener(
                 (v, position) -> displayBookLauncher.launch(
                         this,
-                        vm.getWorks().get(position),
-                        vm.getBookshelf(),
-                        vm.isAllBookshelves()));
+                        vm.getWorks(), position,
+                        vm.getBookshelf(), vm.isAllBookshelves()));
 
         rowMenu = MenuUtils.create(context);
         rowMenu.add(Menu.NONE, R.id.MENU_DELETE,

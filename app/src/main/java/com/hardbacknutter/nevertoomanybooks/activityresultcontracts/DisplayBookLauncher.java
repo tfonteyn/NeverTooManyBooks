@@ -74,7 +74,7 @@ public class DisplayBookLauncher {
      *
      * @throws IllegalArgumentException (debug)
      */
-    public void launchBookPager(@NonNull final List<AuthorWork> works,
+    public void launchBookPager(@NonNull final List<? extends AuthorWork> works,
                                 final int position,
                                 @NonNull final Bookshelf bookshelf) {
         final AuthorWork currentWork = works.get(position);
@@ -124,17 +124,23 @@ public class DisplayBookLauncher {
      * or start a NEW BooksOnBookshelf Activity if the work is a TocEntry.
      *
      * @param fragment       hosting fragment
-     * @param work           to open
+     * @param works          the list of works
+     * @param workPosition   to open the list on
      * @param bookshelf      current Bookshelf displayed by the BoB
      * @param allBookshelves flag
      *
      * @throws IllegalArgumentException (debug)
      */
     public void launch(@NonNull final Fragment fragment,
-                       @NonNull final AuthorWork work,
+                       @NonNull final List<? extends AuthorWork> works,
+                       final int workPosition,
                        @NonNull final Bookshelf bookshelf,
                        final boolean allBookshelves) {
 
+        // github #151
+        // launchBookPager(works, workPosition, bookshelf);
+
+        final AuthorWork work = works.get(workPosition);
         switch (work.getWorkType()) {
             case Book:
             case BookLight: {

@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 @SuppressWarnings("WeakerAccess")
 public class TocViewModel
@@ -48,7 +49,7 @@ public class TocViewModel
      * This is a copy of {@link Book#getToc()} but cast to {@link AuthorWork} items.
      */
     @NonNull
-    private final List<AuthorWork> works = new ArrayList<>();
+    private final List<TocEntry> works = new ArrayList<>();
 
     /** Whether the fragment is running in embedded mode. */
     private boolean embedded;
@@ -123,7 +124,7 @@ public class TocViewModel
     }
 
     @NonNull
-    List<AuthorWork> getWorks() {
+    List<TocEntry> getWorks() {
         return works;
     }
 

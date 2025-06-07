@@ -42,9 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.FastScrollerMode;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -179,22 +179,20 @@ public class TocFragment
 
         adapter = new AuthorWorksAdapter(context, aVm.getStyle(), vm.getAuthors(), vm.getWorks());
         adapter.setOnRowClickListener((v, position) -> {
-            final AuthorWork work = vm.getWorks().get(position);
+            final TocEntry tocEntry = vm.getWorks().get(position);
 
             if (v.getId() == R.id.author) {
-                final Author primaryAuthor = work.getPrimaryAuthor();
-                if (primaryAuthor != null) {
-                    authorWorksLauncher.launch(new AuthorWorksContract.Input(
-                            primaryAuthor.getId(),
-                            aVm.getBookshelf()));
-                }
+                authorWorksLauncher.launch(new AuthorWorksContract.Input(
+                        tocEntry.getPrimaryAuthor().getId(),
+                        aVm.getBookshelf()));
             } else {
                 // row/background: open the book
                 // If there's only one book, there is no point doing this
-                // as we're already on the book.
-                if (work.getBookCount() > 1) {
-                    // TODO: allBookshelves see AuthorWorksFragment
-                    displayBookLauncher.launch(this, work, aVm.getBookshelf(), false);
+                // as we're already on that book.
+                if (tocEntry.getBookCount() > 1) {
+                    displayBookLauncher.launch(this,
+                                               vm.getWorks(), position,
+                                               aVm.getBookshelf(), false);
                 }
             }
         });
