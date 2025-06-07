@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,9 +81,9 @@ public class MoneyFormatter
         }
 
         final Currency currency = rawValue.getCurrency();
-        // no currency ? just display the source value as-is
         if (currency == null) {
-            return String.valueOf(rawValue.getValue().doubleValue());
+            return context.getString(R.string.unknown_currency,
+                                     rawValue.getValue().doubleValue());
         }
 
         try {
