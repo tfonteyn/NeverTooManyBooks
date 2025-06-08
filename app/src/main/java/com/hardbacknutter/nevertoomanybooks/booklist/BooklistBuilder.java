@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.DomainExpression;
@@ -418,36 +417,14 @@ class BooklistBuilder {
         addDomainExpression(DBExpr.AUTHOR_ID);
 
         // The domains for the book level, visibility and ordering according to style.
-        if (style.getLayout() == ScreenLayout.Grid) {
-            //TODO: define a FieldVisibility.Screen.Grid, and do this in style.isShowField(...)
-            // or do all in style.isShowField(...) where we can check the layout in use ?
-            style.getBookLevelFieldsOrderBy().entrySet()
-                 .stream()
-                 .filter(field -> {
-                     final String key = field.getKey();
-                     if (key.equals(DBKey.TITLE) || key.equals(DBKey.COVER[0])) {
-                         return true;
-                     } else if (key.equals(DBKey.FK_AUTHOR)) {
-                         return style.isShowField(FieldVisibility.Screen.List, key);
-                     }
-                     return false;
-                 })
-                 .map(field -> DBExpr.forBookLevelField(field.getKey(),
-                                                        field.getValue(),
-                                                        style))
-                 .flatMap(List::stream)
-                 .forEach(this::addDomainExpression);
-        } else {
-            // Style.Layout.List
-            style.getBookLevelFieldsOrderBy().entrySet()
-                 .stream()
-                 .filter(field -> style.isShowField(FieldVisibility.Screen.List, field.getKey()))
-                 .map(field -> DBExpr.forBookLevelField(field.getKey(),
-                                                        field.getValue(),
-                                                        style))
-                 .flatMap(List::stream)
-                 .forEach(this::addDomainExpression);
-        }
+        style.getBookLevelFieldsOrderBy().entrySet()
+             .stream()
+             .filter(field -> style.isShowField(FieldVisibility.Screen.List, field.getKey()))
+             .map(field -> DBExpr.forBookLevelField(field.getKey(),
+                                                    field.getValue(),
+                                                    style))
+             .flatMap(List::stream)
+             .forEach(this::addDomainExpression);
 
         // If we're showing {@link DBKey#LOANEE_NAME} on the book level, we require
         // a {@code LEFT JOIN} {@link DBDefinitions#TBL_BOOK_LOANEE}.
