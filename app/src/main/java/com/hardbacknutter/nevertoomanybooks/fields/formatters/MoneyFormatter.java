@@ -44,19 +44,13 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * This class can display {@link Money} with or without a {@link Currency}.
  * <p>
- * The ICU NumberFormatter is only available from ICU level 60, but Android
- * <a href="https://developer.android.com/guide/topics/resources/internationalization#versioning-nougat">lags behind</a>
- * So you need Android 9 (API level 28) and even then, the NumberFormatter
- * is not available in android.icu so you still would need to bundle the full ICU lib
- * For now, this is to much overkill.
- * <p>
- * <a href="https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/com/ibm/icu/number/NumberFormatter.java">icu4</a>
+ * The ICU NumberFormatter Requires Android 11 (API level 30) so we can't use it yet.
+ * See <a href="https://github.com/unicode-org/icu/blob/main/icu4j/main/core/src/main/java/com/ibm/icu/number/NumberFormatter.java">icu4</a>
  * and {@code UnitWidth.NARROW}
  */
 
 public class MoneyFormatter
         implements FieldFormatter<Money> {
-
     /** Log tag. */
     private static final String TAG = "MoneyFormatter";
     @NonNull
