@@ -22,14 +22,22 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.badge.BadgeDrawable;
+import com.google.android.material.badge.BadgeUtils;
+import com.google.android.material.badge.ExperimentalBadgeUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -69,6 +77,8 @@ public class AuthorWorksAdapter
     private final List<Author> authors;
     @NonNull
     private final ClickableListFormatter<Author> authorFormatter;
+    @Px
+    private final int badgeOffset;
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
@@ -98,6 +108,15 @@ public class AuthorWorksAdapter
 
         authorFormatter = new ClickableListFormatter<>(context, author ->
                 author.getLabel(context, Details.AutoSelect, style));
+
+        badgeOffset = dp2px(context, 20);
+    }
+
+    @Px
+    private int dp2px(@NonNull final Context context,
+                      @Dimension(unit = Dimension.DP) final int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                                               context.getResources().getDisplayMetrics());
     }
 
     /**
@@ -129,13 +148,10 @@ public class AuthorWorksAdapter
         final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(inflater, parent, false);
         switch (AuthorWork.Type.getType((char) viewType)) {
             case TocEntry: {
-                holder = new TocEntryHolder(vb, style, authorFormatter);
+                holder = new TocEntryHolder(vb, style, authorFormatter, badgeOffset);
                 break;
             }
-            case BookLight: {
-                holder = new BookLightHolder(vb, style, authorFormatter);
-                break;
-            }
+            case BookLight:
             case Book: {
                 holder = new BookHolder(vb, style, authorFormatter);
                 break;
@@ -187,100 +203,67 @@ public class AuthorWorksAdapter
             extends AuthorWorkHolder {
 
         @NonNull
-        private final String tocStr;
-        @NonNull
-        private final Drawable tocIcon;
-
+        private final String singleBookStr;
         @NonNull
         private final String multipleBooksStr;
-        @NonNull
-        private final Drawable multipleBooksIcon;
+        @Px
+        private final int badgeOffset;
 
         TocEntryHolder(@NonNull final RowAuthorWorkBinding vb,
                        @NonNull final Style style,
-                       @NonNull final ClickableListFormatter<Author> authorFormatter) {
+                       @NonNull final ClickableListFormatter<Author> authorFormatter,
+                       @Px final int badgeOffset) {
             super(vb, style, authorFormatter);
-            final Context context = itemView.getContext();
-            final Resources.Theme theme = context.getTheme();
-            final Resources res = context.getResources();
+            this.badgeOffset = badgeOffset;
 
+            final Resources res = itemView.getContext().getResources();
             // The entry is a story (etc...) which appears in one book only.
-            tocStr = res.getString(R.string.lbl_table_of_content_entry);
-            tocIcon = res.getDrawable(R.drawable.menu_book_24px, theme);
+            singleBookStr = res.getString(R.string.lbl_table_of_content_entry);
             // The entry is a story (etc...) which appears in multiple books.
             multipleBooksStr = res.getString(R.string.tip_authors_works_multiple_books);
-            multipleBooksIcon = res.getDrawable(R.drawable.library_books_24px, theme);
+
+            vb.btnType.setIconResource(R.drawable.menu_book_24px);
         }
 
+        @OptIn(markerClass = ExperimentalBadgeUtils.class)
         @Override
         public void onBind(@NonNull final AuthorWork work) {
             super.onBind(work);
             if (work.getBookCount() > 1) {
-                vb.btnType.setIcon(multipleBooksIcon);
                 vb.btnType.setContentDescription(multipleBooksStr);
+                vb.btnType.getViewTreeObserver().addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                final BadgeDrawable badgeDrawable = BadgeDrawable
+                                        .create(vb.btnType.getContext());
+                                badgeDrawable.setNumber(work.getBookCount());
+                                badgeDrawable.setVerticalOffset(badgeOffset);
+                                badgeDrawable.setHorizontalOffset(badgeOffset);
+                                BadgeUtils.attachBadgeDrawable(badgeDrawable, vb.btnType,
+                                                               vb.btnTypeLayout);
+
+                                vb.btnType.getViewTreeObserver()
+                                          .removeOnGlobalLayoutListener(this);
+                            }
+                        });
+
             } else {
-                vb.btnType.setIcon(tocIcon);
-                vb.btnType.setContentDescription(tocStr);
+                vb.btnType.setContentDescription(singleBookStr);
             }
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
-    public static class BookLightHolder
-            extends AuthorWorkHolder {
-
-        @NonNull
-        private final String typeDescription;
-
-        @NonNull
-        private final Drawable typeIcon;
-
-        BookLightHolder(@NonNull final RowAuthorWorkBinding vb,
-                        @NonNull final Style style,
-                        @NonNull final ClickableListFormatter<Author> authorFormatter) {
-            super(vb, style, authorFormatter);
-            final Context context = itemView.getContext();
-            final Resources.Theme theme = context.getTheme();
-            final Resources res = context.getResources();
-            typeDescription = res.getString(R.string.lbl_book);
-            typeIcon = res.getDrawable(R.drawable.book_2_24px, theme);
-        }
-
-        @Override
-        public void onBind(@NonNull final AuthorWork work) {
-            super.onBind(work);
-            vb.btnType.setIcon(typeIcon);
-            vb.btnType.setContentDescription(typeDescription);
-        }
-    }
-
-
-    @SuppressLint("UseCompatLoadingForDrawables")
     public static class BookHolder
             extends AuthorWorkHolder {
-
-        @NonNull
-        private final String typeDescription;
-
-        @NonNull
-        private final Drawable typeIcon;
 
         BookHolder(@NonNull final RowAuthorWorkBinding vb,
                    @NonNull final Style style,
                    @NonNull final ClickableListFormatter<Author> authorFormatter) {
             super(vb, style, authorFormatter);
-            final Context context = itemView.getContext();
-            final Resources.Theme theme = context.getTheme();
-            final Resources res = context.getResources();
-            typeDescription = res.getString(R.string.lbl_book);
-            typeIcon = res.getDrawable(R.drawable.book_2_24px, theme);
-        }
 
-        @Override
-        public void onBind(@NonNull final AuthorWork work) {
-            super.onBind(work);
-            vb.btnType.setIcon(typeIcon);
-            vb.btnType.setContentDescription(typeDescription);
+            vb.btnType.setContentDescription(itemView.getContext().getString(R.string.lbl_book));
+            vb.btnType.setIconResource(R.drawable.book_2_24px);
         }
     }
 
@@ -339,29 +322,25 @@ public class AuthorWorksAdapter
                               ? authorFormatter.format(context, List.of(primaryAuthor))
                               : null);
 
-            vb.btnType.setOnClickListener(anchor -> {
-                final String titles = work
-                        .getBookTitles(context)
-                        .stream()
-                        .map(bt -> context
-                                .getString(R.string.list_element,
-                                           bt.getLabel(context, Details.AutoSelect, style)))
-                        .collect(Collectors.joining("\n"));
+            if (work.getBookCount() > 1) {
+                vb.btnType.setOnClickListener(anchor -> {
+                    final String titles = work
+                            .getBookTitles(context)
+                            .stream()
+                            .map(bt -> context
+                                    .getString(R.string.list_element,
+                                               bt.getLabel(context, Details.AutoSelect, style)))
+                            .collect(Collectors.joining("\n"));
 
-                if (work.getBookCount() > 1) {
                     final String msg = context
                             .getString(R.string.info_story_in_multiple_books,
                                        work.getLabel(context, Details.AutoSelect, style),
                                        titles);
                     InfoPopup.show(anchor, XOFF, YOFF, msg);
-                } else {
-                    final String msg = context
-                            .getString(R.string.info_story_in_single_book,
-                                       work.getLabel(context, Details.AutoSelect, style),
-                                       titles);
-                    InfoPopup.show(anchor, XOFF, YOFF, msg);
-                }
-            });
+                });
+            } else {
+                vb.btnType.setOnClickListener(null);
+            }
         }
     }
 }
