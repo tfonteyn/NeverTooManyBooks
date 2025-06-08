@@ -729,15 +729,21 @@ public class XmlRecordReader
          * <p>
          * decode the bare essentials only. To decode all possible entities we could add the Apache
          * 'lang' library I suppose.... maybe some day.
+         *
+         * @param data to decode
          */
         @NonNull
         static String decode(@Nullable final String data) {
-            if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
+            if (data == null) {
                 return "";
             }
 
-            // must be last of the entities
-            String result = data.trim();
+            String result = data.strip();
+
+            if ("null".equalsIgnoreCase(result) || result.isEmpty()) {
+                return "";
+            }
+
             result = AMP_LITERAL.matcher(result).replaceAll("&");
             result = GT_LITERAL.matcher(result).replaceAll(">");
             result = LT_LITERAL.matcher(result).replaceAll("<");
