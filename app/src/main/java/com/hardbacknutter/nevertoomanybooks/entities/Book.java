@@ -2130,7 +2130,7 @@ public class Book
         @Override
         public String getLabel(@NonNull final Context context,
                                @Nullable final Details details,
-                               @NonNull final Style style) {
+                               @Nullable final Style style) {
             return context.getResources().getStringArray(R.array.lbl_book_content_type)[id];
         }
 

@@ -199,7 +199,7 @@ public class Bookshelf
     @Override
     public String getLabel(@NonNull final Context context,
                            @Nullable final Details details,
-                           @NonNull final Style style) {
+                           @Nullable final Style style) {
         return name;
     }
 

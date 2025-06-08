@@ -25,6 +25,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
@@ -99,8 +100,8 @@ abstract class LibraryBase
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context,
-                           @NonNull final Details details,
-                           @NonNull final Style style) {
+                           @Nullable final Details details,
+                           @Nullable final Style style) {
         return name;
     }
 

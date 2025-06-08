@@ -103,8 +103,8 @@ public class Tag
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context,
-                           @NonNull final Details details,
-                           @NonNull final Style style) {
+                           @Nullable final Details details,
+                           @Nullable final Style style) {
         return name;
     }
 

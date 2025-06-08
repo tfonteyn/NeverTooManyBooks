@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.grouping;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -133,8 +134,8 @@ public enum ReadStatus
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context,
-                           @NonNull final Details details,
-                           @NonNull final Style style) {
+                           @Nullable final Details details,
+                           @Nullable final Style style) {
         return context.getResources().getStringArray(R.array.lbl_read_status)[id];
     }
 }
