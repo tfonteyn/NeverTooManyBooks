@@ -183,7 +183,7 @@
 
             <TextView
                 android:id="@+id/author"
-                style="@style/BoB.Group.Book.Text"
+                style="@style/BoB.Group.Book.Author"
                 android:layout_marginTop="@dimen/section_margin_top"
                 android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"

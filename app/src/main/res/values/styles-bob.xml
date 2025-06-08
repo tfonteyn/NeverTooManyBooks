@@ -113,6 +113,11 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <style name="BoB.Group.Book.Author"
+           parent="Base.BoB.Group.Book">
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+    </style>
+
     <style name="BoB.Group.Book.SeriesTitle"
            parent="Base.BoB.Group.Book">
     </style>
