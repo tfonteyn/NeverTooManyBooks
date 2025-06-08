@@ -131,7 +131,7 @@ public class RealNumberParser
             return ((Number) source).floatValue();
         }
 
-        final String stringValue = source.toString().trim();
+        final String stringValue = source.toString().strip();
         try {
             return parseFloat(stringValue);
         } catch (@NonNull final NumberFormatException e) {
@@ -197,7 +197,7 @@ public class RealNumberParser
             return ((Number) source).doubleValue();
         }
 
-        final String stringValue = source.toString().trim();
+        final String stringValue = source.toString().strip();
         try {
             return parseDouble(stringValue);
         } catch (@NonNull final NumberFormatException e) {

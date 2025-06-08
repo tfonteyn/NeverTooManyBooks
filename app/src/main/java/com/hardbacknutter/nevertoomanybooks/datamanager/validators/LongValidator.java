@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -78,7 +78,7 @@ public class LongValidator
         } else if (obj instanceof Integer) {
             value = ((Integer) obj).longValue();
         } else {
-            final String stringValue = obj.toString().trim();
+            final String stringValue = obj.toString().strip();
             if (stringValue.isEmpty()) {
                 value = defaultValue;
             } else {

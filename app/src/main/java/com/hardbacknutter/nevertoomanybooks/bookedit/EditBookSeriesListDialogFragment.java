@@ -283,7 +283,7 @@ public class EditBookSeriesListDialogFragment
         // clear any previous error
         vb.lblSeriesTitle.setError(null);
 
-        final String title = vb.seriesTitle.getText().toString().trim();
+        final String title = vb.seriesTitle.getText().toString().strip();
         if (title.isEmpty()) {
             vb.lblSeriesTitle.setError(getString(R.string.vldt_non_blank_required));
             return;
@@ -291,7 +291,7 @@ public class EditBookSeriesListDialogFragment
 
         final Series series = new Series(title);
         //noinspection DataFlowIssue
-        series.setNumber(vb.seriesNum.getText().toString().trim());
+        series.setNumber(vb.seriesNum.getText().toString().strip());
         if (withDetails) {
             //noinspection DataFlowIssue
             editLauncher.add(getActivity(), series);

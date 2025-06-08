@@ -253,10 +253,10 @@ class EditIdentifierDelegate
     @SuppressWarnings("DataFlowIssue")
     private void viewToModel() {
         final Identifier currentEdit = vm.getCurrentEdit();
-        currentEdit.setName(vb.identifierName.getText().toString().trim());
-        currentEdit.setKey(vb.identifierKey.getText().toString().trim());
-        currentEdit.setSiteUrl(vb.identifierSiteUrl.getText().toString().trim());
-        currentEdit.setBookUri(vb.identifierBookUri.getText().toString().trim());
-        currentEdit.setAuthorUri(vb.identifierAuthorUri.getText().toString().trim());
+        currentEdit.setName(vb.identifierName.getText().toString().strip());
+        currentEdit.setKey(vb.identifierKey.getText().toString().strip());
+        currentEdit.setSiteUrl(vb.identifierSiteUrl.getText().toString().strip());
+        currentEdit.setBookUri(vb.identifierBookUri.getText().toString().strip());
+        currentEdit.setAuthorUri(vb.identifierAuthorUri.getText().toString().strip());
     }
 }

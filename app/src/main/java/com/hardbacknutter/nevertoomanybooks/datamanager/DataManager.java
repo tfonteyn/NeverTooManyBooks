@@ -435,7 +435,7 @@ public class DataManager
         if (o == null) {
             return defaultValue;
         } else {
-            return o.toString().trim();
+            return o.toString().strip();
         }
     }
 

@@ -172,7 +172,7 @@ public final class AppLocaleImpl
         }
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        String lang = inputLang.trim().toLowerCase(userLocale);
+        String lang = inputLang.strip().toLowerCase(userLocale);
         final int len = lang.length();
         if (len > 3) {
             lang = languagesSupplier.get().getISO3FromDisplayLanguage(context, userLocale, lang);

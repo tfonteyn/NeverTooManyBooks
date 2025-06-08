@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -256,7 +256,7 @@ public class MoneyParser {
         if (currencyStr != null && !currencyStr.isEmpty()) {
             try {
                 // We MUST use the users Locale here as currencies can use local characters.
-                String currencyCode = currencyStr.trim().toUpperCase(locale);
+                String currencyCode = currencyStr.strip().toUpperCase(locale);
                 // if we don't have a normalized ISO3 code, see if we can convert it to one.
                 if (currencyCode.length() != 3) {
                     currencyCode = fromSymbol(currencyStr);
@@ -296,7 +296,7 @@ public class MoneyParser {
         if (CURRENCY_MAP.isEmpty()) {
             createCurrencyMap();
         }
-        final String key = symbol.trim().toLowerCase(locale);
+        final String key = symbol.strip().toLowerCase(locale);
         return CURRENCY_MAP.get(key);
     }
 }

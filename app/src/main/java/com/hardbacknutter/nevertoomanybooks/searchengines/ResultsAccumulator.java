@@ -189,7 +189,7 @@ class ResultsAccumulator {
                                  @NonNull final Locale locale) {
         // No new data ? we're done.
         String dataToAdd = siteData.getString(key, null);
-        if (dataToAdd == null || dataToAdd.trim().isEmpty()) {
+        if (dataToAdd == null || dataToAdd.isBlank()) {
             return;
         }
 
@@ -234,7 +234,7 @@ class ResultsAccumulator {
                              @NonNull final DateParser<LocalDateTime> dateParser) {
         // No new data ? we're done.
         final String dataToAdd = srcBook.getString(key, null);
-        if (dataToAdd == null || dataToAdd.trim().isEmpty()) {
+        if (dataToAdd == null || dataToAdd.isBlank()) {
             return;
         }
 
@@ -242,7 +242,7 @@ class ResultsAccumulator {
         // might not be valid. We'll deal with that later.
         // We do this as we WILL accept partial dates (e.g. just a year)
         final String previous = dstBook.getString(key, null);
-        if (previous == null || previous.trim().isEmpty()) {
+        if (previous == null || previous.isBlank()) {
             dstBook.putString(key, dataToAdd);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 dbgLogValueCopied("processDate", key, dataToAdd);

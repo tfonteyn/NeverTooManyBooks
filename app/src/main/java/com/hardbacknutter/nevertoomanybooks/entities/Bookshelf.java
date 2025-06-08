@@ -125,7 +125,7 @@ public class Bookshelf
      */
     public Bookshelf(@NonNull final String name,
                      @NonNull final Style style) {
-        this.name = name.trim();
+        this.name = name.strip();
         styleUuid = style.getUuid();
     }
 
@@ -137,7 +137,7 @@ public class Bookshelf
      */
     public Bookshelf(@NonNull final String name,
                      @NonNull final String styleUuid) {
-        this.name = name.trim();
+        this.name = name.strip();
         this.styleUuid = styleUuid;
     }
 

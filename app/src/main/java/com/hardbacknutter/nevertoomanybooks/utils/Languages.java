@@ -143,7 +143,7 @@ public class Languages {
                                              @NonNull final Locale locale,
                                              @NonNull final String language) {
 
-        final String source = language.trim().toLowerCase(locale);
+        final String source = language.strip().toLowerCase(locale);
         if (source.isEmpty()) {
             return "";
         }
@@ -244,7 +244,7 @@ public class Languages {
     @NonNull
     public String toBibliographic(@NonNull final Locale locale,
                                   @NonNull final String iso3) {
-        final String source = iso3.trim().toLowerCase(locale);
+        final String source = iso3.strip().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
         }
@@ -331,7 +331,7 @@ public class Languages {
     @NonNull
     public String toTerminology(@NonNull final Locale locale,
                                 @NonNull final String iso3) {
-        final String source = iso3.trim().toLowerCase(locale);
+        final String source = iso3.strip().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
         }

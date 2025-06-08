@@ -243,7 +243,7 @@ public class SearchBookByIsbnFragment
                     view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 }
                 //noinspection DataFlowIssue
-                onBarcodeEntered(vb.isbn.getText().toString().trim());
+                onBarcodeEntered(vb.isbn.getText().toString().strip());
                 break;
             }
             case KEY_STOP_SCANNING: {
@@ -280,7 +280,7 @@ public class SearchBookByIsbnFragment
     public void onPause() {
         super.onPause();
         //noinspection DataFlowIssue
-        coordinator.setIsbnSearchText(vb.isbn.getText().toString().trim());
+        coordinator.setIsbnSearchText(vb.isbn.getText().toString().strip());
     }
 
     @Override

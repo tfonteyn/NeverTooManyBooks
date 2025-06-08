@@ -474,7 +474,7 @@ public class SynchronizedDb
             // The toUpperCase call was VERY slow (profiler test)
             // As there are only "select" and "savepoint" and  we don't use the latter:
             // test on 's' only, and assume trim() is not needed.
-            //   readOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
+            //   readOnly = sql.strip().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
             final boolean readOnly = sql.charAt(0) == 'S' || sql.charAt(0) == 's';
 
             return new SynchronizedStatement(synchronizer, statement, readOnly);

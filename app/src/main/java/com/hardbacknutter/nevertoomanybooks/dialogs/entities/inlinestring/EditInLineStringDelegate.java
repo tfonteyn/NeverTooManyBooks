@@ -243,6 +243,6 @@ class EditInLineStringDelegate
     }
 
     private void viewToModel() {
-        vm.setCurrentEdit(vb.editString.getText().toString().trim());
+        vm.setCurrentEdit(vb.editString.getText().toString().strip());
     }
 }

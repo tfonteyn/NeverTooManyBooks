@@ -154,7 +154,7 @@ public class SqliteShellFragment
 //    }
 
     private void execute() {
-        executeSql(vb.input.getText().toString().trim());
+        executeSql(vb.input.getText().toString().strip());
     }
 
     private void executeSql(@NonNull final String sql) {

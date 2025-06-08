@@ -196,15 +196,15 @@ public class SearchFtsFragment
     private void viewToModel() {
         final SearchCriteria criteria = vm.getCriteria();
         //noinspection DataFlowIssue
-        criteria.setFtsBookTitle(vb.title.getText().toString().trim());
+        criteria.setFtsBookTitle(vb.title.getText().toString().strip());
         //noinspection DataFlowIssue
-        criteria.setFtsSeriesTitle(vb.seriesTitle.getText().toString().trim());
+        criteria.setFtsSeriesTitle(vb.seriesTitle.getText().toString().strip());
         //noinspection DataFlowIssue
-        criteria.setFtsAuthor(vb.author.getText().toString().trim());
+        criteria.setFtsAuthor(vb.author.getText().toString().strip());
         //noinspection DataFlowIssue
-        criteria.setFtsPublisher(vb.publisher.getText().toString().trim());
+        criteria.setFtsPublisher(vb.publisher.getText().toString().strip());
         //noinspection DataFlowIssue
-        criteria.setFtsKeywords(vb.keywords.getText().toString().trim());
+        criteria.setFtsKeywords(vb.keywords.getText().toString().strip());
     }
 
     @Override

@@ -92,7 +92,7 @@ class ReadingProgressDelegate
     private static int parseInt(@Nullable final Editable text,
                                 final int defValue) {
         if (text != null) {
-            final String txt = text.toString().trim();
+            final String txt = text.toString().strip();
             try {
                 if (!txt.isEmpty()) {
                     return Integer.parseInt(txt);

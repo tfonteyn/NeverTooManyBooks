@@ -39,7 +39,7 @@ public final class NumberParser {
         if (stringValue == null) {
             return true;
         }
-        final String s = stringValue.trim();
+        final String s = stringValue.strip();
         return s.isEmpty()
                || "0".equals(s)
                || "0.0".equals(s)
@@ -68,7 +68,7 @@ public final class NumberParser {
             return ((Number) source).longValue();
         }
 
-        final String stringValue = source.toString().trim();
+        final String stringValue = source.toString().strip();
         if (isZero(stringValue)) {
             return 0;
         }
@@ -101,7 +101,7 @@ public final class NumberParser {
             return ((Number) source).intValue();
         }
 
-        final String stringValue = source.toString().trim();
+        final String stringValue = source.toString().strip();
         if (isZero(stringValue)) {
             return 0;
         }

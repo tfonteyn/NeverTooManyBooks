@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -109,7 +109,7 @@ public class FileLogger
             sb.append(k).append("->");
             final Object o = bundle.get(k);
             if (o != null) {
-                sb.append(o.toString().trim());
+                sb.append(o.toString().strip());
             }
             sb.append('\n');
         }

@@ -224,7 +224,7 @@ public class SearchCriteria
         if (keywords == null || keywords.isEmpty() || ".".equals(keywords)) {
             ftsKeywords = null;
         } else {
-            ftsKeywords = keywords.trim();
+            ftsKeywords = keywords.strip();
         }
     }
 

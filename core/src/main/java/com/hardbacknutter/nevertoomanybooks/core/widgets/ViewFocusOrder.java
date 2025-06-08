@@ -246,7 +246,7 @@ public final class ViewFocusOrder {
           .append(" ('").append(getResName(view, view.getId())).append("') -> ");
 
         if (view instanceof TextView) {
-            final String value = ((TextView) view).getText().toString().trim();
+            final String value = ((TextView) view).getText().toString().strip();
             sb.append("\"");
             if (value.length() > 20) {
                 sb.append(value.substring(0, 19)).append("…");

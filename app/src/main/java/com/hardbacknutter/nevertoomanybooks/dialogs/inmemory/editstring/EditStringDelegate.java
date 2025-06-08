@@ -169,6 +169,6 @@ class EditStringDelegate
 
     private void viewToModel() {
         final Editable text = vb.editString.getText();
-        vm.setCurrentValue(text != null ? text.toString().trim() : "");
+        vm.setCurrentValue(text != null ? text.toString().strip() : "");
     }
 }

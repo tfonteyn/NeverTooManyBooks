@@ -214,7 +214,7 @@ class EditSeriesDelegate
 
     private void viewToModel() {
         final Series currentEdit = vm.getCurrentEdit();
-        currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
+        currentEdit.setTitle(vb.seriesTitle.getText().toString().strip());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
     }
 }

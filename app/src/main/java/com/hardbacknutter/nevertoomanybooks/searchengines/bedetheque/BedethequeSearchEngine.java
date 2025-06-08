@@ -538,7 +538,7 @@ public class BedethequeSearchEngine
                 case "Titre :": {
                     final Node textNode = labelElement.nextSibling();
                     if (textNode != null) {
-                        book.setTitle(textNode.toString().trim());
+                        book.setTitle(textNode.toString().strip());
                     }
                     break;
                 }
@@ -558,7 +558,7 @@ public class BedethequeSearchEngine
                     final List<Series> seriesList = book.getSeries();
                     if (textNode != null && !seriesList.isEmpty()) {
                         seriesList.get(seriesList.size() - 1)
-                                  .setNumber(textNode.toString().trim());
+                                  .setNumber(textNode.toString().strip());
                     }
                     break;
                 }
@@ -566,7 +566,7 @@ public class BedethequeSearchEngine
                     final Node textNode = labelElement.nextSibling();
                     if (textNode != null) {
                         book.setIdentifierValue(Identifier.SID_BEDETHEQUE,
-                                                textNode.toString().trim());
+                                                textNode.toString().strip());
                     }
                     break;
                 }
@@ -675,7 +675,7 @@ public class BedethequeSearchEngine
                 case "Format :": {
                     final Node textNode = labelElement.nextSibling();
                     if (textNode != null) {
-                        currentFormat = textNode.toString().trim();
+                        currentFormat = textNode.toString().strip();
                         mapFormat(context, currentFormat, false, book);
                     }
                     break;
@@ -723,7 +723,7 @@ public class BedethequeSearchEngine
         // a later edition is a plain text
         final Node node = label.nextSibling();
         if (node != null) {
-            return node.toString().trim();
+            return node.toString().strip();
         }
 
         return null;
@@ -784,7 +784,7 @@ public class BedethequeSearchEngine
                              @NonNull final Book book) {
         final Node textNode = labelElement.nextSibling();
         if (textNode != null) {
-            book.add(processSeries(textNode.toString().trim(), book));
+            book.add(processSeries(textNode.toString().strip(), book));
         }
     }
 

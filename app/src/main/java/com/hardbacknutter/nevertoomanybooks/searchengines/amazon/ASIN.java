@@ -67,7 +67,7 @@ public final class ASIN {
         }
 
         boolean foundAlpha = false;
-        final String ucAsin = asin.trim().toLowerCase(Locale.ENGLISH);
+        final String ucAsin = asin.strip().toLowerCase(Locale.ENGLISH);
         for (int i = 0; i < ucAsin.length(); i++) {
             final int pos = "1234567890abcdefghijklmnopqrstuvwxyz".indexOf(ucAsin.charAt(i));
             // Make sure it's a valid char

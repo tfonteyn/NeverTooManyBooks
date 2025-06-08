@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -135,7 +135,7 @@ public class StringList<E> {
 
                 } else if (c == delimiter) {
                     // we reached the end of an element
-                    final String element = sb.toString().trim();
+                    final String element = sb.toString().strip();
                     if (allowBlank || !element.isEmpty()) {
                         // decode it using the objects factory and add it to the list
                         list.add(coder.decode(element));
@@ -150,7 +150,7 @@ public class StringList<E> {
         }
 
         // It's important to send back even an empty item.
-        final String element = sb.toString().trim();
+        final String element = sb.toString().strip();
         if (allowBlank || !element.isEmpty()) {
             list.add(coder.decode(element));
         }

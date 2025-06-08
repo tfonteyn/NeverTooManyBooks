@@ -97,7 +97,7 @@ public class TocEntryCoder
             final String g1 = matcher.group(0);
             if (g1 != null) {
                 // strip out the found pattern (including the brackets)
-                title = title.replace(g1, "").trim();
+                title = title.replace(g1, "").strip();
 
                 final PartialDate firstPublicationDate = partialDateParser
                         .parse(matcher.group(1))

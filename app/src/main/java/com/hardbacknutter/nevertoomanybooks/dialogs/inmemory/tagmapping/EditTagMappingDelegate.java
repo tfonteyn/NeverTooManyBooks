@@ -175,7 +175,7 @@ class EditTagMappingDelegate
     private void viewToModel() {
         Editable text = vb.tagName.getText();
         final TagMapping currentEdit = vm.getCurrentValue();
-        currentEdit.setName(text != null ? text.toString().trim() : "");
+        currentEdit.setName(text != null ? text.toString().strip() : "");
 
         text = vb.tagMapping.getText();
         if (text != null) {

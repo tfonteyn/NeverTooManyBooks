@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -113,8 +113,8 @@ public final class SearchEngineUtils {
      */
     @NonNull
     public static String cleanName(@NonNull final String s) {
-        final String tmp = cleanText(s.trim());
-        return CLEANUP_TITLE_PATTERN.matcher(tmp).replaceAll("").trim();
+        final String tmp = cleanText(s.strip());
+        return CLEANUP_TITLE_PATTERN.matcher(tmp).replaceAll("").strip();
     }
 
     /**
@@ -143,6 +143,6 @@ public final class SearchEngineUtils {
                 prev = ' ';
             }
         }
-        return out.toString().trim();
+        return out.toString().strip();
     }
 }

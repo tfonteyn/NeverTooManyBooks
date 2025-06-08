@@ -218,6 +218,6 @@ class EditTagDelegate
     }
 
     private void viewToModel() {
-        vm.getCurrentEdit().setName(vb.tagName.getText().toString().trim());
+        vm.getCurrentEdit().setName(vb.tagName.getText().toString().strip());
     }
 }

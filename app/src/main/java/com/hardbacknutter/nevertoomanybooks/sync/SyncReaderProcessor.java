@@ -342,7 +342,7 @@ public class SyncReaderProcessor {
             //    return localBook.contains(key);
             final Object o = localBook.get(field.getKey(), realNumberParser);
             if (o != null) {
-                final String value = o.toString().trim();
+                final String value = o.toString().strip();
                 return !value.isEmpty() && !"0".equals(value) && !"0.0".equals(value);
             }
         }

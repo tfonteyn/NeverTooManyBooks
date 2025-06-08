@@ -180,7 +180,7 @@ class EditLenderDelegate
     }
 
     private void viewToModel() {
-        vm.setCurrentEdit(vb.lendTo.getText().toString().trim());
+        vm.setCurrentEdit(vb.lendTo.getText().toString().strip());
     }
 
     private boolean saveChanges() {

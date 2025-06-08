@@ -192,6 +192,6 @@ class EditBookPublisherDelegate
     }
 
     private void viewToModel() {
-        publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().trim());
+        publisherVm.getCurrentEdit().setName(vb.publisherName.getText().toString().strip());
     }
 }

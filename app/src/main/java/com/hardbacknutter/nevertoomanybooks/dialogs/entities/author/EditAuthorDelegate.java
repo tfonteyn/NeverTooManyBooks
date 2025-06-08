@@ -344,13 +344,13 @@ class EditAuthorDelegate
     private void viewToModel() {
         final Author currentEdit = vm.getCurrentEdit();
 
-        currentEdit.setName(vb.familyName.getText().toString().trim(),
-                            vb.givenNames.getText().toString().trim());
+        currentEdit.setName(vb.familyName.getText().toString().strip(),
+                            vb.givenNames.getText().toString().strip());
 
         // Dates have already been set in the PartialDatePickerLauncher.ResultListener
 
         if (vm.showRealAuthorName()) {
-            vm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
+            vm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().strip());
         }
 
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());

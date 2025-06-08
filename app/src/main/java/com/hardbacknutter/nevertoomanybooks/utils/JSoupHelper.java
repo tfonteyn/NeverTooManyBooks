@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -180,7 +180,7 @@ public class JSoupHelper {
 
         final String[] list = ATTR_STYLE_PATTERN.split(element.attr(ATTR_STYLE));
         for (int i = 0; i < list.length; i += 2) {
-            keymaps.put(list[i].trim(), list[i + 1].trim().split(" "));
+            keymaps.put(list[i].strip(), list[i + 1].strip().split(" "));
         }
         return Collections.unmodifiableMap(keymaps);
     }

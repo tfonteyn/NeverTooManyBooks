@@ -904,7 +904,7 @@ public class IsfdbSearchEngine
                             if (dotIdx != -1) {
                                 final int closeBrIdx = nr.indexOf(']');
                                 if (closeBrIdx > dotIdx) {
-                                    nr = nr.substring(dotIdx + 1, closeBrIdx).trim();
+                                    nr = nr.substring(dotIdx + 1, closeBrIdx).strip();
                                     if (!nr.isEmpty()) {
                                         series.setNumber(nr);
                                     }
@@ -1268,7 +1268,7 @@ public class IsfdbSearchEngine
             String tmpString = notesDiv.html();
             // it should always have this at the start, but paranoia...
             if (tmpString.startsWith("<b>Notes:</b>")) {
-                tmpString = tmpString.substring(13).trim();
+                tmpString = tmpString.substring(13).strip();
             }
             book.setDescription(tmpString);
         }
@@ -1320,7 +1320,7 @@ public class IsfdbSearchEngine
                             @NonNull final Book book) {
         final Node data = labelElement.nextSibling();
         if (data != null) {
-            book.setPages(data.toString().trim());
+            book.setPages(data.toString().strip());
         }
     }
 
@@ -1329,7 +1329,7 @@ public class IsfdbSearchEngine
         final Node data = labelElement.nextSibling();
         if (data != null) {
             // <li><b>Catalog ID:</b> catalogID
-            book.putString(SiteField.CATALOG_ID, data.toString().trim());
+            book.putString(SiteField.CATALOG_ID, data.toString().strip());
         }
     }
 
@@ -1369,7 +1369,7 @@ public class IsfdbSearchEngine
                                               @NonNull final Book book) {
         final Node data = labelElement.nextSibling();
         if (data != null) {
-            final String tmp = data.toString().trim();
+            final String tmp = data.toString().strip();
             // assume that if we get here,
             // then we added a "Pub. Series:" as last one.
             final List<Series> seriesList = book.getSeries();
@@ -1393,7 +1393,7 @@ public class IsfdbSearchEngine
         final Node data = labelElement.nextSibling();
         if (data != null) {
             // <li><b>Type:</b> COLLECTION
-            final String tmp = data.toString().trim();
+            final String tmp = data.toString().strip();
             book.putString(SiteField.BOOK_TYPE, tmp);
             final Book.ContentType type = TYPE_MAP.get(tmp);
             if (type != null) {
@@ -1407,7 +1407,7 @@ public class IsfdbSearchEngine
         final Node data = labelElement.nextSibling();
         if (data != null) {
             // dates are in fact displayed as YYYY-MM-DD which is very nice.
-            String tmp = data.toString().trim();
+            String tmp = data.toString().strip();
             // except that ISFDB uses 00 for the day/month when unknown ...
             // e.g. "1975-04-00" or "1974-00-00"
             // Cut those parts off. Ignore the locale.
@@ -1422,7 +1422,7 @@ public class IsfdbSearchEngine
         if (data != null) {
             // we use them in the order found here.
             // <b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
-            book.setIsbn(ISBN.cleanText(data.toString().trim()));
+            book.setIsbn(ISBN.cleanText(data.toString().strip()));
 
             final Element nextElementSibling = labelElement.nextElementSibling();
             if (nextElementSibling != null) {
@@ -1617,7 +1617,7 @@ public class IsfdbSearchEngine
                         final Languages languages = ServiceLocator.getInstance().getLanguages();
                         lang = languages.getISO3FromDisplayLanguage(
                                 context, getLocale(context),
-                                node.toString().trim());
+                                node.toString().strip());
                     }
                 }
             }

@@ -277,7 +277,7 @@ public final class IsfdbAuthorResolver
         if (node == null) {
             return null;
         }
-        final Author author = Author.from(node.toString().trim());
+        final Author author = Author.from(node.toString().strip());
         author.setIdentifierValue(Identifier.SID_ISFDB, sid);
 
         // test for an "Alternate Name" or a "real name" result.
@@ -351,14 +351,14 @@ public final class IsfdbAuthorResolver
                     case "Birthplace:": {
                         final Node node = label.nextSibling();
                         if (node != null) {
-                            birthPlace = node.toString().trim();
+                            birthPlace = node.toString().strip();
                         }
                         break;
                     }
                     case "Birthdate:": {
                         final Node node = label.nextSibling();
                         if (node != null) {
-                            dateParser.parse(node.toString().trim())
+                            dateParser.parse(node.toString().strip())
                                       .map(PartialDate::getIsoString)
                                       .ifPresent(author::setBirthDate);
                         }
@@ -367,7 +367,7 @@ public final class IsfdbAuthorResolver
                     case "Deathdate:": {
                         final Node node = label.nextSibling();
                         if (node != null) {
-                            dateParser.parse(node.toString().trim())
+                            dateParser.parse(node.toString().strip())
                                       .map(PartialDate::getIsoString)
                                       .ifPresent(author::setDeathDate);
                         }

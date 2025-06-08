@@ -283,7 +283,7 @@ public class EditBookPublisherListDialogFragment
         // clear any previous error
         vb.lblPublisherName.setError(null);
 
-        final String name = vb.publisherName.getText().toString().trim();
+        final String name = vb.publisherName.getText().toString().strip();
         if (name.isEmpty()) {
             vb.lblPublisherName.setError(getString(R.string.vldt_non_blank_required));
             return;

@@ -354,8 +354,8 @@ public class Author
      */
     public Author(@NonNull final String familyName,
                   @Nullable final String givenNames) {
-        this.familyName = familyName.trim();
-        this.givenNames = givenNames == null ? "" : givenNames.trim();
+        this.familyName = familyName.strip();
+        this.givenNames = givenNames == null ? "" : givenNames.strip();
     }
 
     /**

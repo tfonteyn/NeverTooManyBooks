@@ -142,7 +142,7 @@ public final class FtsDaoHelper {
             parameter.append('*');
         }
         // reminder to self: we do not need to prepend with a '*' for MATCH to work.
-        final String cleanedText = parameter.toString().trim();
+        final String cleanedText = parameter.toString().strip();
 
         if (domain != null) {
             // prepend each word with the FTS column name.
@@ -182,8 +182,8 @@ public final class FtsDaoHelper {
                               + prepareSearchText(author, DBKey.FTS.AUTHOR_NAME)
                               + prepareSearchText(bookTitle, DBKey.TITLE)
                               + prepareSearchText(seriesTitle, DBKey.SERIES.TITLE)
-                              + prepareSearchText(publisherName, DBKey.PUBLISHER.NAME)
-        ).trim();
+                              + prepareSearchText(publisherName, DBKey.PUBLISHER.NAME))
+                .strip();
 
         if (query.isEmpty()) {
             return Optional.empty();

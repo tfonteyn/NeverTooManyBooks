@@ -297,7 +297,7 @@ public class BedethequeAuthorResolver
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
                             try {
-                                sid = Integer.parseInt(textNode.toString().trim());
+                                sid = Integer.parseInt(textNode.toString().strip());
                             } catch (@NonNull final NumberFormatException ignore) {
                                 // ignore
                             }
@@ -324,7 +324,7 @@ public class BedethequeAuthorResolver
                         // <label>Pseudo :</label>Morris
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            penName = textNode.toString().trim();
+                            penName = textNode.toString().strip();
                         }
                         break;
                     }
@@ -397,7 +397,7 @@ public class BedethequeAuthorResolver
             birthCountry = span.text();
             if (birthCountry.startsWith("(") && birthCountry.endsWith(")")) {
                 birthCountry = birthCountry.substring(1, birthCountry.length() - 1)
-                                           .trim();
+                                           .strip();
             }
         }
         return birthCountry;
@@ -413,7 +413,7 @@ public class BedethequeAuthorResolver
     @Nullable
     private String parseDate(@Nullable final Node textNode) {
         if (textNode != null) {
-            String s = textNode.toString().trim();
+            String s = textNode.toString().strip();
             // Not in the Pattern, paranoia...
             if (s.startsWith("le ")) {
                 s = s.substring(3);

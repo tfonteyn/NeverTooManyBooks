@@ -209,6 +209,6 @@ class EditBookshelfDelegate
 
     private void viewToModel() {
         //noinspection DataFlowIssue
-        vm.getCurrentEdit().setName(vb.bookshelf.getText().toString().trim());
+        vm.getCurrentEdit().setName(vb.bookshelf.getText().toString().strip());
     }
 }

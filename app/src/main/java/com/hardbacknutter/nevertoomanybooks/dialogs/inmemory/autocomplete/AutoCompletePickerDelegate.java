@@ -181,6 +181,6 @@ class AutoCompletePickerDelegate
     }
 
     private void viewToModel() {
-        vm.setCurrentValue(vb.editString.getText().toString().trim());
+        vm.setCurrentValue(vb.editString.getText().toString().strip());
     }
 }

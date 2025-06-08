@@ -1551,7 +1551,7 @@ public final class CalibreContentServer
         // If we escape it, Android will turn it into a '_'
         // Hence, we remove it ourselves, so a subsequent findFile will work.
         while (authorDirectory.endsWith(".") && authorDirectory.length() > 2) {
-            authorDirectory = authorDirectory.substring(0, authorDirectory.length() - 1).trim();
+            authorDirectory = authorDirectory.substring(0, authorDirectory.length() - 1).strip();
         }
         return authorDirectory;
     }

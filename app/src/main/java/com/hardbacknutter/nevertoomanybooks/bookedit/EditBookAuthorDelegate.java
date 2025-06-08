@@ -371,12 +371,12 @@ class EditBookAuthorDelegate
 
     private void viewToModel() {
         final Author currentEdit = authorVm.getCurrentEdit();
-        currentEdit.setName(vb.familyName.getText().toString().trim(),
-                            vb.givenNames.getText().toString().trim());
+        currentEdit.setName(vb.familyName.getText().toString().strip(),
+                            vb.givenNames.getText().toString().strip());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
         if (authorVm.showRealAuthorName()) {
-            authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
+            authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().strip());
         }
 
         if (authorVm.showAuthorType()) {

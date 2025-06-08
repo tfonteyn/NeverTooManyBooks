@@ -809,7 +809,7 @@ public class StripInfoSearchEngine
                             if (a != null) {
                                 final Node nrNode = a.previousSibling();
                                 if (nrNode != null) {
-                                    number = nrNode.toString().trim();
+                                    number = nrNode.toString().strip();
                                 }
 
                                 // the number is not used in the TOC as we don't support

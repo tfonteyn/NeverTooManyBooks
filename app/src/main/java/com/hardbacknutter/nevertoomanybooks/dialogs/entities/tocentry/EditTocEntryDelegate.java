@@ -196,12 +196,12 @@ class EditTocEntryDelegate
 
     private void viewToModel() {
         //noinspection DataFlowIssue
-        vm.setTitle(vb.title.getText().toString().trim());
+        vm.setTitle(vb.title.getText().toString().strip());
         //noinspection DataFlowIssue
-        vm.setFirstPublicationDate(vb.firstPublication.getText().toString().trim());
+        vm.setFirstPublicationDate(vb.firstPublication.getText().toString().strip());
 
         if (vm.isAnthology()) {
-            vm.setCurrentAuthorName(vb.author.getText().toString().trim());
+            vm.setCurrentAuthorName(vb.author.getText().toString().strip());
         }
     }
 }

@@ -202,12 +202,12 @@ public class SearchBookByTextFragment
 
     private void viewToModel() {
         //noinspection DataFlowIssue
-        coordinator.setTitleSearchText(vb.title.getText().toString().trim());
-        coordinator.setAuthorSearchText(vb.author.getText().toString().trim());
-        coordinator.setSeriesSearchText(vb.seriesTitle.getText().toString().trim());
+        coordinator.setTitleSearchText(vb.title.getText().toString().strip());
+        coordinator.setAuthorSearchText(vb.author.getText().toString().strip());
+        coordinator.setSeriesSearchText(vb.seriesTitle.getText().toString().strip());
         //noinspection DataFlowIssue
-        coordinator.setSeriesNrSearchText(vb.seriesNum.getText().toString().trim());
-        coordinator.setPublisherSearchText(vb.publisher.getText().toString().trim());
+        coordinator.setSeriesNrSearchText(vb.seriesNum.getText().toString().strip());
+        coordinator.setPublisherSearchText(vb.publisher.getText().toString().strip());
     }
 
     /**

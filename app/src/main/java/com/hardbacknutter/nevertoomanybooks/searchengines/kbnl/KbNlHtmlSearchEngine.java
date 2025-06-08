@@ -394,7 +394,7 @@ public class KbNlHtmlSearchEngine
         final Element a = td.selectFirst("a");
         if (a != null) {
             final String[] cleanedData = a.text().split("/");
-            book.setTitle(cleanedData[0].trim());
+            book.setTitle(cleanedData[0].strip());
             // It's temping to decode [1,
             // but the data has proven to be very unstructured and mostly unusable.
         }
@@ -407,7 +407,7 @@ public class KbNlHtmlSearchEngine
         if (!aas.isEmpty()) {
             for (final Element a : aas) {
                 // remove a year part in the name
-                final String cleanedString = a.text().split("\\(")[0].trim();
+                final String cleanedString = a.text().split("\\(")[0].strip();
                 // reject separators as for example: <psi:text>;</psi:text>
                 if (cleanedString.length() == 1) {
                     return;
@@ -476,7 +476,7 @@ public class KbNlHtmlSearchEngine
                                .filter(name -> !name.isEmpty())
                                .collect(Collectors.joining(" "));
             if (text.contains(":")) {
-                text = text.split(":")[1].trim();
+                text = text.split(":")[1].strip();
             }
             if (!text.isBlank()) {
                 book.add(Publisher.from(text));

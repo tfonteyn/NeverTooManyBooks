@@ -240,7 +240,7 @@ public class EditTextField<T, V extends EditText>
         //noinspection DataFlowIssue
         final Context context = view.getContext();
 
-        final String text = editable.toString().trim();
+        final String text = editable.toString().strip();
         // Update the actual value
         if (formatter instanceof EditFieldFormatter) {
             rawValue = ((EditFieldFormatter<T>) formatter).extract(context, text);

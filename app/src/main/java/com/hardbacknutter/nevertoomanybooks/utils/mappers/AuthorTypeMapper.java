@@ -150,7 +150,7 @@ public class AuthorTypeMapper {
         final String[] names = typeName.split(",");
         int mapped = Author.TYPE_UNKNOWN;
         for (final String name : names) {
-            final Integer type = MAPPINGS.get(name.toLowerCase(locale).trim());
+            final Integer type = MAPPINGS.get(name.toLowerCase(locale).strip());
             if (type != null) {
                 mapped |= type;
             }

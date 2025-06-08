@@ -113,7 +113,7 @@ public class TocEntry
                     @NonNull final String title,
                     @NonNull final PartialDate firstPublicationDate) {
         this.author = author;
-        this.title = title.trim();
+        this.title = title.strip();
         this.firstPublicationDate = firstPublicationDate;
         bookCount = 1;
     }
@@ -136,7 +136,7 @@ public class TocEntry
              final int bookCount) {
         this.id = id;
         this.author = author;
-        this.title = title.trim();
+        this.title = title.strip();
         this.firstPublicationDate = firstPublicationDate;
         this.bookCount = bookCount;
     }

@@ -537,7 +537,7 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 final Node textNode = element.nextSibling();
                 if (textNode != null) {
-                    book.setPages(textNode.toString().trim());
+                    book.setPages(textNode.toString().strip());
                 }
             }
         }
@@ -549,7 +549,7 @@ public class DatabazeKnihSearchEngine
             if (element != null) {
                 final Node textNode = element.nextSibling();
                 if (textNode != null) {
-                    final String text = textNode.toString().trim();
+                    final String text = textNode.toString().strip();
                     if (!text.isEmpty()) {
                         partialDateParser.parse(text).ifPresent(book::setFirstPublicationDate);
                     }
@@ -562,7 +562,7 @@ public class DatabazeKnihSearchEngine
         if (element != null) {
             final Node textNode = element.nextSibling();
             if (textNode != null) {
-                book.setFormat(textNode.toString().trim());
+                book.setFormat(textNode.toString().strip());
             }
         }
 
@@ -571,7 +571,7 @@ public class DatabazeKnihSearchEngine
         if (element != null) {
             final Node textNode = element.nextSibling();
             if (textNode != null) {
-                book.setPrintRun(textNode.toString().trim());
+                book.setPrintRun(textNode.toString().strip());
             }
         }
 
@@ -585,7 +585,7 @@ public class DatabazeKnihSearchEngine
         if (element != null) {
             final Node textNode = element.nextSibling();
             if (textNode != null) {
-                final String text = textNode.toString().trim();
+                final String text = textNode.toString().strip();
                 if (!text.isEmpty()) {
                     if (EBOOK.equals(text)) {
                         book.setFormat(EBOOK);

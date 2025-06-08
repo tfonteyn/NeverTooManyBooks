@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,7 +62,7 @@ public class BooleanValidator
             throws ValidatorException {
 
         final Object o = dataManager.get(key, realNumberParser);
-        if (o == null || o.toString().trim().isEmpty()) {
+        if (o == null || o.toString().isBlank()) {
             dataManager.putBoolean(key, defaultValue);
             return;
         }

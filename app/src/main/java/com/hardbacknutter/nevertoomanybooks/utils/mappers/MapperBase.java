@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,8 +76,8 @@ abstract class MapperBase
                 .filter(lcValue::startsWith)
                 .findFirst()
                 .map(key -> (context.getString(mappings.get(key))
-                             + ' ' + value.substring(key.length()).trim())
-                        .trim())
+                             + ' ' + value.substring(key.length()).strip())
+                        .strip())
                 .ifPresent(replacement -> book.putString(key, replacement));
     }
 }

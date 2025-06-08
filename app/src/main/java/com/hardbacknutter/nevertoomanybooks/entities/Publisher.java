@@ -78,7 +78,7 @@ public class Publisher
      * @param name of publisher.
      */
     public Publisher(@NonNull final String name) {
-        this.name = name.trim();
+        this.name = name.strip();
     }
 
     /**

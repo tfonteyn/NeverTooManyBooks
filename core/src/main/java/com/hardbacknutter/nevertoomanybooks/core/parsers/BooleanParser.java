@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,7 @@ public final class BooleanParser {
                                        final boolean emptyIsFalse)
             throws NumberFormatException {
 
-        if (source == null || source.trim().isEmpty()) {
+        if (source == null || source.isBlank()) {
             if (emptyIsFalse) {
                 return false;
             } else {
@@ -89,7 +89,7 @@ public final class BooleanParser {
 
         // we only do english terms, as it's expected that these come from some
         // sort of program code during imports etc...
-        final String stringValue = source.trim().toLowerCase(Locale.ENGLISH);
+        final String stringValue = source.strip().toLowerCase(Locale.ENGLISH);
         switch (stringValue) {
             case "1":
             case "y":

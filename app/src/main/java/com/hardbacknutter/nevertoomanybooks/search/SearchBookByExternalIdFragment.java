@@ -215,7 +215,7 @@ public class SearchBookByExternalIdFragment
             // if the user switched from a text input, clean the input
             if ((vb.externalId.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
                 //noinspection DataFlowIssue
-                final String text = vb.externalId.getText().toString().trim();
+                final String text = vb.externalId.getText().toString().strip();
                 if (!DIGITS_PATTERN.matcher(text).matches()) {
                     vb.externalId.setText("");
                 }
@@ -232,7 +232,7 @@ public class SearchBookByExternalIdFragment
         super.onPause();
         selectedRbViewId = vb.sitesGroup.getCheckedRadioButtonId();
         //noinspection DataFlowIssue
-        currentInput = vb.externalId.getText().toString().trim();
+        currentInput = vb.externalId.getText().toString().strip();
     }
 
     @Override
@@ -246,7 +246,7 @@ public class SearchBookByExternalIdFragment
     boolean onPreSearch() {
         //sanity check
         //noinspection DataFlowIssue
-        if (vb.externalId.getText().toString().trim().isEmpty()
+        if (vb.externalId.getText().toString().isBlank()
             || vb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
             vb.lblExternalId.setError(getString(R.string.warning_requires_site_and_id));
             return false;
@@ -257,7 +257,7 @@ public class SearchBookByExternalIdFragment
     @Override
     boolean onSearch() {
         //noinspection DataFlowIssue
-        final String externalId = vb.externalId.getText().toString().trim();
+        final String externalId = vb.externalId.getText().toString().strip();
         //noinspection DataFlowIssue
         return coordinator.searchByExternalId(engineId, externalId);
     }
