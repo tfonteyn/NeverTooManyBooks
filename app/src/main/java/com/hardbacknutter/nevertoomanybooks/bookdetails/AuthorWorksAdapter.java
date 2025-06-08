@@ -96,7 +96,8 @@ public class AuthorWorksAdapter
         this.authors = authors;
         this.works = works;
 
-        authorFormatter = new ClickableListFormatter<>(context, Details.AutoSelect, style);
+        authorFormatter = new ClickableListFormatter<>(context, author ->
+                author.getLabel(context, Details.AutoSelect, style));
     }
 
     /**

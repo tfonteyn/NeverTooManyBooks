@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.bookreadstatus.BookReadStatusViewMod
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
@@ -278,8 +279,6 @@ public class ShowBookDetailsViewModel
                 new ListFormatter<>(Details.Normal, style);
         final ListFormatter<Entity> fullDetailListFormatter =
                 new ListFormatter<>(Details.Full, style);
-        final ClickableListFormatter<Entity> authorFormatter =
-                new ClickableListFormatter<>(context, Details.Full, style);
 
         // book fields
         fields.add(new TextViewField<>(FragmentId.Main, R.id.title, DBKey.TITLE));
@@ -291,7 +290,8 @@ public class ShowBookDetailsViewModel
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,
-                                       authorFormatter));
+                                       new ClickableListFormatter<Author>(context, author ->
+                                               author.getLabel(context, Details.Full, style))));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.series_title, Book.BKEY_SERIES_LIST,
                                        DBKey.FK_SERIES,

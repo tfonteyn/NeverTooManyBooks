@@ -33,29 +33,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.entities.Details;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * Formats a list of {@link Entity}s.
+ * Formats a list of {@link T}s.
  * Each item gets a chevron next to it indicate it's clickable.
  * Lines are spaced with a plain '\n'.
  * <p>
  * This formatter provides the visual formatting only.
- * Actual 'click' functionality must be implemented.
+ * Actual 'click' functionality must be implemented elsewhere.
  */
 @SuppressWarnings("WeakerAccess")
-public class ClickableListFormatter<T extends Entity>
+public class ClickableListFormatter<T>
         implements FieldFormatter<List<T>> {
 
     @NonNull
-    private final Details details;
-
-    @NonNull
-    private final Style style;
+    private final Function<T, String> textSupplier;
 
     @NonNull
     private final Drawable icon;
@@ -64,16 +59,13 @@ public class ClickableListFormatter<T extends Entity>
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param details how much details to show
-     * @param style   to use
+     * @param context      Current context
+     * @param textSupplier provides the raw text to format
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     public ClickableListFormatter(@NonNull final Context context,
-                                  @NonNull final Details details,
-                                  @NonNull final Style style) {
-        this.details = details;
-        this.style = style;
+                                  @NonNull final Function<T, String> textSupplier) {
+        this.textSupplier = textSupplier;
 
         isRTL = context.getResources().getConfiguration()
                        .getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
@@ -97,7 +89,7 @@ public class ClickableListFormatter<T extends Entity>
             final T entity = rawValue.get(i);
             final ImageSpan imageSpan = new ImageSpan(icon, ImageSpan.ALIGN_BOTTOM);
 
-            final Spanned text = Html.fromHtml(entity.getLabel(context, details, style),
+            final Spanned text = Html.fromHtml(textSupplier.apply(entity),
                                                Html.FROM_HTML_MODE_COMPACT);
             if (isRTL) {
                 // Text first, then icon
