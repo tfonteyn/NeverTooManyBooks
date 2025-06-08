@@ -76,10 +76,7 @@ public class BookDaoHelperTest
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_GOODREADS,
                                                          "18306114")));
 
-        final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,
-                                                              serviceLocator::getCoverStorage,
-                                                              serviceLocator::getReorderHelper,
-                                                              book, false);
+        final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, false);
         final ContentValues cv = bookDaoHelper
                 .process(context)
                 .filterValues(serviceLocator.getDb().getTableInfo(TBL_BOOKS));

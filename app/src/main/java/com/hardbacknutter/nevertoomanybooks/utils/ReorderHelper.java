@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,9 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 
 /**
@@ -71,17 +71,6 @@ public final class ReorderHelper {
      * Cache for the pv_reformat_titles_prefixes strings.
      */
     private final Map<Locale, String> localePrefixMap = new HashMap<>();
-    @NonNull
-    private final Supplier<AppLocale> appLocaleSupplier;
-
-    /**
-     * Constructor.
-     *
-     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
-     */
-    public ReorderHelper(@NonNull final Supplier<AppLocale> appLocaleSupplier) {
-        this.appLocaleSupplier = appLocaleSupplier;
-    }
 
     /**
      * Get the global default for this preference.
@@ -192,7 +181,9 @@ public final class ReorderHelper {
         if (language == null || language.isBlank()) {
             localeFromLang = null;
         } else {
-            localeFromLang = appLocaleSupplier.get().getLocale(context, language).orElse(null);
+            localeFromLang = ServiceLocator.getInstance()
+                                           .getAppLocale()
+                                           .getLocale(context, language).orElse(null);
         }
         return reorder(context, title, localeFromLang, localeList);
     }
@@ -302,9 +293,10 @@ public final class ReorderHelper {
         // getLocalizedResources is slow, so we cache it for every Locale.
         String words = localePrefixMap.get(locale);
         if (words == null) {
-            words = appLocaleSupplier.get()
-                                     .getLocalizedResources(context, locale)
-                                     .getString(R.string.pv_reformat_titles_prefixes);
+            words = ServiceLocator.getInstance()
+                                  .getAppLocale()
+                                  .getLocalizedResources(context, locale)
+                                  .getString(R.string.pv_reformat_titles_prefixes);
             // hack for WebLate removing empty Strings.
             if ("|".equals(words)) {
                 words = "";

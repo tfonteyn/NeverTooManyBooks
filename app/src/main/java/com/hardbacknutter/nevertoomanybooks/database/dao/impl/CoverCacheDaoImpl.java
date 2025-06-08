@@ -38,14 +38,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -72,19 +71,14 @@ public class CoverCacheDaoImpl
 
     @NonNull
     private final SynchronizedDb db;
-    @NonNull
-    private final Supplier<CoverStorage> coverStorageSupplier;
 
     /**
      * Constructor.
      *
-     * @param db                   Underlying database
-     * @param coverStorageSupplier deferred supplier for the {@link CoverStorage}
+     * @param db Underlying database
      */
-    public CoverCacheDaoImpl(@NonNull final SynchronizedDb db,
-                             @NonNull final Supplier<CoverStorage> coverStorageSupplier) {
+    public CoverCacheDaoImpl(@NonNull final SynchronizedDb db) {
         this.db = db;
-        this.coverStorageSupplier = coverStorageSupplier;
     }
 
     /**
@@ -153,9 +147,11 @@ public class CoverCacheDaoImpl
         }
         //noinspection CheckStyle
         try {
-            final long lm = coverStorageSupplier.get().getPersistedFile(uuid, cIdx)
-                                                .map(File::lastModified)
-                                                .orElse(0L);
+            final long lm = ServiceLocator.getInstance()
+                                          .getCoverStorage()
+                                          .getPersistedFile(uuid, cIdx)
+                                          .map(File::lastModified)
+                                          .orElse(0L);
             if (lm > 0) {
                 final String fileLastModified =
                         Instant.ofEpochMilli(lm)
@@ -258,7 +254,9 @@ public class CoverCacheDaoImpl
     private void logAndDisableCache(@NonNull final Throwable e) {
         LoggerFactory.getLogger().e(TAG, e);
         //FIXME: we should let the user know, and cancel any pending tasks...
-        coverStorageSupplier.get().setImageCachingEnabled(false);
+        ServiceLocator.getInstance()
+                      .getCoverStorage()
+                      .setImageCachingEnabled(false);
     }
 
     private static final class Sql {

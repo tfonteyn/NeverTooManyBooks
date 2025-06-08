@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -74,24 +74,14 @@ public class TocEntryDaoImpl
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     private static final String ERROR_USE_INSERT_OR_UPDATE_INSTEAD = "use insertOrUpdate instead";
-    @NonNull
-    private final Supplier<AuthorDao> authorDaoSupplier;
-    @NonNull
-    private final Supplier<ReorderHelper> reorderHelperSupplier;
 
     /**
      * Constructor.
      *
-     * @param db                    Underlying database
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
-     * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
+     * @param db Underlying database
      */
-    public TocEntryDaoImpl(@NonNull final SynchronizedDb db,
-                           @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
-                           @NonNull final Supplier<AuthorDao> authorDaoSupplier) {
+    public TocEntryDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
-        this.authorDaoSupplier = authorDaoSupplier;
-        this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
     @NonNull
@@ -117,7 +107,7 @@ public class TocEntryDaoImpl
         }
 
         if (normalize) {
-            final ReorderHelper reorderHelper = reorderHelperSupplier.get();
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             final List<Locale> locales = LocaleListUtils.asList(context);
             list.forEach(tocEntry -> {
                 final String title = reorderHelper.reverse(context, tocEntry.getTitle(),
@@ -137,7 +127,9 @@ public class TocEntryDaoImpl
                       @NonNull final TocEntry tocEntry,
                       @NonNull final Locale locale) {
 
-        authorDaoSupplier.get().fixId(context, tocEntry.getPrimaryAuthor(), locale);
+        ServiceLocator.getInstance()
+                      .getAuthorDao()
+                      .fixId(context, tocEntry.getPrimaryAuthor(), locale);
 
         final Optional<TocEntry> oFound = findByName(context, tocEntry, locale);
         if (oFound.isPresent()) {
@@ -187,9 +179,10 @@ public class TocEntryDaoImpl
                                          @NonNull final TocEntry tocEntry,
                                          @NonNull final Locale locale) {
 
-        final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String title = tocEntry.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
+        final String obTitle = ServiceLocator.getInstance()
+                                             .getReorderHelper()
+                                             .reorderForSorting(context, title, locale);
         final String searchDateIso = tocEntry.getFirstPublicationDate().getIsoString();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_AUTHOR_AND_TITLE, new String[]{
@@ -303,7 +296,8 @@ public class TocEntryDaoImpl
             return;
         }
 
-        final AuthorDao authorDao = authorDaoSupplier.get();
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK);
              SynchronizedStatement stmtInsToc = db.compileStatement(Sql.INSERT);
@@ -323,7 +317,7 @@ public class TocEntryDaoImpl
                     authorDao.insert(context, author, locale);
                 }
 
-                final ReorderHelper reorderHelper = reorderHelperSupplier.get();
+
                 final String title = tocEntry.getTitle();
                 final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
 

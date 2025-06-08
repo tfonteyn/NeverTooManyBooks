@@ -382,8 +382,7 @@ public class ServiceLocator {
     public Languages getLanguages() {
         synchronized (this) {
             if (languages == null) {
-                languages = new Languages(this::getAppLocale,
-                                          this::getIsoLanguageDao);
+                languages = new Languages(this::getIsoLanguageDao);
             }
         }
         return languages;
@@ -443,7 +442,7 @@ public class ServiceLocator {
     public ReorderHelper getReorderHelper() {
         synchronized (this) {
             if (reorderHelper == null) {
-                reorderHelper = new ReorderHelper(this::getAppLocale);
+                reorderHelper = new ReorderHelper();
             }
         }
         return reorderHelper;
@@ -563,20 +562,8 @@ public class ServiceLocator {
     public BookDao getBookDao() {
         synchronized (this) {
             if (bookDao == null) {
-                bookDao = new BookDaoImpl(getDb(),
-                                          this::getAuthorDao,
-                                          this::getSeriesDao,
-                                          this::getPublisherDao,
-                                          this::getBookshelfDao,
-                                          this::getTocEntryDao,
-                                          this::getLoaneeDao,
-                                          this::getBookIdentifierDao,
-                                          this::getTagDao,
-                                          this::getCalibreDao,
-                                          this::getStripInfoDao,
-                                          this::getFtsDao,
-                                          this::getCoverStorage,
-                                          this::getReorderHelper);
+                bookDao = new BookDaoImpl(getDb(), getSystemLocaleList().get(0)
+                );
             }
         }
         return bookDao;
@@ -586,7 +573,7 @@ public class ServiceLocator {
     public DeletedBooksDao getDeletedBooksDao() {
         synchronized (this) {
             if (deletedBooksDao == null) {
-                deletedBooksDao = new DeletedBooksDaoImpl(getDb(), this::getBookDao);
+                deletedBooksDao = new DeletedBooksDaoImpl(getDb());
             }
         }
         return deletedBooksDao;
@@ -596,9 +583,7 @@ public class ServiceLocator {
     public BookshelfDao getBookshelfDao() {
         synchronized (this) {
             if (bookshelfDao == null) {
-                bookshelfDao = new BookshelfDaoImpl(getDb(),
-                                                    this::getTagDao,
-                                                    this::getStyles);
+                bookshelfDao = new BookshelfDaoImpl(getDb(), this::getStyles);
             }
         }
         return bookshelfDao;
@@ -608,7 +593,7 @@ public class ServiceLocator {
     public CalibreDao getCalibreDao() {
         synchronized (this) {
             if (calibreDao == null) {
-                calibreDao = new CalibreDaoImpl(getDb(), this::getCalibreLibraryDao);
+                calibreDao = new CalibreDaoImpl(getDb());
             }
         }
         return calibreDao;
@@ -618,7 +603,7 @@ public class ServiceLocator {
     public CalibreLibraryDao getCalibreLibraryDao() {
         synchronized (this) {
             if (calibreLibraryDao == null) {
-                calibreLibraryDao = new CalibreLibraryDaoImpl(getDb(), this::getBookshelfDao);
+                calibreLibraryDao = new CalibreLibraryDaoImpl(getDb());
             }
         }
         return calibreLibraryDao;
@@ -658,8 +643,7 @@ public class ServiceLocator {
     public FtsDao getFtsDao() {
         synchronized (this) {
             if (ftsDao == null) {
-                ftsDao = new FtsDaoImpl(getDb(),
-                                        this::getStyles);
+                ftsDao = new FtsDaoImpl(getDb(), this::getStyles);
             }
         }
         return ftsDao;
@@ -695,9 +679,8 @@ public class ServiceLocator {
     public IdentifierValueDao getBookIdentifierDao() {
         synchronized (this) {
             if (bookIdentifierDao == null) {
-                bookIdentifierDao = new IdentifierValueDaoImpl(getDb(),
-                                                               DBDefinitions.TBL_BOOK_IDENTIFIER,
-                                                               DBKey.FK_BOOK);
+                bookIdentifierDao = new IdentifierValueDaoImpl(
+                        getDb(), DBDefinitions.TBL_BOOK_IDENTIFIER, DBKey.FK_BOOK);
             }
         }
         return bookIdentifierDao;
@@ -737,13 +720,7 @@ public class ServiceLocator {
     public MaintenanceDao getMaintenanceDao() {
         synchronized (this) {
             if (maintenanceDao == null) {
-                maintenanceDao = new MaintenanceDaoImpl(getDb(),
-                                                        this::getAuthorDao,
-                                                        this::getSeriesDao,
-                                                        this::getPublisherDao,
-                                                        this::getTocEntryDao,
-                                                        this::getAppLocale,
-                                                        this::getReorderHelper);
+                maintenanceDao = new MaintenanceDaoImpl(getDb());
             }
         }
         return maintenanceDao;
@@ -753,8 +730,7 @@ public class ServiceLocator {
     public PublisherDao getPublisherDao() {
         synchronized (this) {
             if (publisherDao == null) {
-                publisherDao = new PublisherDaoImpl(getDb(),
-                                                    this::getReorderHelper);
+                publisherDao = new PublisherDaoImpl(getDb());
             }
         }
         return publisherDao;
@@ -764,8 +740,7 @@ public class ServiceLocator {
     public SeriesDao getSeriesDao() {
         synchronized (this) {
             if (seriesDao == null) {
-                seriesDao = new SeriesDaoImpl(getDb(),
-                                              this::getReorderHelper);
+                seriesDao = new SeriesDaoImpl(getDb());
             }
         }
         return seriesDao;
@@ -782,7 +757,7 @@ public class ServiceLocator {
     }
 
     /**
-     * You probably want to use {@link #getStyles()} instead.
+     * private; You probably want to use {@link #getStyles()} instead.
      *
      * @return singleton
      */
@@ -797,7 +772,7 @@ public class ServiceLocator {
     }
 
     /**
-     * You probably want to use {@link #getLanguages()} instead.
+     * private; You probably want to use {@link #getLanguages()} instead.
      *
      * @return singleton
      */
@@ -815,7 +790,7 @@ public class ServiceLocator {
     public TagDao getTagDao() {
         synchronized (this) {
             if (tagDao == null) {
-                tagDao = new TagDaoImpl(getDb(), this::getBookDao);
+                tagDao = new TagDaoImpl(getDb());
             }
         }
         return tagDao;
@@ -835,10 +810,7 @@ public class ServiceLocator {
     public TocEntryDao getTocEntryDao() {
         synchronized (this) {
             if (tocEntryDao == null) {
-                tocEntryDao = new TocEntryDaoImpl(getDb(),
-                                                  this::getReorderHelper,
-                                                  this::getAuthorDao
-                );
+                tocEntryDao = new TocEntryDaoImpl(getDb());
             }
         }
         return tocEntryDao;
@@ -853,8 +825,7 @@ public class ServiceLocator {
     public CoverCacheDao getCoverCacheDao() {
         synchronized (this) {
             if (coverCacheDao == null) {
-                coverCacheDao = new CoverCacheDaoImpl(getCacheDb(),
-                                                      this::getCoverStorage);
+                coverCacheDao = new CoverCacheDaoImpl(getCacheDb());
             }
         }
         return coverCacheDao;

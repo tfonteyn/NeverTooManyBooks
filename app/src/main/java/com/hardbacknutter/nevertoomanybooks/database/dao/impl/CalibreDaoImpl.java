@@ -26,10 +26,10 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -53,19 +53,13 @@ public class CalibreDaoImpl
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
 
-    @NonNull
-    private final Supplier<CalibreLibraryDao> calibreLibraryDaoSupplier;
-
     /**
      * Constructor.
      *
-     * @param db                        Underlying database
-     * @param calibreLibraryDaoSupplier deferred supplier for the {@link CalibreLibraryDao}
+     * @param db Underlying database
      */
-    public CalibreDaoImpl(@NonNull final SynchronizedDb db,
-                          @NonNull final Supplier<CalibreLibraryDao> calibreLibraryDaoSupplier) {
+    public CalibreDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
-        this.calibreLibraryDaoSupplier = calibreLibraryDaoSupplier;
     }
 
     @Override
@@ -108,7 +102,7 @@ public class CalibreDaoImpl
             }
         }
 
-        final CalibreLibraryDao libraryDao = calibreLibraryDaoSupplier.get();
+        final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
         final CalibreLibrary library;
 
         if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {

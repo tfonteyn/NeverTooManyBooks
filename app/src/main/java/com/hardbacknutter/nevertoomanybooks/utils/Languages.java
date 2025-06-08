@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IsoLanguageDao;
@@ -66,19 +67,14 @@ public class Languages {
     @NonNull
     private final Map<String, String> lang3ToLang2Map;
     @NonNull
-    private final Supplier<AppLocale> appLocaleSupplier;
-    @NonNull
     private final Supplier<IsoLanguageDao> isoLanguageDao;
 
     /**
      * Constructor.
      *
-     * @param appLocaleSupplier deferred supplier for the {@link AppLocale}.
-     * @param isoLanguageDao    deferred supplier for the {@link IsoLanguageDao}.
+     * @param isoLanguageDao deferred supplier for the {@link IsoLanguageDao}.
      */
-    public Languages(@NonNull final Supplier<AppLocale> appLocaleSupplier,
-                     @NonNull final Supplier<IsoLanguageDao> isoLanguageDao) {
-        this.appLocaleSupplier = appLocaleSupplier;
+    public Languages(@NonNull final Supplier<IsoLanguageDao> isoLanguageDao) {
         this.isoLanguageDao = isoLanguageDao;
 
         final String[] languages = Locale.getISOLanguages();
@@ -104,7 +100,7 @@ public class Languages {
         if (language == null || language.isBlank()) {
             return context.getResources().getConfiguration().getLocales().get(0);
         }
-        return appLocaleSupplier.get().getLocale(context, language).orElseGet(
+        return ServiceLocator.getInstance().getAppLocale().getLocale(context, language).orElseGet(
                 () -> context.getResources().getConfiguration().getLocales().get(0));
     }
 
@@ -121,9 +117,9 @@ public class Languages {
     public String getDisplayLanguageFromISO3(@NonNull final Context context,
                                              @NonNull final String iso3) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        return appLocaleSupplier.get().getLocale(context, iso3)
-                                .map(locale -> locale.getDisplayLanguage(userLocale))
-                                .orElse(iso3);
+        return ServiceLocator.getInstance().getAppLocale().getLocale(context, iso3)
+                             .map(locale -> locale.getDisplayLanguage(userLocale))
+                             .orElse(iso3);
     }
 
     /**
@@ -167,7 +163,7 @@ public class Languages {
             return "eng";
         } else {
             try {
-                return getIsoCode(appLocaleSupplier.get().create(code));
+                return getIsoCode(ServiceLocator.getInstance().getAppLocale().create(code));
             } catch (@NonNull final MissingResourceException ignore) {
                 return code;
             }

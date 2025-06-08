@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -66,19 +66,14 @@ public class SeriesDaoImpl
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
-    @NonNull
-    private final Supplier<ReorderHelper> reorderHelperSupplier;
 
     /**
      * Constructor.
      *
      * @param db                    Underlying database
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
      */
-    public SeriesDaoImpl(@NonNull final SynchronizedDb db,
-                         @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
+    public SeriesDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
-        this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
     @NonNull
@@ -99,9 +94,10 @@ public class SeriesDaoImpl
                                        @NonNull final Series series,
                                        @NonNull final Locale locale) {
 
-        final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String title = series.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
+        final String obTitle = ServiceLocator.getInstance()
+                                             .getReorderHelper()
+                                             .reorderForSorting(context, title, locale);
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
                 SqlEncode.orderByColumn(title, locale),
@@ -222,7 +218,7 @@ public class SeriesDaoImpl
         }
 
         if (normalize) {
-            final ReorderHelper reorderHelper = reorderHelperSupplier.get();
+            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             final List<Locale> locales = LocaleListUtils.asList(context);
             list.forEach(series -> {
                 final String title = reorderHelper.reverse(context, series.getTitle(),
@@ -342,9 +338,10 @@ public class SeriesDaoImpl
         // REMINDER: do NOT resolve the locale using series.getLocale!
         // It's explicitly set as a parameter!
 
-        final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String title = series.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, title, locale);
+        final String obTitle = ServiceLocator.getInstance()
+                                             .getReorderHelper()
+                                             .reorderForSorting(context, title, locale);
 
         final long iId;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
@@ -372,9 +369,10 @@ public class SeriesDaoImpl
         // REMINDER: do NOT resolve the locale using series.getLocale!
         // It's explicitly set as a parameter!
 
-        final ReorderHelper reorderHelper = reorderHelperSupplier.get();
         final String text = series.getTitle();
-        final String obTitle = reorderHelper.reorderForSorting(context, text, locale);
+        final String obTitle = ServiceLocator.getInstance()
+                                             .getReorderHelper()
+                                             .reorderForSorting(context, text, locale);
 
         final int rowsAffected;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {

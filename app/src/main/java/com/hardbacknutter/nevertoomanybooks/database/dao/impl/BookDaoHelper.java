@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -53,13 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -84,10 +81,6 @@ public class BookDaoHelper {
     private static final Pattern T = Pattern.compile("T");
 
     @NonNull
-    private final Supplier<CoverStorage> coverStorageSupplier;
-    @NonNull
-    private final Supplier<ReorderHelper> reorderHelperSupplier;
-    @NonNull
     private final Book book;
     private final boolean isNew;
 
@@ -101,19 +94,13 @@ public class BookDaoHelper {
     /**
      * Constructor.
      *
-     * @param context               Current context
-     * @param coverStorageSupplier  deferred supplier for the {@link CoverStorage}
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
-     * @param book                  to process
-     * @param isNew                 flag; whether the book is entirely 'new' or it's an update
+     * @param context Current context
+     * @param book    to process
+     * @param isNew   flag; whether the book is entirely 'new' or it's an update
      */
     public BookDaoHelper(@NonNull final Context context,
-                         @NonNull final Supplier<CoverStorage> coverStorageSupplier,
-                         @NonNull final Supplier<ReorderHelper> reorderHelperSupplier,
                          @NonNull final Book book,
                          final boolean isNew) {
-        this.coverStorageSupplier = coverStorageSupplier;
-        this.reorderHelperSupplier = reorderHelperSupplier;
         this.book = book;
         this.isNew = isNew;
 
@@ -140,8 +127,9 @@ public class BookDaoHelper {
         // Handle TITLE
         if (book.contains(DBKey.TITLE)) {
             final String title = book.getTitle();
-            final String obTitle = reorderHelperSupplier
-                    .get().reorderForSorting(context, title, bookLocale);
+            final String obTitle = ServiceLocator.getInstance()
+                                                 .getReorderHelper()
+                                                 .reorderForSorting(context, title, bookLocale);
 
             book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(obTitle, bookLocale));
         }
@@ -538,10 +526,14 @@ public class BookDaoHelper {
 
                 if (fileSpec.isEmpty()) {
                     // A *present* but empty fileSpec indicates we need to delete the cover
-                    coverStorageSupplier.get().delete(uuid, cIdx);
+                    ServiceLocator.getInstance()
+                                  .getCoverStorage()
+                                  .delete(uuid, cIdx);
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    coverStorageSupplier.get().persist(new File(fileSpec), uuid, cIdx);
+                    ServiceLocator.getInstance()
+                                  .getCoverStorage()
+                                  .persist(new File(fileSpec), uuid, cIdx);
                 }
 
                 book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);

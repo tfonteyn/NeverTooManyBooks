@@ -27,19 +27,15 @@ import androidx.annotation.WorkerThread;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.Logger;
@@ -97,60 +93,30 @@ public class MaintenanceDaoImpl
             UPDATE_ + TBL_TOC_ENTRIES.getName() + _SET_ + DBKey.TITLE_OB + "=?"
             + _WHERE_ + DBKey.PK_ID + "=?";
 
-    @NonNull
-    private final Supplier<AuthorDao> authorDaoSupplier;
-    @NonNull
-    private final Supplier<SeriesDao> seriesDaoSupplier;
-    @NonNull
-    private final Supplier<PublisherDao> publisherDaoSupplier;
-    @NonNull
-    private final Supplier<TocEntryDao> tocEntryDaoSupplier;
-    @NonNull
-    private final Supplier<AppLocale> appLocaleSupplier;
-    @NonNull
-    private final Supplier<ReorderHelper> reorderHelperSupplier;
-
     /**
      * Constructor.
      *
-     * @param db                    Underlying database
-     * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
-     * @param seriesDaoSupplier     deferred supplier for the {@link SeriesDao}
-     * @param publisherDaoSupplier  deferred supplier for the {@link PublisherDao}
-     * @param tocEntryDaoSupplier   deferred supplier for the {@link TocEntryDao}
-     * @param appLocaleSupplier     deferred supplier for the {@link AppLocale}
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
+     * @param db Underlying database
      */
-    public MaintenanceDaoImpl(@NonNull final SynchronizedDb db,
-                              @NonNull final Supplier<AuthorDao> authorDaoSupplier,
-                              @NonNull final Supplier<SeriesDao> seriesDaoSupplier,
-                              @NonNull final Supplier<PublisherDao> publisherDaoSupplier,
-                              @NonNull final Supplier<TocEntryDao> tocEntryDaoSupplier,
-                              @NonNull final Supplier<AppLocale> appLocaleSupplier,
-                              @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
+    public MaintenanceDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
-        this.authorDaoSupplier = authorDaoSupplier;
-        this.seriesDaoSupplier = seriesDaoSupplier;
-        this.publisherDaoSupplier = publisherDaoSupplier;
-        this.tocEntryDaoSupplier = tocEntryDaoSupplier;
-        this.appLocaleSupplier = appLocaleSupplier;
-        this.reorderHelperSupplier = reorderHelperSupplier;
     }
 
     @Override
     @WorkerThread
     public void purge() {
         final Logger logger = LoggerFactory.getLogger();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         //noinspection CheckStyle
         try {
             int i;
-            i = seriesDaoSupplier.get().purge();
+            i = serviceLocator.getSeriesDao().purge();
             logger.w(TAG, "Purged Series: " + i);
-            i = authorDaoSupplier.get().purge();
+            i = serviceLocator.getAuthorDao().purge();
             logger.w(TAG, "Purged Author: " + i);
-            i = publisherDaoSupplier.get().purge();
+            i = serviceLocator.getPublisherDao().purge();
             logger.w(TAG, "Purged Publishers: " + i);
-            i = tocEntryDaoSupplier.get().purge();
+            i = serviceLocator.getTocEntryDao().purge();
             logger.w(TAG, "Purged TocEntries: " + i);
 
             db.analyze();
@@ -173,18 +139,22 @@ public class MaintenanceDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            final AppLocale appLocale = serviceLocator.getAppLocale();
+            final ReorderHelper reorderHelper = serviceLocator.getReorderHelper();
+
             try (Cursor cursor = db.rawQuery(BOOK_TITLES, null);
                  SynchronizedStatement stmt = db.compileStatement(BOOK_REBUILD)) {
                 while (cursor.moveToNext()) {
                     final long id = cursor.getLong(0);
                     final String title = cursor.getString(1);
                     final String currentObTitle = cursor.getString(2);
-                    final Locale bookLocale = appLocaleSupplier
-                            .get()
+
+                    final Locale bookLocale = appLocale
                             .getLocale(context, cursor.getString(3))
                             .orElse(userLocale);
-                    final String rebuildObTitle = reorderHelperSupplier
-                            .get().reorderForSorting(context, title, bookLocale, locales);
+                    final String rebuildObTitle = reorderHelper
+                            .reorderForSorting(context, title, bookLocale, locales);
 
                     // only update the database if actually needed.
                     if (!currentObTitle.equals(rebuildObTitle)) {
@@ -204,8 +174,8 @@ public class MaintenanceDaoImpl
                     final String title = cursor.getString(1);
                     final String currentObTitle = cursor.getString(2);
 
-                    final String rebuildObTitle = reorderHelperSupplier
-                            .get().reorderForSorting(context, title, userLocale, locales);
+                    final String rebuildObTitle = reorderHelper
+                            .reorderForSorting(context, title, userLocale, locales);
 
                     // only update the database if actually needed.
                     if (!currentObTitle.equals(rebuildObTitle)) {
@@ -224,8 +194,8 @@ public class MaintenanceDaoImpl
                     final String title = cursor.getString(1);
                     final String currentObTitle = cursor.getString(2);
 
-                    final String rebuildObTitle = reorderHelperSupplier
-                            .get().reorderForSorting(context, title, userLocale, locales);
+                    final String rebuildObTitle = reorderHelper
+                            .reorderForSorting(context, title, userLocale, locales);
 
                     // only update the database if actually needed.
                     if (!currentObTitle.equals(rebuildObTitle)) {
@@ -245,8 +215,8 @@ public class MaintenanceDaoImpl
                     final String title = cursor.getString(1);
                     final String currentObTitle = cursor.getString(2);
 
-                    final String rebuildObTitle = reorderHelperSupplier
-                            .get().reorderForSorting(context, title, userLocale, locales);
+                    final String rebuildObTitle = reorderHelper
+                            .reorderForSorting(context, title, userLocale, locales);
 
                     // only update the database if actually needed.
                     if (!currentObTitle.equals(rebuildObTitle)) {

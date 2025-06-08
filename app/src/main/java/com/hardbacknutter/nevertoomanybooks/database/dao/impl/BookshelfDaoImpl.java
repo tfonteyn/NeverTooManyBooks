@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
@@ -56,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMergeHelper;
@@ -82,22 +82,17 @@ public class BookshelfDaoImpl
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
     @NonNull
-    private final Supplier<TagDao> tagDaoSupplier;
-    @NonNull
     private final Supplier<StylesHelper> stylesHelperSupplier;
 
     /**
      * Constructor.
      *
      * @param db                   Underlying database
-     * @param tagDaoSupplier       deferred supplier for the {@link TagDao}
      * @param stylesHelperSupplier deferred supplier for the {@link StylesHelper}
      */
     public BookshelfDaoImpl(@NonNull final SynchronizedDb db,
-                            @NonNull final Supplier<TagDao> tagDaoSupplier,
                             @NonNull final Supplier<StylesHelper> stylesHelperSupplier) {
         super(db, TAG);
-        this.tagDaoSupplier = tagDaoSupplier;
         this.stylesHelperSupplier = stylesHelperSupplier;
     }
 
@@ -341,7 +336,9 @@ public class BookshelfDaoImpl
                                                 @NonNull final PFilter<?> filter) {
         // A filter based on tags might contain previously deleted tag ids.
         if (DBKey.FK_TAG.equals(filter.getDBKey())) {
-            final Set<Long> validTagIds = tagDaoSupplier.get().getAll()
+            final Set<Long> validTagIds = ServiceLocator.getInstance()
+                                                        .getTagDao()
+                                                        .getAll()
                                                         .stream()
                                                         .map(Tag::getId)
                                                         .collect(Collectors.toSet());

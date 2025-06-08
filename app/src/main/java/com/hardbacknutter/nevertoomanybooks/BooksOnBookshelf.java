@@ -50,6 +50,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -817,7 +818,7 @@ public class BooksOnBookshelf
     }
 
     private int getOffscreenCacheSize() {
-        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         // Protect against silly values
         return MathUtils.clamp(prefs.getInt(PK_OFFSCREEN_CACHE_SIZE, DEFAULT_OFFSCREEN_CACHE_SIZE),
                                MIN_OFFSCREEN_CACHE_SIZE, MAX_OFFSCREEN_CACHE_SIZE);

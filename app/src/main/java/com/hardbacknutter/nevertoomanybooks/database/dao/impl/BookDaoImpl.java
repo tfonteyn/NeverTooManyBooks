@@ -38,7 +38,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -58,18 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierValueDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -77,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -114,81 +102,17 @@ public class BookDaoImpl
 
     @NonNull
     private final DateParser<LocalDateTime> dateParser;
-    @NonNull
-    private final Supplier<AuthorDao> authorDaoSupplier;
-    @NonNull
-    private final Supplier<SeriesDao> seriesDaoSupplier;
-    @NonNull
-    private final Supplier<PublisherDao> publisherDaoSupplier;
-    @NonNull
-    private final Supplier<BookshelfDao> bookshelfDaoSupplier;
-    @NonNull
-    private final Supplier<TocEntryDao> tocEntryDaoSupplier;
-    @NonNull
-    private final Supplier<LoaneeDao> loaneeDaoDaoSupplier;
-    @NonNull
-    private final Supplier<IdentifierValueDao> identifierDaoSupplier;
-    @NonNull
-    private final Supplier<TagDao> tagDaoSupplier;
-    @NonNull
-    private final Supplier<CalibreDao> calibreDaoSupplier;
-    @NonNull
-    private final Supplier<StripInfoDao> stripInfoDaoSupplier;
-    @NonNull
-    private final Supplier<FtsDao> ftsDaoSupplier;
-    @NonNull
-    private final Supplier<CoverStorage> coverStorageSupplier;
-    @NonNull
-    private final Supplier<ReorderHelper> reorderHelperSupplier;
 
     /**
      * Constructor.
      *
-     * @param db                    Underlying database
-     * @param authorDaoSupplier     deferred supplier for the {@link AuthorDao}
-     * @param seriesDaoSupplier     deferred supplier for the {@link SeriesDao}
-     * @param publisherDaoSupplier  deferred supplier for the {@link PublisherDao}
-     * @param bookshelfDaoSupplier  deferred supplier for the {@link BookshelfDao}
-     * @param tocEntryDaoSupplier   deferred supplier for the {@link TocEntryDao}
-     * @param loaneeDaoDaoSupplier  deferred supplier for the {@link LoaneeDao}
-     * @param identifierDaoSupplier deferred supplier for the {@link IdentifierValueDao}
-     * @param tagDaoSupplier        deferred supplier for the {@link TagDao}
-     * @param calibreDaoSupplier    deferred supplier for the {@link CalibreDao}
-     * @param stripInfoDaoSupplier  deferred supplier for the {@link StripInfoDao}
-     * @param ftsDaoSupplier        deferred supplier for the {@link FtsDao}
-     * @param coverStorageSupplier  deferred supplier for the {@link CoverStorage}
-     * @param reorderHelperSupplier deferred supplier for the {@link ReorderHelper}
+     * @param db           Underlying database
+     * @param systemLocale the system Locale
      */
     public BookDaoImpl(@NonNull final SynchronizedDb db,
-                       @NonNull final Supplier<AuthorDao> authorDaoSupplier,
-                       @NonNull final Supplier<SeriesDao> seriesDaoSupplier,
-                       @NonNull final Supplier<PublisherDao> publisherDaoSupplier,
-                       @NonNull final Supplier<BookshelfDao> bookshelfDaoSupplier,
-                       @NonNull final Supplier<TocEntryDao> tocEntryDaoSupplier,
-                       @NonNull final Supplier<LoaneeDao> loaneeDaoDaoSupplier,
-                       @NonNull final Supplier<IdentifierValueDao> identifierDaoSupplier,
-                       @NonNull final Supplier<TagDao> tagDaoSupplier,
-                       @NonNull final Supplier<CalibreDao> calibreDaoSupplier,
-                       @NonNull final Supplier<StripInfoDao> stripInfoDaoSupplier,
-                       @NonNull final Supplier<FtsDao> ftsDaoSupplier,
-                       @NonNull final Supplier<CoverStorage> coverStorageSupplier,
-                       @NonNull final Supplier<ReorderHelper> reorderHelperSupplier) {
+                       @NonNull final Locale systemLocale) {
         super(db, TAG);
-        dateParser = new ISODateParser(ServiceLocator.getInstance().getSystemLocaleList().get(0));
-
-        this.authorDaoSupplier = authorDaoSupplier;
-        this.seriesDaoSupplier = seriesDaoSupplier;
-        this.publisherDaoSupplier = publisherDaoSupplier;
-        this.bookshelfDaoSupplier = bookshelfDaoSupplier;
-        this.tocEntryDaoSupplier = tocEntryDaoSupplier;
-        this.loaneeDaoDaoSupplier = loaneeDaoDaoSupplier;
-        this.identifierDaoSupplier = identifierDaoSupplier;
-        this.tagDaoSupplier = tagDaoSupplier;
-        this.calibreDaoSupplier = calibreDaoSupplier;
-        this.stripInfoDaoSupplier = stripInfoDaoSupplier;
-        this.ftsDaoSupplier = ftsDaoSupplier;
-        this.coverStorageSupplier = coverStorageSupplier;
-        this.reorderHelperSupplier = reorderHelperSupplier;
+        dateParser = new ISODateParser(systemLocale);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -227,10 +151,7 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,
-                                                                  coverStorageSupplier,
-                                                                  reorderHelperSupplier,
-                                                                  book, true);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, true);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
@@ -286,7 +207,7 @@ public class BookDaoImpl
             insertBookLinks(context, book, flags);
 
             // and populate the search suggestions table
-            ftsDaoSupplier.get().insert(newBookId);
+            ServiceLocator.getInstance().getFtsDao().insert(newBookId);
 
             // lastly we move the covers from the cache dir to their permanent dir/name
             try {
@@ -334,10 +255,7 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context,
-                                                                  coverStorageSupplier,
-                                                                  reorderHelperSupplier,
-                                                                  book, false);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, false);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
@@ -369,7 +287,7 @@ public class BookDaoImpl
 
                 insertBookLinks(context, book, flags);
 
-                ftsDaoSupplier.get().update(book.getId());
+                ServiceLocator.getInstance().getFtsDao().update(book.getId());
 
                 try {
                     bookDaoHelper.persistCovers();
@@ -457,13 +375,14 @@ public class BookDaoImpl
             // Now delete the covers for those actually deleted books.
             // Note that if anything goes wrong here:
             // - the database will be rolled back as expected.
-            // - the already deleted covers will NOT be restored
-            //   automatically. The user can however restore them
-            //   one-by-one if they enabled the undo facility for covers.
+            // - the already deleted covers will NOT be restored automatically.
+            //   The user can however restore them one-by-one
+            //   if they enabled the undo facility for covers.
             // but what could go wrong during a file-delete op... flw... oh well.
+            final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
             actuallyDeleted.forEach(uuid -> {
                 for (int cIdx = 0; cIdx < 2; cIdx++) {
-                    coverStorageSupplier.get().delete(uuid, cIdx);
+                    coverStorage.delete(uuid, cIdx);
                 }
             });
 
@@ -502,18 +421,22 @@ public class BookDaoImpl
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocaleOrUserLocale(context);
 
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
         if (book.contains(Book.BKEY_BOOKSHELF_LIST)) {
             // Bookshelves will be inserted if new, but never updated
-            bookshelfDaoSupplier.get().insertOrUpdate(context,
-                                                      book.getId(),
-                                                      book.getBookshelves());
+            serviceLocator.getBookshelfDao().insertOrUpdate(context,
+                                                            book.getId(),
+                                                            book.getBookshelves());
         }
 
         if (book.contains(Book.BKEY_AUTHOR_LIST)) {
-            authorDaoSupplier.get().insertOrUpdate(context, book.getId(), true,
-                                                   book.getAuthors(),
-                                                   author -> bookLocale);
+            serviceLocator.getAuthorDao().insertOrUpdate(context,
+                                                         book.getId(), true,
+                                                         book.getAuthors(),
+                                                         author -> bookLocale);
         }
+
 
         if (book.contains(Book.BKEY_SERIES_LIST)) {
             final Function<Series, Locale> localeSupplier = item -> {
@@ -523,35 +446,37 @@ public class BookDaoImpl
                     return bookLocale;
                 }
             };
-            seriesDaoSupplier.get().insertOrUpdate(context, book.getId(), true,
-                                                   book.getSeries(),
-                                                   localeSupplier);
+            serviceLocator.getSeriesDao().insertOrUpdate(context,
+                                                         book.getId(), true,
+                                                         book.getSeries(),
+                                                         localeSupplier);
         }
 
         if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
-            publisherDaoSupplier.get().insertOrUpdate(context, book.getId(), true,
-                                                      book.getPublishers(),
-                                                      publisher -> bookLocale);
+            serviceLocator.getPublisherDao().insertOrUpdate(context,
+                                                            book.getId(), true,
+                                                            book.getPublishers(),
+                                                            publisher -> bookLocale);
         }
 
         if (book.contains(Book.BKEY_TOC_LIST)) {
             // TOC entries are two steps away; they can exist in other books
             // Hence we will both insert new entries
             // AND update existing ones as needed.
-            tocEntryDaoSupplier.get().insertOrUpdate(context,
-                                                     book.getId(),
-                                                     book.getToc(),
-                                                     tocEntry -> bookLocale);
+            serviceLocator.getTocEntryDao().insertOrUpdate(context,
+                                                           book.getId(),
+                                                           book.getToc(),
+                                                           tocEntry -> bookLocale);
         }
 
         if (book.contains(Book.BKEY_TAG_LIST)) {
             // These are two steps away; they can exist in other books.
             // We will insert new entries
             // AND update existing ones as needed.
-            tagDaoSupplier.get().insertOrUpdate(context,
-                                                book.getId(),
-                                                book.getTags(),
-                                                tag -> bookLocale);
+            serviceLocator.getTagDao().insertOrUpdate(context,
+                                                      book.getId(),
+                                                      book.getTags(),
+                                                      tag -> bookLocale);
         }
 
         if (book.contains(Book.BKEY_IDENTIFIER_LIST)) {
@@ -560,23 +485,24 @@ public class BookDaoImpl
             // Instead we always work with the String key.
             // We will insert new entries
             // but there is nothing to update as such.
-            identifierDaoSupplier.get().insertOrUpdate(context, book.getId(),
-                                                       book.getIdentifiers());
+            serviceLocator.getBookIdentifierDao().insertOrUpdate(context,
+                                                                 book.getId(),
+                                                                 book.getIdentifiers());
         }
 
         if (book.contains(DBKey.LOANEE_NAME)) {
-            loaneeDaoDaoSupplier.get().setLoanee(book);
+            serviceLocator.getLoaneeDao().setLoanee(book);
         }
 
         // Handle synchronization field.
         if (book.contains(DBKey.CALIBRE.BOOK_UUID)) {
             // Calibre libraries will be inserted if new, but not updated
-            calibreDaoSupplier.get().insertOrUpdate(context, book);
+            serviceLocator.getCalibreDao().insertOrUpdate(context, book);
         }
 
         // Handle synchronization field.
         if (book.getIdentifierValue(Identifier.SID_STRIP_INFO).isPresent()) {
-            stripInfoDaoSupplier.get().insertOrUpdate(book);
+            serviceLocator.getStripInfoDao().insertOrUpdate(book);
         }
     }
 
@@ -596,9 +522,10 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
+            final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
             for (final long bookId : bookIds) {
                 // Bookshelves will be inserted if new, but never updated
-                bookshelfDaoSupplier.get().insertOrUpdate(context, bookId, bookshelves);
+                bookshelfDao.insertOrUpdate(context, bookId, bookshelves);
 
                 touchStmt.bindLong(1, bookId);
                 touchStmt.executeUpdateDelete();

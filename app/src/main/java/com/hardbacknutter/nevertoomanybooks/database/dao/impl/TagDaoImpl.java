@@ -40,11 +40,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoInsertException;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoUpdateException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
@@ -74,19 +74,14 @@ public class TagDaoImpl
 
     private static final String ERROR_INSERT_FROM = "Insert from\n";
     private static final String ERROR_UPDATE_FROM = "Update from\n";
-    @NonNull
-    private final Supplier<BookDao> bookDaoSupplier;
 
     /**
      * Constructor.
      *
-     * @param db              Underlying database
-     * @param bookDaoSupplier deferred supplier for the {@link BookDao}
+     * @param db Underlying database
      */
-    public TagDaoImpl(@NonNull final SynchronizedDb db,
-                      @NonNull final Supplier<BookDao> bookDaoSupplier) {
+    public TagDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
-        this.bookDaoSupplier = bookDaoSupplier;
     }
 
     @NonNull
@@ -458,7 +453,7 @@ public class TagDaoImpl
                                  @NonNull final Locale locale)
             throws DaoInsertException, DaoUpdateException {
 
-        final BookDao bookDao = bookDaoSupplier.get();
+        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         final TagMapper tagMapper = new TagMapper(context);
         final Pattern csvSplitter = Pattern.compile("\\\\,");
 

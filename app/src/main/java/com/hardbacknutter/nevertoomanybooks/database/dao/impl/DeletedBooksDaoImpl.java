@@ -30,15 +30,14 @@ import androidx.core.util.Pair;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DeletedBooksDao;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
@@ -48,19 +47,14 @@ public class DeletedBooksDaoImpl
         implements DeletedBooksDao {
 
     private static final String TAG = "DeletedBooksDaoImpl";
-    @NonNull
-    private final Supplier<BookDao> bookDaoSupplier;
 
     /**
      * Constructor.
      *
-     * @param db              Underlying database
-     * @param bookDaoSupplier deferred supplier for the {@link BookDao}
+     * @param db Underlying database
      */
-    public DeletedBooksDaoImpl(@NonNull final SynchronizedDb db,
-                               @NonNull final Supplier<BookDao> bookDaoSupplier) {
+    public DeletedBooksDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
-        this.bookDaoSupplier = bookDaoSupplier;
     }
 
     @Override
@@ -130,7 +124,7 @@ public class DeletedBooksDaoImpl
                 .stream()
                 .map(record -> record.first)
                 .collect(Collectors.toList());
-        return bookDaoSupplier.get().deleteByUuid(all);
+        return ServiceLocator.getInstance().getBookDao().deleteByUuid(all);
     }
 
     @Override
