@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.ClickableListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
@@ -108,6 +110,8 @@ public class BookHolder
     /** Formatter for showing the page-number field. */
     @Nullable
     private FieldFormatter<String> pagesFormatter;
+    @Nullable
+    private ClickableListFormatter<DataHolder> authorFormatter;
 
     /**
      * Constructor.
@@ -173,6 +177,10 @@ public class BookHolder
                     vb.coverImage0.setOnClickListener(coverHelper::onZoomCover);
                 }
             }
+            if (style.isShowField(FieldVisibility.Screen.List, DBKey.FK_AUTHOR)) {
+                vb.author.setOnClickListener(v -> listener
+                        .onClick(v, getBindingAdapterPosition()));
+            }
         }
     }
 
@@ -183,6 +191,7 @@ public class BookHolder
      */
     @Override
     public void onBind(@NonNull final DataHolder rowData) {
+        final Context context = itemView.getContext();
         if (use == null) {
             // Init once. We do this here because we want to check the rowData (once)
             use = style.getFieldVisibilityKeys(FieldVisibility.Screen.List, false)
@@ -191,6 +200,11 @@ public class BookHolder
                        .filter(key -> rowData.contains(MapDBKey.getDomainName(key)))
                        .collect(Collectors.toSet());
 
+            if (use.contains(DBKey.FK_AUTHOR)) {
+                // private rd, not the methods 'rowData' !
+                authorFormatter = new ClickableListFormatter<>(context, rd ->
+                        rd.getString(DBKey.AUTHOR.FORMATTED_FULL_NAME));
+            }
             if (use.contains(DBKey.PAGES)) {
                 pagesFormatter = new PagesFormatter();
             }
@@ -218,8 +232,8 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.FK_AUTHOR)) {
-            //ENHANCE: maybe add support for real-name
-            showOrHide(vb.author, rowData.getString(DBKey.AUTHOR.FORMATTED_FULL_NAME));
+            //noinspection DataFlowIssue
+            showOrHide(vb.author, authorFormatter.format(context, List.of(rowData)));
         }
 
         if (use.contains(DBKey.FK_SERIES)) {
@@ -339,8 +353,8 @@ public class BookHolder
      * @param text to set
      */
     private void showOrHide(@NonNull final TextView view,
-                            @Nullable final String text) {
-        if (text != null && !text.isEmpty()) {
+                            @Nullable final CharSequence text) {
+        if (text != null && text.length() != 0) {
             view.setText(text);
             view.setVisibility(View.VISIBLE);
         } else {

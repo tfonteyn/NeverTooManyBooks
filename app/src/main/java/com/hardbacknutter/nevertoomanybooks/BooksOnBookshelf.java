@@ -1070,10 +1070,6 @@ public class BooksOnBookshelf
 
     /**
      * User clicked a row.
-     * <ul>
-     *      <li>Book: open the details page.</li>
-     *      <li>Not a book: expand/collapse the section as appropriate.</li>
-     * </ul>
      *
      * @param v               View clicked
      * @param adapterPosition The {@link #adapter} position of the row clicked.
@@ -1089,8 +1085,14 @@ public class BooksOnBookshelf
             return;
         }
 
-        if (rowData.getInt(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
-            // It's a book, open the details page.
+        if (v.getId() == R.id.author) {
+            // User clicked an Author in a Book row, open the AuthorWorks
+            authorWorksLauncher.launch(new AuthorWorksContract.Input(
+                    rowData.getInt(DBKey.FK_AUTHOR),
+                    vm.getBookshelf()));
+
+        } else if (rowData.getInt(DBKey.BL_NODE.GROUP) == BooklistGroup.BOOK) {
+            // User clicked a book, open the details page.
             final long bookId = rowData.getLong(DBKey.FK_BOOK);
             // store the id as the current 'central' book for repositioning after a rebuild
             vm.setSelectedBook(bookId, adapterPosition);
@@ -1109,7 +1111,7 @@ public class BooksOnBookshelf
                 ));
             }
         } else {
-            // it's a level, expand/collapse
+            // User clicked another BooklistGroup, expand/collapse
             final long nodeRowId = rowData.getLong(DBKey.BL_NODE.ROW_ID);
             vm.setNode(nodeRowId, BooklistNode.NextState.Toggle, 1);
             // don't pass the node, we want the list to scroll back to

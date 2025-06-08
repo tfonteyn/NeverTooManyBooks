@@ -4,15 +4,12 @@ Draft notes for next version:
 
 NEW:
 
-- Amazon parsing updated due to site changes
-- #149: click on author names in the book-details and book-content screens to open the author-works
-  screen
-- #150: remember the setting for sorting+filter on the author-works screen
+- #149: click on an author name to open the author-works screen
 - #153: new filters for authors names
 
 FIXES:
 
-- Performance improvements: image loading / memory usage reduced in the booklist
+- Amazon parsing updated due to site changes
 - #146: second fix: it's now again possible to use "Copy if blank" on list-fields.
 - #153: don't overwrite an author picture when doing an update
 - #154: always refresh the author data when coming back to the author-works screen
