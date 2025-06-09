@@ -1,0 +1,12 @@
+NEW:
+- #149: click on an author name to open the author-works screen
+- #153: filters for authors names
+
+FIXES:
+- Amazon parsing updated
+- #146: 2nd fix: it's again possible to use "Copy if blank" on list-fields.
+- #153: don't overwrite author picture when updating
+- #154: refresh author when coming back to the author-works screen
+- #155: Backup was missing the author identifiers. Updating an author was not updating its
+  metadata.
+- #159: CSV import: ratings/prices with a comma dec. sep. failed to import.

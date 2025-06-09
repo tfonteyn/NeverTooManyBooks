@@ -1,21 +1,12 @@
 Draft notes for next version:
 
-### 7.5.0
+### 7.5.1
 
 NEW:
 
-- #149: click on an author name to open the author-works screen
-- #153: new filters for authors names
 
 FIXES:
 
-- Amazon parsing updated due to site changes
-- #146: second fix: it's now again possible to use "Copy if blank" on list-fields.
-- #153: don't overwrite an author picture when doing an update
-- #154: always refresh the author data when coming back to the author-works screen
-- #155: Backup was missing the author identifiers. Importing an existing author was not updating its
-  metadata.
-- #159: CSV import: ratings and prices with a comma decimal separator failed to import.
 
 REMOVED:
 
