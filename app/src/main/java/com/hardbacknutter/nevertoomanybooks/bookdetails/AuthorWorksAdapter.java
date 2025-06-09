@@ -26,7 +26,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
 import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
@@ -231,23 +230,14 @@ public class AuthorWorksAdapter
             super.onBind(work);
             if (work.getBookCount() > 1) {
                 vb.btnType.setContentDescription(multipleBooksStr);
-                vb.btnType.getViewTreeObserver().addOnGlobalLayoutListener(
-                        new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
-                                final BadgeDrawable badgeDrawable = BadgeDrawable
-                                        .create(vb.btnType.getContext());
-                                badgeDrawable.setNumber(work.getBookCount());
-                                badgeDrawable.setVerticalOffset(badgeOffset);
-                                badgeDrawable.setHorizontalOffset(badgeOffset);
-                                BadgeUtils.attachBadgeDrawable(badgeDrawable, vb.btnType,
-                                                               vb.btnTypeLayout);
-
-                                vb.btnType.getViewTreeObserver()
-                                          .removeOnGlobalLayoutListener(this);
-                            }
-                        });
-
+                final BadgeDrawable badgeDrawable = BadgeDrawable.create(vb.btnType.getContext());
+                badgeDrawable.setNumber(work.getBookCount());
+                vb.btnType.post(() -> {
+                    badgeDrawable.setVerticalOffset(badgeOffset);
+                    badgeDrawable.setHorizontalOffset(badgeOffset);
+                    BadgeUtils.attachBadgeDrawable(badgeDrawable, vb.btnType,
+                                                   vb.btnTypeLayout);
+                });
             } else {
                 vb.btnType.setContentDescription(singleBookStr);
             }
