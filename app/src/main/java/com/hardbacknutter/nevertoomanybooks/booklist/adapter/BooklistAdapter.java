@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -92,6 +93,9 @@ public class BooklistAdapter
     /** Shared across all {@link BookHolder}s. */
     @NonNull
     private final RealNumberParser realNumberParser;
+    /** Shared across all {@link BookHolder}s. */
+    @NonNull
+    private final PartialDateParser partialDateParser;
     @NonNull
     private final ScreenLayout layout;
     @NonNull
@@ -131,6 +135,7 @@ public class BooklistAdapter
 
         final List<Locale> locales = LocaleListUtils.asList(context);
         realNumberParser = new RealNumberParser(locales);
+        partialDateParser = new PartialDateParser();
         formatter = new Formatter(context, style, locales);
 
         final Resources res = context.getResources();
@@ -356,7 +361,7 @@ public class BooklistAdapter
                 switch (layout) {
                     case List:
                         holder = new BookHolder(itemView, style, imageViewSize, coverHelper,
-                                                realNumberParser);
+                                                realNumberParser, partialDateParser);
                         break;
                     case Grid:
                         holder = new BookGridHolder(itemView, style, imageViewSize, coverHelper);

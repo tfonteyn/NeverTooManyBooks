@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.MapDBKey;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.bookreadstatus.ReadingProgress;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
-import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
@@ -115,17 +114,19 @@ public class BookHolder
     /**
      * Constructor.
      *
-     * @param itemView         the view specific for this holder
-     * @param style            to use
-     * @param imageViewSize    to use
-     * @param coverHelper      to use
-     * @param realNumberParser the shared parser
+     * @param itemView          the view specific for this holder
+     * @param style             to use
+     * @param imageViewSize     to use
+     * @param coverHelper       to shared helper
+     * @param realNumberParser  the shared parser
+     * @param partialDateParser the shared parser
      */
     BookHolder(@NonNull final View itemView,
                @NonNull final Style style,
                @NonNull final ImageViewSize imageViewSize,
                @NonNull final CoverHelper coverHelper,
-               @NonNull final RealNumberParser realNumberParser) {
+               @NonNull final RealNumberParser realNumberParser,
+               @NonNull final DateParser<PartialDate> partialDateParser) {
         super(itemView);
         vb = BooksonbookshelfRowBookBinding.bind(itemView);
 
@@ -133,7 +134,7 @@ public class BookHolder
 
         this.style = style;
         this.realNumberParser = realNumberParser;
-        this.partialDateParser = new PartialDateParser();
+        this.partialDateParser = partialDateParser;
 
         final Resources res = context.getResources();
         conditionDescriptions = res.getStringArray(R.array.lbl_book_condition);
