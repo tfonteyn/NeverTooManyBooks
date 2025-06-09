@@ -130,7 +130,7 @@ public final class AuthorResolverFactory {
                                             @NonNull final List<String> sidKeys) {
 
         // For reference: these sites don't have their own resolvers,
-        // but always use Bedetheque; so don't add them to any list her.
+        // but always use Bedetheque; so don't add them to any list here.
         // EngineId.LastDodoNl,
         // EngineId.StripInfoBe,
         // EngineId.StripWebBe,
