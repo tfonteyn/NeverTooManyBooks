@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -389,6 +392,7 @@
     <string name="lbl_price_listed">Liste fiyatı</string>
     <string name="lbl_price_paid">Ödenen fiyat</string>
     <string name="lbl_print_run">Baskı çalıştırmak</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Yayınlama</string>
     <string name="lbl_date_published_month">Yayım ayı</string>
     <string name="lbl_date_published_year">Yayım yılı</string>

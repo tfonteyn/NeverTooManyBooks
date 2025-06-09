@@ -383,6 +383,7 @@
     <string name="lbl_price_listed">Listenpreis</string>
     <string name="lbl_price_paid">Bezahlter Preis</string>
     <string name="lbl_print_run">Druckauflage</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Veröffentlichung</string>
     <string name="lbl_date_published_month">Monat der Veröffentlichung</string>
     <string name="lbl_date_published_year">Jahr der Veröffentlichung</string>

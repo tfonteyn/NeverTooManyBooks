@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!--suppress LongLine --><resources>
@@ -129,4 +132,5 @@
     <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
     <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_added_as_single_char">\u2795</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
 </resources>
