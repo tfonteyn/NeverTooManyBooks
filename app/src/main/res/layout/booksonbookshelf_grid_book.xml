@@ -41,12 +41,10 @@
         tools:src="@sample/covers"
         />
 
-    <!-- textIsSelectable="false" as we need to allow clicks on this field. -->
     <TextView
         android:id="@+id/author"
-        style="@style/Field.Generic"
+        style="@style/Field.Author"
         android:maxLines="3"
-        android:textIsSelectable="false"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -42,6 +42,13 @@
         <item name="layout_goneMarginStart">@dimen/field_margin_start</item>
     </style>
 
+    <style name="Field.Author"
+           parent="Base.Field">
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <!-- We want to be able to click on it. -->
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
     <!-- textAppearanceBodyLarge: textSize is 16sp -->
     <style name="Field.BookTitle"
            parent="Base.Field">

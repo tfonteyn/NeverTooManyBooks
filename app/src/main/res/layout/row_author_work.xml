@@ -89,11 +89,9 @@
                 tools:text="(1951)"
                 />
 
-            <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
             <TextView
                 android:id="@+id/author"
-                style="@style/Field.Generic"
-                android:textIsSelectable="false"
+                style="@style/Field.Author"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/title"
