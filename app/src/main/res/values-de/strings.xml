@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -667,7 +664,7 @@
     <string name="option_info_import_books_option_new_only">Importiert nur neue Bücher. Aktualisierungen vorhandener Bücher werden ignoriert.</string>
     <string name="ps_manage_fields">Ausgewählte Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
     <string name="info_rebuild_scheduled">Neuaufbau geplant</string>
-    <string name="menu_search_updates">Suche nach Aktualisierungen</string>
+    <string name="menu_search_updates">Nach Aktualisierungen suchen</string>
     <string name="info_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
     <string name="lbl_citation_type">Zitier-/Freigabeformat</string>
     <string name="lbl_citation_type_default">Ich lese…</string>
