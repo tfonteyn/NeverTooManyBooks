@@ -15,8 +15,7 @@ FIXES:
 - #154: always refresh the author data when coming back to the author-works screen
 - #155: Backup was missing the author identifiers. Importing an existing author was not updating its
   metadata.
-- #159: CSV import: ratings and prices with a comma decimal separator failed to import. In some
-  places the rating was rounded down to a whole number
+- #159: CSV import: ratings and prices with a comma decimal separator failed to import.
 
 REMOVED:
 
