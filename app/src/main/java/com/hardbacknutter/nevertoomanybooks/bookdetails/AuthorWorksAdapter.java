@@ -322,25 +322,29 @@ public class AuthorWorksAdapter
                               ? authorFormatter.format(context, List.of(primaryAuthor))
                               : null);
 
-            if (work.getBookCount() > 1) {
-                vb.btnType.setOnClickListener(anchor -> {
-                    final String titles = work
-                            .getBookTitles(context)
-                            .stream()
-                            .map(bt -> context
-                                    .getString(R.string.list_element,
-                                               bt.getLabel(context, Details.AutoSelect, style)))
-                            .collect(Collectors.joining("\n"));
+            vb.btnType.setOnClickListener(anchor -> {
+                final String titles = work
+                        .getBookTitles(context)
+                        .stream()
+                        .map(bt -> context
+                                .getString(R.string.list_element,
+                                           bt.getLabel(context, Details.AutoSelect, style)))
+                        .collect(Collectors.joining("\n"));
 
+                if (work.getBookCount() > 1) {
                     final String msg = context
                             .getString(R.string.info_story_in_multiple_books,
                                        work.getLabel(context, Details.AutoSelect, style),
                                        titles);
                     InfoPopup.show(anchor, XOFF, YOFF, msg);
-                });
-            } else {
-                vb.btnType.setOnClickListener(null);
-            }
+                } else {
+                    final String msg = context
+                            .getString(R.string.info_story_in_single_book,
+                                       work.getLabel(context, Details.AutoSelect, style),
+                                       titles);
+                    InfoPopup.show(anchor, XOFF, YOFF, msg);
+                }
+            });
         }
     }
 }
