@@ -49,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class ClickableListFormatter<T>
         implements FieldFormatter<List<T>> {
 
+    public static final char LINE_SEPARATOR = '\n';
+
     @NonNull
     private final Function<T, String> textSupplier;
 
@@ -106,8 +108,9 @@ public class ClickableListFormatter<T>
                 builder.append(text);
             }
             // add spacing so tapping is easier (but not after the last row)
+            // This is also essential for the detecting the correct line clicked!
             if (i + 1 != rawValue.size()) {
-                builder.append("\n");
+                builder.append(LINE_SEPARATOR);
             }
 
         }
