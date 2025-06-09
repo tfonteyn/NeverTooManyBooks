@@ -123,6 +123,7 @@
     <string name="lbl_location">Local</string>
     <string name="lbl_moving_data">Movendo dados</string>
     <string name="lbl_price_paid">Preço pago</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Publicação</string>
     <string name="lbl_publisher">Editor</string>
     <string name="lbl_publishers">Editores</string>

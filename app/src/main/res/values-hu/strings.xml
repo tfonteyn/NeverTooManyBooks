@@ -591,6 +591,7 @@
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Azóta módosított könyvek importálása</string>
     <string name="pt_sort_title_reordered">Címek rendezése</string>
     <string name="pt_show_title_reordered">Címek megjelenítése…</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Publikáció</string>
     <string name="lbl_print_run">Példányszám</string>
     <string name="lbl_edition">Kiadás</string>

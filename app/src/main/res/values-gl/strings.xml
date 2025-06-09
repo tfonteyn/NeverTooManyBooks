@@ -537,6 +537,7 @@
     <string name="lbl_original_language">Idioma orixinal</string>
     <string name="lbl_barcode">Código de barras</string>
     <string name="lbl_location">Localización</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Publicación</string>
     <string name="lbl_print_run">Tirada</string>
     <string name="lbl_edition">Edición</string>

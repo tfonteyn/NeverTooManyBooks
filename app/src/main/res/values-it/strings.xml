@@ -390,6 +390,7 @@
     <string name="lbl_price_listed">Prezzo di listino</string>
     <string name="lbl_price_paid">Pagato</string>
     <string name="lbl_print_run">Tiratura</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Pubblicazione</string>
     <string name="lbl_date_published_month">Mese di Pubblicazione</string>
     <string name="lbl_date_published_year">Anno di Pubblicazione</string>

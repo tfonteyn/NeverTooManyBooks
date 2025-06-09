@@ -391,6 +391,7 @@
     <string name="lbl_price_listed">Lijstprijs</string>
     <string name="lbl_price_paid">Betaald</string>
     <string name="lbl_print_run">Oplage</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Uitgave</string>
     <string name="lbl_publisher">Uitgever</string>
     <string name="lbl_publishers">Uitgevers</string>

@@ -307,8 +307,7 @@ public class BookHolder
         }
 
         if (use.contains(DBKey.LOCATION)) {
-            // TODO: maybe add 📍 (U+1F4CD)
-            showOrHide(vb.location, rowData.getString(DBKey.LOCATION));
+            showOrHideLocation(vb.location, rowData.getString(DBKey.LOCATION));
         }
 
         if (use.contains(DBKey.RATING)) {
@@ -422,6 +421,18 @@ public class BookHolder
                                 @StringRes final int symbol) {
         if (text != null && !text.isEmpty()) {
             view.setText(formatDate(view.getContext(), symbol, text));
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
+    }
+
+    private void showOrHideLocation(@NonNull final TextView view,
+                                    @Nullable final String text) {
+        if (text != null && !text.isEmpty()) {
+            view.setText(String.format(locale, a_space_b,
+                                       view.getContext().getString(R.string.lbl_location_symbol),
+                                       text));
             view.setVisibility(View.VISIBLE);
         } else {
             view.setVisibility(View.GONE);

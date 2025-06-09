@@ -391,6 +391,7 @@
     <string name="lbl_price_listed">Liste des prix</string>
     <string name="lbl_price_paid">Payé</string>
     <string name="lbl_print_run">Tirage</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Parution</string>
     <string name="lbl_date_published_month">Mois de parution</string>
     <string name="lbl_date_published_year">Année de parution</string>

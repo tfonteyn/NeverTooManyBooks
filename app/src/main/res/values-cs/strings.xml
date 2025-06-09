@@ -403,6 +403,7 @@
     <string name="lbl_price_listed">Katalogová cena</string>
     <string name="lbl_price_paid">Zaplacená cena</string>
     <string name="lbl_print_run">Náklad</string>
+    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Vydání</string>
     <string name="lbl_date_published_month">Měsíc vydání</string>
     <string name="lbl_date_published_year">Rok vydání</string>
