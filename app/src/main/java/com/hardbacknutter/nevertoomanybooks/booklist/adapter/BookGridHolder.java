@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfGridBookBinding;
@@ -75,13 +74,13 @@ public class BookGridHolder
      * @param itemView      the view specific for this holder
      * @param style         to use
      * @param imageViewSize to use
-     * @param imageLoader   to use
+     * @param coverHelper   to use
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     BookGridHolder(@NonNull final View itemView,
                    @NonNull final Style style,
                    @NonNull final ImageViewSize imageViewSize,
-                   @NonNull final ImageViewLoader imageLoader) {
+                   @NonNull final CoverHelper coverHelper) {
         super(itemView);
         vb = BooksonbookshelfGridBookBinding.bind(itemView);
 
@@ -104,7 +103,7 @@ public class BookGridHolder
         lp.width = imageViewSize.width;
         lp.height = imageViewSize.height;
 
-        coverHelper = new CoverHelper(imageLoader, imageViewSize.width);
+        this.coverHelper = coverHelper;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
             dbgRowIdView = new BookDebugRowIdView(vb.gridCell);

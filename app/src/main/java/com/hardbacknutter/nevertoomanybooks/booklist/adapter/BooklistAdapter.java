@@ -90,12 +90,15 @@ public class BooklistAdapter
     private final Formatter formatter;
 
     /** Shared across all {@link BookHolder}s. */
+    @NonNull
     private final RealNumberParser realNumberParser;
     @NonNull
     private final ScreenLayout layout;
     @NonNull
-    private final ImageViewLoader imageLoader;
     private final ImageViewSize imageViewSize;
+    /** Shared across all {@link BookHolder}s. */
+    @NonNull
+    private final CoverHelper coverHelper;
     @Nullable
     private Booklist booklist;
     /** The 'list of items'. */
@@ -141,8 +144,10 @@ public class BooklistAdapter
             groupRowHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
 
-        // we are going to set the LayoutParams manually: use ImageViewLoader.ApplySizing.None
         imageViewSize = coverScale.getMaxSizeInPixels(context, layout);
+
+        // we are going to set the LayoutParams manually: use ImageViewLoader.ApplySizing.None
+        final ImageViewLoader imageLoader;
         switch (layout) {
             case List: {
                 imageLoader = new ImageViewLoader(ASyncExecutor.IMAGES,
@@ -161,6 +166,8 @@ public class BooklistAdapter
             default:
                 throw new IllegalArgumentException(layout.toString());
         }
+
+        coverHelper = new CoverHelper(imageLoader, imageViewSize.width);
 
         // getItemId returns the rowId
         setHasStableIds(true);
@@ -348,11 +355,11 @@ public class BooklistAdapter
             case BooklistGroup.BOOK:
                 switch (layout) {
                     case List:
-                        holder = new BookHolder(itemView, style, imageViewSize, imageLoader,
+                        holder = new BookHolder(itemView, style, imageViewSize, coverHelper,
                                                 realNumberParser);
                         break;
                     case Grid:
-                        holder = new BookGridHolder(itemView, style, imageViewSize, imageLoader);
+                        holder = new BookGridHolder(itemView, style, imageViewSize, coverHelper);
                         break;
                     default:
                         throw new IllegalArgumentException(layout.toString());
