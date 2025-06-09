@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -80,7 +77,6 @@
     <string name="lbl_publishers">வெளியீட்டாளர்கள்</string>
     <string name="lbl_bookshelf">புத்தக அலமாரி</string>
     <string name="lbl_bookshelves">புத்தக அலமாரிகள்</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">வெளியீடு</string>
     <string name="lbl_print_run">அச்சு ரன்</string>
     <string name="lbl_edition">பதிப்பு</string>
@@ -863,5 +859,4 @@
     <string name="info_identifier_editor"><![CDATA[திருத்துவதற்கு முன் அடையாளங்காட்டிகளில் உள்ள <a href="%1$s">ஆவணத்தைப்</a> படிக்கவும்.]]></string>
     <string name="lbl_date_born">பிறந்தது</string>
     <string name="pt_fetch_author_info">ஆசிரியர் தகவலைப் பெறுங்கள்</string>
-
 </resources>

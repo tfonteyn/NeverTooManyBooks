@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -403,7 +400,6 @@
     <string name="lbl_price_listed">Katalogová cena</string>
     <string name="lbl_price_paid">Zaplacená cena</string>
     <string name="lbl_print_run">Náklad</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
     <string name="lbl_publication">Vydání</string>
     <string name="lbl_date_published_month">Měsíc vydání</string>
     <string name="lbl_date_published_year">Rok vydání</string>
