@@ -84,6 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.ClickableListFormatter;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment;
@@ -299,13 +300,37 @@ public class ShowBookDetailsFragment
                                  @NonNull final MotionEvent event) {
         final android.text.Layout layout = v.getLayout();
         if (layout != null) {
-            final int line = layout.getLineForVertical((int) event.getY());
-            final List<Author> authors = vm.getBook().getAuthors();
-            if (line < authors.size()) {
-                final Author author = authors.get(line);
+            final int y = (int) event.getY() + v.getScrollY();
+            final int line = layout.getLineForVertical(y);
+            final int offset = layout.getOffsetForHorizontal(line, event.getX());
 
+            final char lineSeparator = ClickableListFormatter.LINE_SEPARATOR;
+            final CharSequence text = v.getText();
+
+            // Find start of the Author name
+            int start = offset;
+            while (start > 0 && text.charAt(start - 1) != lineSeparator) {
+                start--;
+            }
+
+            // Find end of the Author name
+            int end = offset;
+            while (end < text.length() && text.charAt(end) != lineSeparator) {
+                end++;
+            }
+
+            // Compute index by counting the number of lineSeparator before 'start'
+            int index = 0;
+            for (int i = 0; i < start; i++) {
+                if (text.charAt(i) == lineSeparator) {
+                    index++;
+                }
+            }
+
+            final List<Author> authors = vm.getBook().getAuthors();
+            if (index < authors.size()) {
                 authorWorksLauncher.launch(new AuthorWorksContract.Input(
-                        author.getId(),
+                        authors.get(index).getId(),
                         aVm.getBookshelf()));
             }
         }
