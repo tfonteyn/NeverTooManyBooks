@@ -390,7 +390,7 @@
     <string name="lbl_price_listed">Precio de lista</string>
     <string name="lbl_price_paid">Pagado</string>
     <string name="lbl_print_run">Ejecución de impresión</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
+    <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">Publicación</string>
     <string name="lbl_date_published_month">Mes de publicación</string>
     <string name="lbl_date_published_year">Año de publicación</string>

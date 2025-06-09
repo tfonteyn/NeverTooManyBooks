@@ -351,7 +351,7 @@
     <string name="lbl_personal_notes">Osobné poznámky</string>
     <string name="lbl_location">Umiestnenie</string>
     <string name="lbl_location_long">Umiestnenie knihy</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
+    <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">Publikácia</string>
     <string name="lbl_print_run">Náklad</string>
     <string name="lbl_edition">Vydanie</string>

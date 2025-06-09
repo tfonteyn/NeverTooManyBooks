@@ -400,7 +400,7 @@
     <string name="lbl_price_listed">Цена по каталогу</string>
     <string name="lbl_price_paid">Уплаченная цена</string>
     <string name="lbl_print_run">Тираж</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
+    <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">публикация</string>
     <string name="lbl_date_published_month">Месяц публикации</string>
     <string name="lbl_date_published_year">Год публикации</string>

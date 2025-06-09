@@ -394,7 +394,7 @@
     <string name="lbl_price_listed">Cena katalogowa</string>
     <string name="lbl_price_paid">Zapłacona cena</string>
     <string name="lbl_print_run">Nakład</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
+    <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">Publikacja</string>
     <string name="lbl_date_published_month">Miesiąc publikacji</string>
     <string name="lbl_date_published_year">Rok publikacji</string>

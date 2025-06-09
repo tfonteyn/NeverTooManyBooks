@@ -192,6 +192,6 @@
     <string name="whichSendApplication">Kopīgot</string>
     <string name="whichViewApplication">Atvērt, izmantojot</string>
     <string name="yes">Jā</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
+    <string name="lbl_location_symbol">\ud83d\udccd</string>
 
 </resources>

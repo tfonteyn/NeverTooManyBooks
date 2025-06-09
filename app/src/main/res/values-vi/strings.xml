@@ -437,7 +437,7 @@
     <string name="lbl_price_listed">Giá niêm yết</string>
     <string name="lbl_price_paid">Giá phải trả</string>
     <string name="lbl_print_run">Số bản in</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
+    <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">Xuất bản</string>
     <string name="lbl_publisher">Nhà xuất bản</string>
     <string name="lbl_publishers">Nhà xuất bản</string>

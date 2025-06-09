@@ -392,7 +392,7 @@
     <string name="lbl_price_listed">Liste fiyatı</string>
     <string name="lbl_price_paid">Ödenen fiyat</string>
     <string name="lbl_print_run">Baskı çalıştırmak</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
+    <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">Yayınlama</string>
     <string name="lbl_date_published_month">Yayım ayı</string>
     <string name="lbl_date_published_year">Yayım yılı</string>

@@ -80,7 +80,7 @@
     <string name="lbl_publishers">வெளியீட்டாளர்கள்</string>
     <string name="lbl_bookshelf">புத்தக அலமாரி</string>
     <string name="lbl_bookshelves">புத்தக அலமாரிகள்</string>
-    <string name="lbl_location_symbol">\\ud83d\\udccd</string>
+    <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">வெளியீடு</string>
     <string name="lbl_print_run">அச்சு ரன்</string>
     <string name="lbl_edition">பதிப்பு</string>
