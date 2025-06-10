@@ -45,10 +45,10 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Parser for dates coming from the database or other sources
  * where we are certain the format is ISO.
- * Negative years are fully supported.
+ * Years can be prefixed with '+' and '-'.
  * <p>
  * In addition, this parser also accept the following, but only with positive 4 digit years.
- * - MMM_YYYY + DD_MMM_YYYY: where MMM is a short or long alpha month string.
+ * - MMM_YYYY and DD_MMM_YYYY: where MMM is a short or long alpha month string.
  * - MM_YYYY: specifically only a numeric 1 or 2 digit month + a 4 digit year
  * <p>
  * The result is always a {@link PartialDate}.
@@ -224,21 +224,31 @@ public class PartialDateParser
      *     <li>Day {@code dd} can be one or two digits; 01..31  or 1..9</li>
      * </ul>
      *
-     * @param dateStr a pattern as above, or {@code null}, or {@code ""}
-     * @param locale  (optional) Locale to try to decode month names.
-     *                If set to {@code null} we'll use {@code Locale.ENGLISH}.
-     * @param isUtc   Set to {@code true} if dates are to be converted from UTC
-     *                to the local timezone.
-     *                Set to {@code false} to use the date is used as-is,
-     *                i.e. in the current timezone.
+     * @param date   a pattern as above, or {@code null}, or {@code ""}
+     * @param locale (optional) Locale to try to decode month names.
+     *               If set to {@code null} we'll use {@code Locale.ENGLISH}.
+     * @param isUtc  Set to {@code true} if dates are to be converted from UTC
+     *               to the local timezone.
+     *               Set to {@code false} to use the date is used as-is,
+     *               i.e. in the current timezone.
      *
      * @return Resulting date if parsed, otherwise {@code Optional.empty()}
      */
     @NonNull
-    public Optional<PartialDate> parse(@Nullable final CharSequence dateStr,
+    public Optional<PartialDate> parse(@Nullable final CharSequence date,
                                        @Nullable final Locale locale,
                                        final boolean isUtc) {
-        if (dateStr == null || dateStr.length() == 0) {
+        if (date == null) {
+            return Optional.empty();
+        }
+
+        // Cut off any leading '+'; easiest to handle
+        String dateStr = date.toString();
+        if (dateStr.startsWith("+")) {
+            dateStr = dateStr.substring(1);
+        }
+
+        if (dateStr.isEmpty()) {
             return Optional.empty();
         }
 
@@ -256,20 +266,24 @@ public class PartialDateParser
         try {
             matcher = PATTERN_YYYY_MM_DD_TIMESTAMP.matcher(dateStr);
             if (matcher.find()) {
-                if (isUtc) {
-                    // full date match with an optional timestamp; simply pass the whole group
+                final int year = Integer.parseInt(matcher.group(1));
+                final int month = Integer.parseInt(matcher.group(2));
+                final int day = Integer.parseInt(matcher.group(3));
+
+                if (isUtc && month > 0 && day > 0) {
+                    // Full date match with an optional timestamp; simply pass the whole group
+                    // Creating the LocalDateTime object will automatically adjust for timezones.
                     localDate = LocalDateTime
                             .parse(SPACE.matcher(matcher.group()).replaceFirst("T"))
                             .atZone(ZoneOffset.UTC)
                             .withZoneSameInstant(ZoneId.systemDefault())
                             .toLocalDate();
-                } else {
-                    // reconstruct using the Y,M,D groups
-                    localDate = LocalDate.of(Integer.parseInt(matcher.group(1)),
-                                             Integer.parseInt(matcher.group(2)),
-                                             Integer.parseInt(matcher.group(3)));
+                    return Optional.of(new PartialDate(localDate));
                 }
-                return Optional.of(new PartialDate(localDate));
+                // We do not requiring timezone adjust OR one of the date values was zero.
+                // Construct directly from the Y,M,D groups.
+                // This allows for 00 months/days.
+                return Optional.of(new PartialDate(year, month, day));
             }
 
             matcher = PATTERN_MM_YYYY.matcher(dateStr);

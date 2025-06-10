@@ -29,11 +29,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PartialDateParserTest {
 
-    private DateParser<PartialDate> parser;
+    private PartialDateParser parser;
 
     @BeforeEach
     void setup() {
@@ -170,5 +171,80 @@ class PartialDateParserTest {
         assertEquals(13, oDayOfMonth.get());
 
         assertEquals("-0019-08-13", partialDate.getIsoString());
+    }
+
+    @Test
+    void parsePlus() {
+        Optional<PartialDate> od;
+        final PartialDate partialDate;
+
+        od = parser.parse("+0019-08-13", Locale.UK);
+        assertTrue(od.isPresent());
+        partialDate = od.get();
+
+        final Optional<Integer> oYear = partialDate.getYear();
+        assertTrue(oYear.isPresent());
+        assertEquals(19, oYear.get());
+
+        final Optional<Month> oMonth = partialDate.getMonth();
+        assertTrue(oMonth.isPresent());
+        assertEquals(Month.AUGUST, oMonth.get());
+
+        final Optional<Integer> oDayOfMonth = partialDate.getDayOfMonth();
+        assertTrue(oDayOfMonth.isPresent());
+        assertEquals(13, oDayOfMonth.get());
+
+        assertEquals("0019-08-13", partialDate.getIsoString());
+
+        od = parser.parse("+2020/09/17");
+        assertTrue(od.isPresent());
+        assertEquals("2020-09-17", od.get().getIsoString());
+    }
+
+    @Test
+    void parseWikidataZeros() {
+        Optional<PartialDate> od;
+        final PartialDate partialDate;
+
+        od = parser.parse("+1964-02-00T00:00:00Z", Locale.UK);
+        assertTrue(od.isPresent());
+        partialDate = od.get();
+
+        final Optional<Integer> oYear = partialDate.getYear();
+        assertTrue(oYear.isPresent());
+        assertEquals(1964, oYear.get());
+
+        final Optional<Month> oMonth = partialDate.getMonth();
+        assertTrue(oMonth.isPresent());
+        assertEquals(Month.FEBRUARY, oMonth.get());
+
+        final Optional<Integer> oDayOfMonth = partialDate.getDayOfMonth();
+        assertFalse(oDayOfMonth.isPresent());
+
+        assertEquals("1964-02", partialDate.getIsoString());
+    }
+
+    @Test
+    void parseWikidataZerosAndUtc() {
+        Optional<PartialDate> od;
+        final PartialDate partialDate;
+
+        // Request utc with zero values, should not crash
+        od = parser.parse("+1964-02-00T00:00:00Z", Locale.UK, true);
+        assertTrue(od.isPresent());
+        partialDate = od.get();
+
+        final Optional<Integer> oYear = partialDate.getYear();
+        assertTrue(oYear.isPresent());
+        assertEquals(1964, oYear.get());
+
+        final Optional<Month> oMonth = partialDate.getMonth();
+        assertTrue(oMonth.isPresent());
+        assertEquals(Month.FEBRUARY, oMonth.get());
+
+        final Optional<Integer> oDayOfMonth = partialDate.getDayOfMonth();
+        assertFalse(oDayOfMonth.isPresent());
+
+        assertEquals("1964-02", partialDate.getIsoString());
     }
 }
