@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryTh
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikiData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Audible;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BL;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
@@ -438,9 +438,9 @@ public class Identifier
                                VIAF.AUTHOR_URL),
                 new Identifier(SID_WIKIDATA, TYPE_STRING,
                                context.getString(R.string.identifier_wikidata),
-                               WikiData.SITE_URL,
-                               WikiData.BOOK_URL,
-                               WikiData.AUTHOR_URL)
+                               WikidataSearchEngine.SITE_URL,
+                               WikidataSearchEngine.BOOK_URL,
+                               WikidataSearchEngine.AUTHOR_URL)
         );
     }
 

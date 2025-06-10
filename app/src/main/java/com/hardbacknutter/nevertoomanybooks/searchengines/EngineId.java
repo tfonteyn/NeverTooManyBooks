@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryTh
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripweb.StripWebSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
@@ -139,7 +140,8 @@ public enum EngineId
     LibraryThing(LibraryThingSearchEngine.class, BuildConfig.ENABLE_LIBRARYTHING),
     OpenLibrary(OpenLibrarySearchEngine.class, true),
     StripInfoBe(StripInfoSearchEngine.class, true),
-    StripWebBe(StripWebSearchEngine.class, true);
+    StripWebBe(StripWebSearchEngine.class, true),
+    Wikidata(WikidataSearchEngine.class, true);
 
     /** {@link Parcelable}. */
     public static final Creator<EngineId> CREATOR = new Creator<>() {

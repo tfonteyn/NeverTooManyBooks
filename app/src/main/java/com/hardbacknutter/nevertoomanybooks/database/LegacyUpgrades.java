@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikiData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
@@ -769,7 +769,7 @@ public final class LegacyUpgrades {
                 stmt.bindString(1, "%s");
                 stmt.bindString(2, Identifier.SID_URI);
                 stmt.executeUpdateDelete();
-                stmt.bindString(1, WikiData.AUTHOR_URL);
+                stmt.bindString(1, WikidataSearchEngine.AUTHOR_URL);
                 stmt.bindString(2, Identifier.SID_WIKIDATA);
                 stmt.executeUpdateDelete();
             }

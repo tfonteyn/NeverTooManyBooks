@@ -67,6 +67,8 @@
             translatable="false">StripInfo</string>
     <string name="site_stripweb_be"
             translatable="false">StripWeb</string>
+    <string name="site_wikidata"
+            translatable="false">WikiData</string>
 
     <!-- Synchronization provider.
      https://calibre-ebook.com -->

@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbAuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryAuthorResolver;
+import com.hardbacknutter.nevertoomanybooks.searchengines.wikidata.WikidataAuthorResolver;
 
 public final class AuthorResolverFactory {
 
@@ -111,6 +112,12 @@ public final class AuthorResolverFactory {
                 }
                 break;
             }
+            case Wikidata: {
+                if (isEnabled(context, engineId)) {
+                    return List.of(WikidataAuthorResolver.create(context, searchEngine));
+                }
+                break;
+            }
         }
         return List.of();
     }
@@ -135,17 +142,18 @@ public final class AuthorResolverFactory {
         // EngineId.StripInfoBe,
         // EngineId.StripWebBe,
 
-        // These Engine/resolvers support searching by name;
-        // so always add them.
+        // These Engine resolvers support searching by name.
+        // Always add them.
         final List<EngineId> searchByName =
                 Stream.of(EngineId.Bedetheque,
                           EngineId.Isfdb,
-                          EngineId.OpenLibrary)
+                          EngineId.OpenLibrary,
+                          EngineId.Wikidata)
                       .filter(engineId -> isEnabled(context, engineId))
                       .collect(Collectors.toList());
 
-        // These Engine/resolvers rely on the SID;
-        // so only add them if we actually have an available SID value.
+        // These Engine resolvers rely on their SID.
+        // Only add them if we actually have an available SID value.
         final List<EngineId> searchBySid =
                 Stream.of(EngineId.DatabazeKnih,
                           EngineId.Dnb,
@@ -158,6 +166,8 @@ public final class AuthorResolverFactory {
                       .collect(Collectors.toList());
 
         return Stream.concat(searchByName.stream(), searchBySid.stream())
+                     .sorted((f1, f2) ->
+                                     f1.getName(context).compareToIgnoreCase(f2.getName(context)))
                      .collect(Collectors.toList());
     }
 
