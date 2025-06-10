@@ -289,7 +289,7 @@ public class ShowBookDetailsFragment
         final TextView authorsView = view.findViewById(R.id.author);
 
         authorsView.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
                 onAuthorClicked((TextView) v, event);
             }
             return true;
