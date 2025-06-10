@@ -23,18 +23,23 @@
     <dimen name="author_detail_picture_width">96dp</dimen>
     <dimen name="author_detail_picture_height">96dp</dimen>
 
+    <style name="Base.Author.Details"
+           parent="Widget.MaterialComponents.TextView">
+        <item name="android:textIsSelectable">true</item>
+    </style>
+
     <style name="Author.Details.Name"
-           parent="">
+           parent="Base.Author.Details">
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
     <style name="Author.Details.Dates"
-           parent="">
+           parent="Base.Author.Details">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
     <style name="Author.Details.Bookshelf"
-           parent="">
+           parent="Base.Author.Details">
         <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
     </style>
 </resources>
