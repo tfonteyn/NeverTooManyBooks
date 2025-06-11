@@ -4,6 +4,7 @@ Draft notes for next version:
 
 NEW:
 
+- #156 Wikidata AuthorResolver
 
 FIXES:
 
@@ -18,19 +19,18 @@ Supported Android versions:
 
 https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
 
-2025-03-31:
+2025-05-31:
 
 | version | %     |     
 |---------|-------|
-| 15.0    | 7.56  |
-| 14.0    | 42.15 |
-| 13.0    | 59.54 |
-| 12.0    | 71.97 |
-| 11.0    | 82.82 |
-| 10.0    | 88.57 |
-| 9.0     | 91.85 |
-| 8.1     | 92.84 |
-| 8.0     | 94.90 |
+| 15.0    | 15.42 |
+| 14.0    | 45.21 |
+| 13.0    | 62.15 |
+| 12.0    | 74.10 |
+| 11.0    | 84.03 |
+| 10.0    | 89.34 |
+| 9.0     | 92.29 |
+| 8.0     | 94.29 |
 
 <hr style="border:1px solid blue;">
 
@@ -135,7 +135,7 @@ Second scenario: from BoB, do an import which changes preferences.
 We force an activity restart, and now the BoB screen status bar is incorrect.
 
 Emulator set to use "no cutout" or a "double cutout"
-Android 14, 13 and 12 work FINE.
+Android 16, 14, 13 and 12 work FINE.
 
 <hr style="border:1px solid red;">
 
