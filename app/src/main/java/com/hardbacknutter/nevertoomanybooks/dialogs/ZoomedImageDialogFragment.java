@@ -105,6 +105,11 @@ public class ZoomedImageDialogFragment
 
         imageView = view.findViewById(R.id.cover_image_0);
         imageView.setOnClickListener(v -> dismiss());
+        // 2025-06-11
+        // BoB/Details: a click on the background always closed the dialog.
+        // AuthorWorks: for some images it did, for others it did not  HUH???
+        // Workaround: set an explicit listener
+        view.findViewById(R.id.background).setOnClickListener(v -> dismiss());
     }
 
     @Override
