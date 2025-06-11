@@ -45,7 +45,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/cloud_download_24px"
-            android:key="goodreads.resolve.authors.openlibrary"
+            android:key="goodreads.resolve.authors.wikidata"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             tools:title="@string/pt_fetch_author_info_using_site_x" />

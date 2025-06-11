@@ -87,8 +87,8 @@ public final class AuthorResolverFactory {
                 if (isEnabled(context, engineId)) {
                     list.add(GoodreadsAuthorResolver.create(context, searchEngine));
                 }
-                if (isEnabled(context, engineId, EngineId.OpenLibrary, false)) {
-                    list.add(OpenLibraryAuthorResolver.create(context, searchEngine));
+                if (isEnabled(context, engineId, EngineId.Wikidata, false)) {
+                    list.add(WikidataAuthorResolver.create(context, searchEngine));
                 }
                 return list;
             }

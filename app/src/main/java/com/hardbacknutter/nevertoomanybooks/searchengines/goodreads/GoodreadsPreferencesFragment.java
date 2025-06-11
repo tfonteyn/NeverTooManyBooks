@@ -38,8 +38,8 @@ public class GoodreadsPreferencesFragment
         setPreferencesFromResource(R.xml.preferences_site_goodreads, rootKey);
 
         //noinspection DataFlowIssue
-        findPreference("goodreads.resolve.authors.openlibrary")
+        findPreference("goodreads.resolve.authors.wikidata")
                 .setTitle(getString(R.string.pt_fetch_author_info_using_site_x,
-                                    getString(R.string.site_open_library)));
+                                    getString(R.string.site_wikidata)));
     }
 }
