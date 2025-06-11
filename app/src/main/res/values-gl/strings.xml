@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -64,7 +61,7 @@
     <string name="httpErrorFileNotFound">Non se puido atopar o ficheiro solicitado.</string>
     <string name="error_invalid_url">Enderezo non válido (URL)</string>
     <string name="error_upgrade_not_supported">Non se pode actualizar desde versións anteriores á %1$s.</string>
-    <string name="error_network_please_connect">Por favor, conecta a internet.</string>
+    <string name="error_network_please_connect">Por favor, conecta a Internet.</string>
     <string name="error_network_failed_try_again">Comproba a conexión e téntao de novo.</string>
     <string name="error_site_authentication_failed">Fallou a autenticación en %1$s</string>
     <string name="error_http_403_site_forbidden">%1$s bloqueou o acceso.</string>
@@ -447,7 +444,7 @@
     <string name="pe_search_result_order_most_recent">Atopado o libro máis recente</string>
     <string name="pe_search_result_order_first_found">Primeiro libro atopado</string>
     <string name="option_toc_list_update_with_main_author">Actualizar autorías</string>
-    <string name="option_auto_updates">Permitir actualizacións automáticas da internet.</string>
+    <string name="option_auto_updates">Permitir actualizacións automáticas da Internet.</string>
     <string name="option_download_set_folder">Establecer o cartafol de descargas</string>
     <string name="option_download_folder">Cartafol de descargas local</string>
     <string name="option_download_ebook_format">Descargar eBook (%1$s)</string>
@@ -569,8 +566,8 @@
     <string name="lbl_date_first_publication_as_single_char">1️⃣</string>
     <string name="lbl_date_first_publication_year">Ano da 1ª publicación</string>
     <string name="lbl_date_first_publication_month">Mes da 1ª publicación</string>
-    <string name="lbl_date_born">Nacido</string>
-    <string name="lbl_date_died">Finado</string>
+    <string name="lbl_date_born">Naceu</string>
+    <string name="lbl_date_died">Finou</string>
     <string name="title_backup_and_export">Copia de seguridade e exportación</string>
     <string name="lbl_export_books_option_all">Todos os libros</string>
     <string name="lbl_export_books_option_since_last_full_backup">Libros novos e actualizados</string>
