@@ -543,6 +543,7 @@
     <string name="lbl_lend_out_to_name">%1$s க்கு கடன் கொடுங்கள்</string>
     <string name="lbl_identifier">அடையாளங்காட்டி</string>
     <string name="lbl_identifiers">அடையாளங்காட்டிகள்</string>
+    <string name="lbl_wikidata_claim_author_id">ஆசிரியர் ஐடிக்கான விக்கிடேட்டா “claim/P” குறியீடு.</string>
     <string name="lbl_year">ஆண்டு</string>
     <string name="lbl_month">மாதம்</string>
     <string name="lbl_day">நாள்</string>

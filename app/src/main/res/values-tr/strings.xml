@@ -461,6 +461,7 @@
     <string name="lbl_websites">Web siteleri</string>
     <string name="bookshelf_my_wishlist">İstek Listesi</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_wikidata_claim_author_id">Yazar kimliği için Vikiveri “claim/P” kodu</string>
     <string name="lbl_year">Yıl</string>
     <string name="list_and">ve</string>
     <string name="brackets">(%1$s)</string>

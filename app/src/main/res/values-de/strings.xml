@@ -18,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -453,6 +455,7 @@
     <string name="lbl_websites">Websites</string>
     <string name="bookshelf_my_wishlist">Wunschzettel</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_wikidata_claim_author_id">Wikidata „claim/P“-Code für die Autoren-ID</string>
     <string name="lbl_year">Jahr</string>
     <string name="list_and">und</string>
     <string name="brackets">(%1$s)</string>

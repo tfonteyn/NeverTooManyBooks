@@ -360,6 +360,7 @@
     <string name="lbl_lend_out_to_name">Požičaná komu %1$s</string>
     <string name="lbl_identifier">Identifikátor</string>
     <string name="lbl_identifiers">Identifikátory</string>
+    <string name="lbl_wikidata_claim_author_id">Kód Wikidata „claim/P“ pre id autora</string>
     <string name="lbl_year">Rok</string>
     <string name="lbl_month">Mesiac</string>
     <string name="lbl_day">Deň</string>

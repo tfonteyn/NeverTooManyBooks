@@ -469,6 +469,7 @@
     <string name="lbl_websites">Веб-сайты</string>
     <string name="bookshelf_my_wishlist">Список желаний</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_wikidata_claim_author_id">Код Викиданных «claim/P» для идентификатора автора</string>
     <string name="lbl_year">Год</string>
     <string name="list_and">и</string>
     <string name="brackets">(%1$s)</string>

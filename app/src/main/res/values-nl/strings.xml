@@ -441,6 +441,7 @@
     <string name="lbl_website_address">Web-adres (URL)</string>
     <string name="lbl_websites">Websites</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_wikidata_claim_author_id">Wikidata “claim/P” code voor de auteur id</string>
     <string name="lbl_year">Jaar</string>
     <string name="list_and">en</string>
     <string name="brackets">(%1$s)</string>

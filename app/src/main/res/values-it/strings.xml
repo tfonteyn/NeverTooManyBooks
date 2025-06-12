@@ -459,6 +459,7 @@
     <string name="lbl_websites">Siti web</string>
     <string name="bookshelf_my_wishlist">Lista dei desideri</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_wikidata_claim_author_id">Codice Wikidata “claim/P” per l\'id dell\'autore</string>
     <string name="lbl_year">Anno</string>
     <string name="list_and">e</string>
     <string name="brackets">(%1$s)</string>

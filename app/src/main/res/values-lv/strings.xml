@@ -193,5 +193,6 @@
     <string name="whichViewApplication">Atvērt, izmantojot</string>
     <string name="yes">Jā</string>
     <string name="lbl_location_symbol">\ud83d\udccd</string>
+    <string name="lbl_wikidata_claim_author_id">Wikidata “claim/P” kods autora id</string>
 
 </resources>

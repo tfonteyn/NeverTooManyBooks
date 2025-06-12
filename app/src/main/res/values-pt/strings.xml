@@ -133,6 +133,7 @@
     <string name="lbl_tab_publication">Publicação</string>
     <string name="lbl_unread">Não lido</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_wikidata_claim_author_id">Código “claim/P” do Wikidata para o id do autor</string>
     <string name="lbl_year">Ano</string>
     <string name="brackets">(%1$s)</string>
     <string name="ellipsize">%1$s…</string>
