@@ -135,12 +135,16 @@ class EditIdentifierDelegate
 
         modelToView();
 
+        // Force lower-case a-z and digits only
         final InputFilter[] filterArray = {
                 new InputFilter.LengthFilter(Identifier.MAX_KEY_LEN),
                 (source, start, end, dest, dstart, dend) -> {
                     if (source != null && !KEY_PATTERN.matcher(source.toString()).matches()) {
+                        // Remove invalid character
+                        // (we could add code to lowercase etc... but this is good enough
                         return "";
                     }
+                    // Return original
                     //noinspection ReturnOfNull
                     return null;
                 }
@@ -248,6 +252,13 @@ class EditIdentifierDelegate
         vb.identifierSiteUrl.setText(currentEdit.getSiteUrl(context));
         vb.identifierBookUri.setText(currentEdit.getBookUri(context).orElse(""));
         vb.identifierAuthorUri.setText(currentEdit.getAuthorUri(context).orElse(""));
+
+        // Remove the "P" prefix for easier editing
+        String wdp = currentEdit.getWikidataClaimAuthorId().orElse("");
+        if (wdp.startsWith("P")) {
+            wdp = wdp.substring(1);
+        }
+        vb.identifierWikidataClaimAuthorId.setText(wdp);
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -258,5 +269,9 @@ class EditIdentifierDelegate
         currentEdit.setSiteUrl(vb.identifierSiteUrl.getText().toString().strip());
         currentEdit.setBookUri(vb.identifierBookUri.getText().toString().strip());
         currentEdit.setAuthorUri(vb.identifierAuthorUri.getText().toString().strip());
+
+        // "P" prefix will be added internally
+        currentEdit.setWikidataClaimAuthorId(
+                vb.identifierWikidataClaimAuthorId.getText().toString().strip());
     }
 }

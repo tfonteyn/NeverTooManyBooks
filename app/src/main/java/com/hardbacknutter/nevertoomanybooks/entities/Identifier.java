@@ -152,6 +152,8 @@ public class Identifier
             return new Identifier[size];
         }
     };
+    /** Wikidata claims prefix. */
+    private static final String P = "P";
 
     @NonNull
     private String key;
@@ -165,6 +167,8 @@ public class Identifier
     private String authorUri;
     private char type;
     private long id;
+    @Nullable
+    private String wikidataClaimAuthorId;
 
     /**
      * Constructor to add unknown Identifiers as found in book searches.
@@ -175,6 +179,7 @@ public class Identifier
         this.key = key;
         this.type = TYPE_STRING;
         this.name = key;
+        this.wikidataClaimAuthorId = null;
         this.siteUrl = null;
         this.bookUri = null;
         this.authorUri = null;
@@ -193,27 +198,31 @@ public class Identifier
      * Constructor for the predefined Identifiers.
      * Will be used when updated app versions bring new and TESTED urls.
      *
-     * @param key       a key(word) for this Identifier. e.g. "oclc"
-     *                  The size is not enforced when importing or coming from a website,
-     *                  but should be {@link #MAX_KEY_LEN} characters max, preferably less.
-     *                  The UI editor does enforce length and lowercase.
-     * @param type      {@link #TYPE_STRING} or {@link #TYPE_LONG}
-     * @param name      a short name
-     * @param siteUrl   url to the main website page
-     * @param bookUri   a url with a {@code %s%} placeholder for the sid,
-     *                  to view a {@code Book} on the site
-     * @param authorUri a url with a {@code %s%} placeholder for the sid,
-     *                  to view an {@code Author} on the site
+     * @param key                   a key(word) for this Identifier. e.g. "oclc"
+     *                              The size is not enforced when importing or coming from
+     *                              a website, but should be {@link #MAX_KEY_LEN} characters
+     *                              max, preferably less.
+     *                              The UI editor does enforce length and lowercase.
+     * @param type                  {@link #TYPE_STRING} or {@link #TYPE_LONG}
+     * @param name                  a short name
+     * @param wikidataClaimAuthorId the "Pxxx" Wikidata claim number for the Author id
+     * @param siteUrl               url to the main website page
+     * @param bookUri               a url with a {@code %s%} placeholder for the sid,
+     *                              to view a {@code Book} on the site
+     * @param authorUri             a url with a {@code %s%} placeholder for the sid,
+     *                              to view an {@code Author} on the site
      */
     public Identifier(@Size(max = MAX_KEY_LEN) @NonNull final String key,
                       final char type,
                       @NonNull final String name,
+                      @Nullable final String wikidataClaimAuthorId,
                       @Nullable final String siteUrl,
                       @Nullable final String bookUri,
                       @Nullable final String authorUri) {
         this.key = key;
         this.type = type;
         this.name = name;
+        this.wikidataClaimAuthorId = wikidataClaimAuthorId;
         this.siteUrl = siteUrl;
         this.bookUri = bookUri;
         this.authorUri = authorUri;
@@ -231,6 +240,7 @@ public class Identifier
         key = rowData.getString(DBKey.IDENTIFIERS.KEY);
         type = rowData.getString(DBKey.IDENTIFIERS.TYPE).charAt(0);
         name = rowData.getString(DBKey.IDENTIFIERS.NAME);
+        wikidataClaimAuthorId = rowData.getString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID);
         siteUrl = rowData.getString(DBKey.IDENTIFIERS.SITE_URL, null);
         bookUri = rowData.getString(DBKey.IDENTIFIERS.BOOK_URI, null);
         authorUri = rowData.getString(DBKey.IDENTIFIERS.AUTHOR_URI, null);
@@ -243,6 +253,7 @@ public class Identifier
         type = (char) in.readInt();
         //noinspection DataFlowIssue
         name = in.readString();
+        wikidataClaimAuthorId = in.readString();
         siteUrl = in.readString();
         bookUri = in.readString();
         authorUri = in.readString();
@@ -266,162 +277,194 @@ public class Identifier
                 // links empty on purpose; created dynamically
                 new Identifier(SID_ASIN, TYPE_STRING,
                                context.getString(R.string.identifier_amazon),
+                               "P4862",
                                null,
                                null,
                                null),
                 new Identifier(SID_AUDIBLE, TYPE_STRING,
                                context.getString(R.string.identifier_audible),
+                               null,
                                Audible.SITE_URL,
                                Audible.BOOK_URL,
                                Audible.AUTHOR_URL),
                 new Identifier(SID_BARNES_AND_NOBLE, TYPE_LONG,
                                context.getString(R.string.identifier_barnesandnoble),
+                               null,
                                BarnesAndNoble.SITE_URL,
                                BarnesAndNoble.BOOK_URL,
                                BarnesAndNoble.AUTHOR_URL),
                 new Identifier(SID_BEDETHEQUE, TYPE_LONG,
                                context.getString(R.string.identifier_bedetheque),
+                               "P5491",
                                BedethequeSearchEngine.SITE_URL,
                                BedethequeSearchEngine.BOOK_URL,
                                BedethequeSearchEngine.AUTHOR_URL),
                 new Identifier(SID_BNF, TYPE_STRING,
                                context.getString(R.string.identifier_bnf),
+                               "P268",
                                BNF.SITE_URL,
                                BNF.BOOK_URL,
                                BNF.AUTHOR_URL),
                 new Identifier(SID_BRITISH_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_british_library),
+                               null,
                                BL.SITE_URL,
                                BL.BOOK_URL,
                                BL.AUTHOR_URL),
                 new Identifier(SID_DATABAZE_KNIH, TYPE_LONG,
                                context.getString(R.string.identifier_databaze_knih),
+                               "P10387",
                                DatabazeKnihSearchEngine.SITE_URL,
                                DatabazeKnihSearchEngine.BOOK_URL,
                                DatabazeKnihSearchEngine.AUTHOR_URL),
                 new Identifier(SID_DNB, TYPE_STRING,
                                context.getString(R.string.identifier_dnb),
+                               "P7902",
                                DnbSearchEngine.SITE_URL,
                                DnbSearchEngine.BOOK_URL,
                                DnbSearchEngine.AUTHOR_URL),
                 new Identifier(SID_DOI, TYPE_STRING,
                                context.getString(R.string.identifier_doi),
+                               null,
                                DOI.SITE_URL,
                                DOI.BOOK_URL,
                                DOI.AUTHOR_URL),
                 new Identifier(SID_DOUBAN, TYPE_LONG,
                                context.getString(R.string.identifier_douban),
+                               "P6441",
                                DoubanSearchEngine.SITE_URL,
                                DoubanSearchEngine.BOOK_URL,
                                DoubanSearchEngine.AUTHOR_URL),
                 new Identifier(SID_FANTLAB, TYPE_LONG,
                                context.getString(R.string.identifier_fantlab),
+                               "P7433",
                                FantLab.SITE_URL,
                                FantLab.BOOK_URL,
                                FantLab.AUTHOR_URL),
                 new Identifier(SID_GOODREADS, TYPE_LONG,
                                context.getString(R.string.identifier_goodreads),
+                               "P2963",
                                GoodreadsSearchEngine.SITE_URL,
                                GoodreadsSearchEngine.BOOK_URL,
                                GoodreadsSearchEngine.AUTHOR_URL),
                 new Identifier(SID_GOOGLE, TYPE_STRING,
                                context.getString(R.string.identifier_google_books),
+                               null,
                                GoogleBooksSearchEngine.SITE_URL,
                                GoogleBooksSearchEngine.BOOK_URL,
                                GoogleBooksSearchEngine.AUTHOR_URL),
                 new Identifier(SID_ISFDB, TYPE_LONG,
                                context.getString(R.string.identifier_isfdb),
+                               "P1233",
                                IsfdbSearchEngine.SITE_URL,
                                IsfdbSearchEngine.BOOK_URL,
                                IsfdbSearchEngine.AUTHOR_URL),
                 new Identifier(SID_ISNI, TYPE_STRING,
                                context.getString(R.string.identifier_isni),
+                               "P213",
                                ISNI.SITE_URL,
                                null,
                                ISNI.AUTHOR_URL),
                 new Identifier(SID_KBNL, TYPE_LONG,
                                context.getString(R.string.identifier_kb_nl),
+                               "P1006",
                                KbNlSearchEngine.SITE_URL,
                                KbNlSearchEngine.BOOK_URL,
                                KbNlSearchEngine.AUTHOR_URL),
                 new Identifier(SID_KBR, TYPE_LONG,
                                context.getString(R.string.identifier_kbr),
+                               "P11249",
                                KBR.SITE_URL,
                                KBR.BOOK_URL,
                                KBR.AUTHOR_URL),
                 new Identifier(SID_LAST_DODO_NL, TYPE_LONG,
                                context.getString(R.string.identifier_lastdodo_nl),
+                               null,
                                LastDodoSearchEngine.SITE_URL,
                                LastDodoSearchEngine.BOOK_URL,
                                LastDodoSearchEngine.AUTHOR_URL),
                 new Identifier(SID_LCCN, TYPE_STRING,
                                context.getString(R.string.identifier_lccn),
+                               "P244",
                                Lccn.SITE_URL,
                                Lccn.BOOK_URL,
                                Lccn.AUTHOR_URL),
                 new Identifier(SID_LIBRARY_THING, TYPE_LONG,
                                context.getString(R.string.identifier_library_thing),
+                               "P7400",
                                LibraryThingSearchEngine.SITE_URL,
                                LibraryThingSearchEngine.BOOK_URL,
                                LibraryThingSearchEngine.AUTHOR_URL),
                 new Identifier(SID_LIBRIS, TYPE_LONG,
                                context.getString(R.string.identifier_libris),
+                               null,
                                LibrisSE.SITE_URL,
                                LibrisSE.BOOK_URL,
                                LibrisSE.AUTHOR_URL),
                 new Identifier(SID_LIBRIS_XL, TYPE_STRING,
                                context.getString(R.string.identifier_libris),
+                               null,
                                LibrisSE.XL_SITE_URL,
                                LibrisSE.XL_BOOK_URL,
                                LibrisSE.XL_AUTHOR_URL),
                 new Identifier(SID_NILF, TYPE_LONG,
                                context.getString(R.string.identifier_nilf),
+                               "P2191",
                                FantaScienza.SITE_URL,
                                FantaScienza.BOOK_URL,
                                FantaScienza.AUTHOR_URL),
                 new Identifier(SID_NOOSFERE, TYPE_LONG,
                                context.getString(R.string.identifier_noosfere),
+                               "P5570",
                                NooSFere.SITE_URL,
                                NooSFere.BOOK_URL,
                                NooSFere.AUTHOR_URL),
                 new Identifier(SID_OCLC, TYPE_LONG,
                                context.getString(R.string.identifier_worldcat),
+                               "P10832",
                                WorldCat.SITE_URL,
                                WorldCat.BOOK_URL,
                                WorldCat.AUTHOR_URL),
                 new Identifier(SID_OPEN_LIBRARY, TYPE_STRING,
                                context.getString(R.string.identifier_open_library),
+                               "P648",
                                OpenLibrarySearchEngine.SITE_URL,
                                OpenLibrarySearchEngine.BOOK_URL,
                                OpenLibrarySearchEngine.AUTHOR_URL),
                 new Identifier(SID_PORBASE, TYPE_LONG,
                                context.getString(R.string.identifier_porbase),
+                               "P1005",
                                Porbase.SITE_URL,
                                Porbase.BOOK_URL,
                                Porbase.AUTHOR_URL),
                 new Identifier(SID_STORYGRAPH, TYPE_STRING,
                                context.getString(R.string.identifier_storygraph),
+                               "P12430",
                                StoryGraph.SITE_URL,
                                StoryGraph.BOOK_URL,
                                StoryGraph.AUTHOR_URL),
                 new Identifier(SID_STRIP_INFO, TYPE_LONG,
                                context.getString(R.string.identifier_stripinfo_be),
+                               null,
                                StripInfoSearchEngine.SITE_URL,
                                StripInfoSearchEngine.BOOK_URL,
                                StripInfoSearchEngine.AUTHOR_URL),
                 new Identifier(SID_STRIPWEB, TYPE_LONG,
                                context.getString(R.string.identifier_stripweb_be),
+                               null,
                                StripWebSearchEngine.SITE_URL,
                                StripWebSearchEngine.BOOK_URL,
                                StripWebSearchEngine.AUTHOR_URL),
                 new Identifier(SID_TERCERA_FUNDACION, TYPE_LONG,
                                context.getString(R.string.identifier_tercerafundacion),
+                               null,
                                TerceraFundacion.SITE_URL,
                                TerceraFundacion.BOOK_URL,
                                TerceraFundacion.AUTHOR_URL),
                 // the bookUrl/authorUrl IS the sid
                 new Identifier(SID_URI, TYPE_STRING,
                                context.getString(R.string.identifier_uri),
+                               null,
                                null,
                                "%s",
                                "%s"),
@@ -430,14 +473,17 @@ public class Identifier
                                context.getString(R.string.identifier_urn),
                                null,
                                null,
+                               null,
                                null),
                 new Identifier(SID_VIAF, TYPE_LONG,
                                context.getString(R.string.identifier_viaf),
+                               "P214",
                                VIAF.SITE_URL,
                                null,
                                VIAF.AUTHOR_URL),
                 new Identifier(SID_WIKIDATA, TYPE_STRING,
                                context.getString(R.string.identifier_wikidata),
+                               null,
                                WikidataSearchEngine.SITE_URL,
                                WikidataSearchEngine.BOOK_URL,
                                WikidataSearchEngine.AUTHOR_URL)
@@ -451,6 +497,7 @@ public class Identifier
         dest.writeString(key);
         dest.writeInt(type);
         dest.writeString(name);
+        dest.writeString(wikidataClaimAuthorId);
         dest.writeString(siteUrl);
         dest.writeString(bookUri);
         dest.writeString(authorUri);
@@ -528,6 +575,27 @@ public class Identifier
                            @Nullable final Details details,
                            @Nullable final Style style) {
         return name;
+    }
+
+    @NonNull
+    public Optional<String> getWikidataClaimAuthorId() {
+        if (wikidataClaimAuthorId != null && !wikidataClaimAuthorId.isEmpty()) {
+            return Optional.of(wikidataClaimAuthorId);
+        }
+        return Optional.empty();
+    }
+
+    public void setWikidataClaimAuthorId(@Nullable final String p) {
+        if (p == null || p.isBlank()) {
+            this.wikidataClaimAuthorId = null;
+        } else {
+            String wdp = p.strip();
+            // add prefix if missing
+            if (!wdp.startsWith(P)) {
+                wdp = P + wdp;
+            }
+            this.wikidataClaimAuthorId = wdp;
+        }
     }
 
     /**
@@ -609,6 +677,7 @@ public class Identifier
         key = source.key;
         type = source.type;
         name = source.name;
+        wikidataClaimAuthorId = source.wikidataClaimAuthorId;
         siteUrl = source.siteUrl;
         bookUri = source.bookUri;
         authorUri = source.authorUri;
@@ -622,6 +691,7 @@ public class Identifier
                + ", key=`" + key + '`'
                + ", type=`" + type + '`'
                + ", name=`" + name + '`'
+               + ", wikidataClaimAuthorId=`" + wikidataClaimAuthorId + '`'
                + ", siteUrl=`" + siteUrl + '`'
                + ", bookUri=`" + bookUri + '`'
                + ", authorUri=`" + authorUri + '`'
@@ -630,7 +700,8 @@ public class Identifier
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, key, type, name, siteUrl, bookUri, authorUri);
+        return Objects.hash(id, key, type, name, wikidataClaimAuthorId,
+                            siteUrl, bookUri, authorUri);
     }
 
     @Override
@@ -651,6 +722,7 @@ public class Identifier
         return Objects.equals(key, that.key)
                && type == that.type
                && Objects.equals(name, that.name)
+               && Objects.equals(wikidataClaimAuthorId, that.wikidataClaimAuthorId)
                && Objects.equals(siteUrl, that.siteUrl)
                && Objects.equals(bookUri, that.bookUri)
                && Objects.equals(authorUri, that.authorUri);

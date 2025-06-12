@@ -484,6 +484,8 @@ public final class DBKey {
         public static final String TYPE = "type";
         /** A short name; i.e. website name. Not Localized. */
         public static final String NAME = "name";
+        /** The claim, i.e. "P" number for an Author id. */
+        public static final String WIKIDATA_CLAIM_AUTHOR_ID = "wd_p_author_id";
         /** URL to the main page of the site. */
         public static final String SITE_URL = "site_url";
         /**

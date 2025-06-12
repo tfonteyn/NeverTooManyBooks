@@ -112,10 +112,11 @@ public class DBHelper
      * v7.2.0: 39
      * v7.3.0: 40
      * v7.4.0: 41
+     * v7.6.0: 42
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 41;
+    public static final int DATABASE_VERSION = 42;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -579,6 +580,7 @@ public class DBHelper
                     Identifier.SID_DATABAZE_KNIH,
                     Identifier.TYPE_LONG,
                     context.getString(R.string.identifier_databaze_knih),
+                    "P10387",
                     DatabazeKnihSearchEngine.SITE_URL,
                     DatabazeKnihSearchEngine.BOOK_URL,
                     DatabazeKnihSearchEngine.AUTHOR_URL));
@@ -606,6 +608,7 @@ public class DBHelper
                     Identifier.SID_ISNI,
                     Identifier.TYPE_STRING,
                     context.getString(R.string.identifier_isni),
+                    "P213",
                     ISNI.SITE_URL,
                     null,
                     ISNI.AUTHOR_URL));
@@ -613,6 +616,7 @@ public class DBHelper
                     Identifier.SID_STORYGRAPH,
                     Identifier.TYPE_STRING,
                     context.getString(R.string.identifier_storygraph),
+                    "P12430",
                     StoryGraph.SITE_URL,
                     StoryGraph.BOOK_URL,
                     StoryGraph.AUTHOR_URL));
@@ -622,11 +626,13 @@ public class DBHelper
                     context.getString(R.string.identifier_urn),
                     null,
                     null,
+                    null,
                     null));
             addIdentifier(context, db, new Identifier(
                     Identifier.SID_VIAF,
                     Identifier.TYPE_LONG,
                     context.getString(R.string.identifier_viaf),
+                    "P214",
                     VIAF.SITE_URL,
                     null,
                     VIAF.AUTHOR_URL));
@@ -636,6 +642,13 @@ public class DBHelper
                                              DBDefinitions.DOM_AUTHOR_BIRTH_DATE,
                                              DBDefinitions.DOM_AUTHOR_DEATH_DATE,
                                              DBDefinitions.DOM_AUTHOR_PICTURE_UUID);
+        }
+        if (oldVersion < 42) {
+            TBL_IDENTIFIERS.alterTableAddColumns(
+                    db,
+                    DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID);
+
+            updateIdentifierWikiDataAuthorIdClaims(context, db);
         }
 
         // We have to do this here due to some users skipping updates (see github #30)
@@ -651,6 +664,23 @@ public class DBHelper
 
         // Rebuild all triggers
         Triggers.create(db);
+    }
+
+    private void updateIdentifierWikiDataAuthorIdClaims(@NonNull final Context context,
+                                                        @NonNull final SQLiteDatabase db) {
+        try (SQLiteStatement stmt = db.compileStatement(
+                "UPDATE " + TBL_IDENTIFIERS.getName()
+                + " SET " + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
+                + " WHERE " + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
+            Identifier.createInitialList(context)
+                      .stream()
+                      .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
+                      .forEach(identifier -> {
+                          stmt.bindString(1, identifier.getWikidataClaimAuthorId().get());
+                          stmt.bindString(2, identifier.getKey());
+                          stmt.executeUpdateDelete();
+                      });
+        }
     }
 
     private void addIdentifier(@NonNull final Context context,
@@ -676,31 +706,38 @@ public class DBHelper
                 + '(' + DBKey.IDENTIFIERS.KEY
                 + ',' + DBKey.IDENTIFIERS.TYPE
                 + ',' + DBKey.IDENTIFIERS.NAME
+                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
                 + ',' + DBKey.IDENTIFIERS.SITE_URL
                 + ',' + DBKey.IDENTIFIERS.BOOK_URI
                 + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
-                + ") VALUES(?,?,?,?,?,?)")) {
+                + ") VALUES(?,?,?,?,?,?,?)")) {
             stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
             stmt.bindString(2, String.valueOf(identifier.getType()));
             stmt.bindString(3, identifier.getName());
 
-            final String siteUrl = identifier.getSiteUrl(context);
-            if (siteUrl == null) {
+            final String wdc = identifier.getWikidataClaimAuthorId().orElse(null);
+            if (wdc == null) {
                 stmt.bindNull(4);
             } else {
-                stmt.bindString(4, siteUrl);
+                stmt.bindString(4, wdc);
+            }
+            final String siteUrl = identifier.getSiteUrl(context);
+            if (siteUrl == null) {
+                stmt.bindNull(5);
+            } else {
+                stmt.bindString(5, siteUrl);
             }
             final String bookUrl = identifier.getBookUri(context).orElse(null);
             if (bookUrl == null) {
-                stmt.bindNull(5);
+                stmt.bindNull(6);
             } else {
-                stmt.bindString(5, bookUrl);
+                stmt.bindString(6, bookUrl);
             }
             final String authorUrl = identifier.getAuthorUri(context).orElse(null);
             if (authorUrl == null) {
-                stmt.bindNull(6);
+                stmt.bindNull(7);
             } else {
-                stmt.bindString(6, authorUrl);
+                stmt.bindString(7, authorUrl);
             }
             stmt.executeInsert();
         }

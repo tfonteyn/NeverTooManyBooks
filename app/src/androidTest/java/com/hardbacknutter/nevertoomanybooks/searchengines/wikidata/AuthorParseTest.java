@@ -87,7 +87,7 @@ public class AuthorParseTest
         assertTrue(author.getTmpPictureFileSpec().orElse("").endsWith("_wikidata_Q42_0_.jpg"));
 
         final List<Identifier.Value> identifiers = author.getIdentifiers();
-        assertEquals(17, identifiers.size());
+        assertEquals(19, identifiers.size());
         assertEquals("Q42", author.getIdentifierValue(Identifier.SID_WIKIDATA).orElse(null));
 
         assertEquals("B000AQ2A84", author.getIdentifierValue(Identifier.SID_ASIN).orElse(null));
@@ -99,10 +99,12 @@ public class AuthorParseTest
         assertEquals("122", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
         assertEquals("0000000080456315",
                      author.getIdentifierValue(Identifier.SID_ISNI).orElse(null));
+        assertEquals("068744307", author.getIdentifierValue(Identifier.SID_KBNL).orElse(null));
         assertEquals("14651562", author.getIdentifierValue(Identifier.SID_KBR).orElse(null));
         assertEquals("n80076765", author.getIdentifierValue(Identifier.SID_LCCN).orElse(null));
         assertEquals("adamsdouglas-1",
                      author.getIdentifierValue(Identifier.SID_LIBRARY_THING).orElse(null));
+        assertEquals("10014", author.getIdentifierValue(Identifier.SID_NILF).orElse(null));
         assertEquals("143", author.getIdentifierValue(Identifier.SID_NOOSFERE).orElse(null));
         assertEquals("E39PBJxhkQGbbdgtx94vJRmrv3",
                      author.getIdentifierValue(Identifier.SID_OCLC).orElse(null));
@@ -130,7 +132,7 @@ public class AuthorParseTest
         assertTrue(author.getTmpPictureFileSpec().orElse("").endsWith("_wikidata_Q34981_0_.jpg"));
 
         final List<Identifier.Value> identifiers = author.getIdentifiers();
-        assertEquals(18, identifiers.size());
+        assertEquals(20, identifiers.size());
         assertEquals("Q34981", author.getIdentifierValue(Identifier.SID_WIKIDATA).orElse(null));
 
         assertEquals("46170", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
@@ -143,10 +145,12 @@ public class AuthorParseTest
         assertEquals("5", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
         assertEquals("0000000122590564",
                      author.getIdentifierValue(Identifier.SID_ISNI).orElse(null));
+        assertEquals("068561504", author.getIdentifierValue(Identifier.SID_KBNL).orElse(null));
         assertEquals("14589377", author.getIdentifierValue(Identifier.SID_KBR).orElse(null));
         assertEquals("n80126289", author.getIdentifierValue(Identifier.SID_LCCN).orElse(null));
         assertEquals("asimovisaac",
                      author.getIdentifierValue(Identifier.SID_LIBRARY_THING).orElse(null));
+        assertEquals("10133", author.getIdentifierValue(Identifier.SID_NILF).orElse(null));
         assertEquals("16", author.getIdentifierValue(Identifier.SID_NOOSFERE).orElse(null));
         assertEquals("E39PBJbWxdkyxFMBK6D7rM4jG3",
                      author.getIdentifierValue(Identifier.SID_OCLC).orElse(null));

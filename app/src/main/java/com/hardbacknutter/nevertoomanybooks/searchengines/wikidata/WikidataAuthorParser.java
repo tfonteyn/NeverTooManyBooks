@@ -29,9 +29,9 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -69,38 +69,13 @@ class WikidataAuthorParser {
 
     private static final String CHARSET = "UTF-8";
 
-    private static final Map<String, String> SIDS = Map.ofEntries(
-            Map.entry("P4862", Identifier.SID_ASIN),
-            Map.entry("P5491", Identifier.SID_BEDETHEQUE),
-            Map.entry("P268", Identifier.SID_BNF),
-            Map.entry("P10387", Identifier.SID_DATABAZE_KNIH),
-            Map.entry("P7902", Identifier.SID_DNB),
-            Map.entry("P6441", Identifier.SID_DOUBAN),
-            Map.entry("P7433", Identifier.SID_FANTLAB),
-            Map.entry("P2963", Identifier.SID_GOODREADS),
-            Map.entry("P1233", Identifier.SID_ISFDB),
-            Map.entry("P213", Identifier.SID_ISNI),
-            Map.entry("P11249", Identifier.SID_KBR),
-            Map.entry("P244", Identifier.SID_LCCN),
-            Map.entry("P7400", Identifier.SID_LIBRARY_THING),
-            Map.entry("P5570", Identifier.SID_NOOSFERE),
-            Map.entry("P10832", Identifier.SID_OCLC),
-            Map.entry("P648", Identifier.SID_OPEN_LIBRARY),
-            Map.entry("P1005", Identifier.SID_PORBASE),
-            Map.entry("P12430", Identifier.SID_STORYGRAPH),
-            Map.entry("P214", Identifier.SID_VIAF)
-    );
-
-    private static final String P_FAMILY_NAME = "P734";
-    private static final String P_GIVEN_NAME = "P735";
     private static final String P_IMAGE = "P18";
     private static final String P_BIRTH_DATE = "P569";
     private static final String P_DEATH_DATE = "P570";
 
-    private static final String ENTITY_URL =
-            "https://www.wikidata.org/wiki/Special:EntityData/%1$s.json";
-
     /**
+     * Get size information for the image before download.
+     * <p>
      * Param 1: filename.
      */
     private static final String IMAGE_INFO =
@@ -115,9 +90,10 @@ class WikidataAuthorParser {
      * Plucked out of thin air. Any size smaller, get original image, otherwise thumbnail image.
      */
     private static final int IMAGE_SIZE_THRESHOLD = 5_000_000;
-    /** Th default width we request for thumbnails. Arbitrary value. **/
+    /** The default width we request for thumbnails. Arbitrary value. **/
     private static final int THUMB_WIDTH = 200;
     /**
+     * Download the thumb sized image.
      * Param 1: filename.
      * Param 2: width
      */
@@ -174,11 +150,16 @@ class WikidataAuthorParser {
         parseDate(claims, P_DEATH_DATE).map(PartialDate::getIsoString)
                                        .ifPresent(author::setDeathDate);
 
-        SIDS.entrySet()
-            .stream()
-            .map(pi -> parseSid(claims, pi.getKey(), pi.getValue()))
-            .flatMap(Optional::stream)
-            .forEach(v -> author.setIdentifierValue(v.getKey(), v.getSid()));
+        ServiceLocator.getInstance()
+                      .getIdentifierDao()
+                      .getAll()
+                      .stream()
+                      .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
+                      .map(identifier -> parseSid(claims,
+                                                  identifier.getWikidataClaimAuthorId().get(),
+                                                  identifier.getKey()))
+                      .flatMap(Optional::stream)
+                      .forEach(v -> author.setIdentifierValue(v.getKey(), v.getSid()));
 
         parseImage(context, claims).ifPresent(url -> {
             try {
@@ -228,9 +209,9 @@ class WikidataAuthorParser {
         }
 
         String sid = p.getJSONObject(0)
-                            .getJSONObject("mainsnak")
-                            .getJSONObject("datavalue")
-                            .getString("value");
+                      .getJSONObject("mainsnak")
+                      .getJSONObject("datavalue")
+                      .getString("value");
 
         if (Identifier.SID_BNF.equals(sidKey)) {
             // wiki stores it without "cb" prefix, we need it with.

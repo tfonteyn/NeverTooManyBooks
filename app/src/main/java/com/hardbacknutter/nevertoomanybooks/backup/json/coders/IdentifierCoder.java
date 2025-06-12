@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -35,6 +36,11 @@ public class IdentifierCoder
     @NonNull
     private final Context context;
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
     public IdentifierCoder(@NonNull final Context context) {
         this.context = context;
     }
@@ -48,7 +54,9 @@ public class IdentifierCoder
         out.put(DBKey.IDENTIFIERS.KEY, identifier.getKey());
         out.put(DBKey.IDENTIFIERS.TYPE, String.valueOf(identifier.getType()));
         out.put(DBKey.IDENTIFIERS.NAME, identifier.getName());
-        // null urls will be discarded
+        // nulls will be discarded
+        out.put(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, identifier.getWikidataClaimAuthorId());
+        // nulls will be discarded
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl(context));
         out.put(DBKey.IDENTIFIERS.BOOK_URI, identifier.getBookUri(context).orElse(null));
         out.put(DBKey.IDENTIFIERS.AUTHOR_URI, identifier.getAuthorUri(context).orElse(null));
@@ -62,12 +70,18 @@ public class IdentifierCoder
         final String key = data.getString(DBKey.IDENTIFIERS.KEY);
         final char type = data.getString(DBKey.IDENTIFIERS.TYPE).charAt(0);
         final String name = data.getString(DBKey.IDENTIFIERS.NAME);
-        // nulls allowed
+        @Nullable
+        final String wikidataClaimAuthorId =
+                data.optString(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, null);
+        @Nullable
         final String siteUrl = data.optString(DBKey.IDENTIFIERS.SITE_URL, null);
+        @Nullable
         final String bookUrl = data.optString(DBKey.IDENTIFIERS.BOOK_URI, null);
+        @Nullable
         final String authorUrl = data.optString(DBKey.IDENTIFIERS.AUTHOR_URI, null);
 
-        final Identifier identifier = new Identifier(key, type, name, siteUrl, bookUrl, authorUrl);
+        final Identifier identifier = new Identifier(key, type, name, wikidataClaimAuthorId,
+                                                     siteUrl, bookUrl, authorUrl);
         identifier.setId(data.getLong(DBKey.PK_ID));
         return identifier;
     }

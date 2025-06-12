@@ -130,9 +130,10 @@ public class IdentifierDaoImpl
         stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindString(2, String.valueOf(identifier.getType()));
         stmt.bindString(3, identifier.getName());
-        stmt.bindString(4, identifier.getSiteUrl(context));
-        stmt.bindString(5, identifier.getBookUri(context).orElse(null));
-        stmt.bindString(6, identifier.getAuthorUri(context).orElse(null));
+        stmt.bindString(4, identifier.getWikidataClaimAuthorId().orElse(null));
+        stmt.bindString(5, identifier.getSiteUrl(context));
+        stmt.bindString(6, identifier.getBookUri(context).orElse(null));
+        stmt.bindString(7, identifier.getAuthorUri(context).orElse(null));
         final long iId = stmt.executeInsert();
 
         if (iId != -1) {
@@ -160,11 +161,12 @@ public class IdentifierDaoImpl
         stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
         stmt.bindString(2, String.valueOf(identifier.getType()));
         stmt.bindString(3, identifier.getName());
-        stmt.bindString(4, identifier.getSiteUrl(context));
-        stmt.bindString(5, identifier.getBookUri(context).orElse(null));
-        stmt.bindString(6, identifier.getAuthorUri(context).orElse(null));
+        stmt.bindString(4, identifier.getWikidataClaimAuthorId().orElse(null));
+        stmt.bindString(5, identifier.getSiteUrl(context));
+        stmt.bindString(6, identifier.getBookUri(context).orElse(null));
+        stmt.bindString(7, identifier.getAuthorUri(context).orElse(null));
 
-        stmt.bindLong(7, identifier.getId());
+        stmt.bindLong(8, identifier.getId());
         final int rowsAffected = stmt.executeUpdateDelete();
 
         if (rowsAffected > 0) {
@@ -366,10 +368,11 @@ public class IdentifierDaoImpl
                 + '(' + DBKey.IDENTIFIERS.KEY
                 + ',' + DBKey.IDENTIFIERS.TYPE
                 + ',' + DBKey.IDENTIFIERS.NAME
+                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
                 + ',' + DBKey.IDENTIFIERS.SITE_URL
                 + ',' + DBKey.IDENTIFIERS.BOOK_URI
                 + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
-                + ") VALUES(?,?,?,?,?,?)";
+                + ") VALUES(?,?,?,?,?,?,?)";
 
         /** Update an {@link Identifier}. */
         static final String UPDATE =
@@ -377,6 +380,7 @@ public class IdentifierDaoImpl
                 + _SET_ + DBKey.IDENTIFIERS.KEY + "=?"
                 + ',' + DBKey.IDENTIFIERS.TYPE + "=?"
                 + ',' + DBKey.IDENTIFIERS.NAME + "=?"
+                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID + "=?"
                 + ',' + DBKey.IDENTIFIERS.SITE_URL + "=?"
                 + ',' + DBKey.IDENTIFIERS.BOOK_URI + "=?"
                 + ',' + DBKey.IDENTIFIERS.AUTHOR_URI + "=?"
@@ -396,6 +400,8 @@ public class IdentifierDaoImpl
                 + DBKey.IDENTIFIERS.KEY + "=excluded." + DBKey.IDENTIFIERS.KEY
                 + ',' + DBKey.IDENTIFIERS.TYPE + "=excluded." + DBKey.IDENTIFIERS.TYPE
                 + ',' + DBKey.IDENTIFIERS.NAME + "=excluded." + DBKey.IDENTIFIERS.NAME
+                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
+                + "=excluded." + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
                 + ',' + DBKey.IDENTIFIERS.SITE_URL + "=excluded." + DBKey.IDENTIFIERS.SITE_URL
                 + ',' + DBKey.IDENTIFIERS.BOOK_URI + "=excluded." + DBKey.IDENTIFIERS.BOOK_URI
                 + ',' + DBKey.IDENTIFIERS.AUTHOR_URI + "=excluded." + DBKey.IDENTIFIERS.AUTHOR_URI;
@@ -405,6 +411,7 @@ public class IdentifierDaoImpl
                                                 DBKey.IDENTIFIERS.KEY,
                                                 DBKey.IDENTIFIERS.TYPE,
                                                 DBKey.IDENTIFIERS.NAME,
+                                                DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID,
                                                 DBKey.IDENTIFIERS.SITE_URL,
                                                 DBKey.IDENTIFIERS.BOOK_URI,
                                                 DBKey.IDENTIFIERS.AUTHOR_URI);

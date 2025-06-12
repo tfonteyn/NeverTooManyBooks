@@ -1281,6 +1281,7 @@
             translatable="false">@string/lbl_identifier</string>
     <string name="lbl_book_uri">Book URL</string>
     <string name="lbl_author_uri">Author URL</string>
+    <string name="lbl_wikidata_claim_author_id">WikiData author ID claim (P…)</string>
 
     <!-- endregion -->
     <!-- region ========== All date related labels. -->

@@ -143,12 +143,31 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_identifier_wikidata_claim_author_id"
+            style="@style/TIL.Text"
+            android:hint="@string/lbl_wikidata_claim_author_id"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_identifier_author_uri"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/identifier_wikidata_claim_author_id"
+                style="@style/TIE.Number"
+                android:maxLength="6"
+                android:imeOptions="actionDone"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/button_panel_layout"
             style="@style/Dialog.ButtonPanel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_identifier_author_uri">
+            app:layout_constraintTop_toBottomOf="@id/lbl_identifier_wikidata_claim_author_id">
 
             <Button
                 android:id="@+id/btn_negative"

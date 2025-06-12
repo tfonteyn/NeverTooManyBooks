@@ -250,6 +250,7 @@ public final class DBDefinitions {
     public static final Domain DOM_IDENTIFIER_KEY;
     public static final Domain DOM_IDENTIFIER_TYPE;
     public static final Domain DOM_IDENTIFIER_NAME;
+    public static final Domain DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID;
     public static final Domain DOM_IDENTIFIER_SITE_URL;
     public static final Domain DOM_IDENTIFIER_BOOK_URI;
     public static final Domain DOM_IDENTIFIER_AUTHOR_URI;
@@ -1110,7 +1111,9 @@ public final class DBDefinitions {
                         .notNull()
                         .localized()
                         .build();
-
+        DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID =
+                new Domain.Builder(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, SqLiteDataType.Text)
+                        .build();
         DOM_IDENTIFIER_SITE_URL =
                 new Domain.Builder(DBKey.IDENTIFIERS.SITE_URL, SqLiteDataType.Text)
                         .build();
@@ -1534,6 +1537,7 @@ public final class DBDefinitions {
                             DOM_IDENTIFIER_KEY,
                             DOM_IDENTIFIER_TYPE,
                             DOM_IDENTIFIER_NAME,
+                            DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID,
                             DOM_IDENTIFIER_SITE_URL,
                             DOM_IDENTIFIER_BOOK_URI,
                             DOM_IDENTIFIER_AUTHOR_URI)
