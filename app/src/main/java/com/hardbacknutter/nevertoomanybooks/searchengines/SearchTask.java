@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 /**
  * Searches a single {@link SearchEngine}.
  */
-public class SearchTask
+public final class SearchTask
         extends LTask<Book> {
 
     /** Log tag. */
@@ -67,6 +67,14 @@ public class SearchTask
     @Nullable
     private SearchCoordinatorCriteria criteria;
 
+    private SearchTask(@NonNull final Context context,
+                       final int taskId,
+                       @NonNull final SearchEngine searchEngine,
+                       @NonNull final TaskListener<Book> taskListener) {
+        super(taskId, TAG + ' ' + searchEngine.getName(context), taskListener);
+        this.searchEngine = searchEngine;
+    }
+
     /**
      * Constructor. Will search according to passed parameters.
      * <ol>
@@ -80,16 +88,16 @@ public class SearchTask
      * @param taskId       a unique task identifier, returned with each message
      * @param searchEngine the search site engine
      * @param taskListener for the results
+     *
+     * @return task
      */
-    SearchTask(@NonNull final Context context,
-               final int taskId,
-               @NonNull final SearchEngine searchEngine,
-               @NonNull final TaskListener<Book> taskListener) {
-        super(taskId, TAG + ' ' + searchEngine.getName(context),
-              taskListener);
-
-        this.searchEngine = searchEngine;
-        this.searchEngine.setCaller(this);
+    static SearchTask createSearchTask(@NonNull final Context context,
+                                       final int taskId,
+                                       @NonNull final SearchEngine searchEngine,
+                                       @NonNull final TaskListener<Book> taskListener) {
+        final SearchTask searchTask = new SearchTask(context, taskId, searchEngine, taskListener);
+        searchEngine.setCaller(searchTask);
+        return searchTask;
     }
 
     @NonNull
