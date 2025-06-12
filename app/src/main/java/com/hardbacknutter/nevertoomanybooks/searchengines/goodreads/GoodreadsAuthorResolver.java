@@ -68,8 +68,6 @@ public final class GoodreadsAuthorResolver
 
     @NonNull
     private final GoodreadsSearchEngine searchEngine;
-    @Nullable
-    private final String authorUri;
     @NonNull
     private final FullDateParser dateParser;
 
@@ -82,13 +80,6 @@ public final class GoodreadsAuthorResolver
     private GoodreadsAuthorResolver(@NonNull final Context context,
                                     @NonNull final GoodreadsSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        // The engine is hardcoded/defined with the identifier,
-        // but the author-uri can be absent
-        authorUri = this.searchEngine
-                .getEngineId()
-                .getIdentifier()
-                .flatMap(identifier -> identifier.getAuthorUri(context))
-                .orElse(null);
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
         dateParser = new FullDateParser(new ISODateParser(systemLocale),
@@ -132,10 +123,6 @@ public final class GoodreadsAuthorResolver
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
-        // the user can delete it...
-        if (authorUri == null) {
-            return false;
-        }
 
         final Optional<String> oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         // no id, give up
@@ -143,7 +130,7 @@ public final class GoodreadsAuthorResolver
             return false;
         }
 
-        final String url = String.format(authorUri, oIv.get());
+        final String url = String.format(GoodreadsSearchEngine.AUTHOR_URL, oIv.get());
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             final Author found = parse(context, document);

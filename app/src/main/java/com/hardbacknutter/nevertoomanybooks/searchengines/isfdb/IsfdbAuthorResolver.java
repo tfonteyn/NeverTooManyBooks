@@ -63,8 +63,6 @@ public final class IsfdbAuthorResolver
 
     @NonNull
     private final IsfdbSearchEngine searchEngine;
-    @Nullable
-    private final String authorUri;
     @NonNull
     private final String authorSearchUrl;
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
@@ -78,13 +76,6 @@ public final class IsfdbAuthorResolver
     private IsfdbAuthorResolver(@NonNull final Context context,
                                 @NonNull final IsfdbSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        // The engine is hardcoded/defined with the identifier,
-        // but the author-uri can be absent
-        authorUri = this.searchEngine
-                .getEngineId()
-                .getIdentifier()
-                .flatMap(identifier -> identifier.getAuthorUri(context))
-                .orElse(null);
 
         authorSearchUrl = this.searchEngine.getHostUrl(context)
                           + "/cgi-bin/se.cgi?arg=%s&type=Name";
@@ -156,10 +147,7 @@ public final class IsfdbAuthorResolver
                                @NonNull final String sid)
             throws SearchException, CredentialsException {
         // the user can delete it...
-        if (authorUri == null) {
-            return null;
-        }
-        final String url = String.format(authorUri, sid);
+        final String url = String.format(IsfdbSearchEngine.AUTHOR_URL, sid);
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             // sanity check, we SHOULD always have a single result page

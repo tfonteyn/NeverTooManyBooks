@@ -63,8 +63,6 @@ public final class OpenLibraryAuthorResolver
 
     @NonNull
     private final OpenLibrarySearchEngine searchEngine;
-    @Nullable
-    private final String authorUri;
     @NonNull
     private final AuthorParser authorParser;
 
@@ -77,14 +75,6 @@ public final class OpenLibraryAuthorResolver
     private OpenLibraryAuthorResolver(@NonNull final Context context,
                                       @NonNull final OpenLibrarySearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        // The engine is hardcoded/defined with the identifier,
-        // but the author-uri can be absent
-        authorUri = this.searchEngine
-                .getEngineId()
-                .getIdentifier()
-                .flatMap(identifier -> identifier.getAuthorUri(context))
-                .orElse(OpenLibrarySearchEngine.AUTHOR_URL);
-
         authorParser = new AuthorParser(context, searchEngine);
     }
 
@@ -166,12 +156,8 @@ public final class OpenLibraryAuthorResolver
     private Author searchBySid(@NonNull final Context context,
                                @NonNull final String sid)
             throws SearchException {
-        // the user can delete it...
-        if (authorUri == null) {
-            return null;
-        }
 
-        final String url = String.format(authorUri, sid) + ".json";
+        final String url = String.format(OpenLibrarySearchEngine.AUTHOR_URL, sid) + ".json";
 
         final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
         try {

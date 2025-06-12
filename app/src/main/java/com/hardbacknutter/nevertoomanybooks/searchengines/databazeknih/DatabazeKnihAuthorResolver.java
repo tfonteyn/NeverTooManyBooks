@@ -74,8 +74,6 @@ public final class DatabazeKnihAuthorResolver
 
     @NonNull
     private final DatabazeKnihSearchEngine searchEngine;
-    @Nullable
-    private final String authorUri;
 
     /**
      * Private Constructor.
@@ -86,13 +84,6 @@ public final class DatabazeKnihAuthorResolver
     private DatabazeKnihAuthorResolver(@NonNull final Context context,
                                        @NonNull final DatabazeKnihSearchEngine searchEngine) {
         this.searchEngine = searchEngine;
-        // The engine is hardcoded/defined with the identifier,
-        // but the author-uri can be absent
-        authorUri = this.searchEngine
-                .getEngineId()
-                .getIdentifier()
-                .flatMap(identifier -> identifier.getAuthorUri(context))
-                .orElse(null);
     }
 
     /**
@@ -162,12 +153,8 @@ public final class DatabazeKnihAuthorResolver
     private Author searchBySid(@NonNull final Context context,
                                @NonNull final String sid)
             throws SearchException, CredentialsException {
-        // the user can delete it...
-        if (authorUri == null) {
-            return null;
-        }
 
-        final String url = String.format(authorUri, sid);
+        final String url = String.format(DatabazeKnihSearchEngine.AUTHOR_URL, sid);
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             return parse(context, document, sid);
