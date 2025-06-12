@@ -648,7 +648,7 @@ public class DBHelper
                     db,
                     DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID);
 
-            updateIdentifierWikiDataAuthorIdClaims(context, db);
+            updateIdentifierWikidataAuthorIdClaims(context, db);
         }
 
         // We have to do this here due to some users skipping updates (see github #30)
@@ -666,7 +666,7 @@ public class DBHelper
         Triggers.create(db);
     }
 
-    private void updateIdentifierWikiDataAuthorIdClaims(@NonNull final Context context,
+    private void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
                                                         @NonNull final SQLiteDatabase db) {
         try (SQLiteStatement stmt = db.compileStatement(
                 "UPDATE " + TBL_IDENTIFIERS.getName()
