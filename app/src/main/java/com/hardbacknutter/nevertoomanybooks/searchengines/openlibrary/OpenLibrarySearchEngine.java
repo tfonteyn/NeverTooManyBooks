@@ -598,6 +598,8 @@ public class OpenLibrarySearchEngine
 
         // "authors" contains structured Author data
         a = document.optJSONArray("authors");
+        // 2025-06-12: yes, OL can deliver a correct book with isbn, title, and all
+        // sorts of other info, but blatantly not include the author(s). Sigh...
         if (a != null && !a.isEmpty()) {
             parseAuthors(context, a, book);
         }
