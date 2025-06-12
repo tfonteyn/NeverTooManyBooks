@@ -1185,7 +1185,7 @@ public class IsfdbSearchEngine
                         }
                         case "Author:":
                         case "Authors:": {
-                            parseAuthors(li, Author.TYPE_UNKNOWN, book);
+                            parseAuthors(context, li, Author.TYPE_UNKNOWN, book);
                             break;
                         }
                         case "Date:": {
@@ -1229,7 +1229,7 @@ public class IsfdbSearchEngine
                             break;
                         }
                         case "Cover:": {
-                            parseAuthors(li, Author.TYPE_COVER_ARTIST, book);
+                            parseAuthors(context, li, Author.TYPE_COVER_ARTIST, book);
                             break;
                         }
                         case "External IDs:": {
@@ -1239,7 +1239,7 @@ public class IsfdbSearchEngine
                         }
                         case "Editor:":
                         case "Editors:": {
-                            parseAuthors(li, Author.TYPE_EDITOR, book);
+                            parseAuthors(context, li, Author.TYPE_EDITOR, book);
                             break;
                         }
 
@@ -1434,11 +1434,20 @@ public class IsfdbSearchEngine
         }
     }
 
-    private void parseAuthors(@NonNull final Element li,
+    private void parseAuthors(@NonNull final Context context,
+                              @NonNull final Element li,
                               @Author.Type final int type,
                               @NonNull final Book book) {
         for (final Element a : li.select("a[href*=/ea.cgi]")) {
-            final Author author = Author.from(a.text());
+            final String text = a.text();
+
+            final Author author;
+            // Replace their hardcoded 'unknown' with ours
+            if ("unknown".equals(text)) {
+                author = Author.createUnknownAuthor(context);
+            } else {
+                author = Author.from(text);
+            }
 
             final String url = a.attr("href");
             final Matcher matcher = AUTHOR_ID.matcher(url);
