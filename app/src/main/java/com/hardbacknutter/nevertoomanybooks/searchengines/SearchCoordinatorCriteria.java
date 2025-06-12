@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,12 +111,14 @@ public class SearchCoordinatorCriteria {
     /**
      * Simple concatenation of all the values into a single String.
      *
+     * Used by {@link SearchEngine.ByText}.
+     *
      * @param delimiter to use
      *
      * @return a StringJoiner ready to concat more options to
      */
     @NonNull
-    public StringJoiner concat(@NonNull final String delimiter) {
+    public StringJoiner concatTextCriteria(@NonNull final String delimiter) {
         final StringJoiner words = new StringJoiner(delimiter);
 
         if (!title.isEmpty()) {

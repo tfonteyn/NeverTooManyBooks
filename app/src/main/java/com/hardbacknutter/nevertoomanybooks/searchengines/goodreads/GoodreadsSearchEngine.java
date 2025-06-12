@@ -202,7 +202,7 @@ public class GoodreadsSearchEngine
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
         // Searches are just a string of 'words', we can simply concatenate all available options.
-        final StringJoiner words = criteria.concat(" ");
+        final StringJoiner words = criteria.concatTextCriteria(" ");
         if (code != null && !code.isEmpty()) {
             words.add(code);
         }
