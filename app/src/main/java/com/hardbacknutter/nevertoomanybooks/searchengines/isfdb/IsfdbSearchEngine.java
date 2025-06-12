@@ -161,6 +161,15 @@ public class IsfdbSearchEngine
                                                         + "&C=AND";
 
     /**
+     * JSoup selector to detect whether a login will be needed.
+     *
+     * @see #CGI_ADV_SEARCH_PREFIX
+     */
+    private static final String RESTRICTED_TO_REGISTERED_USERS =
+            "h3:contains(For performance reasons, Advanced Searches are"
+            + " currently restricted to registered users.)";
+
+    /**
      * Search by SID.
      * Param 1: external book ID.
      */
@@ -643,10 +652,9 @@ public class IsfdbSearchEngine
                        @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getHostUrl(context) + CGI_ADV_SEARCH_PREFIX;
-
         int index = 0;
-        final StringJoiner args = new StringJoiner("", url, "")
+        final StringJoiner url = new StringJoiner("", getHostUrl(context)
+                                                      + CGI_ADV_SEARCH_PREFIX, "")
                 .setEmptyValue("");
         final Book book = new Book();
 
@@ -654,37 +662,37 @@ public class IsfdbSearchEngine
         try {
             if (isbn != null && !isbn.isEmpty()) {
                 index++;
-                args.add(String.format(USE, index, "pub_isbn",
-                                       URLEncoder.encode(isbn, CHARSET_ENCODE_URL)));
+                url.add(String.format(USE, index, "pub_isbn",
+                                      URLEncoder.encode(isbn, CHARSET_ENCODE_URL)));
             }
 
             final String title = criteria.getTitle();
             if (!title.isEmpty()) {
                 index++;
-                args.add(String.format(USE, index, "pub_title",
-                                       URLEncoder.encode(title, CHARSET_ENCODE_URL)));
+                url.add(String.format(USE, index, "pub_title",
+                                      URLEncoder.encode(title, CHARSET_ENCODE_URL)));
             }
 
             final String author = criteria.getAuthor();
             if (!author.isEmpty()) {
                 index++;
-                args.add(String.format(USE, index, "author_canonical",
-                                       URLEncoder.encode(author, CHARSET_ENCODE_URL)));
+                url.add(String.format(USE, index, "author_canonical",
+                                      URLEncoder.encode(author, CHARSET_ENCODE_URL)));
             }
 
             final String publisher = criteria.getPublisher();
             if (!publisher.isEmpty()) {
                 index++;
-                args.add(String.format(USE, index, "pub_publisher",
-                                       URLEncoder.encode(publisher, CHARSET_ENCODE_URL)));
+                url.add(String.format(USE, index, "pub_publisher",
+                                      URLEncoder.encode(publisher, CHARSET_ENCODE_URL)));
             }
 
             // Sanity check
-            if (args.length() == 0) {
+            if (url.length() == 0) {
                 return book;
             }
 
-            final List<AltEditionIsfdb> editions = fetchEditions(context, url + args);
+            final List<AltEditionIsfdb> editions = fetchEditions(context, url.toString());
             if (!editions.isEmpty()) {
                 fetchByEdition(context, editions.get(0), fetchCovers, book);
             }
@@ -1712,6 +1720,13 @@ public class IsfdbSearchEngine
             throws SearchException, CredentialsException {
 
         final Document document = loadDocument(context, url, null);
+
+        final Element restricted = document.selectFirst(RESTRICTED_TO_REGISTERED_USERS);
+        if (restricted != null) {
+            throw new SearchException(EngineId.Isfdb, null,
+                                      context.getString(R.string.error_site_authentication_failed,
+                                                        context.getString(R.string.site_isfdb)));
+        }
 
         if (!isCancelled()) {
             return parseEditions(context, document);
