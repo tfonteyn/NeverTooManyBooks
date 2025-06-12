@@ -89,6 +89,16 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
  * </ol>
  * i.o.w. the type {@code TYPE_LONG} is only used in the predefined Identifiers,
  * and an unknown identifier is always assumed to be a {@code TYPE_STRING}.
+ * <p>
+ * There are an endless amount of Identifiers, we cannot predefine them all.
+ * For reference, here are some more wikidata claim numbers:
+ * <ul>
+ *     <li>P12435   Shamela author ID</li>
+ *     <li>P2687    JPNO=Japanese National Bibliography Number of the National Diet Library</li>
+ *     <li>P3184    Czech National Bibliography ID  identifier for a book or periodical at the Czech National Library</li>
+ *     <li>P7865    CoBiS author ID</li>
+ *     <li>P8287    Worlds Without End author ID</li>
+ * </ul>
  */
 public class Identifier
         implements Parcelable, Entity, Mergeable {

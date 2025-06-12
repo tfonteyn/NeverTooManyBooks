@@ -43,27 +43,17 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * Wikidata claims we use.
- *
+ * Other Wikidata claims we could add later.
  * <ul>
- *     <li>P18: image</li>
  *     <li>P19  place of birth</li>
  *     <li>P20  place of death</li>
  *     <li>P106 occupation</li>
- *     <li>P569: birth date</li>
- *     <li>P570: death date</li>
- *     <li>P734: family name</li>
- *     <li>P735: given name     reference to another Q</li>
  *     <li>P742: pseudonym</li>
  * </ul>
- * <p>
- * P7865    CoBiS author ID
- * P8287    Worlds Without End author ID
- * P12435   Shamela author ID
- * P2687    JPNO    Japanese National Bibliography Number of the National Diet Library
- * P3184    Czech National Bibliography ID  identifier for a book or periodical at the Czech National Library
  *
  * @see <a href="https://www.mediawiki.org/wiki/API:Main_page">mediawiki api</a>
+ * @see <a href="https://www.wikidata.org/wiki/Wikidata:Database_reports/List_of_properties/all">
+ *     claims</a>
  */
 class WikidataAuthorParser {
 
@@ -128,7 +118,6 @@ class WikidataAuthorParser {
         // to get the name, we should use claims "P734" + "P735" which are entity-data
         // and require an extra call for each. Instead we'll use the "labels"
         // and rely on our Author name splitting as usual.
-
         final JSONObject labels = authorData.getJSONObject("labels");
         JSONObject label = labels.optJSONObject(langCode);
         if (label == null) {
