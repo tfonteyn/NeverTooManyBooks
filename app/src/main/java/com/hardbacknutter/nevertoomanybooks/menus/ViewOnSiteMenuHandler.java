@@ -79,33 +79,11 @@ abstract class ViewOnSiteMenuHandler<T>
                              @NonNull final T data) {
         final MenuItem item = menu.findItem(subMenuResId);
         if (item == null) {
-            final SubMenu parent = menu
-                    .addSubMenu(menuGroupResId, subMenuResId,
-                                context.getResources()
-                                       .getInteger(R.integer.MENU_ORDER_VIEW_ON_SITE),
-                                R.string.option_view_book_at)
-                    .setIcon(R.drawable.link_24px);
-
-            menuIds.clear();
-
-            // add to the menu if the Identifier has a valid url
-            final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
-            getSids(data)
-                    .stream()
-                    .map(Identifier.Value::getKey)
-                    .map(dao::findByKey)
-                    .flatMap(Optional::stream)
-                    .filter(identifier -> uriProvider.apply(context, identifier).isPresent())
-                    .forEach(identifier -> {
-                                 // generate a random id, and map it to the key
-                                 final int menuItemId = View.generateViewId();
-                                 menuIds.put(menuItemId, identifier.getKey());
-
-                        parent.add(menuGroupResId, menuItemId, 0,
-                                   identifier.getName())
-                              .setIcon(R.drawable.link_24px);
-                             }
-                    );
+            menu.addSubMenu(menuGroupResId, subMenuResId,
+                            context.getResources()
+                                   .getInteger(R.integer.MENU_ORDER_VIEW_ON_SITE),
+                            R.string.option_view_book_at)
+                .setIcon(R.drawable.link_24px);
         }
     }
 
@@ -120,7 +98,34 @@ abstract class ViewOnSiteMenuHandler<T>
             return;
         }
 
-        //noinspection DataFlowIssue
+        final SubMenu parent = subMenuItem.getSubMenu();
+        // Sanity check
+        if (parent == null) {
+            return;
+        }
+
+        menuIds.clear();
+        parent.clear();
+
+        // add to the menu if the Identifier has a valid url
+        final IdentifierDao dao = ServiceLocator.getInstance().getIdentifierDao();
+        getSids(data)
+                .stream()
+                .map(Identifier.Value::getKey)
+                .map(dao::findByKey)
+                .flatMap(Optional::stream)
+                .filter(identifier -> uriProvider.apply(context, identifier).isPresent())
+                .forEach(identifier -> {
+                             // generate a random id, and map it to the key
+                             final int menuItemId = View.generateViewId();
+                             menuIds.put(menuItemId, identifier.getKey());
+
+                             parent.add(menuGroupResId, menuItemId, 0,
+                                        identifier.getName())
+                                   .setIcon(R.drawable.link_24px);
+                         }
+                );
+
         subMenuItem.setVisible(subMenuItem.getSubMenu().size() > 0);
     }
 
