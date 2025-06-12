@@ -478,34 +478,40 @@ public class SearchBookByIsbnFragment
             startSearch();
 
         } else {
-            // always quit scanning until the user manually starts it again
-            switchOffScanner();
-
-            // we always use the first one... really should offer the user a choice.
-            final long firstFound = existingIds.get(0).first;
-            // Show the "title (isbn)" with a caution message
-            final String msg = getString(R.string.a_bracket_b_bracket,
-                                         existingIds.get(0).second, code.asText())
-                               + "\n\n" + getString(R.string.confirm_duplicate_book_message);
-
-            //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.warning_24px)
-                    .setTitle(R.string.lbl_duplicate_book)
-                    .setMessage(msg)
-                    // this dialog is important. Make sure the user pays some attention
-                    .setCancelable(false)
-                    // User aborts this isbn
-                    .setNegativeButton(R.string.cancel, (d, w) -> onClearSearchCriteria())
-                    // User wants to review the existing book
-                    .setNeutralButton(R.string.action_edit, (d, w)
-                            -> editBookLauncher.launch(new EditBookContract
-                            .Input(firstFound, vm.getStyle())))
-                    // User wants to add regardless
-                    .setPositiveButton(R.string.action_add, (d, w) -> startSearch())
-                    .create()
-                    .show();
+            onBookAlreadyPresent(code, existingIds, () -> startSearch());
         }
+    }
+
+    private void onBookAlreadyPresent(@NonNull final ISBN code,
+                                      @NonNull final List<Pair<Long, String>> existingIds,
+                                      @NonNull final Runnable onAdd) {
+        // always quit scanning until the user manually starts it again
+        switchOffScanner();
+
+        // we always use the first one... really should offer the user a choice.
+        final long firstFound = existingIds.get(0).first;
+        // Show the "title (isbn)" with a caution message
+        final String msg = getString(R.string.a_bracket_b_bracket,
+                                     existingIds.get(0).second, code.asText())
+                           + "\n\n" + getString(R.string.confirm_duplicate_book_message);
+
+        //noinspection DataFlowIssue
+        new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.warning_24px)
+                .setTitle(R.string.lbl_duplicate_book)
+                .setMessage(msg)
+                // this dialog is important. Make sure the user pays some attention
+                .setCancelable(false)
+                // User aborts this isbn
+                .setNegativeButton(R.string.cancel, (d, w) -> onClearSearchCriteria())
+                // User wants to review the existing book
+                .setNeutralButton(R.string.action_edit, (d, w)
+                        -> editBookLauncher.launch(new EditBookContract
+                        .Input(firstFound, vm.getStyle())))
+                // User wants to add regardless
+                .setPositiveButton(R.string.action_add, (d, w) -> onAdd.run())
+                .create()
+                .show();
     }
 
     @Override
