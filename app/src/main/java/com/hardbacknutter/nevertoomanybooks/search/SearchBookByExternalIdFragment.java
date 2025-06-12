@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExte
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class SearchBookByExternalIdFragment
@@ -122,7 +123,8 @@ public class SearchBookByExternalIdFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
-        vm.init(getArguments());
+        //noinspection DataFlowIssue
+        vm.init(getContext(), requireArguments());
     }
 
     @Override
@@ -242,24 +244,30 @@ public class SearchBookByExternalIdFragment
         outState.putString(SIS_USER_INPUT, currentInput);
     }
 
+    private void startSearch() {
+        startSearch(vm.getSearchCriteria());
+    }
     @Override
-    boolean onPreSearch() {
-        //sanity check
+    boolean onPreSearch(@NonNull final SearchCoordinatorCriteria criteria) {
         //noinspection DataFlowIssue
-        if (vb.externalId.getText().toString().isBlank()
-            || vb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
+        final String sid = vb.externalId.getText().toString().strip();
+
+        //sanity check
+        if (sid.isBlank() || vb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
             vb.lblExternalId.setError(getString(R.string.warning_requires_site_and_id));
             return false;
         }
+
+        //noinspection DataFlowIssue
+        criteria.addSid(engineId, sid);
+
         return true;
     }
 
     @Override
-    boolean onSearch() {
+    boolean onSearch(@NonNull final SearchCoordinatorCriteria criteria) {
         //noinspection DataFlowIssue
-        final String externalId = vb.externalId.getText().toString().strip();
-        //noinspection DataFlowIssue
-        return coordinator.searchByExternalId(engineId, externalId);
+        return coordinator.searchByExternalId(engineId, criteria);
     }
 
     @Override
@@ -280,7 +288,7 @@ public class SearchBookByExternalIdFragment
 
     @Override
     void onClearSearchCriteria() {
-        super.onClearSearchCriteria();
+        vm.getSearchCriteria().clear();
         vb.externalId.setText("");
     }
 }

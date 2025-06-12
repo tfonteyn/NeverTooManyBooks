@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -58,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncFieldDef;
@@ -101,6 +101,8 @@ public class SearchBookUpdatesViewModel
     @Nullable
     private SyncReaderProcessor syncProcessor;
 
+    private SearchCoordinatorCriteria searchCriteria;
+
     /** Database Access. */
     private BookDao bookDao;
 
@@ -143,7 +145,7 @@ public class SearchBookUpdatesViewModel
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args    {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
@@ -152,6 +154,7 @@ public class SearchBookUpdatesViewModel
 
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
+            searchCriteria = new SearchCoordinatorCriteria(context);
 
             if (args != null) {
                 // if we have args, then we can expect the list to be present
@@ -161,6 +164,11 @@ public class SearchBookUpdatesViewModel
 
             syncProcessorBuilder = createSyncProcessorBuilder(context);
         }
+    }
+
+    @NonNull
+    public SearchCoordinatorCriteria getSearchCriteria() {
+        return searchCriteria;
     }
 
     /**
@@ -401,12 +409,12 @@ public class SearchBookUpdatesViewModel
 
                 if (!currentFieldsWanted.isEmpty()) {
                     // remove all other criteria (this is CRUCIAL)
-                    clearSearchCriteria();
+                    searchCriteria.clear();
                     boolean canSearch = false;
 
                     final String isbnStr = currentBook.getIsbn();
                     if (!isbnStr.isEmpty()) {
-                        setIsbnSearchText(isbnStr);
+                        searchCriteria.setIsbnText(isbnStr);
                         canSearch = true;
                     }
 
@@ -414,8 +422,8 @@ public class SearchBookUpdatesViewModel
                     if (author != null) {
                         final String authorName = author.getFormattedName(true);
                         if (!authorName.isEmpty() && !title.isEmpty()) {
-                            setAuthorSearchText(authorName);
-                            setTitleSearchText(title);
+                            searchCriteria.setAuthor(authorName);
+                            searchCriteria.setTitle(title);
                             canSearch = true;
                         }
                     }
@@ -435,7 +443,7 @@ public class SearchBookUpdatesViewModel
                           });
 
                     if (!externalIds.isEmpty()) {
-                        setExternalIds(externalIds);
+                        searchCriteria.setSids(externalIds);
                         canSearch = true;
                     }
 
@@ -445,10 +453,10 @@ public class SearchBookUpdatesViewModel
                         currentBook.getPrimaryPublisher()
                                    .map(Publisher::getName)
                                    .filter(name -> !name.isEmpty())
-                                   .ifPresent(this::setPublisherSearchText);
+                                   .ifPresent(p -> searchCriteria.setPublisher(p));
                         currentBook.getPrimarySeries().ifPresent(ps -> {
-                            setSeriesSearchText(ps.getTitle());
-                            setSeriesNrSearchText(ps.getNumber());
+                            searchCriteria.setSeries(ps.getTitle());
+                            searchCriteria.setSeriesNr(ps.getNumber());
                         });
 
                         final boolean[] fetchCovers = new boolean[2];
@@ -456,10 +464,10 @@ public class SearchBookUpdatesViewModel
                             fetchCovers[cIdx] = currentFieldsWanted
                                     .containsKey(Book.BKEY_TMP_FILE_SPEC[cIdx]);
                         }
-                        setFetchCovers(fetchCovers);
+                        searchCriteria.setFetchCovers(fetchCovers);
 
                         // Start searching
-                        if (search()) {
+                        if (search(searchCriteria)) {
                             // Update the progress base message.
                             if (title.isEmpty()) {
                                 setBaseMessage(isbnStr);

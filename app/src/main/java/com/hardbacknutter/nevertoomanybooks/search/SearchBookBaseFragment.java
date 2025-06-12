@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
@@ -153,32 +154,24 @@ public abstract class SearchBookBaseFragment
         }
     }
 
-
-    /**
-     * Clear the SearchCoordinator search criteria.
-     * <p>
-     * Override to clear the input fields for the former.
-     * Make sure to always call the super.
-     */
-    @CallSuper
-    void onClearSearchCriteria() {
-        coordinator.clearSearchCriteria();
-    }
-
     /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
+     * The results come back in {@link #onSearchResults(Book)}.
      * <p>
-     * This is final; override {@link #onPreSearch()} and {@link #onSearch()} as needed.
-     * The results come in {@link #onSearchResults(Book)}.
+     * This is final; override
+     * {@link #onPreSearch(SearchCoordinatorCriteria)} and
+     * {@link #onSearch(SearchCoordinatorCriteria)} as needed.
+     *
+     * @param criteria to search for
      */
-    final void startSearch() {
+    final void startSearch(@NonNull final SearchCoordinatorCriteria criteria) {
         // check if we have an active search, if so, quit silently.
         if (coordinator.isSearchActive()) {
             return;
         }
 
         // any implementation specific reasons not to start searching ?
-        if (!onPreSearch()) {
+        if (!onPreSearch(criteria)) {
             return;
         }
 
@@ -191,7 +184,7 @@ public abstract class SearchBookBaseFragment
         }
 
         // Start the lookup in a background search task.
-        if (!onSearch()) {
+        if (!onSearch(criteria)) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_search_could_not_be_started,
                           Snackbar.LENGTH_LONG).show();
@@ -202,20 +195,25 @@ public abstract class SearchBookBaseFragment
      * Override to prevent or allow a search to start.
      * The default implementation allows a search to start.
      *
+     * @param criteria to search for
+     *
      * @return {@code true} if a search is allowed
      */
-    boolean onPreSearch() {
+    boolean onPreSearch(@NonNull final SearchCoordinatorCriteria criteria) {
         return true;
     }
 
     /**
      * Override to customize which search function is called.
-     * The default implementation starts the generic {@link SearchCoordinator#search()}.
+     * The default implementation starts the generic
+     * {@link SearchCoordinator#search(SearchCoordinatorCriteria)}.
+     *
+     * @param criteria to search for
      *
      * @return {@code true} if a search was started
      */
-    boolean onSearch() {
-        return coordinator.search();
+    boolean onSearch(@NonNull final SearchCoordinatorCriteria criteria) {
+        return coordinator.search(criteria);
     }
 
     private void onSearchCancelled(@NonNull final LiveDataEvent<Book> message) {
@@ -264,6 +262,12 @@ public abstract class SearchBookBaseFragment
         onSearchResults(book);
         onClearSearchCriteria();
     }
+
+    /**
+     * Clear the search criteria and the input fields.
+     */
+    @CallSuper
+    abstract void onClearSearchCriteria();
 
     /**
      * Process the search results.

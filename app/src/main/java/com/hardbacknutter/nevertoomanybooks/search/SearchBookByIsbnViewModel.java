@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 
 public class SearchBookByIsbnViewModel
         extends ViewModel {
@@ -76,6 +77,7 @@ public class SearchBookByIsbnViewModel
     private BookDao bookDao;
 
     private Style style;
+    private SearchCoordinatorCriteria searchCriteria;
 
     @NonNull
     private Scanning scanning = Scanning.Off;
@@ -96,14 +98,14 @@ public class SearchBookByIsbnViewModel
      * Pseudo constructor.
      *
      * @param context    Current context
-     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
-     * @param args       {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args       {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
-                     final boolean strictIsbn,
                      @Nullable final Bundle args) {
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
+            searchCriteria = new SearchCoordinatorCriteria(context);
+            final boolean strictIsbn = searchCriteria.isStrictIsbn();
 
             final String qs = PreferenceManager.getDefaultSharedPreferences(context)
                                                .getString(PREF_SCAN_QUEUE, "");
@@ -127,6 +129,11 @@ public class SearchBookByIsbnViewModel
         }
 
         scanQueueUpdate.setValue(scanQueue);
+    }
+
+    @NonNull
+    public SearchCoordinatorCriteria getSearchCriteria() {
+        return searchCriteria;
     }
 
     /**

@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 
 @SuppressWarnings("WeakerAccess")
 public class SearchBookByTextViewModel
@@ -65,6 +66,7 @@ public class SearchBookByTextViewModel
     private final EditBookOutput resultData = new EditBookOutput();
 
     private Style style;
+    private SearchCoordinatorCriteria searchCriteria;
 
     private static boolean addName(@NonNull final Collection<String> recentNames,
                                    @NonNull final String searchText) {
@@ -117,15 +119,24 @@ public class SearchBookByTextViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Fragment#requireArguments()}
      */
-    void init(@NonNull final Bundle args) {
-        if (style == null) {
+    void init(@NonNull final Context context,
+              @NonNull final Bundle args) {
+        if (searchCriteria == null) {
+            searchCriteria = new SearchCoordinatorCriteria(context);
+
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
         }
+    }
+
+    @NonNull
+    public SearchCoordinatorCriteria getSearchCriteria() {
+        return searchCriteria;
     }
 
     @NonNull

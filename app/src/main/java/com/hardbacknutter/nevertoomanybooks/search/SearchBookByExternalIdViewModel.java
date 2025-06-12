@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,11 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
@@ -32,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 
 @SuppressWarnings("WeakerAccess")
 public class SearchBookByExternalIdViewModel
@@ -39,6 +41,7 @@ public class SearchBookByExternalIdViewModel
 
     @NonNull
     private final EditBookOutput resultData = new EditBookOutput();
+    private SearchCoordinatorCriteria searchCriteria;
 
     @NonNull
     Intent createResultIntent() {
@@ -51,8 +54,17 @@ public class SearchBookByExternalIdViewModel
 
     private Style style;
 
-    void init(@Nullable final Bundle args) {
-        if (args != null && style == null) {
+    /**
+     * Pseudo constructor.
+     *
+     * @param context Current context
+     * @param args    {@link Fragment#requireArguments()}
+     */
+    void init(@NonNull final Context context,
+              @NonNull final Bundle args) {
+        if (searchCriteria == null) {
+            searchCriteria = new SearchCoordinatorCriteria(context);
+
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
@@ -64,5 +76,10 @@ public class SearchBookByExternalIdViewModel
     Style getStyle() {
         Objects.requireNonNull(style, "style");
         return style;
+    }
+
+    @NonNull
+    public SearchCoordinatorCriteria getSearchCriteria() {
+        return searchCriteria;
     }
 }

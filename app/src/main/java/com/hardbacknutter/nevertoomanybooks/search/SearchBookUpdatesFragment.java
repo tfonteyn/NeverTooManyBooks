@@ -309,7 +309,7 @@ public class SearchBookUpdatesFragment
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
-                .setChecked(vm.isStrictIsbn());
+                .setChecked(vm.getSearchCriteria().isStrictIsbn());
         }
 
         @Override
@@ -322,7 +322,7 @@ public class SearchBookUpdatesFragment
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
-                vm.setStrictIsbn(checked);
+                vm.getSearchCriteria().setStrictIsbn(requireContext(), checked);
 
             } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
                 vm.setSyncAction(SyncAction.Skip);

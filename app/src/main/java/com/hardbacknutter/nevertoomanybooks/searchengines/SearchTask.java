@@ -26,13 +26,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
@@ -41,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 /**
  * Searches a single {@link SearchEngine}.
  */
-public final class SearchTask
+final class SearchTask
         extends LTask<Book> {
 
     /** Log tag. */
@@ -51,17 +53,9 @@ public final class SearchTask
 
     @NonNull
     private final SearchEngine searchEngine;
-    /** Whether to fetch covers. {false,false} by default. */
-    @NonNull
-    private final boolean[] fetchCovers = new boolean[2];
+
     /** What criteria to search by. */
     private SearchEngine.SearchBy by;
-    /** Search criteria. Usage depends on {@link #by}. */
-    @Nullable
-    private String externalId;
-    /** Search criteria. Usage depends on {@link #by}. */
-    @Nullable
-    private ISBN isbn;
 
     /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
@@ -76,7 +70,7 @@ public final class SearchTask
     }
 
     /**
-     * Constructor. Will search according to passed parameters.
+     * Constructor. Will search according to passed {@link SearchCoordinatorCriteria}.
      * <ol>
      *      <li>external id</li>
      *      <li>valid ISBN</li>
@@ -87,17 +81,55 @@ public final class SearchTask
      * @param context      Current context
      * @param taskId       a unique task identifier, returned with each message
      * @param searchEngine the search site engine
+     * @param criteria     to use
      * @param taskListener for the results
      *
-     * @return task
+     * @return task; will be {@code null} if the given criteria don't match up with the given
+     *         SearchEngine
      */
+    @Nullable
     static SearchTask createSearchTask(@NonNull final Context context,
                                        final int taskId,
                                        @NonNull final SearchEngine searchEngine,
+                                       @NonNull final SearchCoordinatorCriteria criteria,
                                        @NonNull final TaskListener<Book> taskListener) {
-        final SearchTask searchTask = new SearchTask(context, taskId, searchEngine, taskListener);
-        searchEngine.setCaller(searchTask);
-        return searchTask;
+
+        final SearchTask task = new SearchTask(context, taskId, searchEngine, taskListener);
+
+        searchEngine.setCaller(task);
+        task.setExecutor(ASyncExecutor.NETWORK);
+
+        task.setCriteria(criteria);
+
+        final EngineId engineId = searchEngine.getEngineId();
+
+        // check for a external id matching the site.
+        // This always takes preference over all other criteria
+        final Optional<String> oSid = criteria.getSid(engineId);
+        if (oSid.isPresent()
+            && engineId.supports(SearchEngine.SearchBy.ExternalId)) {
+            task.setSearchBy(SearchEngine.SearchBy.ExternalId);
+            return task;
+        }
+
+        final Optional<ISBN> oIsbn = criteria.getIsbn();
+        if (oIsbn.isPresent() && oIsbn.get().isValid(true)
+            && engineId.supports(SearchEngine.SearchBy.Isbn)) {
+            task.setSearchBy(SearchEngine.SearchBy.Isbn);
+            return task;
+        }
+        if (oIsbn.isPresent() && oIsbn.get().isValid(false)
+            && engineId.supports(SearchEngine.SearchBy.Barcode)) {
+            task.setSearchBy(SearchEngine.SearchBy.Barcode);
+            return task;
+        }
+        if (engineId.supports(SearchEngine.SearchBy.Text)) {
+            task.setSearchBy(SearchEngine.SearchBy.Text);
+            return task;
+        }
+
+        // search data and engine have nothing in common, abort.
+        return null;
     }
 
     @NonNull
@@ -110,53 +142,22 @@ public final class SearchTask
         return by;
     }
 
-    void setSearchBy(@NonNull final SearchEngine.SearchBy by) {
+    private void setSearchBy(@NonNull final SearchEngine.SearchBy by) {
         this.by = by;
     }
 
-    /**
-     * Set/reset the criteria.
-     *
-     * @param externalId to search for
-     */
-    void setExternalId(@Nullable final String externalId) {
-        this.externalId = externalId;
+    @NonNull
+    public SearchCoordinatorCriteria getCriteria() {
+        return Objects.requireNonNull(criteria, "criteria");
     }
 
     /**
-     * Set/reset the criteria.
-     *
-     * @param isbn to search for
-     */
-    void setIsbn(@Nullable final ISBN isbn) {
-        this.isbn = isbn;
-    }
-
-    /**
-     * Set/reset the criteria.
+     * Set the criteria.
      *
      * @param criteria to search for
      */
-    void setCriteria(@Nullable final SearchCoordinatorCriteria criteria) {
+    private void setCriteria(@NonNull final SearchCoordinatorCriteria criteria) {
         this.criteria = criteria;
-    }
-
-    /**
-     * Set/reset the criteria.
-     *
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     */
-    void setFetchCovers(@Nullable final boolean[] fetchCovers) {
-        if (fetchCovers == null || fetchCovers.length == 0) {
-            this.fetchCovers[0] = false;
-            this.fetchCovers[1] = false;
-        } else if (fetchCovers.length == 1) {
-            this.fetchCovers[0] = fetchCovers[0];
-            this.fetchCovers[1] = false;
-        } else {
-            this.fetchCovers[0] = fetchCovers[0];
-            this.fetchCovers[1] = fetchCovers[1];
-        }
     }
 
     void startSearch() {
@@ -179,6 +180,8 @@ public final class SearchTask
                    SearchException,
                    CredentialsException,
                    IOException {
+        Objects.requireNonNull(criteria);
+
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // Checking this each time a search starts is not needed...
@@ -203,55 +206,36 @@ public final class SearchTask
         publishProgress(1, context.getString(R.string.progress_msg_searching_site,
                                              searchEngine.getName(context)));
 
-        @Nullable
-        final String isbnStr;
-        if (isbn != null) {
-            //noinspection DataFlowIssue
-            if (searchEngine.getEngineId().getConfig()
-                            .prefersIsbn10(context) && isbn.isIsbn10Compat()) {
-                isbnStr = isbn.asText(ISBN.Type.Isbn10);
-            } else {
-                isbnStr = isbn.asText();
-            }
-        } else {
-            isbnStr = null;
-        }
-
         final Book book;
         switch (by) {
             case ExternalId: {
-                if (externalId == null || externalId.isEmpty()) {
-                    throw new IllegalArgumentException("externalId not set");
+                final Optional<String> oSid = criteria.getSid(searchEngine.getEngineId());
+                if (oSid.isEmpty()) {
+                    throw new IllegalArgumentException("sid not set");
                 }
                 book = ((SearchEngine.ByExternalId) searchEngine)
-                        .searchByExternalId(context, externalId, fetchCovers);
+                        .searchByExternalId(context, oSid.get(), criteria.getFetchCovers());
                 break;
             }
             case Isbn: {
-                if (isbnStr == null || isbnStr.isEmpty()) {
-                    throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
-                }
+                final String isbnStr = requireIsbnString(context);
                 book = ((SearchEngine.ByIsbn) searchEngine)
-                        .searchByIsbn(context, isbnStr, fetchCovers);
+                        .searchByIsbn(context, isbnStr, criteria.getFetchCovers());
                 break;
             }
             case Barcode: {
-                if (isbnStr == null || isbnStr.isEmpty()) {
-                    throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
-                }
+                final String isbnStr = requireIsbnString(context);
                 book = ((SearchEngine.ByBarcode) searchEngine)
-                        .searchByBarcode(context, isbnStr, fetchCovers);
+                        .searchByBarcode(context, isbnStr, criteria.getFetchCovers());
                 break;
             }
             case Text: {
                 // FIXME: github #131 "ISBN: 01-001-86" allow searches with null/empty criteria
                 //  when there is an isbnStr
                 //  => must update code in ALL SearchEngines to allow this!
-                if (criteria == null || criteria.isEmpty()) {
-                    throw new IllegalArgumentException("criteria not set");
-                }
+                final String isbnStr = isbnToString(context);
                 book = ((SearchEngine.ByText) searchEngine)
-                        .search(context, criteria, isbnStr, fetchCovers);
+                        .search(context, criteria, isbnStr, criteria.getFetchCovers());
                 break;
             }
             default: {
@@ -265,16 +249,44 @@ public final class SearchTask
         return book;
     }
 
+    @NonNull
+    private String requireIsbnString(@NonNull final Context context) {
+        final String s = isbnToString(context);
+        if (s == null || s.isEmpty()) {
+            throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
+        }
+        return s;
+    }
+
+    @Nullable
+    private String isbnToString(@NonNull final Context context) {
+        @Nullable
+        final String isbnStr;
+        // Do NOT check on validity, at this point the isbn IS
+        // allowed to be any other code as well.
+        //noinspection DataFlowIssue
+        final ISBN isbn = criteria.getIsbn().orElse(null);
+        if (isbn != null) {
+            //noinspection DataFlowIssue
+            if (searchEngine.getEngineId().getConfig()
+                            .prefersIsbn10(context) && isbn.isIsbn10Compat()) {
+                isbnStr = isbn.asText(ISBN.Type.Isbn10);
+            } else {
+                isbnStr = isbn.asText();
+            }
+        } else {
+            isbnStr = null;
+        }
+        return isbnStr;
+    }
+
     @Override
     @NonNull
     public String toString() {
         return "SearchTask{"
                + "searchEngine=" + searchEngine.getEngineId()
                + ", by=" + by
-               + ", isbn=" + isbn
-               + ", externalId=`" + externalId + '`'
                + ", criteria=`" + criteria + '`'
-               + ", fetchCovers=" + Arrays.toString(fetchCovers)
                + '}';
     }
 }

@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -84,7 +85,8 @@ public class SearchBookByTextFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
-        vm.init(requireArguments());
+        //noinspection DataFlowIssue
+        vm.init(getContext(), requireArguments());
     }
 
     @Override
@@ -118,7 +120,7 @@ public class SearchBookByTextFragment
 
         populateAdapters();
 
-        vb.btnSearch.setOnClickListener(v -> startSearch());
+        vb.btnSearch.setOnClickListener(v -> startSearch(vm.getSearchCriteria()));
         explainSitesSupport(coordinator.getSiteList());
     }
 
@@ -180,7 +182,7 @@ public class SearchBookByTextFragment
                                    @Nullable final KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
             hideKeyboard(view);
-            startSearch();
+            startSearch(vm.getSearchCriteria());
             return true;
         }
         return false;
@@ -193,21 +195,23 @@ public class SearchBookByTextFragment
     }
 
     private void modelToView() {
-        vb.title.setText(coordinator.getTitleSearchText());
-        vb.author.setText(coordinator.getAuthorSearchText());
-        vb.seriesTitle.setText(coordinator.getSeriesSearchText());
-        vb.seriesNum.setText(coordinator.getSeriesNrSearchText());
-        vb.publisher.setText(coordinator.getPublisherSearchText());
+        final SearchCoordinatorCriteria searchCriteria = vm.getSearchCriteria();
+        vb.title.setText(searchCriteria.getTitle());
+        vb.author.setText(searchCriteria.getAuthor());
+        vb.seriesTitle.setText(searchCriteria.getSeries());
+        vb.seriesNum.setText(searchCriteria.getSeriesNr());
+        vb.publisher.setText(searchCriteria.getPublisher());
     }
 
     private void viewToModel() {
+        final SearchCoordinatorCriteria searchCriteria = vm.getSearchCriteria();
         //noinspection DataFlowIssue
-        coordinator.setTitleSearchText(vb.title.getText().toString().strip());
-        coordinator.setAuthorSearchText(vb.author.getText().toString().strip());
-        coordinator.setSeriesSearchText(vb.seriesTitle.getText().toString().strip());
+        searchCriteria.setTitle(vb.title.getText().toString().strip());
+        searchCriteria.setAuthor(vb.author.getText().toString().strip());
+        searchCriteria.setSeries(vb.seriesTitle.getText().toString().strip());
         //noinspection DataFlowIssue
-        coordinator.setSeriesNrSearchText(vb.seriesNum.getText().toString().strip());
-        coordinator.setPublisherSearchText(vb.publisher.getText().toString().strip());
+        searchCriteria.setSeriesNr(vb.seriesNum.getText().toString().strip());
+        searchCriteria.setPublisher(vb.publisher.getText().toString().strip());
     }
 
     /**
@@ -232,10 +236,10 @@ public class SearchBookByTextFragment
     }
 
     @Override
-    boolean onPreSearch() {
+    boolean onPreSearch(@NonNull final SearchCoordinatorCriteria criteria) {
         viewToModel();
 
-        final String authorSearchText = coordinator.getAuthorSearchText();
+        final String authorSearchText = criteria.getAuthor();
         if (!authorSearchText.isEmpty()) {
             // Always add the current search text (if not already present)
             // to the list of recent searches.
@@ -247,7 +251,7 @@ public class SearchBookByTextFragment
             }
         }
 
-        final String seriesSearchText = coordinator.getSeriesSearchText();
+        final String seriesSearchText = criteria.getSeries();
         if (!seriesSearchText.isEmpty()) {
             // Always add the current search text (if not already present)
             // to the list of recent searches.
@@ -259,7 +263,7 @@ public class SearchBookByTextFragment
             }
         }
 
-        final String publisherSearchText = coordinator.getPublisherSearchText();
+        final String publisherSearchText = criteria.getPublisher();
         if (!publisherSearchText.isEmpty()) {
             // Always add the current search text (if not already present)
             // to the list of recent searches.
@@ -272,7 +276,7 @@ public class SearchBookByTextFragment
         }
 
         //sanity check
-        final String titleSearchText = coordinator.getTitleSearchText();
+        final String titleSearchText = criteria.getTitle();
         if (titleSearchText.isEmpty()
             && authorSearchText.isEmpty()) {
             vb.lblTitle.setError(getString(R.string.warning_missing_title_or_author));
@@ -289,31 +293,33 @@ public class SearchBookByTextFragment
         // If any of the search fields are not present in the result,
         // we add them manually as the template for a new book.
 
+        final SearchCoordinatorCriteria searchCriteria = vm.getSearchCriteria();
+
         if (!book.contains(DBKey.TITLE)) {
-            book.setTitle(coordinator.getTitleSearchText());
+            book.setTitle(searchCriteria.getTitle());
         }
 
         final List<Author> authors = book.getAuthors();
         if (authors.isEmpty()) {
             // do NOT use {@code Book.BKEY_AUTHOR_LIST}, that's reserved for verified names.
             book.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
-                           coordinator.getAuthorSearchText());
+                           searchCriteria.getAuthor());
         }
 
         final List<Series> series = book.getSeries();
         if (series.isEmpty()) {
             // do NOT use {@code Book.BKEY_SERIES_LIST}, that's reserved for verified names.
             book.putString(SearchCriteria.BKEY_SEARCH_TEXT_SERIES,
-                           coordinator.getSeriesSearchText());
+                           searchCriteria.getSeries());
             book.putString(DBKey.SERIES.BOOK_SERIES_NUMBER,
-                           coordinator.getSeriesNrSearchText());
+                           searchCriteria.getSeriesNr());
         }
 
         final List<Publisher> publishers = book.getPublishers();
         if (publishers.isEmpty()) {
             // do NOT use {@code Book.BKEY_PUBLISHER_LIST}, that's reserved for verified names.
             book.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
-                           coordinator.getPublisherSearchText());
+                           searchCriteria.getPublisher());
         }
 
         editBookLauncher.launch(new EditBookContract.Input(book, vm.getStyle()));
@@ -321,7 +327,7 @@ public class SearchBookByTextFragment
 
     @Override
     void onClearSearchCriteria() {
-        super.onClearSearchCriteria();
+        vm.getSearchCriteria().clear();
         vb.title.setText("");
         vb.author.setText("");
         vb.seriesTitle.setText("");

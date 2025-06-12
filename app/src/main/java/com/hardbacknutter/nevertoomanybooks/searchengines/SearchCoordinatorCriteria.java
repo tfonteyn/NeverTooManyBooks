@@ -20,16 +20,59 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
+
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.StringJoiner;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+
 /**
- * A data class with all values potentially supported by {@link SearchEngine.ByText}.
+ * A data class with all values to search on.
+ * Actual members used will depend on the actual search method, one of:
+ * {@link SearchEngine.ByText}, {@link SearchEngine.ByExternalId}, {@link SearchEngine.ByIsbn}.
  * <p>
  * All values are 'raw', i.e. exactly as entered by the user in a form.
  */
+@SuppressWarnings("WeakerAccess")
 public class SearchCoordinatorCriteria {
+
+    private static final String PK_SEARCH_STRICT_ISBN = "search.byIsbn.strict";
+    /**
+     * Site external id for search.
+     *
+     * @see SearchEngine.ByExternalId
+     */
+    @NonNull
+    private final Map<EngineId, String> sids = new EnumMap<>(EngineId.class);
+    /**
+     * Raw ISBN text for search.
+     *
+     * @see SearchEngine.ByIsbn
+     */
+    @NonNull
+    private String isbnText = "";
+
+    /** Whether of not to fetch thumbnails. */
+    @NonNull
+    private boolean[] fetchCovers;
+
+    @Nullable
+    private ISBN isbn;
+    /**
+     * {@code true} for strict ISBN checking,
+     * {@code false} for allowing other valid generic codes.
+     */
+    private boolean strictIsbn;
 
     @NonNull
     private String title = "";
@@ -41,6 +84,31 @@ public class SearchCoordinatorCriteria {
     private String seriesNr = "";
     @NonNull
     private String publisher = "";
+
+    public SearchCoordinatorCriteria(@NonNull final Context context) {
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        fetchCovers = new boolean[]{
+                serviceLocator.isFieldEnabled(DBKey.COVER[0]),
+                serviceLocator.isFieldEnabled(DBKey.COVER[1])
+        };
+
+        strictIsbn = PreferenceManager.getDefaultSharedPreferences(context)
+                                      .getBoolean(PK_SEARCH_STRICT_ISBN, true);
+    }
+
+    @NonNull
+    public boolean[] getFetchCovers() {
+        return fetchCovers;
+    }
+
+    /**
+     * Indicate we want images to be downloaded.
+     *
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     */
+    public void setFetchCovers(@NonNull final boolean[] fetchCovers) {
+        this.fetchCovers = fetchCovers;
+    }
 
     @NonNull
     public String getTitle() {
@@ -87,12 +155,107 @@ public class SearchCoordinatorCriteria {
         this.publisher = publisher;
     }
 
+    /**
+     * @see SearchEngine.ByIsbn
+     */
+    @NonNull
+    public String getIsbnText() {
+        return isbnText;
+    }
+
+    /**
+     * @see SearchEngine.ByIsbn
+     */
+    public void setIsbnText(@NonNull final String isbnText) {
+        this.isbnText = isbnText;
+        isbn = null;
+    }
+
+    @NonNull
+    public Optional<ISBN> getIsbn() {
+        if (isbnText.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (isbn == null) {
+            isbn = new ISBN(this.isbnText, this.strictIsbn);
+        }
+        return Optional.of(isbn);
+    }
+
+    public boolean hasValidIsbn() {
+        return getIsbn().map(value -> value.isValid(strictIsbn)).orElse(false);
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @return {@code true} for strict ISBN checking,
+     *         {@code false} for allowing other valid generic codes.
+     */
+    public boolean isStrictIsbn() {
+        return strictIsbn;
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param context
+     * @param strictIsbn {@code true} for strict ISBN checking,
+     *                   {@code false} for allowing other valid generic codes.
+     */
+    public void setStrictIsbn(@NonNull final Context context,
+                              final boolean strictIsbn) {
+        this.strictIsbn = strictIsbn;
+        isbn = null;
+
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putBoolean(PK_SEARCH_STRICT_ISBN, strictIsbn)
+                         .apply();
+    }
+
+    public boolean hasSids() {
+        return !sids.isEmpty();
+    }
+
+    public void addSid(@NonNull final EngineId engineId,
+                       @NonNull final String sid) {
+        sids.put(engineId, sid);
+    }
+
+    @NonNull
+    public Optional<String> getSid(@NonNull final EngineId engineId) {
+        final String s = sids.get(engineId);
+        if (s != null && !s.isEmpty()) {
+            return Optional.of(s);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Clear the current, and set the new given sids.
+     *
+     * @param sids one or more ID's
+     *             The key is the engine id,
+     *             The value is the SID for that engine
+     */
+    public void setSids(@Nullable final Map<EngineId, String> sids) {
+        this.sids.clear();
+        if (sids != null) {
+            this.sids.putAll(sids);
+        }
+    }
+
     public void clear() {
         title = "";
         author = "";
         series = "";
         seriesNr = "";
         publisher = "";
+        isbnText = "";
+        strictIsbn = true;
+        sids.clear();
     }
 
     /**
@@ -105,17 +268,19 @@ public class SearchCoordinatorCriteria {
                && author.isEmpty()
                && series.isEmpty()
                && seriesNr.isEmpty()
-               && publisher.isEmpty();
+               && publisher.isEmpty()
+               && isbnText.isEmpty()
+               && sids.isEmpty();
     }
 
     /**
-     * Simple concatenation of all the values into a single String.
-     *
-     * Used by {@link SearchEngine.ByText}.
+     * Simple concatenation of all the {@link SearchEngine.ByText} values into a single String.
      *
      * @param delimiter to use
      *
      * @return a StringJoiner ready to concat more options to
+     *
+     * @see SearchEngine.ByText
      */
     @NonNull
     public StringJoiner concatTextCriteria(@NonNull final String delimiter) {
@@ -144,11 +309,16 @@ public class SearchCoordinatorCriteria {
     @NonNull
     public String toString() {
         return "SearchCoordinatorCriteria{"
-               + "title='" + title + '\''
-               + ", author='" + author + '\''
-               + ", series='" + series + '\''
-               + ", seriesNr='" + seriesNr + '\''
-               + ", publisher='" + publisher + '\''
+               + "title=`" + title + '`'
+               + ", author=`" + author + '`'
+               + ", series=`" + series + '`'
+               + ", seriesNr=`" + seriesNr + '`'
+               + ", publisher=`" + publisher + '`'
+               + ", isbnText=`" + isbnText + '`'
+               + ", isbn=" + isbn
+               + ", strictIsbn=" + strictIsbn
+               + ", sidSearchText=`" + sids + '`'
+               + ", fetchCovers=" + Arrays.toString(fetchCovers)
                + '}';
     }
 

@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbn
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -129,7 +130,7 @@ public class SearchBookByIsbnFragment
 
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
         //noinspection DataFlowIssue
-        vm.init(getContext(), coordinator.isStrictIsbn(), getArguments());
+        vm.init(getContext(), getArguments());
 
         decideToUseEmbeddedScanner();
     }
@@ -185,7 +186,7 @@ public class SearchBookByIsbnFragment
         toolbar.addMenuProvider(new SearchSitesToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
-        vb.isbn.setText(coordinator.getIsbnSearchText());
+        vb.isbn.setText(vm.getSearchCriteria().getIsbnText());
         autoRemoveError(vb.isbn, vb.lblIsbn);
 
         vb.keypad.key0.setOnClickListener(v -> onKeyPad(v, '0'));
@@ -211,8 +212,9 @@ public class SearchBookByIsbnFragment
         });
 
         // The search preference determines the level here; NOT the 'edit book'
-        final ISBN.Validity isbnValidityCheck = coordinator.isStrictIsbn() ? ISBN.Validity.Strict
-                                                                           : ISBN.Validity.None;
+        final ISBN.Validity isbnValidityCheck = vm.getSearchCriteria()
+                                                  .isStrictIsbn() ? ISBN.Validity.Strict
+                                                                  : ISBN.Validity.None;
 
         isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
@@ -280,7 +282,8 @@ public class SearchBookByIsbnFragment
     public void onPause() {
         super.onPause();
         //noinspection DataFlowIssue
-        coordinator.setIsbnSearchText(vb.isbn.getText().toString().strip());
+        final String isbnSearchText = vb.isbn.getText().toString().strip();
+        vm.getSearchCriteria().setIsbnText(isbnSearchText);
     }
 
     @Override
@@ -396,7 +399,7 @@ public class SearchBookByIsbnFragment
      * @param barCode as returned by the scanner
      */
     private void onBarcodeScanned(@NonNull final String barCode) {
-        final boolean strictIsbn = coordinator.isStrictIsbn();
+        final boolean strictIsbn = vm.getSearchCriteria().isStrictIsbn();
         final ISBN code = new ISBN(barCode, strictIsbn);
 
         final Context context = requireContext();
@@ -448,7 +451,7 @@ public class SearchBookByIsbnFragment
      * @param barCode as entered by the user.
      */
     private void onBarcodeEntered(@NonNull final String barCode) {
-        final boolean strictIsbn = coordinator.isStrictIsbn();
+        final boolean strictIsbn = vm.getSearchCriteria().isStrictIsbn();
         final ISBN code = new ISBN(barCode, strictIsbn);
 
         if (code.isValid(strictIsbn)) {
@@ -460,12 +463,14 @@ public class SearchBookByIsbnFragment
 
     /**
      * Prepare to search with ISBN or, if allowed, with a generic code.
-     * If successful, {@link #startSearch()} will be called as the next step.
+     * If successful, {@link #startSearch(SearchCoordinatorCriteria)}
+     * will be called as the next step.
      *
      * @param code to search for
      */
     private void prepareSearch(@NonNull final ISBN code) {
-        coordinator.setIsbnSearchText(code.asText());
+        final String isbnSearchText = code.asText();
+        vm.getSearchCriteria().setIsbnText(isbnSearchText);
 
         // See if ISBN already exists in our database, if not then start the search.
         final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(code);
@@ -475,10 +480,10 @@ public class SearchBookByIsbnFragment
             // bad/unexpected data - OpenLibrary being notorious...
             // If a user reports this crash, we'll have the ISBN to try and reproduce.
             ACRA.getErrorReporter().putCustomData(DBKey.ISBN, code.asText());
-            startSearch();
+            startSearch(vm.getSearchCriteria());
 
         } else {
-            onBookAlreadyPresent(code, existingIds, () -> startSearch());
+            onBookAlreadyPresent(code, existingIds, () -> startSearch(vm.getSearchCriteria()));
         }
     }
 
@@ -531,7 +536,7 @@ public class SearchBookByIsbnFragment
 
     @Override
     void onClearSearchCriteria() {
-        super.onClearSearchCriteria();
+        vm.getSearchCriteria().clear();
         //mVb.isbn.setText("");
     }
 
@@ -542,7 +547,7 @@ public class SearchBookByIsbnFragment
      */
     private void onOpenUri(@NonNull final Uri uri) {
         //noinspection DataFlowIssue
-        if (!vm.readQueue(getContext(), uri, coordinator.isStrictIsbn())) {
+        if (!vm.readQueue(getContext(), uri, vm.getSearchCriteria().isStrictIsbn())) {
             Snackbar.make(vb.getRoot(), R.string.error_import_failed,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -608,7 +613,7 @@ public class SearchBookByIsbnFragment
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
-                .setChecked(coordinator.isStrictIsbn());
+                .setChecked(vm.getSearchCriteria().isStrictIsbn());
         }
 
         @Override
@@ -634,7 +639,7 @@ public class SearchBookByIsbnFragment
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
-                coordinator.setStrictIsbn(checked);
+                vm.getSearchCriteria().setStrictIsbn(requireContext(), checked);
 
                 final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
                 isbnCleanupTextWatcher.setValidityLevel(validity);
