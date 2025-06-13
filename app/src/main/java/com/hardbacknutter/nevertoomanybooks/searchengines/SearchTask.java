@@ -28,6 +28,7 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -49,24 +50,37 @@ final class SearchTask
     /** Log tag. */
     private static final String TAG = "SearchTask";
 
+    private static final AtomicInteger TASK_ID = new AtomicInteger();
+
     private static final String ERROR_ISBN_STR_NOT_SET = "isbnStr not set";
 
+    private final int searchId;
     @NonNull
     private final SearchEngine searchEngine;
-
-    /** What criteria to search by. */
-    private SearchEngine.SearchBy by;
-
     /** Search criteria. Usage depends on {@link #by}. */
     @NonNull
     private final SearchCoordinatorCriteria criteria;
+    /** What criteria to search by. */
+    private SearchEngine.SearchBy by;
 
+    /**
+     * Constructor.
+     *
+     * @param context      Current context
+     * @param searchId     a unique search identifier, to which this task belongs
+     * @param taskId       a unique task identifier, returned with each message
+     * @param searchEngine the search site engine
+     * @param criteria     to use
+     * @param taskListener for the results
+     */
     private SearchTask(@NonNull final Context context,
+                       final int searchId,
                        final int taskId,
                        @NonNull final SearchEngine searchEngine,
                        @NonNull final SearchCoordinatorCriteria criteria,
                        @NonNull final TaskListener<Book> taskListener) {
         super(taskId, TAG + ' ' + searchEngine.getName(context), taskListener);
+        this.searchId = searchId;
         this.searchEngine = searchEngine;
         this.criteria = criteria;
     }
@@ -81,7 +95,7 @@ final class SearchTask
      * </ol>
      *
      * @param context      Current context
-     * @param taskId       a unique task identifier, returned with each message
+     * @param searchId     a unique search identifier, to which this task belongs
      * @param searchEngine the search site engine
      * @param criteria     to use
      * @param taskListener for the results
@@ -91,12 +105,14 @@ final class SearchTask
      */
     @Nullable
     static SearchTask createSearchTask(@NonNull final Context context,
-                                       final int taskId,
+                                       final int searchId,
                                        @NonNull final SearchEngine searchEngine,
                                        @NonNull final SearchCoordinatorCriteria criteria,
                                        @NonNull final TaskListener<Book> taskListener) {
 
-        final SearchTask task = new SearchTask(context, taskId, searchEngine, criteria,
+        final SearchTask task = new SearchTask(context, searchId,
+                                               TASK_ID.getAndIncrement(),
+                                               searchEngine, criteria,
                                                taskListener);
 
         searchEngine.setCaller(task);
@@ -131,6 +147,10 @@ final class SearchTask
 
         // search data and engine have nothing in common, abort.
         return null;
+    }
+
+    public int getSearchId() {
+        return searchId;
     }
 
     @NonNull
