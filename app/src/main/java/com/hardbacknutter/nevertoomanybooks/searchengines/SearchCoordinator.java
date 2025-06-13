@@ -443,8 +443,6 @@ public class SearchCoordinator
             if (startConcurrentSearch(context, bookSearch)) {
                 return bookSearch.getId();
             }
-            return 0;
-
         } else {
             // We really want to ensure we get the same book from each,
             // so if the ISBN/code is NOT PRESENT, search the sites
@@ -452,8 +450,8 @@ public class SearchCoordinator
             if (startNextSearch(context, bookSearch)) {
                 return bookSearch.getId();
             }
-            return 0;
         }
+        return 0;
     }
 
     /**

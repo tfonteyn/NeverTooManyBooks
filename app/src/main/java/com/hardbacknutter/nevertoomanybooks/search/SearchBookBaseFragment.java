@@ -164,16 +164,18 @@ public abstract class SearchBookBaseFragment
      * {@link #onSearch(BookSearchCriteria)} as needed.
      *
      * @param criteria to search for
+     *
+     * @return the search-id, or {@code 0} if no search was started
      */
-    final void startSearch(@NonNull final BookSearchCriteria criteria) {
+    final int startSearch(@NonNull final BookSearchCriteria criteria) {
         // check if we have an active search, if so, quit silently.
         if (coordinator.isSearchActive()) {
-            return;
+            return 0;
         }
 
         // any implementation specific reasons not to start searching ?
         if (!onPreSearch(criteria)) {
-            return;
+            return 0;
         }
 
         // Warn the user, AND abort.
@@ -181,15 +183,17 @@ public abstract class SearchBookBaseFragment
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
-            return;
+            return 0;
         }
 
         // Start the lookup in a background search task.
-        if (onSearch(criteria) == 0) {
+        final int searchId = onSearch(criteria);
+        if (searchId == 0) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_search_could_not_be_started,
                           Snackbar.LENGTH_LONG).show();
         }
+        return searchId;
     }
 
     /**
