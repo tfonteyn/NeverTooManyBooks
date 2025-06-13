@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -138,12 +137,10 @@ public class SearchCoordinator
             debugSearchTaskFinished(taskId, currentSearch, engineId);
         }
 
-        // ALWAYS store, even when null!
+        // ALWAYS store, even when the result was null!
         // Presence of the site/task id in the map is an indication that the site was processed
         synchronized (currentSearch) {
-            currentSearch.addResult(engineId, new SearchResult(engineId,
-                                                               searchTask.getSearchBy(),
-                                                               result));
+            currentSearch.addResult(engineId, searchTask.getSearchBy(), result);
         }
 
         // clear obsolete progress status
@@ -706,47 +703,6 @@ public class SearchCoordinator
                                   + '|' + task.getSearchEngine().getEngineId().name());
                 }
             }
-        }
-    }
-
-    /**
-     * The result of a single {@link SearchTask}.
-     * <p>
-     * Encapsulates where a result came from + how the search was done + the result itself.
-     */
-    static class SearchResult {
-
-        @Nullable
-        private final Book result;
-        @NonNull
-        private final EngineId engineId;
-        @NonNull
-        private final SearchEngine.SearchBy searchBy;
-
-        SearchResult(@NonNull final EngineId engineId,
-                     @NonNull final SearchEngine.SearchBy searchBy,
-                     @Nullable final Book result) {
-            this.engineId = engineId;
-            this.searchBy = searchBy;
-            this.result = result;
-        }
-
-        @NonNull
-        EngineId getEngineId() {
-            return engineId;
-        }
-
-        @NonNull
-        SearchEngine.SearchBy getSearchBy() {
-            return searchBy;
-        }
-
-        @NonNull
-        Optional<Book> getResult() {
-            if (result == null || result.isEmpty()) {
-                return Optional.empty();
-            }
-            return Optional.of(result);
         }
     }
 

@@ -68,8 +68,8 @@ class BookSearch {
     private final BookSearchCriteria criteria;
 
     /** Accumulates the results from <strong>individual</strong> search tasks. */
-    private final Map<EngineId, SearchCoordinator.SearchResult> resultsByEngineId = new EnumMap<>(
-            EngineId.class);
+    private final Map<EngineId, SearchTaskResult> resultsByEngineId =
+            new EnumMap<>(EngineId.class);
 
     /** Accumulates any errors from <strong>individual</strong> search tasks. */
     private final Map<EngineId, Throwable> errorsByEngineId = new EnumMap<>(EngineId.class);
@@ -131,7 +131,9 @@ class BookSearch {
     }
 
     void addResult(@NonNull final EngineId engineId,
-                   @NonNull final SearchCoordinator.SearchResult result) {
+                   @NonNull final SearchEngine.SearchBy searchBy,
+                   @Nullable final Book book) {
+        final SearchTaskResult result = new SearchTaskResult(engineId, searchBy, book);
         synchronized (resultsByEngineId) {
             resultsByEngineId.put(engineId, result);
         }
@@ -189,9 +191,9 @@ class BookSearch {
                 .map(resultsByEngineId::get)
                 .filter(Objects::nonNull)
                 .filter(result -> result.getResult().isPresent())
-                .map(searchResult -> new Pair<>(
-                        engineCache.get(searchResult.getEngineId()).getLocale(context),
-                        searchResult.getResult().get()))
+                .map(result -> new Pair<>(
+                        engineCache.get(result.getEngineId()).getLocale(context),
+                        result.getResult().get()))
                 .collect(Collectors.toList());
 
         // Merge the data we have in the order as decided upon above.
@@ -255,7 +257,7 @@ class BookSearch {
 
         activeEngines.forEach(engineId -> {
             // no synchronized needed, at this point all other threads have finished.
-            final SearchCoordinator.SearchResult siteData = resultsByEngineId.get(engineId);
+            final SearchTaskResult siteData = resultsByEngineId.get(engineId);
             if (siteData != null) {
                 siteData.getResult().ifPresent(result -> {
 
@@ -371,5 +373,46 @@ class BookSearch {
                  String.format(Locale.ENGLISH, "processing time: %10d ms",
                                (System.nanoTime() - processTime)
                                / NANO_TO_MILLIS));
+    }
+
+    /**
+     * The result of a single {@link SearchTask}.
+     * <p>
+     * Encapsulates where a result came from + how the search was done + the result itself.
+     */
+    private static class SearchTaskResult {
+
+        @Nullable
+        private final Book result;
+        @NonNull
+        private final EngineId engineId;
+        @NonNull
+        private final SearchEngine.SearchBy searchBy;
+
+        SearchTaskResult(@NonNull final EngineId engineId,
+                         @NonNull final SearchEngine.SearchBy searchBy,
+                         @Nullable final Book result) {
+            this.engineId = engineId;
+            this.searchBy = searchBy;
+            this.result = result;
+        }
+
+        @NonNull
+        EngineId getEngineId() {
+            return engineId;
+        }
+
+        @NonNull
+        SearchEngine.SearchBy getSearchBy() {
+            return searchBy;
+        }
+
+        @NonNull
+        Optional<Book> getResult() {
+            if (result == null || result.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(result);
+        }
     }
 }
