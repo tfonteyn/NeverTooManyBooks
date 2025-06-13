@@ -96,8 +96,20 @@ public class BookSearchCriteria {
                 serviceLocator.isFieldEnabled(DBKey.COVER[1])
         };
 
-        strictIsbn = PreferenceManager.getDefaultSharedPreferences(context)
-                                      .getBoolean(PK_SEARCH_STRICT_ISBN, true);
+        strictIsbn = isStrictIsbnDefault(context);
+    }
+
+    public static boolean isStrictIsbnDefault(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_SEARCH_STRICT_ISBN, true);
+    }
+
+    public static void setStrictIsbnDefault(@NonNull final Context context,
+                                            final boolean strictIsbn) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putBoolean(PK_SEARCH_STRICT_ISBN, strictIsbn)
+                         .apply();
     }
 
     /**
@@ -189,11 +201,6 @@ public class BookSearchCriteria {
         isbn = null;
     }
 
-    public void setIsbn(@NonNull final ISBN isbn) {
-        this.isbnText = isbn.asText();
-        this.isbn = isbn;
-    }
-
     @NonNull
     public Optional<ISBN> getIsbn() {
         if (isbnText.isEmpty()) {
@@ -204,6 +211,11 @@ public class BookSearchCriteria {
             isbn = new ISBN(this.isbnText, this.strictIsbn);
         }
         return Optional.of(isbn);
+    }
+
+    public void setIsbn(@NonNull final ISBN isbn) {
+        this.isbnText = isbn.asText();
+        this.isbn = isbn;
     }
 
     public boolean hasValidIsbn() {
@@ -223,7 +235,7 @@ public class BookSearchCriteria {
     /**
      * Search criteria.
      *
-     * @param context Current context
+     * @param context    Current context
      * @param strictIsbn {@code true} for strict ISBN checking,
      *                   {@code false} for allowing other valid generic codes.
      */
@@ -232,10 +244,7 @@ public class BookSearchCriteria {
         this.strictIsbn = strictIsbn;
         isbn = null;
 
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putBoolean(PK_SEARCH_STRICT_ISBN, strictIsbn)
-                         .apply();
+        setStrictIsbnDefault(context, strictIsbn);
     }
 
     public boolean hasSids() {
