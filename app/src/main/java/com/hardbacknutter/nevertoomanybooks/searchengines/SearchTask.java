@@ -58,15 +58,17 @@ final class SearchTask
     private SearchEngine.SearchBy by;
 
     /** Search criteria. Usage depends on {@link #by}. */
-    @Nullable
-    private SearchCoordinatorCriteria criteria;
+    @NonNull
+    private final SearchCoordinatorCriteria criteria;
 
     private SearchTask(@NonNull final Context context,
                        final int taskId,
                        @NonNull final SearchEngine searchEngine,
+                       @NonNull final SearchCoordinatorCriteria criteria,
                        @NonNull final TaskListener<Book> taskListener) {
         super(taskId, TAG + ' ' + searchEngine.getName(context), taskListener);
         this.searchEngine = searchEngine;
+        this.criteria = criteria;
     }
 
     /**
@@ -94,16 +96,15 @@ final class SearchTask
                                        @NonNull final SearchCoordinatorCriteria criteria,
                                        @NonNull final TaskListener<Book> taskListener) {
 
-        final SearchTask task = new SearchTask(context, taskId, searchEngine, taskListener);
+        final SearchTask task = new SearchTask(context, taskId, searchEngine, criteria,
+                                               taskListener);
 
         searchEngine.setCaller(task);
         task.setExecutor(ASyncExecutor.NETWORK);
 
-        task.setCriteria(criteria);
-
         final EngineId engineId = searchEngine.getEngineId();
 
-        // check for a external id matching the site.
+        // check for a sid matching the site.
         // This always takes preference over all other criteria
         final Optional<String> oSid = criteria.getSid(engineId);
         if (oSid.isPresent()
@@ -144,20 +145,6 @@ final class SearchTask
 
     private void setSearchBy(@NonNull final SearchEngine.SearchBy by) {
         this.by = by;
-    }
-
-    @NonNull
-    public SearchCoordinatorCriteria getCriteria() {
-        return Objects.requireNonNull(criteria, "criteria");
-    }
-
-    /**
-     * Set the criteria.
-     *
-     * @param criteria to search for
-     */
-    private void setCriteria(@NonNull final SearchCoordinatorCriteria criteria) {
-        this.criteria = criteria;
     }
 
     void startSearch() {
@@ -264,7 +251,6 @@ final class SearchTask
         final String isbnStr;
         // Do NOT check on validity, at this point the isbn IS
         // allowed to be any other code as well.
-        //noinspection DataFlowIssue
         final ISBN isbn = criteria.getIsbn().orElse(null);
         if (isbn != null) {
             //noinspection DataFlowIssue
