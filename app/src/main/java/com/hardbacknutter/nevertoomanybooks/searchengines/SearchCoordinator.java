@@ -166,7 +166,7 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG && (DEBUG_SWITCHES.SEARCH_COORDINATOR
                                   || DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS)) {
-            debugEnteredOnSearchTaskFinished(engineId);
+            debugSingleSearchFinished(engineId);
         }
 
 
@@ -227,6 +227,7 @@ public class SearchCoordinator
         }
 
         if (stopSearching) {
+            // debug: measure the time the searches took, don't include the post-processing
             final long processTime = System.nanoTime();
 
             final Book book = accumulateResults(context, criteria);
@@ -234,7 +235,6 @@ public class SearchCoordinator
             if (searchErrors != null && !searchErrors.isEmpty()) {
                 book.putString(BKEY_SEARCH_ERROR, searchErrors);
             }
-
 
             final LiveDataEvent<Book> message = LiveDataEvent.of(book);
             if (cancelRequested.get()) {
@@ -245,7 +245,7 @@ public class SearchCoordinator
 
             if (BuildConfig.DEBUG && (DEBUG_SWITCHES.SEARCH_COORDINATOR
                                       || DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS)) {
-                debugExitOnSearchTaskFinished(processTime, searchErrors);
+                debugAllSearchesFinished(processTime, searchErrors);
             }
         }
     }
@@ -514,24 +514,6 @@ public class SearchCoordinator
     }
 
     /**
-     * Search the given engine with the site specific book id.
-     *
-     * @param engineId to use
-     * @param criteria to search for
-     *
-     * @return {@code true} if the search was started.
-     *
-     * @throws IllegalArgumentException if #sid was invalid
-     */
-    public boolean searchByExternalId(@NonNull final EngineId engineId,
-                                      @NonNull final SearchCoordinatorCriteria criteria) {
-
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-        prepareSearch(criteria);
-        return startSearch(context, engineId, criteria);
-    }
-
-    /**
      * Creates {@link TaskProgress} with the global/total progress of all tasks.
      *
      * @return instance
@@ -572,6 +554,8 @@ public class SearchCoordinator
     /**
      * Called after the search criteria are ready, and before starting the actual search.
      * Clears a number of parameters so we can start the search with a clean slate.
+     *
+     * @param criteria to search for
      *
      * @throws IllegalStateException    if the network is not already checked/available
      * @throws IllegalArgumentException if there are no criteria set
@@ -650,7 +634,7 @@ public class SearchCoordinator
      * If there is a valid ISBN/code, we start a concurrent search on all sites.
      * When all sites are searched, we're done.
      * <p>
-     * Otherwise, we start a serial search using author/title (and optional publisher)
+     * Otherwise, we start a serial search using author/title (and optional other criteria)
      * until we find an ISBN/code or until we searched all sites.
      * Once/if an ISBN/code is found, the serial search is abandoned, and a new concurrent search
      * is started on all sites using the ISBN/code.
@@ -658,6 +642,8 @@ public class SearchCoordinator
      * @param criteria to search for
      *
      * @return {@code true} if at least one search was started.
+     *
+     * @see #startSearch(Context, EngineId, SearchCoordinatorCriteria)
      */
     public boolean search(final SearchCoordinatorCriteria criteria) {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -680,12 +666,34 @@ public class SearchCoordinator
     }
 
     /**
+     * Search a single search on the given engine for the site specific book id (sid).
+     *
+     * @param engineId to use
+     * @param criteria to search for
+     *
+     * @return {@code true} if the search was started.
+     *
+     * @throws IllegalArgumentException if #sid was invalid
+     * @see #startSearch(Context, EngineId, SearchCoordinatorCriteria)
+     */
+    public boolean searchByExternalId(@NonNull final EngineId engineId,
+                                      @NonNull final SearchCoordinatorCriteria criteria) {
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
+        prepareSearch(criteria);
+
+        return startSearch(context, engineId, criteria);
+    }
+
+    /**
      * Start <strong>all</strong>> searches, which have not been run yet, in parallel.
      *
      * @param context  Current context
      * @param criteria to search for
      *
      * @return {@code true} if at least one search was started, {@code false} if none
+     *
+     * @see #startSearch(Context, EngineId, SearchCoordinatorCriteria)
      */
     private boolean startSearch(@NonNull final Context context,
                                 @NonNull final SearchCoordinatorCriteria criteria) {
@@ -713,12 +721,14 @@ public class SearchCoordinator
     }
 
     /**
-     * Start a single task.
+     * Start a single search on the next engine in the queue.
      *
      * @param context  Current context
      * @param criteria to search for
      *
      * @return {@code true} if a search was started, {@code false} if not
+     *
+     * @see #startSearch(Context, EngineId, SearchCoordinatorCriteria)
      */
     private boolean startNextSearch(@NonNull final Context context,
                                     @NonNull final SearchCoordinatorCriteria criteria) {
@@ -747,7 +757,7 @@ public class SearchCoordinator
     }
 
     /**
-     * Start the specified site search. This is where a search-task is started.
+     * Start the specified site search. This is where a search-task is actually started.
      * <p>
      * <strong>synchronized</strong> to make sure we start tasks in a serial manner.
      *
@@ -796,8 +806,9 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG) {
             if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "startSearch",
-                                            "searchEngine=" + config.getEngineId().name());
+                LoggerFactory.getLogger().d(TAG, "startSearch|new-task=" + task.getTaskId(),
+                                            "searchEngine=" + engineId.name(),
+                                            "waitingForIsbnOrCode=" + waitingForIsbnOrCode);
             }
             if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
                 searchTasksStartTime.put(task.getSearchEngine().getEngineId(), System.nanoTime());
@@ -841,27 +852,31 @@ public class SearchCoordinator
         return null;
     }
 
-    private void debugEnteredOnSearchTaskFinished(@NonNull final EngineId engineId) {
+    /**
+     * A single search finished.
+     *
+     * @param engineId which finished
+     */
+    private void debugSingleSearchFinished(@NonNull final EngineId engineId) {
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             searchTasksEndTime.put(engineId, System.nanoTime());
         }
 
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
-                                        "finished=" + engineId.name());
+            final Logger logger = LoggerFactory.getLogger();
+            logger.d(TAG, "onSearchTaskFinished|finished=" + engineId.name());
 
             synchronized (activeTasks) {
                 for (final SearchTask task : activeTasks.values()) {
-                    LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
-                                                "running="
-                                                + task.getSearchEngine().getEngineId().name());
+                    logger.d(TAG, "onSearchTaskFinished|running=" + task.getSearchEngine()
+                                                                        .getEngineId().name());
                 }
             }
         }
     }
 
-    private void debugExitOnSearchTaskFinished(final long processTime,
-                                               @Nullable final String searchErrors) {
+    private void debugAllSearchesFinished(final long processTime,
+                                          @Nullable final String searchErrors) {
         final Logger logger = LoggerFactory.getLogger();
 
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
