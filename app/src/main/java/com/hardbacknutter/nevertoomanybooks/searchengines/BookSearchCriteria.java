@@ -189,6 +189,11 @@ public class BookSearchCriteria {
         isbn = null;
     }
 
+    public void setIsbn(@NonNull final ISBN isbn) {
+        this.isbnText = isbn.asText();
+        this.isbn = isbn;
+    }
+
     @NonNull
     public Optional<ISBN> getIsbn() {
         if (isbnText.isEmpty()) {
