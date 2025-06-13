@@ -59,7 +59,7 @@ final class SearchTask
     private final SearchEngine searchEngine;
     /** Search criteria. Usage depends on {@link #by}. */
     @NonNull
-    private final SearchCoordinatorCriteria criteria;
+    private final BookSearchCriteria criteria;
     /** What criteria to search by. */
     private SearchEngine.SearchBy by;
 
@@ -77,7 +77,7 @@ final class SearchTask
                        final int searchId,
                        final int taskId,
                        @NonNull final SearchEngine searchEngine,
-                       @NonNull final SearchCoordinatorCriteria criteria,
+                       @NonNull final BookSearchCriteria criteria,
                        @NonNull final TaskListener<Book> taskListener) {
         super(taskId, TAG + ' ' + searchEngine.getName(context), taskListener);
         this.searchId = searchId;
@@ -86,7 +86,7 @@ final class SearchTask
     }
 
     /**
-     * Constructor. Will search according to passed {@link SearchCoordinatorCriteria}.
+     * Constructor. Will search according to passed {@link BookSearchCriteria}.
      * <ol>
      *      <li>external id</li>
      *      <li>valid ISBN</li>
@@ -107,7 +107,7 @@ final class SearchTask
     static SearchTask createSearchTask(@NonNull final Context context,
                                        final int searchId,
                                        @NonNull final SearchEngine searchEngine,
-                                       @NonNull final SearchCoordinatorCriteria criteria,
+                                       @NonNull final BookSearchCriteria criteria,
                                        @NonNull final TaskListener<Book> taskListener) {
 
         final SearchTask task = new SearchTask(context, searchId,

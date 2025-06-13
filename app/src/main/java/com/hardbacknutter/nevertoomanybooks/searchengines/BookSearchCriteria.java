@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * All values are 'raw', i.e. exactly as entered by the user in a form.
  */
 @SuppressWarnings("WeakerAccess")
-public class SearchCoordinatorCriteria {
+public class BookSearchCriteria {
 
     private static final String PK_SEARCH_STRICT_ISBN = "search.byIsbn.strict";
     /**
@@ -85,7 +85,7 @@ public class SearchCoordinatorCriteria {
     @NonNull
     private String publisher = "";
 
-    public SearchCoordinatorCriteria(@NonNull final Context context) {
+    public BookSearchCriteria(@NonNull final Context context) {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         fetchCovers = new boolean[]{
                 serviceLocator.isFieldEnabled(DBKey.COVER[0]),
@@ -308,7 +308,7 @@ public class SearchCoordinatorCriteria {
     @Override
     @NonNull
     public String toString() {
-        return "SearchCoordinatorCriteria{"
+        return "BookSearchCriteria{"
                + "title=`" + title + '`'
                + ", author=`" + author + '`'
                + ", series=`" + series + '`'

@@ -433,7 +433,7 @@ public class SearchCoordinator
      *
      * @see #startSearch(Context, boolean, EngineId, BookSearch)
      */
-    public boolean search(@NonNull final SearchCoordinatorCriteria criteria) {
+    public boolean search(@NonNull final BookSearchCriteria criteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "init search");
         }
@@ -465,7 +465,7 @@ public class SearchCoordinator
      * @see #startSearch(Context, boolean, EngineId, BookSearch)
      */
     public boolean searchByExternalId(@NonNull final EngineId engineId,
-                                      @NonNull final SearchCoordinatorCriteria criteria) {
+                                      @NonNull final BookSearchCriteria criteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "init searchByExternalId");
         }
@@ -490,7 +490,7 @@ public class SearchCoordinator
      */
     @NonNull
     private BookSearch prepareSearch(@NonNull final Context context,
-                                     @NonNull final SearchCoordinatorCriteria criteria) {
+                                     @NonNull final BookSearchCriteria criteria) {
         // reset flags
         cancelRequested.set(false);
 

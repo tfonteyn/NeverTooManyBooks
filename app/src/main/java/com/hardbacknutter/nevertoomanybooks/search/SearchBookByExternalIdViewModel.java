@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 
 @SuppressWarnings("WeakerAccess")
 public class SearchBookByExternalIdViewModel
@@ -41,7 +41,7 @@ public class SearchBookByExternalIdViewModel
 
     @NonNull
     private final EditBookOutput resultData = new EditBookOutput();
-    private SearchCoordinatorCriteria searchCriteria;
+    private BookSearchCriteria searchCriteria;
 
     @NonNull
     Intent createResultIntent() {
@@ -63,7 +63,7 @@ public class SearchBookByExternalIdViewModel
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
         if (searchCriteria == null) {
-            searchCriteria = new SearchCoordinatorCriteria(context);
+            searchCriteria = new BookSearchCriteria(context);
 
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);
@@ -79,7 +79,7 @@ public class SearchBookByExternalIdViewModel
     }
 
     @NonNull
-    public SearchCoordinatorCriteria getSearchCriteria() {
+    public BookSearchCriteria getSearchCriteria() {
         return searchCriteria;
     }
 }

@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -195,7 +195,7 @@ public class SearchBookByTextFragment
     }
 
     private void modelToView() {
-        final SearchCoordinatorCriteria searchCriteria = vm.getSearchCriteria();
+        final BookSearchCriteria searchCriteria = vm.getSearchCriteria();
         vb.title.setText(searchCriteria.getTitle());
         vb.author.setText(searchCriteria.getAuthor());
         vb.seriesTitle.setText(searchCriteria.getSeries());
@@ -204,7 +204,7 @@ public class SearchBookByTextFragment
     }
 
     private void viewToModel() {
-        final SearchCoordinatorCriteria searchCriteria = vm.getSearchCriteria();
+        final BookSearchCriteria searchCriteria = vm.getSearchCriteria();
         //noinspection DataFlowIssue
         searchCriteria.setTitle(vb.title.getText().toString().strip());
         searchCriteria.setAuthor(vb.author.getText().toString().strip());
@@ -236,7 +236,7 @@ public class SearchBookByTextFragment
     }
 
     @Override
-    boolean onPreSearch(@NonNull final SearchCoordinatorCriteria criteria) {
+    boolean onPreSearch(@NonNull final BookSearchCriteria criteria) {
         viewToModel();
 
         final String authorSearchText = criteria.getAuthor();
@@ -293,7 +293,7 @@ public class SearchBookByTextFragment
         // If any of the search fields are not present in the result,
         // we add them manually as the template for a new book.
 
-        final SearchCoordinatorCriteria searchCriteria = vm.getSearchCriteria();
+        final BookSearchCriteria searchCriteria = vm.getSearchCriteria();
 
         if (!book.contains(DBKey.TITLE)) {
             book.setTitle(searchCriteria.getTitle());

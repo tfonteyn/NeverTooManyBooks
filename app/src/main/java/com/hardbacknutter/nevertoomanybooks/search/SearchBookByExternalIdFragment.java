@@ -47,8 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class SearchBookByExternalIdFragment
@@ -248,7 +248,7 @@ public class SearchBookByExternalIdFragment
         startSearch(vm.getSearchCriteria());
     }
     @Override
-    boolean onPreSearch(@NonNull final SearchCoordinatorCriteria criteria) {
+    boolean onPreSearch(@NonNull final BookSearchCriteria criteria) {
         //noinspection DataFlowIssue
         final String sid = vb.externalId.getText().toString().strip();
 
@@ -265,7 +265,7 @@ public class SearchBookByExternalIdFragment
     }
 
     @Override
-    boolean onSearch(@NonNull final SearchCoordinatorCriteria criteria) {
+    boolean onSearch(@NonNull final BookSearchCriteria criteria) {
         //noinspection DataFlowIssue
         return coordinator.searchByExternalId(engineId, criteria);
     }

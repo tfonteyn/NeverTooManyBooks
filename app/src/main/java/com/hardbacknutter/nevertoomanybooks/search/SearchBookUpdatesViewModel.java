@@ -55,9 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncFieldDef;
@@ -101,7 +101,7 @@ public class SearchBookUpdatesViewModel
     @Nullable
     private SyncReaderProcessor syncProcessor;
 
-    private SearchCoordinatorCriteria searchCriteria;
+    private BookSearchCriteria searchCriteria;
 
     /** Database Access. */
     private BookDao bookDao;
@@ -154,7 +154,7 @@ public class SearchBookUpdatesViewModel
 
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
-            searchCriteria = new SearchCoordinatorCriteria(context);
+            searchCriteria = new BookSearchCriteria(context);
 
             if (args != null) {
                 // if we have args, then we can expect the list to be present
@@ -167,7 +167,7 @@ public class SearchBookUpdatesViewModel
     }
 
     @NonNull
-    public SearchCoordinatorCriteria getSearchCriteria() {
+    public BookSearchCriteria getSearchCriteria() {
         return searchCriteria;
     }
 

@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
@@ -159,12 +159,12 @@ public abstract class SearchBookBaseFragment
      * The results come back in {@link #onSearchResults(Book)}.
      * <p>
      * This is final; override
-     * {@link #onPreSearch(SearchCoordinatorCriteria)} and
-     * {@link #onSearch(SearchCoordinatorCriteria)} as needed.
+     * {@link #onPreSearch(BookSearchCriteria)} and
+     * {@link #onSearch(BookSearchCriteria)} as needed.
      *
      * @param criteria to search for
      */
-    final void startSearch(@NonNull final SearchCoordinatorCriteria criteria) {
+    final void startSearch(@NonNull final BookSearchCriteria criteria) {
         // check if we have an active search, if so, quit silently.
         if (coordinator.isSearchActive()) {
             return;
@@ -199,20 +199,20 @@ public abstract class SearchBookBaseFragment
      *
      * @return {@code true} if a search is allowed
      */
-    boolean onPreSearch(@NonNull final SearchCoordinatorCriteria criteria) {
+    boolean onPreSearch(@NonNull final BookSearchCriteria criteria) {
         return true;
     }
 
     /**
      * Override to customize which search function is called.
      * The default implementation starts the generic
-     * {@link SearchCoordinator#search(SearchCoordinatorCriteria)}.
+     * {@link SearchCoordinator#search(BookSearchCriteria)}.
      *
      * @param criteria to search for
      *
      * @return {@code true} if a search was started
      */
-    boolean onSearch(@NonNull final SearchCoordinatorCriteria criteria) {
+    boolean onSearch(@NonNull final BookSearchCriteria criteria) {
         return coordinator.search(criteria);
     }
 

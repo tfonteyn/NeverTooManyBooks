@@ -65,7 +65,7 @@ class BookSearch {
 
     private final int id;
     @NonNull
-    private final SearchCoordinatorCriteria criteria;
+    private final BookSearchCriteria criteria;
 
     /** Accumulates the results from <strong>individual</strong> search tasks. */
     private final Map<EngineId, SearchCoordinator.SearchResult> resultsByEngineId = new EnumMap<>(
@@ -97,7 +97,7 @@ class BookSearch {
      * @param resultsAccumulator injected accumulator
      */
     BookSearch(@NonNull final List<Site> sites,
-               @NonNull final SearchCoordinatorCriteria criteria,
+               @NonNull final BookSearchCriteria criteria,
                @NonNull final ResultsAccumulator resultsAccumulator) {
         this.id = SEARCH_ID.incrementAndGet();
         // Take a copy!
@@ -118,7 +118,7 @@ class BookSearch {
     }
 
     @NonNull
-    SearchCoordinatorCriteria getCriteria() {
+    BookSearchCriteria getCriteria() {
         return criteria;
     }
 

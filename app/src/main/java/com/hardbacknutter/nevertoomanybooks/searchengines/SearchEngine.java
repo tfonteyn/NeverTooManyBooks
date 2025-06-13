@@ -381,7 +381,7 @@ public interface SearchEngine
         @WorkerThread
         @NonNull
         Book search(@NonNull Context context,
-                    @NonNull SearchCoordinatorCriteria criteria,
+                    @NonNull BookSearchCriteria criteria,
                     @Nullable String code,
                     @NonNull boolean[] fetchCovers)
                 throws StorageException,

@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbn
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -463,7 +463,7 @@ public class SearchBookByIsbnFragment
 
     /**
      * Prepare to search with ISBN or, if allowed, with a generic code.
-     * If successful, {@link #startSearch(SearchCoordinatorCriteria)}
+     * If successful, {@link #startSearch(BookSearchCriteria)}
      * will be called as the next step.
      *
      * @param code to search for

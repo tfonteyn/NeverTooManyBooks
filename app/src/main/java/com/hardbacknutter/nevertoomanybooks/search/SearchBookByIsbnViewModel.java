@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 
 public class SearchBookByIsbnViewModel
         extends ViewModel {
@@ -77,7 +77,7 @@ public class SearchBookByIsbnViewModel
     private BookDao bookDao;
 
     private Style style;
-    private SearchCoordinatorCriteria searchCriteria;
+    private BookSearchCriteria searchCriteria;
 
     @NonNull
     private Scanning scanning = Scanning.Off;
@@ -104,7 +104,7 @@ public class SearchBookByIsbnViewModel
                      @Nullable final Bundle args) {
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
-            searchCriteria = new SearchCoordinatorCriteria(context);
+            searchCriteria = new BookSearchCriteria(context);
             final boolean strictIsbn = searchCriteria.isStrictIsbn();
 
             final String qs = PreferenceManager.getDefaultSharedPreferences(context)
@@ -132,7 +132,7 @@ public class SearchBookByIsbnViewModel
     }
 
     @NonNull
-    public SearchCoordinatorCriteria getSearchCriteria() {
+    public BookSearchCriteria getSearchCriteria() {
         return searchCriteria;
     }
 
