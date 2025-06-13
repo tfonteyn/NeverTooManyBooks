@@ -147,7 +147,7 @@ public abstract class SearchBookBaseFragment
         });
     }
 
-    private void closeProgressDialog() {
+    void closeProgressDialog() {
         if (progressDelegate != null) {
             //noinspection DataFlowIssue
             progressDelegate.dismiss(getActivity().getWindow());
@@ -221,11 +221,7 @@ public abstract class SearchBookBaseFragment
         return coordinator.search(criteria);
     }
 
-    private void onSearchCancelled(@NonNull final LiveDataEvent<BookSearchResult> message) {
-        closeProgressDialog();
-        //noinspection DataFlowIssue
-        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
-    }
+    abstract void onSearchCancelled(@NonNull LiveDataEvent<BookSearchResult> message);
 
     private void onSearchFinished(@NonNull final LiveDataEvent<BookSearchResult> message) {
         closeProgressDialog();

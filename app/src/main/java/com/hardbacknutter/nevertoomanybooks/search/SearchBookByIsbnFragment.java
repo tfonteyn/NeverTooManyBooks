@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookCont
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -64,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -517,6 +519,13 @@ public class SearchBookByIsbnFragment
                 .setPositiveButton(R.string.action_add, (d, w) -> onAdd.run())
                 .create()
                 .show();
+    }
+
+    @Override
+    void onSearchCancelled(@NonNull final LiveDataEvent<BookSearchResult> message) {
+        closeProgressDialog();
+        //noinspection DataFlowIssue
+        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

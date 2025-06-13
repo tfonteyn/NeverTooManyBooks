@@ -42,12 +42,14 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -247,6 +249,7 @@ public class SearchBookByExternalIdFragment
     private void startSearch() {
         startSearch(vm.getSearchCriteria());
     }
+
     @Override
     boolean onPreSearch(@NonNull final BookSearchCriteria criteria) {
         //noinspection DataFlowIssue
@@ -268,6 +271,13 @@ public class SearchBookByExternalIdFragment
     int onSearch(@NonNull final BookSearchCriteria criteria) {
         //noinspection DataFlowIssue
         return coordinator.searchByExternalId(engineId, criteria);
+    }
+
+    @Override
+    void onSearchCancelled(@NonNull final LiveDataEvent<BookSearchResult> message) {
+        closeProgressDialog();
+        //noinspection DataFlowIssue
+        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
     }
 
     @Override
