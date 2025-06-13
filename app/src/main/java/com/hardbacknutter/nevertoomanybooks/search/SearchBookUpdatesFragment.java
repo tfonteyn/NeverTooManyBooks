@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncfieldConfigBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
@@ -240,15 +241,16 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    private void onOneDone(@NonNull final LiveDataEvent<Book> message) {
+    private void onOneDone(@NonNull final LiveDataEvent<BookSearchResult> message) {
         //noinspection DataFlowIssue
-        message.process(book -> vm.processOne(getContext(), book));
+        message.process(result -> vm.processOne(getContext(), result.getBook()));
     }
 
-    private void onAllDone(@NonNull final LiveDataEvent<Book> message) {
+    private void onAllDone(@NonNull final LiveDataEvent<BookSearchResult> message) {
         closeProgressDialog();
 
-        message.process(book -> {
+        message.process(result -> {
+            final Book book = result.getBook();
             final boolean modified = book.getBoolean(EditBookOutput.BKEY_MODIFIED);
             final long firstBook = book.getLong(DBKey.FK_BOOK);
             final long lastProcessed = book.getLong(EditBookOutput.BKEY_LAST_BOOK_ID_PROCESSED);

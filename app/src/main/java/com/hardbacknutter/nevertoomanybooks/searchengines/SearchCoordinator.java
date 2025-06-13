@@ -76,9 +76,9 @@ public class SearchCoordinator
 
     protected final MutableLiveData<LiveDataEvent<TaskProgress>>
             searchCoordinatorProgress = new MutableLiveData<>();
-    protected final MutableLiveData<LiveDataEvent<Book>>
+    protected final MutableLiveData<LiveDataEvent<BookSearchResult>>
             searchCoordinatorCancelled = new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<Book>>
+    private final MutableLiveData<LiveDataEvent<BookSearchResult>>
             searchCoordinatorFinished = new MutableLiveData<>();
 
     /** key: task_id. */
@@ -200,7 +200,8 @@ public class SearchCoordinator
                 book.putString(BKEY_SEARCH_ERROR, searchErrors);
             }
 
-            final LiveDataEvent<Book> message = LiveDataEvent.of(book);
+            final LiveDataEvent<BookSearchResult> message = LiveDataEvent.of(
+                    new BookSearchResult(currentSearch.getId(), book));
             if (cancelRequested.get()) {
                 searchCoordinatorCancelled.setValue(message);
             } else {
@@ -291,7 +292,7 @@ public class SearchCoordinator
      * @return book data
      */
     @NonNull
-    public LiveData<LiveDataEvent<Book>> onSearchFinished() {
+    public LiveData<LiveDataEvent<BookSearchResult>> onSearchFinished() {
         return searchCoordinatorFinished;
     }
 
@@ -301,7 +302,7 @@ public class SearchCoordinator
      * @return book data found so far
      */
     @NonNull
-    public LiveData<LiveDataEvent<Book>> onSearchCancelled() {
+    public LiveData<LiveDataEvent<BookSearchResult>> onSearchCancelled() {
         return searchCoordinatorCancelled;
     }
 

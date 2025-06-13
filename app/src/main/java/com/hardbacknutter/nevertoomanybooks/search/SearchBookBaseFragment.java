@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesSingleListContract;
@@ -216,15 +217,16 @@ public abstract class SearchBookBaseFragment
         return coordinator.search(criteria);
     }
 
-    private void onSearchCancelled(@NonNull final LiveDataEvent<Book> message) {
+    private void onSearchCancelled(@NonNull final LiveDataEvent<BookSearchResult> message) {
         closeProgressDialog();
         //noinspection DataFlowIssue
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
     }
 
-    private void onSearchFinished(@NonNull final LiveDataEvent<Book> message) {
+    private void onSearchFinished(@NonNull final LiveDataEvent<BookSearchResult> message) {
         closeProgressDialog();
-        message.process(book -> {
+        message.process(result -> {
+            final Book book = result.getBook();
             final String searchErrors = book.getString(SearchCoordinator.BKEY_SEARCH_ERROR,
                                                        null);
             book.remove(SearchCoordinator.BKEY_SEARCH_ERROR);

@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
@@ -80,7 +81,7 @@ public class SearchBookUpdatesViewModel
     /** Ask confirmation if the number of covers to download exceeds this number. */
     private static final int WARN_FOR_NUMBER_OF_COVERS = 10;
 
-    private final MutableLiveData<LiveDataEvent<Book>> listFinished =
+    private final MutableLiveData<LiveDataEvent<BookSearchResult>> listFinished =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<Throwable>> listFailed =
             new MutableLiveData<>();
@@ -124,7 +125,7 @@ public class SearchBookUpdatesViewModel
     private int cachedSize;
 
     @NonNull
-    LiveData<LiveDataEvent<Book>> onAllDone() {
+    LiveData<LiveDataEvent<BookSearchResult>> onAllDone() {
         return listFinished;
     }
 
@@ -588,7 +589,8 @@ public class SearchBookUpdatesViewModel
         }
 
 
-        final LiveDataEvent<Book> message = LiveDataEvent.of(book);
+        final LiveDataEvent<BookSearchResult> message = LiveDataEvent.of(
+                new BookSearchResult(0, book));
         if (success) {
             listFinished.setValue(message);
         } else {
