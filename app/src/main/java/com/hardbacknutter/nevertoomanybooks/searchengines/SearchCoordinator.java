@@ -166,7 +166,7 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG && (DEBUG_SWITCHES.SEARCH_COORDINATOR
                                   || DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS)) {
-            debugSingleSearchFinished(engineId);
+            debugSingleSearchFinished(taskId, engineId);
         }
 
 
@@ -196,20 +196,12 @@ public class SearchCoordinator
 
             if (waitingForIsbnOrCode) {
                 if (result != null && result.hasIsbn()) {
-                    waitingForIsbnOrCode = false;
-
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                        LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
-                                                    "waitingForExactCode",
-                                                    "isbn=" + result.getIsbn());
-                    }
-
                     // Start the remaining searches, even if they have run before.
                     // They will redo the search WITH the ISBN/code.
                     // Replace the search text with the (we hope) exact ISBN/code we just found.
                     // Worst case, explicitly use an empty string.
                     criteria.setIsbnText(result.getIsbn());
-                    searchStarted = startSearch(context, criteria);
+                    searchStarted = startConcurrentSearch(context, criteria);
                 } else {
                     // sequentially start the next search which has not run yet.
                     searchStarted = startNextSearch(context, criteria);
@@ -316,23 +308,46 @@ public class SearchCoordinator
     }
 
     /**
-     * Cancel all searches.
+     * Creates {@link TaskProgress} with the global/total progress of all tasks.
+     *
+     * @return instance
      */
-    public void cancel() {
-        cancelRequested.set(true);
-        synchronized (activeTasks) {
-            activeTasks.values().forEach(SearchTask::cancel);
+    @NonNull
+    private TaskProgress accumulateProgress() {
+
+        int progressMax = 0;
+        int progressCount = 0;
+
+        final StringJoiner sb = new StringJoiner("\n");
+        // Start with the base message if we have one.
+        if (baseMessage != null && !baseMessage.isEmpty()) {
+            sb.add(baseMessage);
         }
+
+        synchronized (progressByEngineId) {
+            if (!progressByEngineId.isEmpty()) {
+                // Append each task message
+                progressByEngineId
+                        .values()
+                        .stream()
+                        .map(msg -> String.format(listElementPrefixString, msg.text))
+                        .forEach(sb::add);
+
+                // Accumulate the current & max values for each active task.
+                for (final TaskProgress taskProgress : progressByEngineId.values()) {
+                    progressMax += taskProgress.maxPosition;
+                    progressCount += taskProgress.position;
+                }
+            }
+        }
+
+        return new TaskProgress(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(),
+                                progressMax, progressCount, null);
     }
+
 
     @Override
     protected void onCleared() {
-        cancel();
-    }
-
-    public void cancelTask(@SuppressWarnings("unused") @IdRes final int taskId) {
-        // reminder: this object, the SearchCoordinator is a pseudo task
-        // we're only using "cancelTask" to conform with other usage
         cancel();
     }
 
@@ -359,6 +374,346 @@ public class SearchCoordinator
 
             listElementPrefixString = context.getString(R.string.list_element);
         }
+    }
+
+    /**
+     * Cancel all searches.
+     */
+    public void cancel() {
+        cancelRequested.set(true);
+        synchronized (activeTasks) {
+            activeTasks.values().forEach(SearchTask::cancel);
+        }
+    }
+
+    public void cancelTask(@SuppressWarnings("unused") @IdRes final int taskId) {
+        // reminder: this object, the SearchCoordinator is a pseudo task
+        // we're only using "cancelTask" to conform with other usage
+        cancel();
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelRequested.get();
+    }
+
+    /**
+     * Check if a search task is already running.
+     *
+     * @return {@code true} if there is
+     */
+    public boolean isSearchActive() {
+        synchronized (activeTasks) {
+            return !activeTasks.isEmpty();
+        }
+    }
+
+    /**
+     * Get the <strong>current</strong> preferred search sites.
+     *
+     * @return list with all sites <strong>active and disabled</strong>
+     */
+    @NonNull
+    public List<Site> getSiteList() {
+        return allSites;
+    }
+
+    /**
+     * Override the initial list. Can contain active and disabled equally.
+     *
+     * @param sites to use
+     */
+    public void setSiteList(@NonNull final List<Site> sites) {
+        allSites = sites;
+    }
+
+    /**
+     * Start a search.
+     * <p>
+     * If there is a valid ISBN/code, we start a concurrent search on all sites.
+     * When all sites are searched, we're done.
+     * <p>
+     * Otherwise, we start a serial search using author/title (and optional other criteria)
+     * until we find an ISBN/code or until we searched all sites.
+     * Once/if an ISBN/code is found, the serial search is abandoned, and a new concurrent search
+     * is started on all sites using the ISBN/code.
+     *
+     * @param criteria to search for
+     *
+     * @return {@code true} if at least one search was started.
+     *
+     * @see #startSearch(Context, boolean, EngineId, SearchCoordinatorCriteria)
+     */
+    public boolean search(@NonNull final SearchCoordinatorCriteria criteria) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "init search");
+        }
+
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
+        prepareSearch(criteria);
+
+        if (criteria.hasSids() || criteria.hasValidIsbn()) {
+            return startConcurrentSearch(context, criteria);
+
+        } else {
+            // We really want to ensure we get the same book from each,
+            // so if the ISBN/code is NOT PRESENT, search the sites
+            // one at a time until we get a ISBN/code.
+            return startNextSearch(context, criteria);
+        }
+    }
+
+    /**
+     * Search a single search on the given engine for the site specific book id (sid).
+     *
+     * @param engineId to use
+     * @param criteria to search for
+     *
+     * @return {@code true} if the search was started.
+     *
+     * @throws IllegalArgumentException if #sid was invalid
+     * @see #startSearch(Context, boolean, EngineId, SearchCoordinatorCriteria)
+     */
+    public boolean searchByExternalId(@NonNull final EngineId engineId,
+                                      @NonNull final SearchCoordinatorCriteria criteria) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "init searchByExternalId");
+        }
+
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
+        prepareSearch(criteria);
+        return startSearch(context, false, engineId, criteria);
+    }
+
+    /**
+     * Called after the search criteria are ready, and before starting the actual search.
+     * Clears a number of parameters so we can start the search with a clean slate.
+     *
+     * @param criteria to search for
+     *
+     * @throws IllegalStateException    if the network is not already checked/available
+     * @throws IllegalArgumentException if there are no criteria set
+     */
+    private void prepareSearch(@NonNull final SearchCoordinatorCriteria criteria) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            searchStartTime = System.nanoTime();
+        }
+
+        // Developer sanity checks
+        if (BuildConfig.DEBUG /* always */) {
+            if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
+                throw new IllegalStateException("Network should be checked before starting search");
+            }
+
+            if (isSearchActive()) {
+                throw new IllegalStateException("a search is already running");
+            }
+
+            if (criteria.isEmpty()) {
+                throw new IllegalArgumentException("Nothing to search for");
+            }
+        }
+
+        // reset flags
+        cancelRequested.set(false);
+
+        // no synchronized needed, at this point there are no other threads
+        resultsByEngineId.clear();
+        errorsByEngineId.clear();
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "prepareSearch|criteria=" + criteria);
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            searchTasksStartTime.clear();
+            searchTasksEndTime.clear();
+        }
+    }
+
+    /**
+     * Start <strong>all</strong>> searches, which have not been run yet, in parallel.
+     *
+     * @param context  Current context
+     * @param criteria to search for
+     *
+     * @return {@code true} if at least one search was started, {@code false} if none
+     *
+     * @see #startSearch(Context, boolean, EngineId, SearchCoordinatorCriteria)
+     */
+    private boolean startConcurrentSearch(@NonNull final Context context,
+                                          @NonNull final SearchCoordinatorCriteria criteria) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "startConcurrentSearch");
+        }
+
+        // refuse new searches if we're shutting down.
+        if (cancelRequested.get()) {
+            return false;
+        }
+
+        boolean atLeastOneStarted = false;
+        final List<EngineId> activeEngines = allSites.stream()
+                                                     .filter(Site::isActive)
+                                                     .map(Site::getEngineId)
+                                                     .collect(Collectors.toList());
+        for (final EngineId engineId : activeEngines) {
+            // If the site has not been searched yet, search it
+            synchronized (resultsByEngineId) {
+                if (!resultsByEngineId.containsKey(engineId)) {
+                    if (startSearch(context, false, engineId, criteria)) {
+                        atLeastOneStarted = true;
+                    }
+                }
+            }
+        }
+        return atLeastOneStarted;
+    }
+
+    /**
+     * Start a single search on the next engine in the queue.
+     *
+     * @param context  Current context
+     * @param criteria to search for
+     *
+     * @return {@code true} if a search was started, {@code false} if not
+     *
+     * @see #startSearch(Context, boolean, EngineId, SearchCoordinatorCriteria)
+     */
+    private boolean startNextSearch(@NonNull final Context context,
+                                    @NonNull final SearchCoordinatorCriteria criteria) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "startNextSearch");
+        }
+
+        // refuse new searches if we're shutting down.
+        if (cancelRequested.get()) {
+            return false;
+        }
+
+        final List<EngineId> activeEngines = allSites.stream()
+                                                     .filter(Site::isActive)
+                                                     .map(Site::getEngineId)
+                                                     .collect(Collectors.toList());
+        for (final EngineId engineId : activeEngines) {
+            // If the site has not been searched yet, search it
+            synchronized (resultsByEngineId) {
+                if (!resultsByEngineId.containsKey(engineId)) {
+                    final boolean started = startSearch(context, true, engineId, criteria);
+                    if (started) {
+                        return true;
+                    }
+                    // else, loop to next site
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Start the specified site search. This is where a search-task is actually started.
+     * <p>
+     * <strong>synchronized</strong> to make sure we start tasks in a serial manner.
+     *
+     * @param context           Current context
+     * @param waitForIsbnOrCode flag
+     * @param engineId          to search
+     * @param criteria          to use
+     *
+     * @return {@code true} if the search was started.
+     */
+    private synchronized boolean startSearch(@NonNull final Context context,
+                                             final boolean waitForIsbnOrCode,
+                                             @NonNull final EngineId engineId,
+                                             @NonNull final SearchCoordinatorCriteria criteria) {
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "startSearch",
+                                        "searchEngine=" + engineId.name(),
+                                        "waitForIsbnOrCode=" + waitForIsbnOrCode);
+        }
+        // refuse new searches if we're shutting down.
+        if (cancelRequested.get()) {
+            return false;
+        }
+
+        final SearchEngineConfig config = engineId.getConfig();
+        // Sanity check; should not happen when we get here... flw
+        if (config == null) {
+            return false;
+        }
+
+        SearchEngine searchEngine = engineCache.get(engineId);
+        if (searchEngine == null) {
+            searchEngine = engineId.createSearchEngine(context);
+            engineCache.put(engineId, searchEngine);
+        } else {
+            searchEngine.reset();
+        }
+
+        @Nullable
+        final SearchTask task = SearchTask.createSearchTask(context, TASK_ID.getAndIncrement(),
+                                                            searchEngine,
+                                                            criteria,
+                                                            searchTaskListener);
+
+        if (task == null) {
+            // search data and engine have nothing in common, abort silently.
+            return false;
+        }
+
+        synchronized (activeTasks) {
+            activeTasks.put(task.getTaskId(), task);
+        }
+
+        if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                LoggerFactory.getLogger().d(TAG, "startSearch|new-task=" + task.getTaskId(),
+                                            "searchEngine=" + engineId.name(),
+                                            "waitForIsbnOrCode=" + waitForIsbnOrCode);
+            }
+            if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+                searchTasksStartTime.put(task.getSearchEngine().getEngineId(), System.nanoTime());
+            }
+        }
+
+        waitingForIsbnOrCode = waitForIsbnOrCode;
+        task.startSearch();
+        return true;
+    }
+
+    /**
+     * Called when all is said and done. Collects all individual website errors (if any)
+     * into a single user-formatted message.
+     *
+     * @param context Current context
+     *
+     * @return the error message
+     */
+    @Nullable
+    private String accumulateErrors(@NonNull final Context context) {
+        // no synchronized needed, at this point all other threads have finished.
+        if (!errorsByEngineId.isEmpty()) {
+            final String msg = errorsByEngineId
+                    .values()
+                    .stream()
+                    .map(exception -> ExMsg
+                            .map(context, exception)
+                            .orElseGet(() -> {
+                                // generic network related IOException message
+                                if (exception instanceof IOException) {
+                                    return context.getString(R.string.error_search_failed_network);
+                                }
+                                // generic unknown message
+                                return context.getString(R.string.error_unexpected);
+                            }))
+                    .collect(Collectors.joining("\n"));
+
+            errorsByEngineId.clear();
+            return msg;
+        }
+        return null;
     }
 
     /**
@@ -508,368 +863,26 @@ public class SearchCoordinator
         return sitesInOrder;
     }
 
-    @Override
-    public boolean isCancelled() {
-        return cancelRequested.get();
-    }
-
-    /**
-     * Creates {@link TaskProgress} with the global/total progress of all tasks.
-     *
-     * @return instance
-     */
-    @NonNull
-    private TaskProgress accumulateProgress() {
-
-        int progressMax = 0;
-        int progressCount = 0;
-
-        final StringJoiner sb = new StringJoiner("\n");
-        // Start with the base message if we have one.
-        if (baseMessage != null && !baseMessage.isEmpty()) {
-            sb.add(baseMessage);
-        }
-
-        synchronized (progressByEngineId) {
-            if (!progressByEngineId.isEmpty()) {
-                // Append each task message
-                progressByEngineId
-                        .values()
-                        .stream()
-                        .map(msg -> String.format(listElementPrefixString, msg.text))
-                        .forEach(sb::add);
-
-                // Accumulate the current & max values for each active task.
-                for (final TaskProgress taskProgress : progressByEngineId.values()) {
-                    progressMax += taskProgress.maxPosition;
-                    progressCount += taskProgress.position;
-                }
-            }
-        }
-
-        return new TaskProgress(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(),
-                                progressMax, progressCount, null);
-    }
-
-    /**
-     * Called after the search criteria are ready, and before starting the actual search.
-     * Clears a number of parameters so we can start the search with a clean slate.
-     *
-     * @param criteria to search for
-     *
-     * @throws IllegalStateException    if the network is not already checked/available
-     * @throws IllegalArgumentException if there are no criteria set
-     */
-    private void prepareSearch(@NonNull final SearchCoordinatorCriteria criteria) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            searchStartTime = System.nanoTime();
-        }
-
-        // Developer sanity checks
-        if (BuildConfig.DEBUG /* always */) {
-            if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
-                throw new IllegalStateException("Network should be checked before starting search");
-            }
-
-            if (isSearchActive()) {
-                throw new IllegalStateException("a search is already running");
-            }
-
-            if (criteria.isEmpty()) {
-                throw new IllegalArgumentException("Nothing to search for");
-            }
-        }
-
-        // reset flags
-        waitingForIsbnOrCode = false;
-        cancelRequested.set(false);
-
-        // no synchronized needed, at this point there are no other threads
-        resultsByEngineId.clear();
-        errorsByEngineId.clear();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "prepareSearch|criteria=" + criteria);
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            searchTasksStartTime.clear();
-            searchTasksEndTime.clear();
-        }
-    }
-
-    /**
-     * Check if a search task is already running.
-     *
-     * @return {@code true} if there is
-     */
-    public boolean isSearchActive() {
-        synchronized (activeTasks) {
-            return !activeTasks.isEmpty();
-        }
-    }
-
-    /**
-     * Get the <strong>current</strong> preferred search sites.
-     *
-     * @return list with all sites <strong>active and disabled</strong>
-     */
-    @NonNull
-    public List<Site> getSiteList() {
-        return allSites;
-    }
-
-    /**
-     * Override the initial list. Can contain active and disabled equally.
-     *
-     * @param sites to use
-     */
-    public void setSiteList(@NonNull final List<Site> sites) {
-        allSites = sites;
-    }
-
-    /**
-     * Start a search.
-     * <p>
-     * If there is a valid ISBN/code, we start a concurrent search on all sites.
-     * When all sites are searched, we're done.
-     * <p>
-     * Otherwise, we start a serial search using author/title (and optional other criteria)
-     * until we find an ISBN/code or until we searched all sites.
-     * Once/if an ISBN/code is found, the serial search is abandoned, and a new concurrent search
-     * is started on all sites using the ISBN/code.
-     *
-     * @param criteria to search for
-     *
-     * @return {@code true} if at least one search was started.
-     *
-     * @see #startSearch(Context, EngineId, SearchCoordinatorCriteria)
-     */
-    public boolean search(final SearchCoordinatorCriteria criteria) {
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-
-        prepareSearch(criteria);
-
-        // If we have one or more SID's or we have a valid ISBN
-        if (criteria.hasSids() || criteria.hasValidIsbn()) {
-            // then start a concurrent search
-            waitingForIsbnOrCode = false;
-            return startSearch(context, criteria);
-
-        } else {
-            // We really want to ensure we get the same book from each,
-            // so if the ISBN/code is NOT PRESENT, search the sites
-            // one at a time until we get a ISBN/code.
-            waitingForIsbnOrCode = true;
-            return startNextSearch(context, criteria);
-        }
-    }
-
-    /**
-     * Search a single search on the given engine for the site specific book id (sid).
-     *
-     * @param engineId to use
-     * @param criteria to search for
-     *
-     * @return {@code true} if the search was started.
-     *
-     * @throws IllegalArgumentException if #sid was invalid
-     * @see #startSearch(Context, EngineId, SearchCoordinatorCriteria)
-     */
-    public boolean searchByExternalId(@NonNull final EngineId engineId,
-                                      @NonNull final SearchCoordinatorCriteria criteria) {
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-
-        prepareSearch(criteria);
-
-        return startSearch(context, engineId, criteria);
-    }
-
-    /**
-     * Start <strong>all</strong>> searches, which have not been run yet, in parallel.
-     *
-     * @param context  Current context
-     * @param criteria to search for
-     *
-     * @return {@code true} if at least one search was started, {@code false} if none
-     *
-     * @see #startSearch(Context, EngineId, SearchCoordinatorCriteria)
-     */
-    private boolean startSearch(@NonNull final Context context,
-                                @NonNull final SearchCoordinatorCriteria criteria) {
-        // refuse new searches if we're shutting down.
-        if (cancelRequested.get()) {
-            return false;
-        }
-
-        boolean atLeastOneStarted = false;
-        final List<EngineId> activeEngines = allSites.stream()
-                                                     .filter(Site::isActive)
-                                                     .map(Site::getEngineId)
-                                                     .collect(Collectors.toList());
-        for (final EngineId engineId : activeEngines) {
-            // If the site has not been searched yet, search it
-            synchronized (resultsByEngineId) {
-                if (!resultsByEngineId.containsKey(engineId)) {
-                    if (startSearch(context, engineId, criteria)) {
-                        atLeastOneStarted = true;
-                    }
-                }
-            }
-        }
-        return atLeastOneStarted;
-    }
-
-    /**
-     * Start a single search on the next engine in the queue.
-     *
-     * @param context  Current context
-     * @param criteria to search for
-     *
-     * @return {@code true} if a search was started, {@code false} if not
-     *
-     * @see #startSearch(Context, EngineId, SearchCoordinatorCriteria)
-     */
-    private boolean startNextSearch(@NonNull final Context context,
-                                    @NonNull final SearchCoordinatorCriteria criteria) {
-        // refuse new searches if we're shutting down.
-        if (cancelRequested.get()) {
-            return false;
-        }
-
-        final List<EngineId> activeEngines = allSites.stream()
-                                                     .filter(Site::isActive)
-                                                     .map(Site::getEngineId)
-                                                     .collect(Collectors.toList());
-        for (final EngineId engineId : activeEngines) {
-            // If the site has not been searched yet, search it
-            synchronized (resultsByEngineId) {
-                if (!resultsByEngineId.containsKey(engineId)) {
-                    final boolean started = startSearch(context, engineId, criteria);
-                    if (started) {
-                        return true;
-                    }
-                    // else, loop to next site
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Start the specified site search. This is where a search-task is actually started.
-     * <p>
-     * <strong>synchronized</strong> to make sure we start tasks in a serial manner.
-     *
-     * @param context  Current context
-     * @param engineId to search
-     * @param criteria to use
-     *
-     * @return {@code true} if the search was started.
-     */
-    private synchronized boolean startSearch(@NonNull final Context context,
-                                             @NonNull final EngineId engineId,
-                                             @NonNull final SearchCoordinatorCriteria criteria) {
-        // refuse new searches if we're shutting down.
-        if (cancelRequested.get()) {
-            return false;
-        }
-
-        final SearchEngineConfig config = engineId.getConfig();
-        // Sanity check; should not happen when we get here... flw
-        if (config == null) {
-            return false;
-        }
-
-        SearchEngine searchEngine = engineCache.get(engineId);
-        if (searchEngine == null) {
-            searchEngine = engineId.createSearchEngine(context);
-            engineCache.put(engineId, searchEngine);
-        } else {
-            searchEngine.reset();
-        }
-
-        @Nullable
-        final SearchTask task = SearchTask.createSearchTask(context, TASK_ID.getAndIncrement(),
-                                                            searchEngine,
-                                                            criteria,
-                                                            searchTaskListener);
-
-        if (task == null) {
-            // search data and engine have nothing in common, abort silently.
-            return false;
-        }
-
-        synchronized (activeTasks) {
-            activeTasks.put(task.getTaskId(), task);
-        }
-
-        if (BuildConfig.DEBUG) {
-            if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "startSearch|new-task=" + task.getTaskId(),
-                                            "searchEngine=" + engineId.name(),
-                                            "waitingForIsbnOrCode=" + waitingForIsbnOrCode);
-            }
-            if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-                searchTasksStartTime.put(task.getSearchEngine().getEngineId(), System.nanoTime());
-            }
-        }
-
-        task.startSearch();
-        return true;
-    }
-
-    /**
-     * Called when all is said and done. Collects all individual website errors (if any)
-     * into a single user-formatted message.
-     *
-     * @param context Current context
-     *
-     * @return the error message
-     */
-    @Nullable
-    private String accumulateErrors(@NonNull final Context context) {
-        // no synchronized needed, at this point all other threads have finished.
-        if (!errorsByEngineId.isEmpty()) {
-            final String msg = errorsByEngineId
-                    .values()
-                    .stream()
-                    .map(exception -> ExMsg
-                            .map(context, exception)
-                            .orElseGet(() -> {
-                                // generic network related IOException message
-                                if (exception instanceof IOException) {
-                                    return context.getString(R.string.error_search_failed_network);
-                                }
-                                // generic unknown message
-                                return context.getString(R.string.error_unexpected);
-                            }))
-                    .collect(Collectors.joining("\n"));
-
-            errorsByEngineId.clear();
-            return msg;
-        }
-        return null;
-    }
-
     /**
      * A single search finished.
      *
+     * @param taskId
      * @param engineId which finished
      */
-    private void debugSingleSearchFinished(@NonNull final EngineId engineId) {
+    private void debugSingleSearchFinished(final int taskId,
+                                           @NonNull final EngineId engineId) {
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             searchTasksEndTime.put(engineId, System.nanoTime());
         }
 
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             final Logger logger = LoggerFactory.getLogger();
-            logger.d(TAG, "onSearchTaskFinished|finished=" + engineId.name());
+            logger.d(TAG, "onSearchTaskFinished|finished=" + taskId + '|' + engineId.name());
 
             synchronized (activeTasks) {
                 for (final SearchTask task : activeTasks.values()) {
-                    logger.d(TAG, "onSearchTaskFinished|running=" + task.getSearchEngine()
-                                                                        .getEngineId().name());
+                    logger.d(TAG, "onSearchTaskFinished|running=" + task.getTaskId()
+                                  + '|' + task.getSearchEngine().getEngineId().name());
                 }
             }
         }
