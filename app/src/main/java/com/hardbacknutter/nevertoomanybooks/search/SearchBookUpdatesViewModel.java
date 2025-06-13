@@ -467,7 +467,7 @@ public class SearchBookUpdatesViewModel
                         searchCriteria.setFetchCovers(fetchCovers);
 
                         // Start searching
-                        if (search(searchCriteria)) {
+                        if (search(searchCriteria) > 0) {
                             // Update the progress base message.
                             if (title.isEmpty()) {
                                 setBaseMessage(isbnStr);

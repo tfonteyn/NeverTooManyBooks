@@ -429,11 +429,11 @@ public class SearchCoordinator
      *
      * @param criteria to search for
      *
-     * @return {@code true} if at least one search was started.
+     * @return the search-id, or {@code 0} if no search was started
      *
      * @see #startSearch(Context, boolean, EngineId, BookSearch)
      */
-    public boolean search(@NonNull final BookSearchCriteria criteria) {
+    public int search(@NonNull final BookSearchCriteria criteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "init search");
         }
@@ -443,13 +443,19 @@ public class SearchCoordinator
         final BookSearch bookSearch = prepareSearch(context, criteria);
 
         if (criteria.hasSids() || criteria.hasValidIsbn()) {
-            return startConcurrentSearch(context, bookSearch);
+            if (startConcurrentSearch(context, bookSearch)) {
+                return bookSearch.getId();
+            }
+            return 0;
 
         } else {
             // We really want to ensure we get the same book from each,
             // so if the ISBN/code is NOT PRESENT, search the sites
             // one at a time until we get a ISBN/code.
-            return startNextSearch(context, bookSearch);
+            if (startNextSearch(context, bookSearch)) {
+                return bookSearch.getId();
+            }
+            return 0;
         }
     }
 
@@ -459,13 +465,13 @@ public class SearchCoordinator
      * @param engineId to use
      * @param criteria to search for
      *
-     * @return {@code true} if the search was started.
+     * @return the search-id, or {@code 0} if no search was started
      *
      * @throws IllegalArgumentException if #sid was invalid
      * @see #startSearch(Context, boolean, EngineId, BookSearch)
      */
-    public boolean searchByExternalId(@NonNull final EngineId engineId,
-                                      @NonNull final BookSearchCriteria criteria) {
+    public int searchByExternalId(@NonNull final EngineId engineId,
+                                  @NonNull final BookSearchCriteria criteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "init searchByExternalId");
         }
@@ -473,7 +479,10 @@ public class SearchCoordinator
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         final BookSearch bookSearch = prepareSearch(context, criteria);
-        return startSearch(context, false, engineId, bookSearch);
+        if (startSearch(context, false, engineId, bookSearch)) {
+            return bookSearch.getId();
+        }
+        return 0;
     }
 
     /**

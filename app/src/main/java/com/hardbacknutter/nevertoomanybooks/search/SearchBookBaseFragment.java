@@ -184,7 +184,7 @@ public abstract class SearchBookBaseFragment
         }
 
         // Start the lookup in a background search task.
-        if (!onSearch(criteria)) {
+        if (onSearch(criteria) == 0) {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.error_search_could_not_be_started,
                           Snackbar.LENGTH_LONG).show();
@@ -210,9 +210,9 @@ public abstract class SearchBookBaseFragment
      *
      * @param criteria to search for
      *
-     * @return {@code true} if a search was started
+     * @return the search-id, or {@code 0} if no search was started
      */
-    boolean onSearch(@NonNull final BookSearchCriteria criteria) {
+    int onSearch(@NonNull final BookSearchCriteria criteria) {
         return coordinator.search(criteria);
     }
 

@@ -265,7 +265,7 @@ public class SearchBookByExternalIdFragment
     }
 
     @Override
-    boolean onSearch(@NonNull final BookSearchCriteria criteria) {
+    int onSearch(@NonNull final BookSearchCriteria criteria) {
         //noinspection DataFlowIssue
         return coordinator.searchByExternalId(engineId, criteria);
     }
