@@ -274,6 +274,7 @@
           <option value="UnusedReturnValue" />
           <option value="MagicNumber" />
           <option value="CheckStyle" />
+          <option value="BooleanMethodIsAlwaysInverted" />
         </list>
       </option>
     </inspection_tool>
