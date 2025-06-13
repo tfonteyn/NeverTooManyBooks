@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 public class SearchFtsViewModel
         extends ViewModel {
 
-    private final MutableLiveData<SearchCriteria> onInitSearchCriteria =
+    private final MutableLiveData<LocalSearchCriteria> onInitSearchCriteria =
             new MutableLiveData<>();
     private final MutableLiveData<Void> onSearchStart = new MutableLiveData<>();
     private final MutableLiveData<Void> onSearchFinished = new MutableLiveData<>();
@@ -53,7 +53,7 @@ public class SearchFtsViewModel
     /** Database Access. */
     private FtsDao dao;
     @Nullable
-    private SearchCriteria criteria;
+    private LocalSearchCriteria criteria;
     private Bookshelf bookshelf;
 
     @Override
@@ -72,9 +72,9 @@ public class SearchFtsViewModel
             dao = ServiceLocator.getInstance().getFtsDao();
             bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
                                                DBKey.FK_BOOKSHELF);
-            criteria = args.getParcelable(SearchCriteria.BKEY);
+            criteria = args.getParcelable(LocalSearchCriteria.BKEY);
             if (criteria == null) {
-                criteria = new SearchCriteria();
+                criteria = new LocalSearchCriteria();
             }
 
             // The callback comes from the timer thread, hence use "post"
@@ -84,7 +84,7 @@ public class SearchFtsViewModel
     }
 
     @NonNull
-    MutableLiveData<SearchCriteria> onInitSearchCriteria() {
+    MutableLiveData<LocalSearchCriteria> onInitSearchCriteria() {
         return onInitSearchCriteria;
     }
 
@@ -109,7 +109,7 @@ public class SearchFtsViewModel
      * @return criteria, can be empty, but never {@code null}
      */
     @NonNull
-    SearchCriteria getCriteria() {
+    LocalSearchCriteria getCriteria() {
         Objects.requireNonNull(criteria);
 
         final List<Long> ids = searchResults.stream().map(result -> result.id)

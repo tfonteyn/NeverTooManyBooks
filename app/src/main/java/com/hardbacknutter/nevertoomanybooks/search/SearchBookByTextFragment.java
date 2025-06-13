@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinatorCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -302,14 +302,14 @@ public class SearchBookByTextFragment
         final List<Author> authors = book.getAuthors();
         if (authors.isEmpty()) {
             // do NOT use {@code Book.BKEY_AUTHOR_LIST}, that's reserved for verified names.
-            book.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
+            book.putString(LocalSearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
                            searchCriteria.getAuthor());
         }
 
         final List<Series> series = book.getSeries();
         if (series.isEmpty()) {
             // do NOT use {@code Book.BKEY_SERIES_LIST}, that's reserved for verified names.
-            book.putString(SearchCriteria.BKEY_SEARCH_TEXT_SERIES,
+            book.putString(LocalSearchCriteria.BKEY_SEARCH_TEXT_SERIES,
                            searchCriteria.getSeries());
             book.putString(DBKey.SERIES.BOOK_SERIES_NUMBER,
                            searchCriteria.getSeriesNr());
@@ -318,7 +318,7 @@ public class SearchBookByTextFragment
         final List<Publisher> publishers = book.getPublishers();
         if (publishers.isEmpty()) {
             // do NOT use {@code Book.BKEY_PUBLISHER_LIST}, that's reserved for verified names.
-            book.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
+            book.putString(LocalSearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
                            searchCriteria.getPublisher());
         }
 

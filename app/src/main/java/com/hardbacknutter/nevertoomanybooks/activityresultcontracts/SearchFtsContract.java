@@ -34,12 +34,12 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.localsearch.SearchFtsFragment;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class SearchFtsContract
-        extends ActivityResultContract<SearchFtsContract.Input, Optional<SearchCriteria>> {
+        extends ActivityResultContract<SearchFtsContract.Input, Optional<LocalSearchCriteria>> {
 
     private static final String TAG = "SearchFtsContract";
 
@@ -51,15 +51,15 @@ public class SearchFtsContract
                 .createIntent(context, SearchFtsFragment.class)
                 .putExtra(DBKey.FK_BOOKSHELF, input.bookshelf);
         if (input.criteria != null && !input.criteria.isEmpty()) {
-            intent.putExtra(SearchCriteria.BKEY, input.criteria);
+            intent.putExtra(LocalSearchCriteria.BKEY, input.criteria);
         }
         return intent;
     }
 
     @Override
     @NonNull
-    public Optional<SearchCriteria> parseResult(final int resultCode,
-                                                @Nullable final Intent intent) {
+    public Optional<LocalSearchCriteria> parseResult(final int resultCode,
+                                                     @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             LoggerFactory.getLogger()
                          .d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
@@ -69,7 +69,8 @@ public class SearchFtsContract
             return Optional.empty();
         }
         // The criteria are always present, but can be empty.
-        final SearchCriteria searchCriteria = intent.getParcelableExtra(SearchCriteria.BKEY);
+        final LocalSearchCriteria searchCriteria = intent.getParcelableExtra(
+                LocalSearchCriteria.BKEY);
         if (searchCriteria != null) {
             return Optional.of(searchCriteria);
         } else {
@@ -82,10 +83,10 @@ public class SearchFtsContract
         @NonNull
         final Bookshelf bookshelf;
         @Nullable
-        final SearchCriteria criteria;
+        final LocalSearchCriteria criteria;
 
         public Input(@NonNull final Bookshelf bookshelf,
-                     @Nullable final SearchCriteria criteria) {
+                     @Nullable final LocalSearchCriteria criteria) {
             this.criteria = criteria;
             this.bookshelf = bookshelf;
         }

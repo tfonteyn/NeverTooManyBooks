@@ -38,26 +38,26 @@ import java.util.List;
  *     <li>Simple string criteria (currently only 'lender')</li>
  * </ul>
  */
-public class SearchCriteria
+public class LocalSearchCriteria
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<SearchCriteria> CREATOR = new Creator<>() {
+    public static final Creator<LocalSearchCriteria> CREATOR = new Creator<>() {
         @Override
         @NonNull
-        public SearchCriteria createFromParcel(@NonNull final Parcel in) {
-            return new SearchCriteria(in);
+        public LocalSearchCriteria createFromParcel(@NonNull final Parcel in) {
+            return new LocalSearchCriteria(in);
         }
 
         @Override
         @NonNull
-        public SearchCriteria[] newArray(final int size) {
-            return new SearchCriteria[size];
+        public LocalSearchCriteria[] newArray(final int size) {
+            return new LocalSearchCriteria[size];
         }
     };
 
     /** Log tag. */
-    private static final String TAG = "SearchCriteria";
+    private static final String TAG = "LocalSearchCriteria";
     /** Bundle key to pass this object around. */
     public static final String BKEY = TAG + ":a";
 
@@ -118,7 +118,7 @@ public class SearchCriteria
     @Nullable
     private String loanee;
 
-    public SearchCriteria() {
+    public LocalSearchCriteria() {
     }
 
     /**
@@ -126,7 +126,7 @@ public class SearchCriteria
      *
      * @param in Parcel to construct the object from
      */
-    private SearchCriteria(@NonNull final Parcel in) {
+    private LocalSearchCriteria(@NonNull final Parcel in) {
         in.readList(bookIdList, getClass().getClassLoader());
         ftsBookTitle = in.readString();
         ftsSeriesTitle = in.readString();
@@ -292,7 +292,7 @@ public class SearchCriteria
     @Override
     @NonNull
     public String toString() {
-        return "SearchCriteria{"
+        return "LocalSearchCriteria{"
                + "ftsBookTitle=`" + ftsBookTitle + '`'
                + ", ftsSeriesTitle=`" + ftsSeriesTitle + '`'
                + ", ftsAuthor=`" + ftsAuthor + '`'

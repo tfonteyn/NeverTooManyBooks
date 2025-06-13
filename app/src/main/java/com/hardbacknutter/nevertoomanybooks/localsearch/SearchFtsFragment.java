@@ -128,7 +128,7 @@ public class SearchFtsFragment
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void onSearchCriteriaUpdate(@NonNull final SearchCriteria criteria) {
+    private void onSearchCriteriaUpdate(@NonNull final LocalSearchCriteria criteria) {
         vb.title.setText(criteria.getFtsBookTitle());
         vb.seriesTitle.setText(criteria.getFtsSeriesTitle());
         vb.author.setText(criteria.getFtsAuthor());
@@ -165,7 +165,8 @@ public class SearchFtsFragment
      */
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void showFullResults() {
-        final Intent resultIntent = new Intent().putExtra(SearchCriteria.BKEY, vm.getCriteria());
+        final Intent resultIntent = new Intent().putExtra(LocalSearchCriteria.BKEY,
+                                                          vm.getCriteria());
         //noinspection DataFlowIssue
         getActivity().setResult(Activity.RESULT_OK, resultIntent);
         getActivity().finish();
@@ -194,7 +195,7 @@ public class SearchFtsFragment
     }
 
     private void viewToModel() {
-        final SearchCriteria criteria = vm.getCriteria();
+        final LocalSearchCriteria criteria = vm.getCriteria();
         //noinspection DataFlowIssue
         criteria.setFtsBookTitle(vb.title.getText().toString().strip());
         //noinspection DataFlowIssue

@@ -82,7 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
-import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreBookData;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoCollectionData;
@@ -976,10 +976,10 @@ public class Book
         // None present ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
         if (authors.isEmpty()) {
-            final String searchText = getString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+            final String searchText = getString(LocalSearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             if (!searchText.isEmpty()) {
                 authors.add(Author.from(searchText));
-                remove(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+                remove(LocalSearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1069,10 +1069,10 @@ public class Book
         // None present ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
         if (seriesList.isEmpty()) {
-            final String searchText = getString(SearchCriteria.BKEY_SEARCH_TEXT_SERIES);
+            final String searchText = getString(LocalSearchCriteria.BKEY_SEARCH_TEXT_SERIES);
             if (!searchText.isEmpty()) {
                 seriesList.add(Series.from(searchText, getString(DBKey.SERIES.BOOK_SERIES_NUMBER)));
-                remove(SearchCriteria.BKEY_SEARCH_TEXT_SERIES);
+                remove(LocalSearchCriteria.BKEY_SEARCH_TEXT_SERIES);
                 remove(DBKey.SERIES.BOOK_SERIES_NUMBER);
                 stage.setStage(EntityStage.Stage.Dirty);
             }
@@ -1151,10 +1151,10 @@ public class Book
         // None present ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
         if (publishers.isEmpty()) {
-            final String searchText = getString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
+            final String searchText = getString(LocalSearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
             if (!searchText.isEmpty()) {
                 publishers.add(Publisher.from(searchText));
-                remove(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
+                remove(LocalSearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
                 stage.setStage(EntityStage.Stage.Dirty);
             }
         }

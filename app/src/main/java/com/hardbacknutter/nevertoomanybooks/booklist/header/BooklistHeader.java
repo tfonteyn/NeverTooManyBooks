@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 
 public class BooklistHeader {
 
@@ -74,7 +74,7 @@ public class BooklistHeader {
                           final int totalBooks,
                           final int distinctBooks,
                           @NonNull final List<PFilter<?>> filters,
-                          @Nullable final SearchCriteria searchCriteria) {
+                          @Nullable final LocalSearchCriteria searchCriteria) {
 
         if (style.isShowHeaderField(SHOW_STYLE_NAME)) {
             styleName = style.getLabel(context);

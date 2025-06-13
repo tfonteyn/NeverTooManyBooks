@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.LoaneeFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
@@ -228,7 +228,7 @@ public final class FtsDaoHelper {
      * @return filters
      */
     @NonNull
-    public static Collection<Filter> toFilters(@NonNull final SearchCriteria searchCriteria) {
+    public static Collection<Filter> toFilters(@NonNull final LocalSearchCriteria searchCriteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             LoggerFactory.getLogger().d(TAG, "toFilters", searchCriteria);
         }

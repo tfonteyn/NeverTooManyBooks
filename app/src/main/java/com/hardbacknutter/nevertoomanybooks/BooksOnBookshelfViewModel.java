@@ -82,7 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
-import com.hardbacknutter.nevertoomanybooks.localsearch.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.menus.SiteSearchMenuHandler;
 import com.hardbacknutter.nevertoomanybooks.menus.ViewAuthorOnSiteMenuHandler;
@@ -200,9 +200,9 @@ public class BooksOnBookshelfViewModel
             new MutableLiveData<>();
     private final MutableLiveData<Boolean> searchCriteriaAreActive =
             new MutableLiveData<>();
-    /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
+    /** Holder for all search criteria. See {@link LocalSearchCriteria} for more info. */
     @Nullable
-    private SearchCriteria searchCriteria;
+    private LocalSearchCriteria searchCriteria;
     /** Database Access. */
     private BookDao bookDao;
     private BookshelfDao bookshelfDao;
@@ -317,7 +317,7 @@ public class BooksOnBookshelfViewModel
      *
      * @param context Current context
      * @param args    (optional) {@link #BKEY_PROPOSE_BACKUP} flag
-     *                (optional) {@link SearchCriteria#BKEY} for filtering
+     *                (optional) {@link LocalSearchCriteria#BKEY} for filtering
      *                (optional) {@link Book#BKEY_BOOK_ID_LIST} list of book ids
      *                (optional) {@link #BKEY_LIST_STATE} override the user preference
      *                (optional) {@link DBKey#FK_BOOKSHELF} the Bookshelf id
@@ -337,10 +337,10 @@ public class BooksOnBookshelfViewModel
                 proposeBackup = args.getBoolean(BKEY_PROPOSE_BACKUP, false);
 
                 // Check for incoming criteria
-                searchCriteria = args.getParcelable(SearchCriteria.BKEY);
+                searchCriteria = args.getParcelable(LocalSearchCriteria.BKEY);
                 // Typically there won't be any, create them if needed.
                 if (searchCriteria == null) {
-                    searchCriteria = new SearchCriteria();
+                    searchCriteria = new LocalSearchCriteria();
                 }
 
                 // There MAY be a list of book id's.
@@ -378,7 +378,7 @@ public class BooksOnBookshelfViewModel
 
         // create if not explicitly set above
         if (searchCriteria == null) {
-            searchCriteria = new SearchCriteria();
+            searchCriteria = new LocalSearchCriteria();
         }
 
         searchCriteriaAreActive.setValue(!searchCriteria.isEmpty());
@@ -777,7 +777,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    SearchCriteria getSearchCriteria() {
+    LocalSearchCriteria getSearchCriteria() {
         return Objects.requireNonNull(searchCriteria);
     }
 
@@ -1481,7 +1481,7 @@ public class BooksOnBookshelfViewModel
      * @param criteria to construct the booklist with
      */
     void onFtsSearch(@NonNull final Context context,
-                     @NonNull final SearchCriteria criteria) {
+                     @NonNull final LocalSearchCriteria criteria) {
         forceRebuildInOnResume = true;
 
         searchCriteria = criteria;
