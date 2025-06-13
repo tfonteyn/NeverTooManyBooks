@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  * <p>
  * All values are 'raw', i.e. exactly as entered by the user in a form.
  */
-@SuppressWarnings("WeakerAccess")
 public class BookSearchCriteria {
 
     private static final String PK_SEARCH_STRICT_ISBN = "search.byIsbn.strict";
@@ -85,6 +84,11 @@ public class BookSearchCriteria {
     @NonNull
     private String publisher = "";
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
     public BookSearchCriteria(@NonNull final Context context) {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         fetchCovers = new boolean[]{
@@ -96,6 +100,11 @@ public class BookSearchCriteria {
                                       .getBoolean(PK_SEARCH_STRICT_ISBN, true);
     }
 
+    /**
+     * Flags.
+     *
+     * @return an array same length as {@link DBKey#COVER}.
+     */
     @NonNull
     public boolean[] getFetchCovers() {
         return fetchCovers;
@@ -200,7 +209,7 @@ public class BookSearchCriteria {
     /**
      * Search criteria.
      *
-     * @param context
+     * @param context Current context
      * @param strictIsbn {@code true} for strict ISBN checking,
      *                   {@code false} for allowing other valid generic codes.
      */
