@@ -857,10 +857,12 @@
     <string name="pt_search_resolve_authors">解析作者筆名</string>
     <string name="lbl_book_uri">書籍 URL</string>
     <string name="lbl_author_uri">作者 URL</string>
-    <string name="vldt_blank_or_valid_uri_with_1s_param_required">需為空值、或有單一「%s」id 佔位符的有效「https」URL</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">需為空值、或有單一「%s」ID 佔位符的有效「https」URL</string>
     <string name="vldt_blank_or_valid_url_required">需要空值或有效 URL</string>
     <string name="info_identifier_editor"><![CDATA[編輯前請閱讀關於標識符的 <a href="%1$s">文檔</a>]]></string>
     <string name="lbl_date_born">出生</string>
     <string name="pt_fetch_author_info">獲取作者資訊</string>
     <string name="pt_fetch_author_info_using_site_x">從 %1$s 取得作者信息</string>
+    <string name="lbl_wikidata_claim_author_id">作者 ID 的 Wikidata「claim/P」代碼</string>
+
 </resources>

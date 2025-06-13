@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -852,12 +855,12 @@
     <string name="pt_search_resolve_authors">解析作者笔名</string>
     <string name="lbl_book_uri">书籍 URL</string>
     <string name="lbl_author_uri">作者 URL</string>
-    <string name="vldt_blank_or_valid_uri_with_1s_param_required">需为空值、或有单个“%s” id 占位符的有效 “https” URL</string>
+    <string name="vldt_blank_or_valid_uri_with_1s_param_required">需为空值、或有单个“%s” ID 占位符的有效 “https” URL</string>
     <string name="vldt_blank_or_valid_url_required">需要空值或有效 URL</string>
     <string name="info_identifier_editor"><![CDATA[编辑前请阅读关于标识符的 <a href="%1$s">文档</a>]]></string>
     <string name="lbl_date_born">出生</string>
     <string name="pt_fetch_author_info">获取作者信息</string>
     <string name="pt_fetch_author_info_using_site_x">从 %1$s 获取作者信息</string>
     <string name="menu_search_updates">搜索更新</string>
-    <string name="lbl_wikidata_claim_author_id">作者 id 的 Wikidata “claim/P” 代码</string>
+    <string name="lbl_wikidata_claim_author_id">作者 ID 的 Wikidata “claim/P” 代码</string>
 </resources>
