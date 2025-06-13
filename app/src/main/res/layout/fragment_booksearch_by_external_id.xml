@@ -193,6 +193,7 @@
                 android:id="@+id/external_id"
                 style="@style/TIE.Generic"
                 android:drawableStart="@drawable/dialpad_24px"
+                android:drawablePadding="4dp"
                 android:enabled="false"
                 android:imeOptions="actionSearch"
                 android:inputType="number"
