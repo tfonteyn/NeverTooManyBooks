@@ -120,7 +120,7 @@ public abstract class SearchBookBaseFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        coordinator.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        coordinator.onSearchProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // Handle both Success and Failed searches
         coordinator.onSearchFinished().observe(getViewLifecycleOwner(), this::onSearchFinished);
         coordinator.onSearchCancelled().observe(getViewLifecycleOwner(), this::onSearchCancelled);

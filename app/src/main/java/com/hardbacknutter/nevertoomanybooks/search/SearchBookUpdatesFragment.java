@@ -139,7 +139,7 @@ public class SearchBookUpdatesFragment
         }
 
         // Progress from individual searches AND overall progress
-        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        vm.onSearchProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
         // An individual book search finished.
         vm.onSearchFinished().observe(getViewLifecycleOwner(), this::onOneDone);

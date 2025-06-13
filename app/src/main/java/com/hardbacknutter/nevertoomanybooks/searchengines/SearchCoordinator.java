@@ -267,7 +267,7 @@ public class SearchCoordinator
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
-    private synchronized void onSearchProgress(@NonNull final TaskProgress message) {
+    private synchronized void onSearchTaskProgress(@NonNull final TaskProgress message) {
         synchronized (progressByEngineId) {
             final EngineId engineId;
             synchronized (activeTasks) {
@@ -289,7 +289,7 @@ public class SearchCoordinator
      * @return a {@link TaskProgress} with the progress counter, a text message, ...
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
+    public LiveData<LiveDataEvent<TaskProgress>> onSearchProgress() {
         return searchCoordinatorProgress;
     }
 
@@ -979,7 +979,7 @@ public class SearchCoordinator
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
-            onSearchProgress(message);
+            onSearchTaskProgress(message);
         }
 
         @Override
