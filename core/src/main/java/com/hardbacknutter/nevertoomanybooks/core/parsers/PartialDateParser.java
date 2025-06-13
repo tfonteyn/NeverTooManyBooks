@@ -197,7 +197,8 @@ public class PartialDateParser
                     .get(ChronoField.MONTH_OF_YEAR);
         } catch (DateTimeParseException | NumberFormatException e) {
             if (BuildConfig.DEBUG /* always */) {
-                LoggerFactory.getLogger().e(TAG, e, "monthStr=" + monthStr);
+                LoggerFactory.getLogger().d(TAG, "parseMonth", "monthStr=" + monthStr,
+                                            e.getMessage());
             }
         }
         return monthNumber;
