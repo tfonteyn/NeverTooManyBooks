@@ -63,7 +63,7 @@ public class BookSearchCriteria {
 
     /** Whether of not to fetch thumbnails. */
     @NonNull
-    private boolean[] fetchCovers;
+    private final boolean[] fetchCovers;
 
     @Nullable
     private ISBN isbn;
@@ -115,8 +115,17 @@ public class BookSearchCriteria {
      *
      * @param fetchCovers Set to {@code true} if we want to get covers
      */
-    public void setFetchCovers(@NonNull final boolean[] fetchCovers) {
-        this.fetchCovers = fetchCovers;
+    public void setFetchCovers(@Nullable final boolean[] fetchCovers) {
+        if (fetchCovers == null || fetchCovers.length == 0) {
+            this.fetchCovers[0] = false;
+            this.fetchCovers[1] = false;
+        } else if (fetchCovers.length == 1) {
+            this.fetchCovers[0] = fetchCovers[0];
+            this.fetchCovers[1] = false;
+        } else {
+            this.fetchCovers[0] = fetchCovers[0];
+            this.fetchCovers[1] = fetchCovers[1];
+        }
     }
 
     @NonNull
