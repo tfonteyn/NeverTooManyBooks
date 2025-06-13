@@ -123,28 +123,20 @@ public class SearchCoordinator
      */
     private synchronized void onSearchTaskFinished(final int taskId,
                                                    @Nullable final Book result) {
-
-        // Lookup and rRemove the finished task from our list
+        // Lookup and remove the finished task from our list
         final SearchTask searchTask;
         synchronized (activeTasks) {
             searchTask = Objects.requireNonNull(activeTasks.remove(taskId),
                                                 () -> ERROR_UNKNOWN_TASK + taskId);
         }
 
-        // Lookup the search this task belongs to
-        final BookSearch currentSearch;
-        synchronized (activeSearches) {
-            currentSearch = Objects.requireNonNull(
-                    activeSearches.get(searchTask.getSearchId()),
-                    () -> ERROR_UNKNOWN_SEARCH + searchTask.getSearchId());
-        }
+        final BookSearch currentSearch = getBookSearch(searchTask);
 
         final EngineId engineId = searchTask.getSearchEngine().getEngineId();
 
         if (BuildConfig.DEBUG /* always */) {
             debugSearchTaskFinished(taskId, currentSearch, engineId);
         }
-
 
         // ALWAYS store, even when null!
         // Presence of the site/task id in the map is an indication that the site was processed
@@ -234,27 +226,34 @@ public class SearchCoordinator
                                                  @Nullable final Throwable e) {
         final SearchTask searchTask;
         synchronized (activeTasks) {
-            searchTask = Objects.requireNonNull(activeTasks.get(taskId),
+            searchTask = Objects.requireNonNull(activeTasks.remove(taskId),
                                                 () -> ERROR_UNKNOWN_TASK + taskId);
         }
+        final EngineId engineId = searchTask.getSearchEngine().getEngineId();
+        final BookSearch currentSearch = getBookSearch(searchTask);
+        synchronized (currentSearch) {
+            // Always store, even if the Exception is null
+            currentSearch.addError(engineId, e);
+        }
+        onSearchTaskFinished(taskId, null);
+    }
+
+    /**
+     * Lookup the {@link BookSearch} the given task belongs to.
+     *
+     * @param searchTask to lookup
+     *
+     * @return BookSearch
+     */
+    @NonNull
+    private BookSearch getBookSearch(@NonNull final SearchTask searchTask) {
         final BookSearch currentSearch;
         synchronized (activeSearches) {
             currentSearch = Objects.requireNonNull(
                     activeSearches.get(searchTask.getSearchId()),
                     () -> ERROR_UNKNOWN_SEARCH + searchTask.getSearchId());
         }
-
-        synchronized (currentSearch) {
-            final EngineId engineId;
-            synchronized (activeTasks) {
-                engineId = Objects.requireNonNull(activeTasks.get(taskId),
-                                                  () -> ERROR_UNKNOWN_TASK + taskId)
-                                  .getSearchEngine().getEngineId();
-            }
-            // Always store, even if the Exception is null
-            currentSearch.addError(engineId, e);
-        }
-        onSearchTaskFinished(taskId, null);
+        return currentSearch;
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
@@ -710,9 +709,9 @@ public class SearchCoordinator
     }
 
     /**
-     * Value class encapsulating
-     * where a result came from + how the search was done + the result itself.
-     * The result itself can be {@code null} if nothing was found.
+     * The result of a single {@link SearchTask}.
+     * <p>
+     * Encapsulates where a result came from + how the search was done + the result itself.
      */
     static class SearchResult {
 
