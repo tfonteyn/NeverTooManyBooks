@@ -35,6 +35,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
@@ -65,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public abstract class SearchEngineBase
@@ -495,7 +497,11 @@ public abstract class SearchEngineBase
                 // ENHANCE: we could now have multiple identifiers
                 //  for a single Author. As we don't support that...
                 //  first id "wins"
-                author.addIdentifiers(currentAuthor.getIdentifiers());
+                // Explicitly prune here to make unit tests easier.
+                final List<Identifier.Value> all = new ArrayList<>(author.getIdentifiers());
+                all.addAll(currentAuthor.getIdentifiers());
+                ServiceLocator.getInstance().getIdentifierDao().pruneList(all);
+                author.setIdentifiers(all);
 
                 add = false;
                 // keep looping
