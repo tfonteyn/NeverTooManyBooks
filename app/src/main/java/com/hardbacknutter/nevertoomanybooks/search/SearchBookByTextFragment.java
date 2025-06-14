@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -290,7 +289,7 @@ public class SearchBookByTextFragment
     }
 
     @Override
-    void onSearchCancelled(@NonNull final LiveDataEvent<BookSearchResult> message) {
+    void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
         //noinspection DataFlowIssue
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();

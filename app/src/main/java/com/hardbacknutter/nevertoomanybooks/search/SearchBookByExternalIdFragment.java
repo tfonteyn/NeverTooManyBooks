@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExte
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
@@ -274,7 +273,7 @@ public class SearchBookByExternalIdFragment
     }
 
     @Override
-    void onSearchCancelled(@NonNull final LiveDataEvent<BookSearchResult> message) {
+    void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
         //noinspection DataFlowIssue
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
