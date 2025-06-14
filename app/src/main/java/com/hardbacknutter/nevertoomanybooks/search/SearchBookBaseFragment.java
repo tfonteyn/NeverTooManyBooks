@@ -227,9 +227,7 @@ public abstract class SearchBookBaseFragment
         closeProgressDialog();
         message.process(result -> {
             final Book book = result.getBook();
-            final String searchErrors = book.getString(SearchCoordinator.BKEY_SEARCH_ERROR,
-                                                       null);
-            book.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
+            final String searchErrors = result.getSearchErrors();
             final boolean hasData = !book.isEmpty();
 
             if (searchErrors != null && !searchErrors.isEmpty()) {

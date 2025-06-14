@@ -71,8 +71,6 @@ public class SearchCoordinator
 
     /** Log tag. */
     private static final String TAG = "SearchCoordinator";
-    /** The data returned from the search can contain this key with error messages. */
-    public static final String BKEY_SEARCH_ERROR = TAG + ":error";
 
     protected final MutableLiveData<LiveDataEvent<TaskProgress>>
             searchCoordinatorProgress = new MutableLiveData<>();
@@ -195,9 +193,6 @@ public class SearchCoordinator
 
             final Book book = currentSearch.accumulateResults(context, engineLocaleCache);
             final String searchErrors = currentSearch.accumulateErrors(context);
-            if (searchErrors != null && !searchErrors.isEmpty()) {
-                book.putString(BKEY_SEARCH_ERROR, searchErrors);
-            }
 
             final LiveDataEvent<BookSearchResult> message = LiveDataEvent.of(
                     new BookSearchResult(currentSearch.getId(), book));
@@ -285,8 +280,6 @@ public class SearchCoordinator
 
     /**
      * Handles both Successful and Failed searches.
-     * <p>
-     * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
      *
      * @return book data
      */

@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -32,11 +33,15 @@ public class BookSearchResult {
 
     @NonNull
     private final Book book;
+    @Nullable
+    private final String searchErrors;
 
     public BookSearchResult(final int searchId,
-                            @NonNull final Book book) {
+                            @NonNull final Book book,
+                            @Nullable final String searchErrors) {
         this.searchId = searchId;
         this.book = book;
+        this.searchErrors = searchErrors;
     }
 
     public int getSearchId() {
@@ -46,5 +51,10 @@ public class BookSearchResult {
     @NonNull
     public Book getBook() {
         return book;
+    }
+
+    @Nullable
+    public String getSearchErrors() {
+        return searchErrors;
     }
 }
