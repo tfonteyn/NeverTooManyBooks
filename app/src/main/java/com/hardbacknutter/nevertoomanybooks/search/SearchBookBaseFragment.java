@@ -221,11 +221,16 @@ public abstract class SearchBookBaseFragment
         return coordinator.search(criteria);
     }
 
-    abstract void onSearchCancelled(@NonNull LiveDataEvent<BookSearchResult> message);
+    abstract void onSearchCancelled(@NonNull LiveDataEvent<Boolean> message);
 
-    private void onSearchFinished(@NonNull final LiveDataEvent<BookSearchResult> message) {
+    void onSearchFinished(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
-        message.process(result -> {
+        message.process(trigger -> {
+            @Nullable
+            final BookSearchResult result = coordinator.pollFinishedQueue();
+            if (result == null) {
+                return;
+            }
             final Book book = result.getBook();
             final String searchErrors = result.getSearchErrors();
             final boolean hasData = !book.isEmpty();
@@ -240,28 +245,28 @@ public abstract class SearchBookBaseFragment
                         .setPositiveButton(R.string.ok, (d, w) -> {
                             d.dismiss();
                             if (hasData) {
-                                searchAndClearCriteria(book);
+                                onSearchResults(book);
+                                onClearSearchCriteria();
                             }
                         })
                         .create()
                         .show();
 
             } else if (hasData) {
-                searchAndClearCriteria(book);
+                onSearchResults(book);
+                onClearSearchCriteria();
 
             } else {
                 //noinspection DataFlowIssue
                 Snackbar.make(getView(), R.string.warning_no_matching_book_found,
                               Snackbar.LENGTH_LONG).show();
             }
+
+            coordinator.retriggerSearchFinished();
         });
     }
 
     // Don't allow child classes to override.
-    private void searchAndClearCriteria(@NonNull final Book book) {
-        onSearchResults(book);
-        onClearSearchCriteria();
-    }
 
     /**
      * Clear the search criteria and the input fields.
