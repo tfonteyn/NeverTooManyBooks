@@ -34,6 +34,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -97,6 +98,7 @@ public class SearchCoordinator
 
     /** Caches all created engines for reuse. */
     private final Map<EngineId, SearchEngine> engineCache = new EnumMap<>(EngineId.class);
+    private final Map<EngineId, Locale> engineLocaleCache = new EnumMap<>(EngineId.class);
     // There is a SINGLE/shared listener for ALL tasks!
     private final TaskListener<Book> searchTaskListener = new SearchTaskListener();
     /**
@@ -191,7 +193,7 @@ public class SearchCoordinator
                 activeSearches.remove(currentSearch.getId());
             }
 
-            final Book book = currentSearch.accumulateResults(context, engineCache);
+            final Book book = currentSearch.accumulateResults(context, engineLocaleCache);
             final String searchErrors = currentSearch.accumulateErrors(context);
             if (searchErrors != null && !searchErrors.isEmpty()) {
                 book.putString(BKEY_SEARCH_ERROR, searchErrors);
@@ -631,6 +633,11 @@ public class SearchCoordinator
             engineCache.put(engineId, searchEngine);
         } else {
             searchEngine.reset();
+        }
+
+        // Preserve the locales for use by the results-accumulator
+        if (!engineLocaleCache.containsKey(engineId)) {
+            engineLocaleCache.put(engineId, searchEngine.getLocale(context));
         }
 
         @Nullable

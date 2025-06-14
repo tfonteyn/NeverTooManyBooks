@@ -157,14 +157,14 @@ class BookSearch {
      * Called when all is said and done.
      * Accumulate data from the given sites.
      *
-     * @param context     Current context
-     * @param engineCache shared engine instance cache
+     * @param context         Current context
+     * @param engineLocaleMap engine Locale's
      *
      * @return the accumulated book data bundle
      */
     @NonNull
     Book accumulateResults(@NonNull final Context context,
-                           @NonNull final Map<EngineId, SearchEngine> engineCache) {
+                           @NonNull final Map<EngineId, Locale> engineLocaleMap) {
         final Book book = new Book();
         final List<EngineId> sitesInOrder;
 
@@ -192,7 +192,7 @@ class BookSearch {
                 .filter(Objects::nonNull)
                 .filter(result -> result.getResult().isPresent())
                 .map(result -> new Pair<>(
-                        engineCache.get(result.getEngineId()).getLocale(context),
+                        engineLocaleMap.get(result.getEngineId()),
                         result.getResult().get()))
                 .collect(Collectors.toList());
 
