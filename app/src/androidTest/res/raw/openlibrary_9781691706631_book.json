@@ -1,0 +1,22 @@
+{
+  "works": [
+    {"key": "/works/OL25312237W"}
+  ], "title": "Control Your Mind and Master Your Feelings", "publishers": [
+  "Eric Robertson"
+], "publish_date": "2019", "key": "/books/OL33899062M", "type": {"key": "/type/edition"},
+  "identifiers": {}, "covers": [
+  15089578,
+  -1
+], "source_records": [
+  "amazon:1691706639",
+  "bwb:9781691706631"
+], "number_of_pages": 231, "subtitle": "Break Overthinking & Master Your Emotions", "languages": [
+  {"key": "/languages/eng"}
+], "physical_format": "Paperback", "weight": "1.3 kilos", "isbn_10": [
+  "1691706639"
+], "isbn_13": [
+  "9781691706631"
+], "latest_revision": 80, "revision": 80,
+  "created": {"type": "/type/datetime", "value": "2021-09-27T18:56:20.746460"},
+  "last_modified": {"type": "/type/datetime", "value": "2025-06-03T11:16:39.838349"}
+}

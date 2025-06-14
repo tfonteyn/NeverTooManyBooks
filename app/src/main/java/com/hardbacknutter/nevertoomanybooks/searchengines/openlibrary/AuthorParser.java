@@ -70,6 +70,8 @@ public class AuthorParser {
      * }</pre>
      * As far as I can tell most common/reliable ones are "viaf" and "wikidata"
      * Arbitrary decision: we're limiting us to the ISNI and these:
+     *
+     * (with 'amazon' -> 'asin')
      */
     private static final String AUTHOR_SIDS =
             "viaf|wikidata|goodreads|librarything|amazon|storygraph";
@@ -343,7 +345,11 @@ public class AuthorParser {
                 } else if (AUTHOR_SIDS.contains(key)) {
                     final String s = remoteIds.optString(key);
                     if (!s.isEmpty()) {
-                        author.setIdentifierValue(key, s);
+                        if ("amazon".equals(key)) {
+                            author.setIdentifierValue(Identifier.SID_ASIN, s);
+                        } else {
+                            author.setIdentifierValue(key, s);
+                        }
                     }
                 }
             }

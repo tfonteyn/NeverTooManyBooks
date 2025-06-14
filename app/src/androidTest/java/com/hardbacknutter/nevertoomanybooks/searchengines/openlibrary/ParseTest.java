@@ -63,6 +63,7 @@ public class ParseTest
      * Ignore any failing tests for covers...
      */
     private static final String SITE_COVERS_BROKEN_AGAIN = "site covers broken again";
+    private static final boolean[] FETCH_COVERS = {false, false};
 
     private OpenLibrarySearchEngine searchEngine;
 
@@ -96,10 +97,11 @@ public class ParseTest
         // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
         // https://openlibrary.org/books/OL22853304M.json
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary_9780980200447);
-
+                                                           .R.raw.openlibrary_9780980200447_book);
+        final JSONObject workDocument = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                               .R.raw.openlibrary_9780980200447_work);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -115,8 +117,8 @@ public class ParseTest
         assertEquals("297222669", book.requireIdentifierValue(Identifier.SID_OCLC));
         assertEquals("4LQU1YwhY6kC", book.requireIdentifierValue(Identifier.SID_GOOGLE));
 
-        assertEquals("Includes bibliographical references and index.",
-                     book.getString(DBKey.DESCRIPTION, null));
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("A concise examination of the different meanings"));
         assertEquals("92", book.getString(DBKey.PAGES, null));
         assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
         assertEquals("2009-03", book.getString(DBKey.PUBLICATION_DATE, null));
@@ -133,23 +135,21 @@ public class ParseTest
         Optional<String> oIv;
         Author author;
         assertNotNull(authors);
-        assertEquals(String.valueOf(authors), 3, authors.size());
+        assertEquals(String.valueOf(authors), 2, authors.size());
 
         author = authors.get(0);
         assertEquals("Miedema", author.getFamilyName());
         assertEquals("John", author.getGivenNames());
+        assertTrue(author.getBirthDate().isEmpty());
+        assertTrue(author.getDeathDate().isEmpty());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(1, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
         assertEquals("OL6548935A", oIv.get());
 
-        author = authors.get(1);
-        assertEquals("Miedema.", author.getFamilyName());
-        assertEquals("John", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
-
         // from "contributors" which does not provide author id's
-        author = authors.get(2);
+        author = authors.get(1);
         assertEquals("Ekholm", author.getFamilyName());
         assertEquals("C.", author.getGivenNames());
         assertEquals(Author.TYPE_COVER_ARTIST, author.getType());
@@ -170,14 +170,16 @@ public class ParseTest
         assertEquals("John", tocs.get(0).getPrimaryAuthor().getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(covers);
-        assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-        //   "covers": [
-        //    5546156
-        //  ],
-        assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                          + "_5546156_0_"));
+        if (FETCH_COVERS[0]) {
+            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            assertNotNull(covers);
+            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
+            //   "covers": [
+            //    5546156
+            //  ],
+            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
+                                              + "_5546156_0_"));
+        }
     }
 
     @Test
@@ -189,7 +191,7 @@ public class ParseTest
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.openlibrary_9780734418227);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, FETCH_COVERS, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -221,14 +223,16 @@ public class ParseTest
         assertEquals(1, allSeries.size());
         assertEquals("Nevermoor", allSeries.get(0).getTitle());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(covers);
-        assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-        // "covers": [
-        //  13769253
-        //  ],
-        assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                          + "_13769253_0_"));
+        if (FETCH_COVERS[0]) {
+            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            assertNotNull(covers);
+            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
+            // "covers": [
+            //  13769253
+            //  ],
+            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
+                                              + "_13769253_0_"));
+        }
     }
 
     @Test
@@ -239,7 +243,7 @@ public class ParseTest
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.openlibrary_9780141346830);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, FETCH_COVERS, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -267,18 +271,20 @@ public class ParseTest
         assertEquals("Rick", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(covers);
-        assertEquals(SITE_COVERS_BROKEN_AGAIN, 2, covers.size());
-        //   "covers": [
-        //    14615097,
-        //    14615096,
-        //    13011694
-        //  ],
-        assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                          + "_14615097_0_"));
-        assertTrue(covers.get(1).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                          + "_14615096_1_"));
+        if (FETCH_COVERS[0]) {
+            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            assertNotNull(covers);
+            assertEquals(SITE_COVERS_BROKEN_AGAIN, 2, covers.size());
+            //   "covers": [
+            //    14615097,
+            //    14615096,
+            //    13011694
+            //  ],
+            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
+                                              + "_14615097_0_"));
+            assertTrue(covers.get(1).contains(EngineId.OpenLibrary.getPreferenceKey()
+                                              + "_14615096_1_"));
+        }
     }
 
     @Test
@@ -287,9 +293,11 @@ public class ParseTest
         // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
         // https://openlibrary.org/books/OL36696710M.json
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary_9783103971422);
+                                                           .R.raw.openlibrary_9783103971422_book);
+        final JSONObject workDocument = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                               .R.raw.openlibrary_9783103971422_work);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -303,12 +311,13 @@ public class ParseTest
         assertEquals("1282184385", book.requireIdentifierValue(Identifier.SID_OCLC));
 
         assertEquals("2022-02-09", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("2022", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
         assertEquals("272", book.getString(DBKey.PAGES, null));
         assertEquals("ger", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
         assertEquals(Book.ContentType.Collection.getId(), book.getLong(DBKey.CONTENT_TYPE));
-        assertEquals("Mit zahlreichen farbigen Illustrationen",
-                     book.getString(DBKey.DESCRIPTION, null));
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith("Ein Plädoyer für eine inklusive und klimagerechte"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -319,14 +328,41 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         Author author;
         assertNotNull(authors);
-        assertEquals(2, authors.size());
+        assertEquals(3, authors.size());
 
         author = authors.get(0);
         assertEquals("Diehl", author.getFamilyName());
         assertEquals("Katja", author.getGivenNames());
+        assertEquals("1973-09-17", author.getBirthDate().orElse(null));
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(6, author.getIdentifiers().size());
+        Optional<String> oIv;
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL10146707A", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_ASIN);
+        assertTrue(oIv.isPresent());
+        assertEquals("B09KDKT6RV", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
+        assertTrue(oIv.isPresent());
+        assertEquals("22177746", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_LIBRARY_THING);
+        assertTrue(oIv.isPresent());
+        assertEquals("diehlkatja", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q110700832", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_VIAF);
+        assertTrue(oIv.isPresent());
+        assertEquals("78164479539426210002", oIv.get());
+
+        // duplicate without birthdate
+        author = authors.get(1);
+        assertEquals("Diehl", author.getFamilyName());
+        assertEquals("Katja", author.getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
 
-        author = authors.get(1);
+        author = authors.get(2);
         assertEquals("Reich", author.getFamilyName());
         assertEquals("Doris", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
@@ -334,6 +370,31 @@ public class ParseTest
         final List<TocEntry> tocs = book.getToc();
         assertNotNull(tocs);
         assertEquals(23, tocs.size());
+
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Bin ich der Wandel – oder warte ich auf ihn?`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Mobilität`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Was hat sich durch das Auto verdndert?`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`#Autokorrektur-Fakten`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`»Nicht-männliche« Mobilität`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Privilegien`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Lobbyismus`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Für eine wahlfreie Mobilität`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Raum`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Die Entwicklung des Raums`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Die autogerechte Stadt`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Ländlicher Raum`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Öffentlicher Raum`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Für einen lebenswerten Raum`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Mensch`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Menschen, die nicht Auto fahren wollen`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Menschen in Familien`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Menschen im ländlichen Raum`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Menschen in Armut`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Menschen mit Einschränkungen`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`BIPoC und Transpersonen`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`Menschen, die alt oder krank sind`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`},
+        // TocEntry{id=0, author=Author{id=0, familyName=`Diehl`, givenNames=`Katja`, birthDate=`1973-09-17`,  identifiers=[Value{key=openlibrary, sid=`OL10146707A`}, Value{key=amazon, sid=`B09KDKT6RV`}, Value{key=goodreads, sid=`22177746`}, Value{key=wikidata, sid=`Q110700832`}, Value{key=librarything, sid=`diehlkatja`}, Value{key=viaf, sid=`78164479539426210002`}], realAuthor=null}, title=`So geht Mobilität für alle!`, firstPublicationDate=`PartialDate{localDate=0001-01-01, yearSet=false, monthSet=false, daySet=false}`, bookCount=`1`}],
+
 
         assertEquals("Bin ich der Wandel – oder warte ich auf ihn?", tocs.get(0).getTitle());
         assertEquals("Mobilität", tocs.get(1).getTitle());
@@ -364,14 +425,16 @@ public class ParseTest
         assertEquals("Katja", tocs.get(0).getPrimaryAuthor().getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(covers);
-        assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-        //   "covers": [
-        //  12585189
-        //]
-        assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                          + "_12585189_0_"));
+        if (FETCH_COVERS[0]) {
+            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            assertNotNull(covers);
+            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
+            //   "covers": [
+            //  12585189
+            //]
+            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
+                                              + "_12585189_0_"));
+        }
     }
 
     @Test
@@ -382,7 +445,7 @@ public class ParseTest
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.openlibrary_9780553276329);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, FETCH_COVERS, book);
 
         assertNotNull(book);
         assertFalse(book.isEmpty());
@@ -409,9 +472,34 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         Author author;
         assertNotNull(authors);
-        assertEquals(1, authors.size());
+        assertEquals(2, authors.size());
 
         author = authors.get(0);
+        assertEquals("Cussler", author.getFamilyName());
+        assertEquals("Clive", author.getGivenNames());
+        assertEquals("1931-07-15", author.getBirthDate().orElse(null));
+        assertEquals("2020-02-24", author.getDeathDate().orElse(null));
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals(5, author.getIdentifiers().size());
+        Optional<String> oIv;
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL29079A", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_ISNI);
+        assertTrue(oIv.isPresent());
+        assertEquals("0000000118764664", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
+        assertTrue(oIv.isPresent());
+        assertEquals("18411", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q366266", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_VIAF);
+        assertTrue(oIv.isPresent());
+        assertEquals("56608054", oIv.get());
+
+        // 2025-06-14: yes, a duplicate... not removed because the birth/death dates are absent
+        author = authors.get(1);
         assertEquals("Cussler", author.getFamilyName());
         assertEquals("Clive", author.getGivenNames());
         assertEquals(Author.TYPE_FOREWORD, author.getType());
@@ -423,13 +511,66 @@ public class ParseTest
         assertEquals("NUMA Files, 1; Dirk Pitt Adventures", allSeries.get(0).getTitle());
         assertEquals("1", allSeries.get(0).getNumber());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(covers);
-        assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-        //  "covers": [
-        //    368945
-        //  ],
-        assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                          + "_368945_0_"));
+        if (FETCH_COVERS[0]) {
+            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            assertNotNull(covers);
+            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
+            //  "covers": [
+            //    368945
+            //  ],
+            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
+                                              + "_368945_0_"));
+        }
+    }
+
+    @Test
+    public void parse6()
+            throws IOException, StorageException, SearchException, CredentialsException {
+        // https://openlibrary.org/search.json?q=9781691706631&fields=key,editions
+        // https://openlibrary.org/books/OL33899062M.json
+        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                           .R.raw.openlibrary_9781691706631_book);
+        final JSONObject workDocument = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
+                                                               .R.raw.openlibrary_9781691706631_work);
+        final Book book = new Book();
+        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
+
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+        Log.d(TAG, book.toString());
+
+        assertEquals("Control Your Mind and Master Your Feelings",
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("9781691706631", book.getString(DBKey.ISBN, null));
+        assertEquals("OL33899062M", book.requireIdentifierValue(Identifier.SID_OPEN_LIBRARY));
+
+        assertEquals("2019", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("231", book.getString(DBKey.PAGES, null));
+
+        assertTrue(book.getDescription().startsWith("We oftentimes look towards the outside"));
+        assertEquals("eng", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Eric Robertson", allPublishers.get(0).getName());
+
+        final List<Author> authors = book.getAuthors();
+        Author author;
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        author = authors.get(0);
+        assertEquals("Robertson", author.getFamilyName());
+        assertEquals("Eric", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        assertEquals(1, author.getIdentifiers().size());
+        Optional<String> oIv;
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL14948835A", oIv.get());
     }
 }

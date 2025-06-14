@@ -1,0 +1,29 @@
+{
+  "first_publish_date": "2009", "description": {
+  "type": "/type/text",
+  "value": "A concise examination of the different meanings of slow reading.\r\n\r\nIn the face of ever-increasing demands for speed-reading of volumes of information fragments, some readers are choosing to slow down. While it often seems necessary to read quickly, many readers share a conviction that reading slowly is essential to enjoyment and comprehension.\r\nThe involuntary practice of slow reading has been a subject of much research, but little is known about the voluntary practice. Slow Reading examines the research, from the earliest references in religion and philosophy, to the practice of close reading in the humanities, and the recent swell of interest associated with the Slow Movement. It looks at the diverse angles from which slow reading has been approached in education, library sciences and media studies. Research in psychology and neurophysiology provides a tentative explanation for the ongoing role of slow reading.\r\nSlow Reading brings attention to emerging ideas in technology and culture. The traditional technologies of print and the book have persisted as part of our information ecology because of the need for slow reading and deep comprehension. The theme of locality in the Slow Movement provides insight into the importance of physical location in our relationship with information. Most of all, Slow Reading represents a rediscovery of the pleasure of reading for its own sake."
+}, "links": [
+  {"url": "http://johnmiedema.ca", "type": {"key": "/type/link"}, "title": "Author's Website"},
+  {
+    "url": "http://litwinbooks.com/slowreading-ch2.php", "type": {"key": "/type/link"},
+    "title": "Chapter 2"
+  },
+  {
+    "url": "http://www.powells.com/biblio/91-9781936117369-0", "type": {"key": "/type/link"},
+    "title": "Get the e-book"
+  }
+], "title": "Slow reading",
+  "created": {"type": "/type/datetime", "value": "2009-12-11T10:21:22.692352"},
+  "last_modified": {"type": "/type/datetime", "value": "2020-02-13T07:53:41.783304"}, "covers": [
+  5546156
+], "lc_classifications": [
+  "Z1003 .M58 2009"
+], "latest_revision": 20, "key": "/works/OL13694821W", "authors": [
+  {"type": {"key": "/type/author_role"}, "author": {"key": "/authors/OL6548935A"}}
+], "dewey_number": [
+  "028/.9"
+], "type": {"key": "/type/work"}, "subjects": [
+  "Books and reading",
+  "Reading"
+], "revision": 20
+}

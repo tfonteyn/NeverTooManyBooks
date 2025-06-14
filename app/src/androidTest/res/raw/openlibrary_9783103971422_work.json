@@ -1,0 +1,31 @@
+{
+  "title": "Autokorrektur", "authors": [
+  {"author": {"key": "/authors/OL10146707A"}, "type": {"key": "/type/author_role"}}
+], "key": "/works/OL27063321W", "type": {"key": "/type/work"}, "links": [
+  {
+    "url": "https://www.fischerverlage.de/buch/katja-diehl-autokorrektur-mobilitaet-fuer-eine-lebenswerte-welt-9783103971422",
+    "title": "S. Fischer Verlag (publisher, german)", "type": {"key": "/type/link"}
+  },
+  {
+    "url": "https://inventaire.io/entity/inv:22ed4eeaf5246b7d6cdb2ce3998ffa9f",
+    "title": "inventaire.io", "type": {"key": "/type/link"}
+  },
+  {
+    "title": "BookBrainz",
+    "url": "https://bookbrainz.org/work/1e51c093-0cc8-4312-91e9-1689a7735325",
+    "type": {"key": "/type/link"}
+  }
+], "description": {
+  "type": "/type/text",
+  "value": "Ein Pl\u00e4doyer f\u00fcr eine inklusive und klimagerechte Verkehrswende \u2013 Mit Schwung, Know-how und Kreativit\u00e4t macht die Mobilit\u00e4tsexpertin Katja Diehl Lust auf eine Gesellschaft, die gemeinsam eine attraktive und klimafreundliche Zukunft f\u00fcr alle baut. Eine Zukunft, die mehr Lebensqualit\u00e4t in St\u00e4dten und auf dem Land bietet sowie moderne Formen von Arbeit ber\u00fccksichtigt.\r\n\r\n\u00bbJede:r sollte das Recht haben, ein Leben ohne ein eigenes Auto f\u00fchren zu k\u00f6nnen.\u00ab\r\n\r\n\u00bbAutokorrektur\u00ab will Kick Off einer Gesellschaft sein, die gemeinsam eine attraktive Mobilt\u00e4tszukunft baut \u2013 und zwar schon heute. In Katja Diehls Vorstellung der Zukunft k\u00f6nnen die Menschen Auto fahren, so sie es denn wollen. Sie m\u00fcssen es aber nicht mehr \u2013 denn es gibt attraktive Alternativen.\r\n\r\nMomentan ist nicht alles in unserem Land fair und klimagerecht, inklusiv und bezahlbar aufgestellt. Die Bed\u00fcrfnisse vieler Menschen werden nicht angemessen ber\u00fccksichtigt. Das k\u00f6nnen wir \u00e4ndern, davon ist Mobilit\u00e4tsexpertin Katja Diehl \u00fcberzeugt und l\u00e4utet die Verkehrswende ein.\r\n\r\nDie Mobilit\u00e4tsexpertin Katja Diehl weist den Weg zu einer gerechten und fairen Mobilit\u00e4t der Zukunft, die den Menschen ins Zentrum stellt und unsere Welt lebenswert macht.\r\n\r\n(Quelle: [S. Fischer Verlag](https://www.fischerverlage.de/buch/katja-diehl-autokorrektur-mobilitaet-fuer-eine-lebenswerte-welt-9783103971422))"
+}, "subjects": [
+  "Transportation",
+  "Automotive Transportation"
+], "subject_times": [
+  "21st century"
+], "subtitle": "Mobilit\u00e4t f\u00fcr eine lebenswerte Welt", "covers": [
+  12585189
+], "latest_revision": 3, "revision": 3,
+  "created": {"type": "/type/datetime", "value": "2022-01-26T18:46:36.134264"},
+  "last_modified": {"type": "/type/datetime", "value": "2022-10-29T17:32:39.367930"}
+}

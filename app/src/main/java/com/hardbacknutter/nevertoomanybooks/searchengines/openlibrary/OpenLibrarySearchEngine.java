@@ -560,7 +560,7 @@ public class OpenLibrarySearchEngine
      * </pre>
      *
      * @param context     Current context
-     * @param document    JSON result data
+     * @param document    JSON result data for the "/books/*.json" url
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
      * @param book        Bundle to update
@@ -576,6 +576,36 @@ public class OpenLibrarySearchEngine
                @NonNull final boolean[] fetchCovers,
                @NonNull final Book book)
             throws StorageException, IOException, SearchException, CredentialsException {
+
+        // 2025-06: the site has started to remove several data items from the "book.json"
+        // result. It seems they now expect us to ALWAYS fetch the "work.json" as well.
+
+        JSONObject workDocument = null;
+        // "works": [{"key": "/works/OL25312237W"}],
+        final JSONArray works = document.optJSONArray("works");
+        if (works != null && !works.isEmpty()) {
+            final String work = works.getJSONObject(0).optString("key");
+            if (!work.isEmpty()) {
+                final String editionUrl = getHostUrl(context) + work + ".json";
+                final String workResponse = loadDocument(context, editionUrl);
+                workDocument = new JSONObject(workResponse);
+            }
+        }
+
+        parse(context, document, workDocument, fetchCovers, book);
+    }
+
+    @VisibleForTesting
+    void parse(@NonNull final Context context,
+               @NonNull final JSONObject document,
+               @Nullable final JSONObject workDocument,
+               @NonNull final boolean[] fetchCovers,
+               @NonNull final Book book)
+            throws StorageException, SearchException, CredentialsException {
+
+        if (workDocument != null) {
+            parseWork(context, workDocument, book);
+        }
 
         JSONArray a;
         String s;
@@ -596,44 +626,9 @@ public class OpenLibrarySearchEngine
         //  and concatenate it with the title
         // s = document.optString("subtitle");
 
-        // "authors" contains structured Author data
-        a = document.optJSONArray("authors");
-        // 2025-06-12: yes, OL can deliver a correct book with isbn, title, and all
-        // sorts of other info, but blatantly not include the author(s). Sigh...
-        if (a != null && !a.isEmpty()) {
-            parseAuthors(context, a, book);
-        }
-        // "by_statement" contains NON-structured author data:
-        //     "by John Miedema."
-        //     "Katja Diehl, mit zahlreichen Illustrationen von Doris Reich"
-        //
-        // We'll try and catch some of the inconsistencies, but can't catch them all,
-        // so we leave those to the user.
-        // Note we also will not try and resolve these names on purpose.
-        s = document.optString("by_statement", null);
-        if (s != null && !s.isEmpty()) {
-            // drop trailing '.'
-            if (s.endsWith(".")) {
-                s = s.substring(0, s.length() - 1);
-            }
-            // remove "by " from the start
-            if (s.startsWith("by ") && s.length() > 3) {
-                s = s.substring(3);
-                addAuthor(Author.from(s), Author.TYPE_UNKNOWN, book);
-
-            } else if (s.contains(",")) {
-                // only grab the part before a comma
-                final String[] split = s.split(",");
-                if (split.length > 0) {
-                    addAuthor(Author.from(split[0]), Author.TYPE_UNKNOWN, book);
-                }
-            }
-        }
-
-        a = document.optJSONArray("contributors");
-        if (a != null && !a.isEmpty()) {
-            parseContributors(context, a, book);
-        }
+        // Re-parse for fields which should have been in the "work"
+        // This is OL... better parse twice to be sure
+        parseBookOrWork(context, document, book);
 
         // There is also a key "pagination" which for example
         // contains ""xxii, 781p."
@@ -672,31 +667,6 @@ public class OpenLibrarySearchEngine
         parsePublicationDate(document, book);
         parseFirstPublicationDate(document, book);
 
-        // ENHANCE: "subjects" could be used for tags...
-        //  but the subject list for a single book can be very large
-        //  and contain various entries of dubious quality.
-        // I mean.. seriously, 47 tags ?
-        // https://openlibrary.org/works/OL257943W.json
-        //
-        // There are also two formats:
-        // "subjects": [
-        //            {
-        //                "name": "History",
-        //                "url": "https://openlibrary.org/subjects/history"
-        //            },
-        //
-        // Also seen in a different format:
-        //  "subjects": [
-        //    "Fiction - Espionage / Thriller",
-        //    "Fiction",
-        //    "Espionage/Intrigue",
-        //    "Thrillers",
-        //    "Fiction / Thrillers",
-        //    "Action & Adventure"
-        //  ]
-
-        parseNotes(document, book);
-
         a = document.optJSONArray("table_of_contents");
         if (a != null && !a.isEmpty()) {
             parseToc(context, a, book);
@@ -720,7 +690,149 @@ public class OpenLibrarySearchEngine
     }
 
     /**
+     * <pre>{@code
+     * {
+     *   "title": "Control Your Mind and Master Your Feelings",
+     *   "authors": [
+     *     {
+     *       "author": {
+     *         "key": "/authors/OL14948835A"
+     *       },
+     *       "type": {
+     *         "key": "/type/author_role"
+     *       }
+     *     }
+     *   ],
+     *   "key": "/works/OL25312237W",
+     *   "type": {
+     *     "key": "/type/work"
+     *   },
+     *   "covers": [
+     *     12009823
+     *   ],
+     *   "subjects": [
+     *     "Self-help",
+     *     "personal development",
+     *     "emotional intelligence",
+     *     "mindfulness",
+     *     "meditation",
+     *     "cognitive behavioral therapy",
+     *     "CBT",
+     *     "anxiety",
+     *     "depression",
+     *     "anger management",
+     *     "stress management",
+     *     "positive thinking",
+     *     "self-control",
+     *     "mental health",
+     *     "emotional well-being"
+     *   ],
+     *   "description": {
+     *     "type": "/type/text",
+     *     "value": "We oftentimes look towards the outside world to find the roots of our problems. However, most of the times, we should be looking inwards. Our mind and our emotions determine our state of being in the present moment. If those aspects are left unchecked, we can get easily overwhelmed and are left feeling unfulfilled every single day. \r\n\r\nThis book contains two manuscripts designed to help you discover the best and most efficient way to control your thoughts and master your feelings.\r\n\r\nIn the first part of the bundle called Breaking Overthinking, you will discover:\r\n\r\nHow overthinking can be detrimental to your social life. \r\nThe hidden dangers of overthinking and what can happen to you if it’s left untreated. \r\nHow to declutter your mind from all the noise of the modern world. \r\nHow overthinking affects your body, your energy levels, and your everyday mood. \r\nHow your surroundings affect your state of mind, and what you NEED to do in order to break out of that state. \r\nBad habits we perform every day and don’t even realize are destroying our sanity (and how to overcome them properly). \r\nHow to cut out toxic people from your life, which cloud your judgment and make you feel miserable."
+     *   },
+     *   "latest_revision": 13,
+     *   "revision": 13,
+     *   "created": {
+     *     "type": "/type/datetime",
+     *     "value": "2021-09-27T18:56:20.746460"
+     *   },
+     *   "last_modified": {
+     *     "type": "/type/datetime",
+     *     "value": "2024-12-23T09:10:28.372342"
+     *   }
+     * }
+     * }</pre>
+     */
+    private void parseWork(@NonNull final Context context,
+                           @NonNull final JSONObject document,
+                           @NonNull final Book book)
+            throws SearchException, StorageException {
+
+        parseBookOrWork(context, document, book);
+    }
+
+    /**
+     * Shared parsing for "book" and "work".
+     * <p>
+     * We don't parse the "covers" here, only in the "book".
+     */
+    private void parseBookOrWork(@NonNull final Context context,
+                                 @NonNull final JSONObject document,
+                                 @NonNull final Book book)
+            throws SearchException, StorageException {
+
+        JSONArray a;
+        String s;
+
+        // "authors" contains structured Author data
+        a = document.optJSONArray("authors");
+        if (a != null && !a.isEmpty()) {
+            parseAuthors(context, a, book);
+        }
+
+        // "by_statement" contains NON-structured author data:
+        //     "by John Miedema."
+        //     "Katja Diehl, mit zahlreichen Illustrationen von Doris Reich"
+        //
+        // We'll try and catch some of the inconsistencies, but can't catch them all,
+        // so we leave those to the user.
+        // Note we also will not try and resolve these names on purpose.
+        s = document.optString("by_statement", null);
+        if (s != null && !s.isEmpty()) {
+            // drop trailing '.'
+            if (s.endsWith(".")) {
+                s = s.substring(0, s.length() - 1);
+            }
+            // remove "by " from the start
+            if (s.startsWith("by ") && s.length() > 3) {
+                s = s.substring(3);
+                addAuthor(Author.from(s), Author.TYPE_UNKNOWN, book);
+
+            } else if (s.contains(",")) {
+                // only grab the part before a comma
+                final String[] split = s.split(",");
+                if (split.length > 0) {
+                    addAuthor(Author.from(split[0]), Author.TYPE_UNKNOWN, book);
+                }
+            }
+        }
+
+        a = document.optJSONArray("contributors");
+        if (a != null && !a.isEmpty()) {
+            parseContributors(context, a, book);
+        }
+
+        parseDescriptionAndNotes(document, book);
+
+        // ENHANCE: "subjects" could be used for tags...
+        //  but the subject list for a single book can be very large
+        //  and contain various entries of dubious quality.
+        // I mean.. seriously, 47 tags ?
+        // https://openlibrary.org/works/OL257943W.json
+        //
+        // There are also two formats:
+        // "subjects": [
+        //            {
+        //                "name": "History",
+        //                "url": "https://openlibrary.org/subjects/history"
+        //            },
+        //
+        // Also seen in a different format:
+        //  "subjects": [
+        //    "Fiction - Espionage / Thriller",
+        //    "Fiction",
+        //    "Espionage/Intrigue",
+        //    "Thrillers",
+        //    "Fiction / Thrillers",
+        //    "Action & Adventure"
+        //  ]
+    }
+
+    /**
      * A single Author element:
+     *
+     * === "book" ===
      * <pre>
      *     {
      *   "name": "John Miedema",
@@ -751,6 +863,18 @@ public class OpenLibrarySearchEngine
      *   "revision": 2
      * }
      * </pre>
+     *
+     * === "work" ===
+     * <pre>{@code
+     * }</pre>
+     *        {
+     *             "author": {
+     *                 "key": "/authors/OL14948835A"
+     *             },
+     *             "type": {
+     *                 "key": "/type/author_role"
+     *             }
+     *         }
      * <p>
      * The authors parsed here will be fully resolved.
      *
@@ -766,24 +890,41 @@ public class OpenLibrarySearchEngine
                               @NonNull final Book book)
             throws StorageException, SearchException {
 
-        if (authorParser == null) {
-            authorParser = new AuthorParser(context, this);
-        }
-
         JSONObject element;
         for (int ai = 0; ai < a.length(); ai++) {
             element = a.optJSONObject(ai);
             if (element != null) {
-                final String key = element.optString("key", null);
-                if (key != null && !key.isEmpty()) {
-                    final String authorUrl = getHostUrl(context) + key + ".json";
-                    final String response = loadDocument(context, authorUrl);
-                    final JSONObject document = new JSONObject(response);
-                    final Author author = authorParser.parse(context, document);
-                    if (author != null) {
-                        addAuthor(author, Author.TYPE_UNKNOWN, book);
-                    }
+                // work:
+                // {"author":{"key":"/authors/OL14948835A"}, "type":{"key":"/type/author_role"}}
+                final JSONObject author = element.optJSONObject("author");
+                if (author != null) {
+                    final String key = author.optString("key", null);
+                    fetchAndParseAuthor(context, key, book);
+                } else {
+                    // book:
+                    // "key": "/authors/OL6548935A"
+                    final String key = element.optString("key", null);
+                    fetchAndParseAuthor(context, key, book);
                 }
+            }
+        }
+    }
+
+    private void fetchAndParseAuthor(@NonNull final Context context,
+                                     @Nullable final String key,
+                                     @NonNull final Book book)
+            throws StorageException, SearchException {
+        if (key != null && !key.isEmpty()) {
+            if (authorParser == null) {
+                authorParser = new AuthorParser(context, this);
+            }
+
+            final String authorUrl = getHostUrl(context) + key + ".json";
+            final String response = loadDocument(context, authorUrl);
+            final JSONObject document = new JSONObject(response);
+            final Author author = authorParser.parse(context, document);
+            if (author != null) {
+                addAuthor(author, Author.TYPE_UNKNOWN, book);
             }
         }
     }
@@ -895,32 +1036,61 @@ public class OpenLibrarySearchEngine
     }
 
     /**
+     * "description" seems to be on the "work" only. Only one format (we hope...)
+     * <p>
      * "notes" is a specific (set of) remarks on this particular edition of the book.
-     * There are two known formats returned
+     * There are two known formats returned:
      * <pre>
      *      "notes": "Includes bibliographical references and index.",
      *      "notes": {"type": "/type/text", "value": "Mit zahlreichen farbigen Illustrationen"}
      * </pre>
      *
+     * If we previously parsed a description, the "notes" will be appended.
+     *
      * @param document to parse
      * @param book     to update
      */
-    private void parseNotes(@NonNull final JSONObject document,
-                            @NonNull final Book book) {
+    private void parseDescriptionAndNotes(@NonNull final JSONObject document,
+                                          @NonNull final Book book) {
+        JSONObject element;
+        String s;
 
-        final JSONObject element = document.optJSONObject("notes");
+        element = document.optJSONObject("description");
         if (element != null) {
             // Sanity check, no idea if there are others types
             if ("/type/text".equals(element.optString("type"))) {
-                final String s = element.optString("value", null);
+                s = element.optString("value", null);
                 if (s != null && !s.isEmpty()) {
+                    final String previous = book.getDescription();
+                    if (!previous.isEmpty()) {
+                        s = previous + "\n" + s;
+                    }
+                    book.setDescription(s);
+                }
+            }
+        }
+
+        element = document.optJSONObject("notes");
+        if (element != null) {
+            // Sanity check, no idea if there are others types
+            if ("/type/text".equals(element.optString("type"))) {
+                s = element.optString("value", null);
+                if (s != null && !s.isEmpty()) {
+                    final String previous = book.getDescription();
+                    if (!previous.isEmpty()) {
+                        s = previous + "\n" + s;
+                    }
                     book.setDescription(s);
                 }
             }
         } else {
             // Try the plain string format
-            final String s = document.optString("notes", null);
+            s = document.optString("notes", null);
             if (s != null && !s.isEmpty()) {
+                final String previous = book.getDescription();
+                if (!previous.isEmpty()) {
+                    s = previous + "\n" + s;
+                }
                 book.setDescription(s);
             }
         }
