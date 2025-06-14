@@ -541,10 +541,11 @@ public class SearchCoordinator
         }
 
         boolean atLeastOneStarted = false;
-        final List<EngineId> activeEngines = sites.stream()
-                                                  .filter(Site::isActive)
-                                                  .map(Site::getEngineId)
-                                                  .collect(Collectors.toList());
+        final List<EngineId> activeEngines = bookSearch.getSites()
+                                                       .stream()
+                                                       .filter(Site::isActive)
+                                                       .map(Site::getEngineId)
+                                                       .collect(Collectors.toList());
         for (final EngineId engineId : activeEngines) {
             // If the site has not been searched yet, search it
             if (!bookSearch.hasResult(engineId)) {
@@ -577,10 +578,11 @@ public class SearchCoordinator
             return false;
         }
 
-        final List<EngineId> activeEngines = sites.stream()
-                                                  .filter(Site::isActive)
-                                                  .map(Site::getEngineId)
-                                                  .collect(Collectors.toList());
+        final List<EngineId> activeEngines = bookSearch.getSites()
+                                                       .stream()
+                                                       .filter(Site::isActive)
+                                                       .map(Site::getEngineId)
+                                                       .collect(Collectors.toList());
         for (final EngineId engineId : activeEngines) {
             // If the site has not been searched yet, search it
             if (!bookSearch.hasResult(engineId)) {

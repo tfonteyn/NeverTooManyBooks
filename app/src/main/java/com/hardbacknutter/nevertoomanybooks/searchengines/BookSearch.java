@@ -122,6 +122,11 @@ class BookSearch {
         return criteria;
     }
 
+    @NonNull
+    public List<Site> getSites() {
+        return sites;
+    }
+
     boolean isWaitingForIsbnOrCode() {
         return waitingForIsbnOrCode;
     }
