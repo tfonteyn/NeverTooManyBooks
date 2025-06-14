@@ -32,6 +32,7 @@ import android.widget.EditText;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
+import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
@@ -223,6 +224,15 @@ public abstract class SearchBookBaseFragment
 
     abstract void onSearchCancelled(@NonNull LiveDataEvent<Boolean> message);
 
+    /**
+     * FIXME: make overriding foolproof
+     * When overriding this method, do <strong>NOT</strong> call this super,
+     * but you <strong>MUST CALL {@link #closeProgressDialog()}
+     * and {@link #onClearSearchCriteria}</strong>.
+     *
+     * @param message with results
+     */
+    @EmptySuper
     void onSearchFinished(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
         message.process(trigger -> {
