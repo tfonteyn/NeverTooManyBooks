@@ -196,7 +196,7 @@ class ResultsAccumulator {
         // If we already have previous data, we're done
         final String previous = book.getString(key, null);
         if (previous != null && !previous.isEmpty()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueSkipped("processLanguage", key, dataToAdd);
             }
             return;
@@ -211,7 +211,7 @@ class ResultsAccumulator {
         // copy the new data
         book.putString(key, dataToAdd);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
             dbgLogValueCopied("processLanguage", key, dataToAdd);
         }
     }
@@ -244,7 +244,7 @@ class ResultsAccumulator {
         final String previous = dstBook.getString(key, null);
         if (previous == null || previous.isBlank()) {
             dstBook.putString(key, dataToAdd);
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueCopied("processDate", key, dataToAdd);
             }
             return;
@@ -265,7 +265,7 @@ class ResultsAccumulator {
             }
         });
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
             dbgLogValueSkipped("processDate", key, dataToAdd);
         }
     }
@@ -297,7 +297,7 @@ class ResultsAccumulator {
 
         final List<T> list = book.getParcelableArrayList(key);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
             if (list.isEmpty()) {
                 dbgLogValueCopied("processList", key, dataToAdd);
             } else {
@@ -333,7 +333,7 @@ class ResultsAccumulator {
         // (fetch as String; we don't care about the actual data-type)
         final String previous = book.getString(key, null);
         if (previous != null && !previous.isEmpty()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueSkipped("processMoney", key, dataToAdd);
             }
             return;
@@ -342,7 +342,7 @@ class ResultsAccumulator {
         // Money, double or float ? Just copy the new data.
         if (dataToAdd instanceof Money) {
             book.putMoney(key, (Money) dataToAdd);
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueCopied("processMoney", key, dataToAdd);
             }
             return;
@@ -350,7 +350,7 @@ class ResultsAccumulator {
         if (dataToAdd instanceof Double || dataToAdd instanceof Float) {
             book.putDouble(key, (double) dataToAdd);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueCopied("processMoney", key, dataToAdd.toString());
             }
             return;
@@ -386,7 +386,7 @@ class ResultsAccumulator {
         // (fetch as String; we don't care about the actual data-type)
         final String previous = book.getString(key, null);
         if (previous != null && !previous.isEmpty()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueSkipped("processRealNumberToFloat", key, dataToAdd);
             }
             return;
@@ -396,7 +396,7 @@ class ResultsAccumulator {
         if (dataToAdd instanceof Float) {
             book.putFloat(key, (float) dataToAdd);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueCopied("processRealNumberToFloat", key, dataToAdd);
             }
             return;
@@ -404,7 +404,7 @@ class ResultsAccumulator {
         if (dataToAdd instanceof Double) {
             book.putFloat(key, ((Double) dataToAdd).floatValue());
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueCopied("processRealNumberToFloat", key, dataToAdd);
             }
             return;
@@ -415,12 +415,12 @@ class ResultsAccumulator {
             // this is a fallback in case the SearchEngine has not already parsed the data!
             book.putFloat(key, realNumberParser.toFloat(dataToAdd));
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueCopied("processRealNumberToFloat", key, dataToAdd);
             }
         } catch (@NonNull final IllegalArgumentException e) {
             // covers NumberFormatException
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 LoggerFactory.getLogger().d(TAG, "processRealNumberToFloat", e,
                                             "key=" + key,
                                             "data=`" + dataToAdd + '`');
@@ -450,7 +450,7 @@ class ResultsAccumulator {
         // (fetch as String; we don't care about the actual data-type)
         final String previous = book.getString(key, null);
         if (previous != null && !previous.isEmpty()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
                 dbgLogValueSkipped("processGenericKey", key, dataToAdd);
             }
             return;
@@ -459,7 +459,7 @@ class ResultsAccumulator {
         // Copy the data using the incoming type.
         book.put(key, dataToAdd);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_RESULTS_ACCUMULATOR) {
             dbgLogValueCopied("processGenericKey", key, dataToAdd);
         }
     }

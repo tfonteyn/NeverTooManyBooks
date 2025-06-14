@@ -77,6 +77,7 @@ public final class DEBUG_SWITCHES {
 
     /** {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator}. */
     public static final boolean SEARCH_COORDINATOR = false;
+    public static final boolean SEARCH_RESULTS_ACCUMULATOR = false;
     /** enable timers for rough performance measurements. */
     public static final boolean SEARCH_COORDINATOR_TIMERS = false;
 
