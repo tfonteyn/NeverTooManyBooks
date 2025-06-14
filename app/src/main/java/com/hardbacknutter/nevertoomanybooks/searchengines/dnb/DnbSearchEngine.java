@@ -59,10 +59,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -798,6 +798,13 @@ public class DnbSearchEngine
         if (!url.startsWith("https")) {
             url = getHostUrl(context) + url;
         }
+
+        // 2025-06-14: instead of the above, we could also
+        // just TRY "https://portal.dnb.de/opac/mvb/cover?isbn=..."
+        // for a high-res image...
+        // And if that fails, fall back to the parsed url.
+        // But that disrupts the call-flow of the website and could lead
+        // to access issues (see referer usage)
         return saveImage(context, url,
                          Map.of(HttpConstants.REFERER, document.location()),
                          bookId, cIdx, null);
