@@ -54,6 +54,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 tools:layout_height="@dimen/tools_cover_height"
                 tools:layout_width="@dimen/tools_cover_width"
                 tools:src="@sample/covers"
@@ -67,6 +68,7 @@
                 android:layout_width="@dimen/field_margin_start"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/cover_image_0"
                 app:layout_constraintTop_toTopOf="parent"
                 />
