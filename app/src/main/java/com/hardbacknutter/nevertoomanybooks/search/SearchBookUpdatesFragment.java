@@ -150,8 +150,12 @@ public class SearchBookUpdatesFragment
             // Unlikely to be seen...
             Snackbar.make(vb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
                     .show();
+            // FIXME: this is a kludge...
             // report up what work did get done + the last book we did.
-            onAllDone(message);
+            final BookSearchResult result = vm.pollCancelledQueue();
+            if (result != null) {
+                onAllDone(LiveDataEvent.of(result));
+            }
         });
 
         // The full list was processed
@@ -241,9 +245,18 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    private void onOneDone(@NonNull final LiveDataEvent<BookSearchResult> message) {
-        //noinspection DataFlowIssue
-        message.process(result -> vm.processOne(getContext(), result.getBook()));
+    private void onOneDone(@NonNull final LiveDataEvent<Boolean> message) {
+        message.process(trigger -> {
+            @Nullable
+            final BookSearchResult result = vm.pollFinishedQueue();
+            if (result == null) {
+                return;
+            }
+            //noinspection DataFlowIssue
+            vm.processOne(getContext(), result.getBook());
+
+            vm.retriggerSearchFinished();
+        });
     }
 
     private void onAllDone(@NonNull final LiveDataEvent<BookSearchResult> message) {

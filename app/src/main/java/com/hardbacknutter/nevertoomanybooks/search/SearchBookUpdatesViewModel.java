@@ -75,7 +75,7 @@ public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
 
     /** Prefix to store the settings. */
-    public static final String SYNC_PREFERENCE_PREFIX = "fields.update.usage.";
+    private static final String SYNC_PREFERENCE_PREFIX = "fields.update.usage.";
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesViewModel";
     /** Ask confirmation if the number of covers to download exceeds this number. */
@@ -588,13 +588,11 @@ public class SearchBookUpdatesViewModel
             book.putLong(DBKey.FK_BOOK, bookIdList.get(0));
         }
 
-
-        final LiveDataEvent<BookSearchResult> message = LiveDataEvent.of(
-                new BookSearchResult(0, book));
+        final BookSearchResult data = new BookSearchResult(0, book, null);
         if (success) {
-            listFinished.setValue(message);
+            listFinished.setValue(LiveDataEvent.of(data));
         } else {
-            searchCoordinatorCancelled.setValue(message);
+            pushResultCanceled(data);
         }
     }
 
