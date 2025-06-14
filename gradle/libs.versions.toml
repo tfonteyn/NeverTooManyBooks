@@ -5,7 +5,7 @@ androidKotlinPlugin = "2.1.21"
 # https://github.com/mannodermaus/android-junit5
 mannodermausPlugin = "1.12.2.0"
 
-mannodermaus = "1.7.0"
+mannodermaus = "1.8.0"
 
 # https://developer.android.com/jetpack/androidx/versions
 
