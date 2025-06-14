@@ -37,7 +37,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -50,17 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Co-ordinate multiple {@link SearchTask}.
- * <p>
- * It maintains its own internal list of tasks {@link #activeTasks} and as tasks finish,
- * it processes the data. Once all tasks are complete, it reports back using the
- * {@link MutableLiveData}.
- * <p>
- * The {@link Site#getEngineId()} is used as the task id.
+ * Co-ordinate multiple {@link BookSearch}.
  */
 public class SearchCoordinator
         extends ViewModel
@@ -74,19 +70,23 @@ public class SearchCoordinator
 
     protected final MutableLiveData<LiveDataEvent<TaskProgress>>
             searchCoordinatorProgress = new MutableLiveData<>();
-    protected final MutableLiveData<LiveDataEvent<BookSearchResult>>
+    protected final MutableLiveData<LiveDataEvent<Boolean>>
             searchCoordinatorCancelled = new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<BookSearchResult>>
+    private final MutableLiveData<LiveDataEvent<Boolean>>
             searchCoordinatorFinished = new MutableLiveData<>();
 
-    /** key: task_id. */
-    private final Map<Integer, SearchTask> activeTasks = new HashMap<>();
+    private final Queue<BookSearchResult> searchCoordinatorFinishedQueue =
+            new ConcurrentLinkedQueue<>();
+    private final Queue<BookSearchResult> searchCoordinatorCancelledQueue =
+            new ConcurrentLinkedQueue<>();
+
     /**
      * key: search_id.
      * Added when the first task for this search is started,
      * removed when the last tasks for this search finishes.
      */
     private final Map<Integer, BookSearch> activeSearches = new HashMap<>();
+    private final Map<Integer, Integer> task2searchId = new ConcurrentHashMap<>();
 
     /** Flag indicating we're shutting down. */
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
@@ -94,8 +94,7 @@ public class SearchCoordinator
     /** Accumulates the results from <strong>individual</strong> search tasks. */
     private final Map<EngineId, TaskProgress> progressByEngineId = new EnumMap<>(EngineId.class);
 
-    /** Caches all created engines for reuse. */
-    private final Map<EngineId, SearchEngine> engineCache = new EnumMap<>(EngineId.class);
+    /** Caches the locales for all created engines. */
     private final Map<EngineId, Locale> engineLocaleCache = new EnumMap<>(EngineId.class);
     // There is a SINGLE/shared listener for ALL tasks!
     private final TaskListener<Book> searchTaskListener = new SearchTaskListener();
@@ -122,25 +121,27 @@ public class SearchCoordinator
      */
     private synchronized void onSearchTaskFinished(final int taskId,
                                                    @Nullable final Book result) {
-        // Lookup and remove the finished task from our list
-        final SearchTask searchTask;
-        synchronized (activeTasks) {
-            searchTask = Objects.requireNonNull(activeTasks.remove(taskId),
-                                                () -> ERROR_UNKNOWN_TASK + taskId);
-        }
+        final BookSearch currentSearch = getBookSearch(taskId);
+        final SearchTask currentTask = currentSearch.removeTask(taskId);
+        task2searchId.remove(taskId);
 
-        final BookSearch currentSearch = getBookSearch(searchTask);
+        onSearchTaskFinished(currentSearch, currentTask, result);
+    }
 
-        final EngineId engineId = searchTask.getSearchEngine().getEngineId();
+    private void onSearchTaskFinished(@NonNull final BookSearch currentSearch,
+                                      @NonNull final SearchTask currentTask,
+                                      @Nullable final Book result) {
+
+        final EngineId engineId = currentTask.getSearchEngine().getEngineId();
 
         if (BuildConfig.DEBUG /* always */) {
-            debugSearchTaskFinished(taskId, currentSearch, engineId);
+            currentSearch.debugSearchTaskFinished(currentTask.getTaskId(), engineId);
         }
 
         // ALWAYS store, even when the result was null!
         // Presence of the site/task id in the map is an indication that the site was processed
-        synchronized (currentSearch) {
-            currentSearch.addResult(engineId, searchTask.getSearchBy(), result);
+        synchronized (activeSearches) {
+            currentSearch.addResult(engineId, currentTask.getSearchBy(), result);
         }
 
         // clear obsolete progress status
@@ -174,93 +175,95 @@ public class SearchCoordinator
             }
         }
 
-        // any searches still running or did we get cancelled?
-        final boolean stopSearching;
-        synchronized (activeTasks) {
-            // if we didn't start a new search (which might not be active yet!),
-            // and there are no previous searches still running
-            // (or we got cancelled) then we are done.
-            stopSearching = !searchStarted && (activeTasks.isEmpty() || cancelRequested.get());
-        }
-
-        if (stopSearching) {
-            // debug: measure the time the searches took, don't include the post-processing
-            final long processTime = System.nanoTime();
-
-            synchronized (activeSearches) {
+        final boolean currentIsDone;
+        synchronized (activeSearches) {
+            // If we didn't start a new search (which might not be active yet!),
+            // and there are no previous searches still running (or we got cancelled)
+            // then we are done.
+            currentIsDone = !searchStarted && (!currentSearch.isActive() || cancelRequested.get());
+            if (currentIsDone) {
                 activeSearches.remove(currentSearch.getId());
             }
+        }
 
-            final Book book = currentSearch.accumulateResults(context, engineLocaleCache);
-            final String searchErrors = currentSearch.accumulateErrors(context);
-
-            final LiveDataEvent<BookSearchResult> message = LiveDataEvent.of(
-                    new BookSearchResult(currentSearch.getId(), book));
+        if (currentIsDone) {
+            final BookSearchResult data = currentSearch.finish(context, engineLocaleCache);
             if (cancelRequested.get()) {
-                searchCoordinatorCancelled.setValue(message);
+                pushResultCanceled(data);
             } else {
-                searchCoordinatorFinished.setValue(message);
+                pushResultFinished(data);
             }
+        }
+    }
 
-            if (BuildConfig.DEBUG /* always */) {
-                if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
-                                                "searchId=" + currentSearch.getId(),
-                                                "cancelled=" + cancelRequested.get(),
-                                                "searchErrors=" + searchErrors);
-                }
-                if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-                    currentSearch.debugDumpTimers(processTime);
-                }
-            }
+    /**
+     * Lookup the {@link BookSearch} which the given task belongs to.
+     *
+     * @param taskId to lookup
+     *
+     * @return BookSearch
+     */
+    @NonNull
+    private BookSearch getBookSearch(final int taskId) {
+        final int searchId = Objects.requireNonNull(task2searchId.get(taskId),
+                                                    () -> ERROR_UNKNOWN_TASK + taskId);
+
+        @NonNull
+        final BookSearch currentSearch;
+        synchronized (activeSearches) {
+            currentSearch = Objects.requireNonNull(activeSearches.get(searchId),
+                                                   () -> ERROR_UNKNOWN_SEARCH + searchId);
+        }
+        return currentSearch;
+    }
+
+    protected void pushResultFinished(final BookSearchResult data) {
+        searchCoordinatorFinishedQueue.add(data);
+        searchCoordinatorFinished.setValue(LiveDataEvent.of(true));
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "onSearchTaskFinished",
+                            "searchId=" + data.getSearchId(),
+                            "searchErrors=" + data.getSearchErrors());
+        }
+    }
+
+    protected void pushResultCanceled(final BookSearchResult data) {
+        searchCoordinatorCancelledQueue.add(data);
+        searchCoordinatorCancelled.setValue(LiveDataEvent.of(true));
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "onSearchTaskFinished|Cancelled",
+                            "searchId=" + data.getSearchId(),
+                            "searchErrors=" + data.getSearchErrors());
         }
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private synchronized void onSearchTaskFailed(final int taskId,
                                                  @Nullable final Throwable e) {
-        final SearchTask searchTask;
-        synchronized (activeTasks) {
-            searchTask = Objects.requireNonNull(activeTasks.remove(taskId),
-                                                () -> ERROR_UNKNOWN_TASK + taskId);
-        }
-        final EngineId engineId = searchTask.getSearchEngine().getEngineId();
-        final BookSearch currentSearch = getBookSearch(searchTask);
+        final BookSearch currentSearch = getBookSearch(taskId);
+        final SearchTask currentTask = currentSearch.removeTask(taskId);
+        task2searchId.remove(taskId);
+
         synchronized (currentSearch) {
             // Always store, even if the Exception is null
-            currentSearch.addError(engineId, e);
+            currentSearch.addError(currentTask.getSearchEngine().getEngineId(), e);
         }
-        onSearchTaskFinished(taskId, null);
-    }
-
-    /**
-     * Lookup the {@link BookSearch} the given task belongs to.
-     *
-     * @param searchTask to lookup
-     *
-     * @return BookSearch
-     */
-    @NonNull
-    private BookSearch getBookSearch(@NonNull final SearchTask searchTask) {
-        final BookSearch currentSearch;
-        synchronized (activeSearches) {
-            currentSearch = Objects.requireNonNull(
-                    activeSearches.get(searchTask.getSearchId()),
-                    () -> ERROR_UNKNOWN_SEARCH + searchTask.getSearchId());
-        }
-        return currentSearch;
+        onSearchTaskFinished(currentSearch, currentTask, null);
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private synchronized void onSearchTaskProgress(@NonNull final TaskProgress message) {
         synchronized (progressByEngineId) {
-            final EngineId engineId;
-            synchronized (activeTasks) {
-                engineId = Objects.requireNonNull(activeTasks.get(message.taskId),
-                                                  () -> ERROR_UNKNOWN_TASK + message.taskId)
-                                  .getSearchEngine().getEngineId();
+            final BookSearch currentSearch = getBookSearch(message.taskId);
+            final SearchTask currentTask = currentSearch.getTask(message.taskId);
+            if (currentTask != null) {
+                final EngineId engineId = currentTask.getSearchEngine().getEngineId();
+                progressByEngineId.put(engineId, message);
             }
-            progressByEngineId.put(engineId, message);
         }
         // forward the accumulated progress
         synchronized (searchCoordinatorProgress) {
@@ -282,21 +285,51 @@ public class SearchCoordinator
      * Handles both Successful and Failed searches.
      *
      * @return book data
+     *
+     * @see #pollFinishedQueue()
+     * @see #retriggerSearchFinished()
      */
     @NonNull
-    public LiveData<LiveDataEvent<BookSearchResult>> onSearchFinished() {
+    public LiveData<LiveDataEvent<Boolean>> onSearchFinished() {
         return searchCoordinatorFinished;
+    }
+
+    @Nullable
+    public BookSearchResult pollFinishedQueue() {
+        return searchCoordinatorFinishedQueue.poll();
+    }
+
+    public void retriggerSearchFinished() {
+        if (!searchCoordinatorFinishedQueue.isEmpty()) {
+            searchCoordinatorFinished.setValue(LiveDataEvent.of(true));
+        }
     }
 
     /**
      * The result if the user cancelled the search.
      *
      * @return book data found so far
+     *
+     * @see #pollCancelledQueue()
+     * @see #retriggerCancelledQueue()
      */
     @NonNull
-    public LiveData<LiveDataEvent<BookSearchResult>> onSearchCancelled() {
+    public LiveData<LiveDataEvent<Boolean>> onSearchCancelled() {
         return searchCoordinatorCancelled;
     }
+
+    @Nullable
+    public BookSearchResult pollCancelledQueue() {
+        return searchCoordinatorCancelledQueue.poll();
+    }
+
+    public void retriggerCancelledQueue() {
+        if (!searchCoordinatorCancelledQueue.isEmpty()) {
+            searchCoordinatorCancelled.setValue(LiveDataEvent.of(true));
+        }
+    }
+
+
 
     /**
      * Creates {@link TaskProgress} with the global/total progress of all tasks.
@@ -361,8 +394,8 @@ public class SearchCoordinator
      */
     public void cancel() {
         cancelRequested.set(true);
-        synchronized (activeTasks) {
-            activeTasks.values().forEach(SearchTask::cancel);
+        synchronized (activeSearches) {
+            activeSearches.values().forEach(BookSearch::cancel);
         }
     }
 
@@ -378,13 +411,13 @@ public class SearchCoordinator
     }
 
     /**
-     * Check if a search task is already running.
+     * Check if a search is already running.
      *
-     * @return {@code true} if there is
+     * @return {@code true} if there is at least one
      */
     public boolean isSearchActive() {
-        synchronized (activeTasks) {
-            return !activeTasks.isEmpty();
+        synchronized (activeSearches) {
+            return activeSearches.values().stream().anyMatch(BookSearch::isActive);
         }
     }
 
@@ -497,10 +530,6 @@ public class SearchCoordinator
         if (BuildConfig.DEBUG /* always */) {
             if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
                 throw new IllegalStateException("Network should be checked before starting search");
-            }
-
-            if (isSearchActive()) {
-                throw new IllegalStateException("a search is already running");
             }
 
             if (criteria.isEmpty()) {
@@ -622,13 +651,7 @@ public class SearchCoordinator
             return false;
         }
 
-        SearchEngine searchEngine = engineCache.get(engineId);
-        if (searchEngine == null) {
-            searchEngine = engineId.createSearchEngine(context);
-            engineCache.put(engineId, searchEngine);
-        } else {
-            searchEngine.reset();
-        }
+        final SearchEngine searchEngine = engineId.createSearchEngine(context);
 
         // Preserve the locales for use by the results-accumulator
         if (!engineLocaleCache.containsKey(engineId)) {
@@ -648,16 +671,15 @@ public class SearchCoordinator
         }
 
         if (BuildConfig.DEBUG) {
-            debugSearchTaskStarting(bookSearch, engineId, task, waitForIsbnOrCode);
+            bookSearch.debugSearchTaskStarting(engineId, task.getTaskId(), waitForIsbnOrCode);
         }
 
         bookSearch.setWaitingForIsbnOrCode(waitForIsbnOrCode);
 
         synchronized (activeSearches) {
             activeSearches.put(bookSearch.getId(), bookSearch);
-        }
-        synchronized (activeTasks) {
-            activeTasks.put(task.getTaskId(), task);
+            task2searchId.put(task.getTaskId(), task.getSearchId());
+            bookSearch.addTask(task);
         }
 
         task.startSearch();
@@ -666,44 +688,6 @@ public class SearchCoordinator
 
     protected void setBaseMessage(@Nullable final String baseMessage) {
         this.baseMessage = baseMessage;
-    }
-
-    private void debugSearchTaskStarting(@NonNull final BookSearch bookSearch,
-                                         @NonNull final EngineId engineId,
-                                         @NonNull final SearchTask task,
-                                         final boolean waitForIsbnOrCode) {
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "startSearch",
-                                        "bookSearch=" + bookSearch.getId(),
-                                        "new-task=" + task.getTaskId(),
-                                        "searchEngine=" + engineId.name(),
-                                        "waitForIsbnOrCode=" + waitForIsbnOrCode);
-        }
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            bookSearch.debugSetStartTime(task.getSearchEngine().getEngineId());
-        }
-    }
-
-    private void debugSearchTaskFinished(final int taskId,
-                                         final BookSearch currentSearch,
-                                         final EngineId engineId) {
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            currentSearch.debugSetEndTime(engineId);
-        }
-
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
-                                        "searchId=" + currentSearch.getId(),
-                                        "taskId=" + taskId,
-                                        engineId.name());
-            final Logger logger = LoggerFactory.getLogger();
-            synchronized (activeTasks) {
-                for (final SearchTask task : activeTasks.values()) {
-                    logger.d(TAG, "onSearchTaskFinished|running=" + task.getTaskId()
-                                  + '|' + task.getSearchEngine().getEngineId().name());
-                }
-            }
-        }
     }
 
     /**
