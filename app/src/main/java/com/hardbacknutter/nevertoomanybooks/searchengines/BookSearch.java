@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -62,7 +63,7 @@ class BookSearch {
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
-
+    private static final String ERROR_UNKNOWN_TASK = "Unknown task=";
     private final int id;
     @NonNull
     private final BookSearchCriteria criteria;
@@ -79,6 +80,8 @@ class BookSearch {
     @NonNull
     private final List<Site> sites;
 
+    /** key: task_id. */
+    private final Map<Integer, SearchTask> activeTasks = new ConcurrentHashMap<>();
     /** DEBUG timer. */
     private long searchStartTime;
     /** DEBUG timer. */
@@ -159,6 +162,31 @@ class BookSearch {
     }
 
     /**
+     * Collect all data.
+     *
+     * @param context         Current context
+     * @param engineLocaleMap engine Locale's
+     *
+     * @return the search result
+     */
+    @NonNull
+    BookSearchResult finish(@NonNull final Context context,
+                            @NonNull final Map<EngineId, Locale> engineLocaleMap) {
+        // debug: measure the time the searches took, don't include the post-processing
+        final long processTime = System.nanoTime();
+
+        final Book book = accumulateResults(context, engineLocaleMap);
+        final String searchErrors = accumulateErrors(context);
+        final BookSearchResult result = new BookSearchResult(id, book, searchErrors);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            debugDumpTimers(processTime);
+        }
+
+        return result;
+    }
+
+    /**
      * Called when all is said and done.
      * Accumulate data from the given sites.
      *
@@ -168,8 +196,8 @@ class BookSearch {
      * @return the accumulated book data bundle
      */
     @NonNull
-    Book accumulateResults(@NonNull final Context context,
-                           @NonNull final Map<EngineId, Locale> engineLocaleMap) {
+    private Book accumulateResults(@NonNull final Context context,
+                                   @NonNull final Map<EngineId, Locale> engineLocaleMap) {
         final Book book = new Book();
         final List<EngineId> sitesInOrder;
 
@@ -313,7 +341,7 @@ class BookSearch {
      * @return the error message
      */
     @Nullable
-    String accumulateErrors(@NonNull final Context context) {
+    private String accumulateErrors(@NonNull final Context context) {
         // no synchronized needed, at this point all other threads have finished.
         if (!errorsByEngineId.isEmpty()) {
             final String msg = errorsByEngineId
@@ -338,16 +366,66 @@ class BookSearch {
         return null;
     }
 
-    void debugSetStartTime(@NonNull final EngineId engineId) {
-        searchTasksStartTime.put(engineId, System.nanoTime());
-
+    @NonNull
+    SearchTask removeTask(final int taskId) {
+        return Objects.requireNonNull(activeTasks.remove(taskId),
+                                      () -> ERROR_UNKNOWN_TASK + taskId);
     }
 
-    void debugSetEndTime(@NonNull final EngineId engineId) {
-        searchTasksEndTime.put(engineId, System.nanoTime());
+    @Nullable
+    SearchTask getTask(final int taskId) {
+        return activeTasks.get(taskId);
     }
 
-    void debugDumpTimers(final long processTime) {
+    void addTask(@NonNull final SearchTask task) {
+        activeTasks.put(task.getTaskId(), task);
+    }
+
+    boolean isActive() {
+        return !activeTasks.isEmpty();
+    }
+
+    void cancel() {
+        activeTasks.values().forEach(SearchTask::cancel);
+    }
+
+    void debugSearchTaskStarting(@NonNull final EngineId engineId,
+                                 final int taskId,
+                                 final boolean waitForIsbnOrCode) {
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "startSearch",
+                                        "bookSearch=" + id,
+                                        "new-task=" + taskId,
+                                        "searchEngine=" + engineId.name(),
+                                        "waitForIsbnOrCode=" + waitForIsbnOrCode);
+        }
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            searchTasksStartTime.put(engineId, System.nanoTime());
+        }
+    }
+
+    void debugSearchTaskFinished(final int taskId,
+                                 final EngineId engineId) {
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            searchTasksEndTime.put(engineId, System.nanoTime());
+        }
+
+        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "onSearchTaskFinished",
+                                        "searchId=" + id,
+                                        "taskId=" + taskId,
+                                        engineId.name());
+            final Logger logger = LoggerFactory.getLogger();
+            synchronized (activeTasks) {
+                for (final SearchTask task : activeTasks.values()) {
+                    logger.d(TAG, "onSearchTaskFinished|running=" + task.getTaskId()
+                                  + '|' + task.getSearchEngine().getEngineId().name());
+                }
+            }
+        }
+    }
+
+    private void debugDumpTimers(final long processTime) {
         final Logger logger = LoggerFactory.getLogger();
 
         for (final Map.Entry<EngineId, Long> entry : searchTasksStartTime.entrySet()) {
