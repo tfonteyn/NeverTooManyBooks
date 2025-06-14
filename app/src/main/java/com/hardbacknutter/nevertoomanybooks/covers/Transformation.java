@@ -40,6 +40,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 class Transformation {
@@ -47,13 +48,13 @@ class Transformation {
     /** Log tag. */
     private static final String TAG = "Transformation";
     /**
-     * By default, covers will always be downsized to maximum 600 x 1000 pixels.
+     * By default, covers will always be downsized to a maximum width of 1280.
      * Override with {@link #setScale(int, int)}
      */
     @Dimension
-    private static final int MAX_IMAGE_WIDTH_PX = 600;
+    private static final int MAX_IMAGE_WIDTH_PX = 1280;
     @Dimension
-    private static final int MAX_IMAGE_HEIGHT_PX = 1000;
+    private static final int MAX_IMAGE_HEIGHT_PX = (int) (MAX_IMAGE_WIDTH_PX / CoverScale.HW_RATIO);
     @Nullable
     private File srcFile;
     @Dimension
