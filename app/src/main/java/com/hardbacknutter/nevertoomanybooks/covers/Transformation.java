@@ -315,10 +315,11 @@ class Transformation {
             final float scaleY = (float) maxHeight / srcHeight;
             final float scaling = Math.min(scaleX, scaleY);
 
-            final int targetWidth = (int) Math.ceil(srcWidth * scaling);
-            final int targetHeight = (int) Math.ceil(srcHeight * scaling);
-
-            decoder.setTargetSize(targetWidth, targetHeight);
+            if (scaling < 1.0f) {
+                final int targetWidth = (int) Math.ceil(srcWidth * scaling);
+                final int targetHeight = (int) Math.ceil(srcHeight * scaling);
+                decoder.setTargetSize(targetWidth, targetHeight);
+            }
         });
     }
 
