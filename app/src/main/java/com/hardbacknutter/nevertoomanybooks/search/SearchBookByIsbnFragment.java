@@ -77,10 +77,6 @@ import org.acra.ACRA;
 
 /**
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
- * <p>
- * 2024-04-20: Android Studio is completely [censored]ing up the code formatting in this class!
- * Each time we format the code, methods and variables jump around.
- * https://youtrack.jetbrains.com/issue/IDEA-311599/Poor-result-from-Rearrange-Code-for-Java
  */
 public class SearchBookByIsbnFragment
         extends SearchBookBaseFragment {
@@ -110,31 +106,37 @@ public class SearchBookByIsbnFragment
     private SearchBookByIsbnViewModel vm;
 
     /** The user wants to import a list of ISBNs to the queue. */
-    private final ActivityResultLauncher<String> openUriLauncher =
-            registerForActivityResult(new GetContentUriForReadingContract(),
-                                      o -> o.ifPresent(this::onOpenUri));
+    private ActivityResultLauncher<String> openUriLauncher;
 
     /** Scan barcodes using the scanner Activity. */
-    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
-            registerForActivityResult(new ScannerContract(), o -> {
-                scannerActivityStarted = false;
-                if (o.isPresent()) {
-                    onBarcodeScanned(o.get());
-                } else {
-                    // something was wrong ; quit scanning
-                    switchOffScanner();
-                }
-            });
+    private ActivityResultLauncher<ScanOptions> scannerActivityLauncher;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        createActivityLaunchers();
 
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
         //noinspection DataFlowIssue
         vm.init(getContext(), getArguments());
 
         decideToUseEmbeddedScanner();
+    }
+
+    private void createActivityLaunchers() {
+        openUriLauncher = registerForActivityResult(new GetContentUriForReadingContract(),
+                                                    o -> o.ifPresent(this::onOpenUri));
+
+        scannerActivityLauncher = registerForActivityResult(new ScannerContract(), o -> {
+            scannerActivityStarted = false;
+            if (o.isPresent()) {
+                onBarcodeScanned(o.get());
+            } else {
+                // something was wrong ; quit scanning
+                switchOffScanner();
+            }
+        });
     }
 
     /**
