@@ -59,9 +59,6 @@ public class SearchBookByExternalIdFragment
     private static final String TAG = "BookSearchByExternalId";
     private static final Pattern DIGITS_PATTERN = Pattern.compile("\\d+");
 
-    private static final String SIS_SELECTED_RB_ID = TAG + ":selectedResId";
-    private static final String SIS_USER_INPUT = TAG + ":externalId";
-
     /**
      * NEWTHINGS: adding a new search engine: optional:
      * add a RadioButton to the layout +
@@ -71,8 +68,7 @@ public class SearchBookByExternalIdFragment
      *  we support searching on until the integration of the 'Identifier'
      *  class is more mature
      * <p>
-     *  Amazon is HIDDEN
-     *  not sure if we ever will enable this, users can just use ISBN.
+     *  Amazon is HIDDEN, users should use ISBN.
      * <p>
      *  DNB is HIDDEN
      *  ENHANCE: implement DNB external id searches once the site "stabiler link"
@@ -91,10 +87,7 @@ public class SearchBookByExternalIdFragment
             R.id.site_strip_info_be, EngineId.StripInfoBe
     );
 
-    /** The currently selected radio button used by onPause/onSaveInstanceState. */
-    private int selectedRbViewId = View.NO_ID;
-    /** The current external id text used by onPause/onSaveInstanceState. */
-    private String currentInput;
+
     /** View Binding. */
     private FragmentBooksearchByExternalIdBinding vb;
     /** Set when the user selects a site. */
@@ -146,26 +139,16 @@ public class SearchBookByExternalIdFragment
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_add_book_by_external_id);
 
-        if (savedInstanceState != null) {
-            final int checkedId = savedInstanceState.getInt(SIS_SELECTED_RB_ID, View.NO_ID);
-            if (checkedId != View.NO_ID) {
-                final RadioButton btn = vb.getRoot().findViewById(checkedId);
-                if (btn.getVisibility() == View.VISIBLE) {
-                    btn.setChecked(true);
-                    vb.externalId.setEnabled(true);
-                    vb.externalId.setText(savedInstanceState.getString(SIS_USER_INPUT, ""));
-                }
-            }
-        }
+        modelToView();
 
         vb.sitesGroup.setOnCheckedChangeListener(this::onSiteSelect);
-        vb.btnSearch.setOnClickListener(v -> startSearch());
+        vb.btnSearch.setOnClickListener(v -> prepareSearch());
 
         autoRemoveError(vb.externalId, vb.lblExternalId);
         vb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 hideKeyboard(v);
-                startSearch();
+                prepareSearch();
                 return true;
             }
             return false;
@@ -230,40 +213,48 @@ public class SearchBookByExternalIdFragment
         vb.externalId.setEnabled(true);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        selectedRbViewId = vb.sitesGroup.getCheckedRadioButtonId();
+    protected void modelToView() {
+        final int checkedId = vm.getSelectedRbViewId();
+        if (checkedId != View.NO_ID) {
+            final RadioButton btn = vb.getRoot().findViewById(checkedId);
+            if (btn.getVisibility() == View.VISIBLE) {
+                btn.setChecked(true);
+                vb.externalId.setEnabled(true);
+                vb.externalId.setText(vm.getSid());
+                return;
+            }
+        }
+        vb.externalId.setEnabled(false);
+        vb.externalId.setText("");
+    }
+
+    protected void viewToModel() {
+        vm.setSelectedRbViewId(vb.sitesGroup.getCheckedRadioButtonId());
         //noinspection DataFlowIssue
-        currentInput = vb.externalId.getText().toString().strip();
+        vm.setSid(vb.externalId.getText().toString().strip());
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(SIS_SELECTED_RB_ID, selectedRbViewId);
-        outState.putString(SIS_USER_INPUT, currentInput);
-    }
+    protected void prepareSearch() {
+        viewToModel();
 
-    private void startSearch() {
-        startSearch(vm.getSearchCriteria());
-    }
+        // check if we have an active search, if so, quit silently.
+        if (coordinator.isSearchActive()) {
+            return;
+        }
 
-    @Override
-    boolean onPreSearch(@NonNull final BookSearchCriteria criteria) {
-        //noinspection DataFlowIssue
-        final String sid = vb.externalId.getText().toString().strip();
-
+        final String sid = vm.getSid();
         //sanity check
-        if (sid.isBlank() || vb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
+        if (sid == null || sid.isBlank() || vb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
             vb.lblExternalId.setError(getString(R.string.warning_requires_site_and_id));
-            return false;
+            return;
         }
 
         //noinspection DataFlowIssue
+        final BookSearchCriteria criteria = new BookSearchCriteria(getContext());
+        //noinspection DataFlowIssue
         criteria.addSid(engineId, sid);
 
-        return true;
+        startSearch(criteria);
     }
 
     @Override
@@ -297,7 +288,8 @@ public class SearchBookByExternalIdFragment
 
     @Override
     void onClearSearchCriteria() {
-        vm.getSearchCriteria().clear();
+        vm.setSid(null);
+
         vb.externalId.setText("");
     }
 }

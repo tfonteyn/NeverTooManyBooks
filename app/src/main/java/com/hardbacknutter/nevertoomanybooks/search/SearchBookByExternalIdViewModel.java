@@ -22,8 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.search;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
@@ -33,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 
 @SuppressWarnings("WeakerAccess")
 public class SearchBookByExternalIdViewModel
@@ -41,7 +43,6 @@ public class SearchBookByExternalIdViewModel
 
     @NonNull
     private final EditBookOutput resultData = new EditBookOutput();
-    private BookSearchCriteria searchCriteria;
 
     @NonNull
     Intent createResultIntent() {
@@ -54,6 +55,13 @@ public class SearchBookByExternalIdViewModel
 
     private Style style;
 
+    /** The currently selected radio button. */
+    @IdRes
+    private int selectedRbViewId = View.NO_ID;
+    /** Th current input field content. */
+    @Nullable
+    private String sid;
+
     /**
      * Pseudo constructor.
      *
@@ -62,9 +70,7 @@ public class SearchBookByExternalIdViewModel
      */
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
-        if (searchCriteria == null) {
-            searchCriteria = new BookSearchCriteria(context);
-
+        if (style == null) {
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);
             final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
@@ -78,8 +84,21 @@ public class SearchBookByExternalIdViewModel
         return style;
     }
 
-    @NonNull
-    public BookSearchCriteria getSearchCriteria() {
-        return searchCriteria;
+    @IdRes
+    int getSelectedRbViewId() {
+        return selectedRbViewId;
+    }
+
+    void setSelectedRbViewId(@IdRes final int selectedRbViewId) {
+        this.selectedRbViewId = selectedRbViewId;
+    }
+
+    @Nullable
+    String getSid() {
+        return sid;
+    }
+
+    void setSid(@Nullable final String sid) {
+        this.sid = sid;
     }
 }
