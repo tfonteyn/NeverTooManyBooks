@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncfieldConfigBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.searchsites.SearchSitesSingleListContract;
@@ -323,8 +324,9 @@ public class SearchBookUpdatesFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
+            //noinspection DataFlowIssue
             menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
-                .setChecked(vm.getSearchCriteria().isStrictIsbn());
+                .setChecked(BookSearchCriteria.isStrictIsbn(getContext()));
         }
 
         @Override
@@ -337,7 +339,7 @@ public class SearchBookUpdatesFragment
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
-                vm.getSearchCriteria().setStrictIsbn(requireContext(), checked);
+                BookSearchCriteria.setStrictIsbnDefault(requireContext(), checked);
 
             } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
                 vm.setSyncAction(SyncAction.Skip);

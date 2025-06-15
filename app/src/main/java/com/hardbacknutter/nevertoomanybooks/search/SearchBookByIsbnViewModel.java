@@ -104,9 +104,8 @@ public class SearchBookByIsbnViewModel
                      @Nullable final Bundle args) {
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
-            searchCriteria = new BookSearchCriteria(context);
-            final boolean strictIsbn = searchCriteria.isStrictIsbn();
 
+            final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(context);
             final String qs = PreferenceManager.getDefaultSharedPreferences(context)
                                                .getString(PREF_SCAN_QUEUE, "");
             scanQueue.addAll(Arrays.stream(qs.split(","))
@@ -215,6 +214,7 @@ public class SearchBookByIsbnViewModel
                 try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
                      BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE)) {
 
+                    final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(context);
                     scanQueue.addAll(
                             reader.lines()
                                   .distinct()

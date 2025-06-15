@@ -215,9 +215,10 @@ public class SearchBookByIsbnFragment
         });
 
         // The search preference determines the level here; NOT the 'edit book'
-        final ISBN.Validity isbnValidityCheck = vm.getSearchCriteria()
-                                                  .isStrictIsbn() ? ISBN.Validity.Strict
-                                                                  : ISBN.Validity.None;
+        //noinspection DataFlowIssue
+        final ISBN.Validity isbnValidityCheck = BookSearchCriteria.isStrictIsbn(getContext())
+                                                ? ISBN.Validity.Strict
+                                                : ISBN.Validity.None;
 
         isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
@@ -402,7 +403,8 @@ public class SearchBookByIsbnFragment
      * @param barCode as returned by the scanner
      */
     private void onBarcodeScanned(@NonNull final String barCode) {
-        final boolean strictIsbn = vm.getSearchCriteria().isStrictIsbn();
+        //noinspection DataFlowIssue
+        final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(getContext());
         final ISBN code = new ISBN(barCode, strictIsbn);
 
         final Context context = requireContext();
@@ -557,7 +559,7 @@ public class SearchBookByIsbnFragment
      */
     private void onOpenUri(@NonNull final Uri uri) {
         //noinspection DataFlowIssue
-        if (!vm.readQueue(getContext(), uri, vm.getSearchCriteria().isStrictIsbn())) {
+        if (!vm.readQueue(getContext(), uri)) {
             Snackbar.make(vb.getRoot(), R.string.error_import_failed,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -622,8 +624,9 @@ public class SearchBookByIsbnFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
+            //noinspection DataFlowIssue
             menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
-                .setChecked(vm.getSearchCriteria().isStrictIsbn());
+                .setChecked(BookSearchCriteria.isStrictIsbn(getContext()));
         }
 
         @Override
@@ -649,7 +652,7 @@ public class SearchBookByIsbnFragment
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
-                vm.getSearchCriteria().setStrictIsbn(requireContext(), checked);
+                BookSearchCriteria.setStrictIsbnDefault(requireContext(), checked);
 
                 final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
                 isbnCleanupTextWatcher.setValidityLevel(validity);

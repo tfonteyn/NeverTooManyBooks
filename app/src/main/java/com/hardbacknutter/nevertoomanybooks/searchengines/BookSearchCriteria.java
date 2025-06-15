@@ -53,6 +53,9 @@ public class BookSearchCriteria {
      */
     @NonNull
     private final Map<EngineId, String> sids = new EnumMap<>(EngineId.class);
+    /** Whether of not to fetch thumbnails. */
+    @NonNull
+    private final boolean[] fetchCovers;
     /**
      * Raw ISBN text for search.
      *
@@ -60,11 +63,6 @@ public class BookSearchCriteria {
      */
     @NonNull
     private String isbnText = "";
-
-    /** Whether of not to fetch thumbnails. */
-    @NonNull
-    private final boolean[] fetchCovers;
-
     @Nullable
     private ISBN isbn;
     /**
@@ -86,6 +84,8 @@ public class BookSearchCriteria {
 
     /**
      * Constructor.
+     * <p>
+     * The 'strictIsbn' flag is initialized from the global user-settings.
      *
      * @param context Current context
      */
@@ -96,14 +96,27 @@ public class BookSearchCriteria {
                 serviceLocator.isFieldEnabled(DBKey.COVER[1])
         };
 
-        strictIsbn = isStrictIsbnDefault(context);
+        strictIsbn = isStrictIsbn(context);
     }
 
-    public static boolean isStrictIsbnDefault(@NonNull final Context context) {
+    /**
+     * Get the global user-settings strictIsbn flag.
+     *
+     * @return {@code true} for strict ISBN checking,
+     *         {@code false} for allowing other valid generic codes.
+     */
+    public static boolean isStrictIsbn(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PK_SEARCH_STRICT_ISBN, true);
     }
 
+    /**
+     * Set the global user-settings strictIsbn flag.
+     *
+     * @param context    Current context
+     * @param strictIsbn {@code true} for strict ISBN checking,
+     *                   {@code false} for allowing other valid generic codes.
+     */
     public static void setStrictIsbnDefault(@NonNull final Context context,
                                             final boolean strictIsbn) {
         PreferenceManager.getDefaultSharedPreferences(context)
@@ -223,7 +236,7 @@ public class BookSearchCriteria {
     }
 
     /**
-     * Search criteria.
+     * Get the strictIsbn flag for this criteria object.
      *
      * @return {@code true} for strict ISBN checking,
      *         {@code false} for allowing other valid generic codes.
@@ -233,20 +246,21 @@ public class BookSearchCriteria {
     }
 
     /**
-     * Search criteria.
+     * Set the strictIsbn flag for this criteria object.
      *
-     * @param context    Current context
      * @param strictIsbn {@code true} for strict ISBN checking,
      *                   {@code false} for allowing other valid generic codes.
      */
-    public void setStrictIsbn(@NonNull final Context context,
-                              final boolean strictIsbn) {
+    public void setStrictIsbn(final boolean strictIsbn) {
         this.strictIsbn = strictIsbn;
         isbn = null;
-
-        setStrictIsbnDefault(context, strictIsbn);
     }
 
+    /**
+     * Is there at last one sid.
+     *
+     * @return flag
+     */
     public boolean hasSids() {
         return !sids.isEmpty();
     }
@@ -266,7 +280,7 @@ public class BookSearchCriteria {
     }
 
     /**
-     * Clear the current, and set the new given sids.
+     * <strong>Clear</strong>Clear the current list, and set the new given sids.
      *
      * @param sids one or more ID's
      *             The key is the engine id,
@@ -279,14 +293,20 @@ public class BookSearchCriteria {
         }
     }
 
-    public void clear() {
+    /**
+     * Reset all criteria; empty strings, empty list.
+     * The 'strictIsbn' flag is initialized from the global user-settings.
+     *
+     * @param context Current context
+     */
+    public void reset(@NonNull final Context context) {
         title = "";
         author = "";
         series = "";
         seriesNr = "";
         publisher = "";
         isbnText = "";
-        strictIsbn = true;
+        strictIsbn = isStrictIsbn(context);
         sids.clear();
     }
 
@@ -353,6 +373,4 @@ public class BookSearchCriteria {
                + ", fetchCovers=" + Arrays.toString(fetchCovers)
                + '}';
     }
-
-
 }

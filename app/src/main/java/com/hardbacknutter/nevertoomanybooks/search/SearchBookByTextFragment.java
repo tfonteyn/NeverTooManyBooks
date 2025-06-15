@@ -336,7 +336,9 @@ public class SearchBookByTextFragment
 
     @Override
     void onClearSearchCriteria() {
-        vm.getSearchCriteria().clear();
+        //noinspection DataFlowIssue
+        vm.getSearchCriteria().reset(getContext());
+
         vb.title.setText("");
         vb.author.setText("");
         vb.seriesTitle.setText("");
