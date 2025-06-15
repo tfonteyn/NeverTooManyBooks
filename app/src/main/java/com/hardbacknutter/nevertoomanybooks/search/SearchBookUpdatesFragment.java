@@ -297,7 +297,7 @@ public class SearchBookUpdatesFragment
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> vm.cancelTask(progress.taskId))
+                        .setOnCancelListener(v -> vm.cancel())
                         .show(() -> getActivity().getWindow());
             }
             progressDelegate.onProgress(progress);

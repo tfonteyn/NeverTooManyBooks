@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -399,10 +398,18 @@ public class SearchCoordinator
         }
     }
 
-    public void cancelTask(@SuppressWarnings("unused") @IdRes final int taskId) {
-        // reminder: this object, the SearchCoordinator is a pseudo task
-        // we're only using "cancelTask" to conform with other usage
-        cancel();
+    /**
+     * Cancel the given search.
+     *
+     * @param searchId to cancel
+     */
+    public void cancelSearch(final int searchId) {
+        synchronized (activeSearches) {
+            final BookSearch bookSearch = activeSearches.get(searchId);
+            if (bookSearch != null) {
+                bookSearch.cancel();
+            }
+        }
     }
 
     @Override

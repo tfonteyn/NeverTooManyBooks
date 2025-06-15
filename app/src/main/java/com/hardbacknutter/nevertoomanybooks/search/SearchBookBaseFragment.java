@@ -158,7 +158,7 @@ public abstract class SearchBookBaseFragment
                 progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> coordinator.cancelTask(progress.taskId))
+                        .setOnCancelListener(v -> coordinator.cancel())
                         .show(() -> getActivity().getWindow());
             }
             progressDelegate.onProgress(progress);
