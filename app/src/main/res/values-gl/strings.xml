@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -864,4 +861,5 @@
     <string name="lbl_tab_details">Detalles</string>
     <string name="unknown_author">[Autoría descoñecida]</string>
     <string name="menu_search_updates">Buscar actualizacións</string>
+    <string name="lbl_wikidata_claim_author_id">Wikidata «claim/P»: código para o id da autoría</string>
 </resources>
