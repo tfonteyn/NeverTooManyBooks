@@ -123,6 +123,8 @@ public class ISBN {
     private static final Map<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
     /** Remove '-' and space chars. */
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ -]");
+    private static final String L978 = "978";
+    private static final String L979 = "979";
 
     static {
         // UPC_A Prefix -- ISBN Prefix mapping file (may not be complete)
@@ -345,11 +347,13 @@ public class ISBN {
      */
     public boolean isIsbn10Compat() {
         // reminder: no need to check UPC_A here, as we would have converted it already
-        return codeType == Type.Isbn10 || codeType == Type.Isbn13 && codeText.startsWith("978");
+        return codeType == Type.Isbn10 || codeType == Type.Isbn13 && codeText.startsWith(L978);
     }
 
     /**
-     * Get the code as a text string based on the original type. No conversions are done.
+     * Get the code as a text string based on the original type.
+     * It will have been cleaned and reduced to digits/x only.
+     * No other conversions are done.
      *
      * @return string
      */
@@ -360,6 +364,7 @@ public class ISBN {
 
     /**
      * Get the ISBN as a text string converted to the given type.
+     * It will have been cleaned and reduced to digits/x only.
      * <p>
      * <strong>WARNING:</strong> when converting an ISBN-13 to ISBN-10,
      * you must call {@link #isIsbn10Compat()} prior to avoid this method throwing an exception.
@@ -410,7 +415,7 @@ public class ISBN {
                 }
 
                 // Must be ISBN-13 and compatible with ISBN-10
-                if (codeType == Type.Isbn13 && codeText.startsWith("978")) {
+                if (codeType == Type.Isbn13 && codeText.startsWith(L978)) {
                     // drop the first 3 digits, and copy the next 9.
                     final List<Integer> digits = new ArrayList<>();
                     for (int i = 3; i < 12; i++) {
