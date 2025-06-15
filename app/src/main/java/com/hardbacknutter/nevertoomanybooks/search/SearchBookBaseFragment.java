@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -183,7 +182,7 @@ public abstract class SearchBookBaseFragment
 
     /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
-     * The results come back in {@link #onSearchResults(Book)}.
+     * The results come back in {@link #onSearchResults(BookSearchResult)}.
      * <p>
      * This is final; override {@link #onSearch(BookSearchCriteria)} as needed.
      *
@@ -242,9 +241,8 @@ public abstract class SearchBookBaseFragment
             if (result == null) {
                 return;
             }
-            final Book book = result.getBook();
             final String searchErrors = result.getSearchErrors();
-            final boolean hasData = !book.isEmpty();
+            final boolean hasData = !result.getBook().isEmpty();
 
             if (searchErrors != null && !searchErrors.isEmpty()) {
                 //noinspection DataFlowIssue
@@ -256,7 +254,7 @@ public abstract class SearchBookBaseFragment
                         .setPositiveButton(R.string.ok, (d, w) -> {
                             d.dismiss();
                             if (hasData) {
-                                onSearchResults(book);
+                                onSearchResults(result);
                                 onClearSearchCriteria();
                             }
                         })
@@ -264,7 +262,7 @@ public abstract class SearchBookBaseFragment
                         .show();
 
             } else if (hasData) {
-                onSearchResults(book);
+                onSearchResults(result);
                 onClearSearchCriteria();
 
             } else {
@@ -288,9 +286,9 @@ public abstract class SearchBookBaseFragment
     /**
      * Process the search results.
      *
-     * @param book results of the search
+     * @param bookSearchResult results of the search
      */
-    abstract void onSearchResults(@NonNull Book book);
+    abstract void onSearchResults(@NonNull BookSearchResult bookSearchResult);
 
     /**
      * Add the needed listeners to automatically remove any error text from

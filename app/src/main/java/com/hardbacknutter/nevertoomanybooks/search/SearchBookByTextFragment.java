@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -296,7 +297,8 @@ public class SearchBookByTextFragment
     }
 
     @Override
-    void onSearchResults(@NonNull final Book book) {
+    void onSearchResults(@NonNull final BookSearchResult bookSearchResult) {
+        final Book book = bookSearchResult.getBook();
         // Don't check on any results... just accept them and create a new book.
 
         // If any of the search fields are not present in the result,

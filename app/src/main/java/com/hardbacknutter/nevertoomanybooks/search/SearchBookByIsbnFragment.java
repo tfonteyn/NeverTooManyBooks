@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -530,7 +531,8 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
-    void onSearchResults(@NonNull final Book book) {
+    void onSearchResults(@NonNull final BookSearchResult bookSearchResult) {
+        final Book book = bookSearchResult.getBook();
         // A non-empty result will have a title, or at least 3 fields:
         // The isbn field should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
