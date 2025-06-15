@@ -63,10 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
 
-    final ActivityResultLauncher<EditBookContract.Input> editBookLauncher =
-            registerForActivityResult(new EditBookContract(),
-                                      o -> o.ifPresent(this::onBookEditingDone));
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -77,15 +73,10 @@ public abstract class SearchBookBaseFragment
                     getActivity().finish();
                 }
             };
-
+    ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
     SearchCoordinator coordinator;
 
-    private final ActivityResultLauncher<List<Site>> editSitesLauncher =
-            registerForActivityResult(new SearchSitesSingleListContract(),
-                                      o -> o.ifPresent(sites -> {
-                                          coordinator.setSiteList(sites);
-                                          explainSitesSupport(sites);
-                                      }));
+    private ActivityResultLauncher<List<Site>> editSitesLauncher;
     @Nullable
     private ProgressDelegate progressDelegate;
 
@@ -107,10 +98,25 @@ public abstract class SearchBookBaseFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        createActivityLaunchers();
+
         //noinspection DataFlowIssue
         coordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
         //noinspection DataFlowIssue
         coordinator.init(getContext(), requireArguments());
+    }
+
+    private void createActivityLaunchers() {
+        editBookLauncher = registerForActivityResult(
+                new EditBookContract(),
+                o -> o.ifPresent(this::onBookEditingDone));
+
+        editSitesLauncher = registerForActivityResult(
+                new SearchSitesSingleListContract(),
+                o -> o.ifPresent(sites -> {
+                    coordinator.setSiteList(sites);
+                    explainSitesSupport(sites);
+                }));
     }
 
     @Override
