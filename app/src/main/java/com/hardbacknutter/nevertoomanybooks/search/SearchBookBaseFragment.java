@@ -140,6 +140,17 @@ public abstract class SearchBookBaseFragment
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        viewToModel();
+    }
+
+    // forced implementation
+    abstract void modelToView();
+
+    abstract void viewToModel();
+
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.process(progress -> {
             if (progressDelegate == null) {
@@ -163,28 +174,24 @@ public abstract class SearchBookBaseFragment
     }
 
     /**
+     * Prepare the criteria object to use for the search.
+     * Implementation can interact with the user,
+     * and can reject starting a search.
+     */
+    // forced implementation
+    abstract void prepareSearch();
+
+    /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * The results come back in {@link #onSearchResults(Book)}.
      * <p>
-     * This is final; override
-     * {@link #onPreSearch(BookSearchCriteria)} and
-     * {@link #onSearch(BookSearchCriteria)} as needed.
+     * This is final; override {@link #onSearch(BookSearchCriteria)} as needed.
      *
      * @param criteria to search for
      *
      * @return the search-id, or {@code 0} if no search was started
      */
     final int startSearch(@NonNull final BookSearchCriteria criteria) {
-        // check if we have an active search, if so, quit silently.
-        if (coordinator.isSearchActive()) {
-            return 0;
-        }
-
-        // any implementation specific reasons not to start searching ?
-        if (!onPreSearch(criteria)) {
-            return 0;
-        }
-
         // Warn the user, AND abort.
         if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
             //noinspection DataFlowIssue
@@ -201,18 +208,6 @@ public abstract class SearchBookBaseFragment
                           Snackbar.LENGTH_LONG).show();
         }
         return searchId;
-    }
-
-    /**
-     * Override to prevent or allow a search to start.
-     * The default implementation allows a search to start.
-     *
-     * @param criteria to search for
-     *
-     * @return {@code true} if a search is allowed
-     */
-    boolean onPreSearch(@NonNull final BookSearchCriteria criteria) {
-        return true;
     }
 
     /**
