@@ -77,13 +77,15 @@ public class SearchBookByIsbnViewModel
     private BookDao bookDao;
 
     private Style style;
-    private BookSearchCriteria searchCriteria;
 
     @NonNull
     private Scanning scanning = Scanning.Off;
 
     /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean firstStart = true;
+    /** The raw text. The 'isStrict' flag is get/set directly with SharedPreferences. */
+    @Nullable
+    private String isbnText;
 
     @NonNull
     Intent createResultIntent() {
@@ -97,11 +99,11 @@ public class SearchBookByIsbnViewModel
     /**
      * Pseudo constructor.
      *
-     * @param context    Current context
-     * @param args       {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
+    void init(@NonNull final Context context,
+              @Nullable final Bundle args) {
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
 
@@ -130,9 +132,13 @@ public class SearchBookByIsbnViewModel
         scanQueueUpdate.setValue(scanQueue);
     }
 
-    @NonNull
-    public BookSearchCriteria getSearchCriteria() {
-        return searchCriteria;
+    @Nullable
+    String getIsbnText() {
+        return isbnText;
+    }
+
+    void setIsbnText(@Nullable final String isbnText) {
+        this.isbnText = isbnText;
     }
 
     /**
@@ -198,15 +204,13 @@ public class SearchBookByIsbnViewModel
      * Whitespace and '-' are taken care of as usual, any other text will either
      * cause the line to be skipped, or the import to fail completely.
      *
-     * @param context    Current context
-     * @param uri        to read from
-     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
+     * @param context Current context
+     * @param uri     to read from
      *
      * @return {@code true} on success.
      */
     boolean readQueue(@NonNull final Context context,
-                      @NonNull final Uri uri,
-                      final boolean strictIsbn) {
+                      @NonNull final Uri uri) {
         //TODO: should be run as background task, and use LiveData to update the view...
         // ... but it's so fast for any reasonable length list....
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {

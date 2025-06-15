@@ -189,7 +189,8 @@ public class SearchBookByIsbnFragment
         toolbar.addMenuProvider(new SearchSitesToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
-        vb.isbn.setText(vm.getSearchCriteria().getIsbnText());
+        modelToView();
+
         autoRemoveError(vb.isbn, vb.lblIsbn);
 
         vb.keypad.key0.setOnClickListener(v -> onKeyPad(v, '0'));
@@ -248,8 +249,7 @@ public class SearchBookByIsbnFragment
                 } else {
                     view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 }
-                //noinspection DataFlowIssue
-                onBarcodeEntered(vb.isbn.getText().toString().strip());
+                prepareSearch();
                 break;
             }
             case KEY_STOP_SCANNING: {
@@ -282,12 +282,13 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
+    protected void modelToView() {
+        vb.isbn.setText(vm.getIsbnText());
+    }
+
+    protected void viewToModel() {
         //noinspection DataFlowIssue
-        final String isbnSearchText = vb.isbn.getText().toString().strip();
-        vm.getSearchCriteria().setIsbnText(isbnSearchText);
+        vm.setIsbnText(vb.isbn.getText().toString().strip());
     }
 
     @Override
@@ -428,10 +429,7 @@ public class SearchBookByIsbnFragment
                 if (vm.getScannerMode() == Scanning.Manual) {
                     switchOffScanner();
                 }
-                // Put the code in the field; if the search fails, the user can manually edit it
-                vb.isbn.setText(code.asText());
-                // go search online for the book
-                prepareSearch(code);
+                prepareSearch();
             }
         } else {
             SoundManager.beepOnInvalidIsbn(context);
@@ -450,32 +448,22 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    /**
-     * The user entered a barcode and clicked the search button.
-     *
-     * @param barCode as entered by the user.
-     */
-    private void onBarcodeEntered(@NonNull final String barCode) {
-        final boolean strictIsbn = vm.getSearchCriteria().isStrictIsbn();
-        final ISBN code = new ISBN(barCode, strictIsbn);
+    protected void prepareSearch() {
+        viewToModel();
 
-        if (code.isValid(strictIsbn)) {
-            prepareSearch(code);
-        } else {
-            vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, barCode));
+        // check if we have an active search, if so, quit silently.
+        if (coordinator.isSearchActive()) {
+            return;
         }
-    }
 
-    /**
-     * Prepare to search with ISBN or, if allowed, with a generic code.
-     * If successful, {@link #startSearch(BookSearchCriteria)}
-     * will be called as the next step.
-     *
-     * @param code to search for
-     */
-    private void prepareSearch(@NonNull final ISBN code) {
-        final String isbnSearchText = code.asText();
-        vm.getSearchCriteria().setIsbnText(isbnSearchText);
+        //noinspection DataFlowIssue
+        final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(getContext());
+        final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
+
+        if (!code.isValid(strictIsbn)) {
+            vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, code));
+            return;
+        }
 
         // See if ISBN already exists in our database, if not then start the search.
         final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(code);
@@ -485,10 +473,10 @@ public class SearchBookByIsbnFragment
             // bad/unexpected data - OpenLibrary being notorious...
             // If a user reports this crash, we'll have the ISBN to try and reproduce.
             ACRA.getErrorReporter().putCustomData(DBKey.ISBN, code.asText());
-            startSearch(vm.getSearchCriteria());
+            startSearch(code);
 
         } else {
-            onBookAlreadyPresent(code, existingIds, () -> startSearch(vm.getSearchCriteria()));
+            onBookAlreadyPresent(code, existingIds, () -> startSearch(code));
         }
     }
 
@@ -524,6 +512,16 @@ public class SearchBookByIsbnFragment
                 .show();
     }
 
+    // sits between prepareSearch() and startSearch(criteria)
+    // to support batch-scan mode
+    private void startSearch(@NonNull final ISBN code) {
+        //noinspection DataFlowIssue
+        final BookSearchCriteria criteria = new BookSearchCriteria(getContext());
+        criteria.setIsbn(code);
+
+        startSearch(criteria);
+    }
+
     @Override
     void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
@@ -548,8 +546,8 @@ public class SearchBookByIsbnFragment
 
     @Override
     void onClearSearchCriteria() {
-        vm.getSearchCriteria().clear();
-        //mVb.isbn.setText("");
+        vm.setIsbnText(null);
+        //vb.isbn.setText("");
     }
 
     /**
@@ -582,7 +580,8 @@ public class SearchBookByIsbnFragment
             chip.setOnClickListener(v -> {
                 final ISBN clickedCode = removeFromQueue(v);
                 vb.isbn.setText(clickedCode.asText());
-                prepareSearch(clickedCode);
+                viewToModel();
+                startSearch(clickedCode);
             });
             chip.setOnCloseIconClickListener(this::removeFromQueue);
             chip.setTag(code);
