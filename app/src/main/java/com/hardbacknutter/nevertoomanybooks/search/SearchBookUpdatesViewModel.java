@@ -102,6 +102,7 @@ public class SearchBookUpdatesViewModel
     @Nullable
     private SyncReaderProcessor syncProcessor;
 
+    /** Used inside the loop. Global to avoid recreating a new object in each iteration. */
     private BookSearchCriteria searchCriteria;
 
     /** Database Access. */
@@ -165,11 +166,6 @@ public class SearchBookUpdatesViewModel
 
             syncProcessorBuilder = createSyncProcessorBuilder(context);
         }
-    }
-
-    @NonNull
-    public BookSearchCriteria getSearchCriteria() {
-        return searchCriteria;
     }
 
     /**
@@ -409,7 +405,7 @@ public class SearchBookUpdatesViewModel
                 final String title = currentBook.getTitle();
 
                 if (!currentFieldsWanted.isEmpty()) {
-                    // remove all other criteria (this is CRUCIAL)
+                    // reset all criteria (this is CRUCIAL)
                     searchCriteria.reset(context);
                     boolean canSearch = false;
 
@@ -454,7 +450,7 @@ public class SearchBookUpdatesViewModel
                         currentBook.getPrimaryPublisher()
                                    .map(Publisher::getName)
                                    .filter(name -> !name.isEmpty())
-                                   .ifPresent(p -> searchCriteria.setPublisher(p));
+                                   .ifPresent(searchCriteria::setPublisher);
                         currentBook.getPrimarySeries().ifPresent(ps -> {
                             searchCriteria.setSeries(ps.getTitle());
                             searchCriteria.setSeriesNr(ps.getNumber());
