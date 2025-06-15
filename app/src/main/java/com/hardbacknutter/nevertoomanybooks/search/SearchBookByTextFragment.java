@@ -122,7 +122,7 @@ public class SearchBookByTextFragment
 
         populateAdapters();
 
-        vb.btnSearch.setOnClickListener(v -> startSearch(vm.getSearchCriteria()));
+        vb.btnSearch.setOnClickListener(v -> prepareSearch());
         explainSitesSupport(coordinator.getSiteList());
     }
 
@@ -184,36 +184,30 @@ public class SearchBookByTextFragment
                                    @Nullable final KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
             hideKeyboard(view);
-            startSearch(vm.getSearchCriteria());
+            prepareSearch();
             return true;
         }
         return false;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        viewToModel();
+    protected void modelToView() {
+        final BookSearchCriteria criteria = vm.getSearchCriteria();
+        vb.title.setText(criteria.getTitle());
+        vb.author.setText(criteria.getAuthor());
+        vb.seriesTitle.setText(criteria.getSeries());
+        vb.seriesNum.setText(criteria.getSeriesNr());
+        vb.publisher.setText(criteria.getPublisher());
     }
 
-    private void modelToView() {
-        final BookSearchCriteria searchCriteria = vm.getSearchCriteria();
-        vb.title.setText(searchCriteria.getTitle());
-        vb.author.setText(searchCriteria.getAuthor());
-        vb.seriesTitle.setText(searchCriteria.getSeries());
-        vb.seriesNum.setText(searchCriteria.getSeriesNr());
-        vb.publisher.setText(searchCriteria.getPublisher());
-    }
-
-    private void viewToModel() {
-        final BookSearchCriteria searchCriteria = vm.getSearchCriteria();
+    protected void viewToModel() {
+        final BookSearchCriteria criteria = vm.getSearchCriteria();
         //noinspection DataFlowIssue
-        searchCriteria.setTitle(vb.title.getText().toString().strip());
-        searchCriteria.setAuthor(vb.author.getText().toString().strip());
-        searchCriteria.setSeries(vb.seriesTitle.getText().toString().strip());
+        criteria.setTitle(vb.title.getText().toString().strip());
+        criteria.setAuthor(vb.author.getText().toString().strip());
+        criteria.setSeries(vb.seriesTitle.getText().toString().strip());
         //noinspection DataFlowIssue
-        searchCriteria.setSeriesNr(vb.seriesNum.getText().toString().strip());
-        searchCriteria.setPublisher(vb.publisher.getText().toString().strip());
+        criteria.setSeriesNr(vb.seriesNum.getText().toString().strip());
+        criteria.setPublisher(vb.publisher.getText().toString().strip());
     }
 
     /**
@@ -237,9 +231,15 @@ public class SearchBookByTextFragment
         vb.publisher.setAdapter(publisherAdapter);
     }
 
-    @Override
-    boolean onPreSearch(@NonNull final BookSearchCriteria criteria) {
+    protected void prepareSearch() {
         viewToModel();
+
+        // check if we have an active search, if so, quit silently.
+        if (coordinator.isSearchActive()) {
+            return;
+        }
+
+        final BookSearchCriteria criteria = vm.getSearchCriteria();
 
         final String authorSearchText = criteria.getAuthor();
         if (!authorSearchText.isEmpty()) {
@@ -282,10 +282,10 @@ public class SearchBookByTextFragment
         if (titleSearchText.isEmpty()
             && authorSearchText.isEmpty()) {
             vb.lblTitle.setError(getString(R.string.warning_missing_title_or_author));
-            return false;
+            return;
         }
 
-        return true;
+        startSearch(criteria);
     }
 
     @Override
@@ -302,33 +302,33 @@ public class SearchBookByTextFragment
         // If any of the search fields are not present in the result,
         // we add them manually as the template for a new book.
 
-        final BookSearchCriteria searchCriteria = vm.getSearchCriteria();
+        final BookSearchCriteria criteria = vm.getSearchCriteria();
 
         if (!book.contains(DBKey.TITLE)) {
-            book.setTitle(searchCriteria.getTitle());
+            book.setTitle(criteria.getTitle());
         }
 
         final List<Author> authors = book.getAuthors();
         if (authors.isEmpty()) {
             // do NOT use {@code Book.BKEY_AUTHOR_LIST}, that's reserved for verified names.
             book.putString(LocalSearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
-                           searchCriteria.getAuthor());
+                           criteria.getAuthor());
         }
 
         final List<Series> series = book.getSeries();
         if (series.isEmpty()) {
             // do NOT use {@code Book.BKEY_SERIES_LIST}, that's reserved for verified names.
             book.putString(LocalSearchCriteria.BKEY_SEARCH_TEXT_SERIES,
-                           searchCriteria.getSeries());
+                           criteria.getSeries());
             book.putString(DBKey.SERIES.BOOK_SERIES_NUMBER,
-                           searchCriteria.getSeriesNr());
+                           criteria.getSeriesNr());
         }
 
         final List<Publisher> publishers = book.getPublishers();
         if (publishers.isEmpty()) {
             // do NOT use {@code Book.BKEY_PUBLISHER_LIST}, that's reserved for verified names.
             book.putString(LocalSearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
-                           searchCriteria.getPublisher());
+                           criteria.getPublisher());
         }
 
         editBookLauncher.launch(new EditBookContract.Input(book, vm.getStyle()));
