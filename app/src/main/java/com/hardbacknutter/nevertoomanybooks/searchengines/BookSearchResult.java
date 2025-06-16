@@ -23,6 +23,8 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
@@ -66,5 +68,31 @@ public class BookSearchResult {
 
     public void clearError() {
         searchErrors = null;
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final BookSearchResult that = (BookSearchResult) o;
+        return searchId == that.searchId
+               && Objects.equals(book, that.book)
+               && Objects.equals(searchErrors, that.searchErrors);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(searchId, book, searchErrors);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "BookSearchResult{"
+               + "searchId=" + searchId
+               + ", searchErrors=`" + searchErrors + '`'
+               + ", book=" + book
+               + '}';
     }
 }
