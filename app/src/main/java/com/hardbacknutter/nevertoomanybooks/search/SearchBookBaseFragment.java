@@ -231,15 +231,11 @@ public abstract class SearchBookBaseFragment
     }
 
     /**
-     * FIXME: make overriding foolproof
-     * When overriding this method, do <strong>NOT</strong> call this super,
-     * but you <strong>MUST CALL {@link #closeProgressDialog()}
-     * and {@link #onClearSearchCriteria}</strong>.
+     * private/final, override {@link #onSearchFinished(BookSearchResult)} instead.
      *
-     * @param message with results
+     * @param message from search
      */
-    @EmptySuper
-    void onSearchFinished(@NonNull final LiveDataEvent<Boolean> message) {
+    private void onSearchFinished(@NonNull final LiveDataEvent<Boolean> message) {
         closeProgressDialog();
         message.process(trigger -> {
             @Nullable
@@ -247,38 +243,54 @@ public abstract class SearchBookBaseFragment
             if (result == null) {
                 return;
             }
-            final String searchErrors = result.getSearchErrors();
-            final boolean hasData = !result.getBook().isEmpty();
-
-            if (searchErrors != null && !searchErrors.isEmpty()) {
-                //noinspection DataFlowIssue
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.warning_24px)
-                        .setTitle(hasData ? R.string.warning_book_not_always_found
-                                          : R.string.warning_book_not_found)
-                        .setMessage(searchErrors)
-                        .setPositiveButton(R.string.ok, (d, w) -> {
-                            d.dismiss();
-                            if (hasData) {
-                                onSearchResults(result);
-                                onClearSearchCriteria();
-                            }
-                        })
-                        .create()
-                        .show();
-
-            } else if (hasData) {
-                onSearchResults(result);
-                onClearSearchCriteria();
-
-            } else {
-                //noinspection DataFlowIssue
-                Snackbar.make(getView(), R.string.warning_no_matching_book_found,
-                              Snackbar.LENGTH_LONG).show();
-            }
+            onSearchFinished(result);
 
             coordinator.retriggerSearchFinished();
         });
+    }
+
+    void onSearchFinished(@NonNull final BookSearchResult bookSearchResult) {
+        final Runnable proceed = () -> onSearchResults(bookSearchResult);
+
+        // when there are any issues, talk to the user, then when applicable, proceed
+        if (!checkSearchResultWithUserInteraction(bookSearchResult, proceed)) {
+            return;
+        }
+        // no issues, just proceed
+        proceed.run();
+    }
+
+    boolean checkSearchResultWithUserInteraction(@NonNull final BookSearchResult result,
+                                                 @NonNull final Runnable proceed) {
+
+        final boolean hasData = !result.getBook().isEmpty();
+
+        final String searchErrors = result.getErrorMessage();
+        if (searchErrors != null) {
+            //noinspection DataFlowIssue
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.warning_24px)
+                    .setTitle(hasData ? R.string.warning_book_not_always_found
+                                      : R.string.warning_book_not_found)
+                    .setMessage(searchErrors)
+                    .setPositiveButton(R.string.ok, (d, w) -> {
+                        d.dismiss();
+                        if (hasData) {
+                            proceed.run();
+                        }
+                    })
+                    .create()
+                    .show();
+            return false;
+        }
+
+        if (!hasData) {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.warning_no_matching_book_found,
+                          Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
     }
 
     /**
