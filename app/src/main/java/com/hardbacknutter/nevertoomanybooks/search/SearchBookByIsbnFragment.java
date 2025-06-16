@@ -251,7 +251,19 @@ public class SearchBookByIsbnFragment
                 } else {
                     view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 }
-                prepareSearch();
+
+                viewToModel();
+
+                //noinspection DataFlowIssue
+                final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(getContext());
+                final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
+
+                if (!code.isValid(strictIsbn)) {
+                    vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, code));
+                    return;
+                }
+
+                prepareCriteria(code);
                 break;
             }
             case KEY_STOP_SCANNING: {
@@ -452,20 +464,19 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    protected void prepareSearch() {
-        viewToModel();
-
+    /**
+     * Prepare the criteria object to use for the search.
+     * This method can interact with the user,
+     * and can reject starting a search.
+     * <p>
+     * Used by either by the user typing in a code, or scanning one
+     * in {@link Scanning#Manual}/{@link Scanning#Continuous} mode.
+     *
+     * @param code to search for
+     */
+    private void prepareCriteria(@NonNull final ISBN code) {
         // check if we have an active search, if so, quit silently.
         if (coordinator.isSearchActive()) {
-            return;
-        }
-
-        //noinspection DataFlowIssue
-        final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(getContext());
-        final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
-
-        if (!code.isValid(strictIsbn)) {
-            vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, code));
             return;
         }
 
