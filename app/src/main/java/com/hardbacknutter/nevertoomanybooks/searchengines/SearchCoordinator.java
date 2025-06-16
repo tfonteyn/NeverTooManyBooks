@@ -149,8 +149,6 @@ public class SearchCoordinator
         }
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-
-        // Start new search(es) as needed/allowed.
         boolean searchStarted = false;
 
         if (!cancelRequested.get()) {
@@ -159,6 +157,7 @@ public class SearchCoordinator
                 searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
             }
 
+            // Start new search(es) as needed/allowed.
             if (currentSearch.isWaitingForIsbnOrCode()) {
                 if (result != null && result.hasIsbn()) {
                     // Start the remaining searches, even if they have run before.
@@ -174,6 +173,7 @@ public class SearchCoordinator
             }
         }
 
+        // Check if the search to which the finished task belonged, is fully done.
         final boolean currentIsDone;
         synchronized (activeSearches) {
             // If we didn't start a new search (which might not be active yet!),
@@ -185,6 +185,7 @@ public class SearchCoordinator
             }
         }
 
+        // it is, report back to the user
         if (currentIsDone) {
             final BookSearchResult data = currentSearch.finish(context, engineLocaleCache);
             if (cancelRequested.get()) {
@@ -222,7 +223,7 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger()
-                         .d(TAG, "onSearchTaskFinished",
+                         .d(TAG, "pushResultFinished",
                             "searchId=" + data.getSearchId(),
                             "searchErrors=" + data.getSearchErrors());
         }
@@ -234,7 +235,7 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger()
-                         .d(TAG, "onSearchTaskFinished|Cancelled",
+                         .d(TAG, "pushResultCanceled",
                             "searchId=" + data.getSearchId(),
                             "searchErrors=" + data.getSearchErrors());
         }
@@ -295,11 +296,21 @@ public class SearchCoordinator
 
     @Nullable
     public BookSearchResult pollFinishedQueue() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger()
+                         .d(TAG, "pollFinishedQueue",
+                            "size=" + searchCoordinatorFinishedQueue.size());
+        }
         return searchCoordinatorFinishedQueue.poll();
     }
 
     public void retriggerSearchFinished() {
         if (!searchCoordinatorFinishedQueue.isEmpty()) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                LoggerFactory.getLogger()
+                             .d(TAG, "retriggerSearchFinished",
+                                "size=" + searchCoordinatorFinishedQueue.size());
+            }
             searchCoordinatorFinished.setValue(LiveDataEvent.of(true));
         }
     }
@@ -327,8 +338,6 @@ public class SearchCoordinator
             searchCoordinatorCancelled.setValue(LiveDataEvent.of(true));
         }
     }
-
-
 
     /**
      * Creates {@link TaskProgress} with the global/total progress of all tasks.
@@ -463,11 +472,11 @@ public class SearchCoordinator
      *
      * @return the search-id, or {@code 0} if no search was started
      *
-     * @see #startSearch(Context, boolean, EngineId, BookSearch)
+     * @see #startSearch(Context, EngineId, BookSearch, boolean)
      */
     public int search(@NonNull final BookSearchCriteria criteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "init search");
+            LoggerFactory.getLogger().d(TAG, "search", criteria);
         }
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -498,18 +507,18 @@ public class SearchCoordinator
      * @return the search-id, or {@code 0} if no search was started
      *
      * @throws IllegalArgumentException if #sid was invalid
-     * @see #startSearch(Context, boolean, EngineId, BookSearch)
+     * @see #startSearch(Context, EngineId, BookSearch, boolean)
      */
     public int searchByExternalId(@NonNull final EngineId engineId,
                                   @NonNull final BookSearchCriteria criteria) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "init searchByExternalId");
+            LoggerFactory.getLogger().d(TAG, "searchByExternalId", criteria);
         }
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         final BookSearch bookSearch = prepareSearch(context, criteria);
-        if (startSearch(context, false, engineId, bookSearch)) {
+        if (startSearch(context, engineId, bookSearch, false)) {
             return bookSearch.getId();
         }
         return 0;
@@ -556,7 +565,7 @@ public class SearchCoordinator
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      *
-     * @see #startSearch(Context, boolean, EngineId, BookSearch)
+     * @see #startSearch(Context, EngineId, BookSearch, boolean)
      */
     private boolean startConcurrentSearch(@NonNull final Context context,
                                           @NonNull final BookSearch bookSearch) {
@@ -578,7 +587,7 @@ public class SearchCoordinator
         for (final EngineId engineId : activeEngines) {
             // If the site has not been searched yet, search it
             if (!bookSearch.hasResult(engineId)) {
-                if (startSearch(context, false, engineId, bookSearch)) {
+                if (startSearch(context, engineId, bookSearch, false)) {
                     atLeastOneStarted = true;
                 }
             }
@@ -594,7 +603,7 @@ public class SearchCoordinator
      *
      * @return {@code true} if a search was started, {@code false} if not
      *
-     * @see #startSearch(Context, boolean, EngineId, BookSearch)
+     * @see #startSearch(Context, EngineId, BookSearch, boolean)
      */
     private boolean startNextSearch(@NonNull final Context context,
                                     @NonNull final BookSearch bookSearch) {
@@ -615,7 +624,7 @@ public class SearchCoordinator
         for (final EngineId engineId : activeEngines) {
             // If the site has not been searched yet, search it
             if (!bookSearch.hasResult(engineId)) {
-                final boolean started = startSearch(context, true, engineId, bookSearch);
+                final boolean started = startSearch(context, engineId, bookSearch, true);
                 if (started) {
                     return true;
                 }
@@ -631,17 +640,17 @@ public class SearchCoordinator
      * <strong>synchronized</strong> to make sure we start tasks in a serial manner.
      *
      * @param context           Current context
-     * @param waitForIsbnOrCode flag
      * @param engineId          to search
      * @param bookSearch        to use
+     * @param waitForIsbnOrCode flag
      *
      * @return {@code true} if the search was started.
      */
     private synchronized boolean startSearch(@NonNull final Context context,
-                                             final boolean waitForIsbnOrCode,
                                              @NonNull final EngineId engineId,
-                                             @NonNull final BookSearch bookSearch) {
-        if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                                             @NonNull final BookSearch bookSearch,
+                                             final boolean waitForIsbnOrCode) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "startSearch",
                                         "bookSearch=" + bookSearch.getId(),
                                         "searchEngine=" + engineId.name(),
