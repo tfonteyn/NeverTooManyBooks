@@ -83,14 +83,10 @@ public class SearchBookByIsbnFragment
     /** Log tag. */
     private static final String TAG = "BookSearchByIsbnFrag";
     private static final String BKEY_SCANNER_ACTIVITY_STARTED = TAG + ":started";
-    private static final char KEY_CLEAR_QUEUE = 'q';
-    private static final char KEY_SEARCH = 's';
-    private static final char KEY_DELETE = 'd';
-    private static final char KEY_STOP_SCANNING = 'o';
 
     /**
-     * Flag indicating the scanner Activity is already started so we don't start it a second time
-     * after a device rotation.
+     * Flag indicating the scanner Activity is already started so we don't
+     * start it a second time after a device rotation.
      */
     private boolean scannerActivityStarted;
     @Nullable
@@ -99,9 +95,11 @@ public class SearchBookByIsbnFragment
 
     /** View Binding. */
     private FragmentBooksearchByIsbnBinding vb;
+
     /** manage the validation check next to the field. */
     private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
+
     private SearchBookByIsbnViewModel vm;
 
     /** The user wants to import a list of ISBNs to the queue. */
@@ -119,8 +117,6 @@ public class SearchBookByIsbnFragment
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
         //noinspection DataFlowIssue
         vm.init(getContext(), getArguments());
-
-        decideToUseEmbeddedScanner();
     }
 
     private void createActivityLaunchers() {
@@ -132,7 +128,7 @@ public class SearchBookByIsbnFragment
             if (o.isPresent()) {
                 onBarcodeScanned(o.get());
             } else {
-                // something was wrong ; quit scanning
+                // the user hit 'back' (they are done) or there was something was wrong
                 switchOffScanner();
             }
         });
@@ -177,6 +173,8 @@ public class SearchBookByIsbnFragment
         super.onViewCreated(view, savedInstanceState);
         InsetsListenerBuilder.fragmentRootView(view);
 
+        decideToUseEmbeddedScanner();
+
         if (savedInstanceState != null) {
             scannerActivityStarted = savedInstanceState
                     .getBoolean(BKEY_SCANNER_ACTIVITY_STARTED, false);
@@ -205,14 +203,48 @@ public class SearchBookByIsbnFragment
         vb.keypad.key9.setOnClickListener(v -> onKeyPad(v, '9'));
         vb.keypad.keyX.setOnClickListener(v -> onKeyPad(v, 'X'));
 
-        vb.keypad.btnSearch.setOnClickListener(v -> onKeyPad(v, KEY_SEARCH));
-        vb.btnClearQueue.setOnClickListener(v -> onKeyPad(v, KEY_CLEAR_QUEUE));
-        vb.btnStopScanning.setOnClickListener(v -> onKeyPad(v, KEY_STOP_SCANNING));
-        vb.isbnDel.setOnClickListener(v -> onKeyPad(v, KEY_DELETE));
-
+        vb.isbnDel.setOnClickListener(v -> {
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            vb.isbn.onKey(KeyEvent.KEYCODE_DEL);
+        });
         vb.isbnDel.setOnLongClickListener(v -> {
+            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
             vb.isbn.setText("");
             return true;
+        });
+
+        vb.keypad.btnSearch.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+            } else {
+                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            }
+
+            viewToModel();
+
+            final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(v.getContext());
+            final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
+            if (!code.isValid(strictIsbn)) {
+                vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, code));
+                return;
+            }
+
+            prepareCriteria(code);
+        });
+
+        vb.btnClearQueue.setOnClickListener(v -> {
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            vm.clearQueueAndCancelSearches(v.getContext(), coordinator);
+        });
+
+        // embedded scanner only
+        vb.btnStopScanning.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                view.performHapticFeedback(HapticFeedbackConstants.REJECT);
+            } else {
+                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            }
+            switchOffScanner();
         });
 
         // The search preference determines the level here; NOT the 'edit book'
@@ -224,8 +256,8 @@ public class SearchBookByIsbnFragment
         isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
 
-        isbnValidationTextWatcher =
-                new ISBN.ValidationTextWatcher(vb.lblIsbn, vb.isbn, isbnValidityCheck);
+        isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(vb.lblIsbn, vb.isbn,
+                                                                   isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
 
         vb.isbn.requestFocus();
@@ -236,64 +268,15 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Reroute a key press on the virtual keypad.
+     * Handle any number pad key.
      *
      * @param view the key View
-     * @param key  the key as a char
+     * @param key  the key as a char; 0..9 and X
      */
     private void onKeyPad(@NonNull final View view,
                           final char key) {
-        switch (key) {
-            case KEY_SEARCH: {
-                // The search button
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    view.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
-                } else {
-                    view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                }
-
-                viewToModel();
-
-                //noinspection DataFlowIssue
-                final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(getContext());
-                final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
-
-                if (!code.isValid(strictIsbn)) {
-                    vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, code));
-                    return;
-                }
-
-                prepareCriteria(code);
-                break;
-            }
-            case KEY_STOP_SCANNING: {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    view.performHapticFeedback(HapticFeedbackConstants.REJECT);
-                } else {
-                    view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                }
-                switchOffScanner();
-                break;
-            }
-            case KEY_DELETE: {
-                // The delete button
-                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                vb.isbn.onKey(KeyEvent.KEYCODE_DEL);
-                break;
-            }
-            case KEY_CLEAR_QUEUE: {
-                // The clear-queue button
-                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                //noinspection DataFlowIssue
-                vm.clearQueue(getContext());
-                break;
-            }
-            default:
-                // any number pad key 0..9X
-                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                vb.isbn.onKey(key);
-                break;
-        }
+        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+        vb.isbn.onKey(key);
     }
 
     protected void modelToView() {
@@ -468,8 +451,7 @@ public class SearchBookByIsbnFragment
 
     /**
      * Prepare the criteria object to use for the search.
-     * This method can interact with the user,
-     * and can reject starting a search.
+     * This method can interact with the user, and can reject starting a search.
      * <p>
      * Used by either by the user typing in a code, or scanning one
      * in {@link Scanning#Manual}/{@link Scanning#Continuous} mode.
