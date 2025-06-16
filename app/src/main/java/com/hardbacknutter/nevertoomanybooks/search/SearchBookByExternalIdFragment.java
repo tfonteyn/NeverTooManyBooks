@@ -143,13 +143,13 @@ public class SearchBookByExternalIdFragment
         modelToView();
 
         vb.sitesGroup.setOnCheckedChangeListener(this::onSiteSelect);
-        vb.btnSearch.setOnClickListener(v -> prepareSearch());
+        vb.btnSearch.setOnClickListener(v -> prepareCriteria());
 
         autoRemoveError(vb.externalId, vb.lblExternalId);
         vb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 hideKeyboard(v);
-                prepareSearch();
+                prepareCriteria();
                 return true;
             }
             return false;
@@ -235,7 +235,12 @@ public class SearchBookByExternalIdFragment
         vm.setSid(vb.externalId.getText().toString().strip());
     }
 
-    protected void prepareSearch() {
+    /**
+     * Prepare the criteria object to use for the search.
+     * This method can interact with the user,
+     * and can reject starting a search.
+     */
+    private void prepareCriteria() {
         viewToModel();
 
         // check if we have an active search, if so, quit silently.
@@ -274,6 +279,7 @@ public class SearchBookByExternalIdFragment
     @Override
     void onSearchResults(@NonNull final BookSearchResult bookSearchResult) {
         final Book book = bookSearchResult.getBook();
+
         // A non-empty result will have a title, or at least 3 fields:
         // The external id field for the site should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.

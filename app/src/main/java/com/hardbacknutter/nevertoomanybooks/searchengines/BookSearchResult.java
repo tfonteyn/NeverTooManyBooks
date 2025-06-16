@@ -34,14 +34,15 @@ public class BookSearchResult {
     @NonNull
     private final Book book;
     @Nullable
-    private final String searchErrors;
+    private String searchErrors;
 
     public BookSearchResult(final int searchId,
                             @NonNull final Book book,
                             @Nullable final String searchErrors) {
         this.searchId = searchId;
         this.book = book;
-        this.searchErrors = searchErrors;
+        // paranoia... make sure null or "something"
+        this.searchErrors = searchErrors == null || searchErrors.isEmpty() ? null : searchErrors;
     }
 
     public int getSearchId() {
@@ -53,8 +54,17 @@ public class BookSearchResult {
         return book;
     }
 
+    /**
+     * Get the error message if any.
+     *
+     * @return either {@code null} or a valid message to display
+     */
     @Nullable
-    public String getSearchErrors() {
+    public String getErrorMessage() {
         return searchErrors;
+    }
+
+    public void clearError() {
+        searchErrors = null;
     }
 }

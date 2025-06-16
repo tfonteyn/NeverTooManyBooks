@@ -173,14 +173,6 @@ public abstract class SearchBookBaseFragment
     }
 
     /**
-     * Prepare the criteria object to use for the search.
-     * Implementation can interact with the user,
-     * and can reject starting a search.
-     */
-    // forced implementation
-    abstract void prepareSearch();
-
-    /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * The results come back in {@link #onSearchResults(BookSearchResult)}.
      * <p>

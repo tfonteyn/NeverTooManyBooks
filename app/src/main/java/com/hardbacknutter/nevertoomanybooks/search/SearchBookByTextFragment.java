@@ -123,7 +123,7 @@ public class SearchBookByTextFragment
 
         populateAdapters();
 
-        vb.btnSearch.setOnClickListener(v -> prepareSearch());
+        vb.btnSearch.setOnClickListener(v -> prepareCriteria());
         explainSitesSupport(coordinator.getSiteList());
     }
 
@@ -185,7 +185,7 @@ public class SearchBookByTextFragment
                                    @Nullable final KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
             hideKeyboard(view);
-            prepareSearch();
+            prepareCriteria();
             return true;
         }
         return false;
@@ -232,7 +232,12 @@ public class SearchBookByTextFragment
         vb.publisher.setAdapter(publisherAdapter);
     }
 
-    protected void prepareSearch() {
+    /**
+     * Prepare the criteria object to use for the search.
+     * This method can interact with the user,
+     * and can reject starting a search.
+     */
+    private void prepareCriteria() {
         viewToModel();
 
         // check if we have an active search, if so, quit silently.
@@ -299,11 +304,9 @@ public class SearchBookByTextFragment
     @Override
     void onSearchResults(@NonNull final BookSearchResult bookSearchResult) {
         final Book book = bookSearchResult.getBook();
-        // Don't check on any results... just accept them and create a new book.
 
-        // If any of the search fields are not present in the result,
+        // If any of the below criteria fields are not present in the result,
         // we add them manually as the template for a new book.
-
         final BookSearchCriteria criteria = vm.getSearchCriteria();
 
         if (!book.contains(DBKey.TITLE)) {

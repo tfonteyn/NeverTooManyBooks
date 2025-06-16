@@ -225,7 +225,7 @@ public class SearchCoordinator
             LoggerFactory.getLogger()
                          .d(TAG, "pushResultFinished",
                             "searchId=" + data.getSearchId(),
-                            "searchErrors=" + data.getSearchErrors());
+                            "searchErrors=" + data.getErrorMessage());
         }
     }
 
@@ -237,7 +237,7 @@ public class SearchCoordinator
             LoggerFactory.getLogger()
                          .d(TAG, "pushResultCanceled",
                             "searchId=" + data.getSearchId(),
-                            "searchErrors=" + data.getSearchErrors());
+                            "searchErrors=" + data.getErrorMessage());
         }
     }
 
