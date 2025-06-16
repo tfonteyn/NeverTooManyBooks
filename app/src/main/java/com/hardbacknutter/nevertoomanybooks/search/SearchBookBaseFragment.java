@@ -80,6 +80,7 @@ public abstract class SearchBookBaseFragment
 
     @Nullable
     private ProgressDelegate progressDelegate;
+    private boolean enableProgressMessages = true;
 
     protected void explainSitesSupport(@Nullable final List<Site> sites) {
         // override as needed, e.g. SearchBookByTextFragment
@@ -152,18 +153,24 @@ public abstract class SearchBookBaseFragment
 
     abstract void viewToModel();
 
+    void setEnableProgressMessages(final boolean enableProgressMessages) {
+        this.enableProgressMessages = enableProgressMessages;
+    }
+
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        message.process(progress -> {
-            if (progressDelegate == null) {
-                //noinspection DataFlowIssue
-                progressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(R.string.progress_msg_searching)
-                        .setIndeterminate(true)
-                        .setOnCancelListener(v -> coordinator.cancel())
-                        .show(() -> getActivity().getWindow());
-            }
-            progressDelegate.onProgress(progress);
-        });
+        if (enableProgressMessages) {
+            message.process(progress -> {
+                if (progressDelegate == null) {
+                    //noinspection DataFlowIssue
+                    progressDelegate = new ProgressDelegate(getProgressFrame())
+                            .setTitle(R.string.progress_msg_searching)
+                            .setIndeterminate(true)
+                            .setOnCancelListener(v -> coordinator.cancel())
+                            .show(() -> getActivity().getWindow());
+                }
+                progressDelegate.onProgress(progress);
+            });
+        }
     }
 
     void closeProgressDialog() {
