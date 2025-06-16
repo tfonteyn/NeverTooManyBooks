@@ -51,6 +51,7 @@ import com.google.zxing.Result;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
@@ -71,8 +72,7 @@ import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeScanner;
 import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
-
-import org.acra.ACRA;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
@@ -510,14 +510,20 @@ public class SearchBookByIsbnFragment
                 .show();
     }
 
-    // sits between prepareSearch() and startSearch(criteria)
-    // to support batch-scan mode
-    private void startSearch(@NonNull final ISBN code) {
+    /**
+     * Sits between {@link #prepareCriteria(ISBN)} and {@link #startSearch(BookSearchCriteria)}
+     * to support {@link Scanning#Batch} mode.
+     *
+     * @param code to search for
+     *
+     * @return the search-id, or {@code 0} if no search was started
+     */
+    private int startSearch(@NonNull final ISBN code) {
         //noinspection DataFlowIssue
         final BookSearchCriteria criteria = new BookSearchCriteria(getContext());
         criteria.setIsbn(code);
 
-        startSearch(criteria);
+        return startSearch(criteria);
     }
 
     @Override
@@ -529,6 +535,9 @@ public class SearchBookByIsbnFragment
 
     @Override
     void onSearchResults(@NonNull final BookSearchResult bookSearchResult) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "onSearchResults", bookSearchResult);
+        }
         final Book book = bookSearchResult.getBook();
 
         // A non-empty result will have a title, or at least 3 fields:
@@ -638,6 +647,7 @@ public class SearchBookByIsbnFragment
                 return true;
 
             } else if (menuItemId == R.id.MENU_BARCODE_SCAN_BATCH) {
+                // don't clear
                 vm.setScannerMode(Scanning.Batch);
                 startScanner();
                 return true;
