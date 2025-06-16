@@ -348,6 +348,8 @@ public class SearchBookByTextFragment
      */
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
+        onClearSearchCriteria();
+
         vm.onBookEditingDone(data);
 
         // refresh, we could have modified/created items while editing

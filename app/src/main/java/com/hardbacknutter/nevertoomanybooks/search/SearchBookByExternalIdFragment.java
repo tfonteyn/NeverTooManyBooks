@@ -108,6 +108,8 @@ public class SearchBookByExternalIdFragment
      */
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
+        onClearSearchCriteria();
+
         vm.onBookEditingDone(data);
     }
 
