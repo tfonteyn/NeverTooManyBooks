@@ -117,9 +117,9 @@ public class SearchBookByIsbnViewModel
                                    .collect(Collectors.toList()));
 
             if (args != null) {
-                final Scanning scanning = args.getParcelable(BKEY_SCANNER_MODE);
-                if (scanning != null) {
-                    this.scanning = scanning;
+                final Scanning tmpScanning = args.getParcelable(BKEY_SCANNER_MODE);
+                if (tmpScanning != null) {
+                    this.scanning = tmpScanning;
                 }
 
                 // Lookup the provided style or use the default if not found.
