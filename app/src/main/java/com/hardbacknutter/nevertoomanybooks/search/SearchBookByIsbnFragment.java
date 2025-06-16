@@ -393,6 +393,8 @@ public class SearchBookByIsbnFragment
      */
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
+        onClearSearchCriteria();
+
         vm.onBookEditingDone(data);
         if (vm.getScannerMode() == Scanning.Continuous) {
             // scan another book until the user cancels
