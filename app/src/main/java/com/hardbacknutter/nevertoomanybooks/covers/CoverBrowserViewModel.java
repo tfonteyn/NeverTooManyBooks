@@ -331,7 +331,7 @@ public class CoverBrowserViewModel
         synchronized (galleryTasks) {
             if (!galleryTasks.containsKey(edition)) {
                 final FetchImageTask task =
-                        new FetchImageTask(taskIdCounter.getAndIncrement(), edition, cIdx,
+                        new FetchImageTask(taskIdCounter.incrementAndGet(), edition, cIdx,
                                            fileManager, taskListener,
                                            ImageWebSize.SMALL_FIRST);
                 task.setExecutor(galleryNetworkExecutor);
