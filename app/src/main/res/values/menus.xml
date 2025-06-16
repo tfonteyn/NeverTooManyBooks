@@ -324,11 +324,13 @@
     <!-- Toolbar menu: on-the-fly access to setting search order -->
     <item name="MENU_PREFS_SEARCH_SITES"
           type="id" />
-    <!-- Toolbar menu: start a single scan, batch scan or file import of barcodes. -->
+    <!-- Toolbar menu: start a single scan. -->
     <item name="MENU_BARCODE_SCAN"
           type="id" />
+    <!-- Toolbar menu: start batch scanning. -->
     <item name="MENU_BARCODE_SCAN_BATCH"
           type="id" />
+    <!-- Toolbar menu: start a file import of barcodes. -->
     <item name="MENU_BARCODE_IMPORT"
           type="id" />
 
