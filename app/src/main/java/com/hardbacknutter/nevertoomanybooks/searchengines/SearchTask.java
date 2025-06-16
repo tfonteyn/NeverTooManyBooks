@@ -111,7 +111,7 @@ final class SearchTask
                                        @NonNull final TaskListener<Book> taskListener) {
 
         final SearchTask task = new SearchTask(context, searchId,
-                                               TASK_ID.getAndIncrement(),
+                                               TASK_ID.incrementAndGet(),
                                                searchEngine, criteria,
                                                taskListener);
 
