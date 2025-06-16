@@ -41,7 +41,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
@@ -266,13 +265,6 @@ public class SearchBookByExternalIdFragment
     int onSearch(@NonNull final BookSearchCriteria criteria) {
         //noinspection DataFlowIssue
         return coordinator.searchByExternalId(engineId, criteria);
-    }
-
-    @Override
-    void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> message) {
-        closeProgressDialog();
-        //noinspection DataFlowIssue
-        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

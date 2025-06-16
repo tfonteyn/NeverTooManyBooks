@@ -32,7 +32,6 @@ import android.widget.EditText;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
-import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
@@ -217,7 +216,12 @@ public abstract class SearchBookBaseFragment
         return coordinator.search(criteria);
     }
 
-    abstract void onSearchCancelled(@NonNull LiveDataEvent<Boolean> message);
+    @CallSuper
+    void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> ignored) {
+        closeProgressDialog();
+        //noinspection DataFlowIssue
+        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+    }
 
     /**
      * FIXME: make overriding foolproof
