@@ -318,6 +318,7 @@ public class SearchBookByIsbnFragment
     }
 
     private void startScanner() {
+        setEnableProgressMessages(vm.getScannerMode() != Scanning.Batch);
         if (embeddedBarcodeScanner) {
             startScannerEmbedded();
         } else {
@@ -396,6 +397,7 @@ public class SearchBookByIsbnFragment
             vb.barcodeScannerGroup.setVisibility(View.GONE);
         }
         vm.setScannerMode(Scanning.Off);
+        setEnableProgressMessages(true);
     }
 
     /**
