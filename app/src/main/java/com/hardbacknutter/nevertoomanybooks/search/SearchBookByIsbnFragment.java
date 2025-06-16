@@ -228,6 +228,8 @@ public class SearchBookByIsbnFragment
                 new ISBN.ValidationTextWatcher(vb.lblIsbn, vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
 
+        vb.isbn.requestFocus();
+
         if (vm.isAutoStart()) {
             startScanner();
         }
