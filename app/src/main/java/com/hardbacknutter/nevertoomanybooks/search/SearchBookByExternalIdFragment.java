@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
@@ -291,7 +290,7 @@ public class SearchBookByExternalIdFragment
             return;
         }
 
-        editBookLauncher.launch(new EditBookContract.Input(book, vm.getStyle()));
+        editBook(book, vm.getStyle());
     }
 
     @Override

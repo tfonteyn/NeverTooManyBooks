@@ -49,9 +49,11 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -72,10 +74,11 @@ public abstract class SearchBookBaseFragment
                     getActivity().finish();
                 }
             };
-    ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
     SearchCoordinator coordinator;
 
+    private ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
     private ActivityResultLauncher<List<Site>> editSitesLauncher;
+
     @Nullable
     private ProgressDelegate progressDelegate;
 
@@ -267,7 +270,22 @@ public abstract class SearchBookBaseFragment
         });
     }
 
-    // Don't allow child classes to override.
+    /**
+     * Process the search results.
+     *
+     * @param bookSearchResult results of the search
+     */
+    abstract void onSearchResults(@NonNull BookSearchResult bookSearchResult);
+
+    void editBook(@NonNull final Book book,
+                  @NonNull final Style style) {
+        editBookLauncher.launch(new EditBookContract.Input(book, style));
+    }
+
+    void editBook(final long bookId,
+                  @NonNull final Style style) {
+        editBookLauncher.launch(new EditBookContract.Input(bookId, style));
+    }
 
     /**
      * Clear the search criteria and the input fields.
@@ -275,12 +293,6 @@ public abstract class SearchBookBaseFragment
     @CallSuper
     abstract void onClearSearchCriteria();
 
-    /**
-     * Process the search results.
-     *
-     * @param bookSearchResult results of the search
-     */
-    abstract void onSearchResults(@NonNull BookSearchResult bookSearchResult);
 
     /**
      * Add the needed listeners to automatically remove any error text from

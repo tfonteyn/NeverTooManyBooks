@@ -52,7 +52,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
@@ -505,8 +504,7 @@ public class SearchBookByIsbnFragment
                 .setNegativeButton(R.string.cancel, (d, w) -> onClearSearchCriteria())
                 // User wants to review the existing book
                 .setNeutralButton(R.string.action_edit, (d, w)
-                        -> editBookLauncher.launch(new EditBookContract
-                        .Input(firstFound, vm.getStyle())))
+                        -> editBook(firstFound, vm.getStyle()))
                 // User wants to add regardless
                 .setPositiveButton(R.string.action_add, (d, w) -> onAdd.run())
                 .create()
@@ -533,8 +531,9 @@ public class SearchBookByIsbnFragment
     @Override
     void onSearchResults(@NonNull final BookSearchResult bookSearchResult) {
         final Book book = bookSearchResult.getBook();
+
         // A non-empty result will have a title, or at least 3 fields:
-        // The isbn field should be present as we searched on one.
+        // The isbn field will be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
         // So a valid result means we either need a title, or a third field.
         final String title = book.getString(DBKey.TITLE, null);
@@ -543,7 +542,7 @@ public class SearchBookByIsbnFragment
             return;
         }
 
-        editBookLauncher.launch(new EditBookContract.Input(book, vm.getStyle()));
+        editBook(book, vm.getStyle());
     }
 
     @Override

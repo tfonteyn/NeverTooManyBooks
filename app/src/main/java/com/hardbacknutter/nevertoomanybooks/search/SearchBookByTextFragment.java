@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ExtTextWatcher;
@@ -336,7 +335,7 @@ public class SearchBookByTextFragment
                            criteria.getPublisher());
         }
 
-        editBookLauncher.launch(new EditBookContract.Input(book, vm.getStyle()));
+        editBook(book, vm.getStyle());
     }
 
     @Override
