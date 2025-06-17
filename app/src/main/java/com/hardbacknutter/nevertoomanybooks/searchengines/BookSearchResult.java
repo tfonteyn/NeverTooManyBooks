@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.search.Scanning;
 
 /**
  * The final result from a book search.
@@ -36,14 +37,23 @@ public class BookSearchResult {
     @NonNull
     private final Book book;
     @Nullable
-    private String searchErrors;
+    private final String searchErrors;
+    /** Routing purposes. */
+    @Nullable
+    private final Scanning scanMode;
+
+    public BookSearchResult(@NonNull final Book book) {
+        this(0, book, null, null);
+    }
 
     public BookSearchResult(final int searchId,
                             @NonNull final Book book,
+                            @Nullable final Scanning scanMode,
                             @Nullable final String searchErrors) {
         this.searchId = searchId;
         this.book = book;
-        // paranoia... make sure null or "something"
+        this.scanMode = scanMode;
+        // paranoia... eliminate empty string
         this.searchErrors = searchErrors == null || searchErrors.isEmpty() ? null : searchErrors;
     }
 
@@ -56,6 +66,11 @@ public class BookSearchResult {
         return book;
     }
 
+    @Nullable
+    public Scanning getScanMode() {
+        return scanMode;
+    }
+
     /**
      * Get the error message if any.
      *
@@ -66,10 +81,6 @@ public class BookSearchResult {
         return searchErrors;
     }
 
-    public void clearError() {
-        searchErrors = null;
-    }
-
     @Override
     public boolean equals(@Nullable final Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -77,6 +88,7 @@ public class BookSearchResult {
         }
         final BookSearchResult that = (BookSearchResult) o;
         return searchId == that.searchId
+               && scanMode == that.scanMode
                && Objects.equals(book, that.book)
                && Objects.equals(searchErrors, that.searchErrors);
     }
@@ -91,6 +103,7 @@ public class BookSearchResult {
     public String toString() {
         return "BookSearchResult{"
                + "searchId=" + searchId
+               + ", scanMode=" + scanMode
                + ", searchErrors=`" + searchErrors + '`'
                + ", book=" + book
                + '}';

@@ -35,6 +35,7 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.search.Scanning;
 
 /**
  * A data class with all values to search on.
@@ -56,6 +57,9 @@ public class BookSearchCriteria {
     /** Whether of not to fetch thumbnails. */
     @NonNull
     private final boolean[] fetchCovers;
+    /** Routing purposes. */
+    @Nullable
+    private Scanning scanMode;
     /**
      * Raw ISBN text for search.
      *
@@ -102,6 +106,8 @@ public class BookSearchCriteria {
     /**
      * Get the global user-settings strictIsbn flag.
      *
+     * @param context Current context
+     *
      * @return {@code true} for strict ISBN checking,
      *         {@code false} for allowing other valid generic codes.
      */
@@ -123,6 +129,11 @@ public class BookSearchCriteria {
                          .edit()
                          .putBoolean(PK_SEARCH_STRICT_ISBN, strictIsbn)
                          .apply();
+    }
+
+    @Nullable
+    Scanning getScanMode() {
+        return scanMode;
     }
 
     /**
@@ -207,7 +218,9 @@ public class BookSearchCriteria {
     }
 
     /**
-     * @see SearchEngine.ByIsbn
+     * Set the ISBN criteria.
+     *
+     * @param isbnText to search for
      */
     public void setIsbnText(@NonNull final String isbnText) {
         this.isbnText = isbnText;
@@ -226,12 +239,20 @@ public class BookSearchCriteria {
         return Optional.of(isbn);
     }
 
-    public void setIsbn(@NonNull final ISBN isbn) {
+    /**
+     * Set the ISBN criteria.
+     *
+     * @param isbn     to search for
+     * @param scanMode will be returned with the result
+     */
+    public void setIsbnFromScan(@NonNull final ISBN isbn,
+                                @NonNull final Scanning scanMode) {
         this.isbnText = isbn.asText();
         this.isbn = isbn;
+        this.scanMode = scanMode;
     }
 
-    public boolean hasValidIsbn() {
+    boolean hasValidIsbn() {
         return getIsbn().map(value -> value.isValid(strictIsbn)).orElse(false);
     }
 
@@ -241,7 +262,7 @@ public class BookSearchCriteria {
      * @return {@code true} for strict ISBN checking,
      *         {@code false} for allowing other valid generic codes.
      */
-    public boolean isStrictIsbn() {
+    boolean isStrictIsbn() {
         return strictIsbn;
     }
 
@@ -261,7 +282,7 @@ public class BookSearchCriteria {
      *
      * @return flag
      */
-    public boolean hasSids() {
+    boolean hasSids() {
         return !sids.isEmpty();
     }
 
@@ -366,6 +387,7 @@ public class BookSearchCriteria {
                + ", series=`" + series + '`'
                + ", seriesNr=`" + seriesNr + '`'
                + ", publisher=`" + publisher + '`'
+               + ", scanMode=" + scanMode
                + ", isbnText=`" + isbnText + '`'
                + ", isbn=" + isbn
                + ", strictIsbn=" + strictIsbn
