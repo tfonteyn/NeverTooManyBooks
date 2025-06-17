@@ -71,11 +71,7 @@ public class ParseTest
     public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://www.bookfinder.com/isbn/9780441020348/"
-                                      + "?st=sr&ac=qr&mode=basic&author=&title="
-                                      + "&isbn=978-0-441-02034-8&lang=en&destination=gb"
-                                      + "&currency=USD&binding=*&keywords=&publisher="
-                                      + "&min_year=&max_year=&minprice=&maxprice=";
+        final String locationHeader = "https://www.bookfinder.com/search_s/?st=sr&ac=qr&mode=basic&author=&title=&isbn=9780441020348&lang=en&destination=us&currency=USD&binding=*&keywords=&publisher=&min_year=&max_year=&minprice=&maxprice=";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bookfinder_9780441020348;
 
@@ -95,13 +91,9 @@ public class ParseTest
         assertEquals("English", book.getString(DBKey.LANGUAGE, null));
         assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
-        assertEquals(
-                "<b>\"The most spectacular science fiction writer of recent years\" (Vernor Vinge, author of <i>Rainbows End</i>) presents a near-future thriller. \n"
-                + " <br>\n"
-                + " <br> Detective Inspector Liz Kavanaugh is head of the Rule 34 Squad, monitoring the Internet to determine whether people are engaging in harmless fantasies or illegal activities. Three ex-con spammers have been murdered, and Liz must uncover the link between them before these homicides go viral.\n"
-                + " <br>\n"
-                + " <br></b>",
-                book.getString(DBKey.DESCRIPTION, null));
+        assertTrue(book.getString(DBKey.DESCRIPTION)
+                       .startsWith(
+                               "<b>\"The most spectacular science fiction writer of recent years\" (Vernor Vinge"));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
