@@ -35,7 +35,7 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.search.Scanning;
+import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 
 /**
  * A data class with all values to search on.
@@ -59,7 +59,7 @@ public class BookSearchCriteria {
     private final boolean[] fetchCovers;
     /** Routing purposes. */
     @Nullable
-    private Scanning scanMode;
+    private ScanMode scanMode;
     /**
      * Raw ISBN text for search.
      *
@@ -132,7 +132,7 @@ public class BookSearchCriteria {
     }
 
     @Nullable
-    Scanning getScanMode() {
+    ScanMode getScanMode() {
         return scanMode;
     }
 
@@ -246,7 +246,7 @@ public class BookSearchCriteria {
      * @param scanMode will be returned with the result
      */
     public void setIsbnFromScan(@NonNull final ISBN isbn,
-                                @NonNull final Scanning scanMode) {
+                                @NonNull final ScanMode scanMode) {
         this.isbnText = isbn.asText();
         this.isbn = isbn;
         this.scanMode = scanMode;

@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.search.Scanning;
+import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnViewModel;
@@ -61,14 +61,14 @@ public class AddBookBySearchContract
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(Style.BKEY_UUID, input.styleUuid)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCANNER_MODE,
-                                  (Parcelable) Scanning.getScannerModeSingle(context));
+                                  (Parcelable) ScanMode.getScannerModeSingle(context));
 
             case ScanBatch:
                 return FragmentHostActivityLauncher
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(Style.BKEY_UUID, input.styleUuid)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCANNER_MODE,
-                                  (Parcelable) Scanning.Batch);
+                                  (Parcelable) ScanMode.Batch);
 
             case ExternalId:
                 return FragmentHostActivityLauncher

@@ -69,8 +69,6 @@ public final class Prefs {
     public static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";
     public static final String PK_CAMERA_LENS_FACING = "camera.lens.facing";
 
-    public static final String PK_SCANNER_MODE_SINGLE = "scan.mode.single";
-
     /** The prefix of all "acra" settings which need to be excluded during import/export. */
     public static final String ACRA_EXCLUDE_PREFIX = "^acra\\..*";
 

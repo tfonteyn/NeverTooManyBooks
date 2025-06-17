@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.search.Scanning;
+import com.hardbacknutter.nevertoomanybooks.search.ScanMode;
 
 /**
  * The final result from a book search.
@@ -40,7 +40,7 @@ public class BookSearchResult {
     private final String searchErrors;
     /** Routing purposes. */
     @Nullable
-    private final Scanning scanMode;
+    private final ScanMode scanMode;
 
     public BookSearchResult(@NonNull final Book book) {
         this(0, book, null, null);
@@ -48,7 +48,7 @@ public class BookSearchResult {
 
     public BookSearchResult(final int searchId,
                             @NonNull final Book book,
-                            @Nullable final Scanning scanMode,
+                            @Nullable final ScanMode scanMode,
                             @Nullable final String searchErrors) {
         this.searchId = searchId;
         this.book = book;
@@ -67,7 +67,7 @@ public class BookSearchResult {
     }
 
     @Nullable
-    public Scanning getScanMode() {
+    public ScanMode getScanMode() {
         return scanMode;
     }
 
