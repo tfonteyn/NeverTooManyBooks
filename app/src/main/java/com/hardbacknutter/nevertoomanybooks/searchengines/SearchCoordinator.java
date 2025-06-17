@@ -121,10 +121,11 @@ public class SearchCoordinator
     private synchronized void onSearchTaskFinished(final int taskId,
                                                    @Nullable final Book result) {
         final BookSearch currentSearch = getBookSearch(taskId);
-        final SearchTask currentTask = currentSearch.removeTask(taskId);
-        task2searchId.remove(taskId);
-
-        onSearchTaskFinished(currentSearch, currentTask, result);
+        if (currentSearch != null) {
+            final SearchTask currentTask = currentSearch.removeTask(taskId);
+            task2searchId.remove(taskId);
+            onSearchTaskFinished(currentSearch, currentTask, result);
+        }
     }
 
     private void onSearchTaskFinished(@NonNull final BookSearch currentSearch,
@@ -201,20 +202,17 @@ public class SearchCoordinator
      *
      * @param taskId to lookup
      *
-     * @return BookSearch
+     * @return BookSearch, can be {@code null} if already removed
      */
-    @NonNull
+    @Nullable
     private BookSearch getBookSearch(final int taskId) {
-        final int searchId = Objects.requireNonNull(task2searchId.get(taskId),
-                                                    () -> ERROR_UNKNOWN_TASK + taskId);
-
-        @NonNull
-        final BookSearch currentSearch;
         synchronized (activeSearches) {
-            currentSearch = Objects.requireNonNull(activeSearches.get(searchId),
-                                                   () -> ERROR_UNKNOWN_SEARCH + searchId);
+            final Integer searchId = task2searchId.get(taskId);
+            if (searchId == null) {
+                return null;
+            }
+            return activeSearches.get(searchId);
         }
-        return currentSearch;
     }
 
     protected void pushResultFinished(final BookSearchResult data) {
@@ -245,29 +243,33 @@ public class SearchCoordinator
     private synchronized void onSearchTaskFailed(final int taskId,
                                                  @Nullable final Throwable e) {
         final BookSearch currentSearch = getBookSearch(taskId);
-        final SearchTask currentTask = currentSearch.removeTask(taskId);
-        task2searchId.remove(taskId);
+        if (currentSearch != null) {
+            final SearchTask currentTask = currentSearch.removeTask(taskId);
+            task2searchId.remove(taskId);
 
-        synchronized (currentSearch) {
-            // Always store, even if the Exception is null
-            currentSearch.addError(currentTask.getSearchEngine().getEngineId(), e);
+            synchronized (currentSearch) {
+                // Always store, even if the Exception is null
+                currentSearch.addError(currentTask.getSearchEngine().getEngineId(), e);
+            }
+            onSearchTaskFinished(currentSearch, currentTask, null);
         }
-        onSearchTaskFinished(currentSearch, currentTask, null);
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private synchronized void onSearchTaskProgress(@NonNull final TaskProgress message) {
         synchronized (progressByEngineId) {
             final BookSearch currentSearch = getBookSearch(message.taskId);
-            final SearchTask currentTask = currentSearch.getTask(message.taskId);
-            if (currentTask != null) {
-                final EngineId engineId = currentTask.getSearchEngine().getEngineId();
-                progressByEngineId.put(engineId, message);
+            if (currentSearch != null) {
+                final SearchTask currentTask = currentSearch.getTask(message.taskId);
+                if (currentTask != null) {
+                    final EngineId engineId = currentTask.getSearchEngine().getEngineId();
+                    progressByEngineId.put(engineId, message);
+                }
             }
-        }
-        // forward the accumulated progress
-        synchronized (searchCoordinatorProgress) {
-            searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
+            // forward the accumulated progress
+            synchronized (searchCoordinatorProgress) {
+                searchCoordinatorProgress.setValue(LiveDataEvent.of(accumulateProgress()));
+            }
         }
     }
 
