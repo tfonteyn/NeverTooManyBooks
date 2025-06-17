@@ -584,7 +584,7 @@ public class SearchBookUpdatesViewModel
             book.putLong(DBKey.FK_BOOK, bookIdList.get(0));
         }
 
-        final BookSearchResult data = new BookSearchResult(0, book, null);
+        final BookSearchResult data = new BookSearchResult(book);
         if (success) {
             listFinished.setValue(LiveDataEvent.of(data));
         } else {
