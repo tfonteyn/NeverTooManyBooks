@@ -52,14 +52,6 @@ public final class Prefs {
      * @see com.hardbacknutter.nevertoomanybooks.utils.mappers.FormatMapper
      */
     public static final String PK_SEARCH_REFORMAT_FORMAT = "search.reformat.format";
-    /**
-     * Whether to normalize {@link DBKey#COLOR} values after a search.
-     * <p>
-     * {@code boolean}
-     *
-     * @see com.hardbacknutter.nevertoomanybooks.utils.mappers.ColorMapper
-     */
-    public static final String PK_SEARCH_REFORMAT_COLOR = "search.reformat.color";
 
     public static final String PK_NORMALIZE_SERIES_TITLE = "normalize.series.title";
     public static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
@@ -70,15 +62,14 @@ public final class Prefs {
     public static final String PK_CAMERA_LENS_FACING = "camera.lens.facing";
 
     /** The prefix of all "acra" settings which need to be excluded during import/export. */
-    public static final String ACRA_EXCLUDE_PREFIX = "^acra\\..*";
+    private static final String EXCLUDE_ACRA_PREFIX = "^acra\\..*";
 
     /**
      * Regular expressions for the keys which will be excluded
      * during an import of the preferences.
      */
     public static final List<String> EXCLUDE_WHEN_IMPORTING = List.of(
-            /* The prefix of all "acra" settings. */
-            ACRA_EXCLUDE_PREFIX,
+            EXCLUDE_ACRA_PREFIX,
             CoverVolume.PK_VOLUME_INDEX.replace(".", "\\."),
             Languages.PK_LANG_CREATED_PREFIX.replace(".", "\\.") + ".*"
     );
@@ -88,8 +79,7 @@ public final class Prefs {
      * during an export of the preferences.
      */
     public static final List<String> EXCLUDE_WHEN_EXPORTING = List.of(
-            /* The prefix of all "acra" settings. */
-            ACRA_EXCLUDE_PREFIX,
+            EXCLUDE_ACRA_PREFIX,
             CoverVolume.PK_VOLUME_INDEX.replace(".", "\\."),
             Languages.PK_LANG_CREATED_PREFIX.replace(".", "\\.") + ".*"
     );

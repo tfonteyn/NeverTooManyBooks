@@ -32,13 +32,20 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * System wide book color representation. Color is mainly meant for comics.
  */
 public final class ColorMapper
         extends MapperBase {
+
+    /**
+     * Whether to normalize {@link DBKey#COLOR} values after a search.
+     * <p>
+     * {@code boolean}
+     */
+    @VisibleForTesting
+    public static final String PK_SEARCH_REFORMAT_COLOR = "search.reformat.color";
 
     /** Maps site color terminology to our own. */
     private static final Map<String, Integer> MAPPINGS = new HashMap<>();
@@ -95,7 +102,7 @@ public final class ColorMapper
     @NonNull
     static Optional<Mapper> create(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.PK_SEARCH_REFORMAT_COLOR, true)) {
+                             .getBoolean(PK_SEARCH_REFORMAT_COLOR, true)) {
             return Optional.of(new ColorMapper());
         } else {
             return Optional.empty();
