@@ -115,8 +115,7 @@ public class SearchBookByIsbnFragment
         createActivityLaunchers();
 
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), getArguments());
+        vm.init(getArguments());
     }
 
     private void createActivityLaunchers() {
