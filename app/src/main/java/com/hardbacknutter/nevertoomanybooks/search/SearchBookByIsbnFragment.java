@@ -429,13 +429,21 @@ public class SearchBookByIsbnFragment
                 // Continuous: leave the scanner on, scanning again when the edit is done.
                 if (vm.getScannerMode() == Scanning.Manual) {
                     switchOffScanner();
+                    vm.setIsbnText(barCode);
+                    modelToView();
+                    prepareCriteria(code);
+                    break;
                 }
-                prepareSearch();
+                case Continuous: {
+                    // Continuous: leave the scanner on, scanning restarts when the edit is done.
+                    vm.setIsbnText(barCode);
+                    modelToView();
+                    prepareCriteria(code);
+                    break;
+                }
             }
         } else {
             SoundManager.beepOnInvalidIsbn(context);
-            vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
-                                          code.asText()));
 
             if (vm.getScannerMode() == Scanning.Batch) {
                 // invalid code but we're in batch mode.
@@ -444,7 +452,10 @@ public class SearchBookByIsbnFragment
             } else {
                 // invalid code, always quit scanning and let the user edit the code
                 switchOffScanner();
-                vb.isbn.setText(code.asText());
+                vm.setIsbnText(barCode);
+                modelToView();
+                vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
+                                              code.asText()));
             }
         }
     }
