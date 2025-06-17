@@ -209,7 +209,7 @@
     <string name="error_network_please_connect">Połącz się z internetem.</string>
     <string name="error_network_site_access_failed">Wystąpił problem z siecią podczas uzyskiwania dostępu do %1$s. Sprawdź, czy witryna jest uruchomiona, a jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.</string>
     <string name="error_no_image_editor">Nie znaleziono edytora zdjęć.</string>
-    <string name="error_search_could_not_be_started">Wyszukiwanie książki nie powiodło się.</string>
+    <string name="error_book_search_failed">Wyszukiwanie książki nie powiodło się.</string>
     <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.\nSprawdź także ustawienia sieciowe urządzenia.</string>
     <string name="error_search_x_failed_y">Wyszukiwanie w %1$s nie powiodło się: %2$s</string>
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>

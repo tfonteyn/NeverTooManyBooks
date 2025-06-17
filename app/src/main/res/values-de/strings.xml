@@ -201,7 +201,7 @@
     <string name="error_network_please_connect">Bitte stelle eine Verbindung zum Internet her.</string>
     <string name="error_network_site_access_failed">Beim Zugriff auf %1$s ist ein Netzwerkproblem aufgetreten. Bitte überprüfe, ob die Website erreichbar ist. Falls das Problem weiter besteht, kontaktiere den Support.</string>
     <string name="error_no_image_editor">Keinen Bild-Editor gefunden.</string>
-    <string name="error_search_could_not_be_started">Die Suche nach dem Buch ist fehlgeschlagen.</string>
+    <string name="error_book_search_failed">Die Suche nach dem Buch ist fehlgeschlagen.</string>
     <string name="error_search_failed_network">Öffne die Einstellungen und überprüfe deine Netzwerk- und Site-Sucheinstellungen.\nÜberprüfe auch die Netzwerkeinstellungen deines Geräts.</string>
     <string name="error_search_x_failed_y">Suche bei %1$s fehlgeschlagen: %2$s</string>
     <string name="error_site_authentication_failed">Authentifizierung bei %1$s fehlgeschlagen</string>

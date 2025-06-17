@@ -174,7 +174,7 @@
     <string name="cancel">Cancelar</string>
     <string name="yes">Sim</string>
     <string name="error_search_x_failed_y">Falha ao pesquisar em %1$s: %2$s</string>
-    <string name="error_search_could_not_be_started">A pesquisa do livro falhou.</string>
+    <string name="error_book_search_failed">A pesquisa do livro falhou.</string>
     <string name="error_import_failed">Falha na importação</string>
     <string name="error_backup_failed">Falha na cópia de segurança.</string>
     <string name="warning_book_not_always_found">Nem todos os sites devolveram dados válidos.</string>

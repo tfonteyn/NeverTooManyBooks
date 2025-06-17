@@ -209,8 +209,8 @@
     <!-- A search on a specific website failed, with the specified reason.
          param 1: website name; param 2: message   . -->
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s</string>
-    <!-- STARTING a search has failed / no attempt to search was possible; this is an error! -->
-    <string name="error_search_could_not_be_started">Searching for the book failed.</string>
+    <!-- STARTING a search has failed to start due to an ERROR. -->
+    <string name="error_book_search_failed">Searching for the book failed.</string>
     <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
     <!-- MalformedURLException/UnknownHostException
          Concatenated with a new line and "error_search_failed_network"

@@ -217,7 +217,7 @@
     <string name="error_network_site_access_failed">Đã xảy ra sự cố mạng khi truy cập %1$s. Vui lòng kiểm tra xem trang web có hoạt động không và nếu sự cố vẫn tiếp diễn, vui lòng liên hệ với bộ phận hỗ trợ.</string>
     <string name="error_no_image_editor">Không tìm thấy trình chỉnh sửa hình ảnh nào.</string>
     <string name="error_record_must_contain_column">Bản ghi phải chứa trường có tên “%1$s”.</string>
-    <string name="error_search_could_not_be_started">Tìm kiếm sách không thành công.</string>
+    <string name="error_book_search_failed">Tìm kiếm sách không thành công.</string>
     <string name="error_search_failed_network">Vui lòng mở Thiết đặt và kiểm tra tùy chọn mạng cũng như Trang tìm kiếm của bạn.\nĐồng thời kiểm tra thiết đặt mạng thiết bị của bạn.</string>
     <string name="error_search_x_failed_y">Tìm kiếm trên %1$s không thành công: %2$s</string>
     <string name="error_site_access_blocked">Quyền truy cập đã bị chặn bởi trang web.</string>

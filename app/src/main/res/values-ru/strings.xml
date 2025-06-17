@@ -215,7 +215,7 @@
     <string name="error_network_please_connect">Подключитесь к Интернету.</string>
     <string name="error_network_site_access_failed">При доступе к %1$s возникла проблема с сетью. Пожалуйста, проверьте, работает ли веб-сайт, и если проблема не устранена, обратитесь в службу поддержки.</string>
     <string name="error_no_image_editor">Редактор изображений не найден.</string>
-    <string name="error_search_could_not_be_started">Поиск книги не удался.</string>
+    <string name="error_book_search_failed">Поиск книги не удался.</string>
     <string name="error_search_failed_network">Пожалуйста, откройте «Настройки» и проверьте настройки сети и поиска на сайте.\nТакже проверьте настройки сети вашего устройства.</string>
     <string name="error_search_x_failed_y">Поиск по %1$s не удался: %2$s</string>
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>

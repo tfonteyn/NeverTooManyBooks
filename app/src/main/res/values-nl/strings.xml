@@ -199,7 +199,7 @@
     <string name="error_network_site_access_failed">Er was een netwerkprobleem terwijl je probeerde toegang te krijgen tot %1$s. Controleer of de website in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning.</string>
     <string name="error_no_image_editor">Geen foto-editor gevonden.</string>
     <string name="error_record_must_contain_column">Record moet een veld met de naam „%1$s” bevatten.</string>
-    <string name="error_search_could_not_be_started">Het zoeken naar het boek is mislukt.</string>
+    <string name="error_book_search_failed">Het zoeken naar het boek is mislukt.</string>
     <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren.\nControleer ook de netwerkinstellingen van uw apparaat.</string>
     <string name="error_search_x_failed_y">Zoeken op %1$s is mislukt: %2$s</string>
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>

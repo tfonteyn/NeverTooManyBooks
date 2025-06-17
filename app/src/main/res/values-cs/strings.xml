@@ -217,7 +217,7 @@
     <string name="error_network_please_connect">Připojte se prosím k internetu.</string>
     <string name="error_network_site_access_failed">Při přístupu k %1$s došlo k chybě v síti. Zkontrolujte, zda je web funkční, a pokud problém přetrvává, kontaktujte podporu.</string>
     <string name="error_no_image_editor">Nebyl nalezen žádný editor obrázků.</string>
-    <string name="error_search_could_not_be_started">Vyhledávání knihy se nezdařilo.</string>
+    <string name="error_book_search_failed">Vyhledávání knihy se nezdařilo.</string>
     <string name="error_search_failed_network">Otevřete Nastavení a zkontrolujte předvolby sítě a vyhledávacího webu.
 \nZkontrolujte také nastavení sítě v zařízení.</string>
     <string name="error_search_x_failed_y">Hledání na %1$s se nezdařilo: %2$s</string>

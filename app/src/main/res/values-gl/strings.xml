@@ -70,7 +70,7 @@
     <string name="error_http_403_site_forbidden">%1$s bloqueou o acceso.</string>
     <string name="error_storage_not_writable">Por favor, comproba se o soporte ten permiso de escritura e espazo abondo.</string>
     <string name="error_search_x_failed_y">Fallou a busca en %1$s: %2$s</string>
-    <string name="error_search_could_not_be_started">Fallou a busca do libro.</string>
+    <string name="error_book_search_failed">Fallou a busca do libro.</string>
     <string name="error_unknown_host">Houbo un problema de conexión ao servizo en «%1$s».</string>
     <string name="error_no_image_editor">Non se atopou editor de imaxes.</string>
     <string name="error_unsupported_version_v">Versión non compatible: %1$d</string>

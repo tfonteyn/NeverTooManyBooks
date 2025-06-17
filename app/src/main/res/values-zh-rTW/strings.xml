@@ -214,7 +214,7 @@
     <string name="error_network_site_access_failed">存取 %1$s 時出現網路問題。請檢查網站是否正常，如果問題仍然存在，請聯絡支援人員。</string>
     <string name="error_no_image_editor">找不到圖片編輯器。</string>
     <string name="error_record_must_contain_column">記錄必須包含一個名為「%1$s」的欄位。</string>
-    <string name="error_search_could_not_be_started">搜尋書本失敗。</string>
+    <string name="error_book_search_failed">搜尋書本失敗。</string>
     <string name="error_search_failed_network">請開啟設定並檢查您的網路和搜尋網站首選項。</string>
     <string name="error_search_x_failed_y">搜尋 %1$s 失敗：%2$s</string>
     <string name="error_site_access_blocked">被網站阻止存取。</string>

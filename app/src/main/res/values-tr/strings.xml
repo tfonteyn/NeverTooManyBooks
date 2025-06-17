@@ -207,7 +207,7 @@
     <string name="error_network_please_connect">Lütfen İnternet’e bağlanın.</string>
     <string name="error_network_site_access_failed">%1$s’e erişilirken bir ağ sorunu oluştu. Lütfen web sitesinin açık olup olmadığını kontrol edin ve sorun devam ederse lütfen destek ile iletişime geçin.</string>
     <string name="error_no_image_editor">Resim editörü bulunamadı.</string>
-    <string name="error_search_could_not_be_started">Kitap araması başarısız oldu.</string>
+    <string name="error_book_search_failed">Kitap araması başarısız oldu.</string>
     <string name="error_search_failed_network">Lütfen Ayarlar’ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
     <string name="error_search_x_failed_y">%1$s’de arama başarısız oldu: %2$s</string>
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>

@@ -75,7 +75,7 @@
     <string name="debug_select_items">Válassza ki, hogy mit tartalmazzon:</string>
     <string name="and_others_textual">%1$s et al.</string>
     <string name="httpErrorFile">Nem sikerült hozzáférni a fájlhoz.</string>
-    <string name="error_search_could_not_be_started">A könyv keresése sikertelen.</string>
+    <string name="error_book_search_failed">A könyv keresése sikertelen.</string>
     <string name="error_http_401_authorization_failed">Engedélyezés sikertelen</string>
     <string name="error_network_failed_try_again">Ellenőrizze a kapcsolatot és próbálja újra.</string>
     <string name="acra_dialog_message">Úgy tűnik a(z) &APP_NAME; összeomlott. Jelentést menthet el egy választott helyre, ehhez érintse meg a következőt: „%1$s”. A jelentéssel új feladatot naplózhat a projekt weboldalán.</string>

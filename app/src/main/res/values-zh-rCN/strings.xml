@@ -215,7 +215,7 @@
     <string name="error_network_site_access_failed">访问 %1$s 时出现网络问题。 请检查网站是否正常运行，如果问题仍然存在，请联系支持人员。</string>
     <string name="error_no_image_editor">找不到图像编辑器。</string>
     <string name="error_record_must_contain_column">记录必须包含一个名为“%1$s”的字段。</string>
-    <string name="error_search_could_not_be_started">搜索图书失败。</string>
+    <string name="error_book_search_failed">搜索图书失败。</string>
     <string name="error_search_failed_network">请打开设置并检查您的网络和搜索站点首选项。\n并检查您的设备网络设置。</string>
     <string name="error_search_x_failed_y">搜索%1$s失败：%2$s</string>
     <string name="error_site_access_blocked">访问被该网站阻止。</string>

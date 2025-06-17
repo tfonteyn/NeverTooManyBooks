@@ -612,7 +612,7 @@
     <string name="error_site_access_blocked">Prístup bol zablokovaný webovou stránkou.</string>
     <string name="error_http_403_site_forbidden">%1$s zablokoval prístup.</string>
     <string name="warning_import_failed_for_these_books">Import zlyhal pre tieto knihy/riadky:</string>
-    <string name="error_search_could_not_be_started">Vyhľadávanie knihy zlyhalo.</string>
+    <string name="error_book_search_failed">Vyhľadávanie knihy zlyhalo.</string>
     <string name="error_unsupported_version_v">Nepodporovaná verzia: %1$d</string>
     <string name="error_import_csv_line">Neznáma chyba v riadku %1$d</string>
     <string name="error_import_csv_line_to_long">Príliš dlhý riadok (riadok=%1$d, dĺžka=%2$d)</string>

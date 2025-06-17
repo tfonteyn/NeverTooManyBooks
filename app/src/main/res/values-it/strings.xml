@@ -205,7 +205,7 @@
     <string name="error_network_please_connect">Connettiti a Internet.</string>
     <string name="error_network_site_access_failed">Si è verificato un problema di rete durante l’accesso a %1$s. Verifica se il sito web è attivo e se il problema persiste, contatta l’assistenza.</string>
     <string name="error_no_image_editor">Nessun editor di immagini trovato.</string>
-    <string name="error_search_could_not_be_started">Ricerca del libro fallita.</string>
+    <string name="error_book_search_failed">Ricerca del libro fallita.</string>
     <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo.</string>
     <string name="error_search_x_failed_y">Ricerca su %1$s non riuscita: %2$s</string>
     <string name="error_site_authentication_failed">Autenticazione %1$s non riuscita</string>

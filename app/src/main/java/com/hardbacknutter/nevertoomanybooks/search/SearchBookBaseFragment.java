@@ -204,7 +204,7 @@ public abstract class SearchBookBaseFragment
         final int searchId = onSearch(criteria);
         if (searchId == 0) {
             //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.error_search_could_not_be_started,
+            Snackbar.make(getView(), R.string.error_book_search_failed,
                           Snackbar.LENGTH_LONG).show();
         }
         return searchId;
