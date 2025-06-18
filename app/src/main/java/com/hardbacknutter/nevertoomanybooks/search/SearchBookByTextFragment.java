@@ -292,8 +292,8 @@ public class SearchBookByTextFragment
     }
 
     @Override
-    void onSearchResults(@NonNull final BookSearchResult bookSearchResult) {
-        final Book book = bookSearchResult.getBook();
+    void onSearchResults(@NonNull final BookSearchResult result) {
+        final Book book = result.getBook();
 
         // If any of the below criteria fields are not present in the result,
         // we add them manually as the template for a new book.
