@@ -62,7 +62,7 @@ public final class Site
     };
 
     /** Preferences prefix for individual site settings. */
-    private static final String PREF_PREFIX = "search.site.";
+    private static final String PK_PREFIX = "search.site.";
 
     /**
      * The (for now) only actual preference:
@@ -73,7 +73,7 @@ public final class Site
      * <p>
      * This key uses 'enabled' for backwards compatibility.
      */
-    private static final String PREF_SUFFIX_ACTIVE = "enabled";
+    private static final String PK_SUFFIX_ACTIVE = "enabled";
 
     @NonNull
     private final EngineId engineId;
@@ -155,17 +155,17 @@ public final class Site
      */
     @NonNull
     private String getPrefPrefix() {
-        return PREF_PREFIX + engineId.getPreferenceKey() + '.' + type.key + '.';
+        return PK_PREFIX + engineId.getPreferenceKey() + '.' + type.key + '.';
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
-        active = prefs.getBoolean(getPrefPrefix() + PREF_SUFFIX_ACTIVE, active);
+        active = prefs.getBoolean(getPrefPrefix() + PK_SUFFIX_ACTIVE, active);
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
-        editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ACTIVE, active);
+        editor.putBoolean(getPrefPrefix() + PK_SUFFIX_ACTIVE, active);
     }
 
     @Override
