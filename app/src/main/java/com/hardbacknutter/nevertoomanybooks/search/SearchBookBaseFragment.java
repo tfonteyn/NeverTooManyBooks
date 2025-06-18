@@ -249,19 +249,25 @@ public abstract class SearchBookBaseFragment
         });
     }
 
-    void onSearchFinished(@NonNull final BookSearchResult bookSearchResult) {
-        final Runnable proceed = () -> onSearchResults(bookSearchResult);
+    /**
+     * This is the base method which will interact with the usr as needed.
+     * Override as needed, call super as needed only.
+     *
+     * @param result from a search
+     */
+    void onSearchFinished(@NonNull final BookSearchResult result) {
+        final Runnable proceed = () -> onSearchResults(result);
 
         // when there are any issues, talk to the user, then when applicable, proceed
-        if (!checkSearchResultWithUserInteraction(bookSearchResult, proceed)) {
+        if (!checkSearchResultWithUserInteraction(result, proceed)) {
             return;
         }
         // no issues, just proceed
         proceed.run();
     }
 
-    boolean checkSearchResultWithUserInteraction(@NonNull final BookSearchResult result,
-                                                 @NonNull final Runnable proceed) {
+    private boolean checkSearchResultWithUserInteraction(@NonNull final BookSearchResult result,
+                                                         @NonNull final Runnable proceed) {
 
         final boolean hasData = !result.getBook().isEmpty();
 
@@ -296,9 +302,9 @@ public abstract class SearchBookBaseFragment
     /**
      * Process the search results.
      *
-     * @param bookSearchResult results of the search
+     * @param result results of the search
      */
-    abstract void onSearchResults(@NonNull BookSearchResult bookSearchResult);
+    abstract void onSearchResults(@NonNull BookSearchResult result);
 
     void editBook(@NonNull final Book book,
                   @NonNull final Style style) {
