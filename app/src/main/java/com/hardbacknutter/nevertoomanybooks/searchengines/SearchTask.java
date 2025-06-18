@@ -291,6 +291,7 @@ final class SearchTask
     public String toString() {
         return "SearchTask{"
                + "searchEngine=" + searchEngine.getEngineId()
+               + ", searchId=" + searchId
                + ", by=" + by
                + ", criteria=`" + criteria + '`'
                + '}';
