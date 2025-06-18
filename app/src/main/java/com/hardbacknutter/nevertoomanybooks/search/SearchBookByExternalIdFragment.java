@@ -270,8 +270,8 @@ public class SearchBookByExternalIdFragment
     }
 
     @Override
-    void onSearchResults(@NonNull final BookSearchResult bookSearchResult) {
-        final Book book = bookSearchResult.getBook();
+    void onSearchResults(@NonNull final BookSearchResult result) {
+        final Book book = result.getBook();
 
         // A non-empty result will have a title, or at least 3 fields:
         // The external id field for the site should be present as we searched on one.
