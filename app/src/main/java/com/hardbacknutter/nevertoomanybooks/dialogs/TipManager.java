@@ -56,7 +56,7 @@ public final class TipManager {
      */
     public void reset(@NonNull final Context context) {
         // remove all. This has the benefit of removing any obsolete keys.
-        reset(context, Tip.PREF_TIP);
+        reset(context, Tip.PK_TIP);
         hasBeenDisplayed.clear();
     }
 

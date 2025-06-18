@@ -79,9 +79,9 @@ public enum Tip {
                                           "series_book_may_appear_more_than_once");
 
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "tips.";
+    private static final String PK_PREFIX = "tips.";
     /** Preferences prefix for all tips. */
-    static final String PREF_TIP = PREF_PREFIX + "tip.";
+    static final String PK_TIP = PK_PREFIX + "tip.";
     @StringRes
     private final int msgResId;
 
@@ -110,7 +110,7 @@ public enum Tip {
 
     boolean isEnabled(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PREF_TIP + key, true);
+                                .getBoolean(PK_TIP + key, true);
     }
 
     /**
@@ -177,6 +177,6 @@ public enum Tip {
 
     private void disable(@NonNull final Context context) {
         PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putBoolean(PREF_TIP + key, false).apply();
+                         .edit().putBoolean(PK_TIP + key, false).apply();
     }
 }
