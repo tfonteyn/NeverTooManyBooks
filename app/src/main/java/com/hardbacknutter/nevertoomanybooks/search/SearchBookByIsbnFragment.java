@@ -48,6 +48,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.Result;
 
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -81,7 +83,7 @@ public class SearchBookByIsbnFragment
         extends SearchBookBaseFragment {
 
     /** Log tag. */
-    private static final String TAG = "BookSearchByIsbnFrag";
+    private static final String TAG = "SearchBookByIsbnFrag";
     private static final String BKEY_SCANNER_ACTIVITY_STARTED = TAG + ":started";
 
     /**
@@ -259,9 +261,39 @@ public class SearchBookByIsbnFragment
                                                                    isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
 
-        vb.isbn.requestFocus();
 
-        if (vm.isAutoStart()) {
+        final Context context = getContext();
+        final List<IsbnQueue.Item> items = IsbnQueue.readFromPreferences(context);
+        if (items.isEmpty()) {
+            afterOnCreateView(false);
+        } else {
+            final int size = items.size();
+            final String msg = context.getResources().getQuantityString(
+                    R.plurals.confirm_queue_has_x_items, size, size);
+            new MaterialAlertDialogBuilder(context)
+                    .setTitle(R.string.lbl_search_isbn)
+                    .setMessage(msg)
+                    .setNeutralButton(R.string.action_delete, (d, w) -> {
+                        IsbnQueue.clearPreferences(context);
+                        d.dismiss();
+                    })
+                    .setPositiveButton(R.string.action_search, (d, w) -> {
+                        final boolean searchStarted = vm.addToQueueAndStartSearch(
+                                context, items, this::startSearch);
+                        if (searchStarted) {
+                            Snackbar.make(vb.getRoot(), R.string.progress_msg_searching,
+                                          Snackbar.LENGTH_LONG).show();
+                        }
+                        afterOnCreateView(searchStarted);
+                    })
+                    .create()
+                    .show();
+        }
+    }
+
+    private void afterOnCreateView(final boolean searchStarted) {
+        vb.isbn.requestFocus();
+        if (!searchStarted && vm.isAutoStart()) {
             startScanner();
         }
     }
@@ -299,8 +331,15 @@ public class SearchBookByIsbnFragment
         return vm.createResultIntent();
     }
 
+    /**
+     * Switch the scanner on.
+     *
+     * @see #startScannerActivity()
+     * @see #startScannerEmbedded()
+     */
     private void startScanner() {
-        setEnableProgressMessages(vm.getScannerMode() != Scanning.Batch);
+        // disable interaction when in batch mode
+        setEnableProgressMessages(vm.getScannerMode() != ScanMode.Batch);
         if (embeddedBarcodeScanner) {
             startScannerEmbedded();
         } else {
@@ -310,6 +349,8 @@ public class SearchBookByIsbnFragment
 
     /**
      * Start the embedded (in this Fragment) scanner view.
+     *
+     * @see #startScanner()
      */
     private void startScannerEmbedded() {
         vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
@@ -356,6 +397,8 @@ public class SearchBookByIsbnFragment
 
     /**
      * Start the standalone scanner activity.
+     *
+     * @see #startScanner()
      */
     private void startScannerActivity() {
         if (!scannerActivityStarted) {
@@ -378,85 +421,7 @@ public class SearchBookByIsbnFragment
             }
             vb.barcodeScannerGroup.setVisibility(View.GONE);
         }
-        vm.setScannerMode(Scanning.Off);
-        setEnableProgressMessages(true);
-    }
-
-    /**
-     * The user finished editing a book. Store results and continue scanning if applicable.
-     *
-     * @param data from the edit
-     */
-    @Override
-    void onBookEditingDone(@NonNull final EditBookOutput data) {
-        onClearSearchCriteria();
-
-        vm.onBookEditingDone(data);
-        if (vm.getScannerMode() == Scanning.Continuous) {
-            // scan another book until the user cancels
-            startScanner();
-        }
-    }
-
-    /**
-     * The scanner returned a barcode.
-     *
-     * @param barCode as returned by the scanner
-     */
-    private void onBarcodeScanned(@NonNull final String barCode) {
-        //noinspection DataFlowIssue
-        final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(getContext());
-        final ISBN code = new ISBN(barCode, strictIsbn);
-
-        final Context context = requireContext();
-
-        if (code.isValid(strictIsbn)) {
-            if (strictIsbn) {
-                SoundManager.beepOnValidIsbn(context);
-            } else {
-                SoundManager.beepOnBarcodeFound(context);
-            }
-
-            if (vm.getScannerMode() == Scanning.Batch) {
-                // batch mode, queue the code, go scan next book
-                vm.addToQueue(context, code);
-                startScanner();
-
-            } else {
-                // Scan mode:
-                // Manual: quit scanning after the search/edit.
-                // Continuous: leave the scanner on, scanning again when the edit is done.
-                if (vm.getScannerMode() == Scanning.Manual) {
-                    switchOffScanner();
-                    vm.setIsbnText(barCode);
-                    modelToView();
-                    prepareCriteria(code);
-                    break;
-                }
-                case Continuous: {
-                    // Continuous: leave the scanner on, scanning restarts when the edit is done.
-                    vm.setIsbnText(barCode);
-                    modelToView();
-                    prepareCriteria(code);
-                    break;
-                }
-            }
-        } else {
-            SoundManager.beepOnInvalidIsbn(context);
-
-            if (vm.getScannerMode() == Scanning.Batch) {
-                // invalid code but we're in batch mode.
-                // Just ignore the bad code and scan the next book.
-                startScanner();
-            } else {
-                // invalid code, always quit scanning and let the user edit the code
-                switchOffScanner();
-                vm.setIsbnText(barCode);
-                modelToView();
-                vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
-                                              code.asText()));
-            }
-        }
+        vm.setScannerMode(ScanMode.Off);
     }
 
     /**
@@ -464,7 +429,7 @@ public class SearchBookByIsbnFragment
      * This method can interact with the user, and can reject starting a search.
      * <p>
      * Used by either by the user typing in a code, or scanning one
-     * in {@link Scanning#Manual}/{@link Scanning#Continuous} mode.
+     * in {@link ScanMode#Manual}/{@link ScanMode#Continuous} mode.
      *
      * @param code to search for
      */
@@ -474,16 +439,27 @@ public class SearchBookByIsbnFragment
             return;
         }
 
-        // See if ISBN already exists in our database, if not then start the search.
+        // interaction required
+        setEnableProgressMessages(true);
+
+        // Check if the ISBN already exists in our database,
         final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(code);
         if (existingIds.isEmpty()) {
+            // not there
             startSearch(code);
-
         } else {
             onBookAlreadyPresent(code, existingIds, () -> startSearch(code));
         }
     }
 
+    /**
+     * Called <strong>before</strong> a search is started if the entered code
+     * is already present in the local database.
+     *
+     * @param code        which was already present
+     * @param existingIds the local books which use that code
+     * @param onAdd       action to take when the user selects "add anyway"
+     */
     private void onBookAlreadyPresent(@NonNull final ISBN code,
                                       @NonNull final List<Pair<Long, String>> existingIds,
                                       @NonNull final Runnable onAdd) {
@@ -517,7 +493,9 @@ public class SearchBookByIsbnFragment
 
     /**
      * Sits between {@link #prepareCriteria(ISBN)} and {@link #startSearch(BookSearchCriteria)}
-     * to support {@link Scanning#Batch} mode.
+     * Needed to:
+     * - support {@link ScanMode#Batch} mode.
+     * - allow starting with or without calling {@link #onBookAlreadyPresent}
      *
      * @param code to search for
      *
@@ -526,36 +504,145 @@ public class SearchBookByIsbnFragment
     private int startSearch(@NonNull final ISBN code) {
         //noinspection DataFlowIssue
         final BookSearchCriteria criteria = new BookSearchCriteria(getContext());
-        criteria.setIsbn(code);
+        criteria.setIsbnFromScan(code, vm.getScannerMode());
 
         return startSearch(criteria);
     }
 
-    @Override
-    void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> message) {
-        closeProgressDialog();
+    /**
+     * The scanner returned a barcode.
+     * Called when returning from {@link #startScannerActivity()}
+     * or by the {@link #startScannerEmbedded()} logic.
+     *
+     * @param barCode as returned by the scanner
+     */
+    private void onBarcodeScanned(@NonNull final String barCode) {
         //noinspection DataFlowIssue
-        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+        final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(getContext());
+        final ISBN code = new ISBN(barCode, strictIsbn);
+
+        final Context context = requireContext();
+
+        if (code.isValid(strictIsbn)) {
+            if (strictIsbn) {
+                SoundManager.beepOnValidIsbn(context);
+            } else {
+                SoundManager.beepOnBarcodeFound(context);
+            }
+
+            switch (vm.getScannerMode()) {
+                case Batch: {
+                    final IsbnQueue.Item item = new IsbnQueue.Item(code, ScanMode.Batch);
+                    final int searchId = vm.addToQueueAndStartSearch(context, item,
+                                                                     this::startSearch);
+                    if (searchId > 0) {
+                        // search was started, go scan the next book
+                        startScanner();
+                    } else {
+                        // starting a new search failed
+                        new MaterialAlertDialogBuilder(context)
+                                .setTitle(R.string.progress_msg_searching)
+                                .setMessage(R.string.error_book_search_failed)
+                                .setNegativeButton(R.string.action_stop_scanning, (d, w) -> {
+                                    d.dismiss();
+                                    switchOffScanner();
+                                })
+                                .setPositiveButton(R.string.ok, (d, w) -> startScanner())
+                                .create()
+                                .show();
+                    }
+                    break;
+                }
+                case Manual: {
+                    switchOffScanner();
+                    vm.setIsbnText(barCode);
+                    modelToView();
+                    prepareCriteria(code);
+                    break;
+                }
+                case Continuous: {
+                    // Continuous: leave the scanner on, scanning restarts when the edit is done.
+                    vm.setIsbnText(barCode);
+                    modelToView();
+                    prepareCriteria(code);
+                    break;
+                }
+            }
+        } else {
+            SoundManager.beepOnInvalidIsbn(context);
+
+            if (vm.getScannerMode() == ScanMode.Batch) {
+                // invalid code but we're in batch mode.
+                // Just ignore the bad code and scan the next book.
+                startScanner();
+            } else {
+                // invalid code, always quit scanning and let the user edit the code
+                switchOffScanner();
+                vm.setIsbnText(barCode);
+                modelToView();
+                vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
+                                              code.asText()));
+            }
+        }
     }
 
     @Override
-    void onSearchResults(@NonNull final BookSearchResult bookSearchResult) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "onSearchResults", bookSearchResult);
-        }
-        final Book book = bookSearchResult.getBook();
+    void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> ignored) {
+        super.onSearchCancelled(ignored);
+        //noinspection DataFlowIssue
+        vm.clearQueueAndCancelSearches(getContext(), coordinator);
+    }
 
-        // A non-empty result will have a title, or at least 3 fields:
-        // The isbn field will be present as we searched on one.
-        // The title field, *might* be there but *might* be empty.
-        // So a valid result means we either need a title, or a third field.
-        final String title = book.getString(DBKey.TITLE, null);
-        if ((title == null || title.isEmpty()) && book.size() <= 2) {
+    void onSearchFinished(@NonNull final BookSearchResult result) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "onSearchFinished",
+                                        vm.getScannerMode(),
+                                        result);
+        }
+
+        if (result.getScanMode() == ScanMode.Batch) {
+            vm.onQueueSearchResults(result);
+        } else {
+            // user interactive
+            super.onSearchFinished(result);
+        }
+    }
+
+    /**
+     * Handle the result interactively.
+     *
+     * @param result results of the search
+     */
+    @Override
+    void onSearchResults(@NonNull final BookSearchResult result) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "onSearchResults", result);
+        }
+        final Book book = result.getBook();
+
+        if (!hasData(book)) {
             vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
             return;
         }
 
         editBook(book, vm.getStyle());
+    }
+
+    /**
+     * Called <strong>after</strong> a search to check if there is a minimal amount
+     * of useful data in the given book.
+     *
+     * @param book to check
+     *
+     * @return {@code true} if there is
+     */
+    private boolean hasData(@NonNull final Book book) {
+        // A non-empty result will have a title, or at least 3 fields:
+        // The isbn field will be present as we searched on one.
+        // The title field, *might* be there but *might* be empty.
+        // So a valid result means we either need a title, or a third field.
+        final String title = book.getString(DBKey.TITLE, null);
+        return title != null && !title.isEmpty() || book.size() > 2;
     }
 
     @Override
@@ -570,8 +657,18 @@ public class SearchBookByIsbnFragment
      * @param uri as chosen by the user
      */
     private void onOpenUri(@NonNull final Uri uri) {
-        //noinspection DataFlowIssue
-        if (!vm.readQueue(getContext(), uri)) {
+        final Context context = getContext();
+        try {
+            //noinspection DataFlowIssue
+            final List<IsbnQueue.Item> list = IsbnQueue.readFromFile(context, uri);
+            if (vm.addToQueueAndStartSearch(context, list, this::startSearch)) {
+                Snackbar.make(vb.getRoot(), R.string.progress_msg_searching,
+                              Snackbar.LENGTH_LONG).show();
+            } else {
+                Snackbar.make(vb.getRoot(), R.string.error_book_search_failed,
+                              Snackbar.LENGTH_LONG).show();
+            }
+        } catch (@NonNull final IOException e) {
             Snackbar.make(vb.getRoot(), R.string.error_import_failed,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -582,45 +679,136 @@ public class SearchBookByIsbnFragment
      *
      * @param list to display; can be empty
      */
-    private void onQueueUpdated(@NonNull final List<ISBN> list) {
+    private void onQueueUpdated(@NonNull final Iterator<IsbnQueue.Item> list) {
+
         if (vb.queue.getChildCount() > 0) {
             vb.queue.removeAllViews();
         }
+        while (list.hasNext()) {
+            final IsbnQueue.Item item = list.next();
+            final ISBN code = item.getIsbn();
 
-        list.forEach(code -> {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                LoggerFactory.getLogger().d(TAG, "onQueueUpdated",
+                                            "code=" + code,
+                                            "searchId=" + item.getSearchId(),
+                                            "result=" + (item.getResult() != null));
+            }
+
             final Chip chip = new Chip(getContext(), null, R.attr.appChipInputStyle);
             // RTL-friendly Chip Layout
             chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-            chip.setOnClickListener(v -> {
-                final ISBN clickedCode = removeFromQueue(v);
-                vb.isbn.setText(clickedCode.asText());
-                viewToModel();
-                startSearch(clickedCode);
-            });
-            chip.setOnCloseIconClickListener(this::removeFromQueue);
-            chip.setTag(code);
+            chip.setTag(item);
             chip.setText(code.asText());
-            vb.queue.addView(chip);
-        });
+            chip.setOnCloseIconClickListener(this::removeFromQueue);
+            chip.setOnClickListener(this::onQueueItemClicked);
 
+            final BookSearchResult result = item.getResult();
+            if (result != null) {
+                final Book book = result.getBook();
+
+                if (result.getErrorMessage() != null) {
+                    if (hasData(book)) {
+                        // There was an error, but the book has at least some valid data
+                        chip.setChipBackgroundColorResource(R.color.red_300);
+                    } else {
+                        // There was an error, and the book has no useful data
+                        chip.setChipBackgroundColorResource(R.color.red_500);
+                    }
+                } else if (hasData(book)) {
+                    // no error, book has at least some valid data
+                    chip.setChipBackgroundColorResource(R.color.green_500);
+                }
+            }
+            vb.queue.addView(chip);
+        }
         updateQueueViewsVisibility();
     }
 
-    @NonNull
-    private ISBN removeFromQueue(@NonNull final View chip) {
-        final ISBN code = (ISBN) chip.getTag();
-        // remove and update view manually to avoid flicker
+    /**
+     * The user tapped a queue chip.
+     * The chip can be:
+     * - green: results are in, no errors.
+     * - red: results are in, but with (partial) errors.
+     * - we do NOT get here is the chip has not received a result yet.
+     * <p>
+     * Tell the user and let them delete the chip/result, just cancel,
+     * or start editing the resulting book.
+     *
+     * @param chip clicked
+     */
+    private void onQueueItemClicked(@NonNull final View chip) {
+        final IsbnQueue.Item item = (IsbnQueue.Item) chip.getTag();
+        final BookSearchResult result = item.getResult();
+        if (result == null) {
+            // still searching
+            Snackbar.make(chip, R.string.progress_msg_searching,
+                          Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
         //noinspection DataFlowIssue
-        vm.removeFromQueue(getContext(), code);
+        final MaterialAlertDialogBuilder builder =
+                new MaterialAlertDialogBuilder(getContext())
+                        .setTitle(item.getIsbn().asText())
+                        .setNeutralButton(R.string.action_delete, (d, w) -> {
+                            removeFromQueue(chip);
+                            d.dismiss();
+                        })
+                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.action_edit, (d, w) -> {
+                            removeFromQueue(chip);
+                            d.dismiss();
+                            onSearchResults(result);
+                        });
+
+        @Nullable
+        final String errorMessage = result.getErrorMessage();
+        if (errorMessage != null) {
+            builder.setMessage(errorMessage);
+        }
+
+        builder.create()
+               .show();
+    }
+
+    /**
+     * Common code to remove the given chip and cancel any active searches it owns.
+     *
+     * @param chip to remove
+     */
+    private void removeFromQueue(@NonNull final View chip) {
+        final IsbnQueue.Item item = (IsbnQueue.Item) chip.getTag();
+        // remove but update the view manually to avoid flicker
+        //noinspection DataFlowIssue
+        vm.removeFromQueueAndCancelSearch(getContext(), coordinator, item);
         vb.queue.removeView(chip);
         updateQueueViewsVisibility();
-        return code;
     }
 
+    /**
+     * Common code to update the visibility of the UI queue and 'clear' button.
+     */
     private void updateQueueViewsVisibility() {
         final int visibility = vb.queue.getChildCount() > 0 ? View.VISIBLE : View.GONE;
         // The queue Chips and the 'clear queue' button
         vb.queueGroup.setVisibility(visibility);
+    }
+
+    /**
+     * The user finished editing a book. Store results and continue scanning if applicable.
+     *
+     * @param data from the edit
+     */
+    @Override
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
+        onClearSearchCriteria();
+
+        vm.onBookEditingDone(data);
+        if (vm.getScannerMode() == ScanMode.Continuous) {
+            // scan another book until the user cancels
+            startScanner();
+        }
     }
 
     private final class ToolbarMenuProvider
@@ -647,13 +835,14 @@ public class SearchBookByIsbnFragment
             final int menuItemId = menuItem.getItemId();
 
             if (menuItemId == R.id.MENU_BARCODE_SCAN) {
-                vm.setScannerMode(Scanning.getScannerModeSingle(requireContext()));
+                //noinspection DataFlowIssue
+                vm.setScannerMode(ScanMode.getScannerModeSingle(getContext()));
                 startScanner();
                 return true;
 
             } else if (menuItemId == R.id.MENU_BARCODE_SCAN_BATCH) {
                 // don't clear
-                vm.setScannerMode(Scanning.Batch);
+                vm.setScannerMode(ScanMode.Batch);
                 startScanner();
                 return true;
 

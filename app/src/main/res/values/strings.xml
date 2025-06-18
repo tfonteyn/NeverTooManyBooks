@@ -211,7 +211,9 @@
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s</string>
     <!-- STARTING a search has failed to start due to an ERROR. -->
     <string name="error_book_search_failed">Searching for the book failed.</string>
+
     <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
+
     <!-- MalformedURLException/UnknownHostException
          Concatenated with a new line and "error_search_failed_network"
          param 1: website/url -->
@@ -2192,4 +2194,9 @@
     -->
     <string name="info_registration_benefits"
             translatable="false">This feature benefits from registration at %1$s.\nThis is <b>optional</b>. %2$s</string>
+
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">There is %1$d previously entered ISBN code. Would you like to start a search for it, or should it be removed?</item>
+        <item quantity="other">There are %1$d previously entered ISBN codes. Would you like to start searches for them, or should they be removed?</item>
+    </plurals>
 </resources>
