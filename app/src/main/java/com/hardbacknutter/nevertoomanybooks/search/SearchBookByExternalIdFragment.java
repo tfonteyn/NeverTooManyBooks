@@ -55,7 +55,7 @@ public class SearchBookByExternalIdFragment
         extends SearchBookBaseFragment {
 
     /** Log tag. */
-    private static final String TAG = "BookSearchByExternalId";
+    private static final String TAG = "SearchBookByExternalIdF";
     private static final Pattern DIGITS_PATTERN = Pattern.compile("\\d+");
 
     /**

@@ -44,7 +44,7 @@ import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
-public class WikidataAuthorResolver
+public final class WikidataAuthorResolver
         implements AuthorResolver {
 
     private static final String CHARSET = "UTF-8";

@@ -831,7 +831,7 @@ public class OpenLibrarySearchEngine
 
     /**
      * A single Author element:
-     *
+     * <p>
      * === "book" ===
      * <pre>
      *     {

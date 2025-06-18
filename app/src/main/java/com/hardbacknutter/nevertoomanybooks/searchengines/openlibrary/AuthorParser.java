@@ -70,7 +70,7 @@ public class AuthorParser {
      * }</pre>
      * As far as I can tell most common/reliable ones are "viaf" and "wikidata"
      * Arbitrary decision: we're limiting us to the ISNI and these:
-     *
+     * <p>
      * (with 'amazon' -> 'asin')
      */
     private static final String AUTHOR_SIDS =
