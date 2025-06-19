@@ -260,7 +260,7 @@ public class SearchBookUpdatesViewModel
 
     @VisibleForTesting
     @NonNull
-    public SyncReaderProcessor.Builder getSyncProcessorBuilder() {
+    SyncReaderProcessor.Builder getSyncProcessorBuilder() {
         if (syncProcessor != null) {
             throw new IllegalStateException("syncProcessor already exists");
         }

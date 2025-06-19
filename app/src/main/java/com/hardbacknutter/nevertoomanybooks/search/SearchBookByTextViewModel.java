@@ -135,7 +135,7 @@ public class SearchBookByTextViewModel
     }
 
     @NonNull
-    public BookSearchCriteria getSearchCriteria() {
+    BookSearchCriteria getSearchCriteria() {
         return searchCriteria;
     }
 
