@@ -866,4 +866,9 @@
     <string name="unknown_author">[Autoría descoñecida]</string>
     <string name="menu_search_updates">Buscar actualizacións</string>
     <string name="lbl_wikidata_claim_author_id">Wikidata «claim/P»: código para o id da autoría</string>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Hai %1$d código ISBN previamente introducido. Queres iniciar unha busca do mesmo ou eliminalo?</item>
+        <item quantity="other">Hai %1$d códigos ISBN previamente introducidos. Queres iniciar unha busca dos mesmos ou eliminalos?</item>
+    </plurals>
+    <string name="action_stop_searching">Deter a busca</string>
 </resources>
