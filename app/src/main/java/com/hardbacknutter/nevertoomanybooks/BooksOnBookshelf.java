@@ -414,7 +414,7 @@ public class BooksOnBookshelf
         backClosesFabMenu = new OnBackPressedCallback(false) {
             @Override
             public void handleOnBackPressed() {
-                // Paranoia... the FaMenu onOpenListener should/will disable us
+                // Paranoia... the FabMenu onOpenListener should/will disable us
                 backClosesFabMenu.setEnabled(false);
                 fabMenu.hideMenu();
             }
