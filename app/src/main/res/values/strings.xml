@@ -60,6 +60,7 @@
         <item quantity="other">%1$d books found</item>
     </plurals>
 
+    <!-- Rating of a book is measured in 0 (not rated) or 1..5 stars -->
     <plurals name="n_stars">
         <item quantity="one">%1$s star</item>
         <item quantity="other">%1$s stars</item>
@@ -68,6 +69,16 @@
     <plurals name="n_tags">
         <item quantity="one">%1$d tag</item>
         <item quantity="other">%1$d tags</item>
+    </plurals>
+
+    <!-- A request for confirmation in a dialog asking the user to "Remove" or "Search"
+         a list of ISBN number previously scanned.
+
+        Param 1: the amount of ISBN number in the queue.
+    -->
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">There is %1$d previously entered ISBN code. Would you like to start a search for it, or should it be removed?</item>
+        <item quantity="other">There are %1$d previously entered ISBN codes. Would you like to start searches for them, or should they be removed?</item>
     </plurals>
 
     <!-- endregion -->
@@ -147,9 +158,15 @@
     <string name="notification_channel_info">Info</string>
     <!-- endregion -->
     <!-- region ========== Fatal/Crash/Debug messages. -->
+    <!-- Crash-report dialog: asking the user which data should be included. -->
     <string name="debug_select_items">Select what you would like to include:</string>
+    <!-- Crash-report dialog
+        "&APP_NAME;" will be automatically populated.
 
+        Param 1: always "create"; the button name
+    -->
     <string name="acra_dialog_message">It looks like &APP_NAME; has crashed. Tap “%1$s” to save a report to a location of your choice. You can use this report to report a new issue on the project website.</string>
+    <!-- Crash-report dialog -->
     <string name="acra_report_saved">You can now visit the project page on Github and log a new issue. Please attach the previously saved report to the issue. If you don’t have a Github account yet, you will need to create one.</string>
     <!-- endregion -->
     <!-- region ========== HTTP(S) error messages. -->
@@ -218,6 +235,7 @@
          Concatenated with a new line and "error_search_failed_network"
          param 1: website/url -->
     <string name="error_unknown_host">There was a connection problem to the service on “%1$s”.</string>
+    <!-- The app tried to download the content-table of a book but failed to find any. -->
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
     <string name="error_no_image_editor">No image editor found.</string>
     <string name="error_email_failed">Failed to send the email.</string>
@@ -256,6 +274,7 @@
     <string name="error_type_not_supported">Type not supported: %1$s…</string>
     <!-- endregion -->
     <!-- region ========== Warning messages. -->
+    <!-- Importing a CSV book list; Warning shown BEFORE the import is started. -->
     <string name="warning_import_csv">WARNING: Importing data may update existing book records with new information if the UUID column is not present and the ID in the import file is the same as an existing ID. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else’s books, ensure the UUID field is present or the ID field is blank.</string>
     <!-- Importing a CSV book list; an individual line failed: report the exact position. -->
     <string name="warning_import_csv_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
@@ -350,6 +369,7 @@
     <string name="progress_msg_please_wait">Please wait…</string>
     <!-- [VERIFIED] -->
     <string name="progress_msg_loading">Loading…</string>
+    <!-- Shown when information is downloaded from a website one web-page after another -->
     <string name="progress_msg_loading_page">Loading page %1$d…</string>
     <!-- During startup. -->
     <string name="progress_msg_starting_up">Starting up…</string>
@@ -445,24 +465,35 @@
         -->
     <string name="info_identifier_editor"><![CDATA[Please read the <a href="%1$s">documentation</a> on Identifiers before editing.]]></string>
 
-    <!-- website info: languages. -->
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_various_languages">Various languages</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_chinese">Chinese</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_czech">Czech and more</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_dutch_and_more">Dutch and more</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_english_and_more">English and more</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_french">French</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_french_and_more">French and more</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_german">German</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_portuguese_and_more">Portuguese and more</string>
 
-    <!-- website info: type. -->
+    <!-- website info: short description of the type of search-site. -->
     <string name="site_description_shop">Shop</string>
+    <!-- website info: short description of the type of search-site. -->
     <string name="site_description_catalog">Catalog</string>
 
-    <!-- website info: specifics genres. -->
+    <!-- website info: short description of the specifics genres a search-site provides book data on. -->
     <string name="site_description_comics">Comics</string>
+    <!-- website info: short description of the specifics genres a search-site provides book data on. -->
     <string name="site_description_eu_comics">European Comics</string>
+    <!-- website info: short description of the specifics genres a search-site provides book data on. -->
     <string name="site_description_fsf">Fantasy and Science Fiction</string>
 
     <!-- endregion -->
@@ -535,8 +566,11 @@
     <!-- endregion -->
     <!-- region ========== Size measurements. -->
     <!-- Size of a file: MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
+    <!-- Size of a file: MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
     <string name="size_megabytes">%1$.2fMB</string>
+    <!-- Size of a file: MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
     <string name="size_kilobytes">%1$.2fkB</string>
+    <!-- Size of a file: MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
     <string name="size_bytes">%1$.0fB</string>
     <!-- Cover sizes -->
     <string name="size_hidden">Hidden</string>
@@ -564,7 +598,9 @@
     <string name="book_format_hardcover_oblong">Hardcover - Oblong</string>
     <!-- -book format - oblong, landscape, A l'italienne -->
     <string name="book_format_softcover_oblong">Softcover - Oblong</string>
+    <!-- -book format - The typical american/british size of a comic. -->
     <string name="book_format_comic">Comic</string>
+    <!-- -book format -->
     <string name="book_format_other">Other</string>
     <!--  book format - mostly used for magazines like 'readers digest'
           A lot of english monthly magazines use the same format.
@@ -692,12 +728,19 @@
     <string name="lbl_edition_book_club">Bookclub edition</string>
     <!-- endregion -->
     <!-- region ========== Book / Dust cover condition values. -->
+    <!-- Book / Dust cover condition -->
     <string name="lbl_condition_fine">As new</string>
+    <!-- Book / Dust cover condition -->
     <string name="lbl_condition_very_good">Very good</string>
+    <!-- Book / Dust cover condition -->
     <string name="lbl_condition_good">Good</string>
+    <!-- Book / Dust cover condition -->
     <string name="lbl_condition_fair">Acceptable</string>
+    <!-- Book / Dust cover condition -->
     <string name="lbl_condition_reading_copy">Reading copy</string>
+    <!-- Book / Dust cover condition -->
     <string name="lbl_condition_dust_cover_missing_or_bad">Missing/Fair</string>
+    <!-- Book / Dust cover condition -->
     <string name="lbl_condition_dust_cover_none">None</string>
     <!-- endregion -->
     <!-- region ========== Author types. -->
@@ -750,6 +793,7 @@
     <string name="option_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD card</string>
     <!-- Booklist menu option -->
     <string name="option_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
+    <!-- Booklist menu option -->
     <string name="lbl_select_style">Select Style</string>
     <!-- Booklist menu option -->
     <string name="option_level_reset">Preferred level expansion</string>
@@ -840,6 +884,7 @@
     <!-- whether an action will only apply to the current bookshelf. -->
     <string name="btn_just_this_shelf">This shelf only</string>
 
+    <!-- menu option -->
     <string name="btn_show_list">Show list</string>
 
     <!-- whether an action will apply only to the selected booklist (tree) node. -->
@@ -1056,6 +1101,7 @@
     <string name="action_show_options">Options</string>
     <string name="action_clear_queue">Clear queue</string>
     <string name="action_stop_scanning">Stop scanning</string>
+    <string name="action_stop_searching">Stop searching</string>
     <!-- The user wants to permanently hide a particular message/alert/... -->
     <string name="action_disable_message">Disable message</string>
     <!-- [VERIFIED] -->
@@ -2194,9 +2240,4 @@
     -->
     <string name="info_registration_benefits"
             translatable="false">This feature benefits from registration at %1$s.\nThis is <b>optional</b>. %2$s</string>
-
-    <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">There is %1$d previously entered ISBN code. Would you like to start a search for it, or should it be removed?</item>
-        <item quantity="other">There are %1$d previously entered ISBN codes. Would you like to start searches for them, or should they be removed?</item>
-    </plurals>
 </resources>
