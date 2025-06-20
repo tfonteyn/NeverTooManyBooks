@@ -710,14 +710,15 @@ public class SearchBookByIsbnFragment
                 if (result.getErrorMessage() != null) {
                     if (hasData(book)) {
                         // There was an error, but the book has at least some valid data
-                        chip.setChipBackgroundColorResource(R.color.red_300);
+                        chip.setChipBackgroundColorResource(
+                                R.color.isbn_queue_success_with_partial_errors);
                     } else {
                         // There was an error, and the book has no useful data
-                        chip.setChipBackgroundColorResource(R.color.red_500);
+                        chip.setChipBackgroundColorResource(R.color.isbn_queue_failure);
                     }
                 } else if (hasData(book)) {
                     // no error, book has at least some valid data
-                    chip.setChipBackgroundColorResource(R.color.green_500);
+                    chip.setChipBackgroundColorResource(R.color.isbn_queue_success);
                 }
             }
             vb.queue.addView(chip);
