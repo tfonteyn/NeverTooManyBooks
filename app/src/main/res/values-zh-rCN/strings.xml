@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -864,4 +861,8 @@
     <string name="pt_fetch_author_info_using_site_x">从 %1$s 获取作者信息</string>
     <string name="menu_search_updates">搜索更新</string>
     <string name="lbl_wikidata_claim_author_id">作者 ID 的 Wikidata “claim/P” 代码</string>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="other">之前输入了 %1$d 个 ISBN 码。要开始搜索它们吗？还是应该删除它们呢？</item>
+    </plurals>
+    <string name="action_stop_searching">停止搜索</string>
 </resources>
