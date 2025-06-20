@@ -85,12 +85,16 @@ public class ImportFragment
      */
     private static final String MIME_TYPES = "*/*";
 
-    /** Set the hosting Activity result, and close it. */
+    /**
+     * Only called when the user does a 'back' without having imported anything.
+     *
+     * @see #onStartImport()
+     * @see #onImportFinished(int, ImportResults)
+     */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    // no result as we didn't do anything
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK);
                     getActivity().finish();
@@ -393,7 +397,11 @@ public class ImportFragment
                     .setTitle(R.string.lbl_import_books)
                     .setMessage(R.string.warning_import_csv)
                     .setNegativeButton(R.string.cancel,
-                                       (d, w) -> getActivity().finish())
+                                       (d, w) -> {
+                                           backPressedCallback.setEnabled(false);
+                                           //noinspection DataFlowIssue
+                                           getActivity().finish();
+                                       })
                     .setPositiveButton(R.string.ok, (d, w) -> startImport())
                     .create()
                     .show();
@@ -486,6 +494,7 @@ public class ImportFragment
                 .setTitle(titleId)
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {
+                    backPressedCallback.setEnabled(false);
                     final Intent resultIntent = ImportContract.createResult(result);
                     //noinspection DataFlowIssue
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
