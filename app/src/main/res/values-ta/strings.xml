@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -865,5 +862,9 @@
     <string name="info_identifier_editor"><![CDATA[திருத்துவதற்கு முன் அடையாளங்காட்டிகளில் உள்ள <a href="%1$s">ஆவணத்தைப்</a> படிக்கவும்.]]></string>
     <string name="lbl_date_born">பிறந்தது</string>
     <string name="pt_fetch_author_info">ஆசிரியர் தகவலைப் பெறுங்கள்</string>
-
+    <string name="action_stop_searching">தேடுவதை நிறுத்துங்கள்</string>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">முன்னர் ISBN குறியீட்டில் நுழைந்த %1$d உள்ளது. அதற்கான தேடலைத் தொடங்க விரும்புகிறீர்களா, அல்லது அதை அகற்ற வேண்டுமா?</item>
+        <item quantity="other">முன்னர் நுழைந்த %1$d உள்ளது. அவற்றுக்கான தேடல்களைத் தொடங்க விரும்புகிறீர்களா, அல்லது அவை அகற்றப்பட வேண்டுமா?</item>
+    </plurals>
 </resources>
