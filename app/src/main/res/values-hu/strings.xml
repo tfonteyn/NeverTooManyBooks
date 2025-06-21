@@ -122,6 +122,7 @@
     <string name="action_report">Jelentés</string>
     <string name="action_reset_to_default">Visszaállítás alaphelyzetbe</string>
     <string name="action_retry">Újra</string>
+    <string name="action_remove">Eltávolítás</string>
     <string name="action_save">Mentés</string>
     <string name="action_search">Keresés</string>
     <string name="action_select">Kiválasztás</string>

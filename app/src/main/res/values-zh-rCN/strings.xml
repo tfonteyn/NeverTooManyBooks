@@ -106,6 +106,7 @@
     <string name="action_report">报告</string>
     <string name="action_reset_to_default">重置为默认设置</string>
     <string name="action_retry">重试</string>
+    <string name="action_remove">移除</string>
     <string name="action_save">保存</string>
     <string name="action_search">搜索</string>
     <string name="action_select">选择</string>

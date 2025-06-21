@@ -97,6 +97,7 @@
     <string name="action_not_now">Niet nu</string>
     <string name="action_reset_to_default">Standaardinstellingen herstellen</string>
     <string name="action_retry">Opnieuw</string>
+    <string name="action_remove">Verwijderen</string>
     <string name="action_save">Opslaan</string>
     <string name="action_search">Zoeken</string>
     <string name="action_select">Selecteren</string>

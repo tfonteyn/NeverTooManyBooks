@@ -98,6 +98,7 @@
     <string name="action_not_now">Nie teraz</string>
     <string name="action_reset_to_default">Resetuj ustawienia</string>
     <string name="action_retry">Ponów</string>
+    <string name="action_remove">Usuń</string>
     <string name="action_save">Zapisz</string>
     <string name="action_search">Szukaj</string>
     <string name="action_select">Wybierz</string>

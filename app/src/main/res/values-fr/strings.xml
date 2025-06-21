@@ -96,6 +96,7 @@
     <string name="action_not_now">Pas maintenant</string>
     <string name="action_reset_to_default">Rétablir param. par défaut</string>
     <string name="action_retry">Réessayer</string>
+    <string name="action_remove">Supprimer</string>
     <string name="action_save">Enregistrer</string>
     <string name="action_search">Rechercher</string>
     <string name="action_select">Sélectionner</string>

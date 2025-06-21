@@ -98,6 +98,7 @@
     <string name="action_not_now">Не сейчас</string>
     <string name="action_reset_to_default">Сбросить настройки</string>
     <string name="action_retry">Повторить\n попытку</string>
+    <string name="action_remove">Удалить</string>
     <string name="action_save">Сохранить</string>
     <string name="action_search">Поиск</string>
     <string name="action_select">Выбрать</string>

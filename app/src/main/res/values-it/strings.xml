@@ -94,6 +94,7 @@
     <string name="action_not_now">Non ora</string>
     <string name="action_reset_to_default">Ripristina impostazioni predefinite</string>
     <string name="action_retry">Riprova</string>
+    <string name="action_remove">Rimuovi</string>
     <string name="action_save">Salva</string>
     <string name="action_search">Cerca</string>
     <string name="action_select">Seleziona</string>

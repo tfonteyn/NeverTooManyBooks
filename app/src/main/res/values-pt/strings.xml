@@ -80,6 +80,7 @@
     <string name="action_not_now">Agora não</string>
     <string name="action_reset_to_default">Redefinir para o padrão</string>
     <string name="action_retry">Repetir</string>
+    <string name="action_remove">Remover</string>
     <string name="action_save">Salvar</string>
     <string name="action_search">Pesquisar</string>
     <string name="action_select">Selecionar</string>

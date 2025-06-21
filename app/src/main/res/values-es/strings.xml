@@ -94,6 +94,7 @@
     <string name="action_not_now">Ahora no</string>
     <string name="action_reset_to_default">Restablecer ajustes</string>
     <string name="action_retry">Reintentar</string>
+    <string name="action_remove">Quitar</string>
     <string name="action_save">Guardar</string>
     <string name="action_search">Buscar</string>
     <string name="action_select">Seleccionar</string>

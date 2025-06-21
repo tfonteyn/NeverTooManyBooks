@@ -264,6 +264,7 @@
     <string name="action_edit_defaults">Upraviť predvolené nastavenia</string>
     <string name="action_apply">Použiť</string>
     <string name="action_delete">Odstrániť</string>
+    <string name="action_remove">Odstrániť</string>
     <string name="action_save">Uložiť</string>
     <string name="action_discard">Zahodiť</string>
     <string name="action_help">Pomocník</string>

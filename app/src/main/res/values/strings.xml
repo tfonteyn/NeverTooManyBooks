@@ -1038,6 +1038,8 @@
     <!-- [VERIFIED] -->
     <string name="action_delete">Delete</string>
     <!-- [VERIFIED] -->
+    <string name="action_remove">Remove</string>
+    <!-- [VERIFIED] -->
     <string name="action_save">Save</string>
     <!-- [VERIFIED] -->
     <string name="action_discard">Discard</string>

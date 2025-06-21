@@ -99,6 +99,7 @@
     <string name="action_not_now">Teď ne</string>
     <string name="action_reset_to_default">Obnovit výchozí</string>
     <string name="action_retry">Opakovat</string>
+    <string name="action_remove">Odstranit</string>
     <string name="action_save">Uložit</string>
     <string name="action_search">Hledat</string>
     <string name="action_select">Vybrat</string>

@@ -35,6 +35,7 @@
         <item quantity="one">%1$d grāmata</item>
         <item quantity="other">%1$d grāmatas</item>
     </plurals>
+    <string name="action_remove">Noņemt</string>
     <string name="action_save">Saglabāt</string>
     <plurals name="n_tags">
         <item quantity="zero">%1$d birkas</item>
