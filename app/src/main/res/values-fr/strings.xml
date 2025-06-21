@@ -45,6 +45,11 @@
         <item quantity="other">%1$d étiquettes</item>
         <item quantity="many">%1$d étiquettes</item>
     </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Il y a %1$d code ISBN entré précédemment. Souhaitez-vous lancer une recherche pour ce code, ou doit-il être supprimé ?</item>
+        <item quantity="other">Il y a %1$d codes ISBN précédemment saisis. Souhaitez-vous lancer des recherches pour ces codes ou faut-il les supprimer ?</item>
+        <item quantity="many">Il y a %1$d codes ISBN déjà saisis. Souhaitez-vous lancer des recherches pour ces codes ou faut-il les supprimer ?</item>
+    </plurals>
     <string name="quoted">« %1$s »</string>
     <string name="X_action_clear_credentials">Effacer les identifiants</string>
     <string name="X_action_execute">Exécuter</string>
@@ -144,6 +149,7 @@
     <string name="action_show_options">Options</string>
     <string name="action_show_toc_long">Afficher la table des matières</string>
     <string name="action_stop_scanning">Arrêter la numérisation</string>
+    <string name="action_stop_searching">Cessez de chercher</string>
     <string name="btn_this_book">Ce livre</string>
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Caméra</string>

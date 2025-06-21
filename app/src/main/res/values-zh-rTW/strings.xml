@@ -36,6 +36,9 @@
     <plurals name="n_tags">
         <item quantity="other">%1$d 標籤</item>
     </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="other">之前輸入了 %1$d 個 ISBN 碼。要開始搜尋它們嗎？還是該刪除它們呢？</item>
+    </plurals>
     <string name="quoted">「%1$s」</string>
     <!-- NOT APPLICABLE FOR BOOKS IN CHINESE. -->
     <string name="ps_show_titles_reordered_on">將冠詞移到標題末尾，僅適用於使用冠詞的語言。 \n英文範例：「Lord of The Rings, The」</string>
@@ -116,6 +119,7 @@
     <string name="action_show_toc_long">顯示內容表</string>
     <string name="action_skip">略過</string>
     <string name="action_stop_scanning">停止掃描</string>
+    <string name="action_stop_searching">停止搜尋</string>
     <string name="action_synchronize">同步化</string>
     <string name="action_undo">復原</string>
     <string name="and_others">%1$s……</string>

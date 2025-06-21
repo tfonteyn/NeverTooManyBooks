@@ -40,6 +40,10 @@
         <item quantity="one">%1$d tag</item>
         <item quantity="other">%1$d tags</item>
     </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Er is %1$d eerder ingevoerde ISBN-code. Wil je ernaar gaan zoeken of moet deze worden verwijderd?</item>
+        <item quantity="other">Er zijn %1$d eerder ingevoerde ISBN-codes. Wil je daarnaar gaan zoeken of moeten ze worden verwijderd?</item>
+    </plurals>
     <string name="quoted">„%1$s”</string>
     <string name="X_action_clear_credentials">Certificaatgegevens wissen</string>
     <string name="X_action_execute">Uitvoeren</string>
@@ -106,6 +110,7 @@
     <string name="action_show_toc_long">Inhoudsopgave weergeven</string>
     <string name="action_skip">Overslaan</string>
     <string name="action_stop_scanning">Stop scanning</string>
+    <string name="action_stop_searching">Stop met zoeken</string>
     <string name="action_synchronize">Synchroniseren</string>
     <string name="and_others">%1$s…</string>
     <string name="and_others_textual">%1$s et al.</string>

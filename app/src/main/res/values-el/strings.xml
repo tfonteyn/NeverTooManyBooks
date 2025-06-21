@@ -44,6 +44,10 @@ A question mark is written as the character semicolon: ';'
         <item quantity="one">%1$d ετικέτας</item>
         <item quantity="other">%1$d ετικέτες</item>
     </plurals>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Υπάρχει %1$d κωδικός ISBN καταχωρημένος προηγουμένως. Θα θέλατε να ξεκινήσετε μια αναζήτηση γι\' αυτόν ή θα πρέπει να αφαιρεθεί;</item>
+        <item quantity="other">Υπάρχουν %1$d κωδικοί ISBN που έχουν εισαχθεί προηγουμένως. Θα θέλατε να ξεκινήσετε αναζητήσεις γι\' αυτούς ή θα πρέπει να αφαιρεθούν;</item>
+    </plurals>
     <string name="quoted">«%1$s»</string>
     <string name="X_action_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
     <string name="X_action_execute">Εκτέλεση</string>
@@ -143,6 +147,7 @@ A question mark is written as the character semicolon: ';'
     <string name="action_show_options">Επιλογές</string>
     <string name="action_show_toc_long">Εμφάνιση Πίνακα Περιεχομένων</string>
     <string name="action_stop_scanning">Σταματήστε τη σάρωση</string>
+    <string name="action_stop_searching">Σταματήστε να ψάχνετε</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Κάμερα</string>
