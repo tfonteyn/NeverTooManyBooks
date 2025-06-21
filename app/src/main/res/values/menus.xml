@@ -70,6 +70,8 @@
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
+    <integer name="MENU_ORDER_SETTINGS">9997</integer>
+
     <!-- Used by the ExtMenuItem. -->
     <item name="MENU_DIVIDER"
           type="id" />

@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
@@ -288,7 +289,12 @@ public class SearchBookByTextFragment
             return;
         }
 
-        startSearch(criteria);
+        final int searchId = startSearch(criteria);
+        if (searchId == 0) {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.error_book_search_failed,
+                          Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override

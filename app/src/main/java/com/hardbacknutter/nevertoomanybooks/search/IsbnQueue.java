@@ -53,8 +53,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Most methods will need external synchronization.
- *
- * @noinspection ALL
  */
 class IsbnQueue {
 
@@ -63,9 +61,11 @@ class IsbnQueue {
     /** Storage key into preferences for the current queue. */
     private static final String PK_SCAN_QUEUE = "scan.queue";
 
+    /** File reader buffer. */
     private static final int BUFFER_SIZE = 65535;
     private static final String CSV = ",";
 
+    @SuppressWarnings("TypeMayBeWeakened")
     private final Queue<Item> q = new ConcurrentLinkedQueue<>();
 
     /**
@@ -118,6 +118,7 @@ class IsbnQueue {
                     return readFromStream(context, reader.lines());
 
                 } catch (@NonNull final UncheckedIOException ue) {
+                    //noinspection DataFlowIssue
                     throw ue.getCause();
                 }
             }
@@ -140,7 +141,7 @@ class IsbnQueue {
                 // valid codes only
                 .map(s -> new ISBN(s, strictIsbn))
                 .filter(isbn -> isbn.isValid(strictIsbn))
-                .map((ISBN isbn) -> new Item(isbn, ScanMode.Batch))
+                .map(Item::new)
                 .collect(Collectors.toList());
     }
 
@@ -149,6 +150,13 @@ class IsbnQueue {
         return q.iterator();
     }
 
+    /**
+     * Check/get the item for the given search-id.
+     *
+     * @param searchId to check/get
+     *
+     * @return item
+     */
     @NonNull
     Optional<Item> bySearchId(final int searchId) {
         return q.stream()
@@ -156,34 +164,40 @@ class IsbnQueue {
                 .findAny();
     }
 
-    boolean add(@NonNull final Context context,
-                @NonNull final Item item) {
-        if (q.contains(item)) {
-            return false;
-        }
-        // always returns true, or will throw
+    /**
+     * Check if the <strong>ISBN</strong> of the given item is already present.
+     *
+     * @param item to check
+     *
+     * @return {@code true} if already present
+     */
+    boolean containsIsbn(@NonNull final Item item) {
+        return q.stream().anyMatch(qi -> qi.isbn.equals(item.isbn));
+    }
+
+    /**
+     * Unconditionally add the given item.
+     * <p>
+     * Use {@link #containsIsbn(Item)} <strong>before</strong> calling this method as needed.
+     *
+     * @param context Current context
+     * @param item    to add
+     */
+    void add(@NonNull final Context context,
+             @NonNull final Item item) {
         q.add(item);
         writeToPreferences(context);
-        return true;
     }
 
-    public boolean addAll(@NonNull final Context context,
-                          @NonNull final List<Item> items) {
-        final List<Item> list = items.stream()
-                                     .filter(item -> !q.contains(item))
-                                     .collect(Collectors.toList());
-        final boolean changed = q.addAll(list);
-        if (changed) {
-            writeToPreferences(context);
-        }
-        return changed;
-    }
-
-    boolean contains(@NonNull final ISBN code) {
-        return q.stream()
-                .anyMatch(item -> item.getIsbn().equals(code));
-    }
-
+    /**
+     * Remove the given item.
+     *
+     * @param context Current context
+     * @param item    to remove
+     *
+     * @return {@code true} on success
+     */
+    @SuppressWarnings("UnusedReturnValue")
     boolean remove(@NonNull final Context context,
                    @NonNull final Item item) {
         final boolean removed = q.remove(item);
@@ -193,9 +207,23 @@ class IsbnQueue {
         return removed;
     }
 
+    /**
+     * Clear the queue.
+     *
+     * @param context Current context
+     */
     void clear(@NonNull final Context context) {
         q.clear();
         clearPreferences(context);
+    }
+
+    /**
+     * Check if there is any active search ongoing.
+     *
+     * @return flag
+     */
+    boolean isSearching() {
+        return q.stream().anyMatch(Item::isSearching);
     }
 
     /**
@@ -215,24 +243,28 @@ class IsbnQueue {
     static class Item {
         @NonNull
         private final ISBN isbn;
-        /** Routing purposes. */
-        @NonNull
-        private final ScanMode scanMode;
         /** Set when the search is started. */
         private int searchId;
         /** Set whn the result is in. */
         @Nullable
         private BookSearchResult result;
 
-        Item(@NonNull final ISBN isbn,
-             @NonNull final ScanMode scanMode) {
+        Item(@NonNull final ISBN isbn) {
             this.isbn = isbn;
-            this.scanMode = scanMode;
         }
 
         @NonNull
         ISBN getIsbn() {
             return isbn;
+        }
+
+        /**
+         * Is there an active search for this item.
+         *
+         * @return flag
+         */
+        boolean isSearching() {
+            return searchId > 0 && result == null;
         }
 
         int getSearchId() {
@@ -250,8 +282,7 @@ class IsbnQueue {
 
         void setResult(@NonNull final BookSearchResult result) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                LoggerFactory.getLogger().d(TAG, "scanMode=" + scanMode,
-                                            "result=" + result);
+                LoggerFactory.getLogger().d(TAG, "result=" + result);
             }
             this.result = result;
         }

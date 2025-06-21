@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ConstraintRadioGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -59,14 +60,9 @@ public class SearchBookByExternalIdFragment
      * add a RadioButton to the layout +
      * add mapping between the RadioButton ViewId and the EngineId in the below Map.
      * <p>
-     * ENHANCE: 2024-12-27: We deliberately use a fixed list for SIDs
-     *  we support searching on until the integration of the 'Identifier'
-     *  class is more mature
+     *  Amazon is not added here, users should use the ISBN.
      * <p>
-     *  Amazon is HIDDEN, users should use ISBN.
-     * <p>
-     *  DNB is HIDDEN
-     *  ENHANCE: implement DNB external id searches once the site "stabiler link"
+     *  ENHANCE: DNB is HIDDEN: implement DNB sid searches once the site "stabiler link"
      *  points to the (for now) beta website we use to find and parse
      */
     private static final Map<Integer, EngineId> VIEW_TO_ENGINE = Map.ofEntries(
@@ -255,11 +251,23 @@ public class SearchBookByExternalIdFragment
         //noinspection DataFlowIssue
         criteria.addSid(engineId, sid);
 
-        startSearch(criteria);
+        final int searchId = startSearch(criteria);
+        if (searchId == 0) {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.error_book_search_failed,
+                          Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override
-    int onSearch(@NonNull final BookSearchCriteria criteria) {
+    int startSearch(@NonNull final BookSearchCriteria criteria) {
+        // Warn the user, AND abort.
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.error_network_please_connect,
+                          Snackbar.LENGTH_LONG).show();
+            return 0;
+        }
         //noinspection DataFlowIssue
         return coordinator.searchByExternalId(engineId, criteria);
     }

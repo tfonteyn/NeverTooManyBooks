@@ -63,7 +63,7 @@ public abstract class BasePreferenceFragment
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
     /** Log tag. */
-    private static final String TAG = "BasePreferenceFragment";
+    public static final String TAG = "BasePreferenceFragment";
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";

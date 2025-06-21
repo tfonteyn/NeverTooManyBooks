@@ -19,9 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.location.Criteria;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,11 +35,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.util.Pair;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
@@ -51,6 +57,7 @@ import com.google.zxing.Result;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -58,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
@@ -68,6 +76,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -77,7 +87,140 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * The input field is not being limited in length. This is to allow entering UPC_A numbers.
+ * Use-cases / logic flow....   WILL contain errors...
+ * <p>
+ * - start batch scan
+ * - disable progress
+ * - q items populated by scanner
+ * - q can be cleared using button
+ * - scanner delivers item to be added:
+ * - search started, added to the queue (wil have searchId)
+ * - starting search fails, ask user to:
+ * - stop scanning
+ * - restart scanner
+ * <p>
+ * - usr clicks on q item:
+ * - item has searchId (always)
+ * - dialog title/msg depending on what we can show
+ * - result present:
+ * - user can delete item
+ * - user can edit book
+ * - must be deleted from the q before edit starts
+ * - no result
+ * - user can delete item
+ * <p>
+ * - user stops scanning
+ * - progress STILL disabled
+ * <p>
+ * - q keeps running
+ * - user does a manual entry/scan
+ * - prepareCriteria: we could check book existence before starting a search?
+ * - to start the search, it MUST be added to the queue!
+ * <p>
+ * - user presses 'back'
+ * - there can be items with results
+ * - or items still being searched
+ * - abandon/delete
+ * - abandon, but keep in prefs
+ * <p>
+ * 2. enter screen, prefs contains a list of codes
+ * or user imports from file
+ * Offer to:
+ * - delete list
+ * - start search
+ * - populate q in one go + start all searches
+ * - state: neutral, same as user did a batch scan, then stopped scanning
+ * <p>
+ * ============================================================
+ * <p>
+ * Manual entry:
+ * <ol>
+ *     <li>user enters code and clicks the search-button</li>
+ *     <li>{@link #prepare(ISBN)}</li>
+ *     <li>{@link #preSearchInteractively(ISBN)}</li>
+ *     <li>{@link #startSearch(ISBN)}</li>
+ *     <li>{@link SearchBookBaseFragment#startSearch(Criteria)}</li>
+ *     <li>{@link SearchCoordinator#startSearch(Criteria)}</li>
+ * </ol>
+ * <ol>
+ *     <li>{@link SearchBookBaseFragment#onSearchFinished(LiveDataEvent)}</li>
+ *     <li>{@link #onSearchFinished(BookSearchResult)}</li>
+ *     <li>{@link SearchBookBaseFragment#onSearchFinished(BookSearchResult)}</li>
+ *     <li>{@link #onSearchResults(BookSearchResult)}</li>
+ *     <li>{@link #editBook(long, Style)}</li>
+ *     <li>{@link #onBookEditingDone(EditBookOutput)}</li>
+ *     <li>done.</li>
+ * </ol>
+ * <p>
+ * ============================================================
+ * <p>
+ * Single scan:
+ * <ol>
+ *     <li>User scans a single code</li>
+ *     <li>{@link #onBarcodeScanned(String)}</li>
+ *     <li>{@link #prepare(ISBN)}</li>
+ *     <li>... see Manual Entry</li>
+ * </ol>
+ * <ol>
+ *     <li>... see Manual Entry</li>
+ * </ol>
+ * <p>
+ * ============================================================
+ * <p>
+ * Continuous scan:
+ * <ol>
+ *     <li>User scans a code</li>
+ *     <li>{@link #onBarcodeScanned(String)}</li>
+ *     <li>{@link #prepare(ISBN)}</li>
+ *     <li>... see Manual Entry</li>
+ * </ol>
+ * <ol>
+ *     <li>... see Manual Entry</li>
+ *     <li>{@link #onBookEditingDone(EditBookOutput)}</li>
+ *     <li>scanner starts again</li>
+ * </ol>
+ * <p>
+ * ============================================================
+ * <p>
+ * Batch scan:
+ * <ol>
+ *     <li>User scans a code</li>
+ *     <li>{@link #onBarcodeScanned(String)}</li>
+ *     <li>{@link #preSearchAddToQueue(ISBN)}</li>
+ *     <li>{@link SearchBookByIsbnViewModel#addToQueueAndStartSearch(Context, IsbnQueue.Item, Function)}</li>
+ *     <li>scanner starts again</li>
+ * </ol>
+ * <ol>
+ *     <li>{@link SearchBookBaseFragment#onSearchFinished(LiveDataEvent)}</li>
+ *     <li>{@link #onSearchFinished(BookSearchResult)}</li>
+ *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>all this in the background as the scanner is still running</li>
+ * </ol>
+ * <p>
+ * ============================================================
+ * <p>
+ * After a batch scan was stopped, we have a queue.
+ * <p>
+ * Manual Entry
+ * <ol>
+ *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>done.</li>
+ * </ol>
+ * Single scan
+ * <ol>
+ *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>done.</li>
+ * </ol>
+ * Continuous scan
+ * <ol>
+ *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>scanner starts again</li>
+ * </ol>
+ * Batch scan
+ * <ol>
+ *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
+ *     <li>scanner starts again</li>
+ * </ol>
  */
 public class SearchBookByIsbnFragment
         extends SearchBookBaseFragment {
@@ -103,6 +246,38 @@ public class SearchBookByIsbnFragment
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
 
     private SearchBookByIsbnViewModel vm;
+
+    /**
+     * Intercept 'back' when there are items in the queue still being searched for.
+     * By default disabled.
+     *
+     * @see #onQueueUpdated(Iterator)
+     */
+    private final OnBackPressedCallback backPressedWithActiveSearches =
+            new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection DataFlowIssue
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setTitle(R.string.confirm_leave_isbn_search)
+                            .setSingleChoiceItems(R.array.lbl_leave_isbn_search_options,
+                                                  -1, (d, option) -> {
+                                        d.dismiss();
+                                        // option 0: Save for later
+                                        // option 1: Clear queue
+                                        final boolean clear = option == 1;
+                                        vm.clearQueueAndCancelSearches(getContext(), coordinator,
+                                                                       clear);
+                                        //noinspection DataFlowIssue
+                                        getActivity().setResult(Activity.RESULT_OK,
+                                                                createResultIntent());
+                                        getActivity().finish();
+                                    })
+                            .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
+                            .create()
+                            .show();
+                }
+            };
 
     /** The user wants to import a list of ISBNs to the queue. */
     private ActivityResultLauncher<String> openUriLauncher;
@@ -139,7 +314,7 @@ public class SearchBookByIsbnFragment
      * Check screen size and orientation to decide whether we use the embedded
      * scanner view, or the separate {@link ScannerContract}.
      */
-    private void decideToUseEmbeddedScanner() {
+    private void maybeInitEmbeddedScanner() {
         if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
             //noinspection DataFlowIssue
             final ScreenSize screenSize = ScreenSize.compute(getActivity());
@@ -149,6 +324,16 @@ public class SearchBookByIsbnFragment
             } else {
                 embeddedBarcodeScanner = screenSize.getWidth() == ScreenSize.Value.Expanded;
             }
+
+            // embedded scanner only
+            vb.btnStopScanning.setOnClickListener(v -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    v.performHapticFeedback(HapticFeedbackConstants.REJECT);
+                } else {
+                    v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                }
+                switchOffScanner();
+            });
         }
     }
 
@@ -156,7 +341,7 @@ public class SearchBookByIsbnFragment
     @Override
     public void onConfigurationChanged(@NonNull final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        decideToUseEmbeddedScanner();
+        maybeInitEmbeddedScanner();
     }
 
     @Override
@@ -165,6 +350,9 @@ public class SearchBookByIsbnFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
+        if (BuildConfig.DEBUG /* always */) {
+            dbgAddScanButtons();
+        }
         return vb.getRoot();
     }
 
@@ -174,7 +362,11 @@ public class SearchBookByIsbnFragment
         super.onViewCreated(view, savedInstanceState);
         InsetsListenerBuilder.fragmentRootView(view);
 
-        decideToUseEmbeddedScanner();
+        //noinspection DataFlowIssue
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), backPressedWithActiveSearches);
+
+        maybeInitEmbeddedScanner();
 
         if (savedInstanceState != null) {
             scannerActivityStarted = savedInstanceState
@@ -190,8 +382,79 @@ public class SearchBookByIsbnFragment
 
         modelToView();
 
+        initInputField();
+        initKeypad(view);
+
+        vb.btnClearQueue.setOnClickListener(v -> {
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            vm.clearQueueAndCancelSearches(v.getContext(), coordinator, true);
+        });
+
+        final Context context = getContext();
+        //noinspection DataFlowIssue
+        final List<IsbnQueue.Item> items = IsbnQueue.readFromPreferences(context);
+        if (items.isEmpty()) {
+            afterOnViewCreated();
+        } else {
+            final int size = items.size();
+            final String msg = context.getResources().getQuantityString(
+                    R.plurals.confirm_queue_has_x_items, size, size);
+            new MaterialAlertDialogBuilder(context)
+                    .setTitle(R.string.lbl_search_isbn)
+                    .setMessage(msg)
+                    .setNeutralButton(R.string.action_delete, (d, w) -> {
+                        IsbnQueue.clearPreferences(context);
+                        afterOnViewCreated();
+                        d.dismiss();
+                    })
+                    .setPositiveButton(R.string.action_search, (d, w) -> startSearch(items))
+                    .create()
+                    .show();
+        }
+    }
+
+    /**
+     * Called if there is no Queue.
+     */
+    private void afterOnViewCreated() {
+        vb.isbn.requestFocus();
+        if (vm.isAutoStart()) {
+            startScanner();
+        }
+    }
+
+
+    /**
+     * The input field is not being limited in length. This is to allow entering UPC_A numbers.
+     */
+    private void initInputField() {
         autoRemoveError(vb.isbn, vb.lblIsbn);
 
+        // The search preference determines the level here; NOT the 'edit book'
+        //noinspection DataFlowIssue
+        final ISBN.Validity isbnValidityCheck = BookSearchCriteria.isStrictIsbn(getContext())
+                                                ? ISBN.Validity.Strict
+                                                : ISBN.Validity.None;
+
+        isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
+        vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
+
+        isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(vb.lblIsbn, vb.isbn,
+                                                                   isbnValidityCheck);
+        vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
+
+        vb.isbnDel.setOnClickListener(v -> {
+            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            vb.isbn.onKey(KeyEvent.KEYCODE_DEL);
+        });
+        vb.isbnDel.setOnLongClickListener(v -> {
+            v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+            vb.isbn.setText("");
+            return true;
+        });
+    }
+
+    private void initKeypad(@NonNull final View view) {
         vb.keypad.key0.setOnClickListener(v -> onKeyPad(v, '0'));
         vb.keypad.key1.setOnClickListener(v -> onKeyPad(v, '1'));
         vb.keypad.key2.setOnClickListener(v -> onKeyPad(v, '2'));
@@ -203,17 +466,6 @@ public class SearchBookByIsbnFragment
         vb.keypad.key8.setOnClickListener(v -> onKeyPad(v, '8'));
         vb.keypad.key9.setOnClickListener(v -> onKeyPad(v, '9'));
         vb.keypad.keyX.setOnClickListener(v -> onKeyPad(v, 'X'));
-
-        vb.isbnDel.setOnClickListener(v -> {
-            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            vb.isbn.onKey(KeyEvent.KEYCODE_DEL);
-        });
-        vb.isbnDel.setOnLongClickListener(v -> {
-            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-            vb.isbn.setText("");
-            return true;
-        });
-
         vb.keypad.btnSearch.setOnClickListener(v -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 view.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
@@ -231,72 +483,8 @@ public class SearchBookByIsbnFragment
                 return;
             }
 
-            prepareCriteria(code);
+            prepare(code);
         });
-
-        vb.btnClearQueue.setOnClickListener(v -> {
-            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            vm.clearQueueAndCancelSearches(v.getContext(), coordinator);
-        });
-
-        // embedded scanner only
-        vb.btnStopScanning.setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                view.performHapticFeedback(HapticFeedbackConstants.REJECT);
-            } else {
-                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            }
-            switchOffScanner();
-        });
-
-        // The search preference determines the level here; NOT the 'edit book'
-        //noinspection DataFlowIssue
-        final ISBN.Validity isbnValidityCheck = BookSearchCriteria.isStrictIsbn(getContext())
-                                                ? ISBN.Validity.Strict
-                                                : ISBN.Validity.None;
-
-        isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
-        vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
-
-        isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(vb.lblIsbn, vb.isbn,
-                                                                   isbnValidityCheck);
-        vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
-
-
-        final Context context = getContext();
-        final List<IsbnQueue.Item> items = IsbnQueue.readFromPreferences(context);
-        if (items.isEmpty()) {
-            afterOnCreateView(false);
-        } else {
-            final int size = items.size();
-            final String msg = context.getResources().getQuantityString(
-                    R.plurals.confirm_queue_has_x_items, size, size);
-            new MaterialAlertDialogBuilder(context)
-                    .setTitle(R.string.lbl_search_isbn)
-                    .setMessage(msg)
-                    .setNeutralButton(R.string.action_delete, (d, w) -> {
-                        IsbnQueue.clearPreferences(context);
-                        d.dismiss();
-                    })
-                    .setPositiveButton(R.string.action_search, (d, w) -> {
-                        final boolean searchStarted = vm.addToQueueAndStartSearch(
-                                context, items, this::startSearch);
-                        if (searchStarted) {
-                            Snackbar.make(vb.getRoot(), R.string.progress_msg_searching,
-                                          Snackbar.LENGTH_LONG).show();
-                        }
-                        afterOnCreateView(searchStarted);
-                    })
-                    .create()
-                    .show();
-        }
-    }
-
-    private void afterOnCreateView(final boolean searchStarted) {
-        vb.isbn.requestFocus();
-        if (!searchStarted && vm.isAutoStart()) {
-            startScanner();
-        }
     }
 
     /**
@@ -321,6 +509,12 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        onQueueUpdated(vm.getScanQueue());
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(BKEY_SCANNER_ACTIVITY_STARTED, scannerActivityStarted);
@@ -339,8 +533,7 @@ public class SearchBookByIsbnFragment
      * @see #startScannerEmbedded()
      */
     private void startScanner() {
-        // disable interaction when in batch mode
-        setEnableProgressMessages(vm.getScannerMode() != ScanMode.Batch);
+        setEnableProgressMessages(!isBatchOrHasQueue());
         if (embeddedBarcodeScanner) {
             startScannerEmbedded();
         } else {
@@ -356,7 +549,7 @@ public class SearchBookByIsbnFragment
     private void startScannerEmbedded() {
         vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
         if (scanner == null) {
-            // Use the default com. hardbacknutter.tinyzxingwrapper.scanner.ScanMode.Single
+            // Use the default com.hardbacknutter.tinyzxingwrapper.scanner.ScanMode.Single
             //noinspection DataFlowIssue
             scanner = new BarcodeScanner.Builder()
                     .setBarcodeFormats(BarcodeFamily.PRODUCT)
@@ -426,28 +619,49 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Prepare the criteria object to use for the search.
-     * This method can interact with the user, and can reject starting a search.
-     * <p>
-     * Used by either by the user typing in a code, or scanning one
-     * in {@link ScanMode#Manual}/{@link ScanMode#Continuous} mode.
+     * Prepare to search.
      *
      * @param code to search for
      */
-    private void prepareCriteria(@NonNull final ISBN code) {
+    private void prepare(@NonNull final ISBN code) {
+        if (isBatchOrHasQueue()) {
+            // We're running with a queue, add it to the queue
+            preSearchAddToQueue(code);
+        } else {
+            // We're not using a queue.
+            preSearchInteractively(code);
+        }
+    }
+
+    private boolean isBatchOrHasQueue() {
+        return vb.queue.getChildCount() > 0 || vm.getScannerMode() == ScanMode.Batch;
+    }
+
+    /**
+     * Prepare to search. We're NOT running with a queue.
+     * Check for codes already existing locally, interact with the user as needed.
+     *
+     * @param code to search for
+     */
+    private void preSearchInteractively(@NonNull final ISBN code) {
+        // paranoia: we should not be in the situation... flw
         // check if we have an active search, if so, quit silently.
         if (coordinator.isSearchActive()) {
             return;
         }
 
-        // interaction required
-        setEnableProgressMessages(true);
+        setEnableProgressMessages(!isBatchOrHasQueue());
 
         // Check if the ISBN already exists in our database,
         final List<Pair<Long, String>> existingIds = vm.getBookIdAndTitlesByIsbn(code);
         if (existingIds.isEmpty()) {
             // not there
-            startSearch(code);
+            final int searchId = startSearch(code);
+            if (searchId == 0) {
+                //noinspection DataFlowIssue
+                Snackbar.make(getView(), R.string.error_book_search_failed,
+                              Snackbar.LENGTH_LONG).show();
+            }
         } else {
             onBookAlreadyPresent(code, existingIds, () -> startSearch(code));
         }
@@ -493,7 +707,70 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Sits between {@link #prepareCriteria(ISBN)} and {@link #startSearch(BookSearchCriteria)}
+     * Prepare to search. We're running with a queue, add the code to the queue.
+     * Only interact with the user when adding/starting a search failed.
+     *
+     * @param code to search for
+     */
+    private void preSearchAddToQueue(@NonNull final ISBN code) {
+        final Context context = getContext();
+        //noinspection DataFlowIssue
+        final int searchId = vm.addToQueueAndStartSearch(context, new IsbnQueue.Item(code),
+                                                         this::startSearch);
+
+        // REMINDER: We have a queue, but we can get here for any of these:
+        // - manual entry / single scan (duplicates n/a)
+        // - continuous scan / batch mode
+
+        if (vm.getScannerMode() == ScanMode.Off
+            || vm.getScannerMode() == ScanMode.Single) {
+            // duplicate check N/A
+            if (searchId > 0) {
+                // Search started, remove previous, and focus for new input
+                vm.setIsbnText("");
+                modelToView();
+                vb.isbn.requestFocus();
+            } else {
+                // Starting a new search failed.
+                // Show a quick/simple message.
+                Snackbar.make(vb.getRoot(), R.string.error_book_search_failed,
+                              Snackbar.LENGTH_SHORT)
+                        .show();
+                // allow user to change their previous input
+                vb.isbn.requestFocus();
+            }
+            return;
+        }
+
+        // ScanMode.Continuous / ScanMode.Batch
+
+        if (searchId > 0 || searchId == SearchBookByIsbnViewModel.SEARCH_DUPLICATE_ISBN) {
+            // Search started; or it was a duplicate (silently rejected)
+            // Go scan the next book.
+            startScanner();
+            return;
+        }
+
+        // ScanMode.Continuous / ScanMode.Batch
+        // Starting a new search failed
+        new MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.progress_msg_searching)
+                .setMessage(R.string.error_book_search_failed)
+                .setNegativeButton(R.string.action_stop_scanning, (d, w) -> {
+                    d.dismiss();
+                    switchOffScanner();
+                })
+                .setPositiveButton(R.string.ok, (d, w) -> {
+                    d.dismiss();
+                    startScanner();
+                })
+                .create()
+                .show();
+    }
+
+
+    /**
+     * Sits between {@link #prepare(ISBN)} and {@link #startSearch(BookSearchCriteria)}
      * Needed to:
      * - support {@link ScanMode#Batch} mode.
      * - allow starting with or without calling {@link #onBookAlreadyPresent}
@@ -508,6 +785,30 @@ public class SearchBookByIsbnFragment
         criteria.setIsbnFromScan(code, vm.getScannerMode());
 
         return startSearch(criteria);
+    }
+
+    /**
+     * Start searching the given list (coming from prefs or a file).
+     *
+     * @param items to search for
+     */
+    private void startSearch(@NonNull final List<IsbnQueue.Item> items) {
+        // Do NOT switch on the ScanMode.Batch or otherwise
+        // but DO hide the progress
+        setEnableProgressMessages(false);
+        //noinspection DataFlowIssue
+        final boolean searchStarted = vm.addToQueueAndStartSearch(
+                getContext(), items, this::startSearch);
+
+        if (searchStarted) {
+            Snackbar.make(vb.getRoot(), R.string.progress_msg_searching,
+                          Snackbar.LENGTH_SHORT).show();
+        } else {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.error_book_search_failed,
+                          Snackbar.LENGTH_LONG).show();
+        }
+        vb.isbn.requestFocus();
     }
 
     /**
@@ -533,39 +834,21 @@ public class SearchBookByIsbnFragment
 
             switch (vm.getScannerMode()) {
                 case Batch: {
-                    final IsbnQueue.Item item = new IsbnQueue.Item(code, ScanMode.Batch);
-                    final int searchId = vm.addToQueueAndStartSearch(context, item,
-                                                                     this::startSearch);
-                    if (searchId > 0) {
-                        // search was started, go scan the next book
-                        startScanner();
-                    } else {
-                        // starting a new search failed
-                        new MaterialAlertDialogBuilder(context)
-                                .setTitle(R.string.progress_msg_searching)
-                                .setMessage(R.string.error_book_search_failed)
-                                .setNegativeButton(R.string.action_stop_scanning, (d, w) -> {
-                                    d.dismiss();
-                                    switchOffScanner();
-                                })
-                                .setPositiveButton(R.string.ok, (d, w) -> startScanner())
-                                .create()
-                                .show();
-                    }
+                    preSearchAddToQueue(code);
                     break;
                 }
-                case Manual: {
+                case Single: {
                     switchOffScanner();
                     vm.setIsbnText(barCode);
                     modelToView();
-                    prepareCriteria(code);
+                    prepare(code);
                     break;
                 }
                 case Continuous: {
                     // Continuous: leave the scanner on, scanning restarts when the edit is done.
                     vm.setIsbnText(barCode);
                     modelToView();
-                    prepareCriteria(code);
+                    prepare(code);
                     break;
                 }
             }
@@ -587,25 +870,19 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    @Override
-    void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> ignored) {
-        super.onSearchCancelled(ignored);
-        //noinspection DataFlowIssue
-        vm.clearQueueAndCancelSearches(getContext(), coordinator);
-    }
-
     void onSearchFinished(@NonNull final BookSearchResult result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             LoggerFactory.getLogger().d(TAG, "onSearchFinished",
                                         vm.getScannerMode(),
+                                        "queue=" + vb.queue.getChildCount(),
                                         result);
         }
 
-        if (result.getScanMode() == ScanMode.Batch) {
-            vm.onQueueSearchResults(result);
-        } else {
-            // user interactive
+        if (vb.queue.getChildCount() == 0 && result.getScanMode() == ScanMode.Off) {
+            // user interactive; we'll end up in #onSearchResults
             super.onSearchFinished(result);
+        } else {
+            vm.onQueueSearchResults(result);
         }
     }
 
@@ -617,7 +894,10 @@ public class SearchBookByIsbnFragment
     @Override
     void onSearchResults(@NonNull final BookSearchResult result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            LoggerFactory.getLogger().d(TAG, "onSearchResults", result);
+            LoggerFactory.getLogger().d(TAG, "onSearchResults",
+                                        vm.getScannerMode(),
+                                        "queue=" + vb.queue.getChildCount(),
+                                        result);
         }
         final Book book = result.getBook();
 
@@ -649,7 +929,7 @@ public class SearchBookByIsbnFragment
     @Override
     void onClearSearchCriteria() {
         vm.setIsbnText(null);
-        //vb.isbn.setText("");
+        vb.isbn.setText("");
     }
 
     /**
@@ -658,16 +938,11 @@ public class SearchBookByIsbnFragment
      * @param uri as chosen by the user
      */
     private void onOpenUri(@NonNull final Uri uri) {
-        final Context context = getContext();
         try {
             //noinspection DataFlowIssue
-            final List<IsbnQueue.Item> list = IsbnQueue.readFromFile(context, uri);
-            if (vm.addToQueueAndStartSearch(context, list, this::startSearch)) {
-                Snackbar.make(vb.getRoot(), R.string.progress_msg_searching,
-                              Snackbar.LENGTH_LONG).show();
-            } else {
-                Snackbar.make(vb.getRoot(), R.string.error_book_search_failed,
-                              Snackbar.LENGTH_LONG).show();
+            final List<IsbnQueue.Item> items = IsbnQueue.readFromFile(getContext(), uri);
+            if (!items.isEmpty()) {
+                startSearch(items);
             }
         } catch (@NonNull final IOException e) {
             Snackbar.make(vb.getRoot(), R.string.error_import_failed,
@@ -681,10 +956,15 @@ public class SearchBookByIsbnFragment
      * @param list to display; can be empty
      */
     private void onQueueUpdated(@NonNull final Iterator<IsbnQueue.Item> list) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            LoggerFactory.getLogger().d(TAG, "onQueueUpdated");
+        }
 
-        if (vb.queue.getChildCount() > 0) {
+        // TODO: this can cause flicker if the updates comes too fast
+        if (isBatchOrHasQueue()) {
             vb.queue.removeAllViews();
         }
+
         while (list.hasNext()) {
             final IsbnQueue.Item item = list.next();
             final ISBN code = item.getIsbn();
@@ -701,13 +981,16 @@ public class SearchBookByIsbnFragment
             chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
             chip.setTag(item);
             chip.setText(code.asText());
+            chip.setCheckable(false);
             chip.setOnCloseIconClickListener(this::removeFromQueue);
             chip.setOnClickListener(this::onQueueItemClicked);
+            // experimented with adding an icon depending on the below state,
+            // but that becomes the 'checkable' icon and interferes with clicking.
+            // And it all becomes a bit cluttered... using separate 'hourglass' now.
 
             final BookSearchResult result = item.getResult();
             if (result != null) {
                 final Book book = result.getBook();
-
                 if (result.getErrorMessage() != null) {
                     if (hasData(book)) {
                         // There was an error, but the book has at least some valid data
@@ -724,54 +1007,74 @@ public class SearchBookByIsbnFragment
             }
             vb.queue.addView(chip);
         }
+
         updateQueueViewsVisibility();
     }
 
     /**
      * The user tapped a queue chip.
-     * The chip can be:
-     * - green: results are in, no errors.
-     * - red: results are in, but with (partial) errors.
-     * - we do NOT get here is the chip has not received a result yet.
-     * <p>
-     * Tell the user and let them delete the chip/result, just cancel,
-     * or start editing the resulting book.
      *
      * @param chip clicked
      */
     private void onQueueItemClicked(@NonNull final View chip) {
         final IsbnQueue.Item item = (IsbnQueue.Item) chip.getTag();
+        @Nullable
         final BookSearchResult result = item.getResult();
-        if (result == null) {
-            // still searching
-            Snackbar.make(chip, R.string.progress_msg_searching,
-                          Snackbar.LENGTH_SHORT).show();
-            return;
+
+        // If we have a result, show the title, otherwise the isbn.
+        String dialogTitle = null;
+        if (result != null) {
+            dialogTitle = result.getBook().getTitle();
+        }
+        if (dialogTitle == null || dialogTitle.isBlank()) {
+            dialogTitle = item.getIsbn().asText();
         }
 
         //noinspection DataFlowIssue
-        final MaterialAlertDialogBuilder builder =
-                new MaterialAlertDialogBuilder(getContext())
-                        .setTitle(item.getIsbn().asText())
-                        .setNeutralButton(R.string.action_delete, (d, w) -> {
-                            removeFromQueue(chip);
-                            d.dismiss();
-                        })
-                        .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(R.string.action_edit, (d, w) -> {
-                            removeFromQueue(chip);
-                            d.dismiss();
-                            onSearchResults(result);
-                        });
-
-        @Nullable
-        final String errorMessage = result.getErrorMessage();
-        if (errorMessage != null) {
-            builder.setMessage(errorMessage);
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
+                .setTitle(dialogTitle);
+        if (result != null) {
+            final String errorMessage = result.getErrorMessage();
+            if (errorMessage != null) {
+                builder.setMessage(errorMessage);
+            }
         }
 
-        builder.create()
-               .show();
+        builder.setNeutralButton(R.string.action_discard, (d, w) -> {
+                   removeFromQueue(chip);
+                   d.dismiss();
+               })
+               .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss());
+
+        if (item.isSearching()) {
+            // delete this one?
+            builder.create()
+                   .show();
+            return;
+        }
+
+
+        if (result != null) {
+            // delete this one?, or edit book?
+            builder.setPositiveButton(R.string.action_edit, (d, w) -> {
+                       removeFromQueue(chip);
+                       d.dismiss();
+                       onSearchResults(result);
+                   })
+                   .create()
+                   .show();
+            return;
+        }
+
+        //        // no result, and not searching; allow a manual search to be started
+        //        builder.setPositiveButton(R.string.action_search, (d, w) -> {
+        //                   final ISBN code = item.getIsbn();
+        //                   vm.setIsbnText(code.asText());
+        //                   modelToView();
+        //                   prepareCriteria(code);
+        //               })
+        //               .create()
+        //               .show();
     }
 
     /**
@@ -789,12 +1092,24 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Common code to update the visibility of the UI queue and 'clear' button.
+     * Common code to update the visibility of the UI queue.
      */
     private void updateQueueViewsVisibility() {
-        final int visibility = vb.queue.getChildCount() > 0 ? View.VISIBLE : View.GONE;
-        // The queue Chips and the 'clear queue' button
-        vb.queueGroup.setVisibility(visibility);
+        vb.queueGroup.setVisibility(isBatchOrHasQueue() ? View.VISIBLE : View.GONE);
+
+        final boolean searching = vm.isQueueSearching();
+        if (searching) {
+            vb.queueProgress.setVisibility(View.VISIBLE);
+            vb.queueProgress.startAnimation(
+                    AnimationUtils.loadAnimation(getContext(), R.anim.rotate));
+        } else {
+            vb.queueProgress.setVisibility(View.GONE);
+            vb.queueProgress.clearAnimation();
+        }
+
+        // Enabled when there is a non-empty queue.
+        // We don't look for 'searching' or 'results' items
+        backPressedWithActiveSearches.setEnabled(vb.queue.getChildCount() > 0);
     }
 
     /**
@@ -805,11 +1120,58 @@ public class SearchBookByIsbnFragment
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
         onClearSearchCriteria();
-
+        onQueueUpdated(vm.getScanQueue());
         vm.onBookEditingDone(data);
+
         if (vm.getScannerMode() == ScanMode.Continuous) {
             // scan another book until the user cancels
             startScanner();
+        }
+    }
+
+    private void dbgAddScanButtons() {
+        if (vb.contentBody != null) {
+            final Button single = new Button(getContext());
+            final int singleButtonId = View.generateViewId();
+            single.setId(singleButtonId);
+            single.setText(R.string.option_fab_add_book_by_barcode_scan);
+            single.setOnClickListener(v -> {
+                //noinspection DataFlowIssue
+                final String s = vb.isbn.getText().toString().strip();
+                vb.isbn.setText("");
+                vm.setScannerMode(ScanMode.Single);
+                onBarcodeScanned(s);
+            });
+
+            vb.contentBody.addView(single, 0);
+            ConstraintSet set = new ConstraintSet();
+            set.clone(vb.contentBody);
+            set.connect(singleButtonId, ConstraintSet.TOP,
+                        R.id.queue, ConstraintSet.BOTTOM);
+            set.connect(singleButtonId, ConstraintSet.START,
+                        R.id.queue, ConstraintSet.START);
+            set.applyTo(vb.contentBody);
+
+            final Button batch = new Button(getContext());
+            final int batchButtonId = View.generateViewId();
+            batch.setId(batchButtonId);
+            batch.setText(R.string.option_fab_add_book_by_barcode_scan_batch);
+            batch.setOnClickListener(v -> {
+                //noinspection DataFlowIssue
+                final String s = vb.isbn.getText().toString().strip();
+                vb.isbn.setText("");
+                vm.setScannerMode(ScanMode.Batch);
+                onBarcodeScanned(s);
+            });
+
+            vb.contentBody.addView(batch, 0);
+            set = new ConstraintSet();
+            set.clone(vb.contentBody);
+            set.connect(batchButtonId, ConstraintSet.TOP,
+                        singleButtonId, ConstraintSet.BOTTOM);
+            set.connect(batchButtonId, ConstraintSet.START,
+                        singleButtonId, ConstraintSet.START);
+            set.applyTo(vb.contentBody);
         }
     }
 
@@ -863,6 +1225,17 @@ public class SearchBookByIsbnFragment
                 isbnCleanupTextWatcher.setValidityLevel(validity);
                 isbnValidationTextWatcher.setValidityLevel(validity);
                 return true;
+
+            } else if (menuItemId == R.id.MENU_SETTINGS) {
+                final BarcodePreferenceFragment fragment =
+                        new BarcodePreferenceFragment();
+
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .addToBackStack(BarcodePreferenceFragment.TAG)
+                        .replace(R.id.main_fragment, fragment, BarcodePreferenceFragment.TAG)
+                        .commit();
             }
 
             return false;

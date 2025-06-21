@@ -51,6 +51,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class SearchBookByIsbnViewModel
         extends ViewModel {
 
+    public static final int SEARCH_NOT_STARTED = 0;
+    public static final int SEARCH_DUPLICATE_ISBN = -1;
+
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
 
@@ -91,7 +94,7 @@ public class SearchBookByIsbnViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args    {@link Fragment#getArguments()}
+     * @param args {@link Fragment#getArguments()}
      */
     void init(@Nullable final Bundle args) {
         if (bookDao == null) {
@@ -108,10 +111,6 @@ public class SearchBookByIsbnViewModel
                 final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
                 style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
             }
-        }
-
-        synchronized (scanQueue) {
-            scanQueueUpdate.setValue(scanQueue.iterator());
         }
     }
 
@@ -160,12 +159,19 @@ public class SearchBookByIsbnViewModel
         return bookDao.getBookIdAndTitleByIsbn(code);
     }
 
-
     @NonNull
     LiveData<Iterator<IsbnQueue.Item>> onScanQueueUpdate() {
         return scanQueueUpdate;
     }
 
+    boolean isQueueSearching() {
+        return scanQueue.isSearching();
+    }
+
+    @NonNull
+    Iterator<IsbnQueue.Item> getScanQueue() {
+        return scanQueue.iterator();
+    }
 
     /**
      * Add the list of items to the queue and start a search for them.
@@ -206,7 +212,10 @@ public class SearchBookByIsbnViewModel
      * @param item        to add
      * @param startSearch method
      *
-     * @return the searchId, or {@code 0} if no search was started.
+     * @return the searchId, or:
+     *         {@link #SEARCH_NOT_STARTED} if no search was started.
+     *         This is not necessarily an error;
+     *         {@link #SEARCH_DUPLICATE_ISBN} if the item ISBN was already present.
      */
     int addToQueueAndStartSearch(@NonNull final Context context,
                                  @NonNull final IsbnQueue.Item item,
@@ -215,20 +224,22 @@ public class SearchBookByIsbnViewModel
             LoggerFactory.getLogger().d(TAG, "addToQueueAndStartSearch", "item=" + item);
         }
         synchronized (scanQueue) {
-            // FIRST ADD (at the end of the queue)
             // duplicates are rejected
-            final boolean added = scanQueue.add(context, item);
-            if (added) {
-                // THEN START
-                final int searchId = startSearch.apply(item.getIsbn());
-                if (searchId != 0) {
-                    item.setSearchId(searchId);
-                    return searchId;
-                }
-                // FAIL; simple remove
-                scanQueue.remove(context, item);
+            if (scanQueue.containsIsbn(item)) {
+                return SEARCH_DUPLICATE_ISBN;
             }
-            return 0;
+            // FIRST ADD at the end of the queue.
+            scanQueue.add(context, item);
+            // THEN START the search.
+            final int searchId = startSearch.apply(item.getIsbn());
+            if (searchId > 0) {
+                item.setSearchId(searchId);
+                scanQueueUpdate.setValue(scanQueue.iterator());
+                return searchId;
+            }
+            // No search was started. Remove from the queue
+            scanQueue.remove(context, item);
+            return SEARCH_NOT_STARTED;
         }
     }
 
@@ -242,17 +253,17 @@ public class SearchBookByIsbnViewModel
      *
      * @return {@code true} if at least one search was started
      */
-    private boolean startQueueSearches(@NonNull final Context context,
-                                       @NonNull final Function<ISBN, Integer> startSearch) {
+    boolean startQueueSearches(@NonNull final Context context,
+                               @NonNull final Function<ISBN, Integer> startSearch) {
         boolean atLeastOneStarted = false;
         synchronized (scanQueue) {
             final Iterator<IsbnQueue.Item> list = scanQueue.iterator();
             while (list.hasNext()) {
                 final IsbnQueue.Item item = list.next();
                 // not started yet?
-                if (item.getSearchId() == 0) {
+                if (!item.isSearching()) {
                     final int searchId = startSearch.apply(item.getIsbn());
-                    if (searchId != 0) {
+                    if (searchId > 0) {
                         item.setSearchId(searchId);
                         atLeastOneStarted = true;
                     } else {
@@ -295,12 +306,16 @@ public class SearchBookByIsbnViewModel
      *
      * @param context     Current context
      * @param coordinator used to cancel searches
+     * @param clear       flag
      */
     void clearQueueAndCancelSearches(@NonNull final Context context,
-                                     @NonNull final SearchCoordinator coordinator) {
+                                     @NonNull final SearchCoordinator coordinator,
+                                     final boolean clear) {
         synchronized (scanQueue) {
             coordinator.cancel();
-            scanQueue.clear(context);
+            if (clear) {
+                scanQueue.clear(context);
+            }
             scanQueueUpdate.setValue(scanQueue.iterator());
         }
     }
@@ -318,6 +333,7 @@ public class SearchBookByIsbnViewModel
                                         @NonNull final SearchCoordinator coordinator,
                                         @NonNull final IsbnQueue.Item item) {
         synchronized (scanQueue) {
+            // don't care about the result, we're discarding the whole item
             final int searchId = item.getSearchId();
             if (searchId > 0) {
                 coordinator.cancelSearch(searchId);

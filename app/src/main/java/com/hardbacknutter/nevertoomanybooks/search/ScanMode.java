@@ -34,7 +34,7 @@ public enum ScanMode
     /** Scanner is (set) offline. */
     Off(0),
     /** Scan, search for, and edit the found book. */
-    Manual(1),
+    Single(1),
     /**
      * Scan, search for, and edit the found book.
      * When editing is finished, start a new scan.
@@ -69,7 +69,7 @@ public enum ScanMode
     }
 
     /**
-     * Get the user preferred single-scan mode: either {@link #Manual} or {@link #Continuous}.
+     * Get the user preferred single-scan mode: either {@link #Single} or {@link #Continuous}.
      *
      * @param context Current context
      *
@@ -77,11 +77,11 @@ public enum ScanMode
      */
     @NonNull
     public static ScanMode getScannerModeSingle(@NonNull final Context context) {
-        final int value = IntListPref.getInt(context, PK_SCANNER_MODE_SINGLE, Manual.value);
+        final int value = IntListPref.getInt(context, PK_SCANNER_MODE_SINGLE, Single.value);
         if (value == Continuous.value) {
             return Continuous;
         } else {
-            return Manual;
+            return Single;
         }
     }
 

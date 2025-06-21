@@ -84,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="queue,btn_clear_queue"
+            app:constraint_referenced_ids="queue,queue_progress,btn_clear_queue"
             tools:visibility="visible"
             />
 
@@ -98,6 +98,17 @@
             app:layout_constraintTop_toBottomOf="@id/btn_stop_scanning"
             />
 
+        <ImageView
+            android:id="@+id/queue_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:src="@drawable/hourglass_24px"
+            app:layout_constraintBottom_toBottomOf="@id/queue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/queue"
+            tools:ignore="ContentDescription" />
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/queue"
             android:layout_width="0dp"
@@ -106,7 +117,7 @@
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toStartOf="@id/keypad"
             app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/queue_progress"
             app:layout_constraintTop_toBottomOf="@id/btn_clear_queue"
             >
             <!-- chips will be added here dynamically -->

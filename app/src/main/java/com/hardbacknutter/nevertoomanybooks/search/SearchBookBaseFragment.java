@@ -32,6 +32,7 @@ import android.widget.EditText;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
+import androidx.annotation.EmptySuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
@@ -185,32 +186,6 @@ public abstract class SearchBookBaseFragment
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * The results come back in {@link #onSearchResults(BookSearchResult)}.
      * <p>
-     * This is final; override {@link #onSearch(BookSearchCriteria)} as needed.
-     *
-     * @param criteria to search for
-     *
-     * @return the search-id, or {@code 0} if no search was started
-     */
-    final int startSearch(@NonNull final BookSearchCriteria criteria) {
-        // Warn the user, AND abort.
-        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
-            //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.error_network_please_connect,
-                          Snackbar.LENGTH_LONG).show();
-            return 0;
-        }
-
-        // Start the lookup in a background search task.
-        final int searchId = onSearch(criteria);
-        if (searchId == 0) {
-            //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.error_book_search_failed,
-                          Snackbar.LENGTH_LONG).show();
-        }
-        return searchId;
-    }
-
-    /**
      * Override to customize which search function is called.
      * The default implementation starts the generic
      * {@link SearchCoordinator#search(BookSearchCriteria)}.
@@ -219,12 +194,19 @@ public abstract class SearchBookBaseFragment
      *
      * @return the search-id, or {@code 0} if no search was started
      */
-    int onSearch(@NonNull final BookSearchCriteria criteria) {
+    @EmptySuper
+    int startSearch(@NonNull final BookSearchCriteria criteria) {
+        // Warn the user, AND abort.
+        if (!ServiceLocator.getInstance().getNetworkChecker().isNetworkAvailable()) {
+            //noinspection DataFlowIssue
+            Snackbar.make(getView(), R.string.error_network_please_connect,
+                          Snackbar.LENGTH_LONG).show();
+            return 0;
+        }
         return coordinator.search(criteria);
     }
 
-    @CallSuper
-    void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> ignored) {
+    private void onSearchCancelled(@NonNull final LiveDataEvent<Boolean> ignored) {
         closeProgressDialog();
         //noinspection DataFlowIssue
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
@@ -250,7 +232,7 @@ public abstract class SearchBookBaseFragment
     }
 
     /**
-     * This is the base method which will interact with the usr as needed.
+     * This is the base method which will interact with the user as needed.
      * Override as needed, call super as needed only.
      *
      * @param result from a search
