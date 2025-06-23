@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -65,11 +64,9 @@ public class SearchBookByExternalIdViewModel
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
      * @param args    {@link Fragment#requireArguments()}
      */
-    void init(@NonNull final Context context,
-              @NonNull final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (style == null) {
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);

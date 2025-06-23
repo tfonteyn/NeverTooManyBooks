@@ -114,8 +114,7 @@ public class SearchBookByExternalIdFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), requireArguments());
+        vm.init(requireArguments());
     }
 
     @Override
