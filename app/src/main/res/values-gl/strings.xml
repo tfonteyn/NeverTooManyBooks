@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -871,4 +868,6 @@
         <item quantity="other">Hai %1$d códigos ISBN previamente introducidos. Queres iniciar unha busca dos mesmos ou eliminalos?</item>
     </plurals>
     <string name="action_stop_searching">Deter a busca</string>
+    <string name="action_save_for_later">Gardar para máis tarde</string>
+    <string name="confirm_leave_isbn_search">Hai buscas en curso e/ou resultados non gardados.</string>
 </resources>
