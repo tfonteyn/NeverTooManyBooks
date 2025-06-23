@@ -226,7 +226,8 @@ public class SearchBookByIsbnFragment
             final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(v.getContext());
             final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
             if (!code.isValid(strictIsbn)) {
-                vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, code));
+                vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
+                                              code.asText()));
                 return;
             }
 
