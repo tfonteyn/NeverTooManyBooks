@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
@@ -373,10 +374,8 @@ public class DnbSearchEngine
                             }
                             case "Sprache":
                             case "Language": {
-                                book.setLanguage(languages
-                                                         .getISO3FromDisplayLanguage(context,
-                                                                                     locale,
-                                                                                     td.text()));
+                                book.setLanguage(languages.getISO3FromDisplayLanguage(
+                                        context, locale, td.text()));
                                 break;
                             }
                             case "Genre": {
@@ -390,7 +389,7 @@ public class DnbSearchEngine
 
                                 final List<Tag> tags = Arrays
                                         .stream(split)
-                                        .map(String::strip)
+                                        .map(SearchEngineUtils::cleanName)
                                         .filter(name -> !tagsToIgnore.contains(name))
                                         .map(Tag::new)
                                         .collect(Collectors.toList());
@@ -402,7 +401,7 @@ public class DnbSearchEngine
                             case "Work": {
                                 // The original title for a translated book
                                 // Can have Series/nr prefixed; let the user clean that up.
-                                book.setTranslatedFromTitle(td.text());
+                                book.setTranslatedFromTitle(SearchEngineUtils.cleanName(td.text()));
                                 break;
                             }
                             case "Teil von":
@@ -486,7 +485,7 @@ public class DnbSearchEngine
             text = PATTERN_BAR.split(text)[0];
         }
 
-        text = text.strip();
+        text = SearchEngineUtils.cleanName(text);
         for (final String suffix : TITLE_SUFFIXES) {
             if (text.endsWith(suffix)) {
                 text = text.substring(0, text.length() - suffix.length() - 1).strip();
@@ -534,7 +533,7 @@ public class DnbSearchEngine
             Element e = it.next();
 
             while (e != null && e.nameIs("a")) {
-                final String name = e.text();
+                final String name = SearchEngineUtils.cleanName(e.text());
                 final Author author = Author.from(name);
                 final String url = e.attr("href");
                 final Matcher matcher = AUTHOR_ID.matcher(url);
@@ -604,7 +603,7 @@ public class DnbSearchEngine
                              @NonNull final Book book) {
         final Element a = td.selectFirst("a");
         if (a != null) {
-            final String title = a.text();
+            final String title = SearchEngineUtils.cleanName(a.text());
             if (!title.isBlank()) {
                 final Series series = Series.from(title);
                 final Node node = a.nextSibling();
@@ -640,7 +639,8 @@ public class DnbSearchEngine
         final String text = td.text();
         if (text.contains(" ; ")) {
             final String[] split = PATTERN_SERIES_NR.split(text);
-            final Series series = Series.from(split[0]);
+            final String title = SearchEngineUtils.cleanName(split[0]);
+            final Series series = Series.from(title);
             series.setNumber(split[1].strip());
             book.add(series);
         } else {
@@ -682,12 +682,12 @@ public class DnbSearchEngine
                 final String name;
                 if (brSplit[0].contains(":")) {
                     final String[] parts = brSplit[0].split(":", 2);
-                    name = parts[parts.length - 1];
+                    name = SearchEngineUtils.cleanName(parts[parts.length - 1]);
                 } else {
-                    name = brSplit[0];
+                    name = SearchEngineUtils.cleanName(brSplit[0]);
                 }
 
-                if (name != null && !name.isBlank()) {
+                if (!name.isBlank()) {
                     book.add(Publisher.from(name));
                 }
 
