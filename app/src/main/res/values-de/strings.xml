@@ -864,7 +864,7 @@
     <string name="pt_fetch_author_info">Autoreninformationen abrufen</string>
     <string name="action_stop_searching">Suche abbrechen</string>
     <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">"Es existiert %1$d  zuvor eingegebene ISBN. Willst du danach suchen, or soll sie gelöscht werden?"</item>
-        <item quantity="other">"Es existieren %1$d  zuvor eingegebene ISBNs. Willst du danach suchen, or sollen sie gelöscht werden?"</item>
+        <item quantity="one">Es gibt %1$d zuvor eingegebenen ISBN-Code. Willst du danach suchen, order soll er entfernt werden?</item>
+        <item quantity="other">Es sind %1$d zuvor eingegebene ISBN-Codes vorhanden. Willst du danach suchen, order sollen sie entfernt werden?</item>
     </plurals>
 </resources>
