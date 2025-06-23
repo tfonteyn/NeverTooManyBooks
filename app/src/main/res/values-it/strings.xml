@@ -133,6 +133,8 @@
     <string name="bookshelf_my_books">I miei libri</string>
     <string name="btn_all_books">Tutti i libri</string>
     <string name="action_clear_queue">Cancella coda</string>
+    <string name="action_stop_searching">Smettere di cercare</string>
+    <string name="action_save_for_later">Salva per dopo</string>
     <string name="action_disable_message">Disattiva messaggio</string>
     <string name="action_email">Email</string>
     <string name="btn_just_this_shelf">Solo questa libreria</string>
@@ -177,6 +179,7 @@
     <string name="confirm_rebuild_orderby_columns">Ciò ricostruirà i dati di ordinamento al riavvio dell’app. Sei sicuro di voler continuare?</string>
     <string name="confirm_registration_benefits">Questa funzione beneficia della registrazione con %1$s. Desideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione «%2$s» nelle impostazioni.</string>
     <string name="confirm_registration_required">Questa funzione richiede la registrazione con %1$s. Vuoi vedere maggiori informazioni?</string>
+    <string name="confirm_leave_isbn_search">Ci sono ricerche in corso e/o risultati non salvati.</string>
     <string name="confirm_remove_toc_entry">Rimuovere il titolo «%1$s» di %2$s da questo libro?</string>
     <string name="confirm_scope_for_change">Hai modificato:\n «%1$s»\n in\n «%2$s»\n\nCome desideri applicare questa modifica?\nNota: La scelta «%3$s» sarà applicata immediatamente. Se scegli «%4$s», verrà creato un nuovo %5$s.</string>
     <string name="confirm_scope_for_delete">Elimina il titolo «%1$s» di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta «%3$s» non può essere annullata!</string>

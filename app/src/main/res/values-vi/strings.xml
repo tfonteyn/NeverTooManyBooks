@@ -81,6 +81,8 @@
     <string name="action_crop">Cắt</string>
     <string name="action_apply">Áp dụng</string>
     <string name="action_delete">Xóa</string>
+    <string name="action_stop_searching">Dừng tìm kiếm</string>
+    <string name="action_save_for_later">Lưu lại để xem sau</string>
     <string name="action_disable_message">Tắt tin nhắn</string>
     <string name="action_discard">Loại bỏ</string>
     <string name="action_done">Xong</string>
@@ -180,6 +182,7 @@
     <string name="confirm_rebuild_orderby_columns">Điều này sẽ xây dựng lại dữ liệu sắp xếp khi ứng dụng được khởi động lại. Bạn có chắc chắn muốn tiếp tục không?</string>
     <string name="confirm_registration_benefits">Tính năng này được hưởng lợi từ việc đăng ký với %1$s. Bạn có muốn xem thêm thông tin hay tắt thông báo này không?\n Bạn có thể tìm thấy thông tin này sau này trong phần “%2$s” trong thiết đặt.</string>
     <string name="confirm_registration_required">Tính năng này yêu cầu đăng ký với %1$s. Bạn có muốn xem thêm thông tin không?</string>
+    <string name="confirm_leave_isbn_search">Có những tìm kiếm đang diễn ra và/hoặc kết quả chưa được lưu.</string>
     <string name="confirm_remove_toc_entry">Loại bỏ nhan đề “%1$s” của %2$s khỏi cuốn sách này?</string>
     <string name="confirm_scope_for_change">Bạn đã thay đổi:\n “%1$s”\n thành\n “%2$s”\n\nBạn muốn áp dụng thay đổi này như thế nào?\nLưu ý: Lựa chọn “%3$s” sẽ được áp dụng ngay lập tức. Nếu bạn chọn “%4$s”, thì %5$s mới sẽ được tạo.</string>
     <string name="confirm_scope_for_delete">Xóa nhan đề “%1$s” bởi %2$s\n\nBạn muốn áp dụng thay đổi này như thế nào?\nLưu ý: Không thể hoàn tác lựa chọn “%3$s”!</string>

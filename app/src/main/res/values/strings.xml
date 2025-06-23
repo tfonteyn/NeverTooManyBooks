@@ -924,9 +924,12 @@
     <string name="option_enable_sync_options">Enable sync options</string>
     <!-- endregion -->
     <!-- region ========== Messages for actions that need confirming first. -->
+    <!-- Generic "are you sure?" -->
     <string name="confirm_continue">Are you sure you want to continue?</string>
+    <!-- Message shown when the user is editing and presses 'back' before saving. -->
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
-
+    <!-- Message shown when the user is searching for ISBN codes in batch-mode, and presses 'back'. -->
+    <string name="confirm_leave_isbn_search">There are ongoing searches and/or unsaved results.</string>
 
     <!-- Param 1: book title
          Param 2: author name -->
@@ -1103,18 +1106,21 @@
     <string name="action_show_options">Options</string>
     <string name="action_clear_queue">Clear queue</string>
     <string name="action_stop_scanning">Stop scanning</string>
+    <!-- Button -->
     <string name="action_stop_searching">Stop searching</string>
-    <!-- The user wants to permanently hide a particular message/alert/... -->
+    <!-- Button: Save for later processing; Save for later editing; etc... -->
+    <string name="action_save_for_later">Save for later</string>
+    <!-- Button: The user wants to permanently hide a particular message/alert/... -->
     <string name="action_disable_message">Disable message</string>
     <!-- [VERIFIED] -->
     <string name="action_import">Import</string>
     <!-- [VERIFIED] -->
     <string name="action_export">Export</string>
     <string name="action_synchronize">Synchronize</string>
-    <!-- Small screens; Button text; Ideally 3-5 characters long. -->
+    <!-- Button: Ideally 3-5 characters long. -->
     <string name="action_show_toc"
             translatable="false">@string/lbl_table_of_content_short</string>
-    <!-- Large screens; Button text; max 25 chars -->
+    <!-- Button: max 25 chars -->
     <string name="action_show_toc_long">Show Table Of Content</string>
 
     <!-- Menu option -->

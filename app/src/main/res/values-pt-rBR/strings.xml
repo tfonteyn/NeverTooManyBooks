@@ -255,4 +255,7 @@
     <string name="site_description_czech">Tcheco e muito mais</string>
     <string name="pt_search_resolve_authors">Resolver pseudônimos de autores</string>
     <string name="menu_search_updates">Busca de atualizações</string>
+    <string name="action_stop_searching">Parar de pesquisar</string>
+    <string name="action_save_for_later">Salvar para depois</string>
+    <string name="confirm_leave_isbn_search">Há pesquisas em andamento e/ou resultados não salvos.</string>
 </resources>

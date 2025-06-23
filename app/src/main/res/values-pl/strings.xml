@@ -137,6 +137,8 @@
     <string name="bookshelf_my_books">Moje książki</string>
     <string name="btn_all_books">Wszystkie książki</string>
     <string name="action_clear_queue">Wyczyść kolejkę</string>
+    <string name="action_stop_searching">Przestań szukać</string>
+    <string name="action_save_for_later">Zapisz na później</string>
     <string name="action_disable_message">Wyłącz komunikat</string>
     <string name="action_email">Poczta elektroniczna</string>
     <string name="btn_just_this_shelf">Tylko ta półka</string>
@@ -181,6 +183,7 @@
     <string name="confirm_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować?</string>
     <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
     <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
+    <string name="confirm_leave_isbn_search">Trwają wyszukiwania i/lub wyniki nie zostały zapisane.</string>
     <string name="confirm_remove_toc_entry">Usunąć tytuł „%1$s” autorstwa %2$s z tej książki?</string>
     <string name="confirm_scope_for_change">Zmieniłeś:\n „%1$s”\n na\n „%2$s”\n\nJak chcesz zastosować tę zmianę?\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast. Jeśli wybierzesz „%4$s”, zostanie utworzone nowe %5$s.</string>
     <string name="confirm_scope_for_delete">Usuń tytuł „%1$s” do %2$s.\n\nJak chcesz zastosować tę zmianę?\nOSTRZEŻENIE: wyboru „%3$s” nie można cofnąć!</string>

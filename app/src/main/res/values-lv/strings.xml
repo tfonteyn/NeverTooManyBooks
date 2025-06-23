@@ -195,5 +195,8 @@
     <string name="yes">Jā</string>
     <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_wikidata_claim_author_id">Wikidata “claim/P” kods autora id</string>
+    <string name="action_stop_searching">Pārtrauciet meklēšanu</string>
+    <string name="action_save_for_later">Saglabāt vēlāk</string>
+    <string name="confirm_leave_isbn_search">Notiek meklēšana un/vai netiek saglabāti rezultāti.</string>
 
 </resources>

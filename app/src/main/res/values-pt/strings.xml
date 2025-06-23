@@ -335,6 +335,7 @@
     <string name="option_barcode_scan_mode_manual">Manual</string>
     <string name="option_barcode_scan_mode_continuous">Ler continuamente</string>
     <string name="option_isbn_strict">ISBN estrito</string>
+    <string name="confirm_leave_isbn_search">Existem pesquisas em curso e/ou resultados não guardados.</string>
     <string name="confirm_remove_toc_entry">Remover o título “%1$s” por %2$s deste livro?</string>
     <string name="confirm_delete_style">Excluir o estilo “%1$s”?</string>
     <string name="confirm_merge_bookshelves">A prateleira que está a modificar já existe. Gostaria de as fundir?</string>
@@ -564,6 +565,8 @@
     <string name="action_show_options">Opções</string>
     <string name="action_clear_queue">Limpar fila</string>
     <string name="action_stop_scanning">Parar a leitura</string>
+    <string name="action_stop_searching">Parar de procurar</string>
+    <string name="action_save_for_later">Guardar para mais tarde</string>
     <string name="action_disable_message">Desativar mensagem</string>
     <string name="action_import">Importar</string>
     <string name="action_export">Exportar</string>

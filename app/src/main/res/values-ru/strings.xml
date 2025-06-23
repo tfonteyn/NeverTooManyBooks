@@ -137,6 +137,8 @@
     <string name="bookshelf_my_books">Мои книги</string>
     <string name="btn_all_books">Все книги</string>
     <string name="action_clear_queue">Очистить очередь</string>
+    <string name="action_stop_searching">Прекратить поиск</string>
+    <string name="action_save_for_later">Сохранить на потом</string>
     <string name="action_disable_message">Отключить сообщение</string>
     <string name="action_email">электронная почта</string>
     <string name="btn_just_this_shelf">Только эта книжная полка</string>
@@ -181,6 +183,7 @@
     <string name="confirm_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить?</string>
     <string name="confirm_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s. Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «%2$s» в настройках.</string>
     <string name="confirm_registration_required">Эта функция требует регистрации в %1$s. Хотите увидеть больше информации?</string>
+    <string name="confirm_leave_isbn_search">Поиск продолжается и/или результаты не сохранены.</string>
     <string name="confirm_remove_toc_entry">Удалить название «%1$s» пользователя %2$s из этой книги?</string>
     <string name="confirm_scope_for_change">Вы изменили:
 \n «%1$s»

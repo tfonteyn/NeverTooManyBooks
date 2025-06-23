@@ -84,6 +84,7 @@
     <string name="action_create">Aanmaken</string>
     <string name="action_apply">Toepassen</string>
     <string name="action_delete">Verwijderen</string>
+    <string name="action_save_for_later">Opslaan voor later</string>
     <string name="action_disable_message">Bericht uitschakelen</string>
     <string name="action_discard">Weggooien</string>
     <string name="action_done">Klaar</string>
@@ -176,6 +177,7 @@
     <string name="confirm_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan?</string>
     <string name="confirm_registration_benefits">Deze functie profiteert van registratie bij %1$s. Wil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
     <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s. Wil je meer informatie zien?</string>
+    <string name="confirm_leave_isbn_search">Er zijn lopende zoekopdrachten en/of niet-opgeslagen resultaten.</string>
     <string name="confirm_remove_toc_entry">De titel „%1$s” door %2$s uit dit boek verwijderen?</string>
     <string name="confirm_scope_for_change">Je wijzigde:\n „%1$s”\n naar\n „%2$s”\n\nHoe wil je deze verandering toepassen?\nNB: De keuze „%3$s” wordt onmiddellijk toegepast. Als u „%4$s” kiest, wordt een nieuwe %5$s aangemaakt.</string>
     <string name="confirm_scope_for_delete">Verwijder de titel „%1$s” door %2$s.\n\nHoe wilt u deze wijziging toepassen?\nWAARSCHUWING: De keuze „%3$s” kan niet ongedaan worden gemaakt!</string>

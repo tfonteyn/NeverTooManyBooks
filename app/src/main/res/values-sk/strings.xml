@@ -296,6 +296,8 @@
     <string name="action_show_options">Možnosti</string>
     <string name="action_clear_queue">Vyčistiť front</string>
     <string name="action_stop_scanning">Zastaviť skenovanie</string>
+    <string name="action_stop_searching">Prestaňte hľadať</string>
+    <string name="action_save_for_later">Uložiť na neskôr</string>
     <string name="action_disable_message">Zakázať správu</string>
     <string name="action_import">Importovať</string>
     <string name="action_export">Exportovať</string>
@@ -710,6 +712,7 @@
     <string name="option_lend_out_book">Požičať…</string>
     <string name="option_goto_next_book_without_cover">Preskočiť na nasledujúcu knihu bez obálky</string>
     <string name="option_search_books_in_series">Knihy v tejto sérii</string>
+    <string name="confirm_leave_isbn_search">Prebieha vyhľadávanie a/alebo sú neuložené výsledky.</string>
     <string name="confirm_remove_toc_entry">Odstrániť názov „%1$s“ od %2$s z tejto knihy?</string>
     <string name="btn_show_list">Zobraziť zoznam</string>
     <string name="option_apply_to_this_node_only">Iba tento uzol</string>

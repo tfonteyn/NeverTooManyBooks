@@ -138,6 +138,7 @@ A question mark is written as the character semicolon: ';'
     <string name="bookshelf_my_books">Τα βιβλία μου</string>
     <string name="btn_all_books">Όλα τα βιβλία</string>
     <string name="action_clear_queue">Εκκαθάριση ουράς</string>
+    <string name="action_save_for_later">Αποθήκευση για αργότερα</string>
     <string name="action_disable_message">Απενεργοποίηση μηνυμάτων</string>
     <string name="action_email">ηλεκτρονικό ταχυδρομείο</string>
     <string name="btn_just_this_shelf">Μόνο αυτό το ράφι βιβλίου</string>
@@ -183,6 +184,7 @@ A question mark is written as the character semicolon: ';'
     <string name="confirm_rebuild_orderby_columns">Αυτό θα επαναδημιουργήσει τα δεδομένα ταξινόμησης κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις;</string>
     <string name="confirm_registration_benefits">Αυτή η δυνατότητα επωφελείται από την εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες σε μεταγενέστερη ημερομηνία κάτω από την ενότητα «%2$s» στις ρυθμίσεις.</string>
     <string name="confirm_registration_required">Αυτή η λειτουργία απαιτεί εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες;</string>
+    <string name="confirm_leave_isbn_search">Υπάρχουν συνεχιζόμενες αναζητήσεις ή/και μη αποθηκευμένα αποτελέσματα.</string>
     <string name="confirm_remove_toc_entry">Να καταργηθεί ο τίτλος «%1$s» κατά %2$s από αυτό το βιβλίο;</string>
     <string name="confirm_scope_for_change">Έχετε αλλάξει:\n «%1$s»\n σε\n «%2$s»\n\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία. Εάν επιλέξετε «%4$s», τότε θα δημιουργηθεί ένα νέο %5$s.</string>
     <string name="confirm_scope_for_delete">Διαγράψτε τον τίτλο «%1$s» κατά %2$s\n\nΠώς θέλετε να εφαρμόσετε αυτήν την αλλαγή;\nΠΡΟΕΙΔΟΠΟΙΗΣΗ: Η επιλογή «%3$s» δεν μπορεί να αναιρεθεί!</string>

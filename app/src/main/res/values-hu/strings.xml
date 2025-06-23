@@ -460,6 +460,7 @@
     <string name="action_clear_queue">Várólista törlése</string>
     <string name="lbl_publisher">Kiadó</string>
     <string name="confirm_unsaved_edits">Nem mentett módosításai vannak, ha most kilép, ezek elvesznek.</string>
+    <string name="confirm_leave_isbn_search">Vannak folyamatban lévő keresések és/vagy mentetlen eredmények.</string>
     <string name="confirm_remove_toc_entry">Eltávolítja a könyvből a következőt: „%2$s - %1$s”?</string>
     <string name="confirm_scope_for_delete">A következő törlése: „%2$s - %1$s”\n\nHogyan kívánja alkalmazni ezt a módosítást?\nMegjegyzés: Az „%3$s” választás nem vonható vissza!</string>
     <string name="confirm_delete_book">Ez teljesen törli a következő könyvet: „%2$s - %1$s”\n\nBiztosan folytatja?</string>
@@ -496,6 +497,8 @@
     <string name="action_less_ellipsis">Kevesebb…</string>
     <string name="action_merge">Egyesítés</string>
     <string name="action_duplicate">Megkettőzés</string>
+    <string name="action_stop_searching">Ne keress tovább</string>
+    <string name="action_save_for_later">Mentés későbbre</string>
     <string name="action_disable_message">Üzenet letiltása</string>
     <string name="action_synchronize">Szinkronizálás</string>
     <string name="lbl_edit_style">Stílus szerkesztése</string>
