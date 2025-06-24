@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -54,7 +57,6 @@
     <string name="X_action_use_default_setting">使用默认设置</string>
     <string name="X_error_authentication_failed">验证失败</string>
     <string name="X_error_network_site_has_problems">该网站未按预期运行。</string>
-    <string name="X_httpErrorIO">无法与服务器通信。请稍后再试。</string>
     <string name="X_info_not_authorized">违例</string>
     <string name="X_info_site_authorization_successful">%1$s 认证成功</string>
     <string name="X_info_tap_on_image_to_select">点击大图来选择它。</string>
@@ -65,12 +67,7 @@
     <string name="X_lbl_system">（系统）</string>
     <string name="X_lbl_thumbnails">缩略图</string>
     <string name="X_neither">都不是</string>
-    <string name="X_option_bob_filter_read_no">未读图书</string>
-    <string name="X_option_bob_filter_read_yes">已读图书</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">对话框和菜单</string>
     <string name="X_style_type_defaults">默认样式设置</string>
-    <string name="X_whichImageCaptureApplication">使用以下应用截图</string>
-    <string name="X_whichSendToApplication">通过以下应用发送</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="a_space_b">%1$s %2$s</string>
@@ -251,7 +248,6 @@
     <string name="info_export_successful">导出成功</string>
     <string name="info_import_complete">"导入已完成"</string>
     <string name="info_import_partially_complete">部分导入完成</string>
-    <string name="info_isfdb_warning_limited_to">（仅支持ISFDB）</string>
     <string name="info_maintenance_clear_deleted_book_records">这将清除已删除图书的历史。实际不会删除图书。</string>
     <string name="info_maintenance_sync_deleted_book_records">这将检查从另一设备导入文件中的已删除图书历史。换句话说，在那台设备上删除的图书，也会将其在本设备上删除。</string>
     <string name="info_nothing_to_do">无事可做。</string>
@@ -709,11 +705,8 @@
     <string name="pt_search_prefer_isbn10">可用时使用 ISBN-10</string>
     <string name="pt_search_reformat_color">标准化“图书颜色”名称</string>
     <string name="pt_search_reformat_format">标准化“图书格式”名称</string>
-    <string name="pt_search_resolve_authors_using_site_x">用 %1$s 网站解析作者笔名</string>
     <string name="pt_search_result_order">搜索返回最新书籍或者第找到的第一本。</string>
     <string name="pt_search_show_menu_options">显示搜索菜单</string>
-    <string name="pt_search_uses_publisher">搜索时使用出版商</string>
-    <string name="pt_show_title_reordered">将标题显示为…</string>
     <string name="pt_sort_title_reordered">标题排序方式</string>
     <string name="pt_storage_volume">储存位置</string>
     <string name="pt_thumbnails_cache_resized">缓存尺寸改变的图像</string>
@@ -832,7 +825,6 @@
     <string name="lbl_identifier">识别符</string>
     <string name="lbl_identifiers">识别符</string>
     <string name="info_tap_to_move_tag">轻按标签将其移动到书籍或从书籍移出。</string>
-    <string name="X_confirm_delete_tag">删除标签 “%1$s”？\n\n将从所有设置了该标签的书籍处移除它。不会删除书籍本身。</string>
     <string name="confirm_merge_tags">你正修改的标签已存在。你要合并它们吗？</string>
     <string name="info_substitutions_one_per_line">每行添加一个替代</string>
     <string name="confirm_delete_tag_from_x_books">删除 “%1$s” 标签？\n\n将从 %2$s 处删除它。书籍本身不会被删除。</string>
@@ -850,7 +842,6 @@
     <string name="action_restore_default_identifiers">恢复默认识别符</string>
     <string name="pt_bob_show_group_book_count">显示每组中的书籍数。</string>
     <string name="site_description_czech">捷克语及更多</string>
-    <string name="pt_search_resolve_authors">解析作者笔名</string>
     <string name="lbl_book_uri">书籍 URL</string>
     <string name="lbl_author_uri">作者 URL</string>
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">需为空值、或有单个“%s” ID 占位符的有效 “https” URL</string>

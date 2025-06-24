@@ -60,7 +60,6 @@
     <string name="confirm_continue">Weet je zeker dat je door wilt gaan?</string>
     <string name="X_error_authentication_failed">Authenticatie mislukt</string>
     <string name="X_error_network_site_has_problems">De website heeft problemen.</string>
-    <string name="X_httpErrorIO">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
     <string name="X_info_not_authorized">Niet geautoriseerd</string>
     <string name="X_info_site_authorization_successful">%1$s autorisatie gelukt</string>
     <string name="X_lbl_folder">Map</string>
@@ -72,8 +71,6 @@
     <string name="X_lbl_general">Algemeen</string>
     <string name="tip_booklist_style_defaults">Gebruik dit scherm om de standaard kenmerken van alle stijlen in te stellen. Deze worden gebruikt door alle ingebouwde stijlen en als uitgangspunt voor elke stijl die je zelf definieert.</string>
     <string name="X_action_use_default_setting">Standaardinstellingen gebruiken</string>
-    <string name="X_whichImageCaptureApplication">Afbeelding vastleggen met</string>
-    <string name="X_whichSendToApplication">Verzenden met</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_dialog_message">Het lijkt erop dat &APP_NAME; is gecrasht. Tik op „%1$s” om een rapport op te slaan op een locatie naar keuze. U kunt dit rapport gebruiken om een nieuw probleem te melden op de projectwebsite.</string>
@@ -157,7 +154,6 @@
     <string name="confirm_delete_publisher_from_x_books">Verwijder de uitgever „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd. Overweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_series_from_x_books">Verwijder de reeks „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd. Overweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden.</string>
     <string name="confirm_delete_substitutions">De substituties voor „%1$s” verwijderen?</string>
-    <string name="X_confirm_delete_tag">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit alle boeken waarop deze tag is gezet. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_tag_from_x_books">Verwijder de tag „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_identifier_from_x_books">Verwijder de identificatiecode „%1$s”?\n\nHet wordt verwijderd uit %2$s. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_delete_style">De stijl „%1$s” verwijderen?</string>
@@ -246,7 +242,6 @@
     <string name="option_info_delete_removed_books">Boeken die op het andere apparaat verwijderd zijn, worden ook op dit apparaat verwijderd.</string>
     <string name="info_import_complete">Importeren voltooid</string>
     <string name="info_import_partially_complete">Gedeeltelijke import voltooid</string>
-    <string name="info_isfdb_warning_limited_to">(alleen ondersteund door de ISFDB-website)</string>
     <string name="info_purge_blns_all">Wis de node status van alle lijsten</string>
     <string name="info_purge_blns_item_name">Wis de node status van %1$s „%2$s”?</string>
     <string name="info_rebuild_scheduled">Herbouw gepland</string>
@@ -488,8 +483,6 @@
     <string name="option_bob_filter_isbn_yes">Met ISBN</string>
     <string name="option_bob_filter_lend_out_no">Niet Uitgeleende boeken</string>
     <string name="option_bob_filter_lend_out_yes">Uitgeleende boeken</string>
-    <string name="X_option_bob_filter_read_no">Niet Gelezen boeken</string>
-    <string name="X_option_bob_filter_read_yes">Gelezen boeken</string>
     <string name="option_bob_filter_signed_no">Niet Gesigneerd boeken</string>
     <string name="option_bob_filter_signed_yes">Gesigneerd boeken</string>
     <string name="option_book_sync_list_with_details">Synchroniseer/positioneer de lijst</string>
@@ -653,10 +646,6 @@
     <string name="pt_search_reformat_color">Standaardiseer namen van „boekkleuren”</string>
     <string name="pt_search_reformat_format">Standaardiseer namen van „boekformaten”</string>
     <string name="pt_fetch_author_info_using_site_x">Auteurinformatie ophalen van %1$s</string>
-    <string name="pt_search_resolve_authors">Auteurspseudoniemen oplossen</string>
-    <string name="pt_search_resolve_authors_using_site_x">Los auteurspseudoniemen op met behulp van de %1$s website</string>
-    <string name="pt_search_uses_publisher">Zoeken maakt gebruik van de uitgever</string>
-    <string name="pt_show_title_reordered">Toon titels als…</string>
     <string name="pt_sort_title_reordered">Sorteer titels op</string>
     <string name="pt_storage_volume">Opslagvolume</string>
     <string name="pt_cover_undo_enabled">Bewerkingen op boekomslagen ongedaan maken</string>
@@ -830,7 +819,6 @@
     <string name="lbl_track_progress">Vooruitgang</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Moet groter of gelijk zijn aan de huidige pagina</string>
     <string name="info_builtin_style_asterix">(* standaard stijlen)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Dialogen en menu’s</string>
     <string name="pe_option_bottom_sheet">Altijd onderaan het scherm</string>
     <string name="pt_ui_dialogs_mode">Dialogen</string>
     <string name="pe_ui_dialog_mode_classic">Altijd als een klassiek dialoogvenster</string>

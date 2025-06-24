@@ -66,7 +66,6 @@
     <string name="X_error_authentication_failed">Authentification échouée</string>
     <string name="error_record_must_contain_column">L’enregistrement doit contenir un champ nommé « %1$s ».</string>
     <string name="X_error_network_site_has_problems">Le site Web a des problèmes.</string>
-    <string name="X_httpErrorIO">Impossible d’établir une communication avec le serveur. Veuillez réessayer ultérieurement.</string>
     <string name="X_info_not_authorized">Non autorisé</string>
     <string name="X_info_site_authorization_successful">Autorisation %1$s accordée</string>
     <string name="X_lbl_folder">Dossier</string>
@@ -77,8 +76,6 @@
     <string name="X_lbl_general">Général</string>
     <string name="tip_booklist_style_defaults">Cet écran permet de définir les caractéristiques par défaut de tous les styles. Celles-ci sont utilisées par tous les styles intégrés et comme point de départ pour tout style que vous définissez vous-même.</string>
     <string name="X_action_use_default_setting">Utiliser les paramètres par défaut</string>
-    <string name="X_whichImageCaptureApplication">Capturer une image avec</string>
-    <string name="X_whichSendToApplication">Envoyer avec</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_dialog_message">Il semblerait que &APP_NAME; soit tombé en panne. Touchez « %1$s » pour enregistrer un rapport à l’emplacement de votre choix. Vous pouvez utiliser ce rapport pour signaler un nouveau problème sur le site web du projet.</string>
@@ -170,7 +167,6 @@
     <string name="confirm_delete_style">Supprimer le style « %1$s » ?</string>
     <string name="confirm_delete_identifier_from_x_books">Supprimer l’identifiant « %1$s » ?\n\nIl sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_delete_substitutions">Supprimer les substitutions pour « %1$s » ?</string>
-    <string name="X_confirm_delete_tag">Supprimer l’étiquette « %1$s » ?\n\nElle sera supprimée de tous les livres sur lesquels elle est définie. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_delete_tag_from_x_books">Supprimer l’étiquette « %1$s » ?\n\nElle sera supprimée de %2$s. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Vraiment supprimer le titre « %1$s » (par %2$s) ?\n\nIl sera supprimée de %3$s. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_duplicate_book_message">Le livre que vous tentez d’ajouter existe déjà dans la base de donnnées. Êtes vous certain de vouloir en ajouter une nouvelle copie ?</string>
@@ -246,7 +242,6 @@
     <string name="info_authorized">Autorisé</string>
     <string name="option_moving_covers_from_x_to_y">Déplacer toutes les couvertures de « %1$s » vers « %2$s »</string>
     <string name="option_isfdb_menu_populate_toc">Renseigner les titres automatiquement (ISFDB)</string>
-    <string name="info_isfdb_warning_limited_to">(uniquement pris en charge par le site ISFDB)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">À propos de cette application</string>
     <string name="lbl_about_contact">Contact :</string>
@@ -531,8 +526,6 @@
     <string name="option_bob_filter_isbn_yes">Avec ISBN</string>
     <string name="option_bob_filter_lend_out_no">Livres disponibles</string>
     <string name="option_bob_filter_lend_out_yes">Livres en prêt</string>
-    <string name="X_option_bob_filter_read_no">Livres non lus</string>
-    <string name="X_option_bob_filter_read_yes">Livres lus</string>
     <string name="option_bob_filter_signed_no">Livres non signés</string>
     <string name="option_bob_filter_signed_yes">Livres signés</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Tout plier</string>
@@ -613,8 +606,6 @@
     <string name="pt_search_prefer_isbn10">Utilisez ISBN-10 lorsque cela est possible</string>
     <string name="pt_search_reformat_color">Normaliser les noms de « couleur de livre »</string>
     <string name="pt_search_reformat_format">Normaliser les noms de « format livre »</string>
-    <string name="pt_search_uses_publisher">La recherche utilise l’éditeur</string>
-    <string name="pt_show_title_reordered">Afficher les titres en tant que…</string>
     <string name="ps_show_titles_reordered_off">Afficher comme indiqué,\npar exemple « Le Seigneur des anneaux »</string>
     <string name="error_type_not_supported">Type non pris en charge : %1$s…</string>
     <string name="ps_show_titles_reordered_on">Déplacer un article en début de titre vers la fin,\npar exemple « Seigneur des anneaux, Le »</string>
@@ -756,8 +747,6 @@
     <string name="vldt_real_author_must_be_valid">Doit être vide ou un auteur existant</string>
     <string name="confirm_create_real_author">« %1$s » n’existe pas encore. Faut-il les créer ?</string>
     <string name="pt_fetch_author_info_using_site_x">Récupérer les informations sur l\'auteur de %1$s</string>
-    <string name="pt_search_resolve_authors">Résoudre les noms de plume des auteurs</string>
-    <string name="pt_search_resolve_authors_using_site_x">Résoudre les pseudonymes des auteurs à l’aide du site Web %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserver la dénomination au format Bedetheque</string>
     <string name="confirm_toc_list_update_with_books_main_author">Remplacer l’auteur de toutes les entrées par l’auteur principal du livre « %1$s » ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tous les livres en dessous de cette rangée ont des couvertures. Rechercher à nouveau à partir du haut ?</string>
@@ -837,7 +826,6 @@
     <string name="lbl_track_progress">Progrès</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Doit être supérieur ou égal à la page actuelle</string>
     <string name="info_builtin_style_asterix">(* styles par défaut)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Dialogues et menus</string>
     <string name="pe_option_bottom_sheet">Toujours en bas de l’écran</string>
     <string name="pt_ui_dialogs_mode">Dialogues</string>
     <string name="pe_ui_dialog_mode_classic">Toujours sous forme de boîte de dialogue classique</string>

@@ -56,7 +56,6 @@
     <string name="X_error_authentication_failed">Authentifizierung fehlgeschlagen</string>
     <string name="error_record_must_contain_column">Datensatz muss ein Feld namens „%1$s“ enthalten.</string>
     <string name="X_error_network_site_has_problems">Die Website funktioniert nicht erwartungsgemäß.</string>
-    <string name="X_httpErrorIO">Kommunikation mit dem Server konnte nicht hergestellt werden. Bitte versuche es später noch einmal.</string>
     <string name="X_info_not_authorized">Nicht autorisiert</string>
     <string name="X_info_site_authorization_successful">Autorisierung bei %1$s erfolgreich</string>
     <string name="X_lbl_folder">Ordner</string>
@@ -67,8 +66,6 @@
     <string name="X_lbl_general">Allgemein</string>
     <string name="tip_booklist_style_defaults">Auf dieser Seite kannst du die Standardmerkmale aller Stile festlegen. Diese werden von allen integrierten Stilen verwendet und dienen als Ausgangspunkt für jeden selbst definierten Stil.</string>
     <string name="X_action_use_default_setting">Standardeinstellungen verwenden</string>
-    <string name="X_whichImageCaptureApplication">Bild aufnehmen mit</string>
-    <string name="X_whichSendToApplication">Senden via</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_dialog_message">Es sieht so aus, als ob &APP_NAME; abgestürzt ist. Tippe auf „%1$s“, um einen Bericht an einem Ort deiner Wahl zu speichern. Der Bericht kann verwendet werden, um das Problem auf der Projekt-Website rückzumelden.</string>
@@ -159,7 +156,6 @@
     <string name="confirm_delete_style">Den Stil „%1$s“ löschen?</string>
     <string name="confirm_delete_identifier_from_x_books">Bezeichner „%1$s“ löschen?\n\nEr wird aus %2$s entfernt. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_delete_substitutions">Die Ersetzungen für „%1$s“ löschen?</string>
-    <string name="X_confirm_delete_tag">Den Tag „%1$s“ löschen?\n\nEr wird aus allen Büchern entfernt, in denen er gesetzt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_delete_tag_from_x_books">Den Tag „%1$s“ löschen?\n\nEr wird aus %2$s entfernt. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Den Eintrag „%1$s“ (von %2$s) löschen?\n\nEr wird aus %3$s entfernt. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_merge_tags">Der Tag mit dem neuen Namen existiert bereits. Sollen die Einträge zusammengeführt werden?</string>
@@ -235,7 +231,6 @@
     <string name="info_authorized">Autorisiert</string>
     <string name="option_moving_covers_from_x_to_y">Verschiebe alle Cover von „%1$s“ nach „%2$s“</string>
     <string name="option_isfdb_menu_populate_toc">Automatisches Ausfüllen der Titel (nur ISFDB)</string>
-    <string name="info_isfdb_warning_limited_to">(wird nur von der ISFDB-Website unterstützt)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">Über diese App</string>
     <string name="lbl_about_contact">Kontakt:</string>
@@ -520,8 +515,6 @@
     <string name="option_bob_filter_isbn_yes">Mit ISBN</string>
     <string name="option_bob_filter_lend_out_no">Verfügbare Bücher</string>
     <string name="option_bob_filter_lend_out_yes">Verliehene Bücher</string>
-    <string name="X_option_bob_filter_read_no">Bücher ungelesen</string>
-    <string name="X_option_bob_filter_read_yes">Bücher gelesen</string>
     <string name="option_bob_filter_signed_no">Bücher unsigniert</string>
     <string name="option_bob_filter_signed_yes">Bücher signiert</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Stets eingeklappt beginnen</string>
@@ -602,8 +595,6 @@
     <string name="pt_search_prefer_isbn10">Wenn möglich, verwende ISBN-10</string>
     <string name="pt_search_reformat_color">Namen der Buchfarben standardisieren</string>
     <string name="pt_search_reformat_format">Namen der Buchformate standardisieren</string>
-    <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
-    <string name="pt_show_title_reordered">Titel anzeigen als…</string>
     <string name="ps_show_titles_reordered_off">Anzeige wie angegeben,\nz. B. „Der Herr der Ringe“</string>
     <string name="error_type_not_supported">Typ nicht unterstützt: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Artikel am Anfang eines Titels ans Ende verschieben,\nz. B. „Herr der Ringe, Der“</string>
@@ -744,8 +735,6 @@
     <string name="vldt_real_author_must_be_valid">Muss leer oder ein vorhandener Autor sein</string>
     <string name="confirm_create_real_author">„%1$s“ existiert noch nicht. Sollen sie erstellt werden?</string>
     <string name="pt_fetch_author_info_using_site_x">Autoreninformationen von %1$s abrufen</string>
-    <string name="pt_search_resolve_authors">Autoren-Pseudonyme auflösen</string>
-    <string name="pt_search_resolve_authors_using_site_x">Pseudonyme von Autoren über die %1$s Website auflösen</string>
     <string name="pt_bedetheque_search_resolve_formats">Benennung im Bedetheque-Format (französisch) beibehalten</string>
     <string name="confirm_toc_list_update_with_books_main_author">Ersetze den Autor in allen Einträgen durch den Hauptautor des Buches „%1$s“ ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Alle Bücher unterhalb dieser Zeile haben Cover. Nochmals von oben suchen?</string>
@@ -825,7 +814,6 @@
     <string name="lbl_track_progress">Fortschritt</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Muss größer oder gleich der aktuellen Seite sein</string>
     <string name="info_builtin_style_asterix">(* Standardstile)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Dialoge und Menüs</string>
     <string name="pe_option_bottom_sheet">Immer am unteren Rand des Bildschirms</string>
     <string name="pt_ui_dialogs_mode">Dialoge</string>
     <string name="pe_ui_dialog_mode_classic">Immer als klassisches Dialogfenster</string>

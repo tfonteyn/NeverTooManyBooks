@@ -56,7 +56,6 @@
     <string name="X_error_authentication_failed">Kimlik doğrulama başarısız oldu</string>
     <string name="error_record_must_contain_column">Kayıt, “%1$s” adlı bir alan içermelidir.</string>
     <string name="X_error_network_site_has_problems">Web sitesinde sorunlar var.</string>
-    <string name="X_httpErrorIO">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
     <string name="X_info_not_authorized">Yetkilendirilmemiş</string>
     <string name="X_info_site_authorization_successful">%1$s yetkilendirmesi başarılı</string>
     <string name="X_lbl_folder">Klasör</string>
@@ -67,8 +66,6 @@
     <string name="X_lbl_general">Genel</string>
     <string name="tip_booklist_style_defaults">Tüm stillerin varsayılan özelliklerini ayarlamak için bu ekranı kullanın. Bunlar tüm yerleşik stiller tarafından ve kendi tanımladığınız herhangi bir stil için başlangıç noktası olarak kullanılır.</string>
     <string name="X_action_use_default_setting">Varsayılan ayarları kullan</string>
-    <string name="X_whichImageCaptureApplication">Fotoğraf çekmek için şu uygulamayı kullan</string>
-    <string name="X_whichSendToApplication">Göndermek için kullanılacak uygulama</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="action_add">Ekle</string>
@@ -159,7 +156,6 @@
     <string name="confirm_delete_style">“%1$s” stili silinsin mi?</string>
     <string name="confirm_delete_identifier_from_x_books">“%1$s” tanımlayıcısını silelim mi?\n\n%2$s silinecektir. Kitapların kendileri silinmeyecektir.</string>
     <string name="confirm_delete_substitutions">“%1$s” için ikameleri silelim mi?</string>
-    <string name="X_confirm_delete_tag">“%1$s” etiketini silin.\n\nEtiket, üzerinde bulunduğu tüm kitaplardan silinecektir. Kitapların kendileri silinmeyecektir.</string>
     <string name="confirm_delete_tag_from_x_books">“%1$s” etiketini silin.\n\n%2$s silinecektir. Kitapların kendileri silinmeyecektir.</string>
     <string name="confirm_delete_toc_entry_from_x_books">“%1$s” girişini gerçekten sil (%2$s)?\n\n%3$s silinecektir. Kitapların kendisi silinmeyecek.</string>
     <string name="confirm_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>
@@ -242,7 +238,6 @@
     <string name="info_authorized">Yetkilendirildi</string>
     <string name="option_moving_covers_from_x_to_y">Tüm kapakları “%1$s”’den “%2$s”’ye taşıyın</string>
     <string name="option_isfdb_menu_populate_toc">Kitap adlarını kendiliğinden doldur (ISFDB)</string>
-    <string name="info_isfdb_warning_limited_to">(yalnızca ISFDB web sitesi tarafından desteklenir)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">Uygulama hakkında</string>
     <string name="lbl_about_contact">İletişim:</string>
@@ -527,8 +522,6 @@
     <string name="option_bob_filter_isbn_yes">ISBN ile</string>
     <string name="option_bob_filter_lend_out_no">Mevcut kitaplar</string>
     <string name="option_bob_filter_lend_out_yes">Ödünç verilen kitaplar</string>
-    <string name="X_option_bob_filter_read_no">Okunmayan Kitaplar</string>
-    <string name="X_option_bob_filter_read_yes">Okunan Kitaplar</string>
     <string name="option_bob_filter_signed_no">İmzasız kitaplar</string>
     <string name="option_bob_filter_signed_yes">İmzalanan kitaplar</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Tümünü katla</string>
@@ -609,8 +602,6 @@
     <string name="pt_search_prefer_isbn10">Mümkün olduğunda ISBN-10 kullanın</string>
     <string name="pt_search_reformat_color">“Kitap rengi” adlarını standartlaştırma</string>
     <string name="pt_search_reformat_format">“Kitap formatı” adlarını standartlaştırın</string>
-    <string name="pt_search_uses_publisher">Arama yayıncı kullanıyor</string>
-    <string name="pt_show_title_reordered">Başlıkları farklı göster…</string>
     <string name="pt_sort_title_reordered">Başlıkları sırala</string>
     <string name="pt_cover_undo_enabled">Kitap kapaklarındaki işlemleri geri alma</string>
     <string name="ps_cover_undo_disabled">Kapak düzenleme/değiştirme geri alınamaz (daha az depolama alanı kullanır)</string>
@@ -746,8 +737,6 @@
     <string name="vldt_real_author_must_be_valid">Boş veya mevcut bir Yazar olmalıdır</string>
     <string name="confirm_create_real_author">“%1$s” henüz mevcut değil. Yaratılmalılar mı?</string>
     <string name="pt_fetch_author_info_using_site_x">Yazar bilgilerini %1$s\'den getir</string>
-    <string name="pt_search_resolve_authors">Yazar takma adlarını çözme</string>
-    <string name="pt_search_resolve_authors_using_site_x">%1$s web sitesini kullanarak yazar takma adlarını çözün</string>
     <string name="pt_bedetheque_search_resolve_formats">Bedetheque (Fransızca) biçim adlandırmasını koru</string>
     <string name="confirm_toc_list_update_with_books_main_author">Tüm girişlerdeki yazarı kitabın ana yazarı “%1$s” ile değiştirelim mi?</string>
     <string name="confirm_no_missing_covers_search_from_top">Bu sıranın altındaki tüm kitapların kapakları vardır. Baştan tekrar aransın mı?</string>
@@ -835,7 +824,6 @@
     <string name="lbl_track_progress">İlerleme</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Geçerli sayfadan büyük veya eşit olmalıdır</string>
     <string name="info_builtin_style_asterix">(* varsayılan stiller)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Diyaloglar ve Menüler</string>
     <string name="pe_option_bottom_sheet">Her zaman ekranın alt kısmında</string>
     <string name="pt_ui_dialogs_mode">Diyaloglar</string>
     <string name="pe_ui_dialog_mode_classic">Her zaman klasik bir iletişim kutusu olarak</string>

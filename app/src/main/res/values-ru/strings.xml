@@ -64,7 +64,6 @@
     <string name="X_error_authentication_failed">Ошибка аутентификации</string>
     <string name="error_record_must_contain_column">Запись должна содержать поле с именем «%1$s».</string>
     <string name="X_error_network_site_has_problems">На сайте есть проблемы.</string>
-    <string name="X_httpErrorIO">Не удалось подключиться к серверу. Повторите попытку позже.</string>
     <string name="X_info_not_authorized">Не авторизовано</string>
     <string name="X_info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
     <string name="X_lbl_folder">Папка</string>
@@ -75,8 +74,6 @@
     <string name="X_lbl_general">Общие</string>
     <string name="tip_booklist_style_defaults">На этом экране задаются характеристики по умолчанию для всех стилей. Они используются всеми встроенными стилями и являются отправной точкой для любого стиля, который вы определяете самостоятельно.</string>
     <string name="X_action_use_default_setting">Использовать настройки по умолчанию</string>
-    <string name="X_whichImageCaptureApplication">Делать снимки с помощью</string>
-    <string name="X_whichSendToApplication">Выберите приложение</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="action_add">Добавить</string>
@@ -167,7 +164,6 @@
     <string name="confirm_delete_style">Удалить стиль «%1$s»?</string>
     <string name="confirm_delete_identifier_from_x_books">Удалить идентификатор «%1$s»?\n\nОн будет удален с %2$s. Сами книги не будут удалены.</string>
     <string name="confirm_delete_substitutions">Удалить подстановки для «%1$s»?</string>
-    <string name="X_confirm_delete_tag">Удалить тег «%1$s»?\n\nОн будет удален из всех книг, на которых он установлен. Сами книги не будут удалены.</string>
     <string name="confirm_delete_tag_from_x_books">Удалить тег «%1$s»?\n\nОн будет удален с %2$s. Сами книги не будут удалены.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Действительно удалить запись «%1$s» (от %2$s)?\n\nОн будет удален с %3$s. Сами книги не будут удалены.</string>
     <string name="confirm_merge_tags">Тег, который вы изменяете, уже существует. Не хотите ли вы объединить их?</string>
@@ -250,7 +246,6 @@
     <string name="info_authorized">Авторизовано</string>
     <string name="option_moving_covers_from_x_to_y">Перенести все обложки из «%1$s» в «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Автоматически заполнить названия (ISFDB)</string>
-    <string name="info_isfdb_warning_limited_to">(поддерживается только веб-сайтом ISFDB)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">О приложении</string>
     <string name="lbl_about_contact">Контакт:</string>
@@ -535,8 +530,6 @@
     <string name="option_bob_filter_isbn_yes">С ISBN</string>
     <string name="option_bob_filter_lend_out_no">Книги доступны</string>
     <string name="option_bob_filter_lend_out_yes">Книги в долг</string>
-    <string name="X_option_bob_filter_read_no">Книги непрочитанные</string>
-    <string name="X_option_bob_filter_read_yes">Книги читают</string>
     <string name="option_bob_filter_signed_no">Книги без подписи</string>
     <string name="option_bob_filter_signed_yes">Книги подписаны</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Всегда запускать упакованные</string>
@@ -617,8 +610,6 @@
     <string name="pt_search_prefer_isbn10">Используйте ISBN-10, когда это возможно</string>
     <string name="pt_search_reformat_color">Стандартизировать названия книг</string>
     <string name="pt_search_reformat_format">Стандартизировать имена в формате книги</string>
-    <string name="pt_search_uses_publisher">Поиск использует издатель</string>
-    <string name="pt_show_title_reordered">Показать названия как…</string>
     <string name="pt_sort_title_reordered">Сортировать названия по</string>
     <string name="pt_cover_undo_enabled">Отмена операций на обложках книг</string>
     <string name="ps_cover_undo_disabled">Редактирование/замена обложки не может быть отменено (используется меньший объем памяти)</string>
@@ -753,8 +744,6 @@
     <string name="vldt_real_author_must_be_valid">Должно быть пустым или существующим автором</string>
     <string name="confirm_create_real_author">«%1$s» еще не существует. Должны ли они быть созданы?</string>
     <string name="pt_fetch_author_info_using_site_x">Получение информации об авторе из %1$s</string>
-    <string name="pt_search_resolve_authors">Разрешить псевдонимы авторов</string>
-    <string name="pt_search_resolve_authors_using_site_x">Разрешить авторские псевдонимы с помощью веб-сайта %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Сохранить название формата Bedetheque (французский)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Заменить автора во всех записях на основного автора книги «%1$s»?</string>
     <string name="confirm_no_missing_covers_search_from_top">Все книги ниже этого ряда имеют обложки. Искать снова сверху?</string>
@@ -843,7 +832,6 @@
     <string name="lbl_track_progress">Прогресс</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Должна быть больше или равна текущей странице</string>
     <string name="info_builtin_style_asterix">(* стили по умолчанию)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Диалоги и меню</string>
     <string name="pe_option_bottom_sheet">Всегда в нижней части экрана</string>
     <string name="pt_ui_dialogs_mode">Диалоги</string>
     <string name="pe_ui_dialog_mode_classic">Всегда в виде классического диалогового окна</string>

@@ -60,7 +60,6 @@
     <string name="X_action_use_default_setting">使用預設設定</string>
     <string name="X_error_authentication_failed">驗證失敗</string>
     <string name="X_error_network_site_has_problems">該網站未按預期運作。</string>
-    <string name="X_httpErrorIO">無法與伺服器通訊。稍後再試一次。</string>
     <string name="X_info_not_authorized">違例</string>
     <string name="X_info_site_authorization_successful">%1$s 認證成功</string>
     <string name="X_info_tap_on_image_to_select">點擊大圖來選擇它。</string>
@@ -71,12 +70,7 @@
     <string name="X_lbl_system">（系統）</string>
     <string name="X_lbl_thumbnails">縮圖</string>
     <string name="X_neither">都不是</string>
-    <string name="X_option_bob_filter_read_no">未讀圖書</string>
-    <string name="X_option_bob_filter_read_yes">已讀圖書</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">對話框和選單</string>
     <string name="X_style_type_defaults">預設樣式設定</string>
-    <string name="X_whichImageCaptureApplication">使用以下應用程式擷取圖片</string>
-    <string name="X_whichSendToApplication">透過以下應用程式傳送</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s（%2$s）</string>
     <string name="a_space_b">%1$s %2$s</string>
@@ -259,7 +253,6 @@
     <string name="info_export_successful">匯出成功</string>
     <string name="info_import_complete">匯入完成</string>
     <string name="info_import_partially_complete">部分導入完成</string>
-    <string name="info_isfdb_warning_limited_to">（僅支援ISFDB）</string>
     <string name="info_maintenance_clear_deleted_book_records">這將清除已刪除書籍的歷史。實際不會刪除圖書。</string>
     <string name="info_maintenance_sync_deleted_book_records">這將檢查從另一個裝置匯入檔案中的已刪除圖書記錄。換句話說，在那台裝置上刪除的圖書，也會將其在本裝置上刪除。</string>
     <string name="info_nothing_to_do">無事可做。</string>
@@ -715,11 +708,8 @@
     <string name="pt_search_prefer_isbn10">可用時使用 ISBN-10</string>
     <string name="pt_search_reformat_color">標準化「圖書顏色」名稱</string>
     <string name="pt_search_reformat_format">標準化「圖書格式」名稱</string>
-    <string name="pt_search_resolve_authors_using_site_x">用 %1$s 網站解析作者筆名</string>
     <string name="pt_search_result_order">搜尋返回最新書籍或第找到的第一本。</string>
     <string name="pt_search_show_menu_options">顯示搜尋選單</string>
-    <string name="pt_search_uses_publisher">搜尋時使用出版商</string>
-    <string name="pt_show_title_reordered">將標題顯示為…</string>
     <string name="pt_sort_title_reordered">標題排序方式</string>
     <string name="pt_storage_volume">儲存位置</string>
     <string name="pt_thumbnails_cache_resized">快取尺寸改變的圖像</string>
@@ -844,7 +834,6 @@
     <string name="lbl_identifier">識別符</string>
     <string name="lbl_identifiers">識別符</string>
     <string name="confirm_delete_substitutions">刪除「%1$s」的替代？</string>
-    <string name="X_confirm_delete_tag">刪除標籤「%1$s」？\n\n將從所有設定了該標籤的書籍處移除它。不會刪除書籍本身。</string>
     <string name="info_tap_to_move_tag">輕按標籤將其移動到書籍或從書籍移出。</string>
     <string name="lbl_tag_mapper_apply_merge_case">合併只有字母大小寫不同的標籤</string>
     <string name="lbl_tag_mapper_apply_merge_case_result">大/小寫合併</string>
@@ -859,7 +848,6 @@
     <string name="confirm_delete_identifier_from_x_books">刪除識別符 「%1$s」？\n\n將從 %2$s 處刪除它。書籍本身不會被刪除。</string>
     <string name="action_restore_default_identifiers">恢復預設識別符</string>
     <string name="pt_bob_show_group_book_count">顯示每組中的書籍數。</string>
-    <string name="pt_search_resolve_authors">解析作者筆名</string>
     <string name="lbl_book_uri">書籍 URL</string>
     <string name="lbl_author_uri">作者 URL</string>
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">需為空值、或有單一「%s」ID 佔位符的有效「https」URL</string>

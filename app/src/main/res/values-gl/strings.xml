@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -99,7 +102,6 @@
     <string name="httpErrorFailedSslHandshake">Non se puido establecer unha conexión segura.</string>
     <string name="error_email_failed">Fallou o envío do correo electrónico.</string>
     <string name="acra_report_saved">Xa podes visitar a páxina do proxecto en Github e engadir unha nova incidencia. Adxunta o informe que gardaches antes. Se non tes conta en Github, terás que crear unha.</string>
-    <string name="X_httpErrorIO">Non se puido conectar co servidor. Téntao máis tarde.</string>
     <string name="error_unexpected">Produciuse un erro inesperado.</string>
     <string name="error_import_csv_missing_columns_x">O ficheiro debe conter unha columna cun destes nomes: %1$s</string>
     <string name="error_http_401_authorization_failed">Fallou a autorización</string>
@@ -136,8 +138,6 @@
     <string name="X_lbl_folder">Cartafol</string>
     <string name="X_lbl_general">Xeral</string>
     <string name="X_lbl_system">(Sistema)</string>
-    <string name="X_whichImageCaptureApplication">Capturar imaxe con</string>
-    <string name="X_whichSendToApplication">Enviar a través de</string>
     <string name="action_add">Engadir</string>
     <string name="action_apply">Aplicar</string>
     <string name="action_clear">Borrar</string>
@@ -260,7 +260,6 @@
     <string name="info_download_successful">Descarga con éxito</string>
     <string name="cd_btn_drag_handle">Arrastra para reordenar esta lista</string>
     <string name="cd_clear_text_end_icon">Borrar texto</string>
-    <string name="info_isfdb_warning_limited_to">(soportado só polo sitio web da ISFDB)</string>
     <string name="info_site_list">As buscas limítanse a: %1$s</string>
     <string name="info_site_search_field_optional">Opcional. Non todos os sitios web son compatibles con isto.</string>
     <string name="info_identifier_editor"><![CDATA[Por favor, le a <a href="%1$s">documentación</a> sobre identificadores antes de editar.]]></string>
@@ -455,7 +454,6 @@
     <string name="confirm_scope_for_delete">Excluír o título «%1$s» de %2$s\n\nComo queres aplicar este cambio?\nNota: A escolla «%3$s» non se pode desfacer!</string>
     <string name="option_enable_sync_options">Activar opcións de sincronización</string>
     <string name="confirm_delete_publisher_from_x_books">Excluír a editorial «%1$s»?\n\nVaise borrar de %2$s. Os libros en si non se eliminarán. Considera cambiar o nome polo de outra editorial para conservar estes datos.</string>
-    <string name="X_confirm_delete_tag">Queres borrar aa etiqueta «%1$s»?\n\nVaise excluír de todos os libros nos que apareza. Os libros en si non se eliminarán.</string>
     <string name="confirm_delete_identifier_from_x_books">Borrar o identificador «%1$s»?\n\nExcluirase de %2$s. Os libros en si non se eliminan.</string>
     <string name="confirm_delete_substitutions">Excluír as substitucións para «%1$s»?</string>
     <string name="confirm_delete_style">Eliminar o estilo «%1$s»?</string>
@@ -635,7 +633,6 @@
     <string name="pt_storage_volume">Volume de almacenamento</string>
     <string name="pt_maintenance">Mantemento</string>
     <string name="pt_field_visibility">Visibilidade dos campos</string>
-    <string name="pt_show_title_reordered">Amosar títulos como…</string>
     <string name="pt_sort_title_reordered">Ordenación de títulos</string>
     <string name="pc_image_cache">Caché das imaxes</string>
     <string name="lbl_capitalize_none">Sen cambios</string>
@@ -691,7 +688,6 @@
     <string name="option_info_import_books_option_all">Importa novos libros e substitúe os existentes. Usa isto para restaurar unha copia de seguridade.</string>
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Só importar libros modificados desde</string>
     <string name="pt_capitalize_title">Uso de capitais nos títulos</string>
-    <string name="pt_search_resolve_authors_using_site_x">Resolver pseudónimos das autorías usando o sitio %1$s</string>
     <string name="pt_allow_metered_network_data">Permitir o uso de datos móbiles</string>
     <string name="ps_manage_fields">Os campos escollidos estarán visibles nas pantallas engadir/editar libros. Os que non, agóchanse.</string>
     <string name="pv_reformat_titles_prefixes">|</string>
@@ -704,9 +700,7 @@
     <string name="pe_thumbnails_cache_resized_each_time">Redimensiona as imaxes sempre que se precise (usa menos almacenamento pero o desprazamento será máis lento)</string>
     <string name="pt_fetch_author_info">Obter información sobre a autoría</string>
     <string name="pt_fetch_author_info_using_site_x">Obter información da autoría de %1$s</string>
-    <string name="pt_search_resolve_authors">Resolver pseudónimos das autorías</string>
     <string name="pt_search_reformat_format">Estandarizar nomes do «formato de libro»</string>
-    <string name="pt_search_uses_publisher">A busca usa a editorial</string>
     <string name="pt_search_reformat_color">Estandarizar nomes das «cores dos libros»</string>
     <string name="pt_search_prefer_isbn10">Usar o ISBN-10 cando sexa posible</string>
     <string name="pt_collect_series_info_from_toc">Recoller información da serie da táboa de contidos</string>
@@ -718,7 +712,6 @@
     <string name="pe_fast_scroller_overlay_static">Estática</string>
     <string name="pt_ui_dialogs_mode">Diálogos</string>
     <string name="pt_ui_theme_colors">Cores</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Diálogos e menús</string>
     <string name="pe_ui_dialog_mode_classic">Sempre como unha caixa de diálogo clásica</string>
     <string name="pe_ui_dialog_mode_by_screen_size">As pantallas máis pequenas amosan as caixas de diálogo na parte inferior.\nAs máis grandes, como as tabletas, usan sempre caixas de diálogo clásicas.</string>
     <string name="pe_bob_list_rebuild_state_preserve">Preservar o estado actual</string>
@@ -835,8 +828,6 @@
     <string name="X_neither">Ningunha</string>
     <string name="X_lbl_thumbnails">Miniaturas</string>
     <string name="X_lbl_anthologies">Antoloxías</string>
-    <string name="X_option_bob_filter_read_yes">Libros lidos</string>
-    <string name="X_option_bob_filter_read_no">Libros non lidos</string>
     <string name="X_style_type_defaults">Estilos predefinidos</string>
     <string name="X_error_network_site_has_problems">O sitio web non está funcionando conforme o esperado.</string>
     <string name="X_error_authentication_failed">Fallou a autenticación</string>

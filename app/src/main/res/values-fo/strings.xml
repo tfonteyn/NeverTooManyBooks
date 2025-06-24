@@ -118,7 +118,6 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="debug_select_items">Vel hvat tú vilt telja uppí:</string>
-    <string name="X_httpErrorIO">Fekk ikki samband við ambætaran. Royn aftur seinni.</string>
     <string name="httpErrorTimeout">Sambandið við ambætaran fór út um tíð.</string>
     <string name="httpErrorFile">Fekk ikk atgongd til fíluna.</string>
     <string name="httpErrorFileNotFound">Ynskti fílan varð ikki funnin.</string>

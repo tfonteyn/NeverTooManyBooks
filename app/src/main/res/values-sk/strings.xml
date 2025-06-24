@@ -143,7 +143,6 @@
     <string name="info_download_successful">Sťahovanie úspešné</string>
     <string name="cd_btn_drag_handle">Presunutím zmeníte poradie tohto zoznamu</string>
     <string name="cd_clear_text_end_icon">Vymazať text</string>
-    <string name="info_isfdb_warning_limited_to">(podporované iba webovou stránkou ISFDB)</string>
     <string name="info_site_list">Vyhľadávania sú obmedzené na: %1$s</string>
     <string name="site_description_chinese">Čínština</string>
     <string name="site_description_dutch_and_more">Holandčina a ďalšie</string>
@@ -250,7 +249,6 @@
     <string name="option_download_set_folder">Nastaviť priečinok pre sťahovanie</string>
     <string name="option_download_ebook_format">Stiahnuť e-knihu (%1$s)</string>
     <string name="confirm_unsaved_edits">Máte neuložené zmeny, ak teraz skončíte, stratia sa.</string>
-    <string name="X_confirm_delete_tag">Odstrániť štítok „%1$s“?\n\nBude odstránený zo všetkých kníh. Samotné knihy nebudú odstránené.</string>
     <string name="confirm_delete_identifier_from_x_books">Odstrániť identifikátor „%1$s“?\n\nBude odstránený z %2$s. Samotné knihy nebudú odstránené.</string>
     <string name="confirm_delete_substitutions">Odstrániť náhrady pre „%1$s“?</string>
     <string name="confirm_merge_authors">Autor, ktorého upravujete, už existuje. Chcete ich zlúčiť?</string>
@@ -314,7 +312,6 @@
     <string name="lbl_backup">Záloha</string>
     <string name="whichViewApplication">Otvoriť pomocou</string>
     <string name="whichEditApplication">Upraviť pomocou</string>
-    <string name="X_whichSendToApplication">Poslať pomocou</string>
     <string name="whichSendApplication">Zdieľať</string>
     <string name="dialog_alert_title">Pozor</string>
     <string name="lbl_author">Autor</string>
@@ -438,8 +435,6 @@
     <string name="pt_search_prefer_isbn10">Ak je to možné, použiť ISBN-10</string>
     <string name="pt_collect_series_info_from_toc">Zhromažďovať informácie o sérii z prehľadu obsahu</string>
     <string name="pt_fetch_author_info_using_site_x">Získanie informácií o autorovi z %1$s</string>
-    <string name="pt_search_resolve_authors">Riešenie pseudonymov autorov</string>
-    <string name="pt_search_resolve_authors_using_site_x">Riešenie pseudonymov autorov pomocou webovej stránky %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovať názvoslovie (francúzskeho) formátu Bedetheque</string>
     <string name="pt_main_author_type">Primárny typ autora</string>
     <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>
@@ -466,7 +461,6 @@
     <string name="pt_ui_theme_colors">Farby témy</string>
     <string name="pe_ui_theme_colors_blue_grey">Modrosivá</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamické farby</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Dialógy a ponuky</string>
     <string name="pt_ui_dialogs_mode">Dialógy</string>
     <string name="pe_ui_dialog_mode_classic">Vždy ako klasické dialógové okno</string>
     <string name="pe_ui_dialog_mode_by_screen_size">Menšie obrazovky zobrazujú dialógy v spodnej časti obrazovky.\nVäčšie obrazovky, ako napríklad tablety, vždy používajú klasické dialógové okná.</string>
@@ -574,8 +568,6 @@
     <string name="X_action_use_default_setting">Použiť predvolené hodnoty</string>
     <string name="X_action_update">Aktualizovať</string>
     <string name="X_lbl_folder">Priečinok</string>
-    <string name="X_option_bob_filter_read_yes">Prečítané knihy</string>
-    <string name="X_option_bob_filter_read_no">Neprečítané knihy</string>
     <string name="X_info_site_authorization_successful">%1$s autorizácia úspešná</string>
     <string name="X_info_tap_on_image_to_select">Klepnite na väčší obrázok pre jeho výber.</string>
     <string name="name_colon_value">%1$s: %2$s</string>
@@ -598,7 +590,6 @@
     <string name="progress_msg_x_updated">%1$d aktualizovaných</string>
     <string name="error_search_failed_network">Otvorte Nastavenia a skontrolujte svoje sieťové preferencie a preferencie vyhľadávacích stránok.\nSkontrolujte aj nastavenia siete vášho zariadenia.</string>
     <string name="error_backup_failed">Zálohovanie zlyhalo.</string>
-    <string name="X_httpErrorIO">Nepodarilo sa komunikovať so serverom. Skúste to znova neskôr.</string>
     <string name="acra_dialog_message">Zdá sa, že aplikácia &APP_NAME; spadla. Klepnite na „%1$s“ pre uloženie správy do Vami zvoleného umiestnenia. Túto správu môžete použiť na nahlásenie nového problému na webovej stránke projektu.</string>
     <string name="error_storage_not_writable">Skontrolujte, či je úložisko zapisovateľné a má dostatok miesta.</string>
     <string name="warning_no_search_data_for_active_sites">Žiadne platné údaje vyhľadávania pre aktívne stránky.</string>
@@ -746,7 +737,6 @@
     <string name="lbl_series_multiple">Série</string>
     <string name="lbl_test_connection">Otestovať pripojenie</string>
     <string name="lbl_import_books">Importovať knihy</string>
-    <string name="X_whichImageCaptureApplication">Zachytiť obrázok pomocou</string>
     <string name="lbl_rating">Hodnotenie</string>
     <string name="lbl_publishers">Vydavatelia</string>
     <string name="lbl_date_read_month">Mesiac prečítania</string>
@@ -765,7 +755,6 @@
     <string name="option_sync_deleted_book_records">Synchronizovať odstránené knihy</string>
     <string name="info_import_complete">Importovanie dokončené</string>
     <string name="ps_manage_fields">Vybrané polia sú viditeľné na obrazovkách pridávania/úpravy kníh. Nevybrané polia sú skryté.</string>
-    <string name="pt_show_title_reordered">Zobraziť názvy ako…</string>
     <string name="lbl_capitalize_full">Všetko veľkými písmenami</string>
     <string name="pt_thumbnails_cache_resized">Zmenšené obrázky sú uložené vo vyrovnávacej pamäti</string>
     <string name="ps_show_titles_reordered_on">Platí len pre jazyky, ktoré používajú členy. Presunúť člen na začiatku názvu na koniec.\nNapríklad v angličtine:„Lord of The Rings, The“</string>
@@ -775,7 +764,6 @@
     <string name="pe_thumbnails_cache_resized_each_time">Zmeniť veľkosť obrázkov vždy, keď sú potrebné (používa menej úložiska, posúvanie bude pomalšie)</string>
     <string name="pe_thumbnails_cache_resized_stored">Uložiť zmenšené obrázky do vyrovnávacej pamäte (posúvanie bude rýchlejšie, používa viac úložiska)</string>
     <string name="pe_bob_list_rebuild_state_preserve">Zachovať aktuálny stav</string>
-    <string name="pt_search_uses_publisher">Vyhľadávanie používa vydavateľa</string>
     <string name="pt_bob_row_menu">Kontextové menu riadku</string>
     <string name="pt_fast_scroller_overlay">Textová bublina počas posúvania.</string>
     <string name="pt_bob_list_rebuild_state">Stav spustenia zoznamu kníh</string>

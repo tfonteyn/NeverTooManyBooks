@@ -54,12 +54,9 @@
     <string name="X_action_reset">Redefinir</string>
     <string name="X_action_send">Enviar</string>
     <string name="X_action_try_again">Tentar novamente</string>
-    <string name="X_httpErrorIO">Não foi possível comunicar com o servidor. Tente novamente mais tarde.</string>
     <string name="X_lbl_folder">Pasta</string>
     <string name="lbl_image">Imagem</string>
     <string name="X_lbl_system">(Sistema)</string>
-    <string name="X_whichImageCaptureApplication">Capturar imagem com</string>
-    <string name="X_whichSendToApplication">Compartilhar</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="option_apply_to_all_related_books">Todos os livros relacionados</string>
@@ -325,11 +322,9 @@
     <string name="confirm_delete_bookshelf_from_x_books">Excluir a prateleira“%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão excluídos. Eles ainda estarão presentes em qualquer outra prateleira, ou na prateleira “%3$s”.</string>
     <string name="confirm_delete_identifier_from_x_books">Eliminar o identificador “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão eliminados.</string>
     <string name="confirm_delete_substitutions">Eliminar as substituições de “%1$s”?</string>
-    <string name="X_confirm_delete_tag">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de todos os livros em que estiver definida. Os livros em si não serão eliminados.</string>
     <string name="confirm_delete_tag_from_x_books">Eliminar a etiqueta “%1$s”?\n\nSerá eliminada de %2$s. Os livros em si não serão eliminados.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Pretende realmente excluir o título “%1$s” por %2$s?\n\nSerá eliminada de %3$s. Os próprios livros não serão excluídos.</string>
     <string name="warning_nothing_selected">Nada selecionado</string>
-    <string name="info_isfdb_warning_limited_to">(suportado apenas pelo site do ISFDB)</string>
     <string name="tip_import_isbn_list">Importar um ficheiro de texto com números ISBN. O ficheiro deve ter um único ISBN por cada linha. Os resultados serão colocados na fila.</string>
     <string name="option_storage_edit_settings">Editar configurações</string>
     <string name="option_barcode_scan_mode_manual">Manual</string>
@@ -517,7 +512,6 @@
     <string name="lbl_read_end">Data de conclusão da leitura</string>
     <string name="info_export_successful">Exportação bem sucedida</string>
     <string name="pt_field_visibility">Visibilidade do campo</string>
-    <string name="pt_show_title_reordered">Mostrar títulos como…</string>
     <string name="error_type_not_supported">Tipo não suportado: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Mover um artigo do início de um título para o final,\npor exemplo, “Senhor dos Anéis, O”</string>
     <string name="ps_show_author_name_family_first">Mostrar com o nome de família em primeiro lugar,\npor exemplo, “de Camões, Luís”</string>
@@ -595,7 +589,6 @@
     <string name="pe_thumbnails_cache_resized_stored">Colocar as imagens redimensionadas em cache (a deslocação será mais rápida, usa mais armazenamento)</string>
     <string name="pt_search_reformat_color">Padronize nomes de “cores de livros”</string>
     <string name="pt_search_reformat_format">Padronizar nomes de “formatos de livros”</string>
-    <string name="pt_search_uses_publisher">A pesquisa usa o editor</string>
     <string name="pt_collect_series_info_from_toc">Recolher informações da série da tabela de conteúdo</string>
     <string name="lbl_read_timeout">Tempo limite de leitura (segundos)</string>
     <string name="lbl_timeouts">Tempo limite</string>
@@ -658,8 +651,6 @@
     <string name="pt_allow_metered_network_data">Permitir o uso de dados móveis</string>
     <string name="pt_scanning_beep_on_invalid">Apitar se o ISBN lido é inválido</string>
     <string name="pt_fetch_author_info_using_site_x">Obter informações sobre o autor de %1$s</string>
-    <string name="pt_search_resolve_authors">Resolver nomes de pseudónimos de autores</string>
-    <string name="pt_search_resolve_authors_using_site_x">Resolver pseudónimos de autor usando o site %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Preservar a nomenclatura do formato Bedetheque (francês)</string>
     <string name="pe_ui_theme_dark">Escuro</string>
     <string name="pe_ui_theme_light">Luz</string>
@@ -675,7 +666,6 @@
     <string name="pt_line_spacing">Espaçamento entre linhas</string>
     <string name="pt_bob_list_state_expansion_level">Nível padrão de expansão</string>
     <string name="ps_bob_books_under_multiple_authors_each">sob cada autor</string>
-    <string name="X_option_bob_filter_read_yes">Livros lidos</string>
     <string name="ps_bob_books_under_multiple_publishers_each">em cada editor</string>
     <string name="lbl_filters">Filtros</string>
     <string name="lbl_add_filter">Adicionar filtro</string>
@@ -753,7 +743,6 @@
     <string name="option_purge_bedetheque_authors_cache">Limpar cache de autores do Bedetheque</string>
     <string name="option_rebuild_fts">Reconstruir dados da Pesquisa de Texto Completo</string>
     <string name="info_purge_blns_item_name">Limpar o estado do nó para %1$s “%2$s”\?</string>
-    <string name="X_option_bob_filter_read_no">Livros Não Lidos</string>
     <string name="option_bob_filter_signed_yes">Livros Assinados</string>
     <string name="option_bob_filter_signed_no">Livros não assinados</string>
     <string name="option_bob_filter_lend_out_yes">Livros emprestados</string>
@@ -829,7 +818,6 @@
     <string name="lbl_author_type_lettering">Letrista</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Deve ser maior ou igual à página atual</string>
     <string name="info_builtin_style_asterix">(* estilos predefinidos)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Diálogos e menus</string>
     <string name="pe_option_bottom_sheet">Sempre na parte inferior do ecrã</string>
     <string name="pt_ui_dialogs_mode">Diálogos</string>
     <string name="pe_ui_dialog_mode_classic">Sempre como uma caixa de diálogo clássica</string>

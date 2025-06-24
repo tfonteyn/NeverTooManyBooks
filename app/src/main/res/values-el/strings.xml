@@ -64,7 +64,6 @@ A question mark is written as the character semicolon: ';'
     <string name="X_error_authentication_failed">Η ταυτοποίηση απέτυχε</string>
     <string name="error_record_must_contain_column">Η εγγραφή πρέπει να περιέχει ένα πεδίο με το όνομα «%1$s».</string>
     <string name="X_error_network_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
-    <string name="X_httpErrorIO">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
     <string name="X_info_not_authorized">Χωρίς άδεια</string>
     <string name="X_info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
     <string name="X_lbl_folder">Φάκελος</string>
@@ -75,8 +74,6 @@ A question mark is written as the character semicolon: ';'
     <string name="X_lbl_general">Γενικά</string>
     <string name="tip_booklist_style_defaults">Χρησιμοποιήστε αυτή την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των στυλ. Αυτά χρησιμοποιούνται από όλα τα ενσωματωμένα στυλ και ως σημείο εκκίνησης για κάθε στυλ που ορίζετε εσείς οι ίδιοι.</string>
     <string name="X_action_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
-    <string name="X_whichImageCaptureApplication">Λήψη εικόνας με</string>
-    <string name="X_whichSendToApplication">Αποστολή μέσω</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_dialog_message">Φαίνεται ότι το &APP_NAME; έχει καταρρεύσει. Πατήστε «%1$s» για να αποθηκεύσετε μια αναφορά σε μια τοποθεσία της επιλογής σας. Μπορείτε να χρησιμοποιήσετε αυτή την αναφορά για να αναφέρετε ένα νέο πρόβλημα στον ιστότοπο του έργου.</string>
@@ -168,7 +165,6 @@ A question mark is written as the character semicolon: ';'
     <string name="confirm_delete_style">Διαγραφή του στυλ «%1$s»;</string>
     <string name="confirm_delete_identifier_from_x_books">Διαγραφή του αναγνωριστικού «%1$s»;\n\nΘα διαγραφεί από το %2$s. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
     <string name="confirm_delete_substitutions">Διαγραφή των αντικαταστάσεων για το «%1$s»;</string>
-    <string name="X_confirm_delete_tag">Διαγραφή της ετικέτας «%1$s»;\n\nΘα διαγραφεί από όλα τα βιβλία στα οποία έχει οριστεί. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
     <string name="confirm_delete_tag_from_x_books">Διαγραφή της ετικέτας «%1$s»;\n\nΘα διαγραφεί από το %2$s. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Πραγματικά διαγράψτε τον τίτλο «%1$s» (από το %2$s);\n\nΘα διαγραφεί από το %3$s. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
     <string name="confirm_merge_tags">Η ετικέτα που τροποποιείτε υπάρχει ήδη. Θα θέλατε να τις συγχωνεύσετε;</string>
@@ -245,7 +241,6 @@ A question mark is written as the character semicolon: ';'
     <string name="info_authorized">Έχει άδεια</string>
     <string name="option_moving_covers_from_x_to_y">Μετακινήστε όλα τα καλύμματα από «%1$s» σε «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ISFDB)</string>
-    <string name="info_isfdb_warning_limited_to">(υποστηρίζεται μόνο από την τοποθεσία ISFDB)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">Σχετικά με την εφαρμογή</string>
     <string name="lbl_about_contact">Επαφές:</string>
@@ -530,8 +525,6 @@ A question mark is written as the character semicolon: ';'
     <string name="option_bob_filter_isbn_yes">Με ISBN</string>
     <string name="option_bob_filter_lend_out_no">Βιβλία διαθέσιμα</string>
     <string name="option_bob_filter_lend_out_yes">Βιβλία δανείου</string>
-    <string name="X_option_bob_filter_read_no">Βιβλία μη αναγνωσμένα</string>
-    <string name="X_option_bob_filter_read_yes">Τα βιβλία διαβάζουν</string>
     <string name="option_bob_filter_signed_no">Βιβλία χωρίς υπογραφή</string>
     <string name="option_bob_filter_signed_yes">Υπογεγραμμένα βιβλία</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Διπλώστε όλα</string>
@@ -612,8 +605,6 @@ A question mark is written as the character semicolon: ';'
     <string name="pt_search_prefer_isbn10">Χρησιμοποιήστε ISBN-10 όταν είναι δυνατόν</string>
     <string name="pt_search_reformat_color">Τυποποιήστε τα ονόματα «χρώματος βιβλίου»</string>
     <string name="pt_search_reformat_format">Τυποποιήστε τα ονόματα «μορφής βιβλίου»</string>
-    <string name="pt_search_uses_publisher">Η αναζήτηση χρησιμοποιεί εκδότη</string>
-    <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως…</string>
     <string name="ps_show_titles_reordered_off">Εμφάνιση όπως δίνεται,\nπ.χ. «Ο Άρχοντας των Δαχτυλιδιών»</string>
     <string name="error_type_not_supported">Ο τύπος δεν υποστηρίζεται: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Μετακινήστε ένα άρθρο στην αρχή ενός τίτλου στο τέλος,\nπ.χ. «Άρχοντας των Δαχτυλιδιών, Ο»</string>
@@ -753,8 +744,6 @@ A question mark is written as the character semicolon: ';'
     <string name="vldt_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχων Συγγραφέας</string>
     <string name="confirm_create_real_author">Το «%1$s» δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
     <string name="pt_fetch_author_info_using_site_x">Λήψη πληροφοριών συγγραφέα από %1$s</string>
-    <string name="pt_search_resolve_authors">Επίλυση ψευδώνυμων συγγραφέων</string>
-    <string name="pt_search_resolve_authors_using_site_x">Επιλύστε τα ψευδώνυμα των συγγραφέων χρησιμοποιώντας τον ιστότοπο %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Αντικατάσταση του συγγραφέα σε όλες τις εγγραφές με τον κύριο συγγραφέα του βιβλίου «%1$s»;</string>
     <string name="confirm_no_missing_covers_search_from_top">Όλα τα βιβλία κάτω από αυτή τη σειρά έχουν εξώφυλλα. Ψάξτε ξανά από την κορυφή;</string>
@@ -835,7 +824,6 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_track_progress">Πρόοδος</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Πρέπει να είναι μεγαλύτερη ή ίση με την τρέχουσα σελίδα</string>
     <string name="info_builtin_style_asterix">(* προεπιλεγμένα στυλ)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Διάλογοι και μενού</string>
     <string name="pe_option_bottom_sheet">Πάντα στο κάτω μέρος της οθόνης</string>
     <string name="pt_ui_dialogs_mode">Διάλογοι</string>
     <string name="pe_ui_dialog_mode_classic">Πάντα ως κλασικό παράθυρο διαλόγου</string>

@@ -51,7 +51,6 @@
     <string name="X_action_use_default_setting">Sử dụng các giá trị mặc định</string>
     <string name="X_error_authentication_failed">Quá trình xác thực đã thất bại</string>
     <string name="X_error_network_site_has_problems">Trang web không hoạt động như mong đợi.</string>
-    <string name="X_httpErrorIO">Không thể liên lạc với máy chủ. Hãy thử lại sau.</string>
     <string name="X_info_not_authorized">Không được ủy quyền</string>
     <string name="X_info_site_authorization_successful">Ủy quyền %1$s thành công</string>
     <string name="X_info_tap_on_image_to_select">Nhấn vào hình ảnh lớn hơn để chọn nó.</string>
@@ -62,12 +61,7 @@
     <string name="X_lbl_system">(Hệ thống)</string>
     <string name="X_lbl_thumbnails">Hình thu nhỏ</string>
     <string name="X_neither">Không</string>
-    <string name="X_option_bob_filter_read_no">Sách chưa đọc</string>
-    <string name="X_option_bob_filter_read_yes">Sách đã đọc</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Hộp thoại và Thực đơn</string>
     <string name="X_style_type_defaults">Các thiết đặt phong cách mặc định</string>
-    <string name="X_whichImageCaptureApplication">Chụp ảnh bằng</string>
-    <string name="X_whichSendToApplication">Gửi bằng</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_space_b">%1$s %2$s</string>
@@ -164,7 +158,6 @@
     <string name="confirm_delete_style">Xóa kiểu “%1$s”?</string>
     <string name="confirm_delete_identifier_from_x_books">Xóa định danh “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các sách sẽ không bị xóa.</string>
     <string name="confirm_delete_substitutions">Xóa các thay thế cho “%1$s”?</string>
-    <string name="X_confirm_delete_tag">Xóa thẻ “%1$s”?\n\nNó sẽ bị xóa khỏi tất cả các sách mà nó được đặt. Bản thân các sách sẽ không bị xóa.</string>
     <string name="confirm_delete_tag_from_x_books">Xóa thẻ “%1$s”?\n\nNó sẽ bị xóa khỏi %2$s. Bản thân các sách sẽ không bị xóa.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Thực sự xóa nhan đề “%1$s” của %2$s?\n\nNó sẽ bị xóa khỏi %3$s. Bản thân các cuốn sách sẽ không bị xóa.</string>
     <string name="confirm_merge_tags">Thẻ bạn đang sửa đổi đã tồn tại. Bạn có muốn hợp nhất chúng không?</string>
@@ -262,7 +255,6 @@
     <string name="info_export_successful">Xuất thành công</string>
     <string name="info_import_complete">Nhập hoàn tất</string>
     <string name="info_import_partially_complete">Đã nhập một phần</string>
-    <string name="info_isfdb_warning_limited_to">(chỉ được hỗ trợ bởi trang web ISFDB)</string>
     <string name="info_maintenance_clear_deleted_book_records">Điều này sẽ xóa lịch sử sách đã xóa. Sẽ không có cuốn sách thực sự nào bị xóa.</string>
     <string name="info_maintenance_sync_deleted_book_records">Thao tác này sẽ kiểm tra lịch sử sách đã xóa từ lần nhập trước đó từ một thiết bị khác và đồng bộ hóa các lần xóa đó. Nói cách khác, sách bị xóa trên thiết bị kia cũng sẽ bị xóa trên thiết bị này.</string>
     <string name="info_nothing_to_do">Không có gì để làm.</string>
@@ -728,12 +720,8 @@
     <string name="pt_search_reformat_color">Chuẩn hóa tên “màu sách”</string>
     <string name="pt_search_reformat_format">Chuẩn hóa tên “định dạng sách”</string>
     <string name="pt_fetch_author_info_using_site_x">Lấy thông tin tác giả từ %1$s</string>
-    <string name="pt_search_resolve_authors">Giải quyết bút danh của tác giả</string>
-    <string name="pt_search_resolve_authors_using_site_x">Giải quyết bút danh của tác giả bằng cách sử dụng trang web %1$s</string>
     <string name="pt_search_result_order">Tìm kiếm sẽ trả về cuốn sách gần đây nhất hoặc cuốn sách đầu tiên được tìm thấy.</string>
     <string name="pt_search_show_menu_options">Hiển thị menu tìm kiếm</string>
-    <string name="pt_search_uses_publisher">Tìm kiếm sử dụng nhà xuất bản</string>
-    <string name="pt_show_title_reordered">Hiển thị nhan đề dưới dạng…</string>
     <string name="pt_sort_title_reordered">Sắp xếp nhan đề theo</string>
     <string name="pt_storage_volume">Dung lượng lưu trữ</string>
     <string name="pt_thumbnails_cache_resized">Hình ảnh đã thay đổi kích thước được lưu trữ</string>

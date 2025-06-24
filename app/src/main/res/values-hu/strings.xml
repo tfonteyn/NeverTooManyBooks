@@ -41,7 +41,6 @@
     <string name="notification_channel_error">Hiba</string>
     <string name="notification_channel_warn">Figyelmeztetés</string>
     <string name="notification_channel_info">Infó</string>
-    <string name="X_httpErrorIO">Nem sikerült kommunikálni a szerverrel. Próbálja újra később.</string>
     <string name="httpErrorFailedSslHandshake">Nem sikerült biztonságos kapcsolatot létrehozni.</string>
     <string name="httpErrorAuth">Nem sikerült hitelesíteni.</string>
     <string name="httpError">Hálózati hiba történt.</string>
@@ -102,8 +101,6 @@
     <string name="X_lbl_general">Általános</string>
     <string name="lbl_image">Kép</string>
     <string name="X_lbl_system">(Rendszer)</string>
-    <string name="X_whichImageCaptureApplication">Kép készítése a következővel</string>
-    <string name="X_whichSendToApplication">Küldés a következővel</string>
     <string name="action_add">Hozzáadás</string>
     <string name="action_apply">Alkalmaz</string>
     <string name="action_clear">Törlés</string>
@@ -289,7 +286,6 @@
     <string name="cd_btn_drag_handle">Húzza a lista átrendezéséhez</string>
     <string name="cd_clear_text_end_icon">Szöveg törlése</string>
     <string name="info_partial_date_picker">Érintsen meg egy korábban kiválasztott hónapot vagy napot a kijelölés megszüntetéséhez.</string>
-    <string name="info_isfdb_warning_limited_to">(csak az ISFDB weboldala támogatja)</string>
     <string name="info_site_list">A keresések a következőre korlátozódnak: %1$s</string>
     <string name="info_site_search_field_optional">Opcionális. Nem minden weboldal támogatja.</string>
     <string name="site_description_various_languages">Különféle nyelvek</string>
@@ -468,7 +464,6 @@
     <string name="confirm_continue">Biztosan folytatja?</string>
     <string name="confirm_delete_bookshelf_from_x_books">„%1$s” könyvespolc törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve. Továbbra is jelen lesznek bármely más polcon vagy az „%3$s” polcon.</string>
     <string name="confirm_delete_series_from_x_books">„%1$s” sorozat törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve. Az adatok megőrzése érdekében fontolja meg a sorozat nevének megváltoztatását egy másik sorozat nevére.</string>
-    <string name="X_confirm_delete_tag">„%1$s” címke törlése?\n\nAz összes könyvből el lesz távolítva. Maguk a könyvek nem lesznek törölve.</string>
     <string name="confirm_delete_tag_from_x_books">„%1$s” címke törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve.</string>
     <string name="confirm_delete_identifier_from_x_books">„%1$s” azonosító törlése?\n\n%2$sből lesz eltávolítva. Maguk a könyvek nem lesznek törölve.</string>
     <string name="confirm_delete_substitutions">„%1$s” helyettesítéseinek törlése?</string>
@@ -594,7 +589,6 @@
     <string name="option_info_archive_type_csv">Könyvek exportálása CSV fájlba</string>
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Azóta módosított könyvek importálása</string>
     <string name="pt_sort_title_reordered">Címek rendezése</string>
-    <string name="pt_show_title_reordered">Címek megjelenítése…</string>
     <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="lbl_publication">Publikáció</string>
     <string name="lbl_print_run">Példányszám</string>
@@ -680,14 +674,11 @@
     <string name="info_progress_x_percent">%1$d%% olvasva</string>
     <string name="info_identifier_editor"><![CDATA[Please read the <a href="%1$s">dokumentáció</a>az azonosítókról szerkesztés előtt.]]></string>
     <string name="pe_thumbnails_cache_resized_stored">Átméretezett képek gyorsítótárazása (görgetés gyorsabb lesz, több tárhelyet használ)</string>
-    <string name="pt_search_uses_publisher">A keresés a kiadót is használja</string>
     <string name="pt_search_reformat_color">„Könyvszín” elnevezések egységesítése</string>
     <string name="pt_search_reformat_format">„Könyvformátum” elnevezések egységesítése</string>
     <string name="pt_search_prefer_isbn10">ISBN-10 használata, mikor lehetséges</string>
     <string name="pt_collect_series_info_from_toc">Sorozatadatok gyűjtése a tartalomjegyzékből</string>
     <string name="pt_fetch_author_info_using_site_x">Szerzői információk lekérése %1$s-ből</string>
-    <string name="pt_search_resolve_authors">Szerzői álnevek meghatározása</string>
-    <string name="pt_search_resolve_authors_using_site_x">Szerzői álnevek meghatározása a %1$s webhely segítségével</string>
     <string name="pt_bedetheque_search_resolve_formats">A Bedetheque (francia) formátum megőrzése</string>
     <string name="pt_main_author_type">Elsődleges szerzőtípus</string>
     <string name="pt_edit_book_isbn_checks">ISBN érvényesség ellenőrzés</string>
@@ -715,7 +706,6 @@
     <string name="pt_ui_theme_colors">Téma színek</string>
     <string name="pe_ui_theme_colors_blue_grey">Kék-szürke</string>
     <string name="pe_ui_theme_colors_dynamic">Dinamikus színek</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Dialógusok és Menük</string>
     <string name="pe_option_bottom_sheet">Mindig a képernyő alján</string>
     <string name="pt_ui_dialogs_mode">Dialógusok</string>
     <string name="pe_ui_dialog_mode_classic">Mindig klasszikus dialóguspanel</string>
@@ -855,8 +845,6 @@
     <string name="X_neither">Egyik sem</string>
     <string name="X_lbl_thumbnails">Miniatűrök</string>
     <string name="X_lbl_anthologies">Antológiák</string>
-    <string name="X_option_bob_filter_read_yes">Olvasott könyvek</string>
-    <string name="X_option_bob_filter_read_no">Olvasatlan könyvek</string>
     <string name="X_style_type_defaults">Alapértelmezett stílus beállítások</string>
     <string name="X_error_network_site_has_problems">A webhely nem működik a várt módon.</string>
     <string name="X_error_authentication_failed">Hitelesítés sikertelen</string>

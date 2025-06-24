@@ -139,8 +139,6 @@
             translatable="false">URI</string>
     <string name="identifier_urn"
             translatable="false">URN</string>
-    <string name="identifier_url"
-            translatable="false">URL</string>
     <string name="identifier_viaf"
             translatable="false">Virtual International Authority File</string>
     <string name="identifier_wikidata"

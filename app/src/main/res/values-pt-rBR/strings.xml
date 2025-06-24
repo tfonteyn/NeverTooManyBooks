@@ -169,7 +169,6 @@
     <string name="pt_ui_theme">Tema</string>
     <string name="acra_dialog_message">Parece que &APP_NAME; travou. Toque em “%1$s” para salvar um relatório em um local de sua escolha. Você pode usar este relatório para relatar um novo problema no site do projeto.</string>
     <string name="httpErrorAuth">Não foi possível autenticar.</string>
-    <string name="X_httpErrorIO">Não foi possível comunicar com o servidor. Tente novamente mais tarde.</string>
     <string name="httpError">Ocorreu um erro de rede.</string>
     <string name="error_import_archive_invalid">O arquivo está corrompido ou inválido.</string>
     <string name="warning_no_editions">Nenhuma informação adicional sobre a edição disponível.</string>
@@ -240,7 +239,6 @@
     <string name="confirm_merge_tags">A tag que você está modificando já existe. Você gostaria de mesclá-las?</string>
     <string name="confirm_delete_identifier_from_x_books">Excluir o identificador “%1$s”?\n\nEla será excluída de %2$s. Os livros em si não serão excluídos.</string>
     <string name="confirm_delete_substitutions">Excluir as substituições para “%1$s”?</string>
-    <string name="X_confirm_delete_tag">Excluir a tag “%1$s”?\n\nEla será excluída de todos os livros nos quais estiver definida. Os livros em si não serão excluídos.</string>
     <string name="confirm_delete_tag_from_x_books">Excluir a tag “%1$s”?\n\nEla será excluída de %2$s. Os livros em si não serão excluídos.</string>
     <string name="lbl_tag">Tag</string>
     <string name="lbl_tags">Tags</string>
@@ -253,7 +251,6 @@
     <string name="lbl_original_language">Idioma original</string>
     <string name="action_restore_default_identifiers">Restaurar os identificadores padrão</string>
     <string name="site_description_czech">Tcheco e muito mais</string>
-    <string name="pt_search_resolve_authors">Resolver pseudônimos de autores</string>
     <string name="menu_search_updates">Busca de atualizações</string>
     <string name="action_stop_searching">Parar de pesquisar</string>
     <string name="action_save_for_later">Salvar para depois</string>

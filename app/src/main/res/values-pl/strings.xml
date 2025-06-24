@@ -64,7 +64,6 @@
     <string name="X_error_authentication_failed">Uwierzytelnianie nie powiodło się</string>
     <string name="error_record_must_contain_column">Rekord musi zawierać pole o nazwie „%1$s”.</string>
     <string name="X_error_network_site_has_problems">Witryna ma problemy.</string>
-    <string name="X_httpErrorIO">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
     <string name="X_info_not_authorized">Nieautoryzowany</string>
     <string name="X_info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
     <string name="X_lbl_folder">Folder</string>
@@ -75,8 +74,6 @@
     <string name="X_lbl_general">Ogólne</string>
     <string name="tip_booklist_style_defaults">Ten ekran służy do ustawiania domyślnych właściwości wszystkich stylów. Są one używane przez wszystkie wbudowane style i stanowią punkt wyjścia dla każdego stylu zdefiniowanego przez użytkownika.</string>
     <string name="X_action_use_default_setting">Użyj ustawień domyślnych</string>
-    <string name="X_whichImageCaptureApplication">Zrób zdjęcie w aplikacji</string>
-    <string name="X_whichSendToApplication">Wyślij za pomocą</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="action_add">Dodaj</string>
@@ -167,7 +164,6 @@
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
     <string name="confirm_delete_identifier_from_x_books">Usunąć identyfikator „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte.</string>
     <string name="confirm_delete_substitutions">Usunąć podstawienia dla „%1$s”?</string>
-    <string name="X_confirm_delete_tag">Usunąć tag „%1$s”?\n\nZostanie on usunięty ze wszystkich książek, w których jest ustawiony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_delete_tag_from_x_books">Usunąć tag „%1$s”?\n\nZostanie on usunięty z %2$s. Same książki nie zostaną usunięte.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Naprawdę usuń wpis „%1$s” (przez %2$s)?\n\nZostanie on usunięty z %3$s. Same książki nie zostaną usunięte.</string>
     <string name="confirm_merge_tags">Modyfikowany tag już istnieje. Czy chcesz je scalić?</string>
@@ -244,7 +240,6 @@
     <string name="info_authorized">Upoważniony</string>
     <string name="option_moving_covers_from_x_to_y">Przenieś wszystkie okładki z „%1$s” do „%2$s”</string>
     <string name="option_isfdb_menu_populate_toc">Automatycznie obsadź pozycje antologii(ISFDB)</string>
-    <string name="info_isfdb_warning_limited_to">(obsługiwane tylko przez stronę internetową ISFDB)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">O programie</string>
     <string name="lbl_about_contact">Kontakt:</string>
@@ -529,8 +524,6 @@
     <string name="option_bob_filter_isbn_yes">Z ISBN</string>
     <string name="option_bob_filter_lend_out_no">Książki dostępne</string>
     <string name="option_bob_filter_lend_out_yes">Książki wypożyczone</string>
-    <string name="X_option_bob_filter_read_no">Książki nieprzeczytane</string>
-    <string name="X_option_bob_filter_read_yes">Książki czytane</string>
     <string name="option_bob_filter_signed_no">Książki niepodpisane</string>
     <string name="option_bob_filter_signed_yes">Podpisane książki</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Zawsze uruchamiaj spakowane</string>
@@ -611,8 +604,6 @@
     <string name="pt_search_prefer_isbn10">Jeśli to możliwe, użyj ISBN-10</string>
     <string name="pt_search_reformat_color">Standaryzuj nazwy „kolorów książek”</string>
     <string name="pt_search_reformat_format">Standaryzuj nazwy „formatu książki”</string>
-    <string name="pt_search_uses_publisher">Wyszukiwanie używa wydawcy</string>
-    <string name="pt_show_title_reordered">Pokaż tytuły jako…</string>
     <string name="pt_sort_title_reordered">Sortuj tytuły według</string>
     <string name="pt_cover_undo_enabled">Cofanie operacji na okładkach książek</string>
     <string name="ps_cover_undo_disabled">Edycji/zmiany okładki nie można cofnąć (zużywa mniej pamięci)</string>
@@ -748,8 +739,6 @@
     <string name="vldt_real_author_must_be_valid">Musi być puste lub istniejącego autora</string>
     <string name="confirm_create_real_author">„%1$s” jeszcze nie istnieje. Czy należy je tworzyć?</string>
     <string name="pt_fetch_author_info_using_site_x">Pobierz informacje o autorze z %1$s</string>
-    <string name="pt_search_resolve_authors">Rozwiązywanie pseudonimów autorów</string>
-    <string name="pt_search_resolve_authors_using_site_x">Rozwiąż pseudonimy autorów za pomocą strony internetowej %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachowaj nazewnictwo formatu Bedetheque (francuskie)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Zastąpić autora we wszystkich wpisach głównym autorem książki „%1$s”?</string>
     <string name="confirm_no_missing_covers_search_from_top">Wszystkie książki poniżej tego rzędu mają okładki. Wyszukiwać ponownie od góry?</string>
@@ -836,7 +825,6 @@
     <string name="lbl_track_progress">Postęp</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Musi być większa lub równa bieżącej stronie</string>
     <string name="info_builtin_style_asterix">(* style domyślne)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Dialogi i menu</string>
     <string name="pe_option_bottom_sheet">Zawsze w dolnej części ekranu</string>
     <string name="pt_ui_dialogs_mode">Dialogi</string>
     <string name="pe_ui_dialog_mode_classic">Zawsze jako klasyczne okno dialogowe</string>

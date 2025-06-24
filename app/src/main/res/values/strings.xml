@@ -84,18 +84,25 @@
     <!-- endregion -->
 
     <!-- region ========== Order formatters. -->
-    <!-- two strings concatenated without any space in between; support for RTL languages -->
+    <!-- Two strings concatenated without any space in between;
+         Support for RTL languages -->
     <string name="a_b">%1$s%2$s</string>
-    <!-- two strings concatenated with a single space in between; support for RTL languages -->
+    <!-- Two strings concatenated with a single space in between;
+         Support for RTL languages -->
     <string name="a_space_b">%1$s %2$s</string>
-    <!-- generic "label (info)"; support for RTL languages -->
+    <!-- Generic "label (info)";
+         Support for RTL languages;
+         https://en.wikipedia.org/wiki/Bracket-->
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <!-- generic "label: value"; support for RTL languages -->
+    <!-- Generic "label: value";
+         Support for RTL languages -->
     <string name="name_colon_value">%1$s: %2$s</string>
 
-    <!-- show text between brackets. Some languages use different bracket characters. -->
+    <!-- Show text between brackets. Some languages use different bracket characters.
+         https://en.wikipedia.org/wiki/Bracket -->
     <string name="brackets">(%1$s)</string>
-    <!-- show text between quotes. Some languages use different quote characters. -->
+    <!-- Show text between quotes. Some languages use different quote characters.
+         https://en.wikipedia.org/wiki/Quotation_mark -->
     <string name="quoted">“%1$s”</string>
 
     <!-- Append (or prepend) the ellipsis character to another string.
@@ -110,7 +117,8 @@
      -->
     <string name="list_semicolon">"; "</string>
 
-    <!-- When text is displayed in a list (without using HTML) each line will be formatted using this pattern. -->
+    <!-- When text is displayed in a list (without using HTML) each line will be formatted using this pattern.
+         Support for RTL languages;-->
     <string name="list_element">• %s</string>
     <!-- "name #nr" where the # is a potential language dependent symbol for 'number'.-->
     <string name="name_hash_nr">%1$s #%2$d</string>
@@ -172,8 +180,6 @@
     <!-- region ========== HTTP(S) error messages. -->
     <!-- All the httpError strings were copied from:
         "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
-    <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
-    <string name="X_httpErrorIO">Couldn’t communicate with the server. Try again later.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
     <string name="httpErrorTimeout">The connection to the server timed out.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the a secure connection couldn't be made to the server.-->
@@ -446,10 +452,6 @@
          for fields like the publication date of a book.
     -->
     <string name="info_partial_date_picker">Tap a previously selected month or day to unselect it.</string>
-    <!-- ISFDB specific
-     Some functionality is limited to the ISFDB web site only.
-     This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
-    <string name="info_isfdb_warning_limited_to">(only supported by the ISFDB web site)</string>
 
     <!-- Searching books by "text":
          Information on which websites will be searched.
@@ -962,10 +964,6 @@
          Param 2: content of plural "n_books", e.g.: "It will be removed from 5 books."
     -->
     <string name="confirm_delete_publisher_from_x_books">Delete the publisher “%1$s”?\n\nIt will be removed from %2$s. The books themselves will not be deleted. Consider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
-
-    <!-- Param 1: Tag name -->
-    <string name="X_confirm_delete_tag">Delete the tag “%1$s”?\n\nIt will be removed from all books. The books themselves will not be deleted.</string>
-
     <!-- Param 1: Tag name
          Param 2: content of plural "n_books", e.g.: "It will be removed from 5 books."
     -->
@@ -974,7 +972,6 @@
          Param 2: content of plural "n_books", e.g.: "It will be removed from 5 books."
     -->
     <string name="confirm_delete_identifier_from_x_books">Delete the identifier “%1$s”?\n\nIt will be removed from %2$s. The books themselves will not be deleted.</string>
-
     <!-- context: substitution of one item to another item
          Param 1: Tag name -->
     <string name="confirm_delete_substitutions">Delete the substitutions for “%1$s”?</string>
@@ -1166,11 +1163,6 @@
     <string name="whichViewApplication">Open with</string>
     <!-- [VERIFIED] Title of intent resolver dialog when selecting an editor application to run. -->
     <string name="whichEditApplication">Edit with</string>
-    <!-- [VERIFIED] Title of intent resolver dialog when selecting an application to run to
-     send content to a specific recipient. -->
-    <string name="X_whichSendToApplication">Send using</string>
-    <!-- [VERIFIED] Title of intent resolver dialog when capturing an image. -->
-    <string name="X_whichImageCaptureApplication">Capture image with</string>
     <!-- [VERIFIED] Title of intent resolver dialog when selecting a sharing application to run. -->
     <string name="whichSendApplication">Share</string>
     <!-- [VERIFIED] Title for a generic dialog warning the user about something. -->
@@ -1217,12 +1209,14 @@
     <string name="lbl_bookshelves">Bookshelves</string>
     <!-- A single Book. -->
     <string name="lbl_book">Book</string>
-    <!-- Multiple Book. -->
+    <!-- Multiple Books. -->
     <string name="lbl_books">Books</string>
     <string name="lbl_book_type">Book type</string>
     <string name="lbl_book_type_book"
             translatable="false">@string/lbl_book</string>
+    <!-- A book is a collection of short stories by multiple different authors. -->
     <string name="lbl_book_type_anthology">Anthology</string>
+    <!-- A book is a collection of short stories by s single author. -->
     <string name="lbl_book_type_collection">Collection</string>
     <!-- Single book cover - Short label. -->
     <string name="lbl_cover_front">Cover</string>
@@ -1348,10 +1342,11 @@
 
     <!-- endregion -->
     <!-- region ========== All date related labels. -->
-    <!-- [VERIFIED] Universal date strings -->
+    <!-- [VERIFIED] - Generic "year" -->
     <string name="lbl_year">Year</string>
+    <!-- [VERIFIED] - Generic "month" -->
     <string name="lbl_month">Month</string>
-    <!-- [VERIFIED] -->
+    <!-- [VERIFIED] - Generic "day" -->
     <string name="lbl_day">Day</string>
     <!-- The date a book was added to the database. -->
     <string name="lbl_date_added">Date Added</string>
@@ -1361,15 +1356,23 @@
      -->
     <string name="lbl_date_added_as_single_char">\u2795</string>
 
+    <!-- The year a book was added to the database(app). -->
     <string name="lbl_date_added_year">Year Added</string>
+    <!-- The month a book was added to the database(app). -->
     <string name="lbl_date_added_month">Month Added</string>
+    <!-- The day of the month a book was added to the database(app). -->
     <string name="lbl_date_added_day">Day Added</string>
-    <!-- The date a book was read -->
+    <!-- The date a book was read/finished -->
     <string name="lbl_date_read">Date Read</string>
+    <!-- The year a book was read/finished -->
     <string name="lbl_date_read_year">Year read</string>
+    <!-- The month a book was read/finished -->
     <string name="lbl_date_read_month">Month read</string>
+    <!-- The day in the month a book was read/finished -->
     <string name="lbl_date_read_day">Day read</string>
+    <!-- The date a book was started -->
     <string name="lbl_read_start">Date started reading</string>
+    <!-- The date a book was read/finished -->
     <string name="lbl_read_end">Date finished reading</string>
     <!-- The date the book was last updated. -->
     <string name="lbl_date_last_updated">Date last updated</string>
@@ -1388,13 +1391,17 @@
          (the color will be set by the app theme)
          -->
     <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
-
+    <!-- The year a user acquired the book. -->
     <string name="lbl_date_acquired_year">Year Acquired</string>
+    <!-- The month a user acquired the book. -->
     <string name="lbl_date_acquired_month">Month Acquired</string>
+    <!-- The day of the month a user acquired the book. -->
     <string name="lbl_date_acquired_day">Day Acquired</string>
     <!-- Publication Date for the book. -->
     <string name="lbl_date_published">Date Published</string>
+    <!-- Publication year for the book. -->
     <string name="lbl_date_published_year">Publication Year</string>
+    <!-- Publication month for the book. -->
     <string name="lbl_date_published_month">Publication Month</string>
     <!-- First Publication Date for the CONTENT of the book. e.g. magazine pub... etc... -->
     <string name="lbl_date_first_publication">First Publication</string>
@@ -1423,10 +1430,13 @@
     <string name="info_export_books_option_since_last_full_backup">Books added or updated since last full backup.</string>
     <!-- Label for the dropdown menu where the user selects the format of the export file/archive. -->
     <string name="lbl_archive_format">Format</string>
-    <!-- Text in a dropdown menu. Must be fairly short. -->
+    <!-- File format. Text in a dropdown menu. Must be fairly short. -->
     <string name="option_archive_type_backup_zip">Backup (.zip)</string>
+    <!-- File format. Text in a dropdown menu. Must be fairly short. -->
     <string name="option_archive_type_csv">Books (.csv)</string>
+    <!-- File format. Text in a dropdown menu. Must be fairly short. -->
     <string name="option_archive_type_json">JSON export (.json)</string>
+    <!-- File format. Text in a dropdown menu. Must be fairly short. -->
     <string name="option_archive_type_db">Database file (.db)</string>
     <!-- Explanatory note for 'lbl_archive_type_backup_zip' -->
     <string name="option_info_lbl_archive_type_backup">Full Backup / Restore archive</string>
@@ -1440,6 +1450,7 @@
     <string name="option_info_lbl_archive_is_export_only">This is only for exporting data; importing is not supported.</string>
     <!-- progress final message - all data was exported. -->
     <string name="info_backup_successful">Backup successful</string>
+    <!-- progress final message - all data was exported. -->
     <string name="info_export_successful">Export successful</string>
     <!-- progress final message - displayed when a Backup is done: 1: file size; 2: filename.  -->
     <string name="info_export_report">A %1$s file called “%2$s” was created in the selected folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
@@ -1460,6 +1471,7 @@
          Translated strings are usually longer... add one or more '\n' as needed.
       . -->
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Only import books modified since</string>
+    <!-- Label for a date field. -->
     <string name="lbl_sync_date">Since</string>
     <!-- Radio button text -->
     <string name="option_import_books_option_all">All books</string>
@@ -1518,8 +1530,6 @@
     <string name="pt_field_visibility">Field Visibility</string>
     <!-- Preference summary: screen where the user can select/deselect fields to be shown; e.g. user might want to hide fields they don't use. -->
     <string name="ps_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
-    <!-- SwitchPreference title: How to display titles -->
-    <string name="pt_show_title_reordered">Show titles as…</string>
     <!-- SwitchPreference title: How to sort titles. -->
     <string name="pt_sort_title_reordered">Sort titles by</string>
 
@@ -1600,10 +1610,6 @@
     <string name="pt_search_reformat_format">Standardize “book format” names</string>
     <!-- SwitchPreference title -->
     <string name="pt_search_reformat_color">Standardize “book color” names</string>
-    <!-- SwitchPreference title: some search engines can add the publisher to the search terms.
-         This is not always desirable, as they use "AND" to combine the terms.
-         So by default this is switched off. -->
-    <string name="pt_search_uses_publisher">Search uses publisher</string>
     <!-- SwitchPreference title: when an ISBN-13 number is entered for searching,
          this option forces (if possible) the search to convert it to an ISBN-10
          for the actual search. The data itself will keep using what the user entered.
@@ -1622,13 +1628,6 @@
          Param 1: the website name.
     -->
     <string name="pt_fetch_author_info_using_site_x">Fetch author information from %1$s</string>
-
-    <!-- option to resolve author pen-names -->
-    <string name="pt_search_resolve_authors">Resolve author pen-names</string>
-    <!-- option to enable resolving author pen-names using another website.
-         Param 1: a website name.
-    -->
-    <string name="pt_search_resolve_authors_using_site_x">Resolve author pen-names using the %1$s website</string>
 
     <!-- French users/speakers usually want to preserve the French "format" names as used by the site Bedetheque. -->
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
@@ -1701,9 +1700,6 @@
     <string name="pt_ui_theme_colors">Theme Colors</string>
     <string name="pe_ui_theme_colors_blue_grey">Blue-gray</string>
     <string name="pe_ui_theme_colors_dynamic">Dynamic Colors</string>
-
-    <!-- ListPreference title. UI Dialog tuning. Opens a new screen with the related settings. -->
-    <string name="X_pt_dialog_and_menu_popup_tuning">Dialogs and Menus</string>
 
     <!-- ListPreference value: UI Dialog tuning.
          Always display a dialog or context menu using a BottomSheet. -->
@@ -1794,9 +1790,13 @@
 
     <!-- endregion -->
     <!-- region ========== Website settings. -->
+    <!-- Website connection setting -->
     <string name="lbl_connection_timeout">Connection timeout (seconds)</string>
+    <!-- Website connection setting -->
     <string name="lbl_read_timeout">Read timeout (seconds)</string>
+    <!-- Website connection setting - preference category title. -->
     <string name="lbl_timeouts">Timeouts</string>
+    <!-- Website connection setting -->
     <string name="lbl_website_address">Site address (URL)</string>
     <!-- Whether to use the user credentials to login at a site before doing a search.
          Currently only used for StripInfo website -->
@@ -1817,9 +1817,11 @@
 
     <!-- endregion -->
     <!-- region ========== Style settings. -->
-    <!-- Preference Category -->
+    <!-- Preference Category title -->
     <string name="pc_bob_list">List</string>
+    <!-- Preference Category title -->
     <string name="pc_bob_layout">List layout</string>
+    <!-- Preference Category title -->
     <string name="pc_book_detail_screen">Book details page</string>
     <!-- BooklistGroups.
          Opens a new screen with the related settings. -->
@@ -2080,12 +2082,6 @@
     <!-- SearchAdmin page: 'Alternative Editions' tab description -->
     <string name="lbl_tab_alternative_editions_long">Alternative Editions</string>
 
-    <!-- SearchAdmin page: Name of the 'View on site' tab. Needs to be very short -->
-    <string name="lbl_tab_view_on_site"
-            translatable="false">@string/option_view_book_at</string>
-    <!-- SearchAdmin page: 'View on site' tab description -->
-    <string name="lbl_tab_view_on_site_long"
-            translatable="false">@string/option_view_book_at</string>
     <!-- endregion -->
     <!-- region ========== Single words used for multiple purposes. -->
     <!-- [VERIFIED] -->
@@ -2206,9 +2202,6 @@
     <string name="X_neither">Neither</string>
     <string name="X_lbl_thumbnails">Thumbnails</string>
     <string name="X_lbl_anthologies">Anthologies</string>
-
-    <string name="X_option_bob_filter_read_yes">Books Read</string>
-    <string name="X_option_bob_filter_read_no">Books Unread</string>
 
     <!-- The global default values used as defaults for the built-in styles. -->
     <string name="X_style_type_defaults">Styles default settings</string>

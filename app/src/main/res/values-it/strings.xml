@@ -60,7 +60,6 @@
     <string name="X_error_authentication_failed">Autenticazione fallita</string>
     <string name="error_record_must_contain_column">Il record deve contenere un campo denominato %1$s.</string>
     <string name="X_error_network_site_has_problems">Il sito Web ha problemi.</string>
-    <string name="X_httpErrorIO">Comunicazione con il server non riuscita. Riprova più tardi.</string>
     <string name="X_info_not_authorized">Non autorizzato</string>
     <string name="X_info_site_authorization_successful">Autorizzazione %1$s concessa</string>
     <string name="X_lbl_folder">Cartella</string>
@@ -71,8 +70,6 @@
     <string name="X_lbl_general">Generali</string>
     <string name="tip_booklist_style_defaults">Questa schermata consente di impostare le caratteristiche predefinite di tutti gli stili. Queste vengono utilizzate da tutti gli stili incorporati e come punto di partenza per qualsiasi stile definito dall’utente.</string>
     <string name="X_action_use_default_setting">Utilizza le impostazioni predefinite</string>
-    <string name="X_whichImageCaptureApplication">Acquisisci immagine con</string>
-    <string name="X_whichSendToApplication">Invia tramite</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="action_add">Aggiungi</string>
@@ -163,7 +160,6 @@
     <string name="confirm_delete_style">Eliminare lo stile «%1$s»?</string>
     <string name="confirm_delete_identifier_from_x_books">Cancellare l\'identificatore “%1$s”?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
     <string name="confirm_delete_substitutions">Cancellare le sostituzioni per “%1$s”?</string>
-    <string name="X_confirm_delete_tag">Eliminare il tag «%1$s»?\n\nVerrà eliminata da tutti i libri su cui è impostata. I libri stessi non verranno eliminati.</string>
     <string name="confirm_delete_tag_from_x_books">Eliminare il tag «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Cancellare davvero il titolo «%1$s» (di %2$s)?\n\nVerrà eliminata da %3$s. Libri stessi non saranno cancellati.</string>
     <string name="confirm_merge_tags">Il tag che si sta modificando esiste già. Si desidera unirli?</string>
@@ -240,7 +236,6 @@
     <string name="info_authorized">Autorizzato</string>
     <string name="option_moving_covers_from_x_to_y">Sposta tutte le copertine da «%1$s» a «%2$s»</string>
     <string name="option_isfdb_menu_populate_toc">Inserisci titoli automaticamente (ISFDB)</string>
-    <string name="info_isfdb_warning_limited_to">(supportato solo dal sito Web ISFDB)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">Informazioni</string>
     <string name="lbl_about_contact">Contatti:</string>
@@ -525,8 +520,6 @@
     <string name="option_bob_filter_isbn_yes">Con ISBN</string>
     <string name="option_bob_filter_lend_out_no">Libri disponibili</string>
     <string name="option_bob_filter_lend_out_yes">Libri in prestito</string>
-    <string name="X_option_bob_filter_read_no">Libri non letti</string>
-    <string name="X_option_bob_filter_read_yes">Libri letti</string>
     <string name="option_bob_filter_signed_no">Libri non firmati</string>
     <string name="option_bob_filter_signed_yes">Libri firmati</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Piega tutto</string>
@@ -607,8 +600,6 @@
     <string name="pt_search_prefer_isbn10">Usa ISBN-10 quando possibile</string>
     <string name="pt_search_reformat_color">Standardizzare i nomi di «colore del libro»</string>
     <string name="pt_search_reformat_format">Standardizzare i nomi di «formato libro»</string>
-    <string name="pt_search_uses_publisher">La ricerca utilizza editore</string>
-    <string name="pt_show_title_reordered">Mostra titoli come…</string>
     <string name="ps_show_titles_reordered_off">Visualizzazione come dato,\nad esempio «IIl Signore degli Anelli»</string>
     <string name="error_type_not_supported">Tipo non supportato: %1$s…</string>
     <string name="ps_show_titles_reordered_on">Sposta un articolo dall’inizio di un titolo alla fine,\nad esempio «ignore degli Anelli, Il»</string>
@@ -749,8 +740,6 @@
     <string name="vldt_real_author_must_be_valid">Deve essere vuoto o deve essere un autore esistente</string>
     <string name="confirm_create_real_author">“%1$s” non esiste ancora. Devono essere creati?</string>
     <string name="pt_fetch_author_info_using_site_x">Recuperare le informazioni sull\'autore da %1$s</string>
-    <string name="pt_search_resolve_authors">Risolvere gli pseudonimi degli autori</string>
-    <string name="pt_search_resolve_authors_using_site_x">Risolvi gli pseudonimi degli autori utilizzando il sito Web di %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserva la denominazione del formato Bedetheque (francese)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Sostituire l’autore di tutte le voci con l’autore principale del libro «%1$s» ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tutti i libri sotto questa riga hanno copertine. Cercare di nuovo dall’alto?</string>
@@ -830,7 +819,6 @@
     <string name="lbl_track_progress">Progressi</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Deve essere maggiore o uguale alla pagina corrente</string>
     <string name="info_builtin_style_asterix">(* stili predefiniti)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Finestre di dialogo e menu</string>
     <string name="pe_option_bottom_sheet">Sempre nella parte inferiore dello schermo</string>
     <string name="pt_ui_dialogs_mode">Finestre di dialogo</string>
     <string name="pe_ui_dialog_mode_classic">Sempre come finestra di dialogo classica</string>

@@ -64,7 +64,6 @@
     <string name="X_error_authentication_failed">Ověření se nezdařilo</string>
     <string name="error_record_must_contain_column">Záznam musí obsahovat pole s názvem „%1$s“.</string>
     <string name="X_error_network_site_has_problems">Web má problémy.</string>
-    <string name="X_httpErrorIO">Se serverem nelze komunikovat. Zkuste to později.</string>
     <string name="X_info_not_authorized">Neautorizováno</string>
     <string name="X_info_site_authorization_successful">%1$s autorizace v pořádku</string>
     <string name="X_lbl_folder">Složka</string>
@@ -75,8 +74,6 @@
     <string name="X_lbl_general">Obecné</string>
     <string name="tip_booklist_style_defaults">Na této obrazovce můžete nastavit výchozí vlastnosti všech stylů. Ty jsou používány všemi vestavěnými styly a jako výchozí bod pro jakýkoli styl, který si sami definujete.</string>
     <string name="X_action_use_default_setting">Použít výchozí nastavení</string>
-    <string name="X_whichImageCaptureApplication">Vyfotit pomocí aplikace</string>
-    <string name="X_whichSendToApplication">Odeslat pomocí aplikace</string>
     <string name="a_b">%1$s%2$s</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_dialog_message">Vypadá to, že &APP_NAME; se zhroutila. Klepnutím na „%1$s“ uložíte zprávu na vámi zvolené místo. Tuto zprávu můžete použít k nahlášení nového problému na webových stránkách projektu.</string>
@@ -168,7 +165,6 @@
     <string name="confirm_delete_style">Smazat styl „%1$s“?</string>
     <string name="confirm_delete_identifier_from_x_books">Odstranit identifikátor „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_substitutions">Smazat náhrady za „%1$s“?</string>
-    <string name="X_confirm_delete_tag">Smazat štítek „%1$s“?\n\nBude vymazán ze všech knih, na kterých je nastaven. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_tag_from_x_books">Smazat štítek „%1$s“?\n\nBude odstraněn z %2$s. Knihy samotné smazány nebudou.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Odstraňte název „%1$s“ (z %2$s)?\n\nBude odstraněn z %3$s. Knihy samotné smazány nebudou.</string>
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
@@ -253,7 +249,6 @@
     <string name="info_authorized">Autorizováno</string>
     <string name="option_moving_covers_from_x_to_y">Přesuout všechny obálky z „%1$s“ do „%2$s“</string>
     <string name="option_isfdb_menu_populate_toc">Automaticky naplnit tituly (ISFDB)</string>
-    <string name="info_isfdb_warning_limited_to">(podporuje pouze webová stránka ISFDB)</string>
     <string name="size_kilobytes">%1$.2fkB</string>
     <string name="lbl_about">O této aplikaci</string>
     <string name="lbl_about_contact">Kontakt:</string>
@@ -538,8 +533,6 @@
     <string name="option_bob_filter_isbn_yes">S ISBN</string>
     <string name="option_bob_filter_lend_out_no">Dostupné knihy</string>
     <string name="option_bob_filter_lend_out_yes">Půjčené knihy</string>
-    <string name="X_option_bob_filter_read_no">Nepřečtené knihy</string>
-    <string name="X_option_bob_filter_read_yes">Přečtené knihy</string>
     <string name="option_bob_filter_signed_no">Nepodepsané knihy</string>
     <string name="option_bob_filter_signed_yes">Podepsané knihy</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Vždy spouštět sbalené</string>
@@ -620,8 +613,6 @@
     <string name="pt_search_prefer_isbn10">Pokud je to možné, použijte ISBN-10</string>
     <string name="pt_search_reformat_color">Standardizovat názvy barev knih</string>
     <string name="pt_search_reformat_format">Standardizovat názvy formátu knihy</string>
-    <string name="pt_search_uses_publisher">Vyhledávání používá vydavatele</string>
-    <string name="pt_show_title_reordered">Zobrazit tituly jako…</string>
     <string name="pt_sort_title_reordered">Seřadit tituly podle</string>
     <string name="pt_cover_undo_enabled">Zrušení operací na obálkách knih</string>
     <string name="ps_cover_undo_disabled">Úpravu/záměnu obálky nelze vrátit zpět (využívá méně úložného prostoru)</string>
@@ -755,8 +746,6 @@
     <string name="vldt_real_author_must_be_valid">Musí být prázdné nebo existující Autor</string>
     <string name="confirm_create_real_author">„%1$s“ zatím neexistuje. Měly by být vytvořeny?</string>
     <string name="pt_fetch_author_info_using_site_x">Získat informace o autorovi z %1$s</string>
-    <string name="pt_search_resolve_authors">Řešení pseudonymů autorů</string>
-    <string name="pt_search_resolve_authors_using_site_x">Řešení pseudonymů autorů pomocí webu %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Zachovat pojmenování ve formátu Bedetheque (francouzský)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Nahradit autora u všech záznamů hlavním autorem knihy „%1$s“ ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Všechny knihy pod tímto řádkem mají obálky. Hledat znovu shora?</string>
@@ -842,7 +831,6 @@
     <string name="lbl_track_progress">Pokrok</string>
     <string name="error_total_pages_must_be_larger_than_current_page">Musí být větší nebo stejná jako aktuální stránka</string>
     <string name="info_builtin_style_asterix">(* výchozí styly)</string>
-    <string name="X_pt_dialog_and_menu_popup_tuning">Dialogy a nabídky</string>
     <string name="pe_option_bottom_sheet">Vždy v dolní části obrazovky</string>
     <string name="pt_ui_dialogs_mode">Dialogy</string>
     <string name="pe_ui_dialog_mode_classic">Vždy jako klasické dialogové okno</string>

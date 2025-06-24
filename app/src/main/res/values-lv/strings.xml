@@ -68,7 +68,6 @@
     <string name="lbl_color">Krāsa</string>
     <string name="lbl_genre">Žanrs</string>
     <string name="X_action_update">Atjaunināt</string>
-    <string name="X_option_bob_filter_read_no">Nelasītās grāmatas</string>
     <string name="lbl_book">Grāmata</string>
     <string name="option_image_rotate_ccw">Pretēji pulksteņrādītāja virzienam</string>
     <string name="lbl_author_type_translator">Tulkotājs</string>
@@ -115,8 +114,6 @@
     <string name="X_action_try_again">Mēģināt vēlreiz</string>
     <string name="X_lbl_general">Vispārīgi</string>
     <string name="X_lbl_system">(Sistēma)</string>
-    <string name="X_whichImageCaptureApplication">Attēla uzņemšana, izmantojot lietotni</string>
-    <string name="X_whichSendToApplication">Sūtīšana, izmantojot…</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="action_add">Pievienot</string>
