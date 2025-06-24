@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2023 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,13 +22,7 @@
 <!--
     Testing backups: https://developer.android.com/guide/topics/data/testingbackup
 -->
-<full-backup-content xmlns:tools="http://schemas.android.com/tools">
-    <!-- not needed; gets generated on the fly. -->
-    <exclude
-        domain="sharedpref"
-        path="language2iso3.xml"
-        tools:ignore="FullBackupContent" />
-
+<full-backup-content>
     <!-- can't do the cover images as this would rapidly exceed the 25mb limit -->
     <exclude
         domain="external"
