@@ -865,4 +865,6 @@
         <item quantity="other">之前输入了 %1$d 个 ISBN 码。要开始搜索它们吗？还是应该删除它们呢？</item>
     </plurals>
     <string name="action_stop_searching">停止搜索</string>
+    <string name="confirm_leave_isbn_search">有进行中的搜索和/或为未保存的结果。</string>
+    <string name="action_save_for_later">保存以便稍后处理</string>
 </resources>
