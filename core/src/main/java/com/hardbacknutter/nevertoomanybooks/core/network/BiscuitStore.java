@@ -66,9 +66,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  * https://github.com/AndroidSDKSources/android-sdk-sources-for-api-level-35/blob/master/java/net/InMemoryCookieStore.java
  * <p>
- * Modified the default constructor to take a context from which we
- * get the targetSdkVersion.
- * Added {@link #getRawCookieList()}.
+ * <br>1. Modified the default constructor to take a context from which we get the targetSdkVersion.
+ * <br>2. Added {@link #getRawCookieList()}.
+ * <br>3. in #add, fix isfdb cookies
  * Otherwise no modifications.
  * <p>
  * RELEASE: check for android updates of java.net.InMemoryCookieStore
@@ -76,6 +76,9 @@ import java.util.concurrent.locks.ReentrantLock;
 @SuppressWarnings("ALL")
 public class BiscuitStore
         implements CookieStore {
+
+    private static final long ONE_DAY_IN_SECONDS = 86400;
+
     // BEGIN Android-changed: Add targetSdkVersion and remove cookieJar and domainIndex.
     private final boolean applyMCompatibility;
     // the in-memory representation of cookies
@@ -116,6 +119,10 @@ public class BiscuitStore
         // pre-condition : argument can't be null
         if (cookie == null) {
             throw new NullPointerException("cookie is null");
+        }
+
+        if (cookie.getDomain() != null && cookie.getDomain().endsWith("isfdb.org")) {
+            cookie.setMaxAge(ONE_DAY_IN_SECONDS);
         }
 
         lock.lock();
