@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -867,4 +864,8 @@
     <string name="info_identifier_editor"><![CDATA[Düzenlemeden önce Tanımlayıcılar hakkındaki <a href="%1$s">dokümantasyonu</a> okuyun.]]></string>
     <string name="lbl_date_born">Doğdu</string>
     <string name="pt_fetch_author_info">Yazar bilgilerini getir</string>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Daha önce girilmiş %1$d ISBN kodu var. Bunun için bir arama başlatmak ister misiniz, yoksa kaldırılmalı mı?</item>
+        <item quantity="other">Daha önce girilmiş %1$d ISBN kodu var. Bunlar için arama başlatmak ister misiniz, yoksa kaldırılsınlar mı?</item>
+    </plurals>
 </resources>
