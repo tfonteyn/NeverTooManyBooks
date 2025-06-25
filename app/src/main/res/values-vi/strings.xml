@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -853,4 +850,7 @@
     <string name="info_identifier_editor"><![CDATA[Đọc <a href="%1$s">tài liệu</a> về Mã định danh trước khi chỉnh sửa.]]></string>
     <string name="lbl_date_born">Sinh</string>
     <string name="pt_fetch_author_info">Lấy thông tin tác giả</string>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="other">Có %1$d mã ISBN đã nhập trước đó. Bạn có muốn bắt đầu tìm kiếm chúng hay nên xóa chúng?</item>
+    </plurals>
 </resources>
