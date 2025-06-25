@@ -55,9 +55,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Checks/uses the {@link BiscuitStore} if possible, see {@link #getUserId()}.
  * <p>
- * 2024-12-21: currently authentication is not needed as we only use 'simple searches'.
- * Should we one day need 'Advanced search' then login will be required.
- * Advanced Searches are currently restricted to registered users.
+ * 2025-02-23: 'Advanced search' requires login. We need it for text searches; not for ISBN.
  */
 public class IsfdbAuth
         implements SiteAuthModule,
