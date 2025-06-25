@@ -50,6 +50,7 @@ import androidx.annotation.Nullable;
 public class MaterialRatingBar
         extends RatingBar {
 
+    private static final float FLOAT_EPSILON = 0.1f;
     private final TintInfo tintInfo = new TintInfo();
 
     private MaterialRatingDrawable drawable;
@@ -470,7 +471,7 @@ public class MaterialRatingBar
         // HACK: Check and call our listener here because this method is always called by
         // updateSecondaryProgress() from onProgressRefresh().
         final float rating = getRating();
-        if (onRatingChangeListener != null && rating != lastKnownRating) {
+        if (onRatingChangeListener != null && Math.abs(rating - lastKnownRating) < FLOAT_EPSILON) {
             onRatingChangeListener.onRatingChanged(this, rating);
         }
         lastKnownRating = rating;
