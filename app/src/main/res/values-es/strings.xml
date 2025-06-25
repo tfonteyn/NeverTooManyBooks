@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -860,4 +857,9 @@
     <string name="info_identifier_editor"><![CDATA[Lea la <a href="%1$s">documentación</a> sobre Identificadores antes de editar.]]></string>
     <string name="lbl_date_born">Nacido</string>
     <string name="pt_fetch_author_info">Obtener información sobre el autor</string>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Hay %1$d código ISBN previamente introducido. Desea iniciar una búsqueda del mismo o debe eliminarlo?</item>
+        <item quantity="many">Hay %1$d códigos ISBN previamente introducidos. Desea iniciar la búsqueda de los mismos, o deben eliminarse?</item>
+        <item quantity="other">Hay %1$d códigos ISBN introducidos anteriormente. Desea iniciar la búsqueda de los mismos, o deben eliminarse?</item>
+    </plurals>
 </resources>
