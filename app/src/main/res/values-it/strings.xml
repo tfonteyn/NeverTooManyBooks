@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -861,4 +858,9 @@
     <string name="info_identifier_editor"><![CDATA[Leggere la <a href="%1$s">documentazione</a> sugli identificatori prima di modificarla.]]></string>
     <string name="lbl_date_born">Nato</string>
     <string name="pt_fetch_author_info">Recuperare le informazioni sull\'autore</string>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">C\'è %1$d codice ISBN inserito in precedenza. Si desidera avviare una ricerca per questo codice o è necessario rimuoverlo?</item>
+        <item quantity="many">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
+        <item quantity="other">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
+    </plurals>
 </resources>
