@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes « … »  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -191,13 +188,13 @@
     <string name="disabled">Désactivé</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamique</string>
     <string name="enabled">Activée</string>
-    <string name="error_http_401_authorization_failed">L’autorisation à échouée</string>
+    <string name="error_http_401_authorization_failed">Échec de l’autorisation</string>
     <string name="error_auto_toc_population_failed">La recherche automatique des titres a échoué.</string>
-    <string name="error_backup_failed">Sauvegarde échouée.</string>
+    <string name="error_backup_failed">Échec de la sauvegarde.</string>
     <string name="error_certificate_invalid">Le certificat est incorrect ou inaccessible.</string>
     <string name="error_email_failed">L’envoi de l’e-mail a échoué.</string>
     <string name="error_export_failed">L’exportation a échoué.</string>
-    <string name="error_file_not_found">Fichier non trouvé : %1$s</string>
+    <string name="error_file_not_found">Fichier introuvable : %1$s</string>
     <string name="error_file_not_recognized">Le fichier sélectionné n’est pas reconnu.</string>
     <string name="error_import_archive_invalid">Le fichier d’archive est corrompu ou invalide.</string>
     <string name="error_import_csv_column_count_mismatch">Nombre de colonnes incorrect dans la ligne %1$d</string>
@@ -209,7 +206,7 @@
     <string name="error_import_file_not_supported">Le fichier sélectionné ne peut pas être importé.</string>
     <string name="error_network_failed_try_again">Vérifiez la connexion et réessayez.</string>
     <string name="error_network_please_connect">Connectez-vous à Internet.</string>
-    <string name="error_network_site_access_failed">Un problème de réseau s’est produit lors de l’accès à %1$s. Veuillez vérifier si le site Web fonctionne et si le problème persiste, veuillez contacter le support.</string>
+    <string name="error_network_site_access_failed">Un problème de réseau s’est produit lors de l’accès à %1$s. Vérifiez si le site web fonctionne et si le problème persiste, contactez le support.</string>
     <string name="error_no_image_editor">Aucun éditeur d’image trouvé.</string>
     <string name="error_book_search_failed">La recherche du livre a échoué.</string>
     <string name="error_search_failed_network">Ouvrez les paramètres et vérifiez les préférences de votre réseau et de votre site de recherche.\nVérifiez également les paramètres réseau de votre appareil.</string>
@@ -219,11 +216,11 @@
     <string name="error_insufficient_storage">Espace de stockage insuffisant.</string>
     <string name="error_http_403_site_forbidden">%1$s a bloqué l’accès.</string>
     <string name="error_http_403_forbidden">Le site web a bloqué l’accès.</string>
-    <string name="error_storage_not_accessible">Veuillez vérifier que le stockage est accessible.</string>
+    <string name="error_storage_not_accessible">Vérifiez que le stockage est accessible.</string>
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu’il dispose d’un espace suffisant.</string>
     <string name="error_unexpected">Une erreur inconnue s’est produite.</string>
     <string name="error_unknown_host">Il y a eu un problème de connexion au service sur « %1$s ».</string>
-    <string name="error_unexpected_long">Une erreur inattendue est apparue. Si le problème persiste, contactez le support technique en utilisant l’option « %1$s » en bas de la page de paramètres.</string>
+    <string name="error_unexpected_long">Une erreur inattendue s\'est produite. Si le problème persiste, contactez le support technique en utilisant l’option « %1$s » en bas de la page de paramètres.</string>
     <string name="error_unsupported_version_v">Version non prise en charge : %1$d</string>
     <string name="error_upgrade_not_supported">La mise à niveau à partir de versions antérieures à %1$s n’est pas prise en charge.</string>
     <string name="option_fab_add_book_by_barcode_scan">Numériser un code-barres</string>
@@ -237,7 +234,7 @@
     <string name="httpErrorAuth">Impossible de procéder à l’authentification.</string>
     <string name="httpErrorFailedSslHandshake">Impossible d’établir une connexion sécurisée.</string>
     <string name="httpErrorFile">Impossible d’accéder au fichier.</string>
-    <string name="httpErrorFileNotFound">Impossible de trouver le fichier demandé.</string>
+    <string name="httpErrorFileNotFound">Le fichier demandé est introuvable.</string>
     <string name="httpErrorTimeout">Délai de connexion au serveur dépassé.</string>
     <string name="info_authorized">Autorisé</string>
     <string name="option_moving_covers_from_x_to_y">Déplacer toutes les couvertures de « %1$s » vers « %2$s »</string>
@@ -519,7 +516,7 @@
     <string name="none">Aucun</string>
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Erreur</string>
-    <string name="notification_channel_info">Information</string>
+    <string name="notification_channel_info">Informations</string>
     <string name="notification_channel_warn">Attention</string>
     <string name="password">mot de passe</string>
     <string name="option_bob_filter_isbn_no">Sans ISBN</string>
@@ -631,8 +628,7 @@
     <string name="pv_bob_header_nr_of_books">Montrer le nombre de livres</string>
     <string name="pv_bob_header_style_name">Nom du style</string>
     <!-- use the default single quote character and NOT the stylized! -->
-    <string name="pv_reformat_titles_prefixes"
-            tools:ignore="TypographyQuotes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une|des|Des</string>
+    <string name="pv_reformat_titles_prefixes" tools:ignore="TypographyQuotes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une|des|Des</string>
     <string name="size_hidden">Caché</string>
     <string name="size_large">Grand</string>
     <string name="size_medium">Moyen</string>
@@ -701,7 +697,7 @@
     <string name="warning_already_in_list">Déjà dans la liste !</string>
     <string name="warning_backup_request">Voulez-vous sauvegarder votre base de données sur la carte SD ?</string>
     <string name="warning_book_not_always_found">Pas tous les sites ont renvoyé de données valides.</string>
-    <string name="warning_book_not_found">Impossible de trouver le livre demandé.</string>
+    <string name="warning_book_not_found">Le livre demandé est introuvable.</string>
     <string name="warning_cannot_delete_1st_bs">La première étagère ne peut pas être supprimée.</string>
     <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
     <string name="warning_export_contains_no_data">Il n’y avait rien à exporter.</string>
