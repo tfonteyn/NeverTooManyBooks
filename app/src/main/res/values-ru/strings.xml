@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -875,4 +872,10 @@
     <string name="lbl_date_born">Родился</string>
     <string name="pt_fetch_author_info">Получение информации об авторе</string>
     <string name="menu_search_updates">Поиск обновлений</string>
+    <plurals name="confirm_queue_has_x_items">
+        <item quantity="one">Есть %1$d ранее введенный код ISBN. Хотите начать поиск по нему или хотите удалить его?</item>
+        <item quantity="few">Есть %1$d ранее введенных кода ISBN. Хотите начать их поиск или хотите их удалить?</item>
+        <item quantity="many">Есть %1$d ранее введенных кодов ISBN. Вы хотите начать их поиск или хотите их удалить?</item>
+        <item quantity="other">Есть %1$d ранее введенных кодов ISBN. Вы хотите начать их поиск или хотите их удалить?</item>
+    </plurals>
 </resources>
