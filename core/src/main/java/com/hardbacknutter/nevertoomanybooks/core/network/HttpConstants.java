@@ -131,8 +131,11 @@ public final class HttpConstants {
     /** Value for {@link #CONTENT_TYPE}. */
     public static final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
     /** Value for {@link #CONTENT_TYPE}. */
-    public static final String CONTENT_TYPE_FORM_URL_ENCODED =
+    public static final String CONTENT_TYPE_FORM_URL_ENCODED_UTF8 =
             "application/x-www-form-urlencoded; charset=UTF-8";
+    /** Value for {@link #CONTENT_TYPE}. */
+    public static final String CONTENT_TYPE_FORM_URL_ENCODED =
+            "application/x-www-form-urlencoded";
 
     /**
      * HTTP Request Header.
