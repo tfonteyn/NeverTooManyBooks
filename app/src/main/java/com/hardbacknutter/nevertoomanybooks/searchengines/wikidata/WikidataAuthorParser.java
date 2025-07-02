@@ -32,7 +32,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -227,7 +227,7 @@ class WikidataAuthorParser {
             final String encodeFilename = URLEncoder.encode(filename, CHARSET);
 
             final String url = String.format(IMAGE_INFO, encodeFilename);
-            final FutureHttpGet<String> httpGet = searchEngine.createGetDocumentRequest(context);
+            final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
             final String response = httpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {

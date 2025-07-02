@@ -31,7 +31,7 @@ import java.net.URLEncoder;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -159,9 +159,9 @@ public final class OpenLibraryAuthorResolver
 
         final String url = String.format(OpenLibrarySearchEngine.AUTHOR_URL, sid) + ".json";
 
-        final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
+        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
         try {
-            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
+            final String response = httpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 return authorParser.parse(context, document);
@@ -188,11 +188,11 @@ public final class OpenLibraryAuthorResolver
                                 @NonNull final String names)
             throws SearchException {
 
-        final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
+        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
         try {
             final String url = AUTHOR_SEARCH + URLEncoder.encode(names, CHARSET);
 
-            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
+            final String response = httpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 final int numFound = document.optInt("numFound");

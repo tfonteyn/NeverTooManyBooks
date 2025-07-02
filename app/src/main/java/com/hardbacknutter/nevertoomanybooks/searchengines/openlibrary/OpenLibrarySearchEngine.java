@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -159,7 +159,7 @@ public class OpenLibrarySearchEngine
     private final CookieManager cookieManager;
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     @Nullable
-    private FutureHttpGet<String> futureHttpGet;
+    private FutureHttp<String> httpGet;
     @Nullable
     private SiteAuthModule siteAuthModule;
     @Nullable
@@ -243,8 +243,8 @@ public class OpenLibrarySearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (futureHttpGet != null) {
-                futureHttpGet.cancel();
+            if (httpGet != null) {
+                httpGet.cancel();
             }
             if (siteAuthModule != null) {
                 siteAuthModule.cancel();
@@ -321,13 +321,13 @@ public class OpenLibrarySearchEngine
     private String loadDocument(@NonNull final Context context,
                                 @NonNull final String url)
             throws StorageException, SearchException {
-        futureHttpGet = createGetDocumentRequest(context);
+        httpGet = createGetDocumentRequest(context);
         try {
-            return futureHttpGet.getAsString(url, (con, s) -> s);
+            return httpGet.getAsString(url, (con, s) -> s);
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            futureHttpGet = null;
+            httpGet = null;
         }
     }
 
@@ -1602,16 +1602,16 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     @Override
-    public <T> FutureHttpGet<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> request = super.createGetDocumentRequest(context);
+    public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
+        final FutureHttp<T> request = super.createGetDocumentRequest(context);
         request.setEnable404Redirect(true);
 
         return request;
     }
 
     @NonNull
-    public <T> FutureHttpGet<T> createGetImageRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> request = createGetDocumentRequest(context);
+    public <T> FutureHttp<T> createGetImageRequest(@NonNull final Context context) {
+        final FutureHttp<T> request = createGetDocumentRequest(context);
         request.setInstanceFollowRedirects(true);
         request.setEnable404Redirect(true);
 

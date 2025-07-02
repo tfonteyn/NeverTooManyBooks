@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -515,7 +515,7 @@ public class IsfdbSearchEngine
     /** The ISBN we searched for. Not guaranteed to be identical to the book we find. */
     private String searchForIsbn;
     @Nullable
-    private FutureHttpGet<Boolean> futureHttpGet;
+    private FutureHttp<Boolean> httpGet;
     @Nullable
     private SiteAuthModule siteAuthModule;
 
@@ -1931,8 +1931,8 @@ public class IsfdbSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (futureHttpGet != null) {
-                futureHttpGet.cancel();
+            if (httpGet != null) {
+                httpGet.cancel();
             }
             if (siteAuthModule != null) {
                 siteAuthModule.cancel();
@@ -1962,8 +1962,6 @@ public class IsfdbSearchEngine
                                          @SuppressWarnings("SameParameterValue") final int maxRecords)
             throws StorageException, SearchException {
 
-        futureHttpGet = createGetDocumentRequest(context);
-
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(context, this, fetchCovers, maxRecords);
 
@@ -1974,8 +1972,9 @@ public class IsfdbSearchEngine
             throw new IllegalStateException(e);
         }
 
+        httpGet = createGetDocumentRequest(context);
         try {
-            futureHttpGet.get(url, (con, is) -> {
+            httpGet.get(url, (con, is) -> {
                 try {
                     parser.parse(is, listHandler);
                     return true;
@@ -1989,11 +1988,12 @@ public class IsfdbSearchEngine
                     throw e;
                 }
             });
-
             return listHandler.getResult();
 
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
+        } finally {
+            httpGet = null;
         }
     }
 

@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpBase;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 
 /**
  * 2025-06-25: Proof of concept.
  * <p>
- * This would need to be added AFTER calling {@link FutureHttpBase}#checkResponseCode
+ * This would need to be added AFTER calling {@link FutureHttp}#checkResponseCode
  * but before doing ANYTHING ELSE.
  * <p>
  * For now, the modification in {@link com.hardbacknutter.nevertoomanybooks.core.network.BiscuitStore}

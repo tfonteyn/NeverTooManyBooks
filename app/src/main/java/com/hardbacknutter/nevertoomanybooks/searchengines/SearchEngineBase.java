@@ -49,8 +49,7 @@ import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
@@ -67,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public abstract class SearchEngineBase
@@ -243,45 +243,40 @@ public abstract class SearchEngineBase
 
     /**
      * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@link FutureHttpHead}.
+     * to create a suitable {@code HEAD} request.
      *
      * @param context Current context
      * @param <T>     return type
      *
-     * @return new {@link FutureHttpHead} instance
+     * @return new {@code HEAD} request instance
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public <T> FutureHttpHead<T> createFutureHeadRequest(@NonNull final Context context) {
-        final FutureHttpHead<T> httpHead = new FutureHttpHead<>(
-                config.getEngineId().getLabelResId());
-        httpHead.setConnectTimeout(config.getConnectTimeoutInMs(context))
-                .setReadTimeout(config.getReadTimeoutInMs(context))
-                .setThrottler(config.getThrottler())
-                .setSSLContext(sslContext)
-                .enableLogging(config.isLogHttpGetRequests(context));
+    public <T> FutureHttp<T> createHeadRequest(@NonNull final Context context) {
+        final FutureHttp<T> httpHead = FutureHttpFactory.create(context, config.getEngineId());
+        httpHead.setSSLContext(sslContext);
         return httpHead;
     }
 
     /**
      * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@link FutureHttpGet}.
+     * to create a suitable {@code GET} request.
      * <p>
      * The headers are set to the defaults as used by Firefox to request a "document"
      *
      * @param context Current context
      * @param <T>     return type
      *
-     * @return new {@link FutureHttpGet} instance
+     * @return new {@code GET} request instance
      */
     @NonNull
-    public <T> FutureHttpGet<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> httpGet = createRawGetRequest(context);
+    public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
+        final FutureHttp<T> httpGet = createRawGetRequest(context);
 
         // Improve compatibility by sending standard headers.
         // Some headers are overridden in #createGetImageRequest as needed.
 
-        // Host & User-Agent are set in {@link FutureHttpBase#execute}
+        // Host & User-Agent are set in {@link FutureHttp#execute}
         // but can be overridden as needed.
 
         // Example of a Firefox request to https://developer.android.com
@@ -339,9 +334,20 @@ public abstract class SearchEngineBase
         return httpGet;
     }
 
+    /**
+     * Convenience method which uses the engines specific network configuration
+     * to create a suitable {@code GET} request.
+     * <p>
+     * The headers are set to the defaults as used by Firefox to request an "image"
+     *
+     * @param context Current context
+     * @param <T>     return type
+     *
+     * @return new {@code GET} request instance
+     */
     @NonNull
-    public <T> FutureHttpGet<T> createGetImageRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> httpGet = createGetDocumentRequest(context);
+    public <T> FutureHttp<T> createGetImageRequest(@NonNull final Context context) {
+        final FutureHttp<T> httpGet = createGetDocumentRequest(context);
         httpGet.setRequestProperty(HttpConstants.ACCEPT, HttpConstants.ACCEPT_IMAGE);
         // We want a generic image
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
@@ -355,14 +361,9 @@ public abstract class SearchEngineBase
     }
 
     @NonNull
-    private <T> FutureHttpGet<T> createRawGetRequest(@NonNull final Context context) {
-        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(
-                config.getEngineId().getLabelResId());
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs(context))
-               .setReadTimeout(config.getReadTimeoutInMs(context))
-               .setThrottler(config.getThrottler())
-               .setSSLContext(sslContext)
-               .enableLogging(config.isLogHttpGetRequests(context));
+    private <T> FutureHttp<T> createRawGetRequest(@NonNull final Context context) {
+        final FutureHttp<T> httpGet = FutureHttpFactory.create(context, config.getEngineId());
+        httpGet.setSSLContext(sslContext);
         return httpGet;
     }
 
@@ -455,7 +456,7 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                final FutureHttpGet<File> httpGet = createGetImageRequest(context);
+                final FutureHttp<File> httpGet = createGetImageRequest(context);
                 if (requestProperties != null) {
                     requestProperties.forEach(httpGet::setRequestProperty);
                 }

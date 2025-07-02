@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -57,9 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -103,7 +103,7 @@ public class GoogleBooksSearchEngine
     private static final String SEARCH = "/books/v1/volumes?q=";
     private final RatingParser ratingParser;
     @Nullable
-    private FutureHttpGet<String> futureHttpGet;
+    private FutureHttp<String> httpGet;
 
     /**
      * Constructor.
@@ -229,11 +229,11 @@ public class GoogleBooksSearchEngine
             throws StorageException,
                    SearchException {
 
-        futureHttpGet = createGetDocumentRequest(context);
+        httpGet = createGetDocumentRequest(context);
 
         try {
             // get and store the result into a string.
-            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
+            final String response = httpGet.getAsString(url, (con, s) -> s);
 
             final JSONObject document = new JSONObject(response);
             // https://www.googleapis.com/books/v1/volumes?q=intitle:flowers+inauthor:keyes
@@ -258,7 +258,7 @@ public class GoogleBooksSearchEngine
         } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            futureHttpGet = null;
+            httpGet = null;
         }
     }
 
@@ -619,8 +619,8 @@ public class GoogleBooksSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (futureHttpGet != null) {
-                futureHttpGet.cancel();
+            if (httpGet != null) {
+                httpGet.cancel();
             }
         }
     }

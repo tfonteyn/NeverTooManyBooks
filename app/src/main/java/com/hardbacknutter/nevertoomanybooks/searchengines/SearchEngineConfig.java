@@ -187,7 +187,7 @@ public class SearchEngineConfig {
         }
     }
 
-    boolean isLogHttpGetRequests(@NonNull final Context context) {
+    public boolean isLogHttpGetRequests(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
                 engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING,
                 false);

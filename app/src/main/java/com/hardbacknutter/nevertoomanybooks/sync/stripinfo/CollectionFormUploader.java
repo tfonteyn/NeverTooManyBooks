@@ -33,8 +33,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.OptionalLong;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -44,8 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 
@@ -84,7 +83,7 @@ class CollectionFormUploader {
     private final JSoupHelper jSoupHelper = new JSoupHelper();
 
     @NonNull
-    private final FutureHttpPost<Document> futureHttpPost;
+    private final FutureHttp<Document> httpPost;
     @NonNull
     private final String postUrl;
 
@@ -101,19 +100,15 @@ class CollectionFormUploader {
     @AnyThread
     CollectionFormUploader(@NonNull final Context context) {
 
-        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
-
         //noinspection DataFlowIssue
-        postUrl = config.getHostUrl(context) + StripInfoSearchEngine.COLLECTION_FORM_URL;
+        postUrl = EngineId.StripInfoBe.getConfig().getHostUrl(context)
+                  + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
-        futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
-        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
-                      .setReadTimeout(config.getReadTimeoutInMs(context))
-                      .setThrottler(config.getThrottler())
-                      .setRequestProperty(HttpConstants.CONTENT_TYPE,
-                                          HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED);
+        httpPost = FutureHttpFactory.create(context, EngineId.StripInfoBe);
+        httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
+                                    HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED_UTF8);
 
-        final Locale siteLocale = config.getEngineId().getDefaultLocale();
+        final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
         final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
         realNumberParser = new RealNumberParser(locales);
         moneyParser = new MoneyParser(siteLocale, realNumberParser);
@@ -446,7 +441,7 @@ class CollectionFormUploader {
     private Document doPost(@NonNull final String postBody)
             throws IOException, StorageException {
 
-        return Objects.requireNonNull(futureHttpPost.post(postUrl, postBody, bis ->
+        return Objects.requireNonNull(httpPost.post(postUrl, postBody, bis ->
                 Jsoup.parse(bis, null, postUrl)));
     }
 
@@ -454,6 +449,6 @@ class CollectionFormUploader {
      * Request to cancel an ongoing post (to the site).
      */
     public void cancel() {
-        futureHttpPost.cancel();
+        httpPost.cancel();
     }
 }

@@ -38,13 +38,13 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Given a URL and a filename, this class uses a {@link FutureHttpGet} to download an image,
+ * Given a URL and a filename, this class uses a {@link FutureHttp} to download an image,
  * and the {@link CoverStorage} to store the image.
  */
 public class ImageDownloader {
@@ -67,15 +67,15 @@ public class ImageDownloader {
     public static boolean IGNORE_RENAME_FAILURE;
 
     @NonNull
-    private final FutureHttpGet<File> futureHttpGet;
+    private final FutureHttp<File> httpGet;
 
     /**
      * Constructor.
      *
-     * @param futureHttpGet to use
+     * @param httpGet to use
      */
-    public ImageDownloader(@NonNull final FutureHttpGet<File> futureHttpGet) {
-        this.futureHttpGet = futureHttpGet;
+    public ImageDownloader(@NonNull final FutureHttp<File> httpGet) {
+        this.httpGet = httpGet;
     }
 
     /**
@@ -139,7 +139,7 @@ public class ImageDownloader {
                 }
                 savedFile = destFile;
             } else {
-                savedFile = futureHttpGet.get(url, (con, is) ->
+                savedFile = httpGet.get(url, (con, is) ->
                         coverStorage.persist(is, destFile));
             }
 
@@ -170,8 +170,8 @@ public class ImageDownloader {
     }
 
     public void cancel() {
-        synchronized (futureHttpGet) {
-            futureHttpGet.cancel();
+        synchronized (httpGet) {
+            httpGet.cancel();
         }
     }
 }

@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -122,7 +122,7 @@ public class GoodreadsSearchEngine
     private final RatingParser ratingParser;
     private final AuthorTypeMapper authorTypeMapper;
     @Nullable
-    private FutureHttpGet<String> futureHttpGet;
+    private FutureHttp<String> httpGet;
 
     /**
      * Constructor.
@@ -264,11 +264,11 @@ public class GoodreadsSearchEngine
             throws StorageException, SearchException {
 
         final String url = getHostUrl(context) + String.format(GET_GOODREADS_ID, validIsbn);
-        futureHttpGet = createGetDocumentRequest(context);
+        httpGet = createGetDocumentRequest(context);
 
         try {
             // get and store the result into a string.
-            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
+            final String response = httpGet.getAsString(url, (con, s) -> s);
 
             final JSONArray responseArray = new JSONArray(response);
             if (!responseArray.isEmpty()) {
@@ -283,7 +283,7 @@ public class GoodreadsSearchEngine
         } catch (@NonNull final IOException | JSONException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            futureHttpGet = null;
+            httpGet = null;
         }
 
         return 0;
@@ -702,8 +702,8 @@ public class GoodreadsSearchEngine
     public void cancel() {
         super.cancel();
 
-        if (futureHttpGet != null) {
-            futureHttpGet.cancel();
+        if (httpGet != null) {
+            httpGet.cancel();
         }
     }
 }

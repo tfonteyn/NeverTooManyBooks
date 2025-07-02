@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
@@ -231,9 +231,9 @@ public class BolSearchEngine
      */
     private void ensureCookie(@NonNull final Context context)
             throws SearchException {
-        final FutureHttpHead<Boolean> futureHttpHead = createFutureHeadRequest(context);
+        final FutureHttp<Boolean> httpHead = createHeadRequest(context);
         try {
-            futureHttpHead.head(getHostUrl(context), con -> true);
+            httpHead.head(getHostUrl(context), con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }

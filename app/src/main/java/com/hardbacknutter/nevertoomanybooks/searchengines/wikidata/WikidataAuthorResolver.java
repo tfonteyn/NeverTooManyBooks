@@ -31,7 +31,7 @@ import java.net.URLEncoder;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -163,9 +163,9 @@ public final class WikidataAuthorResolver
 
         final String url = String.format(AUTHOR_SEARCH_BY_SID, sid);
 
-        final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
+        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
         try {
-            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
+            final String response = httpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 return authorParser.parse(context, langCode, document, sid);
@@ -181,12 +181,12 @@ public final class WikidataAuthorResolver
                                 @NonNull final String names)
             throws SearchException {
 
-        final FutureHttpGet<String> futureHttpGet = searchEngine.createGetDocumentRequest(context);
+        final FutureHttp<String> httpGet = searchEngine.createGetDocumentRequest(context);
         try {
             final String url = String.format(AUTHOR_SEARCH_BY_NAME, langCode,
                                              URLEncoder.encode(names, CHARSET));
 
-            final String response = futureHttpGet.getAsString(url, (con, s) -> s);
+            final String response = httpGet.getAsString(url, (con, s) -> s);
             final JSONObject document = new JSONObject(response);
             if (!searchEngine.isCancelled()) {
                 final JSONArray docs = document.optJSONArray("search");

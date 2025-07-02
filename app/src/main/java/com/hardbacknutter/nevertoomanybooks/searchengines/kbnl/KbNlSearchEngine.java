@@ -39,8 +39,7 @@ import javax.xml.parsers.SAXParserFactory;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -117,7 +116,7 @@ public class KbNlSearchEngine
     private static final String PERMALINK_URL = "/cbs/DB=%1$s/XMLPRS=Y/PPN?PPN=%2$s";
 
     @Nullable
-    private FutureHttpGet<Boolean> futureHttpGet;
+    private FutureHttp<Boolean> httpGet;
 
     @NonNull
     private String dbVersion = DEFAULT_DB_VERSION;
@@ -168,8 +167,8 @@ public class KbNlSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (futureHttpGet != null) {
-                futureHttpGet.cancel();
+            if (httpGet != null) {
+                httpGet.cancel();
             }
         }
     }
@@ -183,9 +182,9 @@ public class KbNlSearchEngine
      */
     private void ensureCookie(@NonNull final Context context)
             throws SearchException {
-        final FutureHttpHead<Boolean> futureHttpHead = createFutureHeadRequest(context);
+        final FutureHttp<Boolean> httpHead = createHeadRequest(context);
         try {
-            futureHttpHead.head(getHostUrl(context) + "/cbs/", con -> true);
+            httpHead.head(getHostUrl(context) + "/cbs/", con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }
@@ -248,8 +247,6 @@ public class KbNlSearchEngine
 
         final Book book = new Book();
 
-        futureHttpGet = createGetDocumentRequest(context);
-
         final DefaultHandler handler = new KbNlBookHandler(this, book);
 
         final SAXParser parser;
@@ -259,9 +256,10 @@ public class KbNlSearchEngine
             throw new IllegalStateException(e);
         }
 
+        httpGet = createGetDocumentRequest(context);
         try {
             // Do the search... we'll either get a parsed list-page back, or the parsed book page.
-            futureHttpGet.get(url, (con, is) -> handleResponse(is, parser, handler, book));
+            httpGet.get(url, (con, is) -> handleResponse(is, parser, handler, book));
 
             // If it was a list page, fetch and parse the 1st book found;
             // If it was a book page, we're already done and can skip this step.
@@ -270,10 +268,12 @@ public class KbNlSearchEngine
                 book.clearData();
                 final String url2 = getHostUrl(context)
                                     + String.format(MULTI_RESULT_BOOK_URL, dbVersion, setNr, show);
-                futureHttpGet.get(url2, (con, is) -> handleResponse(is, parser, handler, book));
+                httpGet.get(url2, (con, is) -> handleResponse(is, parser, handler, book));
             }
         } catch (@NonNull final IOException e) {
             throw new SearchException(getEngineId(), e);
+        } finally {
+            httpGet = null;
         }
 
         return book;

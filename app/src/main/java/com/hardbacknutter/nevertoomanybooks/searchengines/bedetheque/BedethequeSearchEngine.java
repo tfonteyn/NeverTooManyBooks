@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
@@ -208,10 +208,10 @@ public class BedethequeSearchEngine
             throws SearchException {
         if (csrfCookie == null || csrfCookie.hasExpired()) {
             try {
-                final FutureHttpHead<HttpCookie> futureHttpHead = createFutureHeadRequest(context);
+                final FutureHttp<HttpCookie> httpHead = createHeadRequest(context);
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                csrfCookie = futureHttpHead.head(getHostUrl(context) + SEARCH_URL, response ->
+                csrfCookie = httpHead.head(getHostUrl(context) + SEARCH_URL, response ->
                         cookieManager.getCookieStore()
                                      .getCookies()
                                      .stream()

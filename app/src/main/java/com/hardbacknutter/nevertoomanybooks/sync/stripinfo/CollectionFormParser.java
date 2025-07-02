@@ -30,13 +30,12 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 
 import org.jsoup.Jsoup;
@@ -82,7 +81,7 @@ public class CollectionFormParser {
     private static final String SIDE_FF_STRIP_COLLECTIE_ID = "stripCollectieId";
 
     @NonNull
-    private final FutureHttpPost<Document> futureHttpPost;
+    private final FutureHttp<Document> httpPost;
     @NonNull
     private final String postUrl;
 
@@ -99,17 +98,13 @@ public class CollectionFormParser {
     public CollectionFormParser(@NonNull final Context context,
                                 @NonNull final BookshelfMapper bookshelfMapper) {
 
-        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
-
         //noinspection DataFlowIssue
-        postUrl = config.getHostUrl(context) + StripInfoSearchEngine.COLLECTION_FORM_URL;
+        postUrl = EngineId.StripInfoBe.getConfig().getHostUrl(context)
+                  + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
-        futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
-        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
-                      .setReadTimeout(config.getReadTimeoutInMs(context))
-                      .setThrottler(config.getThrottler())
-                      .setRequestProperty(HttpConstants.CONTENT_TYPE,
-                                          HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED);
+        httpPost = FutureHttpFactory.create(context, EngineId.StripInfoBe);
+        httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
+                                    HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED_UTF8);
 
         formParser = new CollectionParser(context, bookshelfMapper);
     }
@@ -143,8 +138,7 @@ public class CollectionFormParser {
 
         //noinspection DataFlowIssue
         final Document response = Objects.requireNonNull(
-                futureHttpPost.post(postUrl, postBody, bis ->
-                        Jsoup.parse(bis, null, postUrl)));
+                httpPost.post(postUrl, postBody, bis -> Jsoup.parse(bis, null, postUrl)));
 
         final StripInfoCollectionData collectionData =
                 book.getStripInfoCollectionData().orElseGet(StripInfoCollectionData::new);
@@ -171,6 +165,6 @@ public class CollectionFormParser {
     }
 
     public void cancel() {
-        futureHttpPost.cancel();
+        httpPost.cancel();
     }
 }

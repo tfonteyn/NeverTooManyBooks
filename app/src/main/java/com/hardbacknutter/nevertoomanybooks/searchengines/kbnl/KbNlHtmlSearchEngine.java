@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpHead;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -170,9 +170,9 @@ public class KbNlHtmlSearchEngine
      */
     private void ensureCookie(@NonNull final Context context)
             throws SearchException {
-        final FutureHttpHead<Boolean> futureHttpHead = createFutureHeadRequest(context);
+        final FutureHttp<Boolean> httpHead = createHeadRequest(context);
         try {
-            futureHttpHead.head(getHostUrl(context) + "/cbs/", con -> true);
+            httpHead.head(getHostUrl(context) + "/cbs/", con -> true);
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         }

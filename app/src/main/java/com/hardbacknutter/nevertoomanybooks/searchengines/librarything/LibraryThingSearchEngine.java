@@ -42,7 +42,7 @@ import javax.xml.parsers.SAXParserFactory;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEditionIsbn;
@@ -77,7 +77,7 @@ public class LibraryThingSearchEngine
     private static final int TOKEN_LEN = 32;
 
     @Nullable
-    private FutureHttpGet<Boolean> futureHttpGet;
+    private FutureHttp<Boolean> httpGet;
 
     /**
      * Constructor.
@@ -153,8 +153,8 @@ public class LibraryThingSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (futureHttpGet != null) {
-                futureHttpGet.cancel();
+            if (httpGet != null) {
+                httpGet.cancel();
             }
         }
     }
@@ -201,9 +201,9 @@ public class LibraryThingSearchEngine
         }
 
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
-        futureHttpGet = createGetDocumentRequest(context);
+        httpGet = createGetDocumentRequest(context);
         try {
-            futureHttpGet.get(url, (con, is) -> {
+            httpGet.get(url, (con, is) -> {
                 parser.parse(is, handler);
                 return true;
             });
@@ -211,7 +211,7 @@ public class LibraryThingSearchEngine
         } catch (@NonNull final StorageException | IOException e) {
             throw new SearchException(getEngineId(), e);
         } finally {
-            futureHttpGet = null;
+            httpGet = null;
         }
 
         return handler.getResult();

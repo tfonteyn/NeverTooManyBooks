@@ -73,8 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
@@ -87,6 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.org.json.JSONArray;
@@ -329,11 +329,11 @@ public final class CalibreContentServer
     @Nullable
     private final String authHeader;
     @Nullable
-    private FutureHttpPost<Void> futureHttpPost;
+    private FutureHttp<Void> httpPost;
     @Nullable
-    private FutureHttpGet<String> futureJsonFetchRequest;
+    private FutureHttp<String> jsonFetchRequest;
     @Nullable
-    private FutureHttpGet<Uri> futureFileFetchRequest;
+    private FutureHttp<Uri> fileFetchRequest;
     @Nullable
     private ImageDownloader imageDownloader;
     /** As read from the Content Server. */
@@ -546,13 +546,8 @@ public final class CalibreContentServer
     }
 
     @NonNull
-    private <FRT> FutureHttpGet<FRT> createFutureGetRequest(final boolean useCompression) {
-        final FutureHttpGet<FRT> httpGet = new FutureHttpGet<>(R.string.site_calibre);
-
-        if (useCompression) {
-            httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
-                                       HttpConstants.ACCEPT_ENCODING_GZIP);
-        }
+    private <FRT> FutureHttp<FRT> createGetRequest() {
+        final FutureHttp<FRT> request = FutureHttpFactory.create(R.string.site_calibre);
 
         // TODO: check adding http headers with Calibre built-in-http-server
         //  versus Calibre hosted behind an Apache server
@@ -560,24 +555,26 @@ public final class CalibreContentServer
         // httpGet.setRequestProperty(HttpConstants.CONNECTION,
         //                            HttpConstants.CONNECTION_KEEP_ALIVE);
 
-        httpGet.setConnectTimeout(connectTimeoutInMs)
+        request.setConnectTimeout(connectTimeoutInMs)
                .setReadTimeout(readTimeoutInMs)
                .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
+               .setRequestProperty(HttpConstants.ACCEPT_ENCODING,
+                                   HttpConstants.ACCEPT_ENCODING_GZIP)
                .setSSLContext(sslContext)
                .setHostnameVerifier(hostnameVerifier);
-        return httpGet;
+        return request;
     }
 
     @NonNull
-    private <FRT> FutureHttpPost<FRT> createFuturePostRequest() {
-        final FutureHttpPost<FRT> httpPost = new FutureHttpPost<>(R.string.site_calibre);
-        httpPost.setConnectTimeout(connectTimeoutInMs)
+    private <FRT> FutureHttp<FRT> createPostRequest() {
+        final FutureHttp<FRT> request = FutureHttpFactory.create(R.string.site_calibre);
+        request.setConnectTimeout(connectTimeoutInMs)
                 .setReadTimeout(readTimeoutInMs)
                 .setRequestProperty(HttpConstants.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON)
                 .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
                 .setSSLContext(sslContext)
                 .setHostnameVerifier(hostnameVerifier);
-        return httpPost;
+        return request;
     }
 
     @WorkerThread
@@ -1346,7 +1343,7 @@ public final class CalibreContentServer
 
         synchronized (this) {
             if (imageDownloader == null) {
-                final FutureHttpGet<File> request = createFutureGetRequest(true);
+                final FutureHttp<File> request = createGetRequest();
                 request.setRequestProperty(HttpConstants.ACCEPT,
                                            HttpConstants.ACCEPT_IMAGE);
                 // TODO: check adding http headers with Calibre built-in-http-server
@@ -1388,12 +1385,10 @@ public final class CalibreContentServer
                    StorageException,
                    SocketTimeoutException,
                    IOException {
-        synchronized (this) {
-            if (futureJsonFetchRequest == null) {
-                futureJsonFetchRequest = createFutureGetRequest(true);
-            }
-        }
-        return futureJsonFetchRequest.getAsString(url, buffer, (con, s) -> s);
+
+        jsonFetchRequest = createGetRequest();
+        jsonFetchRequest.setBufferSize(buffer);
+        return jsonFetchRequest.getAsString(url, (con, s) -> s);
     }
 
     /**
@@ -1442,12 +1437,9 @@ public final class CalibreContentServer
 
         final Uri destUri = destFile.getUri();
 
-        synchronized (this) {
-            if (futureFileFetchRequest == null) {
-                futureFileFetchRequest = createFutureGetRequest(true);
-            }
-        }
-        return futureFileFetchRequest.get(url, BUFFER_FILE, (con, is) -> {
+        fileFetchRequest = createGetRequest();
+        fileFetchRequest.setBufferSize(BUFFER_FILE);
+        return fileFetchRequest.get(url, (con, is) -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
                     progressListener.publishProgress(0, context.getString(
@@ -1607,27 +1599,24 @@ public final class CalibreContentServer
         if (postBody == null) {
             throw new JSONException("postBody was null");
         }
-        synchronized (this) {
-            if (futureHttpPost == null) {
-                futureHttpPost = createFuturePostRequest();
-            }
-        }
-        futureHttpPost.post(url, postBody, null);
+
+        httpPost = createPostRequest();
+        httpPost.post(url, postBody, null);
     }
 
     public void cancel() {
         synchronized (this) {
-            if (futureJsonFetchRequest != null) {
-                futureJsonFetchRequest.cancel();
+            if (jsonFetchRequest != null) {
+                jsonFetchRequest.cancel();
             }
-            if (futureFileFetchRequest != null) {
-                futureFileFetchRequest.cancel();
+            if (fileFetchRequest != null) {
+                fileFetchRequest.cancel();
             }
             if (imageDownloader != null) {
                 imageDownloader.cancel();
             }
-            if (futureHttpPost != null) {
-                futureHttpPost.cancel();
+            if (httpPost != null) {
+                httpPost.cancel();
             }
         }
     }

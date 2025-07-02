@@ -41,8 +41,9 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteAuthModule;
@@ -96,7 +97,7 @@ public class StripInfoAuth
     @NonNull
     private final CookieManager cookieManager;
     @Nullable
-    private FutureHttpPost<Void> futureHttpPost;
+    private FutureHttp<Void> httpPost;
 
     /**
      * Constructor.
@@ -214,13 +215,8 @@ public class StripInfoAuth
                 .add("frmName=login")
                 .toString();
 
-        if (futureHttpPost == null) {
-            futureHttpPost = new FutureHttpPost<>(EngineId.StripInfoBe.getLabelResId());
-            futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs(context))
-                          .setReadTimeout(config.getReadTimeoutInMs(context))
-                          .setThrottler(config.getThrottler());
-        }
-        futureHttpPost.post(url, postBody, null);
+        httpPost = FutureHttpFactory.create(context, EngineId.StripInfoBe);
+        httpPost.post(url, postBody, null);
 
         userId = getUserId().orElseThrow(
                 () -> new CredentialsException(R.string.site_stripinfo_be, "login failed"));
@@ -232,8 +228,8 @@ public class StripInfoAuth
     @Override
     public void cancel() {
         synchronized (this) {
-            if (futureHttpPost != null) {
-                futureHttpPost.cancel();
+            if (httpPost != null) {
+                httpPost.cancel();
             }
         }
     }
