@@ -254,10 +254,14 @@ public class TagDaoImpl
                     // Otherwise the trigger "after_update_on" + TBL_TAG
                     // would set DATE_LAST_UPDATED__UTC for ALL books with that tag
                     // while not needed.
-                    final Optional<Tag> found = findById(tag.getId());
-                    // Check for the name being equals.
-                    if (found.isPresent() && !found.get().getName().equals(tag.getName())) {
-                        update(tag);
+                    final Optional<Tag> oFound = findById(tag.getId());
+                    if (oFound.isPresent()) {
+                        final Tag found = oFound.get();
+                        // there is nothing to merge, a tag is just a name
+                        // Check for the name being different.
+                        if (!found.getName().equals(tag.getName())) {
+                            update(tag);
+                        }
                     }
                 }
 

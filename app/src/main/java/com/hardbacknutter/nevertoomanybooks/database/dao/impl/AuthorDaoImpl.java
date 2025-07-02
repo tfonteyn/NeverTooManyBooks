@@ -479,10 +479,15 @@ public class AuthorDaoImpl
                     // Otherwise the trigger "after_update_on" + TBL_AUTHORS
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that author
                     // while not needed.
-                    final Optional<Author> found = findById(author.getId());
-                    // Check for the name AND user fields being different.
-                    if (found.isPresent() && !found.get().isIdentical(author)) {
-                        update(context, author, locale);
+                    final Optional<Author> oFound = findById(author.getId());
+                    if (oFound.isPresent()) {
+                        final Author found = oFound.get();
+                        // always merge, but no need to check if modified or not
+                        author.merge(found, true);
+                        // Check for the name AND user fields being different.
+                        if (!found.isIdentical(author)) {
+                            update(context, author, locale);
+                        }
                     }
                 }
 

@@ -308,10 +308,16 @@ public class SeriesDaoImpl
                     // Otherwise the trigger "after_update_on" + TBL_SERIES
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that series
                     // while not needed.
-                    final Optional<Series> found = findById(series.getId());
-                    // Check for the name AND user fields being equals.
-                    if (found.isPresent() && !found.get().isIdentical(series)) {
-                        update(context, series, locale);
+                    final Optional<Series> oFound = findById(series.getId());
+
+                    if (oFound.isPresent()) {
+                        final Series found = oFound.get();
+                        // always merge, but no need to check if modified or not
+                        series.merge(found, true);
+                        // Check for the name AND user fields being equals.
+                        if (!found.isIdentical(series)) {
+                            update(context, series, locale);
+                        }
                     }
                 }
 

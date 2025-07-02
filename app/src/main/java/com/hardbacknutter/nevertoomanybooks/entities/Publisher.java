@@ -182,6 +182,19 @@ public class Publisher
         name = source.name;
     }
 
+    /**
+     * <strong>Merge</strong> local details with those from the given Publisher.
+     * The <em>name</em> is never merged.
+     *
+     * @param source to copy from
+     *
+     * @return {@code true} if this Publisher was modified in any way
+     */
+    public boolean merge(@NonNull final Publisher source) {
+        // placeholder method, there is nothing to merge for now.
+        return false;
+    }
+
     @NonNull
     @Override
     public List<String> getNameFields() {

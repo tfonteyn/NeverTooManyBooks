@@ -259,10 +259,15 @@ public class PublisherDaoImpl
                     // Otherwise the trigger "after_update_on" + TBL_PUBLISHER
                     // would set DATE_LAST_UPDATED__UTC for ALL books by that publisher
                     // while not needed.
-                    final Optional<Publisher> found = findById(publisher.getId());
-                    // Check for the name AND user fields being equals.
-                    if (found.isPresent() && !found.get().isIdentical(publisher)) {
-                        update(context, publisher, locale);
+                    final Optional<Publisher> oFound = findById(publisher.getId());
+                    if (oFound.isPresent()) {
+                        final Publisher found = oFound.get();
+                        // always merge, but we don't care if modified or not
+                        publisher.merge(found);
+                        // Check for the name AND user fields being equals.
+                        if (!found.isIdentical(publisher)) {
+                            update(context, publisher, locale);
+                        }
                     }
                 }
 
