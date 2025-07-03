@@ -77,8 +77,8 @@ public class AuthorWorksViewModel
 
     /** Database Access. */
     private BookDao bookDao;
-    /** Author is set in {@link #init}. */
-    private Author author;
+    /** Author is set in {@link #init} and {@link #setAuthor(Context, Author, boolean)}. */
+    private final List<Author> authors = new ArrayList<>();
     /** Initial Bookshelf is set in {@link #init}. */
     private Bookshelf bookshelf;
     /** Initially we get toc entries and books. */
@@ -120,17 +120,17 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
-    MutableLiveData<Author> onAuthor() {
+    LiveData<Author> onAuthor() {
         return onAuthor;
     }
 
     @NonNull
-    MutableLiveData<Void> onWorks() {
+    LiveData<Void> onWorks() {
         return onWorks;
     }
 
     @NonNull
-    MutableLiveData<String> onBookshelf() {
+    LiveData<String> onBookshelf() {
         return onBookshelf;
     }
 
@@ -155,10 +155,12 @@ public class AuthorWorksViewModel
             throw new IllegalArgumentException(DBKey.FK_AUTHOR);
         }
 
-        if (author == null || author.getId() != authorId) {
-            author = ServiceLocator.getInstance().getAuthorDao()
-                                   .findById(authorId)
-                                   .orElseThrow();
+        // note we only use/add a single author. Using a list for future compatibility though
+        if (authors.isEmpty() || getPrimaryAuthor().getId() != authorId) {
+            authors.clear();
+            authors.add(ServiceLocator.getInstance().getAuthorDao()
+                                      .findById(authorId)
+                                      .orElseThrow());
 
             bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
                                                DBKey.FK_BOOKSHELF);
@@ -172,7 +174,7 @@ public class AuthorWorksViewModel
             showTocEntries = prefs.getBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries);
             showBooks = prefs.getBoolean(PK_SHOW_BOOKS, showBooks);
 
-            onAuthor.setValue(author);
+            onAuthor.setValue(getPrimaryAuthor());
             reloadWorkList(context);
         }
     }
@@ -188,7 +190,7 @@ public class AuthorWorksViewModel
 
         final List<AuthorWork> authorWorks =
                 ServiceLocator.getInstance().getAuthorDao()
-                              .getAuthorWorks(author, bookshelfId,
+                              .getAuthorWorks(getPrimaryAuthor(), bookshelfId,
                                               showTocEntries, showBooks,
                                               orderByColumn);
 
@@ -219,16 +221,16 @@ public class AuthorWorksViewModel
         reloadWorkList(context);
     }
 
-    public boolean isShowBooks() {
+    boolean isShowBooks() {
         return showBooks;
     }
 
-    public boolean isShowTocEntries() {
+    boolean isShowTocEntries() {
         return showTocEntries;
     }
 
     @NonNull
-    public String getOrderByColumn() {
+    String getOrderByColumn() {
         return orderByColumn;
     }
 
@@ -261,22 +263,33 @@ public class AuthorWorksViewModel
 
     void reloadAuthorIfChanged(@NonNull final Context context) {
         final Author tmp = ServiceLocator.getInstance().getAuthorDao()
-                                         .findById(author.getId())
+                                         .findById(getPrimaryAuthor().getId())
                                          .orElseThrow();
-        if (!tmp.equals(author)) {
+        if (!tmp.equals(getPrimaryAuthor())) {
             // the works might not have changed, but we need to be sure here.
             setAuthor(context, tmp, true);
         }
     }
 
     /**
-     * Get the author.
+     * Get the primary author.
      *
      * @return author
      */
     @NonNull
-    Author getAuthor() {
-        return author;
+    Author getPrimaryAuthor() {
+        return authors.get(0);
+    }
+
+    /**
+     * Get the list of authors (usually just the one) who own these works.
+     *
+     * @return list
+     */
+    @NonNull
+    List<Author> getAuthors() {
+        // used directly by the adapter
+        return authors;
     }
 
     /**
@@ -290,8 +303,9 @@ public class AuthorWorksViewModel
     void setAuthor(@NonNull final Context context,
                    @NonNull final Author author,
                    final boolean reloadWorks) {
-        dataModified = !author.equals(this.author);
-        this.author = author;
+        dataModified = !author.equals(getPrimaryAuthor());
+        this.authors.clear();
+        this.authors.add(author);
         onAuthor.setValue(author);
         if (reloadWorks) {
             reloadWorkList(context);
@@ -376,7 +390,7 @@ public class AuthorWorksViewModel
                  @NonNull final EngineId engineId) {
         // No need to reload the author data.
         // Store any updates to the database.
-        authorResolverTask.start(context, engineId, List.of(author), false, true);
+        authorResolverTask.start(context, engineId, authors, false, true);
     }
 
     void cancelResolverTask() {

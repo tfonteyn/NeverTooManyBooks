@@ -212,8 +212,7 @@ public class AuthorWorksFragment
         //noinspection DataFlowIssue
         FastScrollerMode.create(context).attach(vb.authorWorks);
 
-        adapter = new AuthorWorksAdapter(context, vm.getStyle(), List.of(vm.getAuthor()),
-                                         vm.getWorks());
+        adapter = new AuthorWorksAdapter(context, vm.getStyle(), vm.getAuthors(), vm.getWorks());
 
         // click -> get the book(s) for that entry and display.
         adapter.setOnRowClickListener(
@@ -263,7 +262,7 @@ public class AuthorWorksFragment
         final int height = res.getDimensionPixelSize(R.dimen.author_detail_picture_height);
         imageHandler = new ImageHandler
                 .Builder(this, 0, width, height)
-                .setImageOwner(() -> vm.getAuthor())
+                .setImageOwner(() -> vm.getPrimaryAuthor())
                 .setOnReloadImage(cIdx -> imageHandler.onBindView(pictureView))
                 .setProgressIndicator(progressView)
                 .setPlaceholderDrawable(R.drawable.person_24px)
@@ -277,7 +276,7 @@ public class AuthorWorksFragment
         final Context context = getContext();
 
         // The sids we have for the author
-        final List<String> sidKeys = vm.getAuthor()
+        final List<String> sidKeys = vm.getPrimaryAuthor()
                                        .getIdentifiers()
                                        .stream()
                                        .map(Identifier.Value::getKey)
@@ -348,7 +347,7 @@ public class AuthorWorksFragment
 
     private void onResolverFinished(@NonNull final Boolean resolved) {
         if (resolved) {
-            onAuthorDetailsUpdate(vm.getAuthor());
+            onAuthorDetailsUpdate(vm.getPrimaryAuthor());
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_SHORT)
                     .show();
@@ -465,7 +464,7 @@ public class AuthorWorksFragment
                                               R.id.sm_title_author_works_filter);
 
             vm.getMenuHandlers().forEach(
-                    h -> h.onCreateMenu(context, menu, inflater, vm.getAuthor()));
+                    h -> h.onCreateMenu(context, menu, inflater, vm.getPrimaryAuthor()));
         }
 
         @Override
@@ -499,7 +498,7 @@ public class AuthorWorksFragment
 
             //noinspection DataFlowIssue
             vm.getMenuHandlers().forEach(
-                    h -> h.onPrepareMenu(getContext(), menu, vm.getAuthor()));
+                    h -> h.onPrepareMenu(getContext(), menu, vm.getPrimaryAuthor()));
 
         }
 
@@ -510,7 +509,7 @@ public class AuthorWorksFragment
 
             if (menuItemId == R.id.MENU_AUTHOR_EDIT) {
                 //noinspection DataFlowIssue
-                editAuthorLauncher.editInPlace(getContext(), vm.getAuthor());
+                editAuthorLauncher.editInPlace(getContext(), vm.getPrimaryAuthor());
                 return true;
 
             } else if (menuItemId == R.id.MENU_UPDATE_ITEM_BY_SEARCH) {
@@ -559,7 +558,7 @@ public class AuthorWorksFragment
             return vm.getMenuHandlers()
                      .stream()
                      .anyMatch(h -> h.onMenuItemSelected(
-                             getContext(), menuItemId, vm.getAuthor()));
+                             getContext(), menuItemId, vm.getPrimaryAuthor()));
         }
     }
 }
