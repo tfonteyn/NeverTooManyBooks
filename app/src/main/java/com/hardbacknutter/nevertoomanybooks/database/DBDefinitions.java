@@ -1659,7 +1659,8 @@ public final class DBDefinitions {
                 .addIndex(DBKey.TITLE_OB, false, DOM_TITLE_OB)
                 .addIndex(DBKey.TITLE, false, DOM_TITLE)
                 .addIndex(DBKey.ISBN, false, DOM_BOOK_ISBN)
-                .addIndex(DBKey.BOOK_UUID, true, DOM_BOOK_UUID);
+                .addIndex(DBKey.BOOK_UUID, true, DOM_BOOK_UUID)
+                .addIndex(DBKey.PUBLICATION_DATE, false, DOM_BOOK_DATE_PUBLISHED);
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 
         TBL_DELETED_BOOKS.addDomains(DOM_BOOK_UUID,
