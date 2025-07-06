@@ -266,7 +266,7 @@
     <string name="lbl_author_type_cover_inking">Tinta de la cubierta</string>
     <string name="lbl_author_type_editor">Editor</string>
     <string name="lbl_author_type_inking">entintado</string>
-    <string name="lbl_author_type_intro">Introducción etc.</string>
+    <string name="lbl_author_type_intro">Introducción</string>
     <string name="lbl_author_type_narrator">Narrador</string>
     <string name="lbl_author_type_translator">Traductor</string>
     <string name="lbl_author_type_writer">Escritor</string>
