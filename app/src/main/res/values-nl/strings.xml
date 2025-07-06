@@ -269,7 +269,7 @@
     <string name="lbl_author_type_cover_inking">Omslag inkting</string>
     <string name="lbl_author_type_editor">Redacteur</string>
     <string name="lbl_author_type_inking">Inking</string>
-    <string name="lbl_author_type_intro">Introductie etc.</string>
+    <string name="lbl_author_type_intro">Introductie</string>
     <string name="lbl_author_type_narrator">Verteller</string>
     <string name="lbl_author_type_translator">Vertaler</string>
     <string name="lbl_author_type_writer">Schrijver</string>
@@ -857,4 +857,6 @@
     <string name="info_identifier_editor"><![CDATA[Lees de <a href="%1$s">documentatie</a> over Identifiers voor het bewerken.]]></string>
     <string name="lbl_date_born">Geboren</string>
     <string name="pt_fetch_author_info">Auteursinformatie ophalen</string>
+    <string name="lbl_author_type_foreword">Voorwoord</string>
+    <string name="lbl_author_type_afterword">Nawoord</string>
 </resources>
