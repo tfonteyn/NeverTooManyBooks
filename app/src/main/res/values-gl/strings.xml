@@ -858,4 +858,6 @@
     <string name="action_stop_searching">Deter a busca</string>
     <string name="action_save_for_later">Gardar para máis tarde</string>
     <string name="confirm_leave_isbn_search">Hai buscas en curso e/ou resultados non gardados.</string>
+    <string name="lbl_author_type_foreword">Prólogo</string>
+    <string name="lbl_author_type_afterword">Epílogo</string>
 </resources>
