@@ -753,11 +753,9 @@
     <string name="lbl_author_type_editor">Editor</string>
     <!-- Co-author; someone who contributed to the content, but is not considered (one of) the main authors(s). -->
     <string name="lbl_author_type_contributor">Contributor</string>
-    <string name="lbl_author_type_intro">Introduction etc.</string>
-    <string name="lbl_author_type_foreword"
-            translatable="false">@string/lbl_author_type_intro</string>
-    <string name="lbl_author_type_afterword"
-            translatable="false">@string/lbl_author_type_intro</string>
+    <string name="lbl_author_type_intro">Introduction</string>
+    <string name="lbl_author_type_foreword">Foreword</string>
+    <string name="lbl_author_type_afterword">Afterword</string>
     <!-- audiobooks -->
     <string name="lbl_author_type_narrator">Narrator</string>
     <!-- Interior art / illustrations / photos / comics -->

@@ -266,6 +266,8 @@ class EditBookAuthorDelegate
         typeButtons.put(Author.TYPE_WRITER, vb.cbxAuthorTypeWriter);
         typeButtons.put(Author.TYPE_CONTRIBUTOR, vb.cbxAuthorTypeContributor);
         typeButtons.put(Author.TYPE_INTRODUCTION, vb.cbxAuthorTypeIntro);
+        typeButtons.put(Author.TYPE_FOREWORD, vb.cbxAuthorTypeForeword);
+        typeButtons.put(Author.TYPE_AFTERWORD, vb.cbxAuthorTypeAfterword);
         typeButtons.put(Author.TYPE_TRANSLATOR, vb.cbxAuthorTypeTranslator);
         typeButtons.put(Author.TYPE_EDITOR, vb.cbxAuthorTypeEditor);
         typeButtons.put(Author.TYPE_NARRATOR, vb.cbxAuthorTypeNarrator);
