@@ -191,7 +191,7 @@
     <string name="lbl_author_type_writer">Spisovateľ</string>
     <string name="lbl_author_type_editor">Editor</string>
     <string name="lbl_author_type_contributor">Spolupracovník</string>
-    <string name="lbl_author_type_intro">Úvod atď.</string>
+    <string name="lbl_author_type_intro">Úvod</string>
     <string name="lbl_author_type_narrator">Rozprávač</string>
     <string name="lbl_author_type_artist">Ilustrácie</string>
     <string name="lbl_author_type_inking">Kresba tušom</string>
