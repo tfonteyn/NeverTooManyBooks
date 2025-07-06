@@ -317,7 +317,7 @@
     <string name="lbl_author_type_translator">மொழிபெயர்</string>
     <string name="lbl_author_type_editor">திருத்தி</string>
     <string name="lbl_author_type_contributor">பங்களிப்பாளர்</string>
-    <string name="lbl_author_type_intro">அறிமுகம் போன்றவை.</string>
+    <string name="lbl_author_type_intro">அறிமுகம்</string>
     <string name="lbl_author_type_narrator">கதை</string>
     <string name="lbl_author_type_artist">எடுத்துக்காட்டுகள்</string>
     <string name="lbl_author_type_inking">இன்கிங்</string>
