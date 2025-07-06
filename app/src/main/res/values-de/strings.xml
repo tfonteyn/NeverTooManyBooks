@@ -261,7 +261,7 @@
     <string name="lbl_author_type_cover_inking">Cover-Tuscher</string>
     <string name="lbl_author_type_editor">Herausgeber</string>
     <string name="lbl_author_type_inking">Tuscher</string>
-    <string name="lbl_author_type_intro">Einführung etc.</string>
+    <string name="lbl_author_type_intro">Einführung</string>
     <string name="lbl_author_type_narrator">Erzähler</string>
     <string name="lbl_author_type_translator">Übersetzer</string>
     <string name="lbl_author_type_writer">Autor</string>
