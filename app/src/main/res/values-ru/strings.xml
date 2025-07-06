@@ -276,7 +276,7 @@
     <string name="lbl_author_type_cover_inking">Обложка для книги</string>
     <string name="lbl_author_type_editor">редактор</string>
     <string name="lbl_author_type_inking">красочного</string>
-    <string name="lbl_author_type_intro">Введение и т. Д.</string>
+    <string name="lbl_author_type_intro">Введение</string>
     <string name="lbl_author_type_narrator">рассказчик</string>
     <string name="lbl_author_type_translator">Переводчик</string>
     <string name="lbl_author_type_writer">Писатель</string>
