@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes « … »  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -220,7 +223,7 @@
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu’il dispose d’un espace suffisant.</string>
     <string name="error_unexpected">Une erreur inconnue s’est produite.</string>
     <string name="error_unknown_host">Il y a eu un problème de connexion au service sur « %1$s ».</string>
-    <string name="error_unexpected_long">Une erreur inattendue s\'est produite. Si le problème persiste, contactez le support technique en utilisant l’option « %1$s » en bas de la page de paramètres.</string>
+    <string name="error_unexpected_long">Une erreur inattendue s’est produite. Si le problème persiste, contactez le support technique en utilisant l’option « %1$s » en bas de la page de paramètres.</string>
     <string name="error_unsupported_version_v">Version non prise en charge : %1$d</string>
     <string name="error_upgrade_not_supported">La mise à niveau à partir de versions antérieures à %1$s n’est pas prise en charge.</string>
     <string name="option_fab_add_book_by_barcode_scan">Numériser un code-barres</string>
@@ -461,7 +464,7 @@
     <string name="lbl_websites">Sites Internet</string>
     <string name="bookshelf_my_wishlist">Liste de souhaits</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
-    <string name="lbl_wikidata_claim_author_id">Code « claim/P » de Wikidata pour l\'identifiant de l\'auteur</string>
+    <string name="lbl_wikidata_claim_author_id">Code « claim/P » de Wikidata pour l’identifiant de l’auteur</string>
     <string name="lbl_year">Année</string>
     <string name="list_and">et</string>
     <string name="brackets">(%1$s)</string>
@@ -627,7 +630,7 @@
     <string name="pv_bob_header_filters">Filtres</string>
     <string name="pv_bob_header_nr_of_books">Montrer le nombre de livres</string>
     <string name="pv_bob_header_style_name">Nom du style</string>
-    <!-- use the default single quote character and NOT the stylized! -->
+    <!-- use the default escaped single quote character and NOT the stylized! -->
     <string name="pv_reformat_titles_prefixes" tools:ignore="TypographyQuotes">le|Le|la|La|les|Les|l\'|L\'|un|Un|une|Une|des|Des</string>
     <string name="size_hidden">Caché</string>
     <string name="size_large">Grand</string>
@@ -742,7 +745,7 @@
     <string name="lbl_author_is_a_pen_name_of">C’est un pseudonyme de :</string>
     <string name="vldt_real_author_must_be_valid">Doit être vide ou un auteur existant</string>
     <string name="confirm_create_real_author">« %1$s » n’existe pas encore. Faut-il les créer ?</string>
-    <string name="pt_fetch_author_info_using_site_x">Récupérer les informations sur l\'auteur de %1$s</string>
+    <string name="pt_fetch_author_info_using_site_x">Récupérer les informations sur l’auteur de %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserver la dénomination au format Bedetheque</string>
     <string name="confirm_toc_list_update_with_books_main_author">Remplacer l’auteur de toutes les entrées par l’auteur principal du livre « %1$s » ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tous les livres en dessous de cette rangée ont des couvertures. Rechercher à nouveau à partir du haut ?</string>
@@ -860,8 +863,8 @@
     <string name="lbl_select_style">Sélectionner un style</string>
     <string name="vldt_blank_or_valid_url_required">Valeur vide ou URL valide requis</string>
     <string name="lbl_book_uri">URL du livre</string>
-    <string name="lbl_author_uri">URL de l\'auteur</string>
+    <string name="lbl_author_uri">URL de l’auteur</string>
     <string name="info_identifier_editor"><![CDATA[Lire la <a href="%1$s">documentation</a> sur les identificateurs avant de modifier.]]></string>
     <string name="lbl_date_born">Née</string>
-    <string name="pt_fetch_author_info">Recherche d\'informations sur l\'auteur</string>
+    <string name="pt_fetch_author_info">Recherche d’informations sur l’auteur</string>
 </resources>
