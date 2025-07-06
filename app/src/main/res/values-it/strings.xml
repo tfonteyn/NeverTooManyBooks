@@ -266,7 +266,7 @@
     <string name="lbl_author_type_cover_inking">Copertina del libro Inkting</string>
     <string name="lbl_author_type_editor">Editore</string>
     <string name="lbl_author_type_inking">Inchiostro</string>
-    <string name="lbl_author_type_intro">Introduzione ecc.</string>
+    <string name="lbl_author_type_intro">Introduzione</string>
     <string name="lbl_author_type_narrator">Narratore</string>
     <string name="lbl_author_type_translator">Traduttore</string>
     <string name="lbl_author_type_writer">Scrittore</string>
