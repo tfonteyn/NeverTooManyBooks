@@ -384,7 +384,7 @@
     <string name="lbl_author_type_translator">Fordító</string>
     <string name="lbl_author_type_editor">Szerkesztő</string>
     <string name="lbl_author_type_contributor">Közreműködő</string>
-    <string name="lbl_author_type_intro">Előszó stb.</string>
+    <string name="lbl_author_type_intro">Előszó</string>
     <string name="lbl_author_type_narrator">Előadó</string>
     <string name="lbl_author_type_artist">Illusztrációk</string>
     <string name="lbl_author_type_colorist">Kolorista</string>
