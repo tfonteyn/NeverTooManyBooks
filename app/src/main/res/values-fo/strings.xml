@@ -42,7 +42,7 @@
     <string name="lbl_author_type_translator">Umsetari</string>
     <string name="lbl_author_type_editor">Ritstjóri</string>
     <string name="lbl_author_type_contributor">Medarbeiðari</string>
-    <string name="lbl_author_type_intro">Inngangur o.s.fr.</string>
+    <string name="lbl_author_type_intro">Inngangur</string>
     <string name="lbl_author_type_narrator">Frásøgufólk</string>
     <string name="lbl_author_type_artist">Myndprýðing</string>
     <string name="lbl_author_type_inking">Blekkari</string>
