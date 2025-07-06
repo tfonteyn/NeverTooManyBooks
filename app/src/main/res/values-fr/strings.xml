@@ -276,6 +276,7 @@
     <string name="lbl_author_type_editor">Éditeur</string>
     <string name="lbl_author_type_inking">Encrage</string>
     <string name="lbl_author_type_intro">Introduction</string>
+    <string name="lbl_author_type_afterword">Postface</string>
     <string name="lbl_author_type_narrator">Narrateur</string>
     <string name="lbl_author_type_translator">Traducteur</string>
     <string name="lbl_author_type_writer">Écrivain</string>
@@ -867,4 +868,5 @@
     <string name="info_identifier_editor"><![CDATA[Lire la <a href="%1$s">documentation</a> sur les identificateurs avant de modifier.]]></string>
     <string name="lbl_date_born">Née</string>
     <string name="pt_fetch_author_info">Recherche d’informations sur l’auteur</string>
+    <string name="lbl_author_type_foreword">Préface</string>
 </resources>

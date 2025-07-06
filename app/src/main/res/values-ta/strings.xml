@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -318,6 +321,8 @@
     <string name="lbl_author_type_editor">திருத்தி</string>
     <string name="lbl_author_type_contributor">பங்களிப்பாளர்</string>
     <string name="lbl_author_type_intro">அறிமுகம்</string>
+    <string name="lbl_author_type_foreword">முன்னுரை</string>
+    <string name="lbl_author_type_afterword">பின்னுரை</string>
     <string name="lbl_author_type_narrator">கதை</string>
     <string name="lbl_author_type_artist">எடுத்துக்காட்டுகள்</string>
     <string name="lbl_author_type_inking">இன்கிங்</string>
@@ -399,6 +404,7 @@
     <string name="confirm_delete_substitutions">“%1$s”க்கான மாற்றுகளை நீக்கவா?</string>
     <string name="confirm_delete_tag_from_x_books">“%1$s” என்ற குறிச்சொல்லை நீக்கவா?\n\n இது %2$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
     <string name="confirm_delete_toc_entry_from_x_books">“ %1$s” என்ற தலைப்பை %2$s ஆல் நீக்கவா?\n\n இது %3$s இலிருந்து நீக்கப்படும். புத்தகங்கள் தானே நீக்கப்படாது.</string>
+    <string name="confirm_leave_isbn_search">தொடர்ந்து தேடல்கள் மற்றும்/அல்லது சேமிக்கப்படாத முடிவுகள் உள்ளன.</string>
     <string name="confirm_remove_toc_entry">இந்த புத்தகத்திலிருந்து “ %1$s” என்ற தலைப்பை %2$s ஆல் அகற்றவா?</string>
     <string name="confirm_scope_for_delete">“ %1$s” என்ற தலைப்பை %2$s ஆல் நீக்கு\n\n இந்த மாற்றத்தை எவ்வாறு பயன்படுத்த விரும்புகிறீர்கள்?\n குறிப்பு: “%3$s” தேர்வு செயல்தவிர்க்க முடியாது!</string>
     <string name="confirm_delete_book">இது “ %1$s” என்ற தலைப்பில் புத்தகத்தை %2$s ஆல் முழுமையாக நீக்கிவிடும்.\n\n நீங்கள் தொடர விரும்புகிறீர்களா?</string>
@@ -462,6 +468,7 @@
     <string name="action_show_options">விருப்பங்கள்</string>
     <string name="action_clear_queue">தெளிவான வரிசை</string>
     <string name="action_stop_scanning">ச்கேன் செய்வதை நிறுத்துங்கள்</string>
+    <string name="action_save_for_later">பின்னர் சேமிக்கவும்</string>
     <string name="action_disable_message">செய்தியை முடக்கு</string>
     <string name="action_import">இறக்குமதி</string>
     <string name="action_export">ஏற்றுமதி</string>

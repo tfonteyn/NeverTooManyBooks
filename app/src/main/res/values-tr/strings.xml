@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -269,6 +272,7 @@
     <string name="lbl_author_type_editor">Editör</string>
     <string name="lbl_author_type_inking">Mürekkepleme</string>
     <string name="lbl_author_type_intro">Giriş</string>
+    <string name="lbl_author_type_afterword">Sonsöz</string>
     <string name="lbl_author_type_narrator">Dış ses</string>
     <string name="lbl_author_type_translator">Çevirmen</string>
     <string name="lbl_author_type_writer">Yazar</string>
@@ -868,4 +872,5 @@
         <item quantity="one">Daha önce girilmiş %1$d ISBN kodu var. Bunun için bir arama başlatmak ister misiniz, yoksa kaldırılmalı mı?</item>
         <item quantity="other">Daha önce girilmiş %1$d ISBN kodu var. Bunlar için arama başlatmak ister misiniz, yoksa kaldırılsınlar mı?</item>
     </plurals>
+    <string name="lbl_author_type_foreword">Önsöz</string>
 </resources>

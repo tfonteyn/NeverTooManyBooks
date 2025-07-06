@@ -195,5 +195,7 @@
     <string name="action_stop_searching">Pārtrauciet meklēšanu</string>
     <string name="action_save_for_later">Saglabāt vēlāk</string>
     <string name="confirm_leave_isbn_search">Notiek meklēšana un/vai netiek saglabāti rezultāti.</string>
+    <string name="lbl_author_type_foreword">Priekšvārds</string>
+    <string name="lbl_author_type_afterword">Pēcvārds</string>
 
 </resources>

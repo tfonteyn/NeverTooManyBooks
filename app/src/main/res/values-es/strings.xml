@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -267,6 +270,7 @@
     <string name="lbl_author_type_editor">Editor</string>
     <string name="lbl_author_type_inking">entintado</string>
     <string name="lbl_author_type_intro">Introducción</string>
+    <string name="lbl_author_type_afterword">Epílogo</string>
     <string name="lbl_author_type_narrator">Narrador</string>
     <string name="lbl_author_type_translator">Traductor</string>
     <string name="lbl_author_type_writer">Escritor</string>
@@ -862,4 +866,5 @@
         <item quantity="many">Hay %1$d códigos ISBN previamente introducidos. Desea iniciar la búsqueda de los mismos, o deben eliminarse?</item>
         <item quantity="other">Hay %1$d códigos ISBN introducidos anteriormente. Desea iniciar la búsqueda de los mismos, o deben eliminarse?</item>
     </plurals>
+    <string name="lbl_author_type_foreword">Prólogo</string>
 </resources>
