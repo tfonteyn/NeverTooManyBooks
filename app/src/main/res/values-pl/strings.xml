@@ -270,7 +270,7 @@
     <string name="lbl_author_type_cover_inking">Okładka książki z atramentem</string>
     <string name="lbl_author_type_editor">Redaktor</string>
     <string name="lbl_author_type_inking">Tusz</string>
-    <string name="lbl_author_type_intro">Wprowadzenie itp.</string>
+    <string name="lbl_author_type_intro">Wprowadzenie</string>
     <string name="lbl_author_type_narrator">Narrator</string>
     <string name="lbl_author_type_translator">Tłumacz</string>
     <string name="lbl_author_type_writer">Pisarz</string>
