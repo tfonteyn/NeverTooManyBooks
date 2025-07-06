@@ -357,7 +357,7 @@
     <string name="lbl_author_type_writer">manuscrito</string>
     <string name="lbl_author_type_translator">tradución</string>
     <string name="lbl_author_type_contributor">colaboración</string>
-    <string name="lbl_author_type_intro">introdución etc.</string>
+    <string name="lbl_author_type_intro">introdución</string>
     <string name="lbl_author_type_narrator">narración</string>
     <string name="lbl_author_type_artist">ilustracións</string>
     <string name="lbl_author_type_colorist">cor</string>
