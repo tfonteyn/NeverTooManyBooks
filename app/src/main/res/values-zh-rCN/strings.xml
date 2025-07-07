@@ -285,7 +285,7 @@
     <string name="lbl_author_type_cover_inking">封面书写</string>
     <string name="lbl_author_type_editor">编辑</string>
     <string name="lbl_author_type_inking">书写</string>
-    <string name="lbl_author_type_intro">引言撰写等</string>
+    <string name="lbl_author_type_intro">介绍</string>
     <string name="lbl_author_type_lettering">字体</string>
     <string name="lbl_author_type_narrator">讲述者</string>
     <string name="lbl_author_type_storyboard">故事板</string>
@@ -855,4 +855,6 @@
     <string name="action_stop_searching">停止搜索</string>
     <string name="confirm_leave_isbn_search">有进行中的搜索和/或为未保存的结果。</string>
     <string name="action_save_for_later">保存以便稍后处理</string>
+    <string name="lbl_author_type_foreword">前言</string>
+    <string name="lbl_author_type_afterword">后记</string>
 </resources>
