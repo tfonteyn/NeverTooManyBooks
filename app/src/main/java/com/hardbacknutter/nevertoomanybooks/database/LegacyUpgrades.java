@@ -898,6 +898,8 @@ public final class LegacyUpgrades {
               .remove("show.author.name.given_first")
               .remove("sort.author.name.given_first")
               .remove("startup.lastVersion")
+              // always use 'false'
+              .remove("stripweb.search.byIsbn.prefer.10")
               .remove("tmp.edit.book.tab.authSer")
               .remove("ui.messages.use")
 

@@ -34,15 +34,6 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_show_menu_options" />
 
-        <!-- By exception defaults to "true" ! -->
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/barcode_24px"
-            android:key="stripweb.search.byIsbn.prefer.10"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_search_prefer_isbn10" />
-
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/cloud_download_24px"
