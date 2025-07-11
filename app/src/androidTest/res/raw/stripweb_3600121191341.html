@@ -1,21 +1,20 @@
 <!DOCTYPE html>
-<!--suppress ALL -->
 <html lang="nl">
     <head>
         <meta charset="UTF-8" />
         <title>XIII- box Delen 1-3 | Strips | Stripweb</title>
         <meta name="description"
               content="De albums van deze reeks verschenen enkel in softcover. Nu verschijnt een luxe stripbox met de delen 1-3 in hardcover. Het personage XIII is uiteraard de hoofdrolspeler van de gelijknamige reeks, maar waarom zouden we niet gebruikmaken van de overvloedige ..." />
-        <meta name="keywords"
-              content="XIII- box Delen 1-3" />
         <meta http-equiv="X-UA-Compatible"
               content="IE=edge,chrome=1">
         <meta name="viewport"
               content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="original-opengraphtitle"
+              content="XIII- box Delen 1-3">
         <meta name="robots"
               content="index, follow" />
         <link rel="stylesheet"
-              href="/style/css/app.css?id=b2c0354b85cc222f1561"
+              href="/style/css/app.css?id=1f7b63e09135e9751cae"
               type="text/css"
               media="all" />
         <link rel="apple-touch-icon"
@@ -45,7 +44,7 @@
         <meta property="og:title"
               content="XIII- box Delen 1-3" />
         <meta property="og:url"
-              content="http://www.stripweb.be/nl-nl/xiii-box-delen-1-3" />
+              content="https://www.stripweb.be/nl-nl/xiii-box-delen-1-3" />
         <meta property="og:description"
               content="De albums van deze reeks verschenen enkel in softcover. Nu verschijnt een luxe stripbox met de delen 1-3 in hardcover. Het personage XIII is uiteraard de hoofdrolspeler van de gelijknamige reeks, maar waarom zouden we niet gebruikmaken van de overvloedige ...">
         <meta property="og:site_name"
@@ -77,7 +76,7 @@
         <meta property="og:image"
               content="https://www.stripweb.be//images/photolib/675483_1200x628.jpg" />
         <script type="text/javascript">
-            var strSessionId = "b6pnu05q6mm1rlava9ck3mmmp9";
+            var strSessionId = "d7cpsldaek1juu7mddimf8tc2b";
             var strPath = "/";
             var strAjaxPath = "/components/ajax/";
             var strLang = "nl";
@@ -93,9 +92,12 @@
                         var WebsiteSettingIntProductStockType = "2";
                         var WebsiteSettingBlnMailOnStock = true;
                         var WebsiteSettingBlnShowAddToCartQtyField = false;
+                        var WebsiteSettingStrRecaptchaSiteKey = "0x4AAAAAAAQCOYDRGGoHBQwA";
+                        var WebsiteSettingIntProductWallet = "581261";
                         var intSizeRelatedProducts = 0;
                         var strLabelAddToCart = "Toevoegen aan winkelmandje";
                         var strCartUrl = "\/nl-nl\/cart";
+                        var strHrefPopupProductWalletAdded = "";
                         var strLabelGiveTitle = "Geef een titel op.";
                         var strLabelGiveFirstname = "Geef uw voornaam op.";
                         var strLabelGiveLastname = "Geef uw familienaam op.";
@@ -120,18 +122,6 @@
         <link rel="alternate"
               href="https://www.stripweb.be/nl-nl/xiii-box-delen-1-3"
               hreflang="x-default" />
-        <script async
-                src="https://www.googletagmanager.com/gtag/js?id=G-M4PBLWJJ7K"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-
-            function gtag() {
-                dataLayer.push(arguments)
-            };
-            gtag('js', new Date());
-
-            gtag('config', 'G-M4PBLWJJ7K');
-        </script>
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
                 async
                 defer></script>
@@ -198,34 +188,37 @@
                         <a href="/"
                            class="logo col-md-2 col-5 d-flex justify-content-center justify-content-lg-start"
                            title="Stripweb Kortrijk">
-                            <img src="/style/images/logo-stripweb.svg"
-                                 title="Stripweb Kortrijk"
-                                 alt="Stripweb Kortrijk"
-                                 class="img-fluid" />
-                        </a>
-                        <div class="lang-selects d-flex flex-column flex-md-row align-items-end justify-content-end gap-2">
-                            <div>
-                                <label class="font-weight-bold">Voertaal</label>
-                                <select name="lang"
-                                        class="form-control d-inline w-auto p-1">
-                                    <option value="nl"
-                                            selected="selected">Nederlands
-                                    </option>
-                                    <option value="fr">Frans</option>
-                                </select>
+                            <a href="/"
+                               class="logo col-md-2 col-5 d-flex justify-content-center justify-content-lg-start"
+                               title="Stripweb Kortrijk">
+                                <img src="/style/images/logo-stripweb.svg"
+                                     title="Stripweb Kortrijk"
+                                     alt="Stripweb Kortrijk"
+                                     class="img-fluid" />
+                            </a>
+                            <div class="lang-selects d-flex flex-column flex-md-row align-items-end justify-content-end gap-2">
+                                <div>
+                                    <label class="font-weight-bold">Voertaal</label>
+                                    <select name="lang"
+                                            class="form-control d-inline w-auto p-1">
+                                        <option value="nl"
+                                                selected="selected">Nederlands
+                                        </option>
+                                        <option value="fr">Frans</option>
+                                    </select>
+                                </div>
+                                <div class="ml-4">
+                                    <label class="font-weight-bold">Taal strips</label>
+                                    <select name="bdlang"
+                                            class="form-control d-inline w-auto p-1">
+                                        <option value="nl"
+                                                selected="selected">Nederlands
+                                        </option>
+                                        <option value="fr">Frans</option>
+                                        <option value="en">Engels</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <label class="font-weight-bold">Taal strips</label>
-                                <select name="bdlang"
-                                        class="form-control d-inline w-auto p-1">
-                                    <option value="nl"
-                                            selected="selected">Nederlands
-                                    </option>
-                                    <option value="fr">Frans</option>
-                                    <option value="en">Engels</option>
-                                </select>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -258,16 +251,22 @@
                             </nav>
                             <nav class=" d-none d-lg-flex nav-top flex-lg-row flex-column w-100 w-lg-auto"
                                  role="navigation">
-                                <a href="/nl-nl/contact"
-                                   title="Contact"
+                                <a href="/nl-nl/hoe-bestellen"
+                                   title="Hoe bestellen"
                                    class="d-flex justify-content-between text-white mr-lg-3 py-2 py-lg-0 ">
-                                    Contacteer ons
+                                    Hoe bestellen
                                     <i class="d-lg-none far fa-angle-right"></i>
                                 </a>
                                 <a href="/nl-nl/frais-de-port-1"
                                    title="Transportkosten"
                                    class="d-flex justify-content-between text-white mr-lg-3 py-2 py-lg-0 ">
                                     Transportkosten
+                                    <i class="d-lg-none far fa-angle-right"></i>
+                                </a>
+                                <a href="/nl-nl/abonnementen-1"
+                                   title="Abonnementen"
+                                   class="d-flex justify-content-between text-white mr-lg-3 py-2 py-lg-0 ">
+                                    Abonnementen
                                     <i class="d-lg-none far fa-angle-right"></i>
                                 </a>
                                 <a href="/nl-nl/vip"
@@ -326,7 +325,8 @@
                                 <a href="/nl-nl/mijnaccount"
                                    title="Mijn account"
                                    class="text-white d-flex align-items-center justify-content-center px-lg-3  mr-xxl-1">
-                                    <i class="far fa-user"></i>
+                                    <i class="far fa-user"
+                                       aria-hidden="true"></i>
                                     <span class="d-xxl-flex d-lg-none d-flex font-weight-bold ml-2">
                                         Mijn account
                                     </span>
@@ -379,13 +379,6 @@
                                             </a>
                                         </li>
                                         <li class="dropdown dropright rounded-0 position-static ">
-                                            <a href="/nl-nl/stripweb-editie"
-                                               title="Stripweb Edities"
-                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
-                                                <span>Stripweb Edities</span>
-                                            </a>
-                                        </li>
-                                        <li class="dropdown dropright rounded-0 position-static ">
                                             <a href="/nl-nl/ex-libris"
                                                title="Ex-libris"
                                                class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
@@ -393,7 +386,14 @@
                                             </a>
                                         </li>
                                         <li class="dropdown dropright rounded-0 position-static ">
-                                            <a href="/nl-nl/luxe-edities"
+                                            <a href="/nl-nl/top-10-stripweb-2025"
+                                               title="Top 10 juni 2025"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Top 10 juni 2025</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/luxe-en-gelimiteerde-edities"
                                                title="Luxe en Gelimiteerde Edities"
                                                class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
                                                 <span>Luxe en Gelimiteerde Edities</span>
@@ -445,7 +445,7 @@
                                 </li>
                                 <li class="nav-item w-100 w-lg-auto  product ml-md-0 ml-lg-5 hover-sub position-relative"
                                     aria-haspopup="true">
-                                    <a href="/nl-nl/graphic-novel-4"
+                                    <a href="/nl-nl/graphic-novel-3"
                                        title="Graphic Novel"
                                        class="d-block text-lg-uppercase font-weight-bold position-relative letter-spacing p-2 p-lg-0  sub nav-link first">
                                         Graphic Novel
@@ -468,7 +468,7 @@
                                             </a>
                                         </li>
                                         <li class="dropdown dropright rounded-0 position-static ">
-                                            <a href="/nl-nl/graphic-novel-4"
+                                            <a href="/nl-nl/graphic-novel-3"
                                                class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
                                                 <span>
                                                     Catalogus graphic novel
@@ -479,7 +479,7 @@
                                 </li>
                                 <li class="nav-item w-100 w-lg-auto  product ml-md-0 ml-lg-5 hover-sub position-relative"
                                     aria-haspopup="true">
-                                    <a href="/nl-nl/comics-13"
+                                    <a href="/nl-nl/comics-10"
                                        title="Comics"
                                        class="d-block text-lg-uppercase font-weight-bold position-relative letter-spacing p-2 p-lg-0  sub nav-link first">
                                         Comics
@@ -502,7 +502,7 @@
                                             </a>
                                         </li>
                                         <li class="dropdown dropright rounded-0 position-static ">
-                                            <a href="/nl-nl/comics-13"
+                                            <a href="/nl-nl/comics-10"
                                                class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
                                                 <span>
                                                     Catalogus comics
@@ -511,13 +511,39 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="nav-item w-100 w-lg-auto  product ml-md-0 ml-lg-5 position-relative">
-                                    <a href="/nl-nl/top-10"
-                                       title="Top 10"
-                                       class="d-block text-lg-uppercase font-weight-bold position-relative letter-spacing p-2 p-lg-0  nav-link first">
-                                        Top 10
+                                <li class="nav-item w-100 w-lg-auto  product ml-md-0 ml-lg-5 hover-sub position-relative"
+                                    aria-haspopup="true">
+                                    <a href="/nl-nl/kinderboeken-2"
+                                       title="Kinderboeken"
+                                       class="d-block text-lg-uppercase font-weight-bold position-relative letter-spacing p-2 p-lg-0  sub nav-link first">
+                                        Kinderboeken
 
+                                        <i class="fas fa-angle-down ml-1 d-none d-lg-inline-flex  text-primary"></i>
                                     </a>
+                                    <ul class="nav mt-3">
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/nieuwe-kinderboeken"
+                                               title="Nieuwe kinderboeken"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Nieuwe kinderboeken</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/verwachte-kinderboeken"
+                                               title="Verwachte kinderboeken"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Verwachte kinderboeken</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/kinderboeken-2"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>
+                                                    Catalogus kinderboeken
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                                 <li class="nav-item w-100 w-lg-auto  product ml-md-0 ml-lg-5 hover-sub position-relative"
                                     aria-haspopup="true">
@@ -612,6 +638,20 @@
                                             </div>
                                         </li>
                                         <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/exclusieve-editie"
+                                               title="Exclusieve Editie"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Exclusieve Editie</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/artbooks"
+                                               title="Artbooks"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Artbooks</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
                                             <a href="/nl-nl/zwaarden"
                                                title="Zwaarden"
                                                class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
@@ -640,13 +680,6 @@
                                             </a>
                                         </li>
                                         <li class="dropdown dropright rounded-0 position-static ">
-                                            <a href="/nl-nl/fanzine-4"
-                                               title="Fanzine"
-                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
-                                                <span>Fanzine</span>
-                                            </a>
-                                        </li>
-                                        <li class="dropdown dropright rounded-0 position-static ">
                                             <a href="/nl-nl/anime-dvdbr-2"
                                                title="Anime DVD/BR"
                                                class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
@@ -668,10 +701,94 @@
                                             </a>
                                         </li>
                                         <li class="dropdown dropright rounded-0 position-static ">
-                                            <a href="/nl-nl/artworks-1"
+                                            <a href="/nl-nl/puzzels-2"
+                                               title="Puzzels"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Puzzels</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/artworks"
                                                title="Artworks"
                                                class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
                                                 <span>Artworks</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/sleutelhangers"
+                                               title="Sleutelhangers"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Sleutelhangers</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/asterix-16"
+                                               title="Asterix"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Asterix</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/marvel-merchandise"
+                                               title="Marvel Merchandise"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Marvel Merchandise</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/lego"
+                                               title="Lego"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Lego</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/playmobil"
+                                               title="Playmobil"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Playmobil</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/speelfiguren"
+                                               title="Speelfiguren"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Speelfiguren</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/exemplaires-dedicaces-1"
+                                               title="Exemplaires dédicacés"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Exemplaires dédicacés</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/donald-duck"
+                                               title="Donald Duck"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Donald Duck</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/boardgames"
+                                               title="Boardgames"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Boardgames</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/kalenders"
+                                               title="Kalenders"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Kalenders</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/t-shirts"
+                                               title="T-Shirts"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>T-Shirts</span>
                                             </a>
                                         </li>
                                         <li class="dropdown dropright rounded-0 position-static ">
@@ -679,6 +796,40 @@
                                                class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
                                                 <span>
                                                     Catalogus merchandise
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item w-100 w-lg-auto  product ml-md-0 ml-lg-5 hover-sub position-relative"
+                                    aria-haspopup="true">
+                                    <a href="/nl-nl/mangas-19"
+                                       title="Manga NL"
+                                       class="d-block text-lg-uppercase font-weight-bold position-relative letter-spacing p-2 p-lg-0  sub nav-link first">
+                                        Manga NL
+
+                                        <i class="fas fa-angle-down ml-1 d-none d-lg-inline-flex  text-primary"></i>
+                                    </a>
+                                    <ul class="nav mt-3">
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/verwachte-mangas-1"
+                                               title="Verwachte mangas"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Verwachte mangas</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/nieuwe-mangas-1"
+                                               title="Nieuwe mangas"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>Nieuwe mangas</span>
+                                            </a>
+                                        </li>
+                                        <li class="dropdown dropright rounded-0 position-static ">
+                                            <a href="/nl-nl/mangas-19"
+                                               class=" d-flex align-items-center px-5 dropdown-item nav-link justify-content-between">
+                                                <span>
+                                                    Catalogus manga nl
                                                 </span>
                                             </a>
                                         </li>
@@ -721,7 +872,7 @@
         </header>
         <div class="container d-none d-lg-flex align-items-center">
             <nav aria-label="breadcrumb"
-                 class="border-top border-bottom py-2 mb-4 w-100 d-flex justify-content-between align-items-center">
+                 class="border-top border-bottom py-2 w-100 d-flex justify-content-between align-items-center">
                 <ol class="breadcrumb p-0  fa-sm text-black">
                     <li class="breadcrumb-item">
                         <a href="/"
@@ -755,7 +906,7 @@
               role="main">
             <div class="container mt-4">
                 <div class="row justify-content-center">
-                    <div class="col-sm-4 pr-lg-8 pr-sm-4 ml-xl-9 mb-4 mb-lg-0 mt-0 mt-lg-4 d-flex flex-column align-items-center product-images">
+                    <div class="col-sm-4 pl-lg-8 pr-lg-8 pr-sm-4 mb-4 mb-lg-0 mt-0 mt-lg-4 d-flex flex-column align-items-center product-images">
                         <div class="w-100 d-block position-relative">
                             <div class="slider position-relative ">
                                 <div class="slide position-relative">
@@ -777,7 +928,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-sm-8 pr-xl-9">
+                    <div class="col-lg-8 col-sm-8 pr-xl-9">
                         <div class="border-bottom border-black d-block mb-2 pb-3">
                             <span class="font-weight-bold text-black letter-spacing-small">
                                 XIII Mystery
@@ -785,21 +936,163 @@
                                 1
                             </span>
                             <h1 class=" mb-1">XIII- box Delen 1-3</h1>
-                            <div class="d-flex review-small">
+                            <div class="d-flex">
                                 <div class="stars">
-                                    <i class="fas fa-star fa-sm text-gray-400"></i>
-                                    <i class="fas fa-star fa-sm text-gray-400"></i>
-                                    <i class="fas fa-star fa-sm text-gray-400"></i>
-                                    <i class="fas fa-star fa-sm text-gray-400"></i>
-                                    <i class="fas fa-star fa-sm text-gray-400"></i>
+                                    <i class="fas fa-star text-gray-400"></i>
+                                    <i class="fas fa-star text-gray-400"></i>
+                                    <i class="fas fa-star text-gray-400"></i>
+                                    <i class="fas fa-star text-gray-400"></i>
+                                    <i class="fas fa-star text-gray-400"></i>
                                 </div>
                                 <a data-scroll="reviews"
-                                   class="text-gray-500 ml-2">
+                                   class="text-gray-500 ml-2 fs-6">
                                     <u>0 reviews</u>
                                 </a>
                             </div>
                         </div>
                         <div class="row techinfo font-size-sm mb-3 mt-3 ">
+                            <div class="col-sm-6 mb-1 row">
+                                <strong class="col-xl-6 col-5">
+                                    Reeks
+                                </strong>
+                                <span class="col-xl-6 col-7 font-weight-light">
+                                    <a href="/nl-nl/xiii-mystery/zoeken?text=&13=50127&all=1"
+                                       alt="XIII Mystery"
+                                       title="XIII Mystery">
+                                        <u>
+                                            XIII Mystery
+                                        </u>
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="col-sm-6 mb-1 row">
+                                <strong class="col-xl-6 col-5">
+                                    Nummer
+                                </strong>
+                                <span class="col-xl-6 col-7 font-weight-light">
+                                    1
+                                </span>
+                            </div>
+                            <div class="col-sm-6 mb-1 row">
+                                <strong class="col-xl-6 col-5">
+                                    Cover
+                                </strong>
+                                <span class="col-xl-6 col-7 font-weight-light">
+                                    hardcover
+                                </span>
+                            </div>
+                            <div class="col-sm-6 mb-1 row">
+                                <strong class="col-xl-6 col-5">
+                                    Taal
+                                </strong>
+                                <span class="col-xl-6 col-7 font-weight-light">
+                                    NL
+                                </span>
+                            </div>
+                            <div class="col-sm-6 mb-1 row">
+                                <strong class="col-xl-6 col-5">
+                                    Scenarist
+                                </strong>
+                                <span class="col-xl-6 col-7 font-weight-light">
+                                    <a href="/nl-nl/corbeyran-eric/zoeken?text=&10=506&all=1"
+                                       alt="Corbeyran Eric"
+                                       title="Corbeyran Eric">
+                                        <u>
+                                            Corbeyran Eric
+                                        </u>
+                                    </a>
+                                    ,
+                                    <a href="/nl-nl/dorison-xavier/zoeken?text=&10=1870&all=1"
+                                       alt=" Dorison Xavier"
+                                       title=" Dorison Xavier">
+                                        <u>
+                                            Dorison Xavier
+                                        </u>
+                                    </a>
+                                    ,
+                                    <a href="/nl-nl/yann/zoeken?text=&10=436&all=1"
+                                       alt=" Yann"
+                                       title=" Yann">
+                                        <u>
+                                            Yann
+                                        </u>
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="col-sm-6 mb-1 row">
+                                <strong class="col-xl-6 col-5">
+                                    Tekenaars
+                                </strong>
+                                <span class="col-xl-6 col-7 font-weight-light">
+                                    <a href="/nl-nl/berthet-philippe/zoeken?text=&11=81172&all=1"
+                                       alt="Berthet Philippe"
+                                       title="Berthet Philippe">
+                                        <u>
+                                            Berthet Philippe
+                                        </u>
+                                    </a>
+                                    ,
+                                    <a href="/nl-nl/henninot-eric/zoeken?text=&11=88114&all=1"
+                                       alt=" Henninot Eric"
+                                       title=" Henninot Eric">
+                                        <u>
+                                            Henninot Eric
+                                        </u>
+                                    </a>
+                                    ,
+                                    <a href="/nl-nl/meyer-ralph/zoeken?text=&11=88009&all=1"
+                                       alt=" Meyer Ralph"
+                                       title=" Meyer Ralph">
+                                        <u>
+                                            Meyer Ralph
+                                        </u>
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="col-sm-6 mb-1 row">
+                                <strong class="col-xl-6 col-5">
+                                    Inkleuring
+                                </strong>
+                                <span class="col-xl-6 col-7 font-weight-light">
+                                    <a href="/nl-nl/david-dominique/zoeken?text=&12=78719&all=1"
+                                       alt="David Dominique"
+                                       title="David Dominique">
+                                        <u>
+                                            David Dominique
+                                        </u>
+                                    </a>
+                                    ,
+                                    <a href="/nl-nl/delabie-caroline/zoeken?text=&12=77894&all=1"
+                                       alt=" Delabie Caroline"
+                                       title=" Delabie Caroline">
+                                        <u>
+                                            Delabie Caroline
+                                        </u>
+                                    </a>
+                                    ,
+                                    <a href="/nl-nl/meyer-ralph/zoeken?text=&12=79969&all=1"
+                                       alt=" Meyer Ralph"
+                                       title=" Meyer Ralph">
+                                        <u>
+                                            Meyer Ralph
+                                        </u>
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="col-sm-6 mb-1 row">
+                                <strong class="col-xl-6 col-5">
+                                    Uitgeverij
+                                </strong>
+                                <span class="col-xl-6 col-7 font-weight-light">
+                                    <a href="/nl-nl/dargaud/zoeken?text=&9=72201&all=1"
+                                       alt="Dargaud"
+                                       title="Dargaud">
+                                        <u>
+                                            Dargaud
+                                        </u>
+                                    </a>
+                                </span>
+                            </div>
                             <div class="col-sm-6 mb-1 row">
                                 <strong class="col-xl-6 col-5">
                                     ISBN nummer
@@ -818,152 +1111,10 @@
                             </div>
                             <div class="col-sm-6 mb-1 row">
                                 <strong class="col-xl-6 col-5">
-                                    Reeks
-                                </strong>
-                                <span class="col-xl-6 col-7 font-weight-light">
-                                    <a href="/nl-nl/zoeken?text=&13=50127&all=1"
-                                       alt="XIII Mystery"
-                                       title="XIII Mystery">
-                                        <u>
-                                            XIII Mystery
-                                        </u>
-                                    </a>
-                                </span>
-                            </div>
-                            <div class="col-sm-6 mb-1 row">
-                                <strong class="col-xl-6 col-5">
-                                    Inkleuring
-                                </strong>
-                                <span class="col-xl-6 col-7 font-weight-light">
-                                    <a href="/nl-nl/zoeken?text=&12=78719&all=1"
-                                       alt="David Dominique"
-                                       title="David Dominique">
-                                        <u>
-                                            David Dominique
-                                        </u>
-                                    </a>
-                                    ,
-                                    <a href="/nl-nl/zoeken?text=&12=77894&all=1"
-                                       alt=" Delabie Caroline"
-                                       title=" Delabie Caroline">
-                                        <u>
-                                            Delabie Caroline
-                                        </u>
-                                    </a>
-                                    ,
-                                    <a href="/nl-nl/zoeken?text=&12=79969&all=1"
-                                       alt=" Meyer Ralph"
-                                       title=" Meyer Ralph">
-                                        <u>
-                                            Meyer Ralph
-                                        </u>
-                                    </a>
-                                </span>
-                            </div>
-                            <div class="col-sm-6 mb-1 row">
-                                <strong class="col-xl-6 col-5">
-                                    Tekenaars
-                                </strong>
-                                <span class="col-xl-6 col-7 font-weight-light">
-                                    <a href="/nl-nl/zoeken?text=&11=81172&all=1"
-                                       alt="Berthet Philippe"
-                                       title="Berthet Philippe">
-                                        <u>
-                                            Berthet Philippe
-                                        </u>
-                                    </a>
-                                    ,
-                                    <a href="/nl-nl/zoeken?text=&11=88114&all=1"
-                                       alt=" Henninot Eric"
-                                       title=" Henninot Eric">
-                                        <u>
-                                            Henninot Eric
-                                        </u>
-                                    </a>
-                                    ,
-                                    <a href="/nl-nl/zoeken?text=&11=88009&all=1"
-                                       alt=" Meyer Ralph"
-                                       title=" Meyer Ralph">
-                                        <u>
-                                            Meyer Ralph
-                                        </u>
-                                    </a>
-                                </span>
-                            </div>
-                            <div class="col-sm-6 mb-1 row">
-                                <strong class="col-xl-6 col-5">
-                                    Taal
-                                </strong>
-                                <span class="col-xl-6 col-7 font-weight-light">
-                                    NL
-                                </span>
-                            </div>
-                            <div class="col-sm-6 mb-1 row">
-                                <strong class="col-xl-6 col-5">
-                                    Scenarist
-                                </strong>
-                                <span class="col-xl-6 col-7 font-weight-light">
-                                    <a href="/nl-nl/zoeken?text=&10=506&all=1"
-                                       alt="Corbeyran Eric"
-                                       title="Corbeyran Eric">
-                                        <u>
-                                            Corbeyran Eric
-                                        </u>
-                                    </a>
-                                    ,
-                                    <a href="/nl-nl/zoeken?text=&10=1870&all=1"
-                                       alt=" Dorison Xavier"
-                                       title=" Dorison Xavier">
-                                        <u>
-                                            Dorison Xavier
-                                        </u>
-                                    </a>
-                                    ,
-                                    <a href="/nl-nl/zoeken?text=&10=436&all=1"
-                                       alt=" Yann "
-                                       title=" Yann ">
-                                        <u>
-                                            Yann
-                                        </u>
-                                    </a>
-                                </span>
-                            </div>
-                            <div class="col-sm-6 mb-1 row">
-                                <strong class="col-xl-6 col-5">
-                                    Uitgeverij
-                                </strong>
-                                <span class="col-xl-6 col-7 font-weight-light">
-                                    <a href="/nl-nl/zoeken?text=&9=72201&all=1"
-                                       alt="Dargaud"
-                                       title="Dargaud">
-                                        <u>
-                                            Dargaud
-                                        </u>
-                                    </a>
-                                </span>
-                            </div>
-                            <div class="col-sm-6 mb-1 row">
-                                <strong class="col-xl-6 col-5">
-                                    Cover
-                                </strong>
-                                <span class="col-xl-6 col-7 font-weight-light">
-                                    hardcover
-                                </span>
-                            </div>
-                            <div class="col-sm-6 mb-1 row">
-                                <strong class="col-xl-6 col-5">
-                                    Nummer
-                                </strong>
-                                <span class="col-xl-6 col-7 font-weight-light">
-                                    1
-                                </span>
-                            </div>
-                            <div class="col-sm-6 mb-1 row">
-                                <strong class="col-xl-6 col-5">
                                     Trefwoorden
                                 </strong>
                                 <span class="col-xl-6 col-7 font-weight-light">
-                                    <a href="/nl-nl/zoeken?text=&26=124540&all=1"
+                                    <a href="/nl-nl/avonturen/zoeken?text=&26=124540&all=1"
                                        alt="avonturen"
                                        title="avonturen">
                                         <u>
@@ -971,7 +1122,7 @@
                                         </u>
                                     </a>
                                     ,
-                                    <a href="/nl-nl/zoeken?text=&26=124596&all=1"
+                                    <a href="/nl-nl/thriller/zoeken?text=&26=124596&all=1"
                                        alt="thriller"
                                        title="thriller">
                                         <u>
@@ -1056,6 +1207,32 @@
                                 </div>
                             </div>
                         </form>
+                        <div class="border-top pt-2 mt-2">
+                            <h3 class="mb-lg-3 mb-2">
+                                Omschrijving
+                            </h3>
+                            <div class="detail-description font-size-sm">
+                                De albums van deze reeks verschenen enkel in softcover. Nu
+                                verschijnt een luxe stripbox met de delen 1-3 in hardcover. Het
+                                personage XIII is uiteraard de hoofdrolspeler van de gelijknamige
+                                reeks, maar waarom zouden we niet gebruikmaken van de overvloedige
+                                fantasie van Jean Van Hamme? Drie duo's namen intussen de uitdaging
+                                aan.
+                            </div>
+                            <div class="toggle-button-container">
+                                <button data-description-toggle
+                                        class="toggle-button rounded-pill bg-secondary mt-3 px-4 py-2 text-black font-weight-bold fa-sm mt-2 position-relative border-0 text-center">
+                                    <span data-description-toggle-showmore
+                                          class="showmore">Toon meer
+                                    </span>
+                                    <span data-description-toggle-showless
+                                          class="showmore d-none">Toon minder
+                                    </span>
+                                    <span data-description-toggle-icon
+                                          class="icon fa d-inline-block ml-2 fa-arrow-down"></span>
+                                </button>
+                            </div>
+                        </div>
                         <div class="border-top border-black mt-4">
                             <button id="add-to-wishlist"
                                     class="border-0 bg-transparent fa-sm w-100 text-center py-3"
@@ -1071,22 +1248,10 @@
                     </div>
                 </div>
                 <div class="row justify-content-center">
-                    <div class="col-lg-7 mt-5">
-                        <h2 class="text-center mb-lg-5 mb-2">
-                            Meer info
-                        </h2>
-                        <div class="txt-product font-size-sm">
-                            De albums van deze reeks verschenen enkel in softcover. Nu verschijnt
-                            een luxe stripbox met de delen 1-3 in hardcover. Het personage XIII is
-                            uiteraard de hoofdrolspeler van de gelijknamige reeks, maar waarom
-                            zouden we niet gebruikmaken van de overvloedige fantasie van Jean Van
-                            Hamme? Drie duo's namen intussen de uitdaging aan.
-                        </div>
-                    </div>
                     <div class="col-lg-9 mt-7">
                         <div class="d-flex mb-0 justify-content-between align-items-center">
                             <b class="h3">Ontdek ook</b>
-                            <a href="/nl-nl/zoeken?text=&13=50127&all=1"
+                            <a href="/nl-nl/xiii-mystery/zoeken?text=&13=50127&all=1"
                                class="btn p-2 btn-primary rounded-pill font-weight-bold text-white btn-small">
                                 Bekijk de volledige reeks
                             </a>
@@ -1103,11 +1268,11 @@
                                     <div class="d-flex  border-left border-right border-top border-bottom h-100 bg-white position-relative align-items-start ">
                                         <div class="row no-gutters position-relative  w-100 d-flex flex-lg-column">
                                             <div class="border-danger overview-image position-static w-100 col-4 col-sm-12 bg-white align-self-start ">
-                                                <a href="/nl-nl/judith-warner-10"
+                                                <a href="/nl-nl/de-mangoest-4"
                                                    class="overview-txt position-lg-relative position-static d-block w-100 mb-md-2 d-flex flex-column"
-                                                   title="Judith Warner">
+                                                   title="De Mangoest">
                                                     <picture class="w-100 d-flex align-items-start border-sm-bottom pl-sm-0 pt-sm-0 pl-3 pt-3">
-                                                        <img src="/images/photolib/275x380c/666060/666060.jpg"
+                                                        <img src="/images/photolib/275x380c/650096/650096.jpg"
                                                              alt="front"
                                                              title="front"
                                                              class="img-fluid" />
@@ -1115,28 +1280,28 @@
                                                 </a>
                                             </div>
                                             <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
-                                                <div class="overview-txt  p-3 d-flex flex-column justify-content-start"
-                                                     title="Judith Warner">
-                                                    <a href="/nl-nl/judith-warner-10">
+                                                <div class="overview-txt  p-2 d-flex flex-column justify-content-start"
+                                                     title="De Mangoest">
+                                                    <a href="/nl-nl/de-mangoest-4">
                                                         <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
                                                             <span>
                                                                 XIII Mystery
 
-                                                                13
+                                                                1
                                                             </span>
                                                         </small>
                                                         <div class="product-overview-wrapper">
                                                             <b class="h5 mb-0 product-overview-title text-black d-block">
-                                                                Judith Warner
+                                                                De Mangoest
                                                             </b>
                                                             <small class="text-gray-500 d-block">
-                                                                Hardcover
+                                                                Softcover
                                                             </small>
                                                         </div>
                                                     </a>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="overview-price   w-100 d-flex px-3 pb-3 justify-content-between align-items-center">
+                                                    <div class="overview-price w-100 d-flex px-2 pb-3 justify-content-between align-items-center">
                                                         <div itemprop="offers"
                                                              itemscope
                                                              itemtype="http://schema.org/Offer"
@@ -1151,19 +1316,355 @@
                                                                 </span>
                                                                 <span itemprop="price"
                                                                       class="h4 text-success"
-                                                                      content="16.95">16,95
+                                                                      content="9.99">9,99
                                                                 </span>
                                                             </b>
                                                         </div>
+                                                        <form action="#"
+                                                              method="post"
+                                                              class="z-index-20 order-2 form-add-to-cart ">
+                                                            <button class="btn btn-basket btn-cart d-flex align-items-center justify-content-center fa-1x fa-stack "
+                                                                    data-title="Dit artikel zit in uw winkelmandje. Aantallen kunnen in het winkelmandje aangepast worden"
+                                                                    data-hide="200">
+                                                                <i class="fas fa-circle text-primary fa-stack-2x"></i>
+                                                                <i class="far fa-shopping-bag fa-stack-1x fa-inverse "
+                                                                   aria-hidden="true"></i>
+                                                                <i class="far fa-check fa-stack-1x fa-inverse   d-none"
+                                                                   aria-hidden="true"></i>
+                                                                <i class="far fa-spinner d-none fa-pulse text-white"></i>
+                                                                <span class="d-none">In
+                                                                    winkelmandje
+                                                                </span>
+                                                            </button>
+                                                            <input type="hidden"
+                                                                   name="hdnQuantity"
+                                                                   value="1"
+                                                                   title="Aantal" />
+                                                            <input type="hidden"
+                                                                   name="hdnArticleNo"
+                                                                   value="508993" />
+                                                            <input type="hidden"
+                                                                   name="hdnPriceNo"
+                                                                   value="1" />
+                                                            <input type="hidden"
+                                                                   name="hdnHrefPopupProductAdded"
+                                                                   value="/nl-nl/product-added/de-mangoest-4" />
+                                                        </form>
                                                     </div>
                                                 </div>
-                                                <div class="px-3 justify-content-between align-items-center">
+                                                <div class="px-2 justify-content-between align-items-center">
                                                     <strong class="stock fa-sm d-inline-block mb-2"
                                                             itemprop="availability">
-                                                        <i class="text-danger fas fa-times-circle"
+                                                        <i class="text-success fas fa-check-circle"
                                                            aria-hidden="true"></i>
-                                                        <span class="text-danger">
-                                                            Niet bestelbaar
+                                                        <span class="text-success">
+                                                            Direct leverbaar
+                                                        </span>
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="overview-item col-12">
+                                    <div class="d-flex  border-left border-right border-top border-bottom h-100 bg-white position-relative align-items-start ">
+                                        <div class="row no-gutters position-relative  w-100 d-flex flex-lg-column">
+                                            <div class="border-danger overview-image position-static w-100 col-4 col-sm-12 bg-white align-self-start ">
+                                                <a href="/nl-nl/valstrikken-en-gevoelens"
+                                                   class="overview-txt position-lg-relative position-static d-block w-100 mb-md-2 d-flex flex-column"
+                                                   title="Valstrikken en emoties SC">
+                                                    <picture class="w-100 d-flex align-items-start border-sm-bottom pl-sm-0 pt-sm-0 pl-3 pt-3">
+                                                        <img src="/images/photolib/275x380c/737420/737420.jpg"
+                                                             alt="front"
+                                                             title="front"
+                                                             class="img-fluid" />
+                                                    </picture>
+                                                </a>
+                                            </div>
+                                            <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
+                                                <div class="overview-txt  p-2 d-flex flex-column justify-content-start"
+                                                     title="Valstrikken en emoties SC">
+                                                    <a href="/nl-nl/valstrikken-en-gevoelens">
+                                                        <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
+                                                            <span>
+                                                                XIII Mystery
+
+                                                                14
+                                                            </span>
+                                                        </small>
+                                                        <div class="product-overview-wrapper">
+                                                            <b class="h5 mb-0 product-overview-title text-black d-block">
+                                                                Valstrikken en emoties SC
+                                                            </b>
+                                                            <small class="text-gray-500 d-block">
+                                                                Softcover
+                                                            </small>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="overview-price w-100 d-flex px-2 pb-3 justify-content-between align-items-center">
+                                                        <div itemprop="offers"
+                                                             itemscope
+                                                             itemtype="http://schema.org/Offer"
+                                                             class="prices order-1">
+                                                            <b class="d-block ">
+                                                                <small class="text-gray-800 font-weight-semi mr-1 d-block w-100">
+                                                                    Stripweb prijs:
+                                                                </small>
+                                                                <span itemprop="priceCurrency"
+                                                                      class="h4 text-success"
+                                                                      content="EUR">&euro;
+                                                                </span>
+                                                                <span itemprop="price"
+                                                                      class="h4 text-success"
+                                                                      content="9.99">9,99
+                                                                </span>
+                                                            </b>
+                                                        </div>
+                                                        <form action="#"
+                                                              method="post"
+                                                              class="z-index-20 order-2 form-add-to-cart ">
+                                                            <button class="btn btn-basket btn-cart d-flex align-items-center justify-content-center fa-1x fa-stack "
+                                                                    data-title="Dit artikel zit in uw winkelmandje. Aantallen kunnen in het winkelmandje aangepast worden"
+                                                                    data-hide="200">
+                                                                <i class="fas fa-circle text-primary fa-stack-2x"></i>
+                                                                <i class="far fa-shopping-bag fa-stack-1x fa-inverse "
+                                                                   aria-hidden="true"></i>
+                                                                <i class="far fa-check fa-stack-1x fa-inverse   d-none"
+                                                                   aria-hidden="true"></i>
+                                                                <i class="far fa-spinner d-none fa-pulse text-white"></i>
+                                                                <span class="d-none">In
+                                                                    winkelmandje
+                                                                </span>
+                                                            </button>
+                                                            <input type="hidden"
+                                                                   name="hdnQuantity"
+                                                                   value="1"
+                                                                   title="Aantal" />
+                                                            <input type="hidden"
+                                                                   name="hdnArticleNo"
+                                                                   value="548714" />
+                                                            <input type="hidden"
+                                                                   name="hdnPriceNo"
+                                                                   value="1" />
+                                                            <input type="hidden"
+                                                                   name="hdnHrefPopupProductAdded"
+                                                                   value="/nl-nl/product-added/valstrikken-en-gevoelens" />
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div class="px-2 justify-content-between align-items-center">
+                                                    <strong class="stock fa-sm d-inline-block mb-2"
+                                                            itemprop="availability">
+                                                        <i class="text-success fas fa-check-circle"
+                                                           aria-hidden="true"></i>
+                                                        <span class="text-success">
+                                                            Direct leverbaar
+                                                        </span>
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="overview-item col-12">
+                                    <div class="d-flex  border-left border-right border-top border-bottom h-100 bg-white position-relative align-items-start ">
+                                        <div class="row no-gutters position-relative  w-100 d-flex flex-lg-column">
+                                            <div class="border-danger overview-image position-static w-100 col-4 col-sm-12 bg-white align-self-start ">
+                                                <a href="/nl-nl/calvin-wax-8"
+                                                   class="overview-txt position-lg-relative position-static d-block w-100 mb-md-2 d-flex flex-column"
+                                                   title="Calvin Wax">
+                                                    <picture class="w-100 d-flex align-items-start border-sm-bottom pl-sm-0 pt-sm-0 pl-3 pt-3">
+                                                        <img src="/images/photolib/275x380c/660680/660680.jpg"
+                                                             alt="front"
+                                                             title="front"
+                                                             class="img-fluid" />
+                                                    </picture>
+                                                </a>
+                                            </div>
+                                            <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
+                                                <div class="overview-txt  p-2 d-flex flex-column justify-content-start"
+                                                     title="Calvin Wax">
+                                                    <a href="/nl-nl/calvin-wax-8">
+                                                        <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
+                                                            <span>
+                                                                XIII Mystery
+
+                                                                10
+                                                            </span>
+                                                        </small>
+                                                        <div class="product-overview-wrapper">
+                                                            <b class="h5 mb-0 product-overview-title text-black d-block">
+                                                                Calvin Wax
+                                                            </b>
+                                                            <small class="text-gray-500 d-block">
+                                                                Softcover
+                                                            </small>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="overview-price w-100 d-flex px-2 pb-3 justify-content-between align-items-center">
+                                                        <div itemprop="offers"
+                                                             itemscope
+                                                             itemtype="http://schema.org/Offer"
+                                                             class="prices order-1">
+                                                            <b class="d-block ">
+                                                                <small class="text-gray-800 font-weight-semi mr-1 d-block w-100">
+                                                                    Stripweb prijs:
+                                                                </small>
+                                                                <span itemprop="priceCurrency"
+                                                                      class="h4 text-success"
+                                                                      content="EUR">&euro;
+                                                                </span>
+                                                                <span itemprop="price"
+                                                                      class="h4 text-success"
+                                                                      content="9.99">9,99
+                                                                </span>
+                                                            </b>
+                                                        </div>
+                                                        <form action="#"
+                                                              method="post"
+                                                              class="z-index-20 order-2 form-add-to-cart ">
+                                                            <button class="btn btn-basket btn-cart d-flex align-items-center justify-content-center fa-1x fa-stack "
+                                                                    data-title="Dit artikel zit in uw winkelmandje. Aantallen kunnen in het winkelmandje aangepast worden"
+                                                                    data-hide="200">
+                                                                <i class="fas fa-circle text-primary fa-stack-2x"></i>
+                                                                <i class="far fa-shopping-bag fa-stack-1x fa-inverse "
+                                                                   aria-hidden="true"></i>
+                                                                <i class="far fa-check fa-stack-1x fa-inverse   d-none"
+                                                                   aria-hidden="true"></i>
+                                                                <i class="far fa-spinner d-none fa-pulse text-white"></i>
+                                                                <span class="d-none">In
+                                                                    winkelmandje
+                                                                </span>
+                                                            </button>
+                                                            <input type="hidden"
+                                                                   name="hdnQuantity"
+                                                                   value="1"
+                                                                   title="Aantal" />
+                                                            <input type="hidden"
+                                                                   name="hdnArticleNo"
+                                                                   value="516630" />
+                                                            <input type="hidden"
+                                                                   name="hdnPriceNo"
+                                                                   value="1" />
+                                                            <input type="hidden"
+                                                                   name="hdnHrefPopupProductAdded"
+                                                                   value="/nl-nl/product-added/calvin-wax-8" />
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div class="px-2 justify-content-between align-items-center">
+                                                    <strong class="stock fa-sm d-inline-block mb-2"
+                                                            itemprop="availability">
+                                                        <i class="text-success fas fa-check-circle"
+                                                           aria-hidden="true"></i>
+                                                        <span class="text-success">
+                                                            Direct leverbaar
+                                                        </span>
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="overview-item col-12">
+                                    <div class="d-flex  border-left border-right border-top border-bottom h-100 bg-white position-relative align-items-start ">
+                                        <div class="row no-gutters position-relative  w-100 d-flex flex-lg-column">
+                                            <div class="border-danger overview-image position-static w-100 col-4 col-sm-12 bg-white align-self-start ">
+                                                <a href="/nl-nl/steve-rowland-6"
+                                                   class="overview-txt position-lg-relative position-static d-block w-100 mb-md-2 d-flex flex-column"
+                                                   title="Steve Rowland">
+                                                    <picture class="w-100 d-flex align-items-start border-sm-bottom pl-sm-0 pt-sm-0 pl-3 pt-3">
+                                                        <img src="/images/photolib/275x380c/655188/655188.jpg"
+                                                             alt="front"
+                                                             title="front"
+                                                             class="img-fluid" />
+                                                    </picture>
+                                                </a>
+                                            </div>
+                                            <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
+                                                <div class="overview-txt  p-2 d-flex flex-column justify-content-start"
+                                                     title="Steve Rowland">
+                                                    <a href="/nl-nl/steve-rowland-6">
+                                                        <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
+                                                            <span>
+                                                                XIII Mystery
+
+                                                                5
+                                                            </span>
+                                                        </small>
+                                                        <div class="product-overview-wrapper">
+                                                            <b class="h5 mb-0 product-overview-title text-black d-block">
+                                                                Steve Rowland
+                                                            </b>
+                                                            <small class="text-gray-500 d-block">
+                                                                Softcover
+                                                            </small>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="overview-price w-100 d-flex px-2 pb-3 justify-content-between align-items-center">
+                                                        <div itemprop="offers"
+                                                             itemscope
+                                                             itemtype="http://schema.org/Offer"
+                                                             class="prices order-1">
+                                                            <b class="d-block ">
+                                                                <small class="text-gray-800 font-weight-semi mr-1 d-block w-100">
+                                                                    Stripweb prijs:
+                                                                </small>
+                                                                <span itemprop="priceCurrency"
+                                                                      class="h4 text-success"
+                                                                      content="EUR">&euro;
+                                                                </span>
+                                                                <span itemprop="price"
+                                                                      class="h4 text-success"
+                                                                      content="9.99">9,99
+                                                                </span>
+                                                            </b>
+                                                        </div>
+                                                        <form action="#"
+                                                              method="post"
+                                                              class="z-index-20 order-2 form-add-to-cart ">
+                                                            <button class="btn btn-basket btn-cart d-flex align-items-center justify-content-center fa-1x fa-stack "
+                                                                    data-title="Dit artikel zit in uw winkelmandje. Aantallen kunnen in het winkelmandje aangepast worden"
+                                                                    data-hide="200">
+                                                                <i class="fas fa-circle text-primary fa-stack-2x"></i>
+                                                                <i class="far fa-shopping-bag fa-stack-1x fa-inverse "
+                                                                   aria-hidden="true"></i>
+                                                                <i class="far fa-check fa-stack-1x fa-inverse   d-none"
+                                                                   aria-hidden="true"></i>
+                                                                <i class="far fa-spinner d-none fa-pulse text-white"></i>
+                                                                <span class="d-none">In
+                                                                    winkelmandje
+                                                                </span>
+                                                            </button>
+                                                            <input type="hidden"
+                                                                   name="hdnQuantity"
+                                                                   value="1"
+                                                                   title="Aantal" />
+                                                            <input type="hidden"
+                                                                   name="hdnArticleNo"
+                                                                   value="512522" />
+                                                            <input type="hidden"
+                                                                   name="hdnPriceNo"
+                                                                   value="1" />
+                                                            <input type="hidden"
+                                                                   name="hdnHrefPopupProductAdded"
+                                                                   value="/nl-nl/product-added/steve-rowland-6" />
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div class="px-2 justify-content-between align-items-center">
+                                                    <strong class="stock fa-sm d-inline-block mb-2"
+                                                            itemprop="availability">
+                                                        <i class="text-success fas fa-check-circle"
+                                                           aria-hidden="true"></i>
+                                                        <span class="text-success">
+                                                            Direct leverbaar
                                                         </span>
                                                     </strong>
                                                 </div>
@@ -1187,7 +1688,7 @@
                                                 </a>
                                             </div>
                                             <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
-                                                <div class="overview-txt  p-3 d-flex flex-column justify-content-start"
+                                                <div class="overview-txt  p-2 d-flex flex-column justify-content-start"
                                                      title="Irina">
                                                     <a href="/nl-nl/irina-10">
                                                         <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
@@ -1208,7 +1709,7 @@
                                                     </a>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="overview-price   w-100 d-flex px-3 pb-3 justify-content-between align-items-center">
+                                                    <div class="overview-price w-100 d-flex px-2 pb-3 justify-content-between align-items-center">
                                                         <div itemprop="offers"
                                                              itemscope
                                                              itemtype="http://schema.org/Offer"
@@ -1259,109 +1760,7 @@
                                                         </form>
                                                     </div>
                                                 </div>
-                                                <div class="px-3 justify-content-between align-items-center">
-                                                    <strong class="stock fa-sm d-inline-block mb-2"
-                                                            itemprop="availability">
-                                                        <i class="text-success fas fa-check-circle"
-                                                           aria-hidden="true"></i>
-                                                        <span class="text-success">
-                                                            Direct leverbaar
-                                                        </span>
-                                                    </strong>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="overview-item col-12">
-                                    <div class="d-flex  border-left border-right border-top border-bottom h-100 bg-white position-relative align-items-start ">
-                                        <div class="row no-gutters position-relative  w-100 d-flex flex-lg-column">
-                                            <div class="border-danger overview-image position-static w-100 col-4 col-sm-12 bg-white align-self-start ">
-                                                <a href="/nl-nl/betty-barnowksy-4"
-                                                   class="overview-txt position-lg-relative position-static d-block w-100 mb-md-2 d-flex flex-column"
-                                                   title="Betty Barnowksy">
-                                                    <picture class="w-100 d-flex align-items-start border-sm-bottom pl-sm-0 pt-sm-0 pl-3 pt-3">
-                                                        <img src="/images/photolib/275x380c/657561/657561.jpg"
-                                                             alt="front"
-                                                             title="front"
-                                                             class="img-fluid" />
-                                                    </picture>
-                                                </a>
-                                            </div>
-                                            <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
-                                                <div class="overview-txt  p-3 d-flex flex-column justify-content-start"
-                                                     title="Betty Barnowksy">
-                                                    <a href="/nl-nl/betty-barnowksy-4">
-                                                        <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
-                                                            <span>
-                                                                XIII Mystery
-
-                                                                7
-                                                            </span>
-                                                        </small>
-                                                        <div class="product-overview-wrapper">
-                                                            <b class="h5 mb-0 product-overview-title text-black d-block">
-                                                                Betty Barnowksy
-                                                            </b>
-                                                            <small class="text-gray-500 d-block">
-                                                                Softcover
-                                                            </small>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="overview-price   w-100 d-flex px-3 pb-3 justify-content-between align-items-center">
-                                                        <div itemprop="offers"
-                                                             itemscope
-                                                             itemtype="http://schema.org/Offer"
-                                                             class="prices order-1">
-                                                            <b class="d-block ">
-                                                                <small class="text-gray-800 font-weight-semi mr-1 d-block w-100">
-                                                                    Stripweb prijs:
-                                                                </small>
-                                                                <span itemprop="priceCurrency"
-                                                                      class="h4 text-success"
-                                                                      content="EUR">&euro;
-                                                                </span>
-                                                                <span itemprop="price"
-                                                                      class="h4 text-success"
-                                                                      content="9.99">9,99
-                                                                </span>
-                                                            </b>
-                                                        </div>
-                                                        <form action="#"
-                                                              method="post"
-                                                              class="z-index-20 order-2 form-add-to-cart ">
-                                                            <button class="btn btn-basket btn-cart d-flex align-items-center justify-content-center fa-1x fa-stack "
-                                                                    data-title="Dit artikel zit in uw winkelmandje. Aantallen kunnen in het winkelmandje aangepast worden"
-                                                                    data-hide="200">
-                                                                <i class="fas fa-circle text-primary fa-stack-2x"></i>
-                                                                <i class="far fa-shopping-bag fa-stack-1x fa-inverse "
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-check fa-stack-1x fa-inverse   d-none"
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-spinner d-none fa-pulse text-white"></i>
-                                                                <span class="d-none">In
-                                                                    winkelmandje
-                                                                </span>
-                                                            </button>
-                                                            <input type="hidden"
-                                                                   name="hdnQuantity"
-                                                                   value="1"
-                                                                   title="Aantal" />
-                                                            <input type="hidden"
-                                                                   name="hdnArticleNo"
-                                                                   value="514324" />
-                                                            <input type="hidden"
-                                                                   name="hdnPriceNo"
-                                                                   value="1" />
-                                                            <input type="hidden"
-                                                                   name="hdnHrefPopupProductAdded"
-                                                                   value="/nl-nl/product-added/betty-barnowksy-4" />
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                                <div class="px-3 justify-content-between align-items-center">
+                                                <div class="px-2 justify-content-between align-items-center">
                                                     <strong class="stock fa-sm d-inline-block mb-2"
                                                             itemprop="availability">
                                                         <i class="text-success fas fa-check-circle"
@@ -1391,7 +1790,7 @@
                                                 </a>
                                             </div>
                                             <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
-                                                <div class="overview-txt  p-3 d-flex flex-column justify-content-start"
+                                                <div class="overview-txt  p-2 d-flex flex-column justify-content-start"
                                                      title="Alan Smith">
                                                     <a href="/nl-nl/alan-smith-8">
                                                         <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
@@ -1412,7 +1811,7 @@
                                                     </a>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="overview-price   w-100 d-flex px-3 pb-3 justify-content-between align-items-center">
+                                                    <div class="overview-price w-100 d-flex px-2 pb-3 justify-content-between align-items-center">
                                                         <div itemprop="offers"
                                                              itemscope
                                                              itemtype="http://schema.org/Offer"
@@ -1463,7 +1862,7 @@
                                                         </form>
                                                     </div>
                                                 </div>
-                                                <div class="px-3 justify-content-between align-items-center">
+                                                <div class="px-2 justify-content-between align-items-center">
                                                     <strong class="stock fa-sm d-inline-block mb-2"
                                                             itemprop="availability">
                                                         <i class="text-success fas fa-check-circle"
@@ -1481,11 +1880,11 @@
                                     <div class="d-flex  border-left border-right border-top border-bottom h-100 bg-white position-relative align-items-start ">
                                         <div class="row no-gutters position-relative  w-100 d-flex flex-lg-column">
                                             <div class="border-danger overview-image position-static w-100 col-4 col-sm-12 bg-white align-self-start ">
-                                                <a href="/nl-nl/valstrikken-en-emoties-ex-lbiris"
+                                                <a href="/nl-nl/xiii-box-delen-7-9"
                                                    class="overview-txt position-lg-relative position-static d-block w-100 mb-md-2 d-flex flex-column"
-                                                   title="Valstrikken en emoties + ex lbiris SC">
+                                                   title="XIII- box Delen 7-9">
                                                     <picture class="w-100 d-flex align-items-start border-sm-bottom pl-sm-0 pt-sm-0 pl-3 pt-3">
-                                                        <img src="/images/photolib/275x380c/746299/746299.png"
+                                                        <img src="/images/photolib/275x380c/675485/675485.jpg"
                                                              alt="front"
                                                              title="front"
                                                              class="img-fluid" />
@@ -1493,29 +1892,28 @@
                                                 </a>
                                             </div>
                                             <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
-                                                <div class="overview-txt  p-3 d-flex flex-column justify-content-start"
-                                                     title="Valstrikken en emoties + ex lbiris SC">
-                                                    <a href="/nl-nl/valstrikken-en-emoties-ex-lbiris">
+                                                <div class="overview-txt  p-2 d-flex flex-column justify-content-start"
+                                                     title="XIII- box Delen 7-9">
+                                                    <a href="/nl-nl/xiii-box-delen-7-9">
                                                         <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
                                                             <span>
                                                                 XIII Mystery
 
-                                                                14
+                                                                3
                                                             </span>
                                                         </small>
                                                         <div class="product-overview-wrapper">
                                                             <b class="h5 mb-0 product-overview-title text-black d-block">
-                                                                Valstrikken en emoties + ex lbiris
-                                                                SC
+                                                                XIII- box Delen 7-9
                                                             </b>
                                                             <small class="text-gray-500 d-block">
-                                                                Softcover
+                                                                hardcover
                                                             </small>
                                                         </div>
                                                     </a>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="overview-price   w-100 d-flex px-3 pb-3 justify-content-between align-items-center">
+                                                    <div class="overview-price w-100 d-flex px-2 pb-3 justify-content-between align-items-center">
                                                         <div itemprop="offers"
                                                              itemscope
                                                              itemtype="http://schema.org/Offer"
@@ -1530,355 +1928,19 @@
                                                                 </span>
                                                                 <span itemprop="price"
                                                                       class="h4 text-success"
-                                                                      content="11.9">11,90
+                                                                      content="44.99">44,99
                                                                 </span>
                                                             </b>
                                                         </div>
-                                                        <form action="#"
-                                                              method="post"
-                                                              class="z-index-20 order-2 form-add-to-cart ">
-                                                            <button class="btn btn-basket btn-cart d-flex align-items-center justify-content-center fa-1x fa-stack "
-                                                                    data-title="Dit artikel zit in uw winkelmandje. Aantallen kunnen in het winkelmandje aangepast worden"
-                                                                    data-hide="200">
-                                                                <i class="fas fa-circle text-primary fa-stack-2x"></i>
-                                                                <i class="far fa-shopping-bag fa-stack-1x fa-inverse "
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-check fa-stack-1x fa-inverse   d-none"
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-spinner d-none fa-pulse text-white"></i>
-                                                                <span class="d-none">In
-                                                                    winkelmandje
-                                                                </span>
-                                                            </button>
-                                                            <input type="hidden"
-                                                                   name="hdnQuantity"
-                                                                   value="1"
-                                                                   title="Aantal" />
-                                                            <input type="hidden"
-                                                                   name="hdnArticleNo"
-                                                                   value="563236" />
-                                                            <input type="hidden"
-                                                                   name="hdnPriceNo"
-                                                                   value="1" />
-                                                            <input type="hidden"
-                                                                   name="hdnHrefPopupProductAdded"
-                                                                   value="/nl-nl/product-added/valstrikken-en-emoties-ex-lbiris" />
-                                                        </form>
                                                     </div>
                                                 </div>
-                                                <div class="px-3 justify-content-between align-items-center">
+                                                <div class="px-2 justify-content-between align-items-center">
                                                     <strong class="stock fa-sm d-inline-block mb-2"
                                                             itemprop="availability">
-                                                        <i class="text-success fas fa-check-circle"
+                                                        <i class="text-danger fas fa-times-circle"
                                                            aria-hidden="true"></i>
-                                                        <span class="text-success">
-                                                            Direct leverbaar
-                                                        </span>
-                                                    </strong>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="overview-item col-12">
-                                    <div class="d-flex  border-left border-right border-top border-bottom h-100 bg-white position-relative align-items-start ">
-                                        <div class="row no-gutters position-relative  w-100 d-flex flex-lg-column">
-                                            <div class="border-danger overview-image position-static w-100 col-4 col-sm-12 bg-white align-self-start ">
-                                                <a href="/nl-nl/kolonel-amos-4"
-                                                   class="overview-txt position-lg-relative position-static d-block w-100 mb-md-2 d-flex flex-column"
-                                                   title="Kolonel Amos">
-                                                    <picture class="w-100 d-flex align-items-start border-sm-bottom pl-sm-0 pt-sm-0 pl-3 pt-3">
-                                                        <img src="/images/photolib/275x380c/654337/654337.jpg"
-                                                             alt="front"
-                                                             title="front"
-                                                             class="img-fluid" />
-                                                    </picture>
-                                                </a>
-                                            </div>
-                                            <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
-                                                <div class="overview-txt  p-3 d-flex flex-column justify-content-start"
-                                                     title="Kolonel Amos">
-                                                    <a href="/nl-nl/kolonel-amos-4">
-                                                        <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
-                                                            <span>
-                                                                XIII Mystery
-
-                                                                4
-                                                            </span>
-                                                        </small>
-                                                        <div class="product-overview-wrapper">
-                                                            <b class="h5 mb-0 product-overview-title text-black d-block">
-                                                                Kolonel Amos
-                                                            </b>
-                                                            <small class="text-gray-500 d-block">
-                                                                Softcover
-                                                            </small>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="overview-price   w-100 d-flex px-3 pb-3 justify-content-between align-items-center">
-                                                        <div itemprop="offers"
-                                                             itemscope
-                                                             itemtype="http://schema.org/Offer"
-                                                             class="prices order-1">
-                                                            <b class="d-block ">
-                                                                <small class="text-gray-800 font-weight-semi mr-1 d-block w-100">
-                                                                    Stripweb prijs:
-                                                                </small>
-                                                                <span itemprop="priceCurrency"
-                                                                      class="h4 text-success"
-                                                                      content="EUR">&euro;
-                                                                </span>
-                                                                <span itemprop="price"
-                                                                      class="h4 text-success"
-                                                                      content="9.99">9,99
-                                                                </span>
-                                                            </b>
-                                                        </div>
-                                                        <form action="#"
-                                                              method="post"
-                                                              class="z-index-20 order-2 form-add-to-cart ">
-                                                            <button class="btn btn-basket btn-cart d-flex align-items-center justify-content-center fa-1x fa-stack "
-                                                                    data-title="Dit artikel zit in uw winkelmandje. Aantallen kunnen in het winkelmandje aangepast worden"
-                                                                    data-hide="200">
-                                                                <i class="fas fa-circle text-primary fa-stack-2x"></i>
-                                                                <i class="far fa-shopping-bag fa-stack-1x fa-inverse "
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-check fa-stack-1x fa-inverse   d-none"
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-spinner d-none fa-pulse text-white"></i>
-                                                                <span class="d-none">In
-                                                                    winkelmandje
-                                                                </span>
-                                                            </button>
-                                                            <input type="hidden"
-                                                                   name="hdnQuantity"
-                                                                   value="1"
-                                                                   title="Aantal" />
-                                                            <input type="hidden"
-                                                                   name="hdnArticleNo"
-                                                                   value="511868" />
-                                                            <input type="hidden"
-                                                                   name="hdnPriceNo"
-                                                                   value="1" />
-                                                            <input type="hidden"
-                                                                   name="hdnHrefPopupProductAdded"
-                                                                   value="/nl-nl/product-added/kolonel-amos-4" />
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                                <div class="px-3 justify-content-between align-items-center">
-                                                    <strong class="stock fa-sm d-inline-block mb-2"
-                                                            itemprop="availability">
-                                                        <i class="text-success fas fa-check-circle"
-                                                           aria-hidden="true"></i>
-                                                        <span class="text-success">
-                                                            Direct leverbaar
-                                                        </span>
-                                                    </strong>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="overview-item col-12">
-                                    <div class="d-flex  border-left border-right border-top border-bottom h-100 bg-white position-relative align-items-start ">
-                                        <div class="row no-gutters position-relative  w-100 d-flex flex-lg-column">
-                                            <div class="border-danger overview-image position-static w-100 col-4 col-sm-12 bg-white align-self-start ">
-                                                <a href="/nl-nl/calvin-wax-10"
-                                                   class="overview-txt position-lg-relative position-static d-block w-100 mb-md-2 d-flex flex-column"
-                                                   title="Calvin Wax">
-                                                    <picture class="w-100 d-flex align-items-start border-sm-bottom pl-sm-0 pt-sm-0 pl-3 pt-3">
-                                                        <img src="/images/photolib/275x380c/661529/661529.jpg"
-                                                             alt="front"
-                                                             title="front"
-                                                             class="img-fluid" />
-                                                    </picture>
-                                                </a>
-                                            </div>
-                                            <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
-                                                <div class="overview-txt  p-3 d-flex flex-column justify-content-start"
-                                                     title="Calvin Wax">
-                                                    <a href="/nl-nl/calvin-wax-10">
-                                                        <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
-                                                            <span>
-                                                                XIII Mystery
-
-                                                                10
-                                                            </span>
-                                                        </small>
-                                                        <div class="product-overview-wrapper">
-                                                            <b class="h5 mb-0 product-overview-title text-black d-block">
-                                                                Calvin Wax
-                                                            </b>
-                                                            <small class="text-gray-500 d-block">
-                                                                Hardcover
-                                                            </small>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="overview-price   w-100 d-flex px-3 pb-3 justify-content-between align-items-center">
-                                                        <div itemprop="offers"
-                                                             itemscope
-                                                             itemtype="http://schema.org/Offer"
-                                                             class="prices order-1">
-                                                            <b class="d-block ">
-                                                                <small class="text-gray-800 font-weight-semi mr-1 d-block w-100">
-                                                                    Stripweb prijs:
-                                                                </small>
-                                                                <span itemprop="priceCurrency"
-                                                                      class="h4 text-success"
-                                                                      content="EUR">&euro;
-                                                                </span>
-                                                                <span itemprop="price"
-                                                                      class="h4 text-success"
-                                                                      content="17.99">17,99
-                                                                </span>
-                                                            </b>
-                                                        </div>
-                                                        <form action="#"
-                                                              method="post"
-                                                              class="z-index-20 order-2 form-add-to-cart ">
-                                                            <button class="btn btn-basket btn-cart d-flex align-items-center justify-content-center fa-1x fa-stack "
-                                                                    data-title="Dit artikel zit in uw winkelmandje. Aantallen kunnen in het winkelmandje aangepast worden"
-                                                                    data-hide="200">
-                                                                <i class="fas fa-circle text-primary fa-stack-2x"></i>
-                                                                <i class="far fa-shopping-bag fa-stack-1x fa-inverse "
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-check fa-stack-1x fa-inverse   d-none"
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-spinner d-none fa-pulse text-white"></i>
-                                                                <span class="d-none">In
-                                                                    winkelmandje
-                                                                </span>
-                                                            </button>
-                                                            <input type="hidden"
-                                                                   name="hdnQuantity"
-                                                                   value="1"
-                                                                   title="Aantal" />
-                                                            <input type="hidden"
-                                                                   name="hdnArticleNo"
-                                                                   value="517300" />
-                                                            <input type="hidden"
-                                                                   name="hdnPriceNo"
-                                                                   value="1" />
-                                                            <input type="hidden"
-                                                                   name="hdnHrefPopupProductAdded"
-                                                                   value="/nl-nl/product-added/calvin-wax-10" />
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                                <div class="px-3 justify-content-between align-items-center">
-                                                    <strong class="stock fa-sm d-inline-block mb-2"
-                                                            itemprop="availability">
-                                                        <i class="text-success fas fa-check-circle"
-                                                           aria-hidden="true"></i>
-                                                        <span class="text-success">
-                                                            Direct leverbaar
-                                                        </span>
-                                                    </strong>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="overview-item col-12">
-                                    <div class="d-flex  border-left border-right border-top border-bottom h-100 bg-white position-relative align-items-start ">
-                                        <div class="row no-gutters position-relative  w-100 d-flex flex-lg-column">
-                                            <div class="border-danger overview-image position-static w-100 col-4 col-sm-12 bg-white align-self-start ">
-                                                <a href="/nl-nl/jonathan-fly-8"
-                                                   class="overview-txt position-lg-relative position-static d-block w-100 mb-md-2 d-flex flex-column"
-                                                   title="Jonathan Fly">
-                                                    <picture class="w-100 d-flex align-items-start border-sm-bottom pl-sm-0 pt-sm-0 pl-3 pt-3">
-                                                        <img src="/images/photolib/275x380c/661971/661971.jpg"
-                                                             alt="front"
-                                                             title="front"
-                                                             class="img-fluid" />
-                                                    </picture>
-                                                </a>
-                                            </div>
-                                            <div class=" col-8 col-sm-12 bg-white pb-3 h-auto position-static">
-                                                <div class="overview-txt  p-3 d-flex flex-column justify-content-start"
-                                                     title="Jonathan Fly">
-                                                    <a href="/nl-nl/jonathan-fly-8">
-                                                        <small class="text-uppercase font-weight-bold text-primary product-overview-brand d-flex align-items-end">
-                                                            <span>
-                                                                XIII Mystery
-
-                                                                11
-                                                            </span>
-                                                        </small>
-                                                        <div class="product-overview-wrapper">
-                                                            <b class="h5 mb-0 product-overview-title text-black d-block">
-                                                                Jonathan Fly
-                                                            </b>
-                                                            <small class="text-gray-500 d-block">
-                                                                Softcover
-                                                            </small>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="overview-price   w-100 d-flex px-3 pb-3 justify-content-between align-items-center">
-                                                        <div itemprop="offers"
-                                                             itemscope
-                                                             itemtype="http://schema.org/Offer"
-                                                             class="prices order-1">
-                                                            <b class="d-block ">
-                                                                <small class="text-gray-800 font-weight-semi mr-1 d-block w-100">
-                                                                    Stripweb prijs:
-                                                                </small>
-                                                                <span itemprop="priceCurrency"
-                                                                      class="h4 text-success"
-                                                                      content="EUR">&euro;
-                                                                </span>
-                                                                <span itemprop="price"
-                                                                      class="h4 text-success"
-                                                                      content="9.99">9,99
-                                                                </span>
-                                                            </b>
-                                                        </div>
-                                                        <form action="#"
-                                                              method="post"
-                                                              class="z-index-20 order-2 form-add-to-cart ">
-                                                            <button class="btn btn-basket btn-cart d-flex align-items-center justify-content-center fa-1x fa-stack "
-                                                                    data-title="Dit artikel zit in uw winkelmandje. Aantallen kunnen in het winkelmandje aangepast worden"
-                                                                    data-hide="200">
-                                                                <i class="fas fa-circle text-primary fa-stack-2x"></i>
-                                                                <i class="far fa-shopping-bag fa-stack-1x fa-inverse "
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-check fa-stack-1x fa-inverse   d-none"
-                                                                   aria-hidden="true"></i>
-                                                                <i class="far fa-spinner d-none fa-pulse text-white"></i>
-                                                                <span class="d-none">In
-                                                                    winkelmandje
-                                                                </span>
-                                                            </button>
-                                                            <input type="hidden"
-                                                                   name="hdnQuantity"
-                                                                   value="1"
-                                                                   title="Aantal" />
-                                                            <input type="hidden"
-                                                                   name="hdnArticleNo"
-                                                                   value="517577" />
-                                                            <input type="hidden"
-                                                                   name="hdnPriceNo"
-                                                                   value="1" />
-                                                            <input type="hidden"
-                                                                   name="hdnHrefPopupProductAdded"
-                                                                   value="/nl-nl/product-added/jonathan-fly-8" />
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                                <div class="px-3 justify-content-between align-items-center">
-                                                    <strong class="stock fa-sm d-inline-block mb-2"
-                                                            itemprop="availability">
-                                                        <i class="text-success fas fa-check-circle"
-                                                           aria-hidden="true"></i>
-                                                        <span class="text-success">
-                                                            Direct leverbaar
+                                                        <span class="text-danger">
+                                                            Niet bestelbaar
                                                         </span>
                                                     </strong>
                                                 </div>
@@ -2028,10 +2090,7 @@
                                               title="Commentaar"></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <div class="g-recaptcha"
-                                         data-sitekey="6LeLWOkUAAAAAGH8ll7XFAouJLCqANxDAwtW4DXS"
-                                         data-callback="onSubmitCaptcha"
-                                         data-size="invisible"></div>
+                                    <div class="g-recaptcha"></div>
                                     <input type="submit"
                                            name="btn-submit"
                                            id="btn-submit"
@@ -2039,7 +2098,7 @@
                                            value="Verzenden"
                                            title="Verzenden" />
                                     <input type="hidden"
-                                           name="form-type"
+                                           name="hdnFormType"
                                            id="form-type"
                                            value="review" />
                                 </div>
@@ -2048,53 +2107,69 @@
                     </div>
                 </div>
             </div>
+            <script type="application/ld+json">
+                {
+                    "@context": "https://schema.org/",
+                    "@type": "Product",
+                    "name": "XIII- box Delen 1-3",
+                    "image": [
+                        "https://www.stripweb.be/images/photolib/675483_370x520c.jpg"
+                    ],
+                    "description": "De albums van deze reeks verschenen enkel in softcover. Nu verschijnt een luxe stripbox met de delen 1-3 in hardcover.  Het personage XIII is uiteraard de hoofdrolspeler van de gelijknamige reeks, maar waarom zouden we niet gebruikmaken van de overvloedige fantasie van Jean Van Hamme? Drie duo&#039;s namen intussen de uitdaging aan.    ",
+                    "sku": "3600121191341",
+                    "url": "https://www.stripweb.be/nl-nl/xiii-box-delen-1-3",
+                    "offers": {
+                        "@type": "Offer",
+                        "url": "https://www.stripweb.be/nl-nl/xiii-box-delen-1-3",
+                        "priceCurrency": "EUR",
+                        "price": 44.99,
+                        "availability": "https://schema.org/InStock",
+                        "itemCondition": "https://schema.org/NewCondition"
+                    }
+                }
+            </script>
         </main>
         <footer class="text-light mt-lg-6 mt-4">
             <div class="bg-primary py-lg-6 py-4">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-8 col-md-8 mb-4 mb-lg-0 d-flex align-items-start">
-                            <img src="/style/images/logo-stripweb-light.svg"
-                                 title="Stripweb Kortrijk"
-                                 alt="Stripweb Kortrijk"
-                                 style="width:15%" />
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="text-center">
+                                    <img src="/style/images/logo-stripweb-light.svg"
+                                         title="Stripweb Kortrijk"
+                                         alt="Stripweb Kortrijk"
+                                         style="width:75%" />
+                                </div>
+                                <div>
+                                    <nav class="pl-4 mb-4 mb-lg-0">
+                                        <small class="text-uppercase letter-spacing-small text-white">
+                                            Volg ons
+                                        </small>
+                                        <a href="https://www.facebook.com/stripweb"
+                                           title="Facebook"
+                                           rel="external"
+                                           class="text-white ml-2">
+                                            <i class="fab fa-facebook-square"></i>
+                                        </a>
+                                        <a href="https://www.instagram.com/stripweb.be/"
+                                           title="Instagram"
+                                           rel="external"
+                                           class="text-white ml-2">
+                                            <i class="fab fa-instagram"></i>
+                                        </a>
+                                        <a href="https://www.youtube.com/channel/UC_cToCakzToLXBYNp6lMRkg"
+                                           title="Youtube"
+                                           rel="external"
+                                           class="text-white ml-2">
+                                            <i class="fab fa-youtube"></i>
+                                        </a>
+                                    </nav>
+                                </div>
+                            </div>
                             <div class=" d-flex w-100 flex-column">
                                 <div class="d-flex pl-4">
                                     <div class="row">
-                                        <address class=" font-weight-light mt-4 mt-lg-0 font-size-sm text-white col-lg-4 pl-lg-4">
-                                            <b class="h5 d-block  text-white">
-                                                BDWEB
-                                            </b>
-                                            Rue de Tamines
-
-                                            25
-
-                                            <br />
-                                            1060 Bruxelles
-
-                                            <a href="mailto:info@bdweb.be"
-                                               class="d-block mt-2 text-white">
-                                                <i class="fas fa-envelope"></i>
-                                                info@bdweb.be
-                                            </a>
-                                            <a href="tel:+ 32 78 15 70 07"
-                                               class=" text-white">
-                                                <i class="fas fa-phone"></i>
-                                                + 32 78 15 70 07
-                                            </a>
-                                            <div class="pt-2">
-                                                <p>
-                                                    <strong>Openingsuren:</strong>
-                                                </p>
-                                                <p>Lundi : 10:00-17:00</p>
-                                                <p>Mardi - Vendredi : 10:00-19:00</p>
-                                                <p>Samedi : 11:00-19:00</p>
-                                                <p>Dimanche : ferm&eacute;</p>
-                                            </div>
-                                            <span class="mt-2 d-block">
-                                                BE 0432303165
-                                            </span>
-                                        </address>
                                         <address class=" font-weight-light font-size-sm text-white col-lg-4">
                                             <b class="h5 d-block  text-white">
                                                 Stripweb Kortrijk
@@ -2107,10 +2182,13 @@
                                             <br />
                                             8500 Kortrijk
 
-                                            <a href="mailto:info@stripweb.be"
+                                            <a href="/cdn-cgi/l/email-protection#9ff6f1f9f0dfecebedf6efe8fafdb1fdfa"
                                                class="d-block mt-2 text-white">
                                                 <i class="fas fa-envelope"></i>
-                                                info@stripweb.be
+                                                <span class="__cf_email__"
+                                                      data-cfemail="5930373f36192a2d2b30292e3c3b773b3c">
+                                                    [email&#160;protected]
+                                                </span>
                                             </a>
                                             <a href="tel:+ 32 78 15 70 07"
                                                class=" text-white">
@@ -2123,7 +2201,7 @@
                                                 </p>
                                                 <p>Maandag: Doorlopend open van 09:00 tot 17:00</p>
                                                 <p>Dinsdag t.e.m. vrijdag: Doorlopend open van 09:00
-                                                    tot 18:00<br />Zaterdag 9:30 tot 17:00
+                                                    tot 18:30<br />Zaterdag 9:30 tot 17:30
                                                 </p>
                                                 <p></p>
                                             </div>
@@ -2142,6 +2220,14 @@
                                             <br />
                                             8000 Brugge
 
+                                            <a href="/cdn-cgi/l/email-protection#254c4b434a655651574c555240470b4740"
+                                               class="d-block mt-2 text-white">
+                                                <i class="fas fa-envelope"></i>
+                                                <span class="__cf_email__"
+                                                      data-cfemail="0e676068614e7d7a7c677e796b6c206c6b">
+                                                    [email&#160;protected]
+                                                </span>
+                                            </a>
                                             <a href="tel:+ 32 78 15 70 07"
                                                class=" text-white">
                                                 <i class="fas fa-phone"></i>
@@ -2151,13 +2237,11 @@
                                                 <p>
                                                     <strong>Openingsuren:</strong>
                                                 </p>
-                                                <p>Maandag: 13:30 tot 19:00</p>
+                                                <p>Maandag: 13:30 tot 18:00</p>
                                                 <p>Dinsdag t.e.m. zaterdag: 10:00 tot 12:30 en 13:30
                                                     tot 19:00 uur
                                                 </p>
-                                                <p>Elke eerste zondag van de maand: 14:00 tot 18:00
-                                                    uur
-                                                </p>
+                                                <p></p>
                                                 <p></p>
                                                 <p></p>
                                             </div>
@@ -2167,71 +2251,53 @@
                                         </address>
                                     </div>
                                 </div>
-                                <nav class="pl-4 mb-4 mb-lg-0">
-                                    <small class="text-uppercase letter-spacing-small text-white">
-                                        Volg ons
-                                    </small>
-                                    <a href="https://www.facebook.com/stripweb"
-                                       title="Facebook"
-                                       rel="external"
-                                       class="text-white ml-2">
-                                        <i class="fab fa-facebook-square"></i>
-                                    </a>
-                                    <a href="https://www.instagram.com/stripweb.be/"
-                                       title="Instagram"
-                                       rel="external"
-                                       class="text-white ml-2">
-                                        <i class="fab fa-instagram"></i>
-                                    </a>
-                                    <a href="https://www.youtube.com/channel/UC_cToCakzToLXBYNp6lMRkg"
-                                       title="Youtube"
-                                       rel="external"
-                                       class="text-white ml-2">
-                                        <i class="fab fa-youtube"></i>
-                                    </a>
-                                </nav>
+                                <div class="pl-4 mb-4 mb-lg-0">
+                                    <div class="pl-lg-3">
+                                        <b class="h5 text-white d-block">
+                                            Nieuwsbrief
+                                        </b>
+                                        <p class="font-weight-light text-white">
+                                            Wil je op de hoogte blijven van de laatste nieuwtjes in
+                                            de stripwereld? Schrijf je dan snel in op onze
+                                            maandelijkse nieuwsbrief
+                                        </p>
+                                        <form class="newsletter d-block mt-4 needs-validation"
+                                              novalidate>
+                                            <div class="custom-control custom-checkbox mb-2">
+                                                <input type="checkbox"
+                                                       class="custom-control-input"
+                                                       id="optin"
+                                                       required>
+                                                <label class="custom-control-label d-block"
+                                                       for="optin">
+                                                    Ga akkoord met de algemene voorwaarden
+                                                </label>
+                                            </div>
+                                            <div class="input-group d-flex position-relative justify-content-end">
+                                                <input type="email"
+                                                       name="txtEmailNewsletter"
+                                                       placeholder="E-mailadres"
+                                                       class="form-control p-3 font-weight-bold"
+                                                       required />
+                                                <div class="invalid-feedback m-0">
+                                                    <span class="d-flex align-self-end position-absolute">
+                                                        Geef uw e-mailadres op.
+                                                    </span>
+                                                </div>
+                                                <div class="d-flex align-items-center position-absolute h-100 pr-2 z-index-5">
+                                                    <button type="submit"
+                                                            class="btn bg-third border-0  text-white shadow-none">
+                                                        <i class="fal fa-paper-plane fa-1x font-size-lg"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                            <b class="h5 text-white d-block">
-                                Nieuwsbrief
-                            </b>
-                            <p class="font-weight-light text-white">
-                                Wil je op de hoogte blijven van de laatste nieuwtjes in de
-                                stripwereld? Schrijf je dan snel in op onze maandelijkse nieuwsbrief
-                            </p>
-                            <form class="newsletter d-block mt-4 needs-validation"
-                                  novalidate>
-                                <div class="custom-control custom-checkbox mb-2">
-                                    <input type="checkbox"
-                                           class="custom-control-input"
-                                           id="optin"
-                                           required>
-                                    <label class="custom-control-label d-block"
-                                           for="optin">
-                                        Ga akkoord met de algemene voorwaarden
-                                    </label>
-                                </div>
-                                <div class="input-group d-flex position-relative justify-content-end">
-                                    <input type="email"
-                                           name="txtEmailNewsletter"
-                                           placeholder="E-mailadres"
-                                           class="form-control p-3 font-weight-bold"
-                                           required />
-                                    <div class="invalid-feedback m-0">
-                                        <span class="d-flex align-self-end position-absolute">
-                                            Geef uw e-mailadres op.
-                                        </span>
-                                    </div>
-                                    <div class="d-flex align-items-center position-absolute h-100 pr-2 z-index-5">
-                                        <button type="submit"
-                                                class="btn bg-third border-0  text-white shadow-none">
-                                            <i class="fal fa-paper-plane fa-1x font-size-lg"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                            <div class="mt-4">
+                        <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                            <div class="">
                                 <b class="h5 text-white d-block">
                                     Mijn account
                                 </b>
@@ -2249,6 +2315,45 @@
                                                class="nav-link font-size-sm font-weight-light text-white"
                                                title="U heeft nog geen stripweb account? Registreer je dan hier ">
                                                 Registreren
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/nl-nl/contact"
+                                               class="nav-link font-size-sm font-weight-light text-white"
+                                               title="Contact">
+                                                Contacteer ons
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                            <div class="">
+                                <b class="h5 text-white d-block">
+                                    Overzicht pagina's
+                                </b>
+                                <nav role="navigation">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a href="/nl-nl/overzicht-auteurs"
+                                               class="nav-link font-size-sm font-weight-light text-white"
+                                               title="Overzicht scenaristen">
+                                                Overzicht scenaristen
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/nl-nl/overzicht-reeksen"
+                                               class="nav-link font-size-sm font-weight-light text-white"
+                                               title="Overzicht reeksen">
+                                                Overzicht reeksen
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/nl-nl/overzicht-tekenaars"
+                                               class="nav-link font-size-sm font-weight-light text-white"
+                                               title="Overzicht tekenaars">
+                                                Overzicht tekenaars
                                             </a>
                                         </li>
                                     </ul>
@@ -2310,15 +2415,15 @@
                                  class="img-fluid paymentmethod mr-2" />
                         </picture>
                         <picture>
-                            <img src="/images/photolib/50x30/426702/cbc.png"
-                                 alt="cbc"
-                                 title="cbc"
+                            <img src="/images/photolib/50x30/426548/factuur.png"
+                                 alt="factuur"
+                                 title="factuur"
                                  class="img-fluid paymentmethod mr-2" />
                         </picture>
                         <picture>
-                            <img src="/images/photolib/50x30/426704/applepay.png"
-                                 alt="applepay"
-                                 title="applepay"
+                            <img src="/images/photolib/50x30/426702/cbc.png"
+                                 alt="cbc"
+                                 title="cbc"
                                  class="img-fluid paymentmethod mr-2" />
                         </picture>
                         <picture>
@@ -2362,7 +2467,7 @@
                             </ul>
                         </nav>
                         <small class="text-gray-600">
-                            &copy; 2024 Stripweb Kortrijk
+                            &copy; 2025 Stripweb Kortrijk
                         </small>
                         <small class="text-gray-600 ml-2 pl-2">
                             Site by
@@ -2399,18 +2504,20 @@
                 beschikken
             </p>
         </div>
+        <script data-cfasync="false"
+                src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
         <script type="text/javascript"
                 src="/javascript/build/manifest.js?id=d91051ea7d0c9bd1981e"></script>
         <script type="text/javascript"
-                src="/javascript/build/vendor.js?id=859b45364def494ca0a5"></script>
+                src="/javascript/build/vendor.js?id=8e35e603d5e896052abe"></script>
         <script type="text/javascript"
-                src="/javascript/build/app.js?id=d2213d1e83c460c5db54"></script>
+                src="/javascript/build/app.js?id=8ad5240decf7bfdca452"></script>
         <script type="text/javascript"
                 src="/javascript/build/pagehead.js?id=19baeccc970704f1d795"></script>
         <script type="text/javascript"
-                src="/javascript/build/pages/product.js?id=f2d7e4e4545c169caf8a"></script>
+                src="/javascript/build/pages/product.js?id=89675d97b37d6fa64a92"></script>
         <script type="text/javascript"
-                src="/javascript/build/pages/linked-product.js?id=4f2d6a8d87c91180dbbb"></script>
+                src="/javascript/build/pages/linked-product.js?id=f806ba8daf5439f9ea32"></script>
         <script type="text/javascript">
             var Tawk_API = Tawk_API ||{}, Tawk_LoadStart = new Date();
             (function () {

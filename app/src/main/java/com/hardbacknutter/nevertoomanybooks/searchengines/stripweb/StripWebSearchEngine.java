@@ -55,10 +55,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -125,6 +125,9 @@ public class StripWebSearchEngine
                                                              // typo is from website!
                                                              " + ex lbiris sc",
                                                              " sc");
+    private static final String LANG_NLD = "nld";
+    private static final String LANG_FRA = "fra";
+    private static final String LANG_ENG = "eng";
 
     /**
      * Constructor.
@@ -157,7 +160,7 @@ public class StripWebSearchEngine
                                     List.of(R.string.site_description_dutch_and_more,
                                             R.string.site_description_shop,
                                             R.string.site_description_eu_comics),
-                                    "https://www.stripweb.be",
+                                    SITE_URL,
                                     new Locale("nl", "BE"))
                 .setPreferenceFragmentClazz(StripWebPreferencesFragment.class);
     }
@@ -284,8 +287,8 @@ public class StripWebSearchEngine
             return;
         }
 
-        // col-lg-6 col-sm-8 pr-xl-9
-        final Element details = main.selectFirst("div.col-lg-6");
+        // dic class="col-lg-8 col-sm-8 pr-xl-9"
+        final Element details = main.selectFirst("div.col-lg-8");
         if (details == null) {
             return;
         }
@@ -475,13 +478,13 @@ public class StripWebSearchEngine
             // Seen in use: NL,FR,EN,Fr
             switch (langCode.toLowerCase(Locale.ROOT)) {
                 case "nl":
-                    book.setLanguage("nld");
+                    book.setLanguage(LANG_NLD);
                     break;
                 case "fr":
-                    book.setLanguage("fra");
+                    book.setLanguage(LANG_FRA);
                     break;
                 case "en":
-                    book.setLanguage("eng");
+                    book.setLanguage(LANG_ENG);
                     break;
                 default:
                     book.setLanguage(langCode);
@@ -492,7 +495,7 @@ public class StripWebSearchEngine
 
     private void parseDescription(@NonNull final Document document,
                                   @NonNull final Book book) {
-        final Element desc = document.selectFirst("div.txt-product");
+        final Element desc = document.selectFirst("div.detail-description");
         if (desc != null) {
             String html = desc.html();
             // Potentially contains an iframe (e.g. to youtube content); remove it.
@@ -686,8 +689,8 @@ public class StripWebSearchEngine
             return prefs.getBoolean(key, false);
         } else {
             final Languages languages = ServiceLocator.getInstance().getLanguages();
-            return languages.isUserLanguage(context, "nld")
-                   || languages.isUserLanguage(context, "fra");
+            return languages.isUserLanguage(context, LANG_NLD)
+                   || languages.isUserLanguage(context, LANG_FRA);
         }
     }
 

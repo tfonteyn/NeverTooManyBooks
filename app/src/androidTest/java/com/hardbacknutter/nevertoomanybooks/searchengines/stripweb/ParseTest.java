@@ -121,8 +121,9 @@ public class ParseTest
         assertEquals(Money.EURO, listPrice.getCurrency());
 
         final List<Tag> bookTags = book.getTags();
-        assertEquals(2, bookTags.size());
+        assertEquals(3, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("Western"));
         assertTrue(tags.contains("western"));
         assertTrue(tags.contains("avontuur"));
 
@@ -185,9 +186,9 @@ public class ParseTest
         assertEquals("64", book.getString(DBKey.PAGES, null));
         assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
         assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(3.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
 
-        assertEquals("<p>met tekeningen van Philippe Xavier, Iouri Jigounov, Joël Callède," +
+        assertEquals("met tekeningen van Philippe Xavier, Iouri Jigounov, Joël Callède," +
                      " Gontran Toussaint, Mikaël, Alain Henriet. *een extra katern leveren" +
                      " de volgende tekenaars en scenaristen een hommage aan de reeks XIII:" +
                      " Enrico Marini, Éric Henninot, Alcante, François Boucq, Richard Guérineau," +
@@ -205,10 +206,10 @@ public class ParseTest
                      " zijn verleden na een gesprek met een van zijn oude universiteitsvrienden?" +
                      " En is die laatste echt wie hij zegt dat hij is? In tegenstelling tot zijn" +
                      " dertien voorgangers wordt in dit nieuwe deel dus niet gefocust op één" +
-                     " personage. Bovendien bevat 'Valstrikken en emoties\u0092 een extra" +
+                     " personage. Bovendien bevat 'Valstrikken en emoties’ een extra" +
                      " katern met hommages door o.a. Enrico Marini, Éric Henninot, Boucq," +
                      " Richard Guérineau, Dominique Bertail, TaDuc, Olivier Grenson" +
-                     " en Corentin Rouge.</p>",
+                     " en Corentin Rouge.",
                      book.getString(DBKey.DESCRIPTION, null));
 
         final Money listPrice = book.getMoney(DBKey.PRICE_LISTED, realNumberParser);
@@ -240,33 +241,37 @@ public class ParseTest
         assertEquals(7, allAuthors.size());
         Author author;
         author = allAuthors.get(0);
-        assertEquals("Xavier", author.getFamilyName());
-        assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
-        author = allAuthors.get(1);
-        assertEquals("Henriet", author.getFamilyName());
-        assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
-        author = allAuthors.get(2);
         assertEquals("Van Hamme", author.getFamilyName());
-        assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals("Jean", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1939-01-16", author.getBirthDate().orElse(null));
+        author = allAuthors.get(1);
+        assertEquals("Xavier", author.getFamilyName());
+        assertEquals("Philippe", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals("1969-05-08", author.getBirthDate().orElse(null));
+        author = allAuthors.get(2);
+        assertEquals("Henriet", author.getFamilyName());
+        assertEquals("Alain", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals("1973-02-15", author.getBirthDate().orElse(null));
         author = allAuthors.get(3);
         assertEquals("Callède", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
         author = allAuthors.get(4);
-        assertEquals("Jogounov", author.getFamilyName());
+        assertEquals("Jigounov", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
         author = allAuthors.get(5);
         assertEquals("Toussaint", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
         author = allAuthors.get(6);
         assertEquals("Mikaël", author.getFamilyName());
         assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER | Author.TYPE_ARTIST, author.getType());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals("1974-04-01", author.getBirthDate().orElse(null));
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -341,38 +346,46 @@ public class ParseTest
         assertNotNull(allAuthors);
         assertEquals(8, allAuthors.size());
         Author author;
+        // ominique`, birthDate=``, deathDate=`null`, pictureU
         author = allAuthors.get(0);
-        assertEquals("David", author.getFamilyName());
-        assertEquals("Dominique", author.getGivenNames());
-        assertEquals(Author.TYPE_COLORIST, author.getType());
+        assertEquals("Corbeyran", author.getFamilyName());
+        assertEquals("Éric", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1964-12-14", author.getBirthDate().orElse(null));
         author = allAuthors.get(1);
-        assertEquals("Delabie", author.getFamilyName());
-        assertEquals("Caroline", author.getGivenNames());
-        assertEquals(Author.TYPE_COLORIST, author.getType());
+        assertEquals("Dorison", author.getFamilyName());
+        assertEquals("Xavier", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1972-10-08", author.getBirthDate().orElse(null));
         author = allAuthors.get(2);
-        assertEquals("Meyer", author.getFamilyName());
-        assertEquals("Ralph", author.getGivenNames());
-        assertEquals(Author.TYPE_ARTIST | Author.TYPE_COLORIST, author.getType());
+        assertEquals("Yann", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1954-05-25", author.getBirthDate().orElse(null));
         author = allAuthors.get(3);
         assertEquals("Berthet", author.getFamilyName());
         assertEquals("Philippe", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals("1956-09-22", author.getBirthDate().orElse(null));
         author = allAuthors.get(4);
         assertEquals("Henninot", author.getFamilyName());
         assertEquals("Éric", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals("1974-12-16", author.getBirthDate().orElse(null));
         author = allAuthors.get(5);
-        assertEquals("Corbeyran", author.getFamilyName());
-        assertEquals("Éric", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("Meyer", author.getFamilyName());
+        assertEquals("Ralph", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST | Author.TYPE_COLORIST, author.getType());
+        assertEquals("1971-08-11", author.getBirthDate().orElse(null));
         author = allAuthors.get(6);
-        assertEquals("Dorison", author.getFamilyName());
-        assertEquals("Xavier", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("David", author.getFamilyName());
+        assertEquals("Dominique", author.getGivenNames());
+        assertEquals(Author.TYPE_COLORIST, author.getType());
+        assertEquals("1960-12-12", author.getBirthDate().orElse(null));
         author = allAuthors.get(7);
-        assertEquals("Yann", author.getFamilyName());
-        assertEquals("", author.getGivenNames());
-        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("Delabie", author.getFamilyName());
+        assertEquals("Caroline", author.getGivenNames());
+        assertEquals(Author.TYPE_COLORIST, author.getType());
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
