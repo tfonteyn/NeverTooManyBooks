@@ -57,6 +57,7 @@ import com.google.zxing.Result;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -73,7 +74,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -1021,17 +1024,36 @@ public class SearchBookByIsbnFragment
         @Nullable
         final BookSearchResult result = item.getResult();
 
-        // If we have a result, show the title, otherwise the isbn.
-        String dialogTitle = null;
+        final Context context = getContext();
+        final StringJoiner sj = new StringJoiner("\n");
+
+        // If we have a result, show some book information, otherwise only the isbn.
         if (result != null) {
-            dialogTitle = result.getBook().getTitle();
+            final Book book = result.getBook();
+
+            //noinspection DataFlowIssue
+            book.getPrimarySeries()
+                .map(s -> s.getLabel(context, Details.Normal, vm.getStyle()))
+                .ifPresent(sj::add);
+
+            sj.add(book.getTitle());
+
+            final Author primaryAuthor = book.getPrimaryAuthor();
+            if (primaryAuthor != null) {
+                //noinspection DataFlowIssue
+                sj.add(primaryAuthor.getLabel(context, Details.Normal, vm.getStyle()));
+            }
         }
-        if (dialogTitle == null || dialogTitle.isBlank()) {
+
+        final String dialogTitle;
+        if (sj.length() == 0) {
             dialogTitle = item.getIsbn().asText();
+        } else {
+            dialogTitle = sj.toString();
         }
 
         //noinspection DataFlowIssue
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setTitle(dialogTitle);
         if (result != null) {
             final String errorMessage = result.getErrorMessage();
@@ -1041,8 +1063,8 @@ public class SearchBookByIsbnFragment
         }
 
         builder.setNeutralButton(R.string.action_discard, (d, w) -> {
-                   removeFromQueue(chip);
                    d.dismiss();
+                   removeFromQueue(chip);
                })
                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss());
 
