@@ -275,6 +275,7 @@
           <option value="MagicNumber" />
           <option value="CheckStyle" />
           <option value="BooleanMethodIsAlwaysInverted" />
+          <option value="TypeMayBeWeakened" />
         </list>
       </option>
     </inspection_tool>
