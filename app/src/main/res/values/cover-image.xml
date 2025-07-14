@@ -39,6 +39,9 @@
 
     <!-- BoB layout -->
     <dimen name="cover_list_padding">2dp</dimen>
+    <!-- Book details layout. -->
+    <dimen name="cover_details_0_padding">10dp</dimen>
+    <dimen name="cover_details_1_padding">10dp</dimen>
 
     <!-- Book details layout.
          0: Front cover
@@ -46,20 +49,22 @@
          These are the MAXIMUM dimensions.
          Images will always be scaled to fit this box.
 
-        A height of "100dp" and width of "60dp" is considered the default, i.e. multiplier: 1
+        All sizes are calculated based on multiples of 24dp.
+        A width of "72dp" is considered the default.
+        i.e. "72dp" is multiplier 3.
 
-        height = width / 0.6
-        -->
-    <dimen name="cover_details_0_padding">10dp</dimen>
-    <dimen name="cover_details_1_padding">10dp</dimen>
+        height = width / CoverScale.HW_RATIO
 
-    <!-- 100/60 multiplier: 1.8 -->
+        with CoverScale.HW_RATIO == 0.72f ==> default height is "100dp"
+    -->
+
+    <!-- Multiplier: 4.5 -->
     <dimen name="cover_details_0_width">108dp</dimen>
-    <!-- 100/60 multiplier: 0.9 -->
-    <dimen name="cover_details_1_width">54dp</dimen>
+    <!-- Multiplier: 2 -->
+    <dimen name="cover_details_1_width">48dp</dimen>
 
     <!-- Book edit layout. -->
-    <!-- 100/60 multiplier: 1 -->
+    <!-- Multiplier: 2.5 -->
     <dimen name="cover_edit_0_width">60dp</dimen>
     <dimen name="cover_edit_1_width">60dp</dimen>
 
@@ -75,12 +80,10 @@
     </array>
 
     <integer name="cover_browser_gallery_span_count">1</integer>
-
-    <!-- 100/60 multiplier: 0.9 -->
-    <dimen name="cover_browser_gallery_width">54dp</dimen>
-
-    <!-- 100/60 multiplier: 1.5 -->
-    <dimen name="cover_browser_preview_width">90dp</dimen>
+    <!-- Multiplier: 2 -->
+    <dimen name="cover_browser_gallery_width">48dp</dimen>
+    <!-- Multiplier: 4 -->
+    <dimen name="cover_browser_preview_width">96dp</dimen>
 
     <!-- BoB. The maximum width of a cover image
         indexed by the user-preference CoverScale.
@@ -113,7 +116,9 @@
     </array>
 
     <!-- used as "tools:" defaults in the BoB layout.
-         Actual values are set according to user preferences. -->
-    <dimen name="tools_cover_height">120dp</dimen>
-    <dimen name="tools_cover_width">72dp</dimen>
+         Actual values are set according to user preferences.
+         Multiplier: 4 -->
+    <dimen name="tools_cover_width">96dp</dimen>
+    <!-- 96 / 0.72 -->
+    <dimen name="tools_cover_height">133dp</dimen>
 </resources>

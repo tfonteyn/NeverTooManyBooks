@@ -78,7 +78,7 @@ public enum CoverScale {
      * 13.5 x 20.5     0.66
      * 16   x 24       0.67
      * 10.5 x 17.2     0.61  (US paperback)
-     *                 0.65
+     *        average: 0.65
      * <p>
      *  European comics.
      * 22   x 29       0.76
@@ -89,11 +89,13 @@ public enum CoverScale {
      * 23.5 x 31       0.76
      * 23.5 x 31.5     0.75
      * 22.5 x 30.5     0.74
-     *                 0.75
+     *        average: 0.75
      * <p>
-     * Settling on 0.7 for now.
+     * 2025-07-14: switching to 0.72 for better divisibility.
+     * <p>
+     * Calculations are always: height = width / HW_RATIO
      */
-    public static final float HW_RATIO = 0.7f;
+    public static final float HW_RATIO = 0.72f;
 
     private static final ImageViewSize HIDDEN = new ImageViewSize(0, 0);
 

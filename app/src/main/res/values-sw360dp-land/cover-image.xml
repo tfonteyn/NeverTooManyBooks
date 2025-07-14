@@ -20,26 +20,23 @@
   -->
 
 <resources>
-
     <dimen name="cover_list_padding">2dp</dimen>
     <dimen name="cover_details_0_padding">10dp</dimen>
     <dimen name="cover_details_1_padding">10dp</dimen>
 
-    <!-- 100/60 multiplier: 2 -->
+    <!-- Multiplier: 5 -->
     <dimen name="cover_details_0_width">120dp</dimen>
-    <!-- 100/60 multiplier: 0.8 -->
+    <!-- Multiplier: 2 -->
     <dimen name="cover_details_1_width">48dp</dimen>
 
-    <!-- 100/60 multiplier: 1 -->
+    <!-- Multiplier: 2.5 -->
     <dimen name="cover_edit_0_width">60dp</dimen>
     <dimen name="cover_edit_1_width">60dp</dimen>
 
-    <!-- 100/60 multiplier: 0.8 -->
-    <dimen name="cover_browser_gallery_width">48dp</dimen>
-
-    <!-- 100/60 multiplier: 1.5 -->
-    <dimen name="cover_browser_preview_width">90dp</dimen>
-
     <integer name="cover_browser_gallery_span_count">1</integer>
+    <!-- Multiplier: 2 -->
+    <dimen name="cover_browser_gallery_width">48dp</dimen>
+    <!-- Multiplier: 4 -->
+    <dimen name="cover_browser_preview_width">96dp</dimen>
 
 </resources>
