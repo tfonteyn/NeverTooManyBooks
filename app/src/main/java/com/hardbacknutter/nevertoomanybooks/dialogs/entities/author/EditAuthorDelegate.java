@@ -90,6 +90,7 @@ class EditAuthorDelegate
     /** View Binding. */
     private DialogEditAuthorContentBinding vb;
     /** MUST keep a strong reference. */
+    @SuppressWarnings("FieldCanBeLocal")
     private final PartialDatePickerLauncher.ResultListener datePickerListener = this::onDateSet;
     @Nullable
     private Toolbar toolbar;
