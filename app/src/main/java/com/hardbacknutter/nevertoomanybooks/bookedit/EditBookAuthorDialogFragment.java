@@ -19,21 +19,49 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
+import android.app.Dialog;
 import android.os.Bundle;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.window.layout.WindowMetricsCalculator;
 
+import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FlexClassicDialogFragment;
 
 public class EditBookAuthorDialogFragment
         extends FlexClassicDialogFragment {
 
+    /** Use 90% of available screen width. */
+    private static final float WIDTH_RATIO = 0.9f;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         delegate = new EditBookAuthorDelegate(this, requireArguments());
+    }
 
-        // FIXME: still not ideal on tablet in landscape. Needs revisiting.
-        // forceFullscreen();
+    @Override
+    public void onStart() {
+        super.onStart();
+        //noinspection DataFlowIssue
+        final ScreenSize screenSize = ScreenSize.compute(getActivity());
+        // Tablets and medium phones in landscape mode;
+        // Maximize the width to show as many checkboxes as possible without scrolling.
+        if (screenSize.getWidth() == ScreenSize.Value.Expanded) {
+            final Dialog dialog = getDialog();
+            // sanity check
+            if (dialog != null) {
+                //noinspection DataFlowIssue
+                final int screenWidth = WindowMetricsCalculator
+                        .getOrCreate()
+                        .computeCurrentWindowMetrics(getContext())
+                        .getBounds()
+                        .width();
+                //noinspection DataFlowIssue
+                dialog.getWindow().setLayout((int) (screenWidth * WIDTH_RATIO),
+                                             ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+        }
     }
 }
