@@ -19,6 +19,8 @@
  */
 //file:noinspection LongLine
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget;
+
 plugins {
     alias libs.plugins.android.application
     alias libs.plugins.android.kotlin
@@ -51,7 +53,10 @@ java {
 }
 
 kotlin {
-    jvmToolchain rootProject.ext.toolChain
+    jvmToolchain(rootProject.ext.toolChain)
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
+    }
 }
 
 android {
@@ -155,10 +160,6 @@ android {
 
         // https://developer.android.com/studio/releases/#4-0-0-desugar
         coreLibraryDesugaringEnabled = true
-    }
-
-    kotlinOptions {
-        jvmTarget = 11
     }
 
     buildFeatures {
