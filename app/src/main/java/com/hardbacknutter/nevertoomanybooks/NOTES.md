@@ -1,17 +1,10 @@
 Draft notes for next version:
 
-### 7.6.0
+### 7.6.1
 
 NEW:
 
-- #165 Async book search: scan in batch, and book data is collected/buffered in the background
-- #156 Wikidata AuthorResolver
-- ISFDB login option. Needed for text-searches.
-- StripWeb parser updates
-
 FIXES:
-
-- A lot of smaller issues, see #162, #167, #171, #174, #175, #176, #178, #179, #180
 
 REMOVED:
 

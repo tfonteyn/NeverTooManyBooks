@@ -1,3 +1,19 @@
+### 7.6.0
+
+NEW:
+
+- #165 Scan-in-batch: searches are done asynchronously while scanning can continue.
+  Book data is collected/buffered for editing after you stop scanning.
+- #156 Wikidata AuthorResolver
+- ISFDB login option (see the site's settings page). Needed for text-searches only.
+- StripWeb site parser updates
+
+FIXES:
+
+- A lot of smaller issues, see #162, #167, #171, #174, #175, #176, #178, #179, #180
+
+---
+
 ### 7.5.0
 
 NEW:
