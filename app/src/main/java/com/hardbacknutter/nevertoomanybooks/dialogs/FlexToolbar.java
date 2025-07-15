@@ -82,7 +82,7 @@ public interface FlexToolbar {
                              @NonNull final Toolbar toolbar) {
 
         if (dialogType == DialogType.Fullscreen) {
-            //FIXME: ths does not seem to work...
+            //FIXME: this does not seem to work...
             InsetsListenerBuilder.apply(toolbar);
         }
 
@@ -121,7 +121,7 @@ public interface FlexToolbar {
 
         // For a reason not understood, the style "Toolbar.Button" where we set
         //  <item name="backgroundTint">?attr/colorSecondaryContainer</item>
-        // get overridden by the system. We need to explicitly reset the backgroundTint
+        // gets overridden by the system. We need to explicitly reset the backgroundTint
         // to the desired attribute using the context from the FRAGMENT !
         // See style "Toolbar.Button" for extra comments.
         //noinspection DataFlowIssue
