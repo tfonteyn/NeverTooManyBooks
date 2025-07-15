@@ -63,7 +63,10 @@ public class EditAuthorViewModel
     private String currentRealAuthorName;
 
     private boolean useRealAuthorName;
+    /** Whether types are globally enabled. */
     private boolean useAuthorType;
+    /** The state of the typesSwitch. */
+    private boolean typesAreShown;
     private AuthorDao dao;
 
     /**
@@ -85,6 +88,8 @@ public class EditAuthorViewModel
             currentEdit = new Author(original, true);
             final Author tmp = currentEdit.getRealAuthor();
             currentRealAuthorName = tmp != null ? tmp.getFormattedName(false) : null;
+
+            typesAreShown = useAuthorType && currentEdit.getType() != Author.TYPE_UNKNOWN;
         }
     }
 
@@ -105,6 +110,14 @@ public class EditAuthorViewModel
      */
     public boolean showAuthorType() {
         return useAuthorType;
+    }
+
+    public boolean isTypesAreShown() {
+        return typesAreShown;
+    }
+
+    public void setTypesAreShown(final boolean typesAreShown) {
+        this.typesAreShown = typesAreShown;
     }
 
     /**

@@ -221,47 +221,29 @@ class EditBookAuthorDelegate
     private void setupAuthorTypeField(@Author.Type final int currentType) {
         final CompoundButton typesSwitch = getTypesSwitch();
 
-        if (authorVm.showAuthorType()) {
-            typesSwitch.setVisibility(View.VISIBLE);
-
-            createTypeButtonList();
-
-            if (currentType == Author.TYPE_UNKNOWN) {
-                typesSwitch.setChecked(false);
-                showTypeButtons(false);
-                // all typeButtons are obviously unchecked at this point
-            } else {
-                // FIXME: here seems to be a bug in android with .setChecked...
-                // open dialog for author without type
-                //- type switch shows correct icon
-                //- flip type switch to expand, icon becomes "fold"
-                //- set one type
-                //- rotate dev
-                //- btn and types as expected
-                //- flip type switch to close, icon becomes "unfold"
-                //- rotate dev
-                //- icon is "unfold" (WRONG!) but types are shown
-                //- flip switch : icon changes to correct state, types stay visible
-                //  => ok
-                //- flip switch : icon changes to correct state, types are hidden
-                //  => ok
-                //
-                //so... after rotation,
-                //   typesSwitch.setChecked(true);
-                //   sets the state correctly but the button 'selector' is not updated
-                typesSwitch.setChecked(true);
-                showTypeButtons(true);
-                for (int i = 0; i < typeButtons.size(); i++) {
-                    typeButtons.valueAt(i).setChecked((currentType & typeButtons.keyAt(i)) != 0);
-                }
-            }
-        } else {
+        if (!authorVm.showAuthorType()) {
+            // types are globally disabled.
             typesSwitch.setVisibility(View.GONE);
             showTypeButtons(false);
+            return;
+        }
+
+        createTypeButtonMapping();
+
+        typesSwitch.setVisibility(View.VISIBLE);
+        final boolean typesAreShown = authorVm.isTypesAreShown();
+        typesSwitch.setChecked(typesAreShown);
+        showTypeButtons(typesAreShown);
+        // All typeButtons are unchecked at this point.
+        // Quick check if we should bother setting any?
+        if (currentType != Author.TYPE_UNKNOWN) {
+            for (int i = 0; i < typeButtons.size(); i++) {
+                typeButtons.valueAt(i).setChecked((currentType & typeButtons.keyAt(i)) != 0);
+            }
         }
     }
 
-    private void createTypeButtonList() {
+    private void createTypeButtonMapping() {
         // NEWTHINGS: author type: add layout button to the Map
         typeButtons.put(Author.TYPE_WRITER, vb.cbxAuthorTypeWriter);
         typeButtons.put(Author.TYPE_CONTRIBUTOR, vb.cbxAuthorTypeContributor);
@@ -302,7 +284,9 @@ class EditBookAuthorDelegate
         if (button != null) {
             final int id = button.getId();
             if (id == R.id.toolbar_btn_types) {
-                showTypeButtons(((Checkable) button).isChecked());
+                final boolean checked = ((Checkable) button).isChecked();
+                authorVm.setTypesAreShown(checked);
+                showTypeButtons(checked);
                 return true;
 
             } else if (id == R.id.toolbar_btn_save || id == R.id.btn_positive) {
