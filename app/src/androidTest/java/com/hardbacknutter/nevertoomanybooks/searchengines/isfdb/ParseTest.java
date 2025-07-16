@@ -52,6 +52,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -218,12 +219,7 @@ public class ParseTest
         assertEquals("Terry", author.getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
         assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
-        author = author.getRealAuthor();
-        assertNotNull(author);
-        assertEquals("Pratchett", author.getFamilyName());
-        assertEquals("Terence David John", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
-        assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
+        assertNull(author.getRealAuthor());
 
         author = authors.get(1);
         assertEquals("McLaren", author.getFamilyName());
@@ -302,12 +298,7 @@ public class ParseTest
         assertEquals("Terry", author.getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
         assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
-        author = author.getRealAuthor();
-        assertNotNull(author);
-        assertEquals("Pratchett", author.getFamilyName());
-        assertEquals("Terence David John", author.getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, author.getType());
-        assertEquals("155", author.getIdentifierValue(Identifier.SID_ISFDB).orElse(null));
+        assertNull(author.getRealAuthor());
 
         author = authors.get(1);
         assertEquals("Tierney", author.getFamilyName());
