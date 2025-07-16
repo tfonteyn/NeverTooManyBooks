@@ -135,8 +135,7 @@ public final class DBExpr {
     public static List<DomainExpression> forBookLevelField(@NonNull final String dbKey,
                                                            @NonNull final Sort sort,
                                                            @NonNull final Style style) {
-        if (DBKey.COVER[0].equals(dbKey)
-            || DBKey.COVER[1].equals(dbKey)) {
+        if (DBKey.COVER[0].equals(dbKey)) {
             // We need the (unsorted duh!) UUID for the book to get covers
             return List.of(
                     new DomainExpression(
