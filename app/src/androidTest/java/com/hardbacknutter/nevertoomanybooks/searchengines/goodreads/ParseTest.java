@@ -145,13 +145,17 @@ public class ParseTest
         assertEquals(Author.TYPE_WRITER, author.getType());
         assertEquals("1938-09-26", author.getBirthDate().orElse(null));
         assertEquals("2021-08-19", author.getDeathDate().orElse(null));
-        assertEquals(2, author.getIdentifiers().size());
+        assertEquals(11, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("115105", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
         assertEquals("OL1559643A", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q2037254", oIv.get());
+        // We don't check all of them...
 
         author = authors.get(1);
         assertEquals("Kox", author.getFamilyName());
@@ -159,13 +163,14 @@ public class ParseTest
         assertEquals(Author.TYPE_ARTIST, author.getType());
         assertEquals("1952-02-04", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
-        assertEquals(2, author.getIdentifiers().size());
+        assertEquals(9, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("120410", oIv.get());
-        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
-        assertEquals("OL3144084A", oIv.get());
+        assertEquals("Q3014263", oIv.get());
+        // We don't check all of them...
 
         author = authors.get(2);
         assertEquals("Γαλάτουλα", author.getFamilyName());
@@ -352,15 +357,16 @@ public class ParseTest
         assertEquals("Nix", author.getFamilyName());
         assertEquals("Garth", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
-        assertEquals("1963", author.getBirthDate().orElse(null));
+        assertEquals("1963-07-19", author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
-        assertEquals(2, author.getIdentifiers().size());
+        assertEquals(16, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("8347", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
         assertEquals("OL382982A", oIv.get());
+        // We don't check all of them...
 
         final List<Series> series = book.getSeries();
         assertNotNull(series);
@@ -416,14 +422,14 @@ public class ParseTest
         final List<Tag> bookTags = book.getTags();
         assertEquals(10, bookTags.size());
         final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
-        assertTrue(tags.contains("Science Fiction"));
-        assertTrue(tags.contains("Fiction"));
-        assertTrue(tags.contains("Science Fiction Fantasy"));
-        assertTrue(tags.contains("Space Opera"));
         assertTrue(tags.contains("Audiobook"));
-        assertTrue(tags.contains("Fantasy"));
         assertTrue(tags.contains("Classics"));
+        assertTrue(tags.contains("Fantasy"));
+        assertTrue(tags.contains("Fiction"));
         assertTrue(tags.contains("Novels"));
+        assertTrue(tags.contains("Science Fiction Fantasy"));
+        assertTrue(tags.contains("Science Fiction"));
+        assertTrue(tags.contains("Space Opera"));
         assertTrue(tags.contains("Space"));
         assertTrue(tags.contains("Speculative Fiction"));
 
@@ -446,13 +452,31 @@ public class ParseTest
         assertEquals(Author.TYPE_WRITER, author.getType());
         assertEquals("1920-01-02", author.getBirthDate().orElse(null));
         assertEquals("1992-04-06", author.getDeathDate().orElse(null));
-        assertEquals(2, author.getIdentifiers().size());
-        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_goodreads_16667_0_.jpg"));
+        assertEquals(20, author.getIdentifiers().size());
+
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
         assertTrue(oIv.isPresent());
-        assertEquals("OL34221A", oIv.get());
+        assertEquals("Q34981", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_ISNI);
+        assertTrue(oIv.isPresent());
+        assertEquals("0000000122590564", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_VIAF);
+        assertTrue(oIv.isPresent());
+        assertEquals("24597135", oIv.get());
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("16667", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("46170", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL34221A", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_BNF);
+        assertTrue(oIv.isPresent());
+        assertEquals("cb118892827", oIv.get());
+        // We don't check all of them...
 
         final List<Series> seriesList = book.getSeries();
         assertNotNull(seriesList);
@@ -469,11 +493,11 @@ public class ParseTest
         assertEquals("Greater Foundation Universe", series.getTitle());
         assertEquals("12", series.getNumber());
 
+        final String preferenceKey = EngineId.Goodreads.getPreferenceKey();
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Goodreads.getPreferenceKey()
-                                          + "_9780553803723_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9780553803723_0_.jpg"));
     }
 
     /**
@@ -556,14 +580,13 @@ public class ParseTest
         assertEquals(Author.TYPE_WRITER, author.getType());
 
         // the lookup on OPEN_LIBRARY fails as they have this author listed as "Virgil Virgil"
-        assertEquals(1, author.getIdentifiers().size());
+        assertEquals(2, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
         assertTrue(oIv.isPresent());
         assertEquals("919", oIv.get());
-//        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
-//        assertTrue(oIv.isPresent());
-//        assertEquals("OL34221A", oIv.get());
-
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q17505763", oIv.get());
 
         final List<Series> seriesList = book.getSeries();
         assertNotNull(seriesList);
