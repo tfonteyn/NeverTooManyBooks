@@ -140,10 +140,9 @@ public enum SyncServer
                                                     realNumberParser);
 
             // Cover fields will be at the top of the list.
+            // There is only 1 image supported by Calibre
             builder.add(context.getString(R.string.lbl_cover_front),
                         SyncField.Type.OTHER, DBKey.COVER[0]);
-            builder.add(context.getString(R.string.lbl_cover_back),
-                        SyncField.Type.OTHER, DBKey.COVER[1]);
 
             // These fields will be locally sorted and come next on the list
             final SortedMap<String, SyncFieldDef> map = new TreeMap<>();
@@ -203,7 +202,6 @@ public enum SyncServer
                     label, def.type, def.fieldKey, def.enabledKey));
 
             builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
-                   .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
                    .addRelatedField(DBKey.CALIBRE.BOOK_ID, DBKey.CALIBRE.BOOK_UUID);
 
             return builder;
@@ -271,6 +269,7 @@ public enum SyncServer
                                                     realNumberParser);
 
             // Cover fields will be at the top of the list.
+            // There are only 2 images supported by this site.
             builder.add(context.getString(R.string.lbl_cover_front),
                         SyncField.Type.OTHER, DBKey.COVER[0]);
             builder.add(context.getString(R.string.lbl_cover_back),
