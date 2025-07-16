@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -46,7 +47,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -69,7 +69,6 @@ public class ParseTest
         searchEngine.setCaller(new TestProgressListener(TAG));
     }
 
-
     @Test
     public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
@@ -80,10 +79,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, true, true, true}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
@@ -95,6 +91,10 @@ public class ParseTest
         assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
         assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
         assertEquals("Gekleurd", book.getString(DBKey.COLOR, null));
+
+        assertEquals(
+                "Storyboard: Emem. Ook uitgegeven als beurseditie met stofomslag & gesigneerde en ongenummerde ex libris op het Stripfestival Breda sep 2018/Dutch Comic Con wintereditie nov 2018 op 50 exemplaren (afbeelding 3).",
+                book.getString(DBKey.DESCRIPTION, null));
 
         final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
@@ -111,7 +111,7 @@ public class ParseTest
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
-        assertEquals(2, authors.size());
+        assertEquals(4, authors.size());
 
         Optional<String> oIv;
         Author author;
@@ -120,17 +120,72 @@ public class ParseTest
         assertEquals("Gioux", author.getFamilyName());
         assertEquals("Thierry", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals("1960-05-05", author.getBirthDate().orElse(null));
+        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_1949_0_.jpg"));
+        assertEquals(2, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
         assertTrue(oIv.isPresent());
         assertEquals("2459", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("1949", oIv.get());
 
         author = authors.get(1);
         assertEquals("Duval", author.getFamilyName());
         assertEquals("Fred", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1965-01-05", author.getBirthDate().orElse(null));
+        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_58_0_.jpg"));
+        assertEquals(2, author.getIdentifiers().size());
         oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
         assertTrue(oIv.isPresent());
         assertEquals("4716", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("58", oIv.get());
+
+        author = authors.get(2);
+        assertEquals("Produkties", author.getFamilyName());
+        assertEquals("Van der Heide", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(1, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
+        assertTrue(oIv.isPresent());
+        assertEquals("5446247", oIv.get());
+
+        author = authors.get(3);
+        assertEquals("Sayago", author.getFamilyName());
+        assertEquals("Nuria", author.getGivenNames());
+        assertEquals(Author.TYPE_COLORIST, author.getType());
+        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_30795_0_.jpg"));
+        assertEquals(2, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
+        assertTrue(oIv.isPresent());
+        assertEquals("5548155", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("30795", oIv.get());
+
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_9789463064385_0_"));
+
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_9789463064385_1_"));
+
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_9789463064385_2_"));
+
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     /**
@@ -147,10 +202,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, true, true, true}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Schoot der aarde", book.getString(DBKey.TITLE, null));
@@ -195,5 +247,113 @@ public class ParseTest
         assertEquals("Astier", author.getFamilyName());
         assertEquals("Stéphane", author.getGivenNames());
         assertEquals(Author.TYPE_COLORIST, author.getType());
+
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_9789463943109_0_"));
+
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_9789463943109_1_"));
+    }
+
+    /**
+     * 3 images
+     */
+    @Test
+    public void parse03()
+            throws SearchException, CredentialsException, StorageException, IOException {
+
+        final String locationHeader = "https://www.lastdodo.nl/nl/items/37600-sioban";
+
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.lastdodo_2871290733_sioban;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        searchEngine.parse(context, document, new boolean[]{true, true, true, true}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Sioban", book.getString(DBKey.TITLE, null));
+        assertEquals("2871290733", book.getString(DBKey.ISBN, null));
+        assertEquals("37600", book.requireIdentifierValue(Identifier.SID_LAST_DODO_NL));
+
+        assertEquals("1993", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Ongekleurd", book.getString(DBKey.COLOR, null));
+        assertEquals("430", book.getString(DBKey.PRINT_RUN, null));
+
+        assertEquals(
+                "430 exemplaren genummerd en gesigneerd met een gevouwen kleurenillustratie. + 25 exemplaren niet bestemd voor handel genummerd en gesigneerd.",
+                book.getString(DBKey.DESCRIPTION, null));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Dargaud", allPublishers.get(0).getName());
+
+        final List<Series> allSeries = book.getSeries();
+        assertNotNull(allSeries);
+        assertEquals(1, allSeries.size());
+
+        final Series series = allSeries.get(0);
+        assertEquals("De Klaagzang van de verloren gewesten", series.getTitle());
+        assertEquals("1|a", series.getNumber());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+
+        Author author;
+        Optional<String> oIv;
+
+        author = authors.get(0);
+        assertEquals("Rosinski (Rosek)", author.getFamilyName());
+        assertEquals("Grzegorz", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(1, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
+        assertTrue(oIv.isPresent());
+        assertEquals("2174", oIv.get());
+
+        author = authors.get(1);
+        assertEquals("Dufaux", author.getFamilyName());
+        assertEquals("Jean", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1949-06-07", author.getBirthDate().orElse(null));
+        assertTrue(author.getTmpPictureFileSpec().get().endsWith("_bedetheque_53_0_.jpg"));
+        assertEquals(2, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_LAST_DODO_NL);
+        assertTrue(oIv.isPresent());
+        assertEquals("2138", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_BEDETHEQUE);
+        assertTrue(oIv.isPresent());
+        assertEquals("53", oIv.get());
+
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_2871290733_0_"));
+
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_2871290733_1_"));
+
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_2871290733_2_"));
+
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 }

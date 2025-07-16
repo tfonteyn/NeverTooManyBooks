@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -219,9 +220,9 @@ public class StripWebSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -256,11 +257,11 @@ public class StripWebSearchEngine
     /**
      * Parse the downloaded {@link org.jsoup.nodes.Document} for a single Book.
      *
-     * @param context         Current context
-     * @param document        to parse
-     * @param fetchCovers     Set to {@code true} if we want to get covers
-     *                        The array is guaranteed to have at least one element.
-     * @param book            Bundle to update
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -665,7 +666,7 @@ public class StripWebSearchEngine
                                         @NonNull final Element main,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
-                                        @IntRange(from = 0, to = 1) final int cIdx)
+                                            @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
 
         final Element cover = main.selectFirst("a.d-block");

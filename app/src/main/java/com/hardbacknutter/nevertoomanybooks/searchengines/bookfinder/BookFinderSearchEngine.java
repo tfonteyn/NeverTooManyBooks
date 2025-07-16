@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -148,9 +149,9 @@ public class BookFinderSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -266,7 +267,7 @@ public class BookFinderSearchEngine
                                         @NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
-                                        @IntRange(from = 0, to = 1) final int cIdx)
+                                            @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
 
         final Element img = document.selectFirst("div#header-img > img");

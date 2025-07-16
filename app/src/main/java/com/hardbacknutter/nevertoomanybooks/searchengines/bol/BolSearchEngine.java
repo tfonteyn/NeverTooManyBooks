@@ -305,9 +305,9 @@ public class BolSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
@@ -359,9 +359,9 @@ public class BolSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -663,7 +663,8 @@ public class BolSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param book        to update
      *
      * @throws StorageException The covers directory is not available
@@ -728,7 +729,7 @@ public class BolSearchEngine
                     CoverFileSpecArray.setFileSpec(book, 0, oFileSpec.get());
                     // only attempt to get the back-cover if we got a front-cover
                     // and (obv.) if we want one.
-                    if (fetchCovers.length > 1 && fetchCovers[1]) {
+                    if (fetchCovers[1]) {
                         final String url = currentItem.optString("backImageUrl");
                         if (!url.isEmpty()) {
                             saveImage(context, url, null, bookId, 1, null).ifPresent(

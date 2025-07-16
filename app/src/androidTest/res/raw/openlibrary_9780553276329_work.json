@@ -1,0 +1,32 @@
+{
+  "title": "Pacific Vortex!", "key": "/works/OL84905W", "authors": [
+  {"author": {"key": "/authors/OL29079A"}, "type": {"key": "/type/author_role"}}
+], "type": {"key": "/type/work"}, "subjects": [
+  "Dirk Pitt (Fictitious character)",
+  "Fiction",
+  "Underwater exploration",
+  "Heroes",
+  "Pitt, dirk (fictitious character), fiction",
+  "Fiction, action & adventure",
+  "Large type books",
+  "Fiction, sea stories",
+  "Nuclear submarines",
+  "Dirk Pitt (Fictional character)",
+  "Rescues"
+], "covers": [
+  9269384,
+  10088240,
+  7993042,
+  -1,
+  13240145,
+  2204840,
+  3104127,
+  12310908
+], "subject_places": [
+  "United States"
+],
+  "description": "Fully armed and with all hands on board, the nuclear submarine Starbuck sailed into the calm Pacific Ocean for sea trials - and vanished. No wreckage, no signals, no survivors: nothing ... until ace maritime troubleshooter, Dirk Pitt, finds a single, chilling clue in the shark-torn surf off Hawaii - the log of the Starbuck.'Do not search for us, it can only end in vain ...' A crazed journal of madness and death is all that remains. And the Captain's final, scrawled, fear-crazed note locates the Starbuck's grave hundreds of miles from her last known position! The search for the Starbuck plunges Dirk Pitt into his most shattering assignment to date - a whirlpool of deep-sea mystery and terror - the Pacific Vortex!",
+  "latest_revision": 9, "revision": 9,
+  "created": {"type": "/type/datetime", "value": "2009-10-17T08:18:55.483183"},
+  "last_modified": {"type": "/type/datetime", "value": "2023-12-15T21:38:56.381052"}
+}

@@ -48,15 +48,16 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -187,9 +188,9 @@ public class BertrandPtSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -229,9 +230,9 @@ public class BertrandPtSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -436,7 +437,7 @@ public class BertrandPtSearchEngine
                                          @NonNull final Document document,
                                          @Nullable final String bookId,
                                          @SuppressWarnings("SameParameterValue")
-                                         @IntRange(from = 0, to = 1) final int cIdx)
+                                             @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
 
         final Element img = document.selectFirst("div.cover > picture > img");

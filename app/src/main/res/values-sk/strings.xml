@@ -332,6 +332,7 @@
     <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d strán</string>
     <string name="lbl_country">Krajina</string>
     <string name="lbl_images">Obrázky</string>
+    <string name="lbl_image_3">Obrázok 4</string>
     <string name="lbl_pages">Strany</string>
     <string name="lbl_group">Skupina</string>
     <string name="lbl_currency">Mena</string>
@@ -872,4 +873,5 @@
         <item quantity="other">Je tu %1$d predtým zadaných kódov ISBN. Chcete začať ich vyhľadávanie alebo ich chcete odstrániť?</item>
     </plurals>
     <string name="lbl_author_type_foreword">Predslov</string>
+    <string name="lbl_image_2">Obrázok 3</string>
 </resources>

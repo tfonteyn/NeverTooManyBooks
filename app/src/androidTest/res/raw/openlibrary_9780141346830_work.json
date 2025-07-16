@@ -1,0 +1,93 @@
+{
+  "description": "Percy Jackson isn't expecting freshman orientation to be any fun, but when a mysterious mortal acquaintance appears, pursued by demon cheerleaders, things quickly go from bad to worse. Time is running out for Percy. War between the gods and the Titans is drawing near. Even Camp Half-Blood isn't safe, as Kronos's army prepares to invade its once impenetrable borders. To stop them, Percy and his friends must set out on a quest through the Labyrinth -- a sprawling underground world with surprises and danger at every turn.  Along the way Percy will confront powerful enemies, find out the truth about the lost god Pan, and face the Titan lord Kronos's most terrible secret. The final war begins . . . with the Battle of the Labyrinth. - Publisher.",
+  "covers": [
+    6274739,
+    -1,
+    7634098,
+    8584641,
+    10135609,
+    10400956,
+    6677877,
+    7288333,
+    6304351,
+    6310074,
+    12373116,
+    11980447,
+    8809535,
+    12605121,
+    7314700,
+    11057518,
+    12827697,
+    13012144,
+    12112294,
+    12202517,
+    14171448
+  ], "key": "/works/OL492640W", "authors": [
+  {"author": {"key": "/authors/OL30765A"}, "type": {"key": "/type/author_role"}}
+], "title": "The Battle of the Labyrinth", "subjects": [
+  "Serie:Percy_Jackson_and_the_Olympians",
+  "Greek Mythology",
+  "Juvenile fiction",
+  "Fiction",
+  "Monsters in fiction",
+  "Labyrinths",
+  "Camps",
+  "Monsters",
+  "Mythical Animals",
+  "Children's fiction",
+  "Gods, fiction",
+  "Fantasy fiction",
+  "School Library Journal Best Book of the Year (2005)",
+  "Teenagers",
+  "Prophecies",
+  "Attention-deficit hyperactivity disorder",
+  "Dyslexics",
+  "Friendship",
+  "Single mothers",
+  "Young Adult Fiction",
+  "Greek Gods",
+  "Fantasy",
+  "children's books",
+  "Mythology",
+  "boarding school",
+  "Mythologie grecque",
+  "Romans, nouvelles, etc. pour la jeunesse",
+  "Labyrinthes",
+  "Colonies de vacances",
+  "Monstres",
+  "Animaux fabuleux",
+  "Griekse oudheid",
+  "Jeugdboeken",
+  "verhalen",
+  "Animales fabulosos",
+  "Ficci\u00f3n juvenil",
+  "Mitolog\u00eda griega",
+  "Monstruos",
+  "Campamentos"
+], "type": {"key": "/type/work"}, "subject_people": [
+  "Dionysus (Greek deity)",
+  "Hades (Greek deity)",
+  "Hephaestus (Greek deity)",
+  "Zeus (Greek deity)",
+  "Poseidon (Greek deity)",
+  "Cronus (Greek deity)",
+  "Percy Jackson",
+  "Zeus (mythological)",
+  "Annabeth Chase"
+], "links": [
+  {
+    "title": "Wikipedia", "url": "http://en.wikipedia.org/wiki/Battle_of_the_Labyrinth",
+    "type": {"key": "/type/link"}
+  }
+], "subject_times": [
+  "2008"
+], "identifiers": {
+  "wikidata": [
+    "Q1991641"
+  ], "librarything": [
+    "4264201"
+  ]
+}, "latest_revision": 30, "revision": 30,
+  "created": {"type": "/type/datetime", "value": "2009-12-08T03:33:16.906643"},
+  "last_modified": {"type": "/type/datetime", "value": "2025-05-21T17:26:16.803724"}
+}

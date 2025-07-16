@@ -1022,7 +1022,7 @@ public class Author
      * Any {@link StorageException} is <strong>IGNORED</strong>
      *
      * @param context Current context
-     * @param cIdx    ignored, pass in {@code 0} for future compatibility
+     * @param cIdx    0..n image index; pass in {@code 0} for future compatibility
      *
      * @return file
      */
@@ -1044,7 +1044,7 @@ public class Author
         final Optional<String> uuid = getImageUuid();
         if (uuid.isPresent()) {
             final Optional<File> oFile = ServiceLocator.getInstance().getCoverStorage()
-                                                       .getPersistedFile(uuid.get(), 0);
+                                                       .getPersistedFile(uuid.get(), cIdx);
             if (oFile.isPresent()) {
                 // all done
                 return oFile;
@@ -1059,9 +1059,15 @@ public class Author
         return Optional.empty();
     }
 
+    /**
+     * Remove the image at the given index.
+     *
+     * @param context Current context
+     * @param cIdx    0..n image index; pass in {@code 0} for future compatibility
+     */
     @Override
     public void removeImage(@NonNull final Context context,
-                            final int cIdx) {
+                            @IntRange(from = 0, to = 0) final int cIdx) {
         // we need to delete any existing file, and remove any existing uuid.
         final Optional<String> oUuid = getImageUuid();
         if (oUuid.isEmpty()) {
@@ -1077,6 +1083,22 @@ public class Author
         updateInDatabase(context);
     }
 
+    /**
+     * Update the ImageOwner with the given {@link File}.
+     * This method may set a temporary cover, or persists the cover to storage.
+     *
+     * @param context Current context
+     * @param cIdx    0..n image index; pass in {@code 0} for future compatibility
+     * @param file    cover file or {@code null} to delete the cover
+     *                The file instance passed in MUST be discarded.
+     *                If applicable, the caller can/must use the {@link File}
+     *                as returned by this method.
+     *
+     * @return the {@link File} after processing (either the original, or a renamed/moved file)
+     *
+     * @throws StorageException The covers directory is not available
+     * @throws IOException      on generic/other IO failures
+     */
     @Nullable
     @Override
     public File setImage(@NonNull final Context context,

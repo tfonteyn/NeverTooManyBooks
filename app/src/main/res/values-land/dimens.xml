@@ -30,6 +30,6 @@
     <integer name="span_count_edit_tag_mappings">3</integer>
     <integer name="span_count_syncfield_config">2</integer>
 
-    <dimen name="centered_max_width">800dp</dimen>
+    <dimen name="centered_max_width">900dp</dimen>
 
 </resources>

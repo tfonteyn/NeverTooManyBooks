@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -214,9 +215,9 @@ public class GoogleBooksSearchEngine
      *
      * @param context     Current context
      * @param url         to fetch
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException      on storage related failures
      * @throws SearchException       on generic exceptions (wrapped) during search
@@ -349,9 +350,9 @@ public class GoogleBooksSearchEngine
      *
      * @param context     Current context
      * @param edition     JSON result data
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException on storage related failures
      */
@@ -642,14 +643,14 @@ public class GoogleBooksSearchEngine
     @Override
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
-                                                 final int cIdx,
+                                                 @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
             throws StorageException, SearchException {
         if (altEdition instanceof AltEditionIsbn) {
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
             final String isbn = edition.getIsbn();
-            return searchByIsbn(context, isbn, new boolean[]{true, false})
-                    .getImage(context, 0)
+            return searchByIsbn(context, isbn, new boolean[]{true, false, false, false})
+                    .getImage(context, cIdx)
                     .map(File::getAbsolutePath);
         }
         return Optional.empty();

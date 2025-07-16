@@ -450,7 +450,7 @@ public abstract class SearchEngineBase
                                       @NonNull final String url,
                                       @Nullable final Map<String, String> requestProperties,
                                       @Nullable final String bookId,
-                                      @IntRange(from = 0, to = 1) final int cIdx,
+                                      @IntRange(from = 0, to = 3) final int cIdx,
                                       @Nullable final ImageWebSize size)
             throws StorageException {
 

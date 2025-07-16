@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,18 +33,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public final class CoverFileSpecArray {
     /**
-     * List of front/back cover file specs as collected during the search.
+     * List of image file specs as collected during a book search.
      * <p>
      * <br>type: {@code ArrayList<String>}
      */
-    static final String[] BKEY_FILE_SPEC_ARRAY = {
-            "fileSpec_array:0",
-            "fileSpec_array:1"
-    };
+    static final String[] BKEY_FILE_SPEC_ARRAY = new String[DBKey.NR_OF_BOOK_COVERS];
+
+    static {
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            BKEY_FILE_SPEC_ARRAY[cIdx] = "fileSpec_array:" + cIdx;
+        }
+    }
 
     private CoverFileSpecArray() {
     }
@@ -108,7 +112,7 @@ public final class CoverFileSpecArray {
      * @param book to update
      */
     public static void process(@NonNull final Book book) {
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
             if (book.contains(BKEY_FILE_SPEC_ARRAY[cIdx])) {
                 final List<String> list = book.getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
                 if (!list.isEmpty()) {
@@ -137,7 +141,7 @@ public final class CoverFileSpecArray {
     @VisibleForTesting
     @NonNull
     public static List<String> getList(@NonNull final Book book,
-                                       @IntRange(from = 0, to = 1) final int cIdx) {
+                                       @IntRange(from = 0, to = 3) final int cIdx) {
         if (book.contains(BKEY_FILE_SPEC_ARRAY[cIdx])) {
             return book.getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
         } else {
@@ -153,7 +157,7 @@ public final class CoverFileSpecArray {
      * @param fileSpec to set; use {@code null} to remove any previous
      */
     public static void setFileSpec(@NonNull final Book book,
-                                   @IntRange(from = 0, to = 1) final int cIdx,
+                                   @IntRange(from = 0, to = 3) final int cIdx,
                                    @Nullable final String fileSpec) {
         if (fileSpec != null && !fileSpec.isEmpty()) {
             final ArrayList<String> fileSpecs = new ArrayList<>();

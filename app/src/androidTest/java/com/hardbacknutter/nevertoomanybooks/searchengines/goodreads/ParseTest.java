@@ -54,7 +54,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -92,11 +91,7 @@ public class ParseTest
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.goodreads_next_data_9789604419197);
-        searchEngine.parse(context, document, book, new boolean[]{true, false});
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, book, new boolean[]{true, false, false, false});
         Log.d(TAG, book.toString());
 
         assertEquals("Ο νόμος ποτέ δε κοιμάται...", book.getString(DBKey.TITLE, null));
@@ -203,11 +198,7 @@ public class ParseTest
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.goodreads_next_data_9789028453807);
-        searchEngine.parse(context, document, book, new boolean[]{true, false});
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, book, new boolean[]{true, false, false, false});
         Log.d(TAG, book.toString());
 
         assertEquals("De chocoladewinkel van verloren liefdes", book.getString(DBKey.TITLE, null));
@@ -282,11 +273,7 @@ public class ParseTest
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.goodreads_next_data_9780062683250);
-        searchEngine.parse(context, document, book, new boolean[]{true, false});
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, book, new boolean[]{true, false, false, false});
         Log.d(TAG, book.toString());
 
         assertEquals("The Left-Handed Booksellers of London", book.getString(DBKey.TITLE, null));
@@ -389,11 +376,7 @@ public class ParseTest
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.goodreads_next_data_9780553803723);
-        searchEngine.parse(context, document, book, new boolean[]{true, false});
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, book, new boolean[]{true, false, false, false});
         Log.d(TAG, book.toString());
 
         assertEquals("Foundation and Empire", book.getString(DBKey.TITLE, null));
@@ -511,10 +494,8 @@ public class ParseTest
         final Book book = new Book();
         final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
                                                            .R.raw.goodreads_with_nulls);
-        searchEngine.parse(context, document, book, new boolean[]{true, false});
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
+        searchEngine.parse(context, document, book, new boolean[]{true, false, false, false});
+        Log.d(TAG, book.toString());
 
         assertEquals("The Aenied", book.getString(DBKey.TITLE, null));
         assertEquals("Aeneis", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
@@ -607,9 +588,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
-
-        assertFalse(book.isEmpty());
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("The Left-Handed Booksellers of London", book.getString(DBKey.TITLE, null));
         // full assert is already tested in parseNextDataJson9780062683250()
@@ -623,9 +603,9 @@ public class ParseTest
                 .R.raw.goodreads_multi_result_foundation_and_empire;
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{true, false}, book);
-
-        assertFalse(book.isEmpty());
+        searchEngine.parseMultiResult(context, document, new boolean[]{true, false, false, false},
+                                      book);
+        Log.d(TAG, book.toString());
 
         // live download, results may be different
         assertEquals("Foundation and Empire", book.getString(DBKey.TITLE, null));

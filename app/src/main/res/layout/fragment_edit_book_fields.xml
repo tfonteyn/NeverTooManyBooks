@@ -46,8 +46,28 @@
         <ImageView
             android:id="@id/cover_image_1"
             style="@style/CoverImage.Edit.1"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cover_image_2"
             app:layout_constraintStart_toEndOf="@id/cover_image_0"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
+            />
+
+        <ImageView
+            android:id="@id/cover_image_2"
+            style="@style/CoverImage.Edit.2"
+            app:layout_constraintEnd_toStartOf="@id/cover_image_3"
+            app:layout_constraintStart_toEndOf="@id/cover_image_1"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
+            />
+
+        <ImageView
+            android:id="@id/cover_image_3"
+            style="@style/CoverImage.Edit.3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cover_image_2"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription"
             tools:src="@sample/covers"
@@ -70,7 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,cover_image_2,cover_image_3"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -112,9 +132,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_language"
             style="@style/TIL.Language"
-            android:layout_width="0dp"
             android:hint="@string/lbl_language"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
@@ -151,9 +169,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_original_language"
             style="@style/TIL.Language"
-            android:layout_width="0dp"
             android:hint="@string/lbl_original_language"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_original_title"
             >

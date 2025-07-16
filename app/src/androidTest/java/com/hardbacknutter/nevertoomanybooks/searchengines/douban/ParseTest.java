@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.douban;
 
+import android.util.Log;
+
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -189,10 +191,9 @@ public class ParseTest
                 .R.raw.douban_9787536692930_36892731;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        //og.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("三体", book.getString(DBKey.TITLE, null));
         assertEquals("9787536692930", book.getString(DBKey.ISBN, null));
@@ -233,11 +234,11 @@ public class ParseTest
         assertNotNull(series);
         assertEquals(0, series.size());
 
+        final String preferenceKey = EngineId.Douban.getPreferenceKey();
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Douban.getPreferenceKey()
-                                          + "_9787536692930_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9787536692930_0_.jpg"));
     }
 
     @Test
@@ -248,10 +249,9 @@ public class ParseTest
                 .R.raw.douban_9787536692930_36874304;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        //Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("三体", book.getString(DBKey.TITLE, null));
         assertEquals("9787536692930", book.getString(DBKey.ISBN, null));
@@ -299,11 +299,11 @@ public class ParseTest
         expectedSeries = new Series("科幻世界·中国科幻基石丛书");
         assertEquals(expectedSeries, series.get(0));
 
+        final String preferenceKey = EngineId.Douban.getPreferenceKey();
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Douban.getPreferenceKey()
-                                          + "_9787536692930_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9787536692930_0_.jpg"));
     }
 
     @Test
@@ -318,8 +318,7 @@ public class ParseTest
         final Document document = loadDocument(resId, UTF_8, locationHeader);
 
         // There is only one result.
-        final Optional<String> oUrl =
-                searchEngine.extractBookUrl(context, document);
+        final Optional<String> oUrl = searchEngine.extractBookUrl(context, document);
         assertTrue(oUrl.isPresent());
         assertEquals("https://book.douban.com/subject/36665775/", oUrl.get());
     }
@@ -332,10 +331,9 @@ public class ParseTest
                 .R.raw.douban_9787549641864_36665775;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        //Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("第七重解答", book.getString(DBKey.TITLE, null));
         assertEquals("La Septième Hypothèse",
@@ -420,11 +418,11 @@ public class ParseTest
         expectedSeries = new Series("读客悬疑文库从书");
         assertEquals(expectedSeries, series.get(0));
 
+        final String preferenceKey = EngineId.Douban.getPreferenceKey();
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Douban.getPreferenceKey()
-                                          + "_9787549641864_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9787549641864_0_.jpg"));
     }
 
     /**
@@ -520,10 +518,9 @@ public class ParseTest
                 .R.raw.douban_9787532190294_36897178;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
-
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
-        //Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("伽利略的错误", book.getString(DBKey.TITLE, null));
         assertEquals("Galileo's Error: Foundations for a New Science of Consciousness",
@@ -584,10 +581,10 @@ public class ParseTest
         assertNotNull(series);
         assertEquals(0, series.size());
 
+        final String preferenceKey = EngineId.Douban.getPreferenceKey();
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Douban.getPreferenceKey()
-                                          + "_9787532190294_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9787532190294_0_.jpg"));
     }
 }

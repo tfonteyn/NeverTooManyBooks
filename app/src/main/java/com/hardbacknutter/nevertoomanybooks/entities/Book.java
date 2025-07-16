@@ -218,14 +218,18 @@ public class Book
      * @see ParcelUtils#unwrap(Bundle, String)
      */
     public static final String BKEY_BOOK_ID_LIST = TAG + ":id_list";
+
     /**
-     * Single front/back cover file specs for handling a temporary cover during edit.
+     * File specs for handling temporary images during edit.
      * <p>
      * <br>type: {@code String}
      */
     public static final String[] BKEY_TMP_FILE_SPEC = {
             TAG + ":fileSpec:0",
-            TAG + ":fileSpec:1"};
+            TAG + ":fileSpec:1",
+            TAG + ":fileSpec:2",
+            TAG + ":fileSpec:3"
+    };
     private static final String ERROR_INVALID_BOOK_ID = "bookId";
 
     /** the stage of the book entity. */
@@ -1717,7 +1721,7 @@ public class Book
      */
     @NonNull
     public Optional<File> getImage(@NonNull final Context context,
-                                   @IntRange(from = 0, to = 1) final int cIdx) {
+                                   @IntRange(from = 0, to = 3) final int cIdx) {
         if (contains(BKEY_TMP_FILE_SPEC[cIdx])) {
             // we have a previously set temporary cover, but it could be ""
             final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
@@ -1772,7 +1776,7 @@ public class Book
     @Override
     @Nullable
     public File setImage(@NonNull final Context context,
-                         @IntRange(from = 0, to = 1) final int cIdx,
+                         @IntRange(from = 0, to = 3) final int cIdx,
                          @Nullable final File file)
             throws StorageException, IOException {
 
@@ -1858,7 +1862,7 @@ public class Book
 
     @Override
     public void removeImage(@NonNull final Context context,
-                            final int cIdx) {
+                            @IntRange(from = 0, to = 3) final int cIdx) {
         try {
             setImage(context, cIdx, null);
         } catch (@NonNull final IOException | StorageException ignore) {

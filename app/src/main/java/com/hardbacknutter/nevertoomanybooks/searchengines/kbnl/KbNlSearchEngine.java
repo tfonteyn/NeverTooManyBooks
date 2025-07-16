@@ -310,10 +310,11 @@ public class KbNlSearchEngine
     @NonNull
     private Optional<String> searchBestCoverByEdition(@NonNull final Context context,
                                                       @NonNull final AltEdition edition,
-                                                      @IntRange(from = 0, to = 1) final int cIdx)
+                                                      @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
 
-        Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, ImageWebSize.Large);
+        Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx,
+                                                          ImageWebSize.Large);
         if (oFileSpec.isEmpty()) {
             oFileSpec = searchCoverByEdition(context, edition, cIdx, ImageWebSize.Medium);
             if (oFileSpec.isEmpty()) {
@@ -336,7 +337,7 @@ public class KbNlSearchEngine
     @Override
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
-                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
             throws StorageException {
 

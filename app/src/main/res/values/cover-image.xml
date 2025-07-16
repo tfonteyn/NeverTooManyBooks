@@ -22,16 +22,26 @@
 <resources>
 
     <!-- View tag - tags a Cover Image View with the task responsible to fetch the image -->
-    <item name="TAG_THUMBNAIL_TASK" type="id" />
+    <item name="TAG_THUMBNAIL_TASK"
+          type="id" />
     <!-- View tag - tags a Cover Image View with the 'uuid' (i.e. the book) it represents. -->
-    <item name="TAG_THUMBNAIL_UUID" type="id" />
+    <item name="TAG_THUMBNAIL_UUID"
+          type="id" />
 
     <!-- Predefined id's for cover image views; so we can use them in an array. -->
-    <item name="cover_image_0" type="id" />
-    <item name="cover_image_1" type="id" />
+    <item name="cover_image_0"
+          type="id" />
+    <item name="cover_image_1"
+          type="id" />
+    <item name="cover_image_2"
+          type="id" />
+    <item name="cover_image_3"
+          type="id" />
     <array name="cover_images">
         <item>@id/cover_image_0</item>
         <item>@id/cover_image_1</item>
+        <item>@id/cover_image_2</item>
+        <item>@id/cover_image_3</item>
     </array>
 
     <!-- Maximum space a zoomed cover can use of the screen; 0..100 -->
@@ -40,8 +50,20 @@
     <!-- BoB layout -->
     <dimen name="cover_list_padding">2dp</dimen>
     <!-- Book details layout. -->
-    <dimen name="cover_details_0_padding">10dp</dimen>
-    <dimen name="cover_details_1_padding">10dp</dimen>
+    <dimen name="cover_details_0_padding">4dp</dimen>
+    <dimen name="cover_details_1_padding">@dimen/cover_details_0_padding</dimen>
+    <dimen name="cover_details_2_padding">@dimen/cover_details_0_padding</dimen>
+    <dimen name="cover_details_3_padding">@dimen/cover_details_0_padding</dimen>
+
+    <dimen name="cover_details_0_margin_top">0dp</dimen>
+    <dimen name="cover_details_1_margin_top">4dp</dimen>
+    <dimen name="cover_details_2_margin_top">@dimen/cover_details_1_margin_top</dimen>
+    <dimen name="cover_details_3_margin_top">@dimen/cover_details_1_margin_top</dimen>
+
+    <dimen name="cover_details_0_margin_start">0dp</dimen>
+    <dimen name="cover_details_1_margin_start">4dp</dimen>
+    <dimen name="cover_details_2_margin_start">@dimen/cover_details_1_margin_start</dimen>
+    <dimen name="cover_details_3_margin_start">@dimen/cover_details_1_margin_start</dimen>
 
     <!-- Book details layout.
          0: Front cover
@@ -60,23 +82,31 @@
 
     <!-- Multiplier: 4.5 -->
     <dimen name="cover_details_0_width">108dp</dimen>
-    <!-- Multiplier: 2 -->
-    <dimen name="cover_details_1_width">48dp</dimen>
+    <!-- Multiplier: 1.5 -->
+    <dimen name="cover_details_1_width">36dp</dimen>
+    <dimen name="cover_details_2_width">@dimen/cover_details_1_width</dimen>
+    <dimen name="cover_details_3_width">@dimen/cover_details_1_width</dimen>
 
     <!-- Book edit layout. -->
     <!-- Multiplier: 2.5 -->
     <dimen name="cover_edit_0_width">60dp</dimen>
-    <dimen name="cover_edit_1_width">60dp</dimen>
+    <dimen name="cover_edit_1_width">@dimen/cover_edit_0_width</dimen>
+    <dimen name="cover_edit_2_width">@dimen/cover_edit_0_width</dimen>
+    <dimen name="cover_edit_3_width">@dimen/cover_edit_0_width</dimen>
 
     <!-- array access to cover sizes. -->
     <array name="cover_details_max_width">
         <item>@dimen/cover_details_0_width</item>
         <item>@dimen/cover_details_1_width</item>
+        <item>@dimen/cover_details_2_width</item>
+        <item>@dimen/cover_details_3_width</item>
     </array>
 
     <array name="cover_edit_max_width">
         <item>@dimen/cover_edit_0_width</item>
         <item>@dimen/cover_edit_1_width</item>
+        <item>@dimen/cover_edit_2_width</item>
+        <item>@dimen/cover_edit_3_width</item>
     </array>
 
     <integer name="cover_browser_gallery_span_count">1</integer>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -392,6 +395,7 @@
     <string name="lbl_number">Номер</string>
     <string name="lbl_owned">В собственности</string>
     <string name="lbl_images">Изображения</string>
+    <string name="lbl_image_3">Изображение 4</string>
     <string name="lbl_pages">Страницы</string>
     <string name="lbl_personal_notes">Личные заметки</string>
     <string name="lbl_price_listed">Цена по каталогу</string>
@@ -880,4 +884,5 @@
         <item quantity="other">Есть %1$d ранее введенных кодов ISBN. Вы хотите начать их поиск или хотите их удалить?</item>
     </plurals>
     <string name="lbl_author_type_foreword">Предисловие</string>
+    <string name="lbl_image_2">Изображение 3</string>
 </resources>

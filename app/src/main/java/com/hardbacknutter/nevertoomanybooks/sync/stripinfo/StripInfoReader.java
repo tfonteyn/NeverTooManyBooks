@@ -123,7 +123,7 @@ public class StripInfoReader
         this.syncProcessor = syncProcessor;
 
         final boolean doCovers = recordTypes.contains(RecordType.Cover);
-        coversForNewBooks = new boolean[]{doCovers, doCovers};
+        coversForNewBooks = new boolean[]{doCovers, doCovers, doCovers, doCovers};
 
         // create a new instance just for our own use
         searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine(context);

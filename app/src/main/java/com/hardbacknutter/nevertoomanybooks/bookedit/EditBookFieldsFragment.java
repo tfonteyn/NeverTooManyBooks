@@ -76,8 +76,14 @@ public class EditBookFieldsFragment
                         SoundManager.beepOnBarcodeFound(getContext());
                     }));
 
-    /** Delegate to handle cover replacement, rotation, etc. */
-    private final ImageHandler[] imageHandler = new ImageHandler[2];
+    /**
+     * Delegate to handle cover replacement, rotation, etc.
+     * Individual instances are only created when the corresponding image field is globally enabled.
+     * i.o.w. check for {@code null} !
+     */
+    private final ImageHandler[] imageHandler = new ImageHandler[DBKey.NR_OF_BOOK_COVERS];
+    private ImageView[] coverViews;
+
     private MultiChoiceLauncher<Bookshelf> editBookshelvesLauncher;
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
@@ -112,6 +118,8 @@ public class EditBookFieldsFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         vb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
+        coverViews = new ImageView[]{
+                vb.coverImage0, vb.coverImage1, vb.coverImage2, vb.coverImage3};
         return vb.getRoot();
     }
 
@@ -162,9 +170,8 @@ public class EditBookFieldsFragment
         final Resources res = getResources();
         final TypedArray width = res.obtainTypedArray(R.array.cover_edit_max_width);
         try {
-            final ImageView[] views = {vb.coverImage0, vb.coverImage1};
-            for (int cIdx = 0; cIdx < width.length(); cIdx++) {
-                // in edit mode, always show both covers unless globally disabled
+            for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+                // in edit mode, always show all images unless globally disabled
                 if (ServiceLocator.getInstance().isFieldEnabled(DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
@@ -173,18 +180,13 @@ public class EditBookFieldsFragment
                     imageHandler[cIdx] = new ImageHandler
                             .Builder(this, cIdx, maxWidth, maxHeight)
                             .setImageOwner(() -> vm.getBook())
-                            .setOnReloadImage(idx -> imageHandler[idx].onBindView(views[idx]))
+                            .setOnReloadImage(idx -> imageHandler[idx].onBindView(coverViews[idx]))
                             .setCoverBrowserTitleSupplier(() -> vb.title.getText().toString())
                             .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString())
                             .setProgressIndicator(vb.coverOperationProgressBar)
                             .build();
                 } else {
-                    // This is silly... ViewBinding has no arrays.
-                    if (cIdx == 0) {
-                        vb.coverImage0.setVisibility(View.GONE);
-                    } else {
-                        vb.coverImage1.setVisibility(View.GONE);
-                    }
+                    coverViews[cIdx].setVisibility(View.GONE);
                 }
             }
         } finally {
@@ -208,14 +210,12 @@ public class EditBookFieldsFragment
 
         super.onPopulateViews(fields, book);
 
-        if (imageHandler[0] != null) {
-            imageHandler[0].onBindView(vb.coverImage0);
-            imageHandler[0].attachOnClickListeners(getChildFragmentManager(), vb.coverImage0);
-        }
-
-        if (imageHandler[1] != null) {
-            imageHandler[1].onBindView(vb.coverImage1);
-            imageHandler[1].attachOnClickListeners(getChildFragmentManager(), vb.coverImage1);
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            if (imageHandler[cIdx] != null) {
+                imageHandler[cIdx].onBindView(coverViews[cIdx]);
+                imageHandler[cIdx].attachOnClickListeners(getChildFragmentManager(),
+                                                          coverViews[cIdx]);
+            }
         }
 
         //noinspection DataFlowIssue

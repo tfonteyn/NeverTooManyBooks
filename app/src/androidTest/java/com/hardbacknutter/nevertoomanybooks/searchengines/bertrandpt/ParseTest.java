@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,8 +82,9 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{true, true}, book);
-        //Log.d(TAG, book.toString());
+        searchEngine.parseMultiResult(context, document, new boolean[]{true, false, false, false},
+                                      book);
+        Log.d(TAG, book.toString());
 
         assertEquals("A Livraria Cinnamon Bun", book.getString(DBKey.TITLE, null));
         assertEquals("9789895812899", book.getString(DBKey.ISBN, null));
@@ -137,8 +140,9 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{true, true}, book);
-        //Log.d(TAG, book.toString());
+        searchEngine.parseMultiResult(context, document, new boolean[]{true, false, false, false},
+                                      book);
+        Log.d(TAG, book.toString());
 
         assertEquals("Fundação e Terra", book.getString(DBKey.TITLE, null));
         assertEquals("9789897734939", book.getString(DBKey.ISBN, null));

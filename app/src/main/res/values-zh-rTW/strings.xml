@@ -420,6 +420,7 @@
     <string name="lbl_original_title_long">原標題（如果這本書本是譯本）</string>
     <string name="lbl_owned">已擁有</string>
     <string name="lbl_images">圖片</string>
+    <string name="lbl_image_3">圖片 4</string>
     <string name="lbl_pages">頁數</string>
     <string name="lbl_percentage">百分比</string>
     <string name="lbl_personal_notes">個人筆記</string>
@@ -861,4 +862,5 @@
     <string name="action_save_for_later">儲存以便稍後處理</string>
     <string name="lbl_author_type_foreword">前言</string>
     <string name="lbl_author_type_afterword">後記</string>
+    <string name="lbl_image_2">圖片 3</string>
 </resources>

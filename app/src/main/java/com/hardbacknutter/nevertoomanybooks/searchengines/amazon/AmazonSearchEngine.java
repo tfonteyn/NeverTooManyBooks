@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -293,7 +294,6 @@ public class AmazonSearchEngine
 
     private static final String SPANISH = "es";
 
-    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     /**
      * Parse the "x pages" string.
      * English/French,German,Dutch,Spanish/Portuguese
@@ -301,6 +301,8 @@ public class AmazonSearchEngine
     private static final Pattern PAGES_PATTERN =
             Pattern.compile("(\\d+) (?:pages|Seiten|pagina's|páginas)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
 
     /**
      * Constructor.
@@ -433,7 +435,7 @@ public class AmazonSearchEngine
     @Override
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
-                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
             throws StorageException, SearchException, CredentialsException {
         if (altEdition instanceof AltEditionIsbn) {
@@ -449,7 +451,7 @@ public class AmazonSearchEngine
                 return Optional.empty();
             }
 
-            return parseCover(context, document, isbn, 0)
+            return parseCover(context, document, isbn, cIdx)
                     // let the system resolve any path variations
                     .map(fileSpec -> new File(fileSpec).getAbsolutePath());
         }
@@ -461,9 +463,9 @@ public class AmazonSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -772,7 +774,7 @@ public class AmazonSearchEngine
                                         @NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
-                                        @IntRange(from = 0, to = 1) final int cIdx)
+                                            @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
 
         final Element img = document.selectFirst("img#landingImage");

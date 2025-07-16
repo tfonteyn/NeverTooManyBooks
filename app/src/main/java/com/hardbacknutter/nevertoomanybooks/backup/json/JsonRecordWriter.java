@@ -353,12 +353,13 @@ public class JsonRecordWriter
                         if (collectImageFilenames) {
                             // Book covers
                             final String uuid = book.getUuid();
-                            for (int cIdx = 0; cIdx < 2; cIdx++) {
+                            for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
                                 coverStorage.getPersistedFile(uuid, cIdx)
                                             .ifPresent(results::addCover);
                             }
 
                             // Author pictures
+                            // Hardcoded to using one image {@code cIdx=0}.
                             book.getAuthors()
                                 .stream()
                                 .map(Author::getImageUuid)

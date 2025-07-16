@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -56,7 +57,7 @@ public class BookSearchCriteria {
     private final Map<EngineId, String> sids = new EnumMap<>(EngineId.class);
     /** Whether of not to fetch thumbnails. */
     @NonNull
-    private final boolean[] fetchCovers;
+    private final boolean[] fetchCovers = new boolean[DBKey.NR_OF_BOOK_COVERS];
     /** Routing purposes. */
     @Nullable
     private ScanMode scanMode;
@@ -95,11 +96,9 @@ public class BookSearchCriteria {
      */
     public BookSearchCriteria(@NonNull final Context context) {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        fetchCovers = new boolean[]{
-                serviceLocator.isFieldEnabled(DBKey.COVER[0]),
-                serviceLocator.isFieldEnabled(DBKey.COVER[1])
-        };
-
+        for (int cIdx = 0; cIdx < fetchCovers.length; cIdx++) {
+            fetchCovers[cIdx] = serviceLocator.isFieldEnabled(DBKey.COVER[cIdx]);
+        }
         strictIsbn = isStrictIsbn(context);
     }
 
@@ -139,7 +138,7 @@ public class BookSearchCriteria {
     /**
      * Flags.
      *
-     * @return an array same length as {@link DBKey#COVER}.
+     * @return an array with length {@link DBKey#NR_OF_BOOK_COVERS}.
      */
     @NonNull
     public boolean[] getFetchCovers() {
@@ -149,19 +148,19 @@ public class BookSearchCriteria {
     /**
      * Indicate we want images to be downloaded.
      *
-     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    The length MUST be {@link DBKey#NR_OF_BOOK_COVERS}.
+     *
+     * @throws IllegalArgumentException (debug) if the array is an incorrect length
      */
-    public void setFetchCovers(@Nullable final boolean[] fetchCovers) {
-        if (fetchCovers == null || fetchCovers.length == 0) {
-            this.fetchCovers[0] = false;
-            this.fetchCovers[1] = false;
-        } else if (fetchCovers.length == 1) {
-            this.fetchCovers[0] = fetchCovers[0];
-            this.fetchCovers[1] = false;
-        } else {
-            this.fetchCovers[0] = fetchCovers[0];
-            this.fetchCovers[1] = fetchCovers[1];
+    public void setFetchCovers(@NonNull final boolean[] fetchCovers) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (fetchCovers.length != DBKey.NR_OF_BOOK_COVERS) {
+                throw new IllegalArgumentException("fetchCovers must be DBKey.NR_OF_BOOK_COVERS");
+            }
         }
+
+        System.arraycopy(fetchCovers, 0, this.fetchCovers, 0, fetchCovers.length);
     }
 
     @NonNull

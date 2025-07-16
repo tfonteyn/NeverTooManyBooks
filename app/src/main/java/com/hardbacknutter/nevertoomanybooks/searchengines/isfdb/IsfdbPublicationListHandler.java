@@ -164,7 +164,7 @@ class IsfdbPublicationListHandler
     @NonNull
     private final IsfdbSearchEngine searchEngine;
     @NonNull
-    private final boolean[] fetchCovers;
+    private final boolean[] fetchCovers = new boolean[DBKey.NR_OF_BOOK_COVERS];
     /** XML content. */
     @SuppressWarnings("StringBufferField")
     private final StringBuilder builder = new StringBuilder();
@@ -191,8 +191,8 @@ class IsfdbPublicationListHandler
      *
      * @param context      Current context
      * @param searchEngine to use
-     * @param fetchCovers  Set to {@code true} if we want to get covers
-     *                     The array is guaranteed to have at least one element.
+     * @param fetchCovers  Set array indexes to {@code true} to fetch a cover for that index.
+     *                     Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
      * @param maxRecords   the maximum number of "Publication" records to fetch
      */
     IsfdbPublicationListHandler(@NonNull final Context context,
@@ -201,8 +201,7 @@ class IsfdbPublicationListHandler
                                 final int maxRecords) {
         this.context = context;
         this.searchEngine = searchEngine;
-
-        this.fetchCovers = fetchCovers;
+        System.arraycopy(fetchCovers, 0, this.fetchCovers, 0, fetchCovers.length);
         this.maxRecords = maxRecords;
     }
 

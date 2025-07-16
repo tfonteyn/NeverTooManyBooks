@@ -327,9 +327,9 @@ public class StripInfoSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -380,9 +380,9 @@ public class StripInfoSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -633,7 +633,7 @@ public class StripInfoSearchEngine
         }
 
         // back cover
-        if (fetchCovers.length > 1 && fetchCovers[1]) {
+        if (fetchCovers[1]) {
             parseCover(context, document, isbn, 1).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 1, fileSpec));
         }

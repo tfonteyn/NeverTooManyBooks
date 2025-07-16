@@ -62,7 +62,7 @@ public interface ImageOwner {
      */
     @NonNull
     Optional<File> getImage(@NonNull Context context,
-                            @IntRange(from = 0, to = 1) int cIdx);
+                            @IntRange(from = 0, to = 3) int cIdx);
 
     /**
      * Update the ImageOwner with the given {@link File}.
@@ -82,7 +82,7 @@ public interface ImageOwner {
      */
     @Nullable
     File setImage(@NonNull Context context,
-                  @IntRange(from = 0, to = 1) int cIdx,
+                  @IntRange(from = 0, to = 3) int cIdx,
                   @Nullable File file)
             throws StorageException, IOException;
 
@@ -93,5 +93,5 @@ public interface ImageOwner {
      * @param cIdx    0..n image index
      */
     void removeImage(@NonNull Context context,
-                     @IntRange(from = 0, to = 1) int cIdx);
+                     @IntRange(from = 0, to = 3) int cIdx);
 }

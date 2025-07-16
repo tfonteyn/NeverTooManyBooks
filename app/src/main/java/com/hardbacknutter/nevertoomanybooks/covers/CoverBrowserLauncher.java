@@ -51,7 +51,7 @@ public class CoverBrowserLauncher
      * @param cIdx           0..n image index
      * @param resultListener listener
      */
-    CoverBrowserLauncher(@IntRange(from = 0, to = 1) final int cIdx,
+    CoverBrowserLauncher(@IntRange(from = 0, to = 3) final int cIdx,
                          @NonNull final ResultListener resultListener) {
         // Append the cIdx value!
         super(RK_COVER_BROWSER + cIdx,
@@ -91,7 +91,7 @@ public class CoverBrowserLauncher
     public void launch(@NonNull @UiContext final Context context,
                        @NonNull final String bookTitle,
                        @NonNull final String isbn,
-                       @IntRange(from = 0, to = 1) final int cIdx) {
+                       @IntRange(from = 0, to = 3) final int cIdx) {
 
         final Bundle args = new Bundle(4);
         args.putString(DBKey.TITLE, bookTitle);

@@ -98,7 +98,7 @@ public class ParseTest
         final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Like Nothing on Earth", book.getString(DBKey.TITLE, null));
@@ -189,7 +189,7 @@ public class ParseTest
         final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Mort", book.getString(DBKey.TITLE, null));
@@ -267,7 +267,7 @@ public class ParseTest
         final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("The Shepherd's Crown", book.getString(DBKey.TITLE, null));
@@ -352,7 +352,7 @@ public class ParseTest
         final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Lucky Starr på Merkurius", book.getString(DBKey.TITLE, null));
@@ -438,8 +438,8 @@ public class ParseTest
         final Document document = loadDocument(resId, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
+        Log.d(TAG, book.toString());
 
         // We're only interested in the price field to check if the Locale is working as expected.
         assertEquals(7.0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);

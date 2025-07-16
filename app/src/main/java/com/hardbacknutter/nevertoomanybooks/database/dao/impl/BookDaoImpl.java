@@ -381,7 +381,7 @@ public class BookDaoImpl
             // but what could go wrong during a file-delete op... flw... oh well.
             final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
             actuallyDeleted.forEach(uuid -> {
-                for (int cIdx = 0; cIdx < 2; cIdx++) {
+                for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
                     coverStorage.delete(uuid, cIdx);
                 }
             });

@@ -129,11 +129,8 @@ public class StyleDataStore
      */
     public static final String PK_SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
 
-    /** Detail screens: Show the cover images (front/back) for each book. */
-    public static final String[] PK_DETAILS_SHOW_COVER = {
-            "style.details.show.thumbnail.0",
-            "style.details.show.thumbnail.1",
-    };
+    /** Detail screens: Show the images for each book. */
+    public static final String[] PK_DETAILS_SHOW_COVER = new String[DBKey.NR_OF_BOOK_COVERS];
 
     private static final String VIS_PREFIX = "style.booklist.show.";
 
@@ -183,8 +180,10 @@ public class StyleDataStore
     }
 
     static {
-        PK_DETAILS_SHOW_FIELD_TO_DB_KEY.put(PK_DETAILS_SHOW_COVER[0], DBKey.COVER[0]);
-        PK_DETAILS_SHOW_FIELD_TO_DB_KEY.put(PK_DETAILS_SHOW_COVER[1], DBKey.COVER[1]);
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            PK_DETAILS_SHOW_COVER[cIdx] = "style.details.show.thumbnail." + cIdx;
+            PK_DETAILS_SHOW_FIELD_TO_DB_KEY.put(PK_DETAILS_SHOW_COVER[cIdx], DBKey.COVER[cIdx]);
+        }
     }
 
     @NonNull

@@ -98,7 +98,7 @@ public class IsfdbXmlPublicationTest
 
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(context, searchEngine,
-                                                new boolean[]{true, false}, 1);
+                                                new boolean[]{true}, 1);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final SAXParser parser = factory.newSAXParser();

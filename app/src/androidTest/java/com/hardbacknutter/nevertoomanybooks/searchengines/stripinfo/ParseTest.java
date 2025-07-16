@@ -58,7 +58,7 @@ import static org.junit.Assert.assertTrue;
  * <p>
  * Full network access for {@link #parseMultiResult}.
  */
-@SuppressWarnings({"MissingJavadoc","LongLine"})
+@SuppressWarnings({"MissingJavadoc", "LongLine"})
 public class ParseTest
         extends BaseDBTest {
 
@@ -86,10 +86,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
@@ -145,17 +142,17 @@ public class ParseTest
         assertEquals("23596", oIv.get());
 
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
-                                          + "_9789463064385_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789463064385_0_.jpg"));
 
-        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(backCovers);
-        assertEquals(1, backCovers.size());
-        assertTrue(backCovers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
-                                              + "_9789463064385_1_.jpg"));
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789463064385_1_.jpg"));
     }
 
     @Test
@@ -168,10 +165,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("De boom van de twee lentes", book.getString(DBKey.TITLE, null));
@@ -292,17 +286,17 @@ public class ParseTest
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
-                                          + "_905581315X_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_905581315X_0_.jpg"));
 
-        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(backCovers);
-        assertEquals(1, backCovers.size());
-        assertTrue(backCovers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
-                                              + "_905581315X_1_.jpg"));
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_905581315X_1_.jpg"));
     }
 
     @Test
@@ -315,10 +309,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Het huis van verboden geneugten",
@@ -360,16 +351,17 @@ public class ParseTest
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
 
-        assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
-                                          + "_9789085522072_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789085522072_0_.jpg"));
 
-        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(backCovers);
-        assertTrue(backCovers.isEmpty());
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertTrue(covers.isEmpty());
     }
 
     @Test
@@ -382,10 +374,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("De integrale 5", book.getString(DBKey.TITLE, null));
@@ -448,10 +437,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Red Dust", book.getString(DBKey.TITLE, null));
@@ -512,10 +498,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Spoken in de grot", book.getString(DBKey.TITLE, null));
@@ -574,13 +557,10 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         searchEngine.parseRootDocument(context, "9782756010830",
-                                       document, new boolean[]{false, false}, book);
-
-        assertFalse(book.isEmpty());
-        // Log.d(TAG, book.toString());
+                                       document, new boolean[]{false, false, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("Le chant du pluvier", book.getString(DBKey.TITLE, null));
         assertEquals("9782756010830", book.getString(DBKey.ISBN, null));

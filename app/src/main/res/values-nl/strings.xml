@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -386,6 +389,7 @@
     <string name="lbl_number">Aantal</string>
     <string name="lbl_owned">In bezit</string>
     <string name="lbl_images">Afbeeldingen</string>
+    <string name="lbl_image_3">Afbeelding 4</string>
     <string name="lbl_pages">Pagina’s</string>
     <string name="lbl_personal_notes">Opmerkingen</string>
     <string name="lbl_price_listed">Lijstprijs</string>
@@ -859,4 +863,5 @@
     <string name="pt_fetch_author_info">Auteursinformatie ophalen</string>
     <string name="lbl_author_type_foreword">Voorwoord</string>
     <string name="lbl_author_type_afterword">Nawoord</string>
+    <string name="lbl_image_2">Afbeelding 3</string>
 </resources>

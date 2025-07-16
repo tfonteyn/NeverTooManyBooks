@@ -79,8 +79,8 @@ public class BookTest
     private final List<Author> authorList = new ArrayList<>();
     private final List<Publisher> publisherList = new ArrayList<>();
     private final List<TocEntry> tocEntryList = new ArrayList<>();
-    private final String[] originalImageFileName = new String[2];
-    private final long[] originalImageSize = new long[2];
+    private final String[] originalImageFileName = new String[DBKey.NR_OF_BOOK_COVERS];
+    private final long[] originalImageSize = new long[DBKey.NR_OF_BOOK_COVERS];
     private final FileFilter jpgFilter = pathname -> pathname.getPath().endsWith(EXT_JPG);
 
     /**
@@ -135,10 +135,10 @@ public class BookTest
         tocEntryList.clear();
 
         final DbPrep dbPrep = new DbPrep();
-        for (int i = 0; i < 2; i++) {
-            final File coverFile = dbPrep.getFile(i);
-            originalImageFileName[i] = coverFile.getAbsolutePath();
-            originalImageSize[i] = coverFile.length();
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            final File coverFile = dbPrep.getFile(cIdx);
+            originalImageFileName[cIdx] = coverFile.getAbsolutePath();
+            originalImageSize[cIdx] = coverFile.length();
         }
 
         assertTrue(bookshelfArray[0].getId() > 0);
@@ -413,7 +413,7 @@ public class BookTest
     }
 
     private void assertBookHasTempCover(@NonNull final Book book,
-                                        @IntRange(from = 0, to = 1) final int cIdx)
+                                        @IntRange(from = 0, to = 3) final int cIdx)
             throws StorageException {
 
         assertTrue(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
@@ -431,7 +431,7 @@ public class BookTest
      * @param cIdx 0..n image index
      */
     private void assertBookHasPersistedCover(@NonNull final Book book,
-                                             @IntRange(from = 0, to = 1) final int cIdx) {
+                                             @IntRange(from = 0, to = 3) final int cIdx) {
         // there must NOT be any temp cover fileSpecs.
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
 

@@ -46,7 +46,7 @@ class FetchImageTask
     @NonNull
     private final AltEdition edition;
     /** Image index we're handling. */
-    @IntRange(from = 0, to = 1)
+    @IntRange(from = 0, to = 3)
     private final int cIdx;
     @NonNull
     private final ImageWebSize[] sizes;
@@ -55,7 +55,7 @@ class FetchImageTask
      * Constructor.
      *
      * @param taskId       a task identifier, will be returned in the task listener.
-     * @param edition    to search for
+     * @param edition      to search for
      * @param cIdx         0..n image index
      * @param fileManager  for downloads
      * @param taskListener to send results to
@@ -65,7 +65,7 @@ class FetchImageTask
     @UiThread
     FetchImageTask(final int taskId,
                    @NonNull final AltEdition edition,
-                   @IntRange(from = 0, to = 1) final int cIdx,
+                   @IntRange(from = 0, to = 3) final int cIdx,
                    @NonNull final FileManager fileManager,
                    @NonNull final TaskListener<ImageFileInfo> taskListener,
                    @NonNull final ImageWebSize... sizes) {

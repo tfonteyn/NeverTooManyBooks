@@ -110,7 +110,7 @@ public final class ImageHandler {
     private static final int FLIP = 180;
 
     /** Index of the image we're handling. */
-    @IntRange(from = 0, to = 1)
+    @IntRange(from = 0, to = 3)
     private final int cIdx;
 
     /** Our host. */
@@ -340,7 +340,7 @@ public final class ImageHandler {
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@IntRange(from = 0, to = 1) final int cIdx,
+    private boolean onMenuItemSelected(@IntRange(from = 0, to = 3) final int cIdx,
                                        @IdRes final int menuItemId) {
 
         final ImageOwner imageOwner = imageSupplier.get();
@@ -784,6 +784,7 @@ public final class ImageHandler {
 
         @NonNull
         private final Fragment fragment;
+        @IntRange(from = 0, to = 3)
         private final int cIdx;
         private final int maxWidth;
         private final int maxHeight;
@@ -812,7 +813,7 @@ public final class ImageHandler {
          * @param maxHeight Maximum height for an image in pixels
          */
         public Builder(@NonNull final Fragment fragment,
-                       @IntRange(from = 0, to = 1) final int cIdx,
+                       @IntRange(from = 0, to = 3) final int cIdx,
                        final int maxWidth,
                        final int maxHeight) {
             this.fragment = fragment;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,8 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 
+import android.util.Log;
+
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -31,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -64,10 +65,10 @@ public class SearchByIsbnTest
     public void Isbn0702315516()
             throws SearchException, CredentialsException, StorageException {
         final Book book = ((SearchEngine.ByIsbn) searchEngine)
-                .searchByIsbn(context, "0702315516", new boolean[]{false, false});
+                .searchByIsbn(context, "0702315516", new boolean[]{false, false, false, false});
         assertNotNull(book);
         assertFalse(book.isEmpty());
-        LoggerFactory.getLogger().w(TAG, book);
+        Log.d(TAG, book.toString());
 
         // At the time of this test comment, we were using amazon.es:
         // 2023-06-25T13:58:43.156|SearchByIsbnTest|WARN|DataManager{rawData=Bundle[{

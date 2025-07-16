@@ -199,6 +199,25 @@
             android:title="@string/lbl_cover_back"
             />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="style.details.show.thumbnail.0"
+            android:icon="@drawable/image_24px"
+            android:key="style.details.show.thumbnail.2"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_image_2"
+            />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="style.details.show.thumbnail.0"
+            android:icon="@drawable/image_24px"
+            android:key="style.details.show.thumbnail.3"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_image_3"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory

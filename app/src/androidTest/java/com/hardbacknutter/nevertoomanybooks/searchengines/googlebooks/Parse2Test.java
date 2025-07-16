@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -47,7 +49,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -78,12 +79,8 @@ public class Parse2Test
                                                            .R.raw.googlebooks_9781857989380);
         // Grab the first one found
         final JSONObject edition = document.getJSONArray("items").getJSONObject(0);
-        searchEngine.parse(context, edition, new boolean[]{true, true}, book);
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
-
-        //Log.d(TAG, book.toString());
+        searchEngine.parse(context, edition, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("Flowers for Algernon", book.getString(DBKey.TITLE, null));
         assertEquals("9781857989380", book.getString(DBKey.ISBN, null));
@@ -146,12 +143,8 @@ public class Parse2Test
                                                            .R.raw.googlebooks_9780007499793);
         // Grab the first one found
         final JSONObject edition = document.getJSONArray("items").getJSONObject(0);
-        searchEngine.parse(context, edition, new boolean[]{true, true}, book);
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
-
-        //Log.d(TAG, book.toString());
+        searchEngine.parse(context, edition, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("Space", book.getString(DBKey.TITLE, null));
         assertEquals("9780007499793", book.getString(DBKey.ISBN, null));

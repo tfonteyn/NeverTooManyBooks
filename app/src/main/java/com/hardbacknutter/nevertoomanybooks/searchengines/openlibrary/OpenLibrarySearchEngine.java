@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -116,7 +117,7 @@ public class OpenLibrarySearchEngine
      * <p>
      * Where:
      * <p>
-     * param 1: 'b' for books, or 'a' for authors
+     * param 1: {@link #COVER_KEY_BOOK} for books, or {@link #COVER_KEY_AUTHOR} for authors
      * param 2: key can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
      * param 3: value of the chosen key
      * param 4: one of S, M and L for small, medium and large respectively.
@@ -126,6 +127,9 @@ public class OpenLibrarySearchEngine
      */
     private static final String COVER_BY_KEY =
             "https://covers.openlibrary.org/%1$s/%2$s/%3$s-%4$s.jpg?default=false";
+
+    private static final char COVER_KEY_AUTHOR = 'a';
+    private static final char COVER_KEY_BOOK = 'b';
 
     /**
      * <a href="https://openlibrary.org/dev/docs/api/covers">Covers API</a>
@@ -154,6 +158,7 @@ public class OpenLibrarySearchEngine
             Map.entry("amazon.co.uk_asin", Identifier.SID_ASIN),
             Map.entry("oclc_numbers", Identifier.SID_OCLC)
     );
+
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @NonNull
     private final CookieManager cookieManager;
@@ -336,9 +341,9 @@ public class OpenLibrarySearchEngine
      *
      * @param context     Current context
      * @param url         to fetch
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -561,9 +566,9 @@ public class OpenLibrarySearchEngine
      *
      * @param context     Current context
      * @param document    JSON result data for the "/books/*.json" url
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws IOException          when fetching the Author details fails
@@ -863,18 +868,18 @@ public class OpenLibrarySearchEngine
      *   "revision": 2
      * }
      * </pre>
-     *
+     * <p>
      * === "work" ===
      * <pre>{@code
      * }</pre>
-     *        {
-     *             "author": {
-     *                 "key": "/authors/OL14948835A"
-     *             },
-     *             "type": {
-     *                 "key": "/type/author_role"
-     *             }
-     *         }
+     * {
+     * "author": {
+     * "key": "/authors/OL14948835A"
+     * },
+     * "type": {
+     * "key": "/type/author_role"
+     * }
+     * }
      * <p>
      * The authors parsed here will be fully resolved.
      *
@@ -1044,7 +1049,7 @@ public class OpenLibrarySearchEngine
      *      "notes": "Includes bibliographical references and index.",
      *      "notes": {"type": "/type/text", "value": "Mit zahlreichen farbigen Illustrationen"}
      * </pre>
-     *
+     * <p>
      * If we previously parsed a description, the "notes" will be appended.
      *
      * @param document to parse
@@ -1234,13 +1239,14 @@ public class OpenLibrarySearchEngine
                                      @NonNull final boolean[] fetchCovers,
                                      @NonNull final Book book)
             throws StorageException {
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
+        for (int cIdx = 0; cIdx < fetchCovers.length; cIdx++) {
+            // Should we fetch && is there one to fetch?
             if (fetchCovers[cIdx] && coverIds.length() > cIdx) {
                 final int coverId = coverIds.optInt(cIdx);
                 // We have seen cover id "-1", so check!
                 if (coverId > 0) {
                     final int finalCIdx = cIdx;
-                    searchBestCover(context, "id", String.valueOf(coverId), cIdx).ifPresent(
+                    searchBestCover(context, "id", String.valueOf(coverId), finalCIdx).ifPresent(
                             fileSpec -> CoverFileSpecArray.setFileSpec(book, finalCIdx, fileSpec));
                 }
             }
@@ -1421,7 +1427,6 @@ public class OpenLibrarySearchEngine
         String isbn = null;
         String langIso3 = null;
         String publisher = null;
-        final long[] covers = new long[2];
         JSONArray a;
 
         a = entry.optJSONArray("isbn_13");
@@ -1449,11 +1454,13 @@ public class OpenLibrarySearchEngine
         if (a != null && !a.isEmpty()) {
             publisher = a.optString(0);
         }
+
+        final long[] covers = new long[DBKey.NR_OF_BOOK_COVERS];
         a = entry.optJSONArray("covers");
         if (a != null && !a.isEmpty()) {
-            covers[0] = a.optInt(0);
-            if (a.length() > 1) {
-                covers[1] = a.optInt(1);
+            final int maxCovers = Math.min(a.length(), DBKey.NR_OF_BOOK_COVERS);
+            for (int cIdx = 0; cIdx < maxCovers; cIdx++) {
+                covers[cIdx] = a.optInt(cIdx);
             }
         }
         return new AltEditionOpenLibrary(olid, isbn, langIso3, publisher, covers);
@@ -1477,7 +1484,7 @@ public class OpenLibrarySearchEngine
     @NonNull
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
-                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @IntRange(from = 0, to = 3) final int cIdx,
                                                  @Nullable final ImageWebSize size)
             throws StorageException {
 
@@ -1486,25 +1493,25 @@ public class OpenLibrarySearchEngine
             final long[] covers = edition.getCovers();
 
             // The cover should always be valid, but paranoia...
-            if (covers[cIdx] > 0) {
-                return fetchImageByKey(context, 'b', "id", String.valueOf(covers[cIdx]), cIdx,
-                                       size);
+            if (covers.length >= cIdx && covers[cIdx] > 0) {
+                return fetchImageByKey(context, COVER_KEY_BOOK, "id",
+                                       String.valueOf(covers[cIdx]), cIdx, size);
             }
         } else if (altEdition instanceof AltEditionIsbn) {
-            if (cIdx == 1) {
-                // ENHANCE: we cannot return a back-cover here, as we need to native
+            if (cIdx > 0) {
+                // ENHANCE: we cannot return a back-cover here, as we need the native
                 //  OL cover-id ( != OLID book id) which we do not store locally.
-                //  We'd basically need to do a new book search (2 requests) here,
+                //  We'd basically need to do a new book search (2 requests),
                 //  extract the cover-id(s) and run 2 more requests.
-                //  For now, users can get the back-cover when doing an "Internet update"
+                //  For now, users can get the back-cover when doing an "Update fields" for a book
                 return Optional.empty();
             }
 
             final AltEditionIsbn edition = (AltEditionIsbn) altEdition;
             final String isbn = edition.getIsbn();
 
-            // Frontcover as usual
-            return fetchImageByKey(context, 'b', "isbn", isbn, 0, size);
+            // Frontcover only
+            return fetchImageByKey(context, COVER_KEY_BOOK, "isbn", isbn, 0, size);
         }
 
         return Optional.empty();
@@ -1526,14 +1533,17 @@ public class OpenLibrarySearchEngine
     private Optional<String> searchBestCover(@NonNull final Context context,
                                              @NonNull final String key,
                                              @NonNull final String id,
-                                             final int cIdx)
+                                             @IntRange(from = 0, to = 3) final int cIdx)
             throws StorageException {
 
-        Optional<String> oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, ImageWebSize.Large);
+        Optional<String> oFileSpec = fetchImageByKey(context, COVER_KEY_BOOK, key, id, cIdx,
+                                                     ImageWebSize.Large);
         if (oFileSpec.isEmpty()) {
-            oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, ImageWebSize.Medium);
+            oFileSpec = fetchImageByKey(context, COVER_KEY_BOOK, key, id, cIdx,
+                                        ImageWebSize.Medium);
             if (oFileSpec.isEmpty()) {
-                oFileSpec = fetchImageByKey(context, 'b', key, id, cIdx, ImageWebSize.Small);
+                oFileSpec = fetchImageByKey(context, COVER_KEY_BOOK, key, id, cIdx,
+                                            ImageWebSize.Small);
             }
         }
         return oFileSpec;
@@ -1543,7 +1553,7 @@ public class OpenLibrarySearchEngine
      * Common code to do the actual cover search.
      *
      * @param context Current context
-     * @param type    'b' for books, or 'a' for authors
+     * @param type    {@link #COVER_KEY_BOOK} for books, or {@link #COVER_KEY_AUTHOR} for authors
      *                There is NO check!
      * @param key     to use for the search
      * @param id      value for the above key
@@ -1559,7 +1569,7 @@ public class OpenLibrarySearchEngine
                                      final char type,
                                      @NonNull final String key,
                                      @NonNull final String id,
-                                     @IntRange(from = 0, to = 1) final int cIdx,
+                                     @IntRange(from = 0, to = 3) final int cIdx,
                                      @Nullable final ImageWebSize size)
             throws StorageException {
 

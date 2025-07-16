@@ -331,9 +331,9 @@ public class LastDodoSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -380,18 +380,19 @@ public class LastDodoSearchEngine
         // -> replace the substring to get the full size image
 
         final Elements container = document.getElementsByClass("thumbnails");
+        // 0==front-cover; 1==back-cover; 2+ are extra images
         final Elements images = container.get(0).select("img");
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
+        for (int cIdx = 0; cIdx < fetchCovers.length; cIdx++) {
             if (isCancelled()) {
                 return;
             }
+            // Should we fetch && is there one to fetch?
             if (fetchCovers[cIdx] && images.size() > cIdx) {
                 final String url = images.get(cIdx).attr("src")
                                          .replace("/ld_thumb1/", "/ld_medium/");
-                // use for lambda
-                final int tmpIdx = cIdx;
+                final int finalCIdx = cIdx;
                 saveImage(context, url, null, isbn, cIdx, null).ifPresent(
-                        fileSpec -> CoverFileSpecArray.setFileSpec(book, tmpIdx, fileSpec));
+                        fileSpec -> CoverFileSpecArray.setFileSpec(book, finalCIdx, fileSpec));
             }
         }
     }
@@ -465,9 +466,9 @@ public class LastDodoSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search

@@ -54,7 +54,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
-@SuppressWarnings({"MissingJavadoc","LongLine"})
+@SuppressWarnings({"MissingJavadoc", "LongLine"})
 public class ParseTest
         extends BaseDBTest {
 
@@ -85,7 +85,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{false, false}, book);
+        searchEngine.parseMultiResult(context, document, new boolean[]{false, false, false, false},
+                                      book);
         Log.d(TAG, book.toString());
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
@@ -136,7 +137,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{true, true}, book);
+        searchEngine.parseMultiResult(context, document, new boolean[]{true, true, false, false},
+                                      book);
         Log.d(TAG, book.toString());
 
         assertEquals("Foundation", book.getString(DBKey.TITLE, null));
@@ -204,7 +206,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Alter ego", book.getString(DBKey.TITLE, null));
@@ -270,8 +272,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("Europa", book.getString(DBKey.TITLE, null));
         assertEquals("9789044544725", book.getString(DBKey.ISBN, null));
@@ -339,8 +341,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("nijntjes voorleesfeest", book.getString(DBKey.TITLE, null));
         assertEquals("9789056478193", book.getString(DBKey.ISBN, null));
@@ -389,8 +391,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
-        // Log.d(TAG, book.toString());
+        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
+        Log.d(TAG, book.toString());
 
         assertEquals("Foundation Trilogy", book.getString(DBKey.TITLE, null));
         assertEquals("9781841593326", book.getString(DBKey.ISBN, null));
@@ -456,9 +458,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, new boolean[]{true, true, false, false}, book);
         Log.d(TAG, book.toString());
-
 
         assertEquals("Er stromen rivieren in de lucht", book.getString(DBKey.TITLE, null));
         assertEquals("9789046832073", book.getString(DBKey.ISBN, null));

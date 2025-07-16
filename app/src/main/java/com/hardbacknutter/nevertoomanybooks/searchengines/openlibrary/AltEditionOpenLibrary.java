@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AltEdition;
 
@@ -57,8 +58,7 @@ public class AltEditionOpenLibrary
     private final String langIso3;
     @Nullable
     private final String publisher;
-    /** Guaranteed to be len=2. */
-    private final long[] covers;
+    private final long[] covers = new long[DBKey.NR_OF_BOOK_COVERS];
 
     /**
      * Constructor.
@@ -67,24 +67,20 @@ public class AltEditionOpenLibrary
      * @param isbn      of the book book
      * @param langIso3  language ISO3 code of the book
      * @param publisher primary publisher name
-     * @param covers    the OL native cover id(s); the array <strong>must</strong> be 2 elements.
-     *
-     * @throws IllegalArgumentException if the covers array is not 2 elements.
+     * @param covers    the OL native cover id(s); up to {@code DBKey.NR_OF_BOOK_COVERS} will be used
      */
     AltEditionOpenLibrary(@NonNull final String olid,
                           @Nullable final String isbn,
                           @Nullable final String langIso3,
                           @Nullable final String publisher,
                           @NonNull final long[] covers) {
-        if (covers.length != 2) {
-            throw new IllegalArgumentException("covers must be long[2]");
-        }
-
         this.olid = olid;
         this.isbn = isbn;
         this.langIso3 = langIso3;
         this.publisher = publisher;
-        this.covers = covers;
+        // paranoia: both should be the same length
+        final int maxCovers = Math.min(covers.length, DBKey.NR_OF_BOOK_COVERS);
+        System.arraycopy(covers, 0, this.covers, 0, maxCovers);
     }
 
     private AltEditionOpenLibrary(@NonNull final Parcel in) {
@@ -93,7 +89,6 @@ public class AltEditionOpenLibrary
         isbn = in.readString();
         langIso3 = in.readString();
         publisher = in.readString();
-        covers = new long[2];
         in.readLongArray(covers);
     }
 

@@ -380,6 +380,7 @@
     <string name="lbl_number">Nummer</string>
     <string name="lbl_owned">Im Besitz</string>
     <string name="lbl_images">Bilder</string>
+    <string name="lbl_image_3">Bild 4</string>
     <string name="lbl_pages">Seiten</string>
     <string name="lbl_personal_notes">Persönliche Notizen</string>
     <string name="lbl_price_listed">Listenpreis</string>
@@ -862,4 +863,5 @@
         <item quantity="other">Es sind %1$d zuvor eingegebene ISBN-Codes vorhanden. Willst du danach suchen, oder sollen sie entfernt werden?</item>
     </plurals>
     <string name="lbl_author_type_foreword">Vorwort</string>
+    <string name="lbl_image_2">Bild 3</string>
 </resources>

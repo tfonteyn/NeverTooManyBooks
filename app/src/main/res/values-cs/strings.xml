@@ -398,6 +398,7 @@
     <string name="lbl_number">Číslo</string>
     <string name="lbl_owned">Vlastněno</string>
     <string name="lbl_images">Obrázky</string>
+    <string name="lbl_image_3">Obrázek 4</string>
     <string name="lbl_pages">Počet stran</string>
     <string name="lbl_personal_notes">Osobní poznámky</string>
     <string name="lbl_price_listed">Katalogová cena</string>
@@ -883,4 +884,5 @@
         <item quantity="other">Je zde %1$d dříve zadaných kódů ISBN. Chcete zahájit jejich vyhledávání, nebo je chcete odstranit?</item>
     </plurals>
     <string name="lbl_author_type_foreword">Předmluva</string>
+    <string name="lbl_image_2">Obrázek 3</string>
 </resources>

@@ -66,6 +66,13 @@
         <item>@string/size_x_large</item>
     </string-array>
 
+    <string-array name="lbl_cover_description">
+        <item>@string/lbl_cover_front</item>
+        <item>@string/lbl_cover_back</item>
+        <item>@string/lbl_image_2</item>
+        <item>@string/lbl_image_3</item>
+    </string-array>
+
     <!-- Labels for the {@link Style.Type} enum values. -->
     <string-array name="lbl_style_type">
         <item>@string/style_type_user_defined</item>

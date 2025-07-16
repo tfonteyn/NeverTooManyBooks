@@ -1230,6 +1230,13 @@
     <!-- [VERIFIED] Generic images (plural). -->
     <string name="lbl_images">Images</string>
 
+    <!-- [VERIFIED] Book covers: 3rd image.
+        (translators: the name is 0..3; but actual text is 1..4) -->
+    <string name="lbl_image_2">Image 3</string>
+    <!-- [VERIFIED] Book covers: 4th image.
+        (translators: the name is 0..3; but actual text is 1..4) -->
+    <string name="lbl_image_3">Image 4</string>
+
     <!-- number of pages; this is a field-label + also used for a radio button text. -->
     <string name="lbl_pages">Pages</string>
     <!-- number of pages; this is formatted text. -->

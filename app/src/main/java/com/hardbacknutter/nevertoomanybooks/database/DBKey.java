@@ -197,20 +197,25 @@ public final class DBKey {
             DATE_LAST_UPDATED__UTC,
             DATE_ADDED__UTC);
 
+    /** The number of supported Book images. */
+    public static final int NR_OF_BOOK_COVERS = 4;
+    public static final String[] COVER = new String[NR_OF_BOOK_COVERS];
+
     /** Suffix added to a column name to create a specific 'order by' copy of that column. */
     private static final String ORDER_BY_SUFFIX = "_ob";
     public static final String TITLE_OB = TITLE + ORDER_BY_SUFFIX;
-
     /**
      * The "field is used" key for thumbnails and other places where we need
      * to represent a cover.
      * There is NO VALUE linked to this key.
      */
     private static final String PREFIX_COVER = "thumbnail";
-    public static final String[] COVER = {
-            PREFIX_COVER + ".0",
-            PREFIX_COVER + ".1"
-    };
+
+    static {
+        for (int cIdx = 0; cIdx < NR_OF_BOOK_COVERS; cIdx++) {
+            COVER[cIdx] = PREFIX_COVER + '.' + cIdx;
+        }
+    }
 
     private DBKey() {
     }

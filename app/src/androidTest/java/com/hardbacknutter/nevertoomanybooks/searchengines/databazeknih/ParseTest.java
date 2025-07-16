@@ -93,7 +93,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Případ levoruké dámy", book.getString(DBKey.TITLE, null));
@@ -207,7 +207,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("P.S.", book.getString(DBKey.TITLE, null));
@@ -304,7 +304,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Sonety / Milenčin nářek (dvojjazyčná kniha)",
@@ -389,7 +389,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parseMultiResult(context, document, new boolean[]{false, false}, book);
+        searchEngine.parseMultiResult(context, document, new boolean[]{false, false, false, false},
+                                      book);
         Log.d(TAG, book.toString());
 
         assertEquals("Nadace", book.getString(DBKey.TITLE, null));

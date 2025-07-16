@@ -47,7 +47,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -61,9 +60,13 @@ public class ParseTest
      * The site is rather unstable.... half of the time it fails to serve covers
      * and returns a "500".
      * Ignore any failing tests for covers...
+     * <p>
+     * Example failure:
+     * checkResponseCode|500 https://archive.org/download/m_covers_0012/m_covers_0012_58.zip/0012585189-M.jpg
      */
     private static final String SITE_COVERS_BROKEN_AGAIN = "site covers broken again";
-    private static final boolean[] FETCH_COVERS = {false, false};
+    //    private static final boolean[] FETCH_COVERS = {false, false, false, false};
+    private static final boolean[] FETCH_COVERS = {true, true, true, true};
 
     private OpenLibrarySearchEngine searchEngine;
 
@@ -95,16 +98,16 @@ public class ParseTest
     public void parse1()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780980200447&fields=key,editions
+
         // https://openlibrary.org/books/OL22853304M.json
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary_9780980200447_book);
-        final JSONObject workDocument = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                               .R.raw.openlibrary_9780980200447_work);
+        final JSONObject document = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780980200447_book);
+        // https://openlibrary.org/works/OL13694821W.json
+        final JSONObject workDocument = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780980200447_work);
+
         final Book book = new Book();
         searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
         Log.d(TAG, book.toString());
 
         assertEquals("Slow reading", book.getString(DBKey.TITLE, null));
@@ -171,14 +174,26 @@ public class ParseTest
         assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
 
         if (FETCH_COVERS[0]) {
-            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+            // "covers": [5546156]
+            List<String> covers;
+
+            covers = CoverFileSpecArray.getList(book, 0);
             assertNotNull(covers);
             assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            //   "covers": [
-            //    5546156
-            //  ],
-            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                              + "_5546156_0_"));
+            assertTrue(covers.get(0).contains(preferenceKey + "_5546156_0_"));
+
+            covers = CoverFileSpecArray.getList(book, 1);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 2);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 3);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
         }
     }
 
@@ -187,14 +202,16 @@ public class ParseTest
             throws IOException, StorageException, SearchException, CredentialsException {
 
         // https://openlibrary.org/search.json?q=9780734418227&fields=key,editions
-        // https://openlibrary.org/books/OL47304760M.json
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary_9780734418227);
-        final Book book = new Book();
-        searchEngine.parse(context, document, FETCH_COVERS, book);
 
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
+        // https://openlibrary.org/books/OL47304760M.json
+        final JSONObject document = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780734418227_book);
+        // https://openlibrary.org/works/OL34944836W.json
+        final JSONObject workDocument = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780734418227_work);
+
+        final Book book = new Book();
+        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Wundersmith", book.getString(DBKey.TITLE, null));
@@ -224,14 +241,26 @@ public class ParseTest
         assertEquals("Nevermoor", allSeries.get(0).getTitle());
 
         if (FETCH_COVERS[0]) {
-            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+            // "covers": [13769253]
+            List<String> covers;
+
+            covers = CoverFileSpecArray.getList(book, 0);
             assertNotNull(covers);
             assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            // "covers": [
-            //  13769253
-            //  ],
-            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                              + "_13769253_0_"));
+            assertTrue(covers.get(0).contains(preferenceKey + "_13769253_0_"));
+
+            covers = CoverFileSpecArray.getList(book, 1);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 2);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 3);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
         }
     }
 
@@ -239,14 +268,16 @@ public class ParseTest
     public void parse3()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780141346830&fields=key,editions
-        // https://openlibrary.org/books/OL28508809M.json
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary_9780141346830);
-        final Book book = new Book();
-        searchEngine.parse(context, document, FETCH_COVERS, book);
 
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
+        // https://openlibrary.org/books/OL28508809M.json
+        final JSONObject document = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780141346830_book);
+        // https://openlibrary.org/works/OL492640W.json
+        final JSONObject workDocument = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780141346830_work);
+
+        final Book book = new Book();
+        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Percy Jackson and the Battle of the Labyrinth",
@@ -272,18 +303,28 @@ public class ParseTest
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
         if (FETCH_COVERS[0]) {
-            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+            //   "covers": [14615097, 14615096, 13011694]
+            List<String> covers;
+
+            covers = CoverFileSpecArray.getList(book, 0);
             assertNotNull(covers);
-            assertEquals(SITE_COVERS_BROKEN_AGAIN, 2, covers.size());
-            //   "covers": [
-            //    14615097,
-            //    14615096,
-            //    13011694
-            //  ],
-            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                              + "_14615097_0_"));
-            assertTrue(covers.get(1).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                              + "_14615096_1_"));
+            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
+            assertTrue(covers.get(0).contains(preferenceKey + "_14615097_0_"));
+
+            covers = CoverFileSpecArray.getList(book, 1);
+            assertNotNull(covers);
+            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
+            assertTrue(covers.get(1).contains(preferenceKey + "_14615096_1_"));
+
+            covers = CoverFileSpecArray.getList(book, 2);
+            assertNotNull(covers);
+            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
+            assertTrue(covers.get(1).contains(preferenceKey + "_13011694_2_"));
+
+            covers = CoverFileSpecArray.getList(book, 3);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
         }
     }
 
@@ -291,16 +332,16 @@ public class ParseTest
     public void parse4()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9783103971422&fields=key,editions
+
         // https://openlibrary.org/books/OL36696710M.json
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary_9783103971422_book);
-        final JSONObject workDocument = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                               .R.raw.openlibrary_9783103971422_work);
+        final JSONObject document = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9783103971422_book);
+        // https://openlibrary.org/works/OL27063321W.json
+        final JSONObject workDocument = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9783103971422_work);
+
         final Book book = new Book();
         searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
         Log.d(TAG, book.toString());
 
         assertEquals("Autokorrektur", book.getString(DBKey.TITLE, null));
@@ -426,14 +467,26 @@ public class ParseTest
         assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
 
         if (FETCH_COVERS[0]) {
-            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+            // "covers": [12585189]
+            List<String> covers;
+
+            covers = CoverFileSpecArray.getList(book, 0);
             assertNotNull(covers);
             assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            //   "covers": [
-            //  12585189
-            //]
-            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                              + "_12585189_0_"));
+            assertTrue(covers.get(0).contains(preferenceKey + "_12585189_0_"));
+
+            covers = CoverFileSpecArray.getList(book, 1);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 2);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 3);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
         }
     }
 
@@ -441,14 +494,17 @@ public class ParseTest
     public void parse5()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9780553276329&fields=key,editions
-        // https://openlibrary.org/books/OL7824144M.json
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary_9780553276329);
-        final Book book = new Book();
-        searchEngine.parse(context, document, FETCH_COVERS, book);
 
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
+        // https://openlibrary.org/books/OL7824144M.json
+        final JSONObject document = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780553276329_book);
+
+        // https://openlibrary.org/works/OL84905W.json
+        final JSONObject workDocument = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780553276329_work);
+
+        final Book book = new Book();
+        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Pacific Vortex!", book.getString(DBKey.TITLE, null));
@@ -512,14 +568,26 @@ public class ParseTest
         assertEquals("1", allSeries.get(0).getNumber());
 
         if (FETCH_COVERS[0]) {
-            final List<String> covers = CoverFileSpecArray.getList(book, 0);
+            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+            // "covers": [368945]
+            List<String> covers;
+
+            covers = CoverFileSpecArray.getList(book, 0);
             assertNotNull(covers);
             assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            //  "covers": [
-            //    368945
-            //  ],
-            assertTrue(covers.get(0).contains(EngineId.OpenLibrary.getPreferenceKey()
-                                              + "_368945_0_"));
+            assertTrue(covers.get(0).contains(preferenceKey + "_368945_0_"));
+
+            covers = CoverFileSpecArray.getList(book, 1);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 2);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 3);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
         }
     }
 
@@ -527,16 +595,16 @@ public class ParseTest
     public void parse6()
             throws IOException, StorageException, SearchException, CredentialsException {
         // https://openlibrary.org/search.json?q=9781691706631&fields=key,editions
+
         // https://openlibrary.org/books/OL33899062M.json
-        final JSONObject document = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                           .R.raw.openlibrary_9781691706631_book);
-        final JSONObject workDocument = loadJSONObject(com.hardbacknutter.nevertoomanybooks.test
-                                                               .R.raw.openlibrary_9781691706631_work);
+        final JSONObject document = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9781691706631_book);
+        // https://openlibrary.org/works/OL25312237W.json
+        final JSONObject workDocument = loadJSONObject(
+                com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9781691706631_work);
+
         final Book book = new Book();
         searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
-
-        assertNotNull(book);
-        assertFalse(book.isEmpty());
         Log.d(TAG, book.toString());
 
         assertEquals("Control Your Mind and Master Your Feelings",
@@ -572,5 +640,28 @@ public class ParseTest
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
         assertEquals("OL14948835A", oIv.get());
+
+        if (FETCH_COVERS[0]) {
+            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+            // "covers": [15096667, -1]
+            List<String> covers;
+            
+            covers = CoverFileSpecArray.getList(book, 0);
+            assertNotNull(covers);
+            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
+            assertTrue(covers.get(0).contains(preferenceKey + "_15096667_0_"));
+
+            covers = CoverFileSpecArray.getList(book, 1);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 2);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+
+            covers = CoverFileSpecArray.getList(book, 3);
+            assertNotNull(covers);
+            assertEquals(0, covers.size());
+        }
     }
 }

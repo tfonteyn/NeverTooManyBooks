@@ -50,11 +50,13 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
  */
 @SuppressWarnings("MissingJavadoc")
 public class DbPrep {
-    public static final String[] COVER = {"0.jpg", "1.jpg"};
+    public static final String[] COVER = {"0.jpg", "1.jpg", "2.jpg", "3.jpg"};
 
     private static final int[] coverResId = {
             com.hardbacknutter.nevertoomanybooks.test.R.raw.cover1,
-            com.hardbacknutter.nevertoomanybooks.test.R.raw.cover2
+            com.hardbacknutter.nevertoomanybooks.test.R.raw.cover2,
+            com.hardbacknutter.nevertoomanybooks.test.R.raw.cover3,
+            com.hardbacknutter.nevertoomanybooks.test.R.raw.cover4
     };
 
     /**
@@ -67,7 +69,7 @@ public class DbPrep {
      * @throws IOException on generic/other IO failures
      */
     @NonNull
-    public File getFile(@IntRange(from = 0, to = 1) final int cIdx)
+    public File getFile(@IntRange(from = 0, to = 3) final int cIdx)
             throws StorageException, IOException {
 
         final File tempDir = ServiceLocator.getInstance().getCoverStorage().getTempDir();

@@ -119,7 +119,7 @@ class FileManager {
     public ImageFileInfo search(@NonNull final Context context,
                                 @NonNull final ProgressListener progressListener,
                                 @NonNull final AltEdition edition,
-                                @IntRange(from = 0, to = 1) final int cIdx,
+                                @IntRange(from = 0, to = 3) final int cIdx,
                                 @NonNull final ImageWebSize... sizes)
             throws StorageException, CredentialsException {
 

@@ -46,12 +46,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings({"MissingJavadoc","LongLine"})
+@SuppressWarnings({"MissingJavadoc", "LongLine"})
 public class ParseTest
         extends BaseDBTest {
 
@@ -74,17 +73,14 @@ public class ParseTest
     public void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
 
-        final String locationHeader = "https://www.bedetheque.com"
-                                      + "/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
+        final String locationHeader = "https://www.bedetheque.com/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
         final int resId = com.hardbacknutter.nevertoomanybooks.test
                 .R.raw.bedetheque_db_fond_du_monde_tome_6_la_grande_terre_19401;
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, null, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, true, true, true},
+                           null, book);
         Log.d(TAG, book.toString());
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));
@@ -132,20 +128,26 @@ public class ParseTest
         assertEquals("Yves", author.getGivenNames());
         assertEquals(Author.TYPE_FOREWORD, author.getType());
 
-        List<String> coverList;
-        coverList = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(coverList);
-        assertEquals(1, coverList.size());
-        String cover;
-        cover = coverList.get(0);
-        assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey()
-                                  + "_2840557428_0_.jpg"));
-        coverList = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(coverList);
-        assertEquals(1, coverList.size());
-        cover = coverList.get(0);
-        assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey() +
-                                  "_2840557428_1_.jpg"));
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_2840557428_0_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_2840557428_1_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_2840557428_2_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     @Test
@@ -159,10 +161,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, null, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, true, true, true},
+                           null, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Les soucoupes volantes", book.getString(DBKey.TITLE, null));
@@ -209,20 +209,25 @@ public class ParseTest
         assertEquals("1980-06-19", author.getDeathDate().orElse(null));
         assertEquals("367", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
-        List<String> coverList;
-        coverList = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(coverList);
-        assertEquals(1, coverList.size());
-        String cover;
-        cover = coverList.get(0);
-        assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey()
-                                  + "__0_.jpg"));
-        coverList = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(coverList);
-        assertEquals(1, coverList.size());
-        cover = coverList.get(0);
-        assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey() +
-                                  "__1_.jpg"));
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "__0_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "__1_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
+
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     @Test
@@ -237,10 +242,8 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, true}, "280010578X", book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, true, true, true},
+                           "280010578X", book);
         Log.d(TAG, book.toString());
 
         assertEquals("Les soucoupes volantes", book.getString(DBKey.TITLE, null));
@@ -295,19 +298,25 @@ public class ParseTest
         assertEquals(Author.TYPE_CONTRIBUTOR, author.getType());
         assertEquals("32388", author.getIdentifierValue(Identifier.SID_BEDETHEQUE).orElse(null));
 
-        List<String> coverList;
-        coverList = CoverFileSpecArray.getList(book, 0);
-        assertNotNull(coverList);
-        assertEquals(1, coverList.size());
-        String cover;
-        cover = coverList.get(0);
-        assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey()
-                                  + "_280010578X_0_.jpg"));
-        coverList = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(coverList);
-        assertEquals(1, coverList.size());
-        cover = coverList.get(0);
-        assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey() +
-                                  "_280010578X_1_.jpg"));
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_280010578X_0_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_280010578X_1_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_280010578X_2_.jpg"));
+
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 }

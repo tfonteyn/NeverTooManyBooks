@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -513,6 +516,7 @@
     <string name="lbl_cover_front">Cuberta</string>
     <string name="lbl_covers">Cubertas</string>
     <string name="lbl_covers_long">Imaxes da cuberta</string>
+    <string name="lbl_image_3">Imaxe 4</string>
     <string name="lbl_pages">Páxinas</string>
     <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d páxinas</string>
     <string name="lbl_group">Grupo</string>
@@ -860,4 +864,5 @@
     <string name="confirm_leave_isbn_search">Hai buscas en curso e/ou resultados non gardados.</string>
     <string name="lbl_author_type_foreword">prólogo</string>
     <string name="lbl_author_type_afterword">epílogo</string>
+    <string name="lbl_image_2">Imaxe 3</string>
 </resources>

@@ -387,6 +387,7 @@
     <string name="lbl_number">Numarası</string>
     <string name="lbl_owned">Sahip olunan</string>
     <string name="lbl_images">Resimler</string>
+    <string name="lbl_image_3">Resim 4</string>
     <string name="lbl_pages">Sayfa</string>
     <string name="lbl_personal_notes">Kişisel notlar</string>
     <string name="lbl_price_listed">Liste fiyatı</string>
@@ -873,4 +874,5 @@
         <item quantity="other">Daha önce girilmiş %1$d ISBN kodu var. Bunlar için arama başlatmak ister misiniz, yoksa kaldırılsınlar mı?</item>
     </plurals>
     <string name="lbl_author_type_foreword">Önsöz</string>
+    <string name="lbl_image_2">Resim 3</string>
 </resources>

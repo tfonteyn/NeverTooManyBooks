@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -60,7 +61,7 @@ public class CoverBrowserViewModel
     /** Log tag. */
     private static final String TAG = "CoverBrowserViewModel";
 
-    /** int 0..1. */
+    /** 0..n image index. */
     static final String BKEY_FILE_INDEX = TAG + ":cIdx";
     /** Progressbar for the gallery. */
     private final MutableLiveData<Boolean> showGalleryProgress = new MutableLiveData<>();
@@ -154,6 +155,7 @@ public class CoverBrowserViewModel
     /** ISBN of book to fetch other editions of. */
     private String baseIsbn;
     /** Index of the image we're handling. */
+    @IntRange(from = 0, to = 3)
     private int cIdx;
 
     @Override

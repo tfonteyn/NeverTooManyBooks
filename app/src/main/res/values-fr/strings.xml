@@ -391,6 +391,7 @@
     <string name="lbl_number">Numéro</string>
     <string name="lbl_owned">Propriétaire</string>
     <string name="lbl_images">Images</string>
+    <string name="lbl_image_3">Image 4</string>
     <string name="lbl_pages">Pages</string>
     <string name="lbl_personal_notes">Notes personnelles</string>
     <string name="lbl_price_listed">Liste des prix</string>
@@ -869,4 +870,5 @@
     <string name="lbl_date_born">Née</string>
     <string name="pt_fetch_author_info">Recherche d’informations sur l’auteur</string>
     <string name="lbl_author_type_foreword">Préface</string>
+    <string name="lbl_image_2">Image 3</string>
 </resources>

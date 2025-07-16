@@ -96,7 +96,7 @@ public class CoverCacheDaoImpl
      */
     @NonNull
     private static String constructCacheId(@NonNull final String uuid,
-                                           @IntRange(from = 0, to = 1) final int cIdx,
+                                           @IntRange(from = 0, to = 3) final int cIdx,
                                            final int maxWidth) {
         return uuid + '.' + cIdx + '.' + maxWidth;
     }
@@ -139,7 +139,7 @@ public class CoverCacheDaoImpl
     @Nullable
     @AnyThread
     public Bitmap getCover(@NonNull final String uuid,
-                           @IntRange(from = 0, to = 1) final int cIdx,
+                           @IntRange(from = 0, to = 3) final int cIdx,
                            final int maxWidth) {
         if (isBusy()) {
             return null;
@@ -189,7 +189,7 @@ public class CoverCacheDaoImpl
     @Override
     @UiThread
     public void saveCover(@NonNull final String uuid,
-                          @IntRange(from = 0, to = 1) final int cIdx,
+                          @IntRange(from = 0, to = 3) final int cIdx,
                           @NonNull final Bitmap bitmap,
                           final int width) {
         // Start a task to send it to the cache.

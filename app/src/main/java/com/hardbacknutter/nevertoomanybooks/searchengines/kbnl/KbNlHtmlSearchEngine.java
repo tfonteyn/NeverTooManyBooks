@@ -219,9 +219,9 @@ public class KbNlHtmlSearchEngine
      *
      * @param context     Current context
      * @param titleList   to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
@@ -254,9 +254,9 @@ public class KbNlHtmlSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -540,10 +540,11 @@ public class KbNlHtmlSearchEngine
     @NonNull
     private Optional<String> searchBestCoverByEdition(@NonNull final Context context,
                                                       @NonNull final AltEdition edition,
-                                                      @IntRange(from = 0, to = 1) final int cIdx)
+                                                      @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
 
-        Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx, ImageWebSize.Large);
+        Optional<String> oFileSpec = searchCoverByEdition(context, edition, cIdx,
+                                                          ImageWebSize.Large);
         if (oFileSpec.isEmpty()) {
             oFileSpec = searchCoverByEdition(context, edition, cIdx, ImageWebSize.Medium);
             if (oFileSpec.isEmpty()) {
@@ -566,7 +567,7 @@ public class KbNlHtmlSearchEngine
     @Override
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
-                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
             throws StorageException {
 

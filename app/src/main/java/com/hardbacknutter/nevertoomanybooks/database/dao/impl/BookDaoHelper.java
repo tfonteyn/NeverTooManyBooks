@@ -514,7 +514,7 @@ public class BookDaoHelper {
 
         final String uuid = book.getUuid();
 
-        for (int cIdx = 0; cIdx < Book.BKEY_TMP_FILE_SPEC.length; cIdx++) {
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
             if (book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {
                 final String fileSpec = book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
 

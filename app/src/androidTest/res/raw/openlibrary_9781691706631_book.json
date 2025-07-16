@@ -5,7 +5,7 @@
   "Eric Robertson"
 ], "publish_date": "2019", "key": "/books/OL33899062M", "type": {"key": "/type/edition"},
   "identifiers": {}, "covers": [
-  15089578,
+  15096667,
   -1
 ], "source_records": [
   "amazon:1691706639",
@@ -16,7 +16,7 @@
   "1691706639"
 ], "isbn_13": [
   "9781691706631"
-], "latest_revision": 80, "revision": 80,
+], "latest_revision": 90, "revision": 90,
   "created": {"type": "/type/datetime", "value": "2021-09-27T18:56:20.746460"},
-  "last_modified": {"type": "/type/datetime", "value": "2025-06-03T11:16:39.838349"}
+  "last_modified": {"type": "/type/datetime", "value": "2025-07-10T04:13:57.672360"}
 }

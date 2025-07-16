@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -209,8 +210,8 @@ public interface SearchEngine
          *
          * @param context     Current context
          * @param externalId  the external id (as a String) for this particular search site.
-         * @param fetchCovers Set to {@code true} if we want to get covers
-         *                    The array is guaranteed to have 2 elements.
+         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -278,8 +279,8 @@ public interface SearchEngine
          *
          * @param context     Current context
          * @param validIsbn   to search for, <strong>will</strong> be valid.
-         * @param fetchCovers Set to {@code true} if we want to get covers
-         *                    The array is guaranteed to have 2 elements.
+         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -323,8 +324,8 @@ public interface SearchEngine
          *
          * @param context     Current context
          * @param barcode     to search for, <strong>will</strong> be valid.
-         * @param fetchCovers Set to {@code true} if we want to get covers
-         *                    The array is guaranteed to have 2 elements.
+         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -369,8 +370,8 @@ public interface SearchEngine
          * @param code        isbn, barcode or generic code to search for.
          *                    The interpretation depends on the engine.
          *                    Optional / not supported by all engines
-         * @param fetchCovers Set to {@code true} if we want to get covers
-         *                    The array is guaranteed to have 2 elements.
+         * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+         *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -478,7 +479,9 @@ public interface SearchEngine
          *
          * @param context Current context
          * @param edition to search for
-         * @param cIdx    0..n image index
+         * @param cIdx    0..n image index; implementations might not support the full range.
+         *                Indexes not supported should be ignored,
+         *                and {@code Optional.Empty()} returned.
          * @param size    of image to get.
          *
          * @return fileSpec
@@ -491,7 +494,7 @@ public interface SearchEngine
         @NonNull
         Optional<String> searchCoverByEdition(@NonNull Context context,
                                               @NonNull AltEdition edition,
-                                              @IntRange(from = 0, to = 1) int cIdx,
+                                              @IntRange(from = 0, to = 3) int cIdx,
                                               @Nullable ImageWebSize size)
                 throws StorageException,
                        SearchException,

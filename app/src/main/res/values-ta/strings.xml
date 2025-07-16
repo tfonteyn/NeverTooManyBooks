@@ -833,6 +833,8 @@
     <string name="X_lbl_folder">கோப்புறை</string>
     <string name="X_lbl_general">பொது</string>
     <string name="lbl_image">படம்</string>
+    <string name="lbl_image_2">படம் 3</string>
+    <string name="lbl_image_3">படம் 4</string>
     <string name="X_lbl_system">(அமைப்பு)</string>
     <string name="X_neither">இல்லை</string>
     <string name="X_lbl_thumbnails">சிறு உருவங்கள்</string>

@@ -80,7 +80,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Bone Silence", book.getString(DBKey.TITLE, null));
@@ -124,7 +124,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("The Medusa Chronicles: Alastair Reynolds & Stephen Baxter",
@@ -171,7 +171,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
@@ -217,7 +217,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Siddhartha. Eine indische Dichtung",
@@ -261,7 +261,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Siddhartha", book.getString(DBKey.TITLE, null));
@@ -283,7 +283,6 @@ public class ParseTest
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
-        // 2024-10-10: They changed the author from "Hermann Hesse" to "hermann-hesse"... oh well
         assertEquals("hermann-hesse", authors.get(0).getFamilyName());
         assertEquals("", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
@@ -305,7 +304,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Essential Grammar in Use. Fourth Edition. Book with Answers.",
@@ -349,7 +348,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("La rebelión de los buenos: Premio de Novela Fernando Lara 2023",

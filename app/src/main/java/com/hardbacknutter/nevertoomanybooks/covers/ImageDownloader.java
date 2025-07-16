@@ -92,7 +92,7 @@ public class ImageDownloader {
     @NonNull
     public static String getTempFilename(@NonNull final String source,
                                          @Nullable final String bookId,
-                                         @IntRange(from = 0, to = 1) final int cIdx,
+                                         @IntRange(from = 0, to = 3) final int cIdx,
                                          @Nullable final ImageWebSize size) {
         // keep all "_" even for empty parts. Easier to parse the name if needed.
         return System.currentTimeMillis()

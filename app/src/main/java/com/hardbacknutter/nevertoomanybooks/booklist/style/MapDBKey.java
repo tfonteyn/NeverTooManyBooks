@@ -37,6 +37,8 @@ public final class MapDBKey {
     private static final Map<String, String> DB_KEY_TO_DOMAIN_NAME = Map.ofEntries(
             Map.entry(DBKey.COVER[0], DBKey.BOOK_UUID),
             Map.entry(DBKey.COVER[1], DBKey.BOOK_UUID),
+            Map.entry(DBKey.COVER[2], DBKey.BOOK_UUID),
+            Map.entry(DBKey.COVER[3], DBKey.BOOK_UUID),
 
             Map.entry(DBKey.FK_AUTHOR, DBKey.AUTHOR.FORMATTED_FULL_NAME),
             Map.entry(DBKey.FK_BOOKSHELF, DBKey.BOOKSHELF.BOOK_BOOKSHELF_NAMES_AS_CSV),
@@ -53,6 +55,8 @@ public final class MapDBKey {
     private static final Map<String, Integer> DB_KEY_TO_LABEL_RES_ID = Map.ofEntries(
             Map.entry(DBKey.COVER[0], R.string.lbl_cover_front),
             Map.entry(DBKey.COVER[1], R.string.lbl_cover_back),
+            Map.entry(DBKey.COVER[2], R.string.lbl_image_2),
+            Map.entry(DBKey.COVER[3], R.string.lbl_image_3),
 
             Map.entry(DBKey.AUTHOR.BOOK_AUTHOR_TYPE, R.string.lbl_author_type),
             Map.entry(DBKey.COLOR, R.string.lbl_color),

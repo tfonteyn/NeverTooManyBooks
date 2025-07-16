@@ -217,9 +217,9 @@ public class DoubanSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -455,9 +455,9 @@ public class DoubanSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -725,7 +725,7 @@ public class DoubanSearchEngine
                                         @NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
-                                        @IntRange(from = 0, to = 1) final int cIdx)
+                                            @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
         // "div#mainpic > a" element will have as the href a large version of the image.
         // "div#mainpic > a > img" will have "src" point to a thumbnail
@@ -779,7 +779,7 @@ public class DoubanSearchEngine
     @NonNull
     public Optional<String> searchCoverByEdition(@NonNull final Context context,
                                                  @NonNull final AltEdition altEdition,
-                                                 @IntRange(from = 0, to = 1) final int cIdx,
+                                                 @IntRange(from = 0, to = 0) final int cIdx,
                                                  @Nullable final ImageWebSize size)
             throws SearchException, CredentialsException, StorageException {
 

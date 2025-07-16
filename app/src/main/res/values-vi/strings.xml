@@ -428,6 +428,7 @@
     <string name="lbl_original_title_long">Nhan đề gốc nếu cuốn sách này là bản dịch</string>
     <string name="lbl_owned">Sở hữu</string>
     <string name="lbl_images">Ảnh</string>
+    <string name="lbl_image_3">Hình ảnh 4</string>
     <string name="lbl_pages">Trang</string>
     <string name="lbl_percentage">Tỷ lệ phần trăm</string>
     <string name="lbl_percentage_read">% đã đọc</string>
@@ -858,4 +859,5 @@
     <plurals name="confirm_queue_has_x_items">
         <item quantity="other">Có %1$d mã ISBN đã nhập trước đó. Bạn có muốn bắt đầu tìm kiếm chúng hay nên xóa chúng?</item>
     </plurals>
+    <string name="lbl_image_2">Hình ảnh 3</string>
 </resources>

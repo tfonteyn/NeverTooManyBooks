@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -386,6 +389,7 @@
     <string name="lbl_number">Numer</string>
     <string name="lbl_owned">Posiadane</string>
     <string name="lbl_images">Obrazy</string>
+    <string name="lbl_image_3">Obraz 4</string>
     <string name="lbl_pages">Stron</string>
     <string name="lbl_personal_notes">Notatki osobiste</string>
     <string name="lbl_price_listed">Cena katalogowa</string>
@@ -872,4 +876,5 @@
         <item quantity="other">Jest %1$d wcześniej wprowadzonych kodów ISBN. Chcesz rozpocząć ich wyszukiwanie lub chcesz je usunąć?</item>
     </plurals>
     <string name="lbl_author_type_foreword">Przedmowa</string>
+    <string name="lbl_image_2">Obraz 3</string>
 </resources>

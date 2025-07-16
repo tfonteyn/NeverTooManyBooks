@@ -126,8 +126,12 @@ public class ShowBookDetailsFragment
      */
     static final String BKEY_EMBEDDED = TAG + ":bd-embedded";
 
-    /** Delegate to handle cover replacement, rotation, etc. */
-    private final ImageHandler[] imageHandler = new ImageHandler[2];
+    /**
+     * Delegate to handle cover replacement, rotation, etc.
+     * Individual instances are only created when the corresponding image field is globally enabled.
+     * i.o.w. check for {@code null} !
+     */
+    private final ImageHandler[] imageHandler = new ImageHandler[DBKey.NR_OF_BOOK_COVERS];
     private ToolbarMenuProvider toolbarMenuProvider;
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
@@ -367,7 +371,7 @@ public class ShowBookDetailsFragment
         final TypedArray width = res.obtainTypedArray(R.array.cover_details_max_width);
         try {
             final Style style = aVm.getStyle();
-            for (int cIdx = 0; cIdx < width.length(); cIdx++) {
+            for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
                 if (style.isShowField(FieldVisibility.Screen.Detail, DBKey.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = (int) (maxWidth / CoverScale.HW_RATIO);
@@ -410,7 +414,7 @@ public class ShowBookDetailsFragment
      *
      * @param cIdx 0..n image index
      */
-    private void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
+    private void reloadImage(@IntRange(from = 0, to = 3) final int cIdx) {
         // Needed when running inside the ViewPager to update the activity result data
         // Ignored if running im embedded mode, but keeping this future-proof
         aVm.setDataModified();
@@ -534,7 +538,7 @@ public class ShowBookDetailsFragment
 
         final TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images);
         try {
-            for (int cIdx = 0; cIdx < coverResIds.length(); cIdx++) {
+            for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
                 //noinspection DataFlowIssue
                 final ImageView view = parentView.findViewById(coverResIds.getResourceId(cIdx, 0));
                 if (imageHandler[cIdx] != null) {

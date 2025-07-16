@@ -185,11 +185,12 @@ public class SearchBookUpdatesViewModel
         final SyncReaderProcessor.Builder builder =
                 new SyncReaderProcessor.Builder(context, SYNC_PREFERENCE_PREFIX, realNumberParser);
 
-        // Cover fields will be at the top of the list.
-        builder.add(context.getString(R.string.lbl_cover_front),
-                    SyncField.Type.OTHER, DBKey.COVER[0]);
-        builder.add(context.getString(R.string.lbl_cover_back),
-                    SyncField.Type.OTHER, DBKey.COVER[1]);
+        // Image fields will be at the top of the list.
+        final String[] coverDesc = context.getResources()
+                                          .getStringArray(R.array.lbl_cover_description);
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            builder.add(coverDesc[cIdx], SyncField.Type.OTHER, DBKey.COVER[cIdx]);
+        }
 
         // These fields will be locally sorted and come next on the list
         final SortedMap<String, SyncFieldDef> map = new TreeMap<>();
@@ -251,9 +252,11 @@ public class SearchBookUpdatesViewModel
         map.forEach((label, def) -> builder.add(
                 label, def.type, def.fieldKey, def.enabledKey));
 
-        builder.addRelatedField(DBKey.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
-               .addRelatedField(DBKey.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
-               .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            builder.addRelatedField(DBKey.COVER[cIdx], Book.BKEY_TMP_FILE_SPEC[cIdx]);
+        }
+
+        builder.addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
 
         return builder;
     }
@@ -284,7 +287,10 @@ public class SearchBookUpdatesViewModel
         }
 
         // More than set number of books, ask the user if they really want to overwrite ALL covers
-        return syncProcessorBuilder.getSyncAction(DBKey.COVER[0]) == SyncAction.Overwrite;
+        // Note we only check the frontcover/back-cover.
+        // The assumption is that image 3+4 will seldom be downloaded
+        return syncProcessorBuilder.getSyncAction(DBKey.COVER[0]) == SyncAction.Overwrite
+               || syncProcessorBuilder.getSyncAction(DBKey.COVER[1]) == SyncAction.Overwrite;
     }
 
     /**
@@ -294,8 +300,9 @@ public class SearchBookUpdatesViewModel
      * @param action to set
      */
     void setCoverSyncAction(@NonNull final SyncAction action) {
-        syncProcessorBuilder.setSyncAction(DBKey.COVER[0], action);
-        syncProcessorBuilder.setSyncAction(DBKey.COVER[1], action);
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            syncProcessorBuilder.setSyncAction(DBKey.COVER[cIdx], action);
+        }
     }
 
     int getTotalBooks() {
@@ -456,8 +463,8 @@ public class SearchBookUpdatesViewModel
                             searchCriteria.setSeriesNr(ps.getNumber());
                         });
 
-                        final boolean[] fetchCovers = new boolean[2];
-                        for (int cIdx = 0; cIdx < 2; cIdx++) {
+                        final boolean[] fetchCovers = new boolean[DBKey.NR_OF_BOOK_COVERS];
+                        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
                             fetchCovers[cIdx] = currentFieldsWanted
                                     .containsKey(Book.BKEY_TMP_FILE_SPEC[cIdx]);
                         }

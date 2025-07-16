@@ -147,24 +147,22 @@ public class SyncReaderProcessor {
                     // If the local data is absent or empty, add the field
                     return !localBook.contains(field.getKey())
                            || localBook.getParcelableArrayList(field.getKey()).isEmpty();
-
-                } else if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
-                    // check if we have a valid image
-                    return ServiceLocator.getInstance().getCoverStorage()
-                                         .getPersistedFile(localBook.getUuid(), 0)
-                                         .isEmpty();
-
-                } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
-                    // check if we have a valid image
-                    return ServiceLocator.getInstance().getCoverStorage()
-                                         .getPersistedFile(localBook.getUuid(), 1)
-                                         .isEmpty();
-                } else {
-                    // If the local data is blank or numerical zero, add the field
-                    final String value = localBook.getString(field.getKey(), null);
-                    return value == null || value.isEmpty()
-                           || "0".equals(value) || "0.0".equals(value);
                 }
+
+                for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+                    if (Book.BKEY_TMP_FILE_SPEC[cIdx].equals(field.getKey())) {
+                        // check if we have a valid image
+                        return ServiceLocator.getInstance().getCoverStorage()
+                                             .getPersistedFile(localBook.getUuid(), cIdx)
+                                             .isEmpty();
+                    }
+                }
+
+                // If the local data is blank or numerical zero, add the field
+                final String value = localBook.getString(field.getKey(), null);
+                return value == null || value.isEmpty()
+                       || "0".equals(value) || "0.0".equals(value);
+
             }
             case Skip:
             default:
@@ -285,35 +283,36 @@ public class SyncReaderProcessor {
                                      @NonNull final Book remoteBook,
                                      @NonNull final SyncField field)
             throws IOException {
-        // Handle thumbnail specially
-        if (Book.BKEY_TMP_FILE_SPEC[0].equals(field.getKey())) {
-            processCover(localBook, remoteBook, 0);
-        } else if (Book.BKEY_TMP_FILE_SPEC[1].equals(field.getKey())) {
-            processCover(localBook, remoteBook, 1);
-        } else {
-            switch (field.getAction()) {
-                case CopyIfBlank:
-                    // If our local book already has this data,
-                    // remove the unneeded field from the delta (remote book)
-                    if (hasField(localBook, field, realNumberParser)) {
-                        remoteBook.remove(field.getKey());
-                    }
-                    break;
 
-                case Append:
-                    processAppend(context, localBook, remoteBook, field.getKey());
-                    break;
-
-                case Overwrite:
-                    // no action needed, the data in 'remoteBook' will overwrite
-                    // our local data
-                    break;
-
-                case Skip:
-                default:
-                    // Skip is N/A as fields to skip will have removed during filtering
-                    break;
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            if (Book.BKEY_TMP_FILE_SPEC[cIdx].equals(field.getKey())) {
+                processCover(localBook, remoteBook, cIdx);
+                return;
             }
+        }
+
+        switch (field.getAction()) {
+            case CopyIfBlank:
+                // If our local book already has this data,
+                // remove the unneeded field from the delta (remote book)
+                if (hasField(localBook, field, realNumberParser)) {
+                    remoteBook.remove(field.getKey());
+                }
+                break;
+
+            case Append:
+                processAppend(context, localBook, remoteBook, field.getKey());
+                break;
+
+            case Overwrite:
+                // no action needed, the data in 'remoteBook' will overwrite
+                // our local data
+                break;
+
+            case Skip:
+            default:
+                // Skip is N/A as fields to skip will have removed during filtering
+                break;
         }
     }
 
@@ -352,7 +351,7 @@ public class SyncReaderProcessor {
 
     private void processCover(@NonNull final Book localBook,
                               @NonNull final Book remoteBook,
-                              @IntRange(from = 0, to = 1) final int cIdx)
+                              @IntRange(from = 0, to = 3) final int cIdx)
             throws IOException {
 
         final String fileSpec = remoteBook.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null);
@@ -389,7 +388,7 @@ public class SyncReaderProcessor {
      * {@link SyncField.Type#STRING}: concatenates two {@code String}s.
      *
      * @param context    Current context
-     * @param localBook to check; will NOT be modified.
+     * @param localBook  to check; will NOT be modified.
      * @param remoteBook the data to merge with the book;
      *                   after returning, this will contain the new data AND the data we merged
      *                   from the #localBook

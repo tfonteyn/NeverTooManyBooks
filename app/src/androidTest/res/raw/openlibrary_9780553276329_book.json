@@ -1,0 +1,63 @@
+{
+  "identifiers": {
+    "goodreads": [
+      "361081"
+    ], "librarything": [
+      "1182484"
+    ]
+  }, "title": "Pacific Vortex!", "authors": [
+  {"key": "/authors/OL29079A"}
+], "publish_date": "1984-10", "publishers": [
+  "Bantam"
+], "weight": "4.8 ounces", "series": [
+  "NUMA Files, 1; Dirk Pitt Adventures, 1"
+], "covers": [
+  368945
+], "physical_format": "Mass Market Paperback", "subjects": [
+  "Fiction - Espionage / Thriller",
+  "Fiction",
+  "Espionage/Intrigue",
+  "Thrillers",
+  "Fiction / Thrillers",
+  "Action & Adventure"
+], "languages": [
+  {"key": "/languages/eng"}
+], "type": {"key": "/type/edition"}, "physical_dimensions": "6.9 x 4.1 x 0.7 inches",
+  "source_records": [
+    "promise:bwb_daily_pallets_2021-03-08:O7-AOK-442",
+    "amazon:0553276328",
+    "promise:bwb_daily_pallets_2021-03-08:O7-AIU-963",
+    "promise:bwb_daily_pallets_2021-03-08:O7-DJB-232",
+    "promise:bwb_daily_pallets_2021-03-08:509-BAC-753",
+    "promise:bwb_daily_pallets_2020-12-16:P6-ATN-312",
+    "promise:bwb_daily_pallets_2020-11-16:P6-AJH-632",
+    "promise:bwb_daily_pallets_2020-04-30:O6-BNX-144"
+  ], "local_id": [
+  "urn:bwbsku:O7-AOK-442",
+  "urn:bwbsku:O7-AIU-963",
+  "urn:bwbsku:O7-DJB-232",
+  "urn:bwbsku:509-BAC-753",
+  "urn:bwbsku:P6-ATN-312",
+  "urn:bwbsku:P6-AJH-632",
+  "urn:bwbsku:O6-BNX-144"
+], "key": "/books/OL7824144M", "number_of_pages": 270, "works": [
+  {"key": "/works/OL84905W"}
+], "classifications": {}, "ocaid": "pacificvortexdir00cliv", "isbn_10": [
+  "0553276328"
+], "isbn_13": [
+  "9780553276329"
+], "subtitle": "Dirk Pitt\u2019s First Adventure", "publish_places": [
+  "New York",
+  "Toronto",
+  "London",
+  "Sydney",
+  "Auckland"
+], "copyright_date": "1982, 1994", "contributors": [
+  {"role": "Foreword", "name": "Clive Cussler"}
+], "first_sentence": {
+  "type": "/type/text",
+  "value": "Not that it really matters, but this is the first Dirk Pitt story."
+}, "latest_revision": 25, "revision": 25,
+  "created": {"type": "/type/datetime", "value": "2008-04-29T15:03:11.581851"},
+  "last_modified": {"type": "/type/datetime", "value": "2023-12-17T14:39:38.297589"}
+}

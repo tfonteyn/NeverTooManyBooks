@@ -143,7 +143,9 @@ public class FieldVisibility {
 
             // bit 36..39
             DBKey.DATE_ACQUIRED,
-            DBKey.TRANSLATION_ORIGINAL_LANGUAGE
+            DBKey.TRANSLATION_ORIGINAL_LANGUAGE,
+            DBKey.COVER[2],
+            DBKey.COVER[3]
 
             // NEWTHINGS: BookLevelField: add new field above
             //  and also to:

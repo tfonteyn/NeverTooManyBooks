@@ -80,7 +80,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Rule 34", book.getString(DBKey.TITLE, null));

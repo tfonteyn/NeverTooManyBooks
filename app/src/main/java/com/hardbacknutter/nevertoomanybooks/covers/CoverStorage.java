@@ -117,11 +117,12 @@ public class CoverStorage {
 
     @NonNull
     private static String createName(@NonNull final String uuid,
-                                     @IntRange(from = 0, to = 1) final int cIdx) {
+                                     @IntRange(from = 0, to = 3) final int cIdx) {
         final String name;
         if (cIdx > 0) {
             name = uuid + "_" + cIdx;
         } else {
+            // backwards compatibility, use the raw uuid only
             name = uuid;
         }
         return name;
@@ -307,7 +308,7 @@ public class CoverStorage {
      */
     @NonNull
     public Optional<File> getPersistedFile(@NonNull final String uuid,
-                                           @IntRange(from = 0, to = 1) final int cIdx) {
+                                           @IntRange(from = 0, to = 3) final int cIdx) {
         if (uuid.isEmpty()) {
             return Optional.empty();
         }
@@ -380,7 +381,7 @@ public class CoverStorage {
     @NonNull
     public File persist(@NonNull final File source,
                         @NonNull final String uuid,
-                        @IntRange(from = 0, to = 1) final int cIdx)
+                        @IntRange(from = 0, to = 3) final int cIdx)
             throws IOException, CoverStorageException {
 
         final String name = createName(uuid, cIdx) + EXT_JPG;
@@ -489,7 +490,7 @@ public class CoverStorage {
      * @param cIdx 0..n image index
      */
     public void delete(@NonNull final String uuid,
-                       @IntRange(from = 0, to = 1) final int cIdx) {
+                       @IntRange(from = 0, to = 3) final int cIdx) {
 
         final Optional<File> persistedFile = getPersistedFile(uuid, cIdx);
         if (persistedFile.isPresent()) {
@@ -524,7 +525,7 @@ public class CoverStorage {
      * @throws IOException on generic/other IO failures
      */
     public boolean restore(@NonNull final String uuid,
-                           @IntRange(from = 0, to = 1) final int cIdx)
+                           @IntRange(from = 0, to = 3) final int cIdx)
             throws IOException {
         if (!isUndoEnabled()) {
             return false;
@@ -551,7 +552,7 @@ public class CoverStorage {
      * @return {@code true} if there is a previous version
      */
     boolean isUndoEnabled(@NonNull final String uuid,
-                          @IntRange(from = 0, to = 1) final int cIdx) {
+                          @IntRange(from = 0, to = 3) final int cIdx) {
         if (!isUndoEnabled()) {
             return false;
         }
@@ -614,7 +615,7 @@ public class CoverStorage {
      */
     @Nullable
     public Bitmap getCachedBitmap(@NonNull final String uuid,
-                                  @IntRange(from = 0, to = 1) final int cIdx,
+                                  @IntRange(from = 0, to = 3) final int cIdx,
                                   final int width) {
         return coverCacheDaoSupplier.get().getCover(uuid, cIdx, width);
     }
@@ -634,7 +635,7 @@ public class CoverStorage {
      */
     @UiThread
     public void saveToCache(@NonNull final String uuid,
-                            @IntRange(from = 0, to = 1) final int cIdx,
+                            @IntRange(from = 0, to = 3) final int cIdx,
                             @NonNull final Bitmap bitmap,
                             final int width) {
         coverCacheDaoSupplier.get().saveCover(uuid, cIdx, bitmap, width);

@@ -56,10 +56,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolverHelper;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineUtils;
@@ -286,9 +286,9 @@ public class DatabazeKnihSearchEngine
      *
      * @param context     Current context
      * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param fetchCovers Set array indexes to {@code true} to fetch a cover for that index.
+     *                    Array length is {@link DBKey#NR_OF_BOOK_COVERS}.
+     * @param book        to update
      *
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
@@ -493,8 +493,8 @@ public class DatabazeKnihSearchEngine
      *  but how reliable is this? Need more examples.
      *  https://www.databazeknih.cz/prehled-knihy/lucky-luke-crew-jak-se-daltonovi-polepsili-555445
      *
-     * @param root    to parse
-     * @param book    to update
+     * @param root to parse
+     * @param book to update
      */
     private void parseAdditional(@NonNull final Document root,
                                  @NonNull final Book book) {
@@ -664,10 +664,10 @@ public class DatabazeKnihSearchEngine
     /**
      * Parse the given link/text for an Author.
      *
-     * @param a       to parse
-     * @param text    author name
-     * @param type    of author
-     * @param book    to update
+     * @param a    to parse
+     * @param text author name
+     * @param type of author
+     * @param book to update
      */
     private void parseAuthor(@NonNull final Element a,
                              @NonNull final String text,
@@ -738,7 +738,7 @@ public class DatabazeKnihSearchEngine
                                         @NonNull final Document document,
                                         @Nullable final String bookId,
                                         @SuppressWarnings("SameParameterValue")
-                                        @IntRange(from = 0, to = 1) final int cIdx)
+                                            @IntRange(from = 0, to = 0) final int cIdx)
             throws StorageException {
 
         String url = null;

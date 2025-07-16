@@ -27,8 +27,11 @@
     <string name="action_crop">Apgriezt</string>
     <string name="lbl_publisher">Izdevējs</string>
     <string name="list_and">un</string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
+    <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Kļūda</string>
+    <string name="list_semicolon">"; "</string>
     <string name="list_element">• %s</string>
     <plurals name="n_books">
         <item quantity="zero">%1$d grāmatas</item>
@@ -61,6 +64,7 @@
     <string name="lbl_cover_front">Priekšējais vāks</string>
     <string name="lbl_books">Grāmatas</string>
     <string name="lbl_image">Attēls</string>
+    <string name="lbl_image_3">Attēls 4</string>
     <string name="lbl_pages">Lapas</string>
     <string name="lbl_currency">Valūta</string>
     <string name="lbl_group">Grupa</string>
@@ -115,6 +119,7 @@
     <string name="X_lbl_general">Vispārīgi</string>
     <string name="X_lbl_system">(Sistēma)</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="action_add">Pievienot</string>
     <string name="action_apply">Lietot</string>
@@ -197,5 +202,13 @@
     <string name="confirm_leave_isbn_search">Notiek meklēšana un/vai netiek saglabāti rezultāti.</string>
     <string name="lbl_author_type_foreword">Priekšvārds</string>
     <string name="lbl_author_type_afterword">Pēcvārds</string>
+    <string name="lbl_image_2">Attēls 3</string>
+    <string name="brackets">(%1$s)</string>
+    <string name="quoted">“%1$s”</string>
+    <string name="ellipsize">%1$s…</string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <string name="x_of_y">%1$d di %2$d</string>
+    <string name="and_others">%1$s…</string>
+    <string name="notification_channel_info">Informācija</string>
 
 </resources>

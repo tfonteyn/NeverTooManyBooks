@@ -38,13 +38,12 @@ import androidx.preference.PreferenceManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
-import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
-import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
-import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -101,10 +100,11 @@ public class DBHelper
      * v7.3.0: 40
      * v7.4.0: 41
      * v7.6.0: 42
+     * v7.7.0: 43
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 42;
+    public static final int DATABASE_VERSION = 43;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -545,6 +545,13 @@ public class DBHelper
                     DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID);
 
             updateIdentifierWikidataAuthorIdClaims(context, db);
+        }
+        if (oldVersion < 43) {
+            // enable the cover image 2+3 for ALL styles.
+            db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES.getName()
+                       + " SET " + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
+                       + '=' + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
+                       + '|' + FieldVisibility.getBitValue(Set.of(DBKey.COVER[2], DBKey.COVER[3])));
         }
 
         // We have to do this here due to some users skipping updates (see github #30)

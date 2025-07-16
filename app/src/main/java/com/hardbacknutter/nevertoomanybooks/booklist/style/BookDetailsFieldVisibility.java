@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -30,15 +32,17 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 public class BookDetailsFieldVisibility
         extends FieldVisibility {
 
-    /** The fields which are supported by this class. */
-    private static final Set<String> FIELDS = Set.of(
-            DBKey.COVER[0],
-            DBKey.COVER[1]);
-
     /** The fields which will be visible by default. */
-    public static final Set<String> DEFAULT = Set.of(
-            DBKey.COVER[0],
-            DBKey.COVER[1]);
+    @SuppressWarnings("PublicStaticCollectionField")
+    public static final Set<String> DEFAULT;
+    /** The fields which are supported by this class. */
+    private static final Set<String> FIELDS;
+
+    static {
+        final List<String> list = Arrays.asList(DBKey.COVER);
+        FIELDS = Set.copyOf(list);
+        DEFAULT = Set.copyOf(list);
+    }
 
     /**
      * Constructor.

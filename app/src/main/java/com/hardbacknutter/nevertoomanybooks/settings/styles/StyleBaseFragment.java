@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ScreenLayout;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.WritableStyle;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPreferenceSummaryProvider;
 
@@ -61,7 +62,8 @@ public abstract class StyleBaseFragment
 
     private static final String PSK_LIST_BOOK_SHOW_COVER_0 = "style.booklist.show.thumbnails";
     @NonNull
-    private final SwitchPreference[] pShowCoversOnDetailsScreen = new SwitchPreference[2];
+    private final SwitchPreference[] pShowCoversOnDetailsScreen =
+            new SwitchPreference[DBKey.NR_OF_BOOK_COVERS];
     StyleViewModel vm;
     EditTextPreference pName;
     SeekBarPreference pExpansionLevel;
@@ -131,14 +133,20 @@ public abstract class StyleBaseFragment
         pListBookLevelSorting = findPreference(PSK_LIST_BOOK_LEVEL_SORTING);
 
         // Book details page
-        pShowCoversOnDetailsScreen[0] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[0]);
-        pShowCoversOnDetailsScreen[1] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[1]);
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            pShowCoversOnDetailsScreen[cIdx] =
+                    findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[cIdx]);
+        }
+
+        //noinspection DataFlowIssue
         pShowCoversOnDetailsScreen[0].setOnPreferenceChangeListener((preference, newValue) -> {
             // Covers on DETAIL screen:
             // Setting cover 0 to false
             if (newValue instanceof Boolean && !(Boolean) newValue) {
-                // ==> set cover 1 to false as well
-                pShowCoversOnDetailsScreen[1].setChecked(false);
+                // Set all others to false as well
+                for (int cIdx = 1; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+                    pShowCoversOnDetailsScreen[cIdx].setChecked(false);
+                }
             }
             return true;
         });

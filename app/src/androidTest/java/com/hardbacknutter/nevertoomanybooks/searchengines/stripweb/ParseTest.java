@@ -51,7 +51,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -90,10 +89,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Wanted Lucky Luke", book.getString(DBKey.TITLE, null));
@@ -172,10 +168,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("Valstrikken en emoties", book.getString(DBKey.TITLE, null));
@@ -296,10 +289,7 @@ public class ParseTest
 
         final Document document = loadDocument(resId, UTF_8, locationHeader);
         final Book book = new Book();
-        searchEngine.parse(context, document, new boolean[]{true, false}, book);
-
-        assertFalse(book.isEmpty());
-
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
         assertEquals("XIII- box Delen 1-3", book.getString(DBKey.TITLE, null));

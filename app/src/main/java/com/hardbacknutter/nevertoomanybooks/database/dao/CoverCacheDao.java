@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@ public interface CoverCacheDao {
     @Nullable
     @AnyThread
     Bitmap getCover(@NonNull String uuid,
-                    @IntRange(from = 0, to = 1) int cIdx,
+                    @IntRange(from = 0, to = 3) int cIdx,
                     int width);
 
     /**
@@ -87,7 +87,7 @@ public interface CoverCacheDao {
      */
     @UiThread
     void saveCover(@NonNull String uuid,
-                   @IntRange(from = 0, to = 1) int cIdx,
+                   @IntRange(from = 0, to = 3) int cIdx,
                    @NonNull Bitmap bitmap,
                    int width);
 }

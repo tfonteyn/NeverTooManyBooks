@@ -256,5 +256,19 @@
             android:key="translation_orig_lang"
             android:title="@string/lbl_original_language" />
 
+        <!-- bit: 38 -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="thumbnail.1"
+            android:key="thumbnail.2"
+            android:title="@string/lbl_image_2" />
+
+        <!-- bit: 39 -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="thumbnail.2"
+            android:key="thumbnail.3"
+            android:title="@string/lbl_image_3" />
+
     </com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory>
 </PreferenceScreen>

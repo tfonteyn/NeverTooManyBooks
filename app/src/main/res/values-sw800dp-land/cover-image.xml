@@ -22,8 +22,7 @@
 <resources>
     <dimen name="cover_list_padding">4dp</dimen>
     <!-- smaller than sw600 as we're in embedded mode here -->
-    <dimen name="cover_details_0_padding">10dp</dimen>
-    <dimen name="cover_details_1_padding">10dp</dimen>
+    <dimen name="cover_details_0_padding">8dp</dimen>
 
     <!-- Multiplier: 6 : smaller than sw600 as we're in embedded mode here -->
     <dimen name="cover_details_0_width">144dp</dimen>
@@ -32,7 +31,6 @@
 
     <!-- Multiplier: 4 -->
     <dimen name="cover_edit_0_width">96dp</dimen>
-    <dimen name="cover_edit_1_width">96dp</dimen>
 
     <integer name="cover_browser_gallery_span_count">2</integer>
     <!-- Multiplier: 4 -->

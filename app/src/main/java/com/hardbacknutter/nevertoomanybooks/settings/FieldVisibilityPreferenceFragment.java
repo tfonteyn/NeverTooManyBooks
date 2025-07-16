@@ -45,7 +45,7 @@ public class FieldVisibilityPreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @NonNull
-    private final SwitchPreference[] pCovers = new SwitchPreference[2];
+    private final SwitchPreference[] pCovers = new SwitchPreference[DBKey.NR_OF_BOOK_COVERS];
     private SettingsViewModel vm;
     private VSDataStore dataStore;
 
@@ -67,12 +67,18 @@ public class FieldVisibilityPreferenceFragment
 
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
 
-        pCovers[0] = findPreference(DBKey.COVER[0]);
-        pCovers[1] = findPreference(DBKey.COVER[1]);
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            pCovers[cIdx] = findPreference(DBKey.COVER[cIdx]);
+        }
 
+        //noinspection DataFlowIssue
         pCovers[0].setOnPreferenceChangeListener((preference, newValue) -> {
+            // Setting cover 0 to false
             if (newValue instanceof Boolean && !(Boolean) newValue) {
-                pCovers[1].setChecked(false);
+                // Set all others to false as well
+                for (int cIdx = 1; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+                    pCovers[cIdx].setChecked(false);
+                }
             }
             return true;
         });

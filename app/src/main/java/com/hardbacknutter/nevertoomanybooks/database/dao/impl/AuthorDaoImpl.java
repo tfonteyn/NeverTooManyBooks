@@ -672,6 +672,7 @@ public class AuthorDaoImpl
 
     /**
      * Persist the temporary FileSpec to a permanent UUID based filename.
+     * Hardcoded to using one image {@code cIdx=0}.
      *
      * @param author to store
      *
@@ -723,12 +724,7 @@ public class AuthorDaoImpl
                 author.setId(0);
                 fixPositions(context);
 
-                final Optional<String> pictureUuid = author.getImageUuid();
-                if (pictureUuid.isPresent()) {
-                    ServiceLocator.getInstance().getCoverStorage()
-                                  .delete(pictureUuid.get(), 0);
-                    author.setImageUuid(null);
-                }
+                deletePicture(author);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -742,6 +738,20 @@ public class AuthorDaoImpl
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
+        }
+    }
+
+    /**
+     * Hardcoded to using one image {@code cIdx=0}.
+     *
+     * @param author to handle
+     */
+    private void deletePicture(@NonNull final Author author) {
+        final Optional<String> pictureUuid = author.getImageUuid();
+        if (pictureUuid.isPresent()) {
+            ServiceLocator.getInstance().getCoverStorage()
+                          .delete(pictureUuid.get(), 0);
+            author.setImageUuid(null);
         }
     }
 
