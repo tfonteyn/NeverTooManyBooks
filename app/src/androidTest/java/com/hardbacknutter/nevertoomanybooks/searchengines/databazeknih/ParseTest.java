@@ -398,7 +398,7 @@ public class ParseTest
         assertEquals("2001", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
         assertEquals("250", book.getString(DBKey.PAGES, null));
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(4.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
         assertEquals("měkká / brožovaná", book.getString(DBKey.FORMAT, null));
         assertEquals("1951", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 

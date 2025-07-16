@@ -205,7 +205,7 @@ public final class DatabazeKnihAuthorResolver
             author.setRealAuthor(realAuthor);
         }
 
-        final Element birthEtcElement = section.selectFirst("h3.norma");
+        final Element birthEtcElement = section.selectFirst("p");
         if (birthEtcElement != null) {
             final Matcher matcher = BIRTH_DEATH_DATE_PATTERN.matcher(birthEtcElement.text());
             if (matcher.find()) {
