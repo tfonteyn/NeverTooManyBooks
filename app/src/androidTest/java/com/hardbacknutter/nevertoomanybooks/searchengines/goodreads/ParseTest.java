@@ -79,10 +79,10 @@ public class ParseTest
         realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         // The Goodreads resolver is by default always true,
-        // but the openlibrary one is by default false.
+        // but the wikidata one is by default false.
         // For these tests we want both
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putBoolean("goodreads.resolve.authors.openlibrary", true)
+                         .putBoolean("goodreads.resolve.authors.wikidata", true)
                          .apply();
     }
 
