@@ -174,15 +174,17 @@ public class ParseTest
         assertEquals("Isaac", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+
+        covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                          + "_9780008117498_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9780008117498_0_.jpg"));
 
-        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(backCovers);
-        assertEquals(0, backCovers.size());
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     /**
@@ -241,17 +243,18 @@ public class ParseTest
         assertEquals("Esther", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+
+        covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                          + "_9789044652895_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789044652895_0_.jpg"));
 
-        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(backCovers);
-        assertEquals(1, backCovers.size());
-        assertTrue(backCovers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                              + "_9789044652895_1_.jpg"));
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789044652895_1_.jpg"));
     }
 
     @Test
@@ -307,17 +310,18 @@ public class ParseTest
         assertEquals("Inge", author.getGivenNames());
         assertEquals(Author.TYPE_TRANSLATOR, author.getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+
+        covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                          + "_9789044544725_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789044544725_0_.jpg"));
 
-        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(backCovers);
-        assertEquals(1, backCovers.size());
-        assertTrue(backCovers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                              + "_9789044544725_1_.jpg"));
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789044544725_1_.jpg"));
     }
 
     /** The redirect from {@link #parseMultiResult01()} */
@@ -425,15 +429,17 @@ public class ParseTest
         assertEquals("Michael", author.getGivenNames());
         assertEquals(Author.TYPE_EDITOR, author.getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+
+        covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                          + "_9781841593326_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9781841593326_0_.jpg"));
 
-        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(backCovers);
-        assertEquals(0, backCovers.size());
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     @Test
@@ -494,18 +500,17 @@ public class ParseTest
         assertEquals("Manon", author.getGivenNames());
         assertEquals(Author.TYPE_TRANSLATOR, author.getType());
 
-        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        List<String> covers;
+
+        covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                          + "_9789046832073_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789046832073_0_.jpg"));
 
-        final List<String> backCovers = CoverFileSpecArray.getList(book, 1);
-        assertNotNull(backCovers);
-        assertEquals(1, backCovers.size());
-        assertTrue(backCovers.get(0).endsWith(EngineId.Bol.getPreferenceKey()
-                                              + "_9789046832073_1_.jpg"));
-
-
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(preferenceKey + "_9789046832073_1_.jpg"));
     }
 }
