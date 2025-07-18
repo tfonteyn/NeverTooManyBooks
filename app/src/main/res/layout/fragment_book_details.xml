@@ -128,8 +128,7 @@
             android:layout_width="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/barrier_titles"
-            app:layout_constraintWidth_default="wrap" />
+            app:layout_constraintTop_toBottomOf="@id/barrier_titles" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_read"
