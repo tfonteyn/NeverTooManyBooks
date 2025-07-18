@@ -26,9 +26,8 @@
     <PreferenceCategory
         android:title="@string/site_lastdodo_nl">
 
-        <!-- By exception defaults to "true" ! -->
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:icon="@drawable/barcode_24px"
             android:key="lastdodo.search.byIsbn.prefer.10"
             android:summaryOff="@string/no"

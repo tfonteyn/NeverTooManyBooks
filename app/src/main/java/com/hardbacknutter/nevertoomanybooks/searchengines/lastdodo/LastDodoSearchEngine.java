@@ -139,12 +139,11 @@ public class LastDodoSearchEngine
                                     List.of(R.string.site_description_dutch_and_more,
                                             R.string.site_description_catalog,
                                             R.string.site_description_eu_comics),
-                                    "https://www.lastdodo.nl",
+                                    SITE_URL,
                                     new Locale("nl", "NL"))
                 .setIdentifierKey(Identifier.SID_LAST_DODO_NL)
                 .setPreferenceFragmentClazz(LastDodoPreferencesFragment.class)
                 .setConfig(cb -> cb
-                        .setPrefersIsbn10(true)
                         .build(SearchEngineConfig::new));
     }
 
