@@ -276,6 +276,7 @@
           <option value="CheckStyle" />
           <option value="BooleanMethodIsAlwaysInverted" />
           <option value="TypeMayBeWeakened" />
+          <option value="PublicStaticCollectionField" />
         </list>
       </option>
     </inspection_tool>
