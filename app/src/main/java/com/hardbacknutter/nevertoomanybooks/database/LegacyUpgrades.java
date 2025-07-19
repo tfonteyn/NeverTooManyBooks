@@ -161,9 +161,9 @@ public final class LegacyUpgrades {
                 .getDefaultSharedPreferences(context);
         // change the name of these for easier migration
         final boolean visSeries = global.getBoolean(
-                PK_FIELDS_VISIBILITY_KEYS + DBKey.SERIES.TITLE, true);
+                PK_FIELDS_VISIBILITY_KEYS + "series_name", true);
         final boolean visPublisher = global.getBoolean(
-                PK_FIELDS_VISIBILITY_KEYS + DBKey.PUBLISHER.NAME, true);
+                PK_FIELDS_VISIBILITY_KEYS + "publisher_name", true);
 
         global.edit()
               .putBoolean(PK_FIELDS_VISIBILITY_KEYS + DBKey.FK_SERIES, visSeries)
