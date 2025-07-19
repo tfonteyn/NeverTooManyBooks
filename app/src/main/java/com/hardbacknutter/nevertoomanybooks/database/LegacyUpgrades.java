@@ -691,14 +691,14 @@ public final class LegacyUpgrades {
         final Set<String> legacyKeys = IDENTIFIERS.keySet();
         final Collection<String> legacyValues = IDENTIFIERS.values();
 
-        final Map<String, Integer> predef = new HashMap<>();
-        final String predefSql = SELECT_ + DBKey.PK_ID + ',' + DBKey.IDENTIFIERS.KEY
+        final Map<String, Integer> preDef = new HashMap<>();
+        final String preDefSql = SELECT_ + DBKey.PK_ID + ',' + DBKey.IDENTIFIERS.KEY
                                  + _FROM_ + DBDefinitions.TBL_IDENTIFIERS.getName();
-        try (Cursor cursor = db.rawQuery(predefSql, null)) {
+        try (Cursor cursor = db.rawQuery(preDefSql, null)) {
             while (cursor.moveToNext()) {
                 final int id = cursor.getInt(0);
                 final String name = cursor.getString(1);
-                predef.put(name, id);
+                preDef.put(name, id);
             }
         }
 
@@ -727,7 +727,7 @@ public final class LegacyUpgrades {
                         final String sid = cursor.getString(c);
                         insert.bindLong(1, bookId);
                         //noinspection DataFlowIssue
-                        insert.bindLong(2, predef.get(sidName));
+                        insert.bindLong(2, preDef.get(sidName));
                         insert.bindString(3, sid);
 
                         insert.executeInsert();
