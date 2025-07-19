@@ -468,7 +468,7 @@ public final class LegacyUpgrades {
         final List<Pair<Long, String>> entries = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
                 SELECT_ + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
-                + _FROM_ + TBL_TOC_ENTRIES
+                + _FROM_ + TBL_TOC_ENTRIES.getName()
                 + _GROUP_BY_ + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
                 + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
             while (cursor.moveToNext()) {
@@ -483,7 +483,7 @@ public final class LegacyUpgrades {
         final List<List<Long>> entryDuplicates = new ArrayList<>();
         for (final Pair<Long, String> toc : entries) {
             try (Cursor cursor = db.rawQuery(
-                    SELECT_ + DBKey.PK_ID + _FROM_ + TBL_TOC_ENTRIES
+                    SELECT_ + DBKey.PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
                     + _WHERE_ + DBKey.FK_AUTHOR + "=?"
                     + _AND_ + DBKey.TITLE + "=?",
                     new String[]{String.valueOf(toc.first), toc.second})) {
@@ -513,7 +513,7 @@ public final class LegacyUpgrades {
 
             String sql;
 
-            sql = UPDATE_ + DBDefinitions.TBL_BOOK_TOC_ENTRIES
+            sql = UPDATE_ + DBDefinitions.TBL_BOOK_TOC_ENTRIES.getName()
                   + _SET_ + DBKey.FK_TOC_ENTRY + "=" + keep
                   + _WHERE_ + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
             //noinspection CheckStyle,OverlyBroadCatchBlock
@@ -525,7 +525,7 @@ public final class LegacyUpgrades {
                 throw e;
             }
 
-            sql = DELETE_FROM_ + TBL_TOC_ENTRIES
+            sql = DELETE_FROM_ + TBL_TOC_ENTRIES.getName()
                   + _WHERE_ + DBKey.PK_ID + " IN (" + ids + ')';
             //noinspection CheckStyle,OverlyBroadCatchBlock
             try (SQLiteStatement stmt = db.compileStatement(sql)) {
@@ -737,7 +737,7 @@ public final class LegacyUpgrades {
         }
 
         // null old columns, we'll delete them in a future version
-        db.execSQL(UPDATE_ + TBL_BOOKS + _SET_
+        db.execSQL(UPDATE_ + TBL_BOOKS.getName() + _SET_
                    + legacyKeys.stream().map(domain -> domain + "=NULL")
                                .collect(Collectors.joining(",")));
     }
@@ -822,7 +822,7 @@ public final class LegacyUpgrades {
     }
 
     static void v36onUpgrade(@NonNull final SQLiteDatabase db) {
-        db.execSQL(UPDATE_ + TBL_IDENTIFIERS
+        db.execSQL(UPDATE_ + TBL_IDENTIFIERS.getName()
                    + _SET_ + DBKey.IDENTIFIERS.TYPE + "='" + Identifier.TYPE_STRING + '\''
                    + _WHERE_ + DBKey.IDENTIFIERS.KEY + "='" + Identifier.SID_DNB + '\'');
     }
@@ -870,7 +870,7 @@ public final class LegacyUpgrades {
             // update the Identifiers adding the AuthorUri
             // We don't check success, the row may have been deleted which is fine
             try (SQLiteStatement stmt = db.compileStatement(
-                    UPDATE_ + TBL_IDENTIFIERS
+                    UPDATE_ + TBL_IDENTIFIERS.getName()
                     + _SET_ + DBKey.IDENTIFIERS.AUTHOR_URI + "=?"
                     + _WHERE_ + DBKey.IDENTIFIERS.KEY + "=?")) {
                 // see Identifier#createInitialList
@@ -933,7 +933,7 @@ public final class LegacyUpgrades {
                                               @NonNull final SQLiteDatabase db) {
         final boolean install;
         try (SQLiteStatement stmt = db.compileStatement(
-                "SELECT COUNT(" + DBKey.STYLE.TYPE + ") FROM " + TBL_BOOKLIST_STYLES
+                "SELECT COUNT(" + DBKey.STYLE.TYPE + ") FROM " + TBL_BOOKLIST_STYLES.getName()
                 + _WHERE_ + DBKey.STYLE.TYPE + "=2")) {
             install = 0 == stmt.simpleQueryForLong();
         }
