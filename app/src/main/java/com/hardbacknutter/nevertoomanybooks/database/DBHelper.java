@@ -69,20 +69,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_LANG_MAPPINGS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
  * {@link SQLiteOpenHelper} for the main database.
@@ -421,156 +409,64 @@ public class DBHelper
                     context.getString(R.string.error_upgrade_not_supported, "2.0.0"));
         }
         if (oldVersion < 16) {
-            TBL_STRIPINFO_COLLECTION.create(db, true);
-
-            context.deleteDatabase("taskqueue.db");
+            LegacyUpgrades.v16onUpgrade(context, db);
         }
         if (oldVersion < 17) {
-            TBL_CALIBRE_CUSTOM_FIELDS.create(db, true);
-            CalibreCustomFieldDaoImpl.onPostCreate(db);
+            LegacyUpgrades.v17onUpgrade(db);
         }
         if (oldVersion < 18) {
-            TBL_BOOKSHELF_FILTERS.create(db, true);
+            LegacyUpgrades.v18onUpgrade(db);
         }
         if (oldVersion < 19) {
-            LegacyUpgrades.v19migrateStyles(context, db);
+            LegacyUpgrades.v19onUpgrade(context, db);
         }
         if (oldVersion < 20) {
-            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_AUTO_UPDATE);
+            LegacyUpgrades.v20onUpgrade(db);
         }
         if (oldVersion < 21) {
-            LegacyUpgrades.v21migrateSearchEnginePrefs(context);
+            LegacyUpgrades.v21onUpgrade(context);
         }
         if (oldVersion < 22) {
-            // remove built-in style ID_DEPRECATED_1
-            db.execSQL("DELETE FROM " + TBL_BOOKLIST_STYLES.getName() + " WHERE _id=-2");
+            LegacyUpgrades.v22onUpgrade(db);
         }
         if (oldVersion < 23) {
-            // Up to version 22 we had a bug in how we'd store TOC entries which could create
-            // duplicate authors. Fixed in 23 but we need to do a clean up during upgrade.
-            LegacyUpgrades.v23removeDuplicateAuthors(db);
-            // as a result of the author cleanup, we now might have duplicate toc entries,
-            // same algorithm to clean those up
-            LegacyUpgrades.v23removeDuplicateTocEntries(db);
-
-            // Add pen-name support
-            TBL_PSEUDONYM_AUTHOR.create(db, true);
-            // new search-engine added
-            TBL_BOOKS.alterTableAddColumns(db, new Domain.Builder(
-                    "bdt_book_id", SqLiteDataType.Integer).build());
+            LegacyUpgrades.v23onUpgrade(db);
         }
         if (oldVersion < 24) {
-            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TRANSLATION_ORIGINAL_TITLE);
+            LegacyUpgrades.v24onUpgrade(db);
         }
         if (oldVersion < 25) {
-            TBL_DELETED_BOOKS.create(db, true);
-            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
+            LegacyUpgrades.v25onUpgrade(db, context);
         }
         if (oldVersion < 26) {
-            TBL_BOOKLIST_STYLES.alterTableAddColumns(
-                    db,
-                    DBDefinitions.DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY,
-                    DBDefinitions.DOM_STYLE_COVER_CLICK_ACTION,
-                    DBDefinitions.DOM_STYLE_LAYOUT);
+            LegacyUpgrades.v26onUpgrade(db);
         }
         if (oldVersion < 28) {
-            TBL_BOOKLIST_STYLES.alterTableAddColumns(
-                    db,
-                    DBDefinitions.DOM_STYLE_TITLE_SHOW_REORDERED);
-
-            LegacyUpgrades.v28migrateReorderPref(context, db);
+            LegacyUpgrades.v28onUpgrade(context, db);
         }
         if (oldVersion < 29) {
-            TBL_STRIPINFO_COLLECTION.alterTableAddColumns(
-                    db, DBDefinitions.DOM_STRIP_INFO_DIGITAL);
+            LegacyUpgrades.v29onUpgrade(db);
         }
         if (oldVersion < 31) {
-            TBL_BOOKLIST_STYLES.alterTableAddColumns(
-                    db, DBDefinitions.DOM_STYLE_COVER_LONG_CLICK_ACTION);
+            LegacyUpgrades.v31onUpgrade(db);
         }
         if (oldVersion < 32) {
-            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_BOOK_READ_PROGRESS);
-            TBL_BOOKLIST_STYLES.alterTableAddColumns(
-                    db, DBDefinitions.DOM_STYLE_READ_STATUS_WITH_PROGRESS);
+            LegacyUpgrades.v32onUpgrade(db);
         }
         if (oldVersion < 34) {
-            // recreate tables due to some columns having their COLLATION changed
-
-            // THIS WILL COMMIT ALL PREVIOUS UPDATES
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            // This method must not be called while a transaction is in progress.
-            db.setForeignKeyConstraintsEnabled(false);
-            db.beginTransaction();
-
-            // DBDefinitions.DOM_STYLE_NAME
-            LegacyUpgrades.v34RecreateTable(db, TBL_BOOKLIST_STYLES);
-            // DBDefinitions.DOM_BOOKSHELF_NAME
-            LegacyUpgrades.v34RecreateTable(db, TBL_BOOKSHELF);
-            // DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB, DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB
-            LegacyUpgrades.v34RecreateTable(db, TBL_AUTHORS);
-            // DBDefinitions.DOM_SERIES_TITLE_OB
-            LegacyUpgrades.v34RecreateTable(db, TBL_SERIES);
-            // DBDefinitions.DOM_PUBLISHER_NAME_OB
-            LegacyUpgrades.v34RecreateTable(db, TBL_PUBLISHERS);
-            // DBDefinitions.DOM_TITLE_OB
-            LegacyUpgrades.v34RecreateTable(db, TBL_BOOKS);
-
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            // This method must not be called while a transaction is in progress.
-            db.setForeignKeyConstraintsEnabled(true);
-            db.beginTransaction();
+            LegacyUpgrades.v34onUpgrade(db);
         }
         if (oldVersion < 35) {
-            LegacyUpgrades.v35AddCitationType(db);
-            LegacyUpgrades.v35AddIdentifiersTable(context, db);
-            LegacyUpgrades.v35AddMappingTables(context, db);
-
-            // The format was changed
-            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
-
-            // StripInfo collection support was never finished nor activated in a release build.
-            // Furthermore, it turns out each book with a "stripinfo" SID always wrote
-            // collection data which obviously always was 'empty'.
-            // and we're making a fresh start... drop and recreate the table.
-            db.execSQL("DROP TABLE " + TBL_STRIPINFO_COLLECTION.getName());
-            TBL_STRIPINFO_COLLECTION.create(db, true);
+            LegacyUpgrades.v35oUpgrade(context, db);
         }
         if (oldVersion < 36) {
-            db.execSQL("UPDATE " + TBL_IDENTIFIERS
-                       + " SET " + DBKey.IDENTIFIERS.TYPE + "='" + Identifier.TYPE_STRING + '\''
-                       + " WHERE " + DBKey.IDENTIFIERS.KEY + "='" + Identifier.SID_DNB + '\'');
+            LegacyUpgrades.v36onUpgrade(db);
         }
         if (oldVersion < 37) {
-            // Recreate tabled with date/datetime fields migrated to "text"
-            // Also takes care of adding DOM_TRANSLATION_ORIGINAL_LANGUAGE
-
-            // THIS WILL COMMIT ALL PREVIOUS UPDATES
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            // This method must not be called while a transaction is in progress.
-            db.setForeignKeyConstraintsEnabled(false);
-            db.beginTransaction();
-
-            TBL_BOOKS.recreate(db);
-            TBL_TOC_ENTRIES.recreate(db);
-            TBL_DELETED_BOOKS.recreate(db);
-            TBL_STRIPINFO_COLLECTION.recreate(db);
-            TBL_CALIBRE_LIBRARIES.recreate(db);
-
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            // This method must not be called while a transaction is in progress.
-            db.setForeignKeyConstraintsEnabled(true);
-            db.beginTransaction();
-
-            TBL_LANG_MAPPINGS.create(db, true);
+            LegacyUpgrades.v37onUpgrade(db);
         }
         if (oldVersion < 38) {
-            TBL_BOOKLIST_STYLES.alterTableAddColumns(
-                    db,
-                    DBDefinitions.DOM_STYLE_SHOW_GROUP_BOOK_COUNT);
+            LegacyUpgrades.v38onUpgrade(db);
         }
         if (oldVersion < 39) {
             LegacyUpgrades.v39AddIdentifierAuthorUrl(db);

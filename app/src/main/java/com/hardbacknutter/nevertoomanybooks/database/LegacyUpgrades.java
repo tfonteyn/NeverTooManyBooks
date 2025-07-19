@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -51,7 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
@@ -81,9 +85,19 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TAG;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_DELETED_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_LANG_MAPPINGS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TAG_MAPPINGS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -124,8 +138,25 @@ public final class LegacyUpgrades {
     private LegacyUpgrades() {
     }
 
-    static void v19migrateStyles(@NonNull final Context context,
-                                 @NonNull final SQLiteDatabase db) {
+    static void v16onUpgrade(@NonNull final Context context,
+                             @NonNull final SQLiteDatabase db) {
+        TBL_STRIPINFO_COLLECTION.create(db, true);
+
+        context.deleteDatabase("taskqueue.db");
+    }
+
+    static void v17onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_CALIBRE_CUSTOM_FIELDS.create(db, true);
+        CalibreCustomFieldDaoImpl.onPostCreate(db);
+    }
+
+    static void v18onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_BOOKSHELF_FILTERS.create(db, true);
+    }
+
+    static void v19onUpgrade(@NonNull final Context context,
+                             @NonNull final SQLiteDatabase db) {
+        // Migrate all styles
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(context);
         // change the name of these for easier migration
@@ -281,7 +312,12 @@ public final class LegacyUpgrades {
         }
     }
 
-    static void v21migrateSearchEnginePrefs(final Context context) {
+    static void v20onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_AUTO_UPDATE);
+    }
+
+    static void v21onUpgrade(final Context context) {
+        // migrate SearchEngine Preferences
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
 
@@ -323,7 +359,27 @@ public final class LegacyUpgrades {
               });
     }
 
-    static void v23removeDuplicateAuthors(@NonNull final SQLiteDatabase db) {
+    static void v22onUpgrade(@NonNull final SQLiteDatabase db) {
+        // remove built-in style ID_DEPRECATED_1
+        db.execSQL("DELETE FROM " + TBL_BOOKLIST_STYLES.getName() + " WHERE _id=-2");
+    }
+
+    static void v23onUpgrade(@NonNull final SQLiteDatabase db) {
+        // Up to version 22 we had a bug in how we'd store TOC entries which could create
+        // duplicate authors. Fixed in 23 but we need to do a clean up during upgrade.
+        v23removeDuplicateAuthors(db);
+        // as a result of the author cleanup, we now might have duplicate toc entries,
+        // same algorithm to clean those up
+        v23removeDuplicateTocEntries(db);
+
+        // Add pen-name support
+        TBL_PSEUDONYM_AUTHOR.create(db, true);
+        // new search-engine added
+        TBL_BOOKS.alterTableAddColumns(db, new Domain.Builder(
+                "bdt_book_id", SqLiteDataType.Integer).build());
+    }
+
+    private static void v23removeDuplicateAuthors(@NonNull final SQLiteDatabase db) {
 
         // find the names for duplicate author; i.e. identical family and given names.
         final List<Pair<String, String>> authors = new ArrayList<>();
@@ -407,7 +463,7 @@ public final class LegacyUpgrades {
         }
     }
 
-    static void v23removeDuplicateTocEntries(@NonNull final SQLiteDatabase db) {
+    private static void v23removeDuplicateTocEntries(@NonNull final SQLiteDatabase db) {
         // find the duplicate tocs; i.e. identical author and title.
         final List<Pair<Long, String>> entries = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(
@@ -481,38 +537,34 @@ public final class LegacyUpgrades {
         }
     }
 
-    /**
-     * Check and migrate pre-db25 global field visibility keys.
-     *
-     * @param prefs to migrate
-     */
-    private static void v24migrateGlobalFieldVisibility(@NonNull final SharedPreferences prefs) {
-        final Pattern dot = Pattern.compile("\\.");
-        final List<String> oldVisKeys = prefs.getAll()
-                                             .keySet()
-                                             .stream()
-                                             .filter(key -> key.startsWith(
-                                                     PK_FIELDS_VISIBILITY_KEYS))
-                                             .collect(Collectors.toList());
-        if (!oldVisKeys.isEmpty()) {
-            final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
-                                                                  .getGlobalFieldVisibility();
-            oldVisKeys.forEach(oldKey -> {
-                final boolean value = prefs.getBoolean(oldKey, false);
-                final String dbKey = dot.split(oldKey, 3)[2];
-                fieldVisibility.setVisible(dbKey, value);
-            });
-
-            fieldVisibility.save(prefs);
-        }
+    static void v24onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TRANSLATION_ORIGINAL_TITLE);
     }
 
-    static void v28migrateReorderPref(@NonNull final Context context,
-                                      @NonNull final SQLiteDatabase db) {
-        final int value =
-                PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean("show.title.reordered", false)
-                ? 1 : 0;
+    static void v25onUpgrade(@NonNull final SQLiteDatabase db,
+                             final Context context) {
+        TBL_DELETED_BOOKS.create(db, true);
+        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
+    }
+
+    static void v26onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                db,
+                DBDefinitions.DOM_STYLE_BOOK_LIST_FIELD_ORDER_BY,
+                DBDefinitions.DOM_STYLE_COVER_CLICK_ACTION,
+                DBDefinitions.DOM_STYLE_LAYOUT);
+    }
+
+    static void v28onUpgrade(@NonNull final Context context,
+                             @NonNull final SQLiteDatabase db) {
+        TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                db,
+                DBDefinitions.DOM_STYLE_TITLE_SHOW_REORDERED);
+
+        // migrateReorderPref
+        final int value = PreferenceManager.getDefaultSharedPreferences(context)
+                                           .getBoolean("show.title.reordered", false)
+                          ? 1 : 0;
 
         // We apply the setting to ALL styles as it was the default for all.
         // (including the built-in which is pointless but easier)
@@ -524,6 +576,52 @@ public final class LegacyUpgrades {
         }
     }
 
+    static void v29onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_STRIPINFO_COLLECTION.alterTableAddColumns(
+                db, DBDefinitions.DOM_STRIP_INFO_DIGITAL);
+    }
+
+    static void v31onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                db, DBDefinitions.DOM_STYLE_COVER_LONG_CLICK_ACTION);
+    }
+
+    static void v32onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_BOOK_READ_PROGRESS);
+        TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                db, DBDefinitions.DOM_STYLE_READ_STATUS_WITH_PROGRESS);
+    }
+
+    static void v34onUpgrade(@NonNull final SQLiteDatabase db) {
+        // recreate tables due to some columns having their COLLATION changed
+
+        // THIS WILL COMMIT ALL PREVIOUS UPDATES
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        // This method must not be called while a transaction is in progress.
+        db.setForeignKeyConstraintsEnabled(false);
+        db.beginTransaction();
+
+        // DBDefinitions.DOM_STYLE_NAME
+        v34RecreateTable(db, TBL_BOOKLIST_STYLES);
+        // DBDefinitions.DOM_BOOKSHELF_NAME
+        v34RecreateTable(db, TBL_BOOKSHELF);
+        // DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB, DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB
+        v34RecreateTable(db, TBL_AUTHORS);
+        // DBDefinitions.DOM_SERIES_TITLE_OB
+        v34RecreateTable(db, TBL_SERIES);
+        // DBDefinitions.DOM_PUBLISHER_NAME_OB
+        v34RecreateTable(db, TBL_PUBLISHERS);
+        // DBDefinitions.DOM_TITLE_OB
+        v34RecreateTable(db, TBL_BOOKS);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        // This method must not be called while a transaction is in progress.
+        db.setForeignKeyConstraintsEnabled(true);
+        db.beginTransaction();
+    }
+
     /**
      * AS USED FOR THE UPGRADE FROM V33 TO V34 ONLY.
      * This creates/expects all columns to be identical except for the sqlite datatype.
@@ -531,8 +629,8 @@ public final class LegacyUpgrades {
      * @param db Database Access
      * @param td table
      */
-    static void v34RecreateTable(@NonNull final SQLiteDatabase db,
-                                 @NonNull final TableDefinition td) {
+    private static void v34RecreateTable(@NonNull final SQLiteDatabase db,
+                                         @NonNull final TableDefinition td) {
         final String dstTableName = "copyOf" + td.getName();
         db.execSQL(td.getCreateStatement(dstTableName, true));
 
@@ -552,7 +650,24 @@ public final class LegacyUpgrades {
         db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + td.getName());
     }
 
-    static void v35AddCitationType(@NonNull final SQLiteDatabase db) {
+    static void v35oUpgrade(@NonNull final Context context,
+                            @NonNull final SQLiteDatabase db) {
+        v35AddCitationType(db);
+        v35AddIdentifiersTable(context, db);
+        v35AddMappingTables(context, db);
+
+        // The format was changed
+        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
+
+        // StripInfo collection support was never finished nor activated in a release build.
+        // Furthermore, it turns out each book with a "stripinfo" SID always wrote
+        // collection data which obviously always was 'empty'.
+        // and we're making a fresh start... drop and recreate the table.
+        db.execSQL("DROP TABLE " + TBL_STRIPINFO_COLLECTION.getName());
+        TBL_STRIPINFO_COLLECTION.create(db, true);
+    }
+
+    private static void v35AddCitationType(@NonNull final SQLiteDatabase db) {
         // depending on the install/upgrade path, we might already have
         // added the CITATION_TYPE column
         final ColumnInfo citationType = TBL_BOOKLIST_STYLES
@@ -564,8 +679,8 @@ public final class LegacyUpgrades {
         }
     }
 
-    static void v35AddIdentifiersTable(@NonNull final Context context,
-                                       @NonNull final SQLiteDatabase db) {
+    private static void v35AddIdentifiersTable(@NonNull final Context context,
+                                               @NonNull final SQLiteDatabase db) {
         TBL_IDENTIFIERS.create(db, true);
         TBL_BOOK_IDENTIFIER.create(db, true);
         IdentifierDaoImpl.onPostCreate(context, db);
@@ -627,8 +742,8 @@ public final class LegacyUpgrades {
                                .collect(Collectors.joining(",")));
     }
 
-    static void v35AddMappingTables(@NonNull final Context context,
-                                    @NonNull final SQLiteDatabase db) {
+    private static void v35AddMappingTables(@NonNull final Context context,
+                                            @NonNull final SQLiteDatabase db) {
         TBL_TAG_MAPPINGS.create(db, true);
         TagMappingDaoImpl.onPostCreate(db);
 
@@ -704,6 +819,44 @@ public final class LegacyUpgrades {
         db.execSQL(DELETE_FROM_ + DBDefinitions.TBL_BOOKSHELF_FILTERS.getName()
                    + _WHERE_ + DBKey.BOOKSHELF.FILTER_NAME + "='" + "genre" + "'");
 
+    }
+
+    static void v36onUpgrade(@NonNull final SQLiteDatabase db) {
+        db.execSQL(UPDATE_ + TBL_IDENTIFIERS
+                   + _SET_ + DBKey.IDENTIFIERS.TYPE + "='" + Identifier.TYPE_STRING + '\''
+                   + _WHERE_ + DBKey.IDENTIFIERS.KEY + "='" + Identifier.SID_DNB + '\'');
+    }
+
+    static void v37onUpgrade(@NonNull final SQLiteDatabase db) {
+        // Recreate tabled with date/datetime fields migrated to "text"
+        // Also takes care of adding DOM_TRANSLATION_ORIGINAL_LANGUAGE
+
+        // THIS WILL COMMIT ALL PREVIOUS UPDATES
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        // This method must not be called while a transaction is in progress.
+        db.setForeignKeyConstraintsEnabled(false);
+        db.beginTransaction();
+
+        TBL_BOOKS.recreate(db);
+        TBL_TOC_ENTRIES.recreate(db);
+        TBL_DELETED_BOOKS.recreate(db);
+        TBL_STRIPINFO_COLLECTION.recreate(db);
+        TBL_CALIBRE_LIBRARIES.recreate(db);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        // This method must not be called while a transaction is in progress.
+        db.setForeignKeyConstraintsEnabled(true);
+        db.beginTransaction();
+
+        TBL_LANG_MAPPINGS.create(db, true);
+    }
+
+    static void v38onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                db,
+                DBDefinitions.DOM_STYLE_SHOW_GROUP_BOOK_COUNT);
     }
 
     static void v39AddIdentifierAuthorUrl(@NonNull final SQLiteDatabase db) {
@@ -817,6 +970,32 @@ public final class LegacyUpgrades {
     }
 
     /**
+     * Check and migrate pre-db25 global field visibility keys.
+     *
+     * @param prefs to migrate
+     */
+    private static void v24migrateGlobalFieldVisibility(@NonNull final SharedPreferences prefs) {
+        final Pattern dot = Pattern.compile("\\.");
+        final List<String> oldVisKeys = prefs.getAll()
+                                             .keySet()
+                                             .stream()
+                                             .filter(key -> key.startsWith(
+                                                     PK_FIELDS_VISIBILITY_KEYS))
+                                             .collect(Collectors.toList());
+        if (!oldVisKeys.isEmpty()) {
+            final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
+                                                                  .getGlobalFieldVisibility();
+            oldVisKeys.forEach(oldKey -> {
+                final boolean value = prefs.getBoolean(oldKey, false);
+                final String dbKey = dot.split(oldKey, 3)[2];
+                fieldVisibility.setVisible(dbKey, value);
+            });
+
+            fieldVisibility.save(prefs);
+        }
+    }
+
+    /**
      * Migrate and remove all keys which were declared obsolete.
      *
      * <ul>
@@ -898,7 +1077,7 @@ public final class LegacyUpgrades {
               .remove("show.author.name.given_first")
               .remove("sort.author.name.given_first")
               .remove("startup.lastVersion")
-              // always use 'false'
+              // hardcoded to use 'false'
               .remove("stripweb.search.byIsbn.prefer.10")
               .remove("tmp.edit.book.tab.authSer")
               .remove("ui.messages.use")
