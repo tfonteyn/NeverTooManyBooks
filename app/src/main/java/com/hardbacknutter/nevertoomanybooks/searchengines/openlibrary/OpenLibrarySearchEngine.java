@@ -1611,13 +1611,10 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     public <T> FutureHttp<T> createGetImageRequest(@NonNull final Context context) {
-        final FutureHttp<T> request = createGetDocumentRequest(context);
+        final FutureHttp<T> request = super.createGetImageRequest(context);
         request.setInstanceFollowRedirects(true);
         request.setEnable404Redirect(true);
 
-        //        request.setRequestProperty(HttpConstants.ACCEPT, "*/*");
-        //        request.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
-        //                                   HttpConstants.ACCEPT_ENCODING_IDENTITY);
         return request;
     }
 }
