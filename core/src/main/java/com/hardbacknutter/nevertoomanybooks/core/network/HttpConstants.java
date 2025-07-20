@@ -83,7 +83,7 @@ public final class HttpConstants {
      * Value for {@link #ACCEPT}.
      * Specify images only.
      */
-    public static final String ACCEPT_IMAGE = "image/avif,image/webp,*/*";
+    public static final String ACCEPT_IMAGE = "image/apng,image/webp,image/*,*/*;q=0.8";
 
     /**
      * HTTP Request Header.
