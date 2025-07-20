@@ -98,7 +98,7 @@ public class WikidataSearchEngine
                                     R.string.site_wikidata,
                                     List.of(R.string.site_description_english_and_more,
                                             R.string.site_description_catalog),
-                                    SITE_URL,
+                                    "https://www.wikidata.org",
                                     Locale.US)
                 .setIdentifierKey(Identifier.SID_WIKIDATA);
     }

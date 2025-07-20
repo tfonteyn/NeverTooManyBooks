@@ -160,7 +160,7 @@ public class StripWebSearchEngine
                                     List.of(R.string.site_description_dutch_and_more,
                                             R.string.site_description_shop,
                                             R.string.site_description_eu_comics),
-                                    SITE_URL,
+                                    "https://www.stripweb.be",
                                     new Locale("nl", "BE"))
                 .setPreferenceFragmentClazz(StripWebPreferencesFragment.class);
     }
