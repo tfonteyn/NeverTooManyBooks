@@ -167,6 +167,18 @@ public class FutureHttpImpl<R>
             return;
         }
 
+        if (isLoggingEnabled()) {
+            final String msg = request
+                    .getHeaderFields()
+                    .entrySet()
+                    .stream()
+                    .map(es -> "Response Header: " + es.getKey() + "="
+                               + String.join("|", es.getValue()))
+                    .collect(Collectors.joining("\n"));
+
+            LoggerFactory.getLogger().d(TAG, "checkResponseCode", "\n" + msg);
+        }
+
         @Nullable
         final String location = request.getHeaderField(HttpConstants.RESPONSE_HEADER_LOCATION);
 
@@ -357,6 +369,18 @@ public class FutureHttpImpl<R>
             }
         }
 
+        if (isLoggingEnabled()) {
+            final String msg = request
+                    .getRequestProperties()
+                    .entrySet()
+                    .stream()
+                    .map(es -> "Request Header: " + es.getKey() + "="
+                               + String.join("|", es.getValue()))
+                    .collect(Collectors.joining("\n"));
+
+            LoggerFactory.getLogger().d(TAG, "createRequest", "\n" + msg);
+        }
+
         return request;
     }
 
@@ -522,14 +546,14 @@ public class FutureHttpImpl<R>
                 try {
                     final URL url = new URL(urlStr);
                     if (isLoggingEnabled()) {
-                        LoggerFactory.getLogger().d(TAG, "execute|createRequest");
+                        LoggerFactory.getLogger().d(TAG, "doGetExecute|doGetConnect");
                     }
                     request = doGetConnect(url, method);
                     return action.apply(request);
                 } finally {
                     if (request != null) {
                         if (isLoggingEnabled()) {
-                            LoggerFactory.getLogger().d(TAG, "execute|disconnect");
+                            LoggerFactory.getLogger().d(TAG, "doGetExecute|disconnect");
                         }
                         request.disconnect();
                     }
@@ -539,7 +563,7 @@ public class FutureHttpImpl<R>
 
         } catch (@NonNull final ExecutionException e) {
             if (isLoggingEnabled()) {
-                LoggerFactory.getLogger().d(TAG, "execute: " + e);
+                LoggerFactory.getLogger().d(TAG, "doGetExecute: " + e);
             }
             unpackExecutionException(e);
             return null;
@@ -591,7 +615,7 @@ public class FutureHttpImpl<R>
 
         while (attemptsLeft > 0) {
             if (isLoggingEnabled()) {
-                LoggerFactory.getLogger().d(TAG, "connect",
+                LoggerFactory.getLogger().d(TAG, "doGetConnect|connect",
                                             LOG_ATTEMPTS_LEFT + attemptsLeft,
                                             LOG_REQUEST_URL + requestUrlStr);
             }
@@ -610,7 +634,7 @@ public class FutureHttpImpl<R>
 
                     if (isLoggingEnabled()) {
                         LoggerFactory.getLogger()
-                                     .d(TAG, "connect|response",
+                                     .d(TAG, "doGetConnect|response",
                                         LOG_ATTEMPTS_LEFT + attemptsLeft,
                                         LOG_REQUEST_URL + requestUrlStr,
                                         LOG_REDIRECT_COUNT + redirectCount,
@@ -632,7 +656,7 @@ public class FutureHttpImpl<R>
 
                         if (isLoggingEnabled()) {
                             LoggerFactory.getLogger()
-                                         .d(TAG, "connect|redirect",
+                                         .d(TAG, "doGetConnect|redirect",
                                             LOG_ATTEMPTS_LEFT + attemptsLeft,
                                             LOG_REDIRECT_COUNT + redirectCount,
                                             "new requestUrlStr=" + requestUrlStr);
@@ -671,7 +695,7 @@ public class FutureHttpImpl<R>
                 // ==> IMMEDIATELY a 403....
                 // but using that last url in a browser or with wget will return a 302
                 if (isLoggingEnabled()) {
-                    LoggerFactory.getLogger().e(TAG, e, "connect|disconnecting",
+                    LoggerFactory.getLogger().e(TAG, e, "doGetConnect|disconnecting",
                                                 "e.url=" + e.getUrl(),
                                                 "e.location=" + e.getLocation());
                 }
@@ -689,7 +713,7 @@ public class FutureHttpImpl<R>
                 // FileNotFoundException: seen on some sites. A retry and the site was ok.
                 if (isLoggingEnabled()) {
                     LoggerFactory.getLogger()
-                                 .e(TAG, e, "connect|recoverable error",
+                                 .e(TAG, e, "doGetConnect|recoverable error",
                                     LOG_ATTEMPTS_LEFT + attemptsLeft,
                                     "requestUrlStr=`" + requestUrlStr + '`');
                 }
@@ -698,7 +722,7 @@ public class FutureHttpImpl<R>
                 if (attemptsLeft == 0) {
                     if (isLoggingEnabled()) {
                         LoggerFactory.getLogger()
-                                     .d(TAG, "connect|all attempts failed|disconnecting");
+                                     .d(TAG, "doGetConnect|all attempts failed|disconnecting");
                     }
                     req.disconnect();
                     throw e;
@@ -712,7 +736,8 @@ public class FutureHttpImpl<R>
             }
         }
 
-        final String message = "Giving up|initialRequestUrl=`" + initialRequest.getURL() + '`';
+        final String message = "doGetConnect|Giving up|initialRequestUrl=`"
+                               + initialRequest.getURL() + '`';
         if (isLoggingEnabled()) {
             LoggerFactory.getLogger().d(TAG, message);
         }
