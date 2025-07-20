@@ -308,11 +308,22 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
                                    HttpConstants.ACCEPT_ENCODING_GZIP);
 
+        httpGet.setRequestProperty(HttpConstants.CONNECTION,
+                                   HttpConstants.CONNECTION_KEEP_ALIVE);
+
+        addNavigationHeaders(httpGet);
+
+        // TODO: could add Platform in combo with the Randomizer
+        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
+        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
+
+        return httpGet;
+    }
+
+    private <T> void addNavigationHeaders(@NonNull final FutureHttp<T> httpGet) {
         // Deprecated but Firefox/Chrome are still sending it by default.
         httpGet.setRequestProperty(HttpConstants.DNT, "1");
 
-        httpGet.setRequestProperty(HttpConstants.CONNECTION,
-                                   HttpConstants.CONNECTION_KEEP_ALIVE);
         httpGet.setRequestProperty(HttpConstants.UPGRADE_INSECURE_REQUESTS,
                                    HttpConstants.UPGRADE_INSECURE_REQUESTS_TRUE);
 
@@ -327,12 +338,6 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE,
                                    HttpConstants.SEC_FETCH_SITE_NONE);
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, "?1");
-
-        // TODO: could add Platform in combo with the Randomizer
-        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
-        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
-
-        return httpGet;
     }
 
     /**
@@ -345,11 +350,27 @@ public abstract class SearchEngineBase
      * @param <T>     return type
      *
      * @return new {@code GET} request instance
+     *
+     * @see #createGetDocumentRequest(Context)
      */
     @NonNull
     public <T> FutureHttp<T> createGetImageRequest(@NonNull final Context context) {
-        final FutureHttp<T> httpGet = createGetDocumentRequest(context);
-        httpGet.setRequestProperty(HttpConstants.ACCEPT, HttpConstants.ACCEPT_IMAGE);
+        final FutureHttp<T> httpGet = createRawGetRequest(context);
+
+        httpGet.setRequestProperty(HttpConstants.ACCEPT,
+                                   HttpConstants.ACCEPT_IMAGE);
+        httpGet.setRequestProperty(HttpConstants.ACCEPT_LANGUAGE,
+                                   createAcceptLanguageHeader(context));
+        httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
+                                   HttpConstants.ACCEPT_ENCODING_GZIP);
+
+        httpGet.setRequestProperty(HttpConstants.CONNECTION,
+                                   HttpConstants.CONNECTION_KEEP_ALIVE);
+
+        // TODO: could add Platform in combo with the Randomizer
+        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
+        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
+
         // We want a generic image
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
                                    HttpConstants.SEC_FETCH_DEST_IMAGE);
@@ -357,7 +378,7 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE,
                                    HttpConstants.SEC_FETCH_MODE_NO_CORS);
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE,
-                                   HttpConstants.SEC_FETCH_SITE_SAME_ORIGIN);
+                                   HttpConstants.SEC_FETCH_SITE_NONE);
         return httpGet;
     }
 
@@ -457,19 +478,18 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                final FutureHttp<File> httpGet = createGetImageRequest(context);
-                if (requestProperties != null) {
-                    requestProperties.forEach(httpGet::setRequestProperty);
-                }
-                imageDownloader = new ImageDownloader(httpGet);
+                imageDownloader = new ImageDownloader();
             }
         }
         final String tempFilename = ImageFileInfo.getTempFilename(
                 getEngineId().getPreferenceKey(), bookId, cIdx, size);
 
         try {
-            return imageDownloader.fetch(url, tempFilename)
+            final FutureHttp<File> httpGet = createGetImageRequest(context);
+            return imageDownloader.fetch(url, tempFilename,
+                                         httpGet, requestProperties)
                                   .map(File::getAbsolutePath);
+
         } catch (@NonNull final IOException e) {
             // we swallow IOExceptions, even when the disk is full.
             // We're counting on that condition to be caught elsewhere...

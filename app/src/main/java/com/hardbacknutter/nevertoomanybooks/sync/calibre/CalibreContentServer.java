@@ -1344,25 +1344,25 @@ public final class CalibreContentServer
 
         synchronized (this) {
             if (imageDownloader == null) {
-                final FutureHttp<File> request = createGetRequest();
-                request.setRequestProperty(HttpConstants.ACCEPT,
-                                           HttpConstants.ACCEPT_IMAGE);
-                // TODO: check adding http headers with Calibre built-in-http-server
-                //  versus Calibre hosted behind an Apache server
-                // request.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
-                //                            HttpConstants.SEC_FETCH_DEST_IMAGE)
-                //        .setRequestProperty(HttpConstants.SEC_FETCH_MODE,
-                //                            HttpConstants.SEC_FETCH_MODE_NO_CORS)
-                //        .setRequestProperty(HttpConstants.SEC_FETCH_SITE,
-                //                            HttpConstants.SEC_FETCH_SITE_SAME_ORIGIN);
-                imageDownloader = new ImageDownloader(request);
+                imageDownloader = new ImageDownloader();
             }
         }
 
         final String tempFilename = ImageFileInfo.getTempFilename(
                 FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
 
-        return imageDownloader.fetch(serverUri + coverUrl, tempFilename);
+        // TODO: check adding http headers with Calibre built-in-http-server
+        //  versus Calibre hosted behind an Apache server
+        // request.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
+        //                            HttpConstants.SEC_FETCH_DEST_IMAGE)
+        //        .setRequestProperty(HttpConstants.SEC_FETCH_MODE,
+        //                            HttpConstants.SEC_FETCH_MODE_NO_CORS)
+        //        .setRequestProperty(HttpConstants.SEC_FETCH_SITE,
+        //                            HttpConstants.SEC_FETCH_SITE_SAME_ORIGIN);
+        final FutureHttp<File> request = createGetRequest();
+        return imageDownloader.fetch(serverUri + coverUrl, tempFilename,
+                                     request, Map.of(HttpConstants.ACCEPT,
+                                                     HttpConstants.ACCEPT_IMAGE));
     }
 
     /**

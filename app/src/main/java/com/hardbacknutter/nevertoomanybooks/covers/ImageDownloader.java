@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -65,24 +66,17 @@ public class ImageDownloader {
     @VisibleForTesting
     public static boolean IGNORE_RENAME_FAILURE;
 
-    @NonNull
-    private final FutureHttp<File> httpGet;
-
-    /**
-     * Constructor.
-     *
-     * @param httpGet to use
-     */
-    public ImageDownloader(@NonNull final FutureHttp<File> httpGet) {
-        this.httpGet = httpGet;
-    }
+    @Nullable
+    private FutureHttp<File> httpGet;
 
     /**
      * Given a URL, get an image and save to the given file.
      * Must be called from a background task.
      *
-     * @param url      Image file URL
-     * @param filename filename to write to
+     * @param url               Image file URL
+     * @param filename          filename to write to
+     * @param httpGet           to use
+     * @param requestProperties optional map
      *
      * @return Downloaded File
      *
@@ -92,8 +86,15 @@ public class ImageDownloader {
     @NonNull
     @WorkerThread
     public Optional<File> fetch(@NonNull final String url,
-                                @NonNull final String filename)
+                                @NonNull final String filename,
+                                @NonNull final FutureHttp<File> httpGet,
+                                @Nullable final Map<String, String> requestProperties)
             throws StorageException, IOException {
+
+        this.httpGet = httpGet;
+        if (requestProperties != null) {
+            requestProperties.forEach(this.httpGet::setRequestProperty);
+        }
 
         final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
         final File tempDir = coverStorage.getTempDir();
@@ -113,7 +114,7 @@ public class ImageDownloader {
                 }
                 savedFile = destFile;
             } else {
-                savedFile = httpGet.get(url, (con, is) ->
+                savedFile = this.httpGet.get(url, (con, is) ->
                         coverStorage.persist(is, destFile));
             }
 
@@ -140,12 +141,17 @@ public class ImageDownloader {
                 throw e;
             }
             return Optional.empty();
+
+        } finally {
+            this.httpGet = null;
         }
     }
 
     public void cancel() {
-        synchronized (httpGet) {
-            httpGet.cancel();
+        synchronized (this) {
+            if (httpGet != null) {
+                httpGet.cancel();
+            }
         }
     }
 }
