@@ -56,18 +56,6 @@ public class ParseTest
 
     private static final String TAG = "ParseTest";
 
-    /**
-     * The site is rather unstable.... half of the time it fails to serve covers
-     * and returns a "500".
-     * Ignore any failing tests for covers...
-     * <p>
-     * Example failure:
-     * checkResponseCode|500 https://archive.org/download/m_covers_0012/m_covers_0012_58.zip/0012585189-M.jpg
-     */
-    private static final String SITE_COVERS_BROKEN_AGAIN = "site covers broken again";
-    //    private static final boolean[] FETCH_COVERS = {false, false, false, false};
-    private static final boolean[] FETCH_COVERS = {true, true, true, true};
-
     private OpenLibrarySearchEngine searchEngine;
 
     @Before
@@ -107,7 +95,9 @@ public class ParseTest
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780980200447_work);
 
         final Book book = new Book();
-        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
+        searchEngine.parse(context, document, workDocument,
+                           new boolean[]{true, true, true, true},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Slow reading", book.getString(DBKey.TITLE, null));
@@ -173,28 +163,26 @@ public class ParseTest
         assertEquals("John", tocs.get(0).getPrimaryAuthor().getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
 
-        if (FETCH_COVERS[0]) {
-            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-            // "covers": [5546156]
-            List<String> covers;
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        // "covers": [5546156]
+        List<String> covers;
 
-            covers = CoverFileSpecArray.getList(book, 0);
-            assertNotNull(covers);
-            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(0).contains(preferenceKey + "_5546156_0_"));
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_5546156_0_"));
 
-            covers = CoverFileSpecArray.getList(book, 1);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
 
-            covers = CoverFileSpecArray.getList(book, 2);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
 
-            covers = CoverFileSpecArray.getList(book, 3);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
-        }
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     @Test
@@ -211,7 +199,9 @@ public class ParseTest
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780734418227_work);
 
         final Book book = new Book();
-        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
+        searchEngine.parse(context, document, workDocument,
+                           new boolean[]{true, true, true, true},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Wundersmith", book.getString(DBKey.TITLE, null));
@@ -240,28 +230,26 @@ public class ParseTest
         assertEquals(1, allSeries.size());
         assertEquals("Nevermoor", allSeries.get(0).getTitle());
 
-        if (FETCH_COVERS[0]) {
-            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-            // "covers": [13769253]
-            List<String> covers;
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        // "covers": [13769253]
+        List<String> covers;
 
-            covers = CoverFileSpecArray.getList(book, 0);
-            assertNotNull(covers);
-            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(0).contains(preferenceKey + "_13769253_0_"));
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_13769253_0_"));
 
-            covers = CoverFileSpecArray.getList(book, 1);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
 
-            covers = CoverFileSpecArray.getList(book, 2);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
 
-            covers = CoverFileSpecArray.getList(book, 3);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
-        }
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     @Test
@@ -277,7 +265,9 @@ public class ParseTest
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780141346830_work);
 
         final Book book = new Book();
-        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
+        searchEngine.parse(context, document, workDocument,
+                           new boolean[]{true, true, true, true},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Percy Jackson and the Battle of the Labyrinth",
@@ -320,30 +310,28 @@ public class ParseTest
         assertTrue(oIv.isPresent());
         assertEquals("60214017", oIv.get());
 
-        if (FETCH_COVERS[0]) {
-            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-            //   "covers": [14615097, 14615096, 13011694]
-            List<String> covers;
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        //   "covers": [14615097, 14615096, 13011694]
+        List<String> covers;
 
-            covers = CoverFileSpecArray.getList(book, 0);
-            assertNotNull(covers);
-            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(0).contains(preferenceKey + "_14615097_0_"));
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_14615097_0_"));
 
-            covers = CoverFileSpecArray.getList(book, 1);
-            assertNotNull(covers);
-            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(0).contains(preferenceKey + "_14615096_1_"));
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_14615096_1_"));
 
-            covers = CoverFileSpecArray.getList(book, 2);
-            assertNotNull(covers);
-            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(0).contains(preferenceKey + "_13011694_2_"));
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_13011694_2_"));
 
-            covers = CoverFileSpecArray.getList(book, 3);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
-        }
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     @Test
@@ -359,7 +347,9 @@ public class ParseTest
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9783103971422_work);
 
         final Book book = new Book();
-        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
+        searchEngine.parse(context, document, workDocument,
+                           new boolean[]{true, true, true, true},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Autokorrektur", book.getString(DBKey.TITLE, null));
@@ -484,28 +474,26 @@ public class ParseTest
         assertEquals("Katja", tocs.get(0).getPrimaryAuthor().getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, tocs.get(0).getPrimaryAuthor().getType());
 
-        if (FETCH_COVERS[0]) {
-            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-            // "covers": [12585189]
-            List<String> covers;
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        // "covers": [12585189]
+        List<String> covers;
 
-            covers = CoverFileSpecArray.getList(book, 0);
-            assertNotNull(covers);
-            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(0).contains(preferenceKey + "_12585189_0_"));
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_12585189_0_"));
 
-            covers = CoverFileSpecArray.getList(book, 1);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
 
-            covers = CoverFileSpecArray.getList(book, 2);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
 
-            covers = CoverFileSpecArray.getList(book, 3);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
-        }
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     @Test
@@ -522,7 +510,9 @@ public class ParseTest
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9780553276329_work);
 
         final Book book = new Book();
-        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
+        searchEngine.parse(context, document, workDocument,
+                           new boolean[]{true, true, true, true},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Pacific Vortex!", book.getString(DBKey.TITLE, null));
@@ -585,28 +575,26 @@ public class ParseTest
         assertEquals("NUMA Files, 1; Dirk Pitt Adventures", allSeries.get(0).getTitle());
         assertEquals("1", allSeries.get(0).getNumber());
 
-        if (FETCH_COVERS[0]) {
-            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-            // "covers": [368945]
-            List<String> covers;
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        // "covers": [368945]
+        List<String> covers;
 
-            covers = CoverFileSpecArray.getList(book, 0);
-            assertNotNull(covers);
-            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(0).contains(preferenceKey + "_368945_0_"));
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_368945_0_"));
 
-            covers = CoverFileSpecArray.getList(book, 1);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
 
-            covers = CoverFileSpecArray.getList(book, 2);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
 
-            covers = CoverFileSpecArray.getList(book, 3);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
-        }
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 
     @Test
@@ -622,7 +610,9 @@ public class ParseTest
                 com.hardbacknutter.nevertoomanybooks.test.R.raw.openlibrary_9781691706631_work);
 
         final Book book = new Book();
-        searchEngine.parse(context, document, workDocument, FETCH_COVERS, book);
+        searchEngine.parse(context, document, workDocument,
+                           new boolean[]{true, true, true, true},
+                           book);
         Log.d(TAG, book.toString());
 
         assertEquals("Control Your Mind and Master Your Feelings",
@@ -659,27 +649,25 @@ public class ParseTest
         assertTrue(oIv.isPresent());
         assertEquals("OL14948835A", oIv.get());
 
-        if (FETCH_COVERS[0]) {
-            final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
-            // "covers": [15096667, -1]
-            List<String> covers;
-            
-            covers = CoverFileSpecArray.getList(book, 0);
-            assertNotNull(covers);
-            assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(0).contains(preferenceKey + "_15096667_0_"));
+        final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
+        // "covers": [15096667, -1]
+        List<String> covers;
 
-            covers = CoverFileSpecArray.getList(book, 1);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).contains(preferenceKey + "_15096667_0_"));
 
-            covers = CoverFileSpecArray.getList(book, 2);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
+        covers = CoverFileSpecArray.getList(book, 1);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
 
-            covers = CoverFileSpecArray.getList(book, 3);
-            assertNotNull(covers);
-            assertEquals(0, covers.size());
-        }
+        covers = CoverFileSpecArray.getList(book, 2);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
+
+        covers = CoverFileSpecArray.getList(book, 3);
+        assertNotNull(covers);
+        assertEquals(0, covers.size());
     }
 }
