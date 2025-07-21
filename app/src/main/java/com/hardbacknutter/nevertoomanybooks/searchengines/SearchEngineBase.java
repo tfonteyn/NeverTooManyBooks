@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -463,7 +464,7 @@ public abstract class SearchEngineBase
                 imageDownloader = new ImageDownloader(httpGet);
             }
         }
-        final String tempFilename = ImageDownloader.getTempFilename(
+        final String tempFilename = ImageFileInfo.getTempFilename(
                 getEngineId().getPreferenceKey(), bookId, cIdx, size);
 
         try {

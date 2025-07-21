@@ -79,6 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -1358,7 +1359,7 @@ public final class CalibreContentServer
             }
         }
 
-        final String tempFilename = ImageDownloader.getTempFilename(
+        final String tempFilename = ImageFileInfo.getTempFilename(
                 FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
 
         return imageDownloader.fetch(serverUri + coverUrl, tempFilename);

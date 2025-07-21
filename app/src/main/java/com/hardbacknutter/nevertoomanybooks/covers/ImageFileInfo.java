@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -106,6 +107,47 @@ public class ImageFileInfo
         fileSpec = in.readString();
         engineId = in.readParcelable(getClass().getClassLoader());
         size = in.readParcelable(getClass().getClassLoader());
+    }
+
+    /**
+     * Get a temporary filename.
+     *
+     * @param source of the image (normally a SearchEngine specific code)
+     * @param bookId (optional) either the native id, or the isbn
+     * @param cIdx   0..n image index
+     * @param size   (optional) size of the image
+     *               Omitted if not set
+     *
+     * @return filename
+     */
+    @NonNull
+    public static String getTempFilename(@NonNull final String source,
+                                         @Nullable final String bookId,
+                                         @IntRange(from = 0, to = 3) final int cIdx,
+                                         @Nullable final ImageWebSize size) {
+        // keep all "_" even for empty parts. Easier to parse the name if needed.
+        return System.currentTimeMillis()
+               + "_" + source
+               + "_" + (bookId != null && !bookId.isEmpty() ? bookId : "")
+               + "_" + cIdx
+               + "_" + (size != null ? size : "")
+               + ".jpg";
+    }
+
+    public static boolean isTempFilenameEquals(@Nullable final String path1,
+                                               @Nullable final String path2) {
+        if (path1 == null || path2 == null) {
+            return Objects.equals(path1, path2);
+        }
+        final String[] s1 = path1.split("_", 2);
+        final String[] s2 = path2.split("_", 2);
+        // Sanity check; If there are no '_' character, just compare as-is.
+        if (s1.length != 2 || s2.length != 2) {
+            return path1.equals(path2);
+        }
+
+        // Compare without the path/timestamp part
+        return s1[1].equals(s2[1]);
     }
 
     @Override

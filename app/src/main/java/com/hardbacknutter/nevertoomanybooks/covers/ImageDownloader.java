@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.util.Base64;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -76,31 +75,6 @@ public class ImageDownloader {
      */
     public ImageDownloader(@NonNull final FutureHttp<File> httpGet) {
         this.httpGet = httpGet;
-    }
-
-    /**
-     * Get a temporary filename.
-     *
-     * @param source of the image (normally a SearchEngine specific code)
-     * @param bookId (optional) either the native id, or the isbn
-     * @param cIdx   0..n image index
-     * @param size   (optional) size of the image
-     *               Omitted if not set
-     *
-     * @return filename
-     */
-    @NonNull
-    public static String getTempFilename(@NonNull final String source,
-                                         @Nullable final String bookId,
-                                         @IntRange(from = 0, to = 3) final int cIdx,
-                                         @Nullable final ImageWebSize size) {
-        // keep all "_" even for empty parts. Easier to parse the name if needed.
-        return System.currentTimeMillis()
-               + "_" + source
-               + "_" + (bookId != null && !bookId.isEmpty() ? bookId : "")
-               + "_" + cIdx
-               + "_" + (size != null ? size : "")
-               + ".jpg";
     }
 
     /**
