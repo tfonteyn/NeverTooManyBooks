@@ -43,7 +43,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -63,6 +65,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -94,6 +97,9 @@ import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 import com.hardbacknutter.util.logger.LoggerFactory;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
  * <ul>
@@ -547,20 +553,63 @@ public final class CalibreContentServer
     }
 
     @NonNull
+    private OkHttpClient createHttpClient() {
+        final OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
+                .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS);
+
+        if (sslContext != null) {
+            builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
+            if (hostnameVerifier != null) {
+                builder.setHostnameVerifier$okhttp(hostnameVerifier);
+            }
+        }
+
+        return builder.build();
+    }
+
+    @NonNull
+    private Request createImageRequest(@NonNull final String urlStr)
+            throws MalformedURLException {
+
+        // TODO: check adding http headers with Calibre built-in-http-server
+        //  versus Calibre hosted behind an Apache server
+
+        final Request.Builder builder = new Request.Builder()
+                .url(urlStr)
+                .header(HttpConstants.HOST, new URL(urlStr).getHost())
+                .header(HttpConstants.USER_AGENT,
+                        HttpConstants.BROWSER_USER_AGENT)
+
+                .header(HttpConstants.ACCEPT,
+                        HttpConstants.ACCEPT_IMAGE)
+                .header(HttpConstants.ACCEPT_ENCODING,
+                        HttpConstants.ACCEPT_ENCODING_GZIP)
+
+                .header(HttpConstants.CONNECTION,
+                        HttpConstants.CONNECTION_KEEP_ALIVE);
+
+        if (authHeader != null) {
+            builder.header(HttpConstants.AUTHORIZATION, authHeader);
+        }
+
+        return builder.build();
+    }
+
+    @NonNull
     private <FRT> FutureHttp<FRT> createGetRequest() {
         final FutureHttp<FRT> request = FutureHttpFactory.create(R.string.site_calibre);
 
         // TODO: check adding http headers with Calibre built-in-http-server
         //  versus Calibre hosted behind an Apache server
-        // TEST adding connection-keep-alive
-        // httpGet.setRequestProperty(HttpConstants.CONNECTION,
-        //                            HttpConstants.CONNECTION_KEEP_ALIVE);
 
         request.setConnectTimeout(connectTimeoutInMs)
                .setReadTimeout(readTimeoutInMs)
                .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
                .setRequestProperty(HttpConstants.ACCEPT_ENCODING,
                                    HttpConstants.ACCEPT_ENCODING_GZIP)
+               .setRequestProperty(HttpConstants.CONNECTION,
+                                   HttpConstants.CONNECTION_KEEP_ALIVE)
                .setSSLContext(sslContext)
                .setHostnameVerifier(hostnameVerifier);
         return request;
@@ -570,11 +619,11 @@ public final class CalibreContentServer
     private <FRT> FutureHttp<FRT> createPostRequest() {
         final FutureHttp<FRT> request = FutureHttpFactory.create(R.string.site_calibre);
         request.setConnectTimeout(connectTimeoutInMs)
-                .setReadTimeout(readTimeoutInMs)
-                .setRequestProperty(HttpConstants.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON)
-                .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
-                .setSSLContext(sslContext)
-                .setHostnameVerifier(hostnameVerifier);
+               .setReadTimeout(readTimeoutInMs)
+               .setRequestProperty(HttpConstants.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON)
+               .setRequestProperty(HttpConstants.AUTHORIZATION, authHeader)
+               .setSSLContext(sslContext)
+               .setHostnameVerifier(hostnameVerifier);
         return request;
     }
 
@@ -1344,25 +1393,19 @@ public final class CalibreContentServer
 
         synchronized (this) {
             if (imageDownloader == null) {
-                imageDownloader = new ImageDownloader();
+                final OkHttpClient httpClient = createHttpClient();
+                imageDownloader = new ImageDownloader(httpClient,
+                                                      null,
+                                                      R.string.site_calibre,
+                                                      false);
             }
         }
 
         final String tempFilename = ImageFileInfo.getTempFilename(
                 FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
 
-        // TODO: check adding http headers with Calibre built-in-http-server
-        //  versus Calibre hosted behind an Apache server
-        // request.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
-        //                            HttpConstants.SEC_FETCH_DEST_IMAGE)
-        //        .setRequestProperty(HttpConstants.SEC_FETCH_MODE,
-        //                            HttpConstants.SEC_FETCH_MODE_NO_CORS)
-        //        .setRequestProperty(HttpConstants.SEC_FETCH_SITE,
-        //                            HttpConstants.SEC_FETCH_SITE_SAME_ORIGIN);
-        final FutureHttp<File> request = createGetRequest();
-        return imageDownloader.fetch(serverUri + coverUrl, tempFilename,
-                                     request, Map.of(HttpConstants.ACCEPT,
-                                                     HttpConstants.ACCEPT_IMAGE));
+        final Request imageRequest = createImageRequest(serverUri + coverUrl);
+        return imageDownloader.fetch(imageRequest, tempFilename);
     }
 
     /**

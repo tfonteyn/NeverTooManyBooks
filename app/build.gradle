@@ -281,6 +281,7 @@ dependencies {
     implementation(libs.google.material)
 
     implementation(libs.jsoup)
+    implementation(libs.okhttp)
 
     // CameraX based scanner code from "TinyZXingWrapper"
     releaseImplementation(libs.hardbacknutter.tinyzxingwrapper) {

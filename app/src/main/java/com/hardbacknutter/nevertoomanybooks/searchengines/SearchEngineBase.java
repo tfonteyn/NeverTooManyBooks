@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.net.ssl.SSLContext;
 
@@ -56,10 +58,10 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
@@ -69,6 +71,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
 import com.hardbacknutter.util.logger.LoggerFactory;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 public abstract class SearchEngineBase
         implements SearchEngine {
@@ -340,53 +345,101 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, "?1");
     }
 
-    /**
-     * Convenience method which uses the engines specific network configuration
-     * to create a suitable {@code GET} request.
-     * <p>
-     * The headers are set to the defaults as used by Firefox to request an "image"
-     *
-     * @param context Current context
-     * @param <T>     return type
-     *
-     * @return new {@code GET} request instance
-     *
-     * @see #createGetDocumentRequest(Context)
-     */
-    @NonNull
-    public <T> FutureHttp<T> createGetImageRequest(@NonNull final Context context) {
-        final FutureHttp<T> httpGet = createRawGetRequest(context);
-
-        httpGet.setRequestProperty(HttpConstants.ACCEPT,
-                                   HttpConstants.ACCEPT_IMAGE);
-        httpGet.setRequestProperty(HttpConstants.ACCEPT_LANGUAGE,
-                                   createAcceptLanguageHeader(context));
-        httpGet.setRequestProperty(HttpConstants.ACCEPT_ENCODING,
-                                   HttpConstants.ACCEPT_ENCODING_GZIP);
-
-        httpGet.setRequestProperty(HttpConstants.CONNECTION,
-                                   HttpConstants.CONNECTION_KEEP_ALIVE);
-
-        // TODO: could add Platform in combo with the Randomizer
-        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
-        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
-
-        // We want a generic image
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_DEST,
-                                   HttpConstants.SEC_FETCH_DEST_IMAGE);
-
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_MODE,
-                                   HttpConstants.SEC_FETCH_MODE_NO_CORS);
-        httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE,
-                                   HttpConstants.SEC_FETCH_SITE_NONE);
-        return httpGet;
-    }
-
     @NonNull
     private <T> FutureHttp<T> createRawGetRequest(@NonNull final Context context) {
         final FutureHttp<T> httpGet = FutureHttpFactory.create(context, config.getEngineId());
         httpGet.setSSLContext(sslContext);
         return httpGet;
+    }
+
+    /**
+     * Convenience method which uses the engines specific network configuration
+     * to create a suitable {@link OkHttpClient}.
+     *
+     * @param context Current context
+     *
+     * @return new {@link OkHttpClient} instance
+     *
+     * @see #createGetDocumentRequest(Context)
+     */
+    @NonNull
+    private OkHttpClient createHttpClient(@NonNull final Context context) {
+        final OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .connectTimeout(config.getConnectTimeoutInMs(context), TimeUnit.MILLISECONDS)
+                .readTimeout(config.getReadTimeoutInMs(context), TimeUnit.MILLISECONDS);
+
+        if (sslContext != null) {
+            builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
+        }
+
+        // not in use for now. We'll need to write our own interceptor
+        // to be able to yse LoggerFactory.getLogger()
+        //        if (logEnabled) {
+        //            final HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        //            logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        //            builder.addInterceptor(logging);
+        //        }
+
+        return builder.build();
+    }
+
+    /**
+     * Convenience method to create a suitable {@code GET} {@link Request}.
+     * <p>
+     * The headers are set to the defaults as used by Firefox to request an "image"
+     *
+     * @param context           Current context
+     * @param urlStr            to use
+     * @param requestProperties (optional) extra headers to add/override
+     *
+     * @return new {@code GET} request instance
+     *
+     * @throws MalformedURLException on url errors
+     * @see #createGetDocumentRequest(Context)
+     */
+    @NonNull
+    @EmptySuper
+    protected Request createImageRequest(@NonNull final Context context,
+                                         @NonNull final String urlStr,
+                                         @Nullable final Map<String, String> requestProperties)
+            throws MalformedURLException {
+
+        // TODO: could add Platform in combo with the Randomizer
+        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows",
+        // or "Unknown".
+        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
+
+        final Request.Builder builder = new Request.Builder()
+                .url(urlStr)
+                .header(HttpConstants.HOST, new URL(urlStr).getHost())
+                .header(HttpConstants.USER_AGENT,
+                        HttpConstants.BROWSER_USER_AGENT)
+
+                .header(HttpConstants.ACCEPT,
+                        HttpConstants.ACCEPT_IMAGE)
+                .header(HttpConstants.ACCEPT_ENCODING,
+                        HttpConstants.ACCEPT_ENCODING_GZIP)
+
+                .header(HttpConstants.ACCEPT_LANGUAGE,
+                        createAcceptLanguageHeader(context))
+
+                .header(HttpConstants.CONNECTION,
+                        HttpConstants.CONNECTION_KEEP_ALIVE)
+
+                //We want a generic image
+                .header(HttpConstants.SEC_FETCH_DEST,
+                        HttpConstants.SEC_FETCH_DEST_IMAGE)
+                .header(HttpConstants.SEC_FETCH_MODE,
+                        HttpConstants.SEC_FETCH_MODE_NO_CORS)
+                .header(HttpConstants.SEC_FETCH_SITE,
+                        HttpConstants.SEC_FETCH_SITE_NONE);
+
+        // add or override
+        if (requestProperties != null) {
+            requestProperties.forEach(builder::header);
+        }
+
+        return builder.build();
     }
 
     /**
@@ -464,7 +517,7 @@ public abstract class SearchEngineBase
      *
      * @return File fileSpec, or {@code Optional.empty()} on failure
      *
-     * @throws StorageException The covers directory is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     @WorkerThread
     @NonNull
@@ -474,20 +527,23 @@ public abstract class SearchEngineBase
                                       @Nullable final String bookId,
                                       @IntRange(from = 0, to = 3) final int cIdx,
                                       @Nullable final ImageWebSize size)
-            throws StorageException {
+            throws CoverStorageException {
 
         synchronized (this) {
             if (imageDownloader == null) {
-                imageDownloader = new ImageDownloader();
+                final OkHttpClient httpClient = createHttpClient(context);
+                imageDownloader = new ImageDownloader(httpClient,
+                                                      config.getThrottler(),
+                                                      config.getEngineId().getLabelResId(),
+                                                      config.isLogHttpGetRequests(context));
             }
         }
         final String tempFilename = ImageFileInfo.getTempFilename(
                 getEngineId().getPreferenceKey(), bookId, cIdx, size);
 
         try {
-            final FutureHttp<File> httpGet = createGetImageRequest(context);
-            return imageDownloader.fetch(url, tempFilename,
-                                         httpGet, requestProperties)
+            final Request imageRequest = createImageRequest(context, url, requestProperties);
+            return imageDownloader.fetch(imageRequest, tempFilename)
                                   .map(File::getAbsolutePath);
 
         } catch (@NonNull final IOException e) {

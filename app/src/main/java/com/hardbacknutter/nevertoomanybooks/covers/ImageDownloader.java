@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.util.Base64;
@@ -31,25 +32,37 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.network.FutureHttp;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpForbiddenException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.core.network.HttpUnauthorizedException;
+import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 /**
- * Given a URL and a filename, this class uses a {@link FutureHttp} to download an image,
+ * Given a URL and a filename, this class uses an {@link OkHttpClient} to download an image,
  * and the {@link CoverStorage} to store the image.
  */
 public class ImageDownloader {
 
-    /** Log tag. */
     private static final String TAG = "ImageDownloader";
 
     /** The prefix an embedded image url would have. */
@@ -66,35 +79,86 @@ public class ImageDownloader {
     @VisibleForTesting
     public static boolean IGNORE_RENAME_FAILURE;
 
+    @NonNull
+    private final OkHttpClient client;
     @Nullable
-    private FutureHttp<File> httpGet;
+    private final Throttler throttler;
+
+    private final boolean logEnabled;
+    private final int labelResId;
+
+    /** Current cancelable call. */
+    @Nullable
+    private Call call;
+
+    /**
+     * Constructor.
+     *
+     * @param client     to use
+     * @param throttler  to use
+     * @param labelResId for logging
+     * @param logEnabled flag
+     */
+    public ImageDownloader(@NonNull final OkHttpClient client,
+                           @Nullable final Throttler throttler,
+                           final int labelResId,
+                           final boolean logEnabled) {
+
+        this.client = client;
+        this.throttler = throttler;
+        this.labelResId = labelResId;
+        this.logEnabled = logEnabled;
+    }
+
+    private static void logRequest(@NonNull final Request request) {
+        final String msg = request
+                .headers()
+                .toMultimap()
+                .entrySet()
+                .stream()
+                .map(es -> "Request Header: " + es.getKey() + "="
+                           + String.join("|", es.getValue()))
+                .collect(Collectors.joining("\n"));
+
+        final Logger logger = LoggerFactory.getLogger();
+        logger.d(TAG, "url", request.url().url());
+        logger.d(TAG, "headers", "\n" + msg);
+    }
+
+    private static void logResponse(@NonNull final Response response) {
+        final String msg = response
+                .headers()
+                .toMultimap()
+                .entrySet()
+                .stream()
+                .map(es -> "Response Header: " + es.getKey() + "="
+                           + String.join("|", es.getValue()))
+                .collect(Collectors.joining("\n"));
+
+        final Logger logger = LoggerFactory.getLogger();
+        logger.d(TAG, "url", response.request().url().url());
+        logger.d(TAG, "responseCode", "\n" + response.code());
+        logger.d(TAG, "responseMsg", "\n" + response.message());
+        logger.d(TAG, "headers", "\n" + msg);
+    }
 
     /**
      * Given a URL, get an image and save to the given file.
      * Must be called from a background task.
      *
-     * @param url               Image file URL
-     * @param filename          filename to write to
-     * @param httpGet           to use
-     * @param requestProperties optional map
+     * @param request  to execute
+     * @param filename filename to write to
      *
      * @return Downloaded File
      *
-     * @throws StorageException The covers directory is not available
-     * @throws IOException      on generic/other IO failures
+     * @throws CoverStorageException The covers directory is not available
+     * @throws IOException           on generic/other IO failures
      */
     @NonNull
     @WorkerThread
-    public Optional<File> fetch(@NonNull final String url,
-                                @NonNull final String filename,
-                                @NonNull final FutureHttp<File> httpGet,
-                                @Nullable final Map<String, String> requestProperties)
-            throws StorageException, IOException {
-
-        this.httpGet = httpGet;
-        if (requestProperties != null) {
-            requestProperties.forEach(this.httpGet::setRequestProperty);
-        }
+    public Optional<File> fetch(@NonNull final Request request,
+                                @NonNull final String filename)
+            throws IOException, CoverStorageException {
 
         final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
         final File tempDir = coverStorage.getTempDir();
@@ -105,17 +169,37 @@ public class ImageDownloader {
         final File savedFile;
 
         try {
-            if (url.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
+            // Uncommon, but some sites use embedded base64 images.
+            final String urlStr = request.url().url().toString();
+            if (urlStr.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
                 try (OutputStream os = new FileOutputStream(destFile)) {
                     final byte[] image = Base64
-                            .decode(url.substring(DATA_IMAGE_JPEG_BASE_64.length())
-                                       .getBytes(StandardCharsets.UTF_8), 0);
+                            .decode(urlStr.substring(DATA_IMAGE_JPEG_BASE_64.length())
+                                          .getBytes(StandardCharsets.UTF_8), 0);
                     os.write(image);
                 }
                 savedFile = destFile;
+
             } else {
-                savedFile = this.httpGet.get(url, (con, is) ->
-                        coverStorage.persist(is, destFile));
+                call = client.newCall(request);
+
+                if (logEnabled) {
+                    logRequest(request);
+                }
+
+                if (throttler != null) {
+                    throttler.waitUntilRequestAllowed();
+                }
+                try (Response response = call.execute()) {
+                    checkResponseCode(response);
+
+                    InputStream source = response.body().byteStream();
+                    if ("gzip".equalsIgnoreCase(response.header(
+                            HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING))) {
+                        source = new GZIPInputStream(source);
+                    }
+                    savedFile = coverStorage.persist(source, destFile);
+                }
             }
 
             // too small ? reject
@@ -129,7 +213,7 @@ public class ImageDownloader {
             FileUtils.delete(destFile);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES || IGNORE_RENAME_FAILURE) {
-                LoggerFactory.getLogger().e(TAG, e, "saveImage");
+                LoggerFactory.getLogger().e(TAG, e, "fetch");
 
                 if (IGNORE_RENAME_FAILURE) {
                     return Optional.of(destFile);
@@ -143,14 +227,79 @@ public class ImageDownloader {
             return Optional.empty();
 
         } finally {
-            this.httpGet = null;
+            call = null;
+        }
+    }
+
+    /**
+     * Check the response code and throw exceptions as appropriate.
+     *
+     * @param response to check
+     *
+     * @throws HttpUnauthorizedException 401: Unauthorized.
+     * @throws HttpForbiddenException    403: Forbidden
+     * @throws HttpNotFoundException     404: Not Found.
+     * @throws SocketTimeoutException    408: Request Time-Out.
+     * @throws HttpStatusException       on any other HTTP failures
+     */
+    @WorkerThread
+    private void checkResponseCode(@NonNull final Response response)
+            throws
+            HttpUnauthorizedException,
+            HttpForbiddenException,
+            HttpNotFoundException,
+            SocketTimeoutException,
+            HttpStatusException {
+
+        final int responseCode = response.code();
+
+        if (logEnabled) {
+            logResponse(response);
+        }
+
+        if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+            return;
+        }
+
+        @Nullable
+        final String location = response.header(HttpConstants.RESPONSE_HEADER_LOCATION);
+
+        switch (responseCode) {
+            case HttpURLConnection.HTTP_UNAUTHORIZED:
+                throw new HttpUnauthorizedException(labelResId,
+                                                    response.message(),
+                                                    response.request().url().url(),
+                                                    location);
+
+            case HttpURLConnection.HTTP_FORBIDDEN:
+                throw new HttpForbiddenException(labelResId,
+                                                 response.message(),
+                                                 response.request().url().url(),
+                                                 location);
+
+            case HttpURLConnection.HTTP_NOT_FOUND:
+                throw new HttpNotFoundException(labelResId,
+                                                response.message(),
+                                                response.request().url().url(),
+                                                location);
+
+            case HttpURLConnection.HTTP_CLIENT_TIMEOUT:
+                // for easier reporting issues to the user, map a 408 to an STE
+                throw new SocketTimeoutException("408 " + response.message());
+
+            default:
+                throw new HttpStatusException(labelResId,
+                                              responseCode,
+                                              response.message(),
+                                              response.request().url().url(),
+                                              location);
         }
     }
 
     public void cancel() {
         synchronized (this) {
-            if (httpGet != null) {
-                httpGet.cancel();
+            if (call != null) {
+                call.cancel();
             }
         }
     }

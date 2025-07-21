@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageWebSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -69,6 +70,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.mappers.AuthorTypeMapper;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
+
+import okhttp3.Request;
 
 /**
  * <a href="https://openlibrary.org/dev/docs/api/search">Open Library Search API</a>
@@ -158,6 +161,7 @@ public class OpenLibrarySearchEngine
             Map.entry("amazon.co.uk_asin", Identifier.SID_ASIN),
             Map.entry("oclc_numbers", Identifier.SID_OCLC)
     );
+    private static final String TYPE_TEXT = "/type/text";
 
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     @NonNull
@@ -575,11 +579,10 @@ public class OpenLibrarySearchEngine
      * @throws StorageException     on storage related failures
      * @throws SearchException      on generic exceptions (wrapped) during search
      */
-    @VisibleForTesting
-    void parse(@NonNull final Context context,
-               @NonNull final JSONObject document,
-               @NonNull final boolean[] fetchCovers,
-               @NonNull final Book book)
+    private void parse(@NonNull final Context context,
+                       @NonNull final JSONObject document,
+                       @NonNull final boolean[] fetchCovers,
+                       @NonNull final Book book)
             throws StorageException, IOException, SearchException, CredentialsException {
 
         // 2025-06: the site has started to remove several data items from the "book.json"
@@ -695,6 +698,8 @@ public class OpenLibrarySearchEngine
     }
 
     /**
+     * Parse "work" specific fields.
+     *
      * <pre>{@code
      * {
      *   "title": "Control Your Mind and Master Your Feelings",
@@ -1063,7 +1068,7 @@ public class OpenLibrarySearchEngine
         element = document.optJSONObject("description");
         if (element != null) {
             // Sanity check, no idea if there are others types
-            if ("/type/text".equals(element.optString("type"))) {
+            if (TYPE_TEXT.equals(element.optString("type"))) {
                 s = element.optString("value", null);
                 if (s != null && !s.isEmpty()) {
                     final String previous = book.getDescription();
@@ -1078,7 +1083,7 @@ public class OpenLibrarySearchEngine
         element = document.optJSONObject("notes");
         if (element != null) {
             // Sanity check, no idea if there are others types
-            if ("/type/text".equals(element.optString("type"))) {
+            if (TYPE_TEXT.equals(element.optString("type"))) {
                 s = element.optString("value", null);
                 if (s != null && !s.isEmpty()) {
                     final String previous = book.getDescription();
@@ -1562,7 +1567,7 @@ public class OpenLibrarySearchEngine
      *
      * @return fileSpec
      *
-     * @throws StorageException on storage related failures
+     * @throws CoverStorageException on storage related failures
      */
     @NonNull
     Optional<String> fetchImageByKey(@NonNull final Context context,
@@ -1571,7 +1576,7 @@ public class OpenLibrarySearchEngine
                                      @NonNull final String id,
                                      @IntRange(from = 0, to = 3) final int cIdx,
                                      @Nullable final ImageWebSize size)
-            throws StorageException {
+            throws CoverStorageException {
 
         final String sizeParam;
         if (size == null) {
@@ -1620,11 +1625,15 @@ public class OpenLibrarySearchEngine
     }
 
     @NonNull
-    public <T> FutureHttp<T> createGetImageRequest(@NonNull final Context context) {
-        final FutureHttp<T> request = super.createGetImageRequest(context);
-        request.setInstanceFollowRedirects(true);
-        request.setEnable404Redirect(true);
+    @Override
+    protected Request createImageRequest(@NonNull final Context context,
+                                         @NonNull final String urlStr,
+                                         @Nullable final Map<String, String> requestProperties) {
 
-        return request;
+        // DO NOT ADD ANY HEADERS.... OL only works with the defaults ?!
+        final Request.Builder builder = new Request.Builder()
+                .url(urlStr);
+
+        return builder.build();
     }
 }
