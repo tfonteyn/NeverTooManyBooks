@@ -296,11 +296,29 @@ public class ParseTest
         assertEquals("Puffin", allPublishers.get(0).getName());
 
         final List<Author> authors = book.getAuthors();
+        Author author;
+        Optional<String> oIv;
         assertNotNull(authors);
         assertEquals(1, authors.size());
-        assertEquals("Riordan", authors.get(0).getFamilyName());
-        assertEquals("Rick", authors.get(0).getGivenNames());
-        assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
+
+        author = authors.get(0);
+        assertEquals("Riordan", author.getFamilyName());
+        assertEquals("Rick", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+        assertEquals("1964-06-05", author.getBirthDate().orElse(null));
+        assertTrue(author.getTmpPictureFileSpec().get().contains("_openlibrary_OL30765A_0"));
+        oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
+        assertTrue(oIv.isPresent());
+        assertEquals("OL30765A", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_ISNI);
+        assertTrue(oIv.isPresent());
+        assertEquals("0000000109066661", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q212727", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_VIAF);
+        assertTrue(oIv.isPresent());
+        assertEquals("60214017", oIv.get());
 
         if (FETCH_COVERS[0]) {
             final String preferenceKey = searchEngine.getEngineId().getPreferenceKey();
