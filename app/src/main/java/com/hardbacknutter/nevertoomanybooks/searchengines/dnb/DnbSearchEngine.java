@@ -38,9 +38,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -75,6 +78,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+
+import okhttp3.OkHttpClient;
 
 /**
  * <a href="https://www.dnb.de">Deutsche Nationalbibliothek (DNB)</a>
@@ -146,6 +151,9 @@ public class DnbSearchEngine
     private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
     private final DateParser<PartialDate> partialDateParser = new PartialDateParser();
 
+    @NonNull
+    private final X509TrustManager x509TrustManager;
+
     /**
      * Constructor.
      * <p>
@@ -154,6 +162,8 @@ public class DnbSearchEngine
      *
      * @param appContext The <strong>application</strong> context
      * @param config     the search engine configuration
+     *
+     * @throws IllegalStateException when we could not create the SslContext.
      */
     @Keep
     public DnbSearchEngine(@NonNull final Context appContext,
@@ -161,9 +171,12 @@ public class DnbSearchEngine
         super(appContext, config);
 
         try {
+            // this is a kludge... see DnbSslContextFactory why
+            x509TrustManager = DnbSslContextFactory.getTmf(appContext);
             setSslContext(DnbSslContextFactory.getSslContext(appContext));
         } catch (@NonNull final CertificateException e) {
             LoggerFactory.getLogger().e(TAG, e);
+            throw new IllegalStateException("The dnb certificates have likely become invalid", e);
         }
     }
 
@@ -186,6 +199,25 @@ public class DnbSearchEngine
                                     new Locale("de", "DE"))
                 .setIdentifierKey(Identifier.SID_DNB)
                 .setPreferenceFragmentClazz(DnbPreferencesFragment.class);
+    }
+
+    @NonNull
+    @Override
+    protected OkHttpClient createHttpClient(@NonNull final Context context) {
+        final SearchEngineConfig config = getEngineId().getConfig();
+        //noinspection DataFlowIssue
+        final OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .connectTimeout(config.getConnectTimeoutInMs(context), TimeUnit.MILLISECONDS)
+                .readTimeout(config.getReadTimeoutInMs(context), TimeUnit.MILLISECONDS);
+
+        final SSLContext sslContext = getSslContext();
+        if (sslContext != null) {
+            final SniSslSocketFactory sniSslSocketFactory = new SniSslSocketFactory(
+                    sslContext.getSocketFactory());
+            builder.sslSocketFactory(sniSslSocketFactory, x509TrustManager);
+        }
+
+        return builder.build();
     }
 
     @NonNull

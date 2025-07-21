@@ -239,7 +239,7 @@ public abstract class SearchEngineBase
     }
 
     @Nullable
-    SSLContext getSslContext() {
+    protected SSLContext getSslContext() {
         return sslContext;
     }
 
@@ -363,7 +363,8 @@ public abstract class SearchEngineBase
      * @see #createGetDocumentRequest(Context)
      */
     @NonNull
-    private OkHttpClient createHttpClient(@NonNull final Context context) {
+    @EmptySuper
+    protected OkHttpClient createHttpClient(@NonNull final Context context) {
         final OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(config.getConnectTimeoutInMs(context), TimeUnit.MILLISECONDS)
                 .readTimeout(config.getReadTimeoutInMs(context), TimeUnit.MILLISECONDS);

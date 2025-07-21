@@ -35,7 +35,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * 2025-04-01 www.dnb.be and katalog.dnb.de installed new certificates.
@@ -45,6 +47,9 @@ import javax.net.ssl.TrustManagerFactory;
  * <p>
  * Instead of downloading each time, we simply created the two possible chains
  * as pem-files.
+ * <p>
+ * A second issue is that the site only works with SNI. This is not a bad thing,
+ * but due to the kludge of the certs, we will ALSO need to handle the SNI setup manually.
  * <p>
  * URGENT: current dnb certs will expire 2026-03-31 and will need replacing.
  *  Hopefully the site will fix their issues before...
@@ -60,13 +65,43 @@ final class DnbSslContextFactory {
     /** 4-cert chain. */
     private static final String CERT_FILE_NAME2 = "katalog.dnb.de2.pem";
 
+    @Nullable
+    private static TrustManagerFactory tmf = null;
+    @Nullable
+    private static SSLContext sslContext = null;
+
     private DnbSslContextFactory() {
     }
 
-    @Nullable
+    @NonNull
+    static X509TrustManager getTmf(@NonNull final Context context)
+            throws CertificateException {
+        if (sslContext == null) {
+            init(context);
+        }
+
+        if (tmf != null) {
+            for (final TrustManager tm : tmf.getTrustManagers()) {
+                if (tm instanceof X509TrustManager) {
+                    return (X509TrustManager) tm;
+                }
+            }
+        }
+        throw new CertificateException("No X509TrustManager found");
+    }
+
+    @NonNull
     static SSLContext getSslContext(@NonNull final Context context)
             throws CertificateException {
 
+        if (sslContext == null) {
+            init(context);
+        }
+        return sslContext;
+    }
+
+    private static void init(@NonNull final Context context)
+            throws CertificateException {
         try {
             final X509Certificate c1 = getCertificate(context, CERT_FILE_NAME);
             final X509Certificate c2 = getCertificate(context, CERT_FILE_NAME2);
@@ -76,13 +111,12 @@ final class DnbSslContextFactory {
             keyStore.setCertificateEntry(CERT_FILE_NAME, c1);
             keyStore.setCertificateEntry(CERT_FILE_NAME2, c2);
 
-            final TrustManagerFactory tmf = TrustManagerFactory
+            tmf = TrustManagerFactory
                     .getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(keyStore);
 
-            final SSLContext tls = SSLContext.getInstance("TLS");
-            tls.init(null, tmf.getTrustManagers(), null);
-            return tls;
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
 
         } catch (@NonNull final KeyManagementException e) {
             // wrap for ease of handling; it is in fact almost certain that
@@ -94,7 +128,6 @@ final class DnbSslContextFactory {
             // All these exceptions, can be ignored and we are assuming
             // that the server does not need a cert, or that the cert is
             // loaded in the Android system keystore.
-            return null;
         }
     }
 
