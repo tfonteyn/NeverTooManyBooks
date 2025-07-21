@@ -304,64 +304,39 @@ public class DatabazeKnihSearchEngine
                       @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
-        // id and title
+        // sid and title
         @Nullable
         final String sid = parseMetaTags(document, book);
 
-        final Elements itemProps = document.select("[itemprop]");
-        for (final Element itemProp : itemProps) {
-            final String prop = itemProp.attr("itemprop");
-            switch (prop) {
-                case "author": {
-                    parseAuthors(itemProp, Author.TYPE_WRITER, book);
-                    break;
+        Element element;
+        Node textNode;
+
+        element = document.selectFirst("span.author");
+        if (element != null) {
+            final Elements aas = element.select("a");
+            parseAuthors(aas, Author.TYPE_WRITER, book);
+        }
+        element = document.selectFirst("div.ratValue");
+        if (element != null) {
+            final Node percentage = element.firstChild();
+            if (percentage != null) {
+                try {
+                    // 0..100 / 20 -> 0.0..5.0
+                    final String s = percentage.toString().strip();
+                    final float rating = (float) Integer.parseInt(s) / 20;
+                    ratingParser.normalize(rating).ifPresent(book::setRating);
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
                 }
-                case "description": {
-                    parseDescription(itemProp, book);
-                    break;
-                }
-                case "ratingValue": {
-                    ratingParser.parse(itemProp.text()).ifPresent(book::setRating);
-                    break;
-                }
-                case "genre": {
-                    final List<Tag> tags = itemProp
-                            .select("a.genre")
-                            .stream().map(Element::text)
-                            .map(Tag::new)
-                            .collect(Collectors.toList());
-                    if (!tags.isEmpty()) {
-                        book.setTags(tags);
-                    }
-                    break;
-                }
-                case "datePublished": {
-                    final String text = itemProp.text();
-                    if (!text.isEmpty() && !"?".equals(text)) {
-                        partialDateParser.parse(text).ifPresent(book::setPublicationDate);
-                    }
-                    break;
-                }
-                case "publisher": {
-                    final String text = itemProp.text();
-                    if (!text.isEmpty()) {
-                        book.add(Publisher.from(text));
-                    }
-                    break;
-                }
-                default:
-                    // prop=name => the title
-                    // prop=image
-                    // prop=aggregateRating
-                    // rop=ratingCount
-                    // prop=reviewCount
-                    //Log.d(TAG, "prop=" + prop);
-                    break;
             }
         }
 
-        Element element;
-        element = document.selectFirst("h3 > a[href^=/serie/]");
+        final Element bDetails = document.selectFirst("div#bdetail_rest");
+        if (bDetails == null) {
+            return;
+        }
+
+        element = bDetails.selectFirst("a[href^=/serie/]");
         if (element != null) {
             final String seriesName = SearchEngineUtils.cleanName(element.text());
             if (!seriesName.isEmpty()) {
@@ -387,27 +362,75 @@ public class DatabazeKnihSearchEngine
             }
         }
 
-        element = document.selectFirst("span:contains(Originální název:)");
+        element = bDetails.selectFirst("p.justify");
         if (element != null) {
-            element = element.nextElementSibling();
-            if (element != null) {
-                // <h4>The Case of the Left-Handed Lady<span class="gray">,</span> 2007</h4>
-                if ("h4".equals(element.tag().getName())) {
-                    if (element.childNodeSize() > 0) {
-                        final String text = SearchEngineUtils.cleanName(
-                                element.childNode(0).toString());
-                        book.setTranslatedFromTitle(text);
-                    }
-                    if (element.childNodeSize() > 2) {
-                        final String text = SearchEngineUtils.cleanText(
-                                element.childNode(2).toString());
-                        partialDateParser.parse(text).ifPresent(
-                                book::setFirstPublicationDate);
+            parseDescription(element, book);
+        }
+
+        final Element detailsDesc = document.selectFirst("div.detail_description");
+        if (detailsDesc == null) {
+            return;
+        }
+
+        final List<Tag> tags = detailsDesc.select("a.genre")
+                                          .stream()
+                                          .map(Element::text)
+                                          .map(Tag::new)
+                                          .collect(Collectors.toList());
+        if (!tags.isEmpty()) {
+            book.setTags(tags);
+        }
+
+        // In addition to the "genre" tags parsed above
+        // Note that these come from the "document"!
+        book.addTags(document.select("a.tag").stream()
+                             .map(Element::text)
+                             .map(Tag::new)
+                             .collect(Collectors.toList()));
+
+        // Issued
+        element = document.selectFirst("span:contains(Vydáno:)");
+        if (element != null) {
+            final Element issuedElement = element.nextElementSibling();
+            if (issuedElement != null) {
+                final String issued = issuedElement.text();
+                if (!issued.isEmpty() && !"?".equals(issued)) {
+                    partialDateParser.parse(issued).ifPresent(book::setPublicationDate);
+                }
+
+                // Publishing house
+                element = detailsDesc.selectFirst("a[href^=/nakladatelstvi/]");
+                if (element != null) {
+                    final String name = element.text();
+                    if (!name.isEmpty()) {
+                        book.add(Publisher.from(name));
                     }
                 }
             }
         }
 
+        // original title + first-publication
+        element = document.selectFirst("span:contains(Originální název:)");
+        if (element != null) {
+            // The Case of the Left-Handed Lady<span class="gray">,</span> 2007
+            // bit tricky.. there is no verification possible that this is a title
+            textNode = element.nextSibling();
+            if (textNode != null) {
+                final String text = SearchEngineUtils.cleanName(textNode.toString().strip());
+                book.setTranslatedFromTitle(text);
+            }
+
+            // <span class="gray">,</span>
+            element = element.nextElementSibling();
+            if (element != null) {
+                textNode = element.nextSibling();
+                if (textNode != null) {
+                    final String text = SearchEngineUtils.cleanText(textNode.toString().strip());
+                    partialDateParser.parse(text).ifPresent(book::setFirstPublicationDate);
+                }
+            }
+        }
+        // Audiobooks, narrator
         element = document.selectFirst("span:contains(Interpreti:)");
         if (element != null) {
             element = element.nextElementSibling();
@@ -418,12 +441,6 @@ public class DatabazeKnihSearchEngine
                 }
             }
         }
-
-        // in addition to the "genre" tags parsed above
-        book.addTags(document.select("a.tag").stream()
-                             .map(Element::text)
-                             .map(Tag::new)
-                             .collect(Collectors.toList()));
 
         // Sanity check
         if (sid != null && !sid.isEmpty()) {
@@ -460,28 +477,25 @@ public class DatabazeKnihSearchEngine
         }
     }
 
-    private void parseDescription(@NonNull final Element itemProp,
+    private void parseDescription(@NonNull final Element desc,
                                   @NonNull final Book book) {
-        final Element desc = itemProp.nextElementSibling();
-        if (desc != null) {
-            String text = desc.wholeText().strip();
-            // Check/skip if it is "no description"
-            if (!NO_DESCRIPTION_TEXT.equals(text)) {
-                // text contains \n and lots of whitespace, cleanup
-                text = Arrays.stream(text.split("\n"))
-                             .map(String::strip)
-                             // remove the "click to see more" if present
-                             .filter(t -> !CELY_TEXT.equals(t))
-                             .collect(Collectors.joining("\n"))
-                             // empty lines at end
-                             .stripTrailing();
+        String text = desc.wholeText();
+        // Check/skip if it is "no description"
+        if (!NO_DESCRIPTION_TEXT.equals(text)) {
+            // text contains \n and lots of whitespace, cleanup
+            text = Arrays.stream(text.split("\n"))
+                         .map(String::strip)
+                         // remove the "click to see more" if present
+                         .filter(t -> !CELY_TEXT.equals(t))
+                         .collect(Collectors.joining("\n"))
+                         // empty lines at end
+                         .stripTrailing();
 
-                // depending on the formatting it might still have the "click" text
-                if (text.endsWith(CELY_TEXT)) {
-                    text = text.substring(0, text.length() - 13);
-                }
-                book.setDescription(text);
+            // depending on the formatting it might still have the "click" text
+            if (text.endsWith(CELY_TEXT)) {
+                text = text.substring(0, text.length() - 13);
             }
+            book.setDescription(text);
         }
     }
 
@@ -500,35 +514,85 @@ public class DatabazeKnihSearchEngine
                                  @NonNull final Book book) {
         Element element;
 
-        element = root.selectFirst("[itemprop='numberOfPages']");
-        if (element != null) {
-            book.setPages(element.text());
+        // Další název == Next name:   this is a repeat of title and publication date
+
+        // Překlad: translators
+        final Elements translators = root.select("a[href^=/prekladatele/]");
+        if (!translators.isEmpty()) {
+            parseAuthors(translators, Author.TYPE_TRANSLATOR, book);
         }
 
-        element = root.selectFirst("[itemprop='language']");
+        // Ilustrace/foto:
+        final Elements illustrators = root.select("a[href^=/ilustratori/]");
+        if (!illustrators.isEmpty()) {
+            parseAuthors(illustrators, Author.TYPE_ARTIST, book);
+        }
+
+        // Autor obálky:  covers
+        final Elements coverArtist = root.select("a[href^=/autori-obalek/]");
+        if (!coverArtist.isEmpty()) {
+            parseAuthors(coverArtist, Author.TYPE_COVER_ARTIST, book);
+        }
+
+        // number of pages
+        element = root.selectFirst("span:contains(Počet stran:)");
         if (element != null) {
-            book.setLanguage(mapLanguage(element.text()));
+            element = element.nextElementSibling();
+            if (element != null) {
+                book.setPages(element.text());
+            }
+        }
+
+        // language
+        element = root.selectFirst("span:contains(Jazyk vydání:)");
+        if (element != null) {
+            element = element.nextElementSibling();
+            if (element != null) {
+                book.setLanguage(mapLanguage(element.text()));
+            }
+        }
+
+        // Format
+        // This field contains one of:
+        // "klasická kniha" (klassiek boek)
+        // "ekniha" (eBook)
+        // "audiokniha" (audio-book)
+        // Not seen other entries, but not looked to exhaustion...
+        element = root.selectFirst("span:contains(Forma:)");
+        if (element != null) {
+            final Node textNode = element.nextSibling();
+            if (textNode != null) {
+                final String text = textNode.toString().strip();
+                if (!text.isEmpty()) {
+                    if (EBOOK.equals(text)) {
+                        book.setFormat(EBOOK);
+                    } else if (AUDIOBOOK.equals(text)) {
+                        book.setFormat(AUDIOBOOK);
+                    } else if (!CLASSIC_BOOK.equals(text)) {
+                        LoggerFactory.getLogger().w(TAG, "found Format=" + text);
+                    }
+                }
+            }
+        }
+
+        // Binding, more Format info
+        element = root.selectFirst("span:contains(Vazba knihy:)");
+        if (element != null) {
+            final Node textNode = element.nextSibling();
+            if (textNode != null) {
+                book.setFormat(textNode.toString().strip());
+            }
         }
 
         // there can be more than one isbn. First one "wins"
         if (!book.hasIsbn()) {
-            element = root.selectFirst("[itemprop='isbn']");
+            element = root.selectFirst("span:contains(ISBN:)");
             if (element != null) {
-                book.setIsbn(ISBN.cleanText(element.text()));
+                element = element.nextElementSibling();
+                if (element != null) {
+                    book.setIsbn(ISBN.cleanText(element.text()));
+                }
             }
-        }
-
-        element = root.selectFirst("[itemprop='ilustrator']");
-        if (element != null) {
-            parseAuthors(element, Author.TYPE_ARTIST, book);
-        }
-        element = root.selectFirst("[itemprop='cover']");
-        if (element != null) {
-            parseAuthors(element, Author.TYPE_COVER_ARTIST, book);
-        }
-        element = root.selectFirst("[itemprop='translator']");
-        if (element != null) {
-            parseAuthors(element, Author.TYPE_TRANSLATOR, book);
         }
 
         // Audio books duration
@@ -557,44 +621,12 @@ public class DatabazeKnihSearchEngine
             }
         }
 
-        // Vazba knihy == binding
-        element = root.selectFirst("span:contains(Vazba knihy:)");
-        if (element != null) {
-            final Node textNode = element.nextSibling();
-            if (textNode != null) {
-                book.setFormat(textNode.toString().strip());
-            }
-        }
-
         // Náklad == circulation
         element = root.selectFirst("span:contains(Náklad:)");
         if (element != null) {
             final Node textNode = element.nextSibling();
             if (textNode != null) {
                 book.setPrintRun(textNode.toString().strip());
-            }
-        }
-
-        // Forma == form
-        // This field contains one of:
-        // "klasická kniha" (klassiek boek)
-        // "ekniha" (eBook)
-        // "audiokniha" (audio-book)
-        // Not seen other entries, but not looked to exhaustion...
-        element = root.selectFirst("span:contains(Forma:)");
-        if (element != null) {
-            final Node textNode = element.nextSibling();
-            if (textNode != null) {
-                final String text = textNode.toString().strip();
-                if (!text.isEmpty()) {
-                    if (EBOOK.equals(text)) {
-                        book.setFormat(EBOOK);
-                    } else if (AUDIOBOOK.equals(text)) {
-                        book.setFormat(AUDIOBOOK);
-                    } else if (!CLASSIC_BOOK.equals(text)) {
-                        LoggerFactory.getLogger().w(TAG, "found Format=" + text);
-                    }
-                }
             }
         }
     }
@@ -646,14 +678,14 @@ public class DatabazeKnihSearchEngine
     /**
      * Parse all "a" links in the given element for Authors.
      *
-     * @param element to parse
-     * @param type    of author
-     * @param book    to update
+     * @param aas  to parse
+     * @param type of author
+     * @param book to update
      */
-    private void parseAuthors(@NonNull final Element element,
+    private void parseAuthors(@NonNull final Elements aas,
                               @Author.Type final int type,
                               @NonNull final Book book) {
-        for (final Element a : element.select("a")) {
+        for (final Element a : aas) {
             final String text = a.text();
             if (!text.isEmpty()) {
                 parseAuthor(a, text, type, book);

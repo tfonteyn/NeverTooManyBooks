@@ -60,7 +60,7 @@ import static org.junit.Assert.assertTrue;
  * ebook:
  * https://www.databazeknih.cz/prehled-knihy/vecer-na-bezdezu-krivoklad-krkonosska-pout-543519
  */
-@SuppressWarnings({"MissingJavadoc","LongLine"})
+@SuppressWarnings({"MissingJavadoc", "LongLine"})
 public class ParseTest
         extends BaseDBTest {
 
@@ -111,13 +111,13 @@ public class ParseTest
 
         assertEquals("Enola se stále skrývá před svým\n"
                      + "bratrem – slavným detektivem Sherlockem Holmesem. Když ale\n"
-                     + "objeví tajnou skrýš plnou brilantních kreseb, vyrazí po\n"
-                     + "stopě jejich autorky, mladé lady Cecily, která beze stopy\n"
-                     + "zmizela ze své ložnice. Enola se vydá do nočních ulic\n"
-                     + "Londýna, kterými se potulují vr\n"
-                     + "azi, aby rozluštila záhadu\n"
-                     + "a zachránila talentovanou aristokratku před mocným\n"
-                     + "padouchem. Riskuje však, že odhalí víc, než by měla...",
+                     + "objeví tajnou skrýš plnou brilantních kreseb, vyrazí po stopě\n"
+                     + "jejich autorky, mladé lady Cecily, která beze stopy zmizela ze\n"
+                     + "své ložnice. Enola se vydá do nočních ulic Londýna, kterými se\n"
+                     + "potulují vr\n"
+                     + "azi, aby rozluštila záhadu a\n"
+                     + "zachránila talentovanou aristokratku před mocným padouchem.\n"
+                     + "Riskuje však, že odhalí víc, než by měla...",
                      book.getString(DBKey.DESCRIPTION, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -216,19 +216,18 @@ public class ParseTest
         assertEquals("2015", book.getString(DBKey.PUBLICATION_DATE, null));
         assertEquals("ces", book.getString(DBKey.LANGUAGE, null));
         assertEquals("216", book.getString(DBKey.PAGES, null));
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(3.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
         assertEquals("pevná / vázaná", book.getString(DBKey.FORMAT, null));
         assertEquals("2015", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
 
-        assertEquals("Soubor fejetonů, kterými herečka\n"
-                     + "Aňa Geislerová přispívala do magazínu ELLE, nyní vychází\n"
-                     + "knižně. V souhrnném vydání vyvstává příběh, který mohl dříve\n"
-                     + "čtenářům snadno uniknout; příběh části života, ve které jako\n"
-                     + "by se odehrálo úplně všechno. Příchod nových členů rodiny,\n"
-                     + "odcházení těch starých,\n"
-                     + "lásky, pády, úspěchy, problémy. Pět podivuhodných let, k\n"
-                     + "nimž autorka přidala ještě několik dříve nepublikovaných\n"
-                     + "textů.",
+        assertEquals("Soubor fejetonů, kterými herečka Aňa\n"
+                     + "Geislerová přispívala do magazínu ELLE, nyní vychází knižně. V\n"
+                     + "souhrnném vydání vyvstává příběh, který mohl dříve čtenářům\n"
+                     + "snadno uniknout; příběh části života, ve které jako by se\n"
+                     + "odehrálo úplně všechno. Příchod nových členů rodiny,\n"
+                     + "odcházení těch starých, lásky,\n"
+                     + "pády, úspěchy, problémy. Pět podivuhodných let, k nimž\n"
+                     + "autorka přidala ještě několik dříve nepublikovaných textů.",
                      book.getString(DBKey.DESCRIPTION, null));
 
         final List<Tag> bookTags = book.getTags();
@@ -315,15 +314,15 @@ public class ParseTest
         // language=jiný -> "other", not stored
         assertNull(book.getString(DBKey.LANGUAGE, null));
         assertEquals("352", book.getString(DBKey.PAGES, null));
-        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+        assertEquals(4.5f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
         assertEquals("pevná / vázaná s přebalem", book.getString(DBKey.FORMAT, null));
 
         assertEquals("Sonnets / A lover's complaint",
                      book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
 
-        assertEquals("Dvojjazyčné vydání /česky a\n"
-                     + "anglicky/ kompletních Shakespearových sonetů s jeho méně\n"
-                     + "známou, rozsáhlou básnickou skladbou Milenčin nářek.\n"
+        assertEquals("Dvojjazyčné vydání /česky a anglicky/\n"
+                     + "kompletních Shakespearových sonetů s jeho méně známou, rozsáhlou\n"
+                     + "básnickou skladbou Milenčin nářek.\n"
                      + "(Pozn.: v knize uvedeno chybné ISBN 80-7221-005-X)",
                      book.getString(DBKey.DESCRIPTION, null));
 
@@ -358,20 +357,24 @@ public class ParseTest
         assertTrue(oIv.isPresent());
         assertEquals("73", oIv.get());
 
-        author = authors.get(1);
-        assertEquals("Lavický", author.getFamilyName());
-        assertEquals("Vladimír", author.getGivenNames());
-        assertNull(author.getBirthDate().orElse(null));
-        assertNull(author.getDeathDate().orElse(null));
-        assertEquals(Author.TYPE_ARTIST, author.getType());
-        assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
+        final String pic = author.getTmpPictureFileSpec().orElse(null);
+        assertNotNull(pic);
+        assertTrue(pic.endsWith("_databazeknih_73_0_.jpg"));
 
-        author = authors.get(2);
+        author = authors.get(1);
         assertEquals("Urbánková", author.getFamilyName());
         assertEquals("Jarmila", author.getGivenNames());
         assertNull(author.getBirthDate().orElse(null));
         assertNull(author.getDeathDate().orElse(null));
         assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
+
+        author = authors.get(2);
+        assertEquals("Lavický", author.getFamilyName());
+        assertEquals("Vladimír", author.getGivenNames());
+        assertNull(author.getBirthDate().orElse(null));
+        assertNull(author.getDeathDate().orElse(null));
+        assertEquals(Author.TYPE_ARTIST, author.getType());
         assertFalse(author.getIdentifierValue(Identifier.SID_DATABAZE_KNIH).isPresent());
     }
 

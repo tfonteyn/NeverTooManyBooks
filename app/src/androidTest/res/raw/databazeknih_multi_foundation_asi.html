@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="cs-CZ">
     <head>
         <script async
                 src="https://www.googletagmanager.com/gtag/js?id=G-071DTZVVD0"></script>
@@ -17,6 +17,29 @@
             })(window,document,'script','dataLayer','GTM-PJXN2HQ');
         </script>
         <!-- End Google Tag Manager -->
+
+
+        <meta http-equiv="Content-Type"
+              content="text/html; charset=utf-8" />
+        <meta name="robots"
+              content="noindex, follow" />
+        <meta name="author"
+              content="Databazeknih.cz" />
+        <meta name="verify-v1"
+              content="JiMerw6ACIaF3zP4sGDspZeK+Az/kYgj4c/7FN1PFiM=" />
+        <meta name="all-apver"
+              content="b6692ea5df920cad691c20319a6fffd7a4a766b8" />
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0" />
+        <link href="/favicon.ico"
+              rel="shortcut icon" />
+        <link href="/icon.png"
+              rel="icon"
+              type="image/png" />
+
+        <title>
+            Vyhledávání | Databáze knih
+        </title>
 
         <script>
             var Unidata = window.Unidata || {};
@@ -39,41 +62,16 @@
             }
         </script>
 
-        <meta http-equiv="Content-Type"
-              content="text/html; charset=utf-8" />
-
-        <meta name="robots"
-              content="noindex, follow" />
-
-        <meta name="author"
-              content="Databazeknih.cz" />
-        <meta name="verify-v1"
-              content="JiMerw6ACIaF3zP4sGDspZeK+Az/kYgj4c/7FN1PFiM=" />
-        <meta name="all-apver"
-              content="b6692ea5df920cad691c20319a6fffd7a4a766b8" />
-        <meta name="viewport"
-              content="width=device-width, initial-scale=1.0" />
-        <link href="/favicon.ico"
-              rel="shortcut icon" />
-        <link href="/icon.png"
-              rel="icon"
-              type="image/png" />
-
-        <title>Vyhledávání | Databáze knih</title>
-
-        <link rel="stylesheet"
-              href="/css/default.css?ver=5f"
-              type="text/css" />
-        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700|Lora:400,700&display=swap'
-              rel='stylesheet'
+        <link rel="preload"
+              href="/css/default.css?ver=7l"
               as="style"
               onload="this.onload=null;this.rel='stylesheet'">
         <noscript>
-            <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700|Lora:400,700&display=swap'
-                  rel='stylesheet'>
+            <link rel="stylesheet"
+                  href="/css/default.css?ver=7l">
         </noscript>
 
-        <script src="https://1gr.cz/js/uni/uni.js?rr=1741872996887"></script>
+        <script src="https://1gr.cz/js/uni/uni.js?rr=1752063294"></script>
         <style>
             @import "https://1gr.cz/css/externi/reklama.css?rr=1739525808422";
         </style>
@@ -144,7 +142,8 @@ tp.push(["init", function () { tp.experience.init(); } ]);
         </script>
 
 
-        <script src="/jquery/main.js?v=1b"
+        <script defer
+                src="/jquery/main.js?v=1k"
                 type='text/javascript'></script>
         <base href="https://www.databazeknih.cz/" />
 
@@ -231,11 +230,16 @@ tp.push(["init", function () { tp.experience.init(); } ]);
                                                    autocomplete='no'>
                                             <button type='submit'
                                                     value=''
-                                                    class='mainSearchButton'>
+                                                    class='mainSearchButton'
+                                                    aria-label="Hledat">
                                                 <img src='/img/content/magnifier.svg'
                                                      alt='' />
                                             </button>
                                         </form>
+
+                                        <a href="/isbn-scanner-new"
+                                           class="camera-link"
+                                           title="Skenovat ISBN"></a>
                                     </div>
                                 </div>
                             </div>
@@ -267,7 +271,9 @@ tp.push(["init", function () { tp.experience.init(); } ]);
                                    href='https://restorio.cz/?utm_source=databazeknih&utm_medium=topmenu&utm_campaign=databazeknih_topmenu'
                                    class="GTM_antikvariat_menu">Antikvariát
                                     <img class="extLink odleft_pet"
-                                         src="/img/icons/header/external_link.svg">
+                                         src="/img/icons/header/external_link.svg"
+                                         alt=""
+                                         title="" />
                                 </a>
                             </li>
                             <li>
@@ -346,7 +352,8 @@ tp.push(["init", function () { tp.experience.init(); } ]);
                                 <button type="submit"
                                         value=""
                                         class="searchbut"
-                                        name="hledat" />
+                                        name="hledat"
+                                        aria-label="Hledat" />
                                 <img src='/img/content/magnifier.svg'
                                      alt='' />
                                 </button>
@@ -384,28 +391,33 @@ tp.push(["init", function () { tp.experience.init(); } ]);
                             </ul>
                             <div class='clear'></div>
 
-                            <p class='select odr'>
-                                <SELECT name='lang'
-                                        value='všechny jazyky'
-                                        onChange='location.href=this.options[this.selectedIndex].value'>
-                                    <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=cz"
-                                            selected>český jazyk
-                                    </OPTION>
-                                    <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=sk">
-                                        slovenský jazyk
-                                    </OPTION>
-                                    <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=en">
-                                        anglický jazyk
-                                    </OPTION>
-                                    <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=de">
-                                        německý jazyk
-                                    </OPTION>
-                                    <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=other">
-                                        jiný jazyk
-                                    </OPTION>
-                                </SELECT>
-                            </p>
-                            <div class="clear"></div>
+
+                            <div class="grayBoxLight">
+                                <img src="/img/icons/flags/cz.svg"
+                                     class="flag odtopm" />
+                                <p class='select odr'>
+                                    <SELECT name='lang'
+                                            value='všechny jazyky'
+                                            onChange='location.href=this.options[this.selectedIndex].value'>
+                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=cz"
+                                                selected>český jazyk
+                                        </OPTION>
+                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=sk">
+                                            slovenský jazyk
+                                        </OPTION>
+                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=en">
+                                            anglický jazyk
+                                        </OPTION>
+                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=de">
+                                            německý jazyk
+                                        </OPTION>
+                                        <OPTION value="/search?in=books&amp;q=foundation%20asi&amp;lang=other">
+                                            jiný jazyk
+                                        </OPTION>
+                                    </SELECT>
+                                </p>
+                                <div class="clear"></div>
+                            </div>
 
                             <hr class="oddown odtop" />
 
@@ -413,10 +425,15 @@ tp.push(["init", function () { tp.experience.init(); } ]);
 
                                 <a href="/prehled-knihy/nadace-nadace-40000">
 
-                                    <img src="https://www.databazeknih.cz/img/books/40_/40000/nadace-uwD-40000.jpg?v=1510351345"
-                                         alt="Nadace"
-                                         title="Nadace"
-                                         class="img_39_left odtopm" />
+
+                                    <picture>
+                                        <source srcset="https://www.databazeknih.cz/img/books/40_/40000/nadace-uwD-40000.webp?v=1510351345"
+                                                type="image/webp">
+                                        <img src="https://www.databazeknih.cz/img/books/40_/40000/nadace-uwD-40000.jpg?v=1510351345"
+                                             alt="Obálka knihy Nadace"
+                                             title="Nadace"
+                                             class="img_39_left odtopm" />
+                                    </picture>
                                 </a>
 
 
@@ -484,6 +501,10 @@ tp.push(["init", function () { tp.experience.init(); } ]);
                                 </div>
                             </div>
                         </div>
+
+                        <div id='ad_sticky_mobile'>
+                            <div id='m_sticky'></div>
+                        </div>
                         <div id='ad_footer_mobile'>
                             <div id="r-touchfooter"
                                  class="r-main r-box touch-216 s_m_paticka">
@@ -495,11 +516,26 @@ tp.push(["init", function () { tp.experience.init(); } ]);
                                 </div>
                             </div>
                         </div>
-                        <div id='ad_sticky_mobile'>
-                            <div id='m_sticky'></div>
-                        </div>
 
                     </div>
+                </div>
+            </div>
+
+            <div itemscope
+                 itemtype="https://schema.org/WebSite"
+                 class="novis">
+                <meta itemprop="name"
+                      content="Databáze knih" />
+                <meta itemprop="url"
+                      content="https://www.databazeknih.cz/" />
+
+                <div itemprop="potentialAction"
+                     itemscope
+                     itemtype="https://schema.org/SearchAction">
+                    <meta itemprop="target"
+                          content="https://www.databazeknih.cz/search?q={search_term_string}" />
+                    <meta itemprop="query-input"
+                          content="required name=q" />
                 </div>
             </div>
 
@@ -527,22 +563,88 @@ tp.push(["init", function () { tp.experience.init(); } ]);
                     }, 1000);
                 }
             </script>
-            <script language="JavaScript"
-                    type="text/javascript">
-                if (window.innerWidth > 900) {         document.write('<script src="https://1gr.cz/js/uni/paticka.js?rr=1741772085590"></scr'+'ipt><script>if (window.Ads) Ads.serve({"site":"databazeknih_cz","slots":[{"position":12,"provider":"sas","id":"halfpagead_spodni","bidding":true,"sas-size":"300x600,300x300,250x250,300x250,160x600,120x600,240x400,120x240,210x210,250x360,250x600,script1x1","default-size":"300x600"},{"position":54,"provider":"sas","id":"wallpaper","bidding":true,"sas-size":"970x310,750x100,728x90,970x250,970x210,500x200,300x300,480x300,336x280,750x200,script1x1","default-size":"970x310"},{"position":58,"provider":"sas","id":"widesquare","bidding":true,"sas-size":"480x300,300x300,250x250,300x250,336x280,480x480,200x200,320x50,script1x1","default-size":"480x300"},{"position":11,"provider":"sas","id":"halfpagead","sticky":true,"bidding":true,"sas-size":"300x600,300x300,250x250,300x250,160x600,120x600,240x400,120x240,210x210,250x360,250x600,script1x1","default-size":"300x600"},{"position":28,"provider":"sas","id":"branding","branding":true,"bidding":true,"sas-size":"2000x1280,998x200,998x100,750x100,728x90,2000x1400,970x100,970x210,970x90,2000x1200,1920x1080,script1x1","default-size":"998x200"},{"position":22,"provider":"sas","id":"300x250","bidding":true,"sas-size":"300x250,250x250,210x210,300x50,300x100,300x150,200x200,script1x1","default-size":"300x250"}]});</scr'+'ipt><div class="counters">    <img src="//m.1gr.cz/u/free.gif?r=qUOHDpXC87Hzi5T&amp;p=dI0MSgcULK%7cbX3Q8DaiIOOFzkR2H%7cqeRP3TkX1P%7cExX5OHQa%7cllxK81o%7c-Dvp-L81x&amp;x=3pkwc9" alt=""></div><script>window.UniLoaded = window.UniLoaded || [];UniLoaded.push(function () {    Misc.callJsOnce({        cookieName: "webidsync",        url: "//webid.databazeknih.cz/_servix/webid.aspx",        ignoreRobots: true    });});</scr'+'ipt>');
-                } else {
-                    document.write('<script src="https://1gr.cz/js/uni/paticka.js?rr=1741772085590"></scr'+'ipt><script>if (window.Ads) Ads.serve({"site":"databazeknih_cz","slots":[{"position":216,"provider":"sas","id":"m_paticka","bidding":true,"sas-size":"640x700,300x250,250x250,480x480,300x50,300x100,300x150,200x200,script1x1","default-size":"300x250"},{"position":203,"provider":"sas","id":"m_300x250","bidding":true,"sas-size":"300x250,250x250,480x480,210x210,300x50,300x100,300x150,200x200,script1x1","default-size":"300x250"},{"position":215,"provider":"sas","id":"m_branding","bidding":true,"sas-size":"768x1230,300x250,250x250,480x820,480x480,720x1280,300x600_mb,1080x1920,300x600,300x300,160x600,120x600,338x280,script1x1","default-size":"300x250"},{"position":205,"provider":"sas","id":"m_sticky","bidding":true,"sas-size":"600x200,320x150,300x250,300x300,500x200,320x100,970x250,336x280,320x50,728x90,970x310,480x480,480x300,998x200,300x50,300x100,970x210,750x200,750x100,1x1,script1x1","default-size":"320x150"}]});</scr'+'ipt><div class="counters">    <img src="//m.1gr.cz/u/free.gif?r=D1gLjgPFwBnaLQf&amp;p=DCkTkxJNY%7cvqsd349Kx%7crSiZPQgLuz%7cPV-kxJNv&amp;x=wc4s8I" alt=""></div><script>window.UniLoaded = window.UniLoaded || [];UniLoaded.push(function () {    Misc.callJsOnce({        cookieName: "webidsync",        url: "//webid.databazeknih.cz/_servix/webid.aspx",        ignoreRobots: true    });});</scr'+'ipt>');
-                }
+            <div id="mafra-ads-container"></div>
+            <script>
+                window.addEventListener('DOMContentLoaded', function () {
+                    const container = document.getElementById('mafra-ads-container');
+                    const device = window.innerWidth > 900 ? 'desktop' : 'mobil';
+
+                    fetch('/mafra-ads?device=' + device)
+                        .then(response => response.text())
+                        .then(html => {
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = html;
+
+                            const scripts = tempDiv.querySelectorAll('script');
+                            const nonScripts = [...tempDiv.childNodes].filter(node => node.tagName !== 'SCRIPT');
+                            container.append(...nonScripts);
+
+                            // Spustíme externí skripty (s src)
+                            const externalScripts = [...scripts].filter(script => script.src);
+                            const inlineScripts = [...scripts].filter(script => !script.src);
+
+                            let loadedCount = 0;
+
+                            if (externalScripts.length === 0) {
+                                runInlineScripts();
+                            }
+
+                            externalScripts.forEach(script => {
+                                const newScript = document.createElement('script');
+                                newScript.src = script.src;
+                                newScript.onload = () => {
+                                    loadedCount++;
+                                    if (loadedCount === externalScripts.length) {
+                                        runInlineScripts();
+                                    }
+                                };
+                                document.body.appendChild(newScript);
+                            });
+
+                            function runInlineScripts() {
+                                inlineScripts.forEach(script => {
+                                    const newScript = document.createElement('script');
+                                    newScript.textContent = script.textContent;
+                                    document.body.appendChild(newScript);
+                                });
+                            }
+                        });
+                });
             </script>
-
-
             <footer>
                 <div id="footer">
+                    <div class="trends">
+                        <p>
+                            <span class="odr">Často hledané knížky:</span>
+                            <a href="knihy/cas-vos-553528">Čas vos</a>
+                            -
+                            <a href=knihy/empyreum-empyreum-ctvrte-kridlo-530478"">Čtvrté křídlo</a>
+                            -
+                            <a href="knihy/empyreum-empyreum-onyxova-boure-553086">Onyxová bouře</a>
+                            -
+                            <a href="knihy/shuggie-bain-489101">Shuggie Bain</a>
+                            -
+                            <a href="knihy/mladej-mungo-558900">Mladej Mungo</a>
+                        </p>
+                        <p>
+                            <span class="odr">Hledaní autoři:</span>
+                            <a href="autori/rebecca-yarros-155224">Rebecca Yarros</a>
+                            -
+                            <a href="autori/robert-bryndza-37135">Robert Bryndza</a>
+                            -
+                            <a href="autori/alena-mornstajnova-54811">Alena Mornštajnová</a>
+                            -
+                            <a href="autori/patrik-hartl-38083">Patrik Hartl</a>
+                        </p>
+                    </div>
+
                     <p>
                         <a href="/"
                            title="DatabazeKnih.cz ...Váš knižní svět">
                             <img class="logoDk"
-                                 src="/img/content/logo_footer.png">
+                                 src="/img/content/logo_footer.png"
+                                 alt="Databáze knih logo"
+                                 loading="lazy" />
                         </a>
                     </p>
 
@@ -556,6 +658,8 @@ tp.push(["init", function () { tp.experience.init(); } ]);
                         <a href="/napoveda">Nápověda</a>
                         -
                         <a href="/podminky-uziti">Podmínky užití</a>
+                        -
+                        <a href="/gdpr">GDPR</a>
                         -
                         <a href="/nez-nam-napisete">Napište nám</a>
                         <br />
@@ -593,14 +697,6 @@ tp.push(["init", function () { tp.experience.init(); } ]);
                     </p>
                 </div>
             </footer>
-            <script language="JavaScript"
-                    type="text/javascript"
-                    async>
-                <!--
-                document.write ('<img src="https://toplist.cz/count.asp?id=882154&amp;logo=blank&amp;http='+escape(document.referrer)+'" border=0 width=1 height=1 alt="" />');
-                //-->
-            </script>
-
         </div>
 
         <!-- antiadblock -->
