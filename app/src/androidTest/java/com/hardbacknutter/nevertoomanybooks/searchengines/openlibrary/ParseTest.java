@@ -315,12 +315,12 @@ public class ParseTest
             covers = CoverFileSpecArray.getList(book, 1);
             assertNotNull(covers);
             assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(1).contains(preferenceKey + "_14615096_1_"));
+            assertTrue(covers.get(0).contains(preferenceKey + "_14615096_1_"));
 
             covers = CoverFileSpecArray.getList(book, 2);
             assertNotNull(covers);
             assertEquals(SITE_COVERS_BROKEN_AGAIN, 1, covers.size());
-            assertTrue(covers.get(1).contains(preferenceKey + "_13011694_2_"));
+            assertTrue(covers.get(0).contains(preferenceKey + "_13011694_2_"));
 
             covers = CoverFileSpecArray.getList(book, 3);
             assertNotNull(covers);
