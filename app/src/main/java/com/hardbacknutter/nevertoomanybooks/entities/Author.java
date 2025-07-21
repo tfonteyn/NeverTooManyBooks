@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageOwner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -1363,12 +1364,18 @@ public class Author
             return false;
         }
         // The ids MAY be different, but at least one is != 0
+
+        // The file-spec has a timestamp element.
+        if (!ImageFileInfo.isTempFilenameEquals(tmpPictureFileSpec,
+                                                that.tmpPictureFileSpec)) {
+            return false;
+        }
+
         return Objects.equals(familyName, that.familyName)
                && Objects.equals(givenNames, that.givenNames)
                && Objects.equals(birthDate, that.birthDate)
                && Objects.equals(deathDate, that.deathDate)
                && Objects.equals(imageUuid, that.imageUuid)
-               && Objects.equals(tmpPictureFileSpec, that.tmpPictureFileSpec)
                && Objects.equals(realAuthor, that.realAuthor);
     }
 
