@@ -23,15 +23,17 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.Discouraged;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
@@ -200,7 +202,7 @@ public class CoverStorage {
      *
      * @return {@code true} if image is acceptable.
      */
-    @AnyThread
+    @WorkerThread
     public boolean isAcceptableSize(@Nullable final File srcFile) {
         if (srcFile == null) {
             return false;
@@ -212,14 +214,24 @@ public class CoverStorage {
         }
 
         // Read the image files to get file size
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            final ImageDecoder.Source source = ImageDecoder.createSource(srcFile);
+            try {
+                final Bitmap bitmap = ImageDecoder.decodeBitmap(source);
+                return bitmap.getHeight() >= MIN_VALID_IMAGE_SIDE
+                       && bitmap.getWidth() >= MIN_VALID_IMAGE_SIDE;
+            } catch (@NonNull final IOException ignore) {
+                // ignore, reject file
+            }
+        } else {
+            final BitmapFactory.Options opt = new BitmapFactory.Options();
+            opt.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
 
-        if (isAcceptableSize(opt)) {
-            return true;
+            if (isAcceptableSize(opt)) {
+                return true;
+            }
         }
-
         FileUtils.delete(srcFile);
         return false;
     }
