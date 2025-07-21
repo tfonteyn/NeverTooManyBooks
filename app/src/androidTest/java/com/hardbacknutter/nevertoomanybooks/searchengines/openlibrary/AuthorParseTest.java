@@ -158,7 +158,7 @@ public class AuthorParseTest
         assertEquals("1920-01-02", author.getBirthDate().orElse(null));
         assertEquals("1992-04-06", author.getDeathDate().orElse(null));
 
-        assertEquals(4, author.getIdentifiers().size());
+        assertEquals(6, author.getIdentifiers().size());
         Optional<String> oIv;
         oIv = author.getIdentifierValue(Identifier.SID_OPEN_LIBRARY);
         assertTrue(oIv.isPresent());
@@ -172,6 +172,12 @@ public class AuthorParseTest
         oIv = author.getIdentifierValue(Identifier.SID_VIAF);
         assertTrue(oIv.isPresent());
         assertEquals("24597135", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_GOODREADS);
+        assertTrue(oIv.isPresent());
+        assertEquals("16667", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_LIBRARY_THING);
+        assertTrue(oIv.isPresent());
+        assertEquals("asimovisaac", oIv.get());
 
         final String pic = author.getTmpPictureFileSpec().orElse(null);
         assertNotNull(pic);
