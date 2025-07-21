@@ -178,9 +178,6 @@ public class BedethequeAuthorResolver
                 }
             }
         }
-
-        // We really should never get here as we should always have a url.
-        // But we STILL CAN get here if the user tapped 'cancel' at the exact moment....
         return modified;
     }
 
