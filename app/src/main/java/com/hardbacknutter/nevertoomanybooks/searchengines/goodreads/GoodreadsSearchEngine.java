@@ -452,8 +452,10 @@ public class GoodreadsSearchEngine
 
         if (fetchCovers[0]) {
             final String url = o.optString("imageUrl");
-            saveImage(context, url, null, book.getIsbn(), 0, null).ifPresent(
-                    fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+            if (!url.isBlank()) {
+                saveImage(context, url, null, book.getIsbn(), 0, null).ifPresent(
+                        fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+            }
         }
     }
 
