@@ -282,6 +282,7 @@ dependencies {
 
     implementation(libs.jsoup)
     implementation(libs.okhttp)
+    implementation(libs.okhttp.urlconnection)
 
     // CameraX based scanner code from "TinyZXingWrapper"
     releaseImplementation(libs.hardbacknutter.tinyzxingwrapper) {

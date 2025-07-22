@@ -213,6 +213,7 @@ public class DnbSearchEngine
                 .connectTimeout(config.getConnectTimeoutInMs(context), TimeUnit.MILLISECONDS)
                 .readTimeout(config.getReadTimeoutInMs(context), TimeUnit.MILLISECONDS);
 
+        // this is a kludge... see DnbSslContextFactory why
         final SSLContext sslContext = getSslContext();
         if (sslContext != null) {
             final SniSslSocketFactory sniSslSocketFactory = new SniSslSocketFactory(

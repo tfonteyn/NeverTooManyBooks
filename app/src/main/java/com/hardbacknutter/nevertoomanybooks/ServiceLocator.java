@@ -471,6 +471,11 @@ public class ServiceLocator {
         return cookieManager;
     }
 
+    /**
+     * Get the single/shared OkHttp client initialized with the global CookieManager.
+     *
+     * @return client
+     */
     @NonNull
     public OkHttpClient getOkHttpClient() {
         synchronized (this) {

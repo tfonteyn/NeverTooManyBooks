@@ -113,6 +113,7 @@ acra-dialog = { group = "ch.acra", name = "acra-dialog", version.ref = "acra" }
 hardbacknutter-tinyzxingwrapper = { module = "com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper", version.ref = "tinyzxingwrapper" }
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttpAndroid" }
+okhttp-urlconnection = { group = "com.squareup.okhttp3", name = "okhttp-urlconnection", version.ref = "okhttpAndroid" }
 zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxingCore" }
 
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter" }

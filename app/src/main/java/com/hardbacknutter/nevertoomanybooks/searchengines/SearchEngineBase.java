@@ -344,6 +344,8 @@ public abstract class SearchEngineBase
     /**
      * Convenience method which uses the engines specific network configuration
      * to create a suitable {@link OkHttpClient}.
+     * <p>
+     * Overridable for sites requiring quirks...
      *
      * @param context Current context
      *
@@ -379,7 +381,7 @@ public abstract class SearchEngineBase
     /**
      * Convenience method to create a suitable {@code GET} {@link Request}.
      * <p>
-     * The headers are set to the defaults as used by Firefox to request an "image".
+     * Overridable for sites requiring quirks...
      *
      * @param context           Current context
      * @param urlStr            to use

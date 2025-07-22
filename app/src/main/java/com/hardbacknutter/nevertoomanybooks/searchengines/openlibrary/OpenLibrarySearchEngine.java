@@ -1631,9 +1631,6 @@ public class OpenLibrarySearchEngine
                                          @Nullable final Map<String, String> requestProperties) {
 
         // DO NOT ADD ANY HEADERS.... OL only works with the defaults ?!
-        final Request.Builder builder = new Request.Builder()
-                .url(urlStr);
-
-        return builder.build();
+        return new Request.Builder().url(urlStr).build();
     }
 }

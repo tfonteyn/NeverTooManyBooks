@@ -56,6 +56,7 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Given a URL and a filename, this class uses an {@link OkHttpClient} to download an image,
@@ -121,7 +122,7 @@ public class ImageDownloader {
                 .collect(Collectors.joining("\n"));
 
         final Logger logger = LoggerFactory.getLogger();
-        logger.d(TAG, "url", request.url().url());
+        logger.d(TAG, "url: " + request.url().url());
         logger.d(TAG, "headers", "\n" + msg);
     }
 
@@ -136,10 +137,14 @@ public class ImageDownloader {
                 .collect(Collectors.joining("\n"));
 
         final Logger logger = LoggerFactory.getLogger();
-        logger.d(TAG, "url", response.request().url().url());
-        logger.d(TAG, "responseCode", "\n" + response.code());
-        logger.d(TAG, "responseMsg", "\n" + response.message());
+        logger.d(TAG, "url: " + response.request().url().url());
+        logger.d(TAG, "response: " + response.code(), response.message());
         logger.d(TAG, "headers", "\n" + msg);
+    }
+
+    private static boolean isZipped(@NonNull final Response response) {
+        return "gzip".equalsIgnoreCase(response.header(
+                HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING));
     }
 
     /**
@@ -193,18 +198,25 @@ public class ImageDownloader {
                 try (Response response = call.execute()) {
                     checkResponseCode(response);
 
-                    InputStream source = response.body().byteStream();
-                    if ("gzip".equalsIgnoreCase(response.header(
-                            HttpConstants.RESPONSE_HEADER_CONTENT_ENCODING))) {
-                        source = new GZIPInputStream(source);
+                    final ResponseBody body = response.body();
+                    if (body != null) {
+                        try (InputStream source = body.byteStream()) {
+                            if (isZipped(response)) {
+                                savedFile = coverStorage.persist(new GZIPInputStream(source),
+                                                                 destFile);
+                            } else {
+                                savedFile = coverStorage.persist(source, destFile);
+                            }
+                        }
+                    } else {
+                        savedFile = null;
                     }
-                    savedFile = coverStorage.persist(source, destFile);
                 }
             }
 
             // too small ? reject
             // too big: N/A as we assume a picture from a website is already a good size
-            if (coverStorage.isAcceptableSize(savedFile)) {
+            if (savedFile != null && coverStorage.isAcceptableSize(savedFile)) {
                 return Optional.of(savedFile);
             }
             return Optional.empty();
