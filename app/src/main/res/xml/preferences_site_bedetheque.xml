@@ -81,4 +81,17 @@
             android:title="@string/option_purge_bedetheque_authors_cache"
             />
     </PreferenceCategory>
+    <com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory
+        android:title="@string/lbl_troubleshooting"
+        android:summary="@string/lbl_troubleshooting_warning">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/troubleshoot_24px"
+            android:key="bedetheque.logging.http.get"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_enable_extra_logging" />
+
+    </com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory>
+
 </PreferenceScreen>
