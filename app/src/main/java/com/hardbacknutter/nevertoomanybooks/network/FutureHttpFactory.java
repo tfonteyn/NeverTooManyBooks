@@ -60,7 +60,7 @@ public final class FutureHttpFactory {
      */
     public static <R> FutureHttp<R> create(@NonNull final Context context,
                                            @NonNull final EngineId engineId) {
-        final FutureHttp<R> request = new FutureHttpImpl<>(engineId.getLabelResId());
+        final FutureHttp<R> request = create(engineId.getLabelResId());
 
         final SearchEngineConfig config = Objects.requireNonNull(engineId.getConfig());
         request.setConnectTimeout(config.getConnectTimeoutInMs(context))
