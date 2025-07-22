@@ -3,11 +3,12 @@ Draft notes for next version:
 ### 7.7.0
 
 NEW:
-
 - github #164: adding 2 extra image slots for books
 - The code for fetching images was rewritten. This finally fixes the issues with OpenLibrary.
 
 FIXES:
+
+- DatabazeKnihSearchEngine parser updated for all site changes
 
 REMOVED:
 
