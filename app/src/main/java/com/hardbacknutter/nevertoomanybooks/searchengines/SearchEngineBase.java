@@ -277,10 +277,10 @@ public abstract class SearchEngineBase
      */
     @NonNull
     public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttp<T> httpGet = createRawGetRequest(context);
+        final FutureHttp<T> httpGet = FutureHttpFactory.create(context, config.getEngineId());
+        httpGet.setSSLContext(sslContext);
 
         // Improve compatibility by sending standard headers.
-        // Some headers are overridden in #createGetImageRequest as needed.
 
         // Host & User-Agent are set in {@link FutureHttp#execute}
         // but can be overridden as needed.
@@ -316,16 +316,6 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.CONNECTION,
                                    HttpConstants.CONNECTION_KEEP_ALIVE);
 
-        addNavigationHeaders(httpGet);
-
-        // TODO: could add Platform in combo with the Randomizer
-        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
-        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
-
-        return httpGet;
-    }
-
-    private <T> void addNavigationHeaders(@NonNull final FutureHttp<T> httpGet) {
         // Deprecated but Firefox/Chrome are still sending it by default.
         httpGet.setRequestProperty(HttpConstants.DNT, "1");
 
@@ -343,12 +333,11 @@ public abstract class SearchEngineBase
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_SITE,
                                    HttpConstants.SEC_FETCH_SITE_NONE);
         httpGet.setRequestProperty(HttpConstants.SEC_FETCH_USER, "?1");
-    }
 
-    @NonNull
-    private <T> FutureHttp<T> createRawGetRequest(@NonNull final Context context) {
-        final FutureHttp<T> httpGet = FutureHttpFactory.create(context, config.getEngineId());
-        httpGet.setSSLContext(sslContext);
+        // TODO: could add Platform in combo with the Randomizer
+        // "Android", "Chrome OS", "Chromium OS", "iOS", "Linux", "macOS", "Windows", or "Unknown".
+        // httpGet.setRequestProperty("Sec-CH-UA-Platform", "Windows");
+
         return httpGet;
     }
 
@@ -387,7 +376,7 @@ public abstract class SearchEngineBase
     /**
      * Convenience method to create a suitable {@code GET} {@link Request}.
      * <p>
-     * The headers are set to the defaults as used by Firefox to request an "image"
+     * The headers are set to the defaults as used by Firefox to request an "image".
      *
      * @param context           Current context
      * @param urlStr            to use
