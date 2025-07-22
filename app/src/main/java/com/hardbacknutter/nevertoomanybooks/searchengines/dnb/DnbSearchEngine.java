@@ -206,7 +206,10 @@ public class DnbSearchEngine
     protected OkHttpClient createHttpClient(@NonNull final Context context) {
         final SearchEngineConfig config = getEngineId().getConfig();
         //noinspection DataFlowIssue
-        final OkHttpClient.Builder builder = new OkHttpClient.Builder()
+        final OkHttpClient.Builder builder = ServiceLocator
+                .getInstance()
+                .getOkHttpClient()
+                .newBuilder()
                 .connectTimeout(config.getConnectTimeoutInMs(context), TimeUnit.MILLISECONDS)
                 .readTimeout(config.getReadTimeoutInMs(context), TimeUnit.MILLISECONDS);
 

@@ -554,7 +554,10 @@ public final class CalibreContentServer
 
     @NonNull
     private OkHttpClient createHttpClient() {
-        final OkHttpClient.Builder builder = new OkHttpClient.Builder()
+        final OkHttpClient.Builder builder = ServiceLocator
+                .getInstance()
+                .getOkHttpClient()
+                .newBuilder()
                 .connectTimeout(connectTimeoutInMs, TimeUnit.MILLISECONDS)
                 .readTimeout(readTimeoutInMs, TimeUnit.MILLISECONDS);
 

@@ -109,6 +109,9 @@ import com.hardbacknutter.util.logger.FileLogger;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+import okhttp3.JavaNetCookieJar;
+import okhttp3.OkHttpClient;
+
 public class ServiceLocator {
 
     /**
@@ -157,6 +160,8 @@ public class ServiceLocator {
 
     @Nullable
     private CookieManager cookieManager;
+    @Nullable
+    private OkHttpClient okHttpClient;
 
     @Nullable
     private AppLocale appLocale;
@@ -464,6 +469,18 @@ public class ServiceLocator {
             }
         }
         return cookieManager;
+    }
+
+    @NonNull
+    public OkHttpClient getOkHttpClient() {
+        synchronized (this) {
+            if (okHttpClient == null) {
+                okHttpClient = new OkHttpClient.Builder()
+                        .cookieJar(new JavaNetCookieJar(getCookieManager()))
+                        .build();
+            }
+        }
+        return okHttpClient;
     }
 
     /**

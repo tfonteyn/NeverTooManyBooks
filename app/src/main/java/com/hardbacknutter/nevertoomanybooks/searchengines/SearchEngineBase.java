@@ -354,7 +354,10 @@ public abstract class SearchEngineBase
     @NonNull
     @EmptySuper
     protected OkHttpClient createHttpClient(@NonNull final Context context) {
-        final OkHttpClient.Builder builder = new OkHttpClient.Builder()
+        final OkHttpClient.Builder builder = ServiceLocator
+                .getInstance()
+                .getOkHttpClient()
+                .newBuilder()
                 .connectTimeout(config.getConnectTimeoutInMs(context), TimeUnit.MILLISECONDS)
                 .readTimeout(config.getReadTimeoutInMs(context), TimeUnit.MILLISECONDS);
 
