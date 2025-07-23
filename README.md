@@ -27,6 +27,9 @@ Make sure to check the [documentation](https://github.com/tfonteyn/NeverTooManyB
 If you're migrating from the app "Book Catalogue", please
 see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBooks/wiki#importing-from-book-catalogue)
 
+Scan the QR code to open this page on your phone:<br>
+![QR Code](qr-code.png)
+
 ### Download the latest release: 7.6.0
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.6.0/NeverTooManyBooks-7.6.0.apk">
