@@ -242,6 +242,13 @@ public final class HttpConstants {
     }
 
     /**
+     * HTTP Response Header.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Length">
+     * Content-Length</a>
+     */
+    public static final String RESPONSE_HEADER_CONTENT_LENGTH = "Content-Length";
+
+    /**
      * Check if the response headers indicate the encoding is gzip.
      *
      * @param response connection to check
