@@ -61,6 +61,8 @@ public class AuthorParseTest
 
         searchEngine = (WikidataSearchEngine) EngineId.Wikidata.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+        //noinspection DataFlowIssue
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
 
         resolver = (WikidataAuthorResolver) WikidataAuthorResolver
                 .create(context, searchEngine);

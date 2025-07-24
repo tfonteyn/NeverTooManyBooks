@@ -135,6 +135,8 @@ public class ParseTest
 
         searchEngine = (KbNlSearchEngine) EngineId.KbNl.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+        //noinspection DataFlowIssue
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
 
         try {
             saxParser = SAXParserFactory.newInstance().newSAXParser();

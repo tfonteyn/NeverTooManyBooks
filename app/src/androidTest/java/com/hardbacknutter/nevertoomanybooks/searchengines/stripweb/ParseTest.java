@@ -71,6 +71,8 @@ public class ParseTest
 
         searchEngine = (StripWebSearchEngine) EngineId.StripWebBe.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+        //noinspection DataFlowIssue
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
     }
 
     /**

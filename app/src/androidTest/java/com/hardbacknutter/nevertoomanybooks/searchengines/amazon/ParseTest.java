@@ -67,6 +67,9 @@ public class ParseTest
 
         searchEngine = (AmazonSearchEngine) EngineId.Amazon.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+        //noinspection DataFlowIssue
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+
         realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
     }
 

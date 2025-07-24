@@ -69,6 +69,8 @@ public class ParseTest
 
         searchEngine = (BolSearchEngine) EngineId.Bol.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+        //noinspection DataFlowIssue
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
     }
 
     /** Network access! */

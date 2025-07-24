@@ -73,6 +73,9 @@ public class ParseTest
 
         searchEngine = (DoubanSearchEngine) EngineId.Douban.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+        //noinspection DataFlowIssue
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+
         realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
     }
 

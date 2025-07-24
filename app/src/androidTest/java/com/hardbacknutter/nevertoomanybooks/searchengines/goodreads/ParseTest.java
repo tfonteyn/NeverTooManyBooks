@@ -75,6 +75,9 @@ public class ParseTest
 
         searchEngine = (GoodreadsSearchEngine) EngineId.Goodreads.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
+        //noinspection DataFlowIssue
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+
         realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
 
         // The Goodreads resolver is by default always true,
