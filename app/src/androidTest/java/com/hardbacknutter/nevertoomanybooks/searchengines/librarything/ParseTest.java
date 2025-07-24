@@ -46,6 +46,7 @@ public class ParseTest
         extends BaseDBTest {
 
     private static final String TAG = "ParseTest";
+    private static final String TOKEN = "";
 
     private LibraryThingSearchEngine searchEngine;
 
@@ -54,6 +55,10 @@ public class ParseTest
             throws DaoWriteException, StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
 
+        if (TOKEN.isEmpty()) {
+            throw new IllegalArgumentException("TOKEN NOT SET");
+        }
+
         searchEngine = (LibraryThingSearchEngine) EngineId.LibraryThing.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
@@ -61,8 +66,7 @@ public class ParseTest
 
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putString(LibraryThingSearchEngine.PK_API_TOKEN,
-                                    "")
+                         .putString(LibraryThingSearchEngine.PK_API_TOKEN, TOKEN)
                          .apply();
     }
 
