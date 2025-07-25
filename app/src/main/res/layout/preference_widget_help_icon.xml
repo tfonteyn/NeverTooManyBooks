@@ -19,23 +19,13 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-
-    <!-- Chip components created from code use these style attr values. -->
-    <attr name="appChipFilterStyle" format="reference" />
-    <attr name="appChipInputStyle" format="reference" />
-
-    <declare-styleable name="ExtGroup">
-        <attr name="groupApply">
-            <flag name="visibility" value="0x1" />
-            <flag name="onclick" value="0x2" />
-            <flag name="tags" value="0x4" />
-        </attr>
-    </declare-styleable>
-
-    <declare-styleable name="PreferenceWithInfo">
-        <attr name="helpText"
-              format="string" />
-    </declare-styleable>
-
-</resources>
+<ImageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/info_icon"
+    android:layout_width="24dp"
+    android:layout_height="24dp"
+    android:clickable="true"
+    android:contentDescription="@string/action_help"
+    android:focusable="true"
+    android:padding="4dp"
+    android:src="@drawable/help_24px" />
