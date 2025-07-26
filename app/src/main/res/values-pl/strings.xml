@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -878,5 +875,5 @@
     </plurals>
     <string name="lbl_author_type_foreword">Przedmowa</string>
     <string name="lbl_image_2">Obraz 3</string>
-    <string name="lbl_fastscroller_draghandle">Rozmiar suwaka paska przewijania</string>
+    <string name="lbl_fastscroller_draghandle">Wielkość suwaka</string>
 </resources>
