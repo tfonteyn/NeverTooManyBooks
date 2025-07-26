@@ -29,6 +29,7 @@ import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -39,6 +40,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -88,7 +90,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <p>
  * <strong>Context/View dependent!</strong>
  * <p>
- * Handles displaying and zooming for images on the details and edit screens.
+ * Handles displaying and zooming for images on the details/edit screens.
  * For BoB displaying,
  * see {@code com.hardbacknutter.nevertoomanybooks.booklist.adapter.CoverHelper}
  * <p>
@@ -97,18 +99,18 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public final class ImageHandler {
 
+
     /** Log tag. */
     private static final String TAG = "ImageHandler";
     private static final String RK_MENU = TAG + ":rk:menu";
-
     private static final String IMAGE_MIME_TYPE = "image/*";
     private static final String ERROR_GENERIC_FILE_PROVIDER = "GenericFileProvider";
-
     /** Rotate +90 or -90 degrees. */
     private static final int TURN = 90;
     /** Rotate upside down. */
     private static final int FLIP = 180;
-
+    private static final float PROGRESS_INDICATOR_ELEVATION = 10f;
+    private static final float PROGRESS_INDICATOR_ALPHA = 0.8f;
     /** Index of the image we're handling. */
     @IntRange(from = 0, to = 3)
     private final int cIdx;
@@ -116,10 +118,18 @@ public final class ImageHandler {
     /** Our host. */
     @NonNull
     private final Fragment fragment;
+    @NonNull
+    private final ImageView imageView;
+    @NonNull
+    private final ConstraintLayout imageViewParent;
 
     /** The owner of the image. We always need the current image. */
     private final Supplier<ImageOwner> imageSupplier;
-    /** Callback to tell the owner to reload (and redisplay) the image after a change. */
+    /**
+     * Callback to tell the owner to reload (and redisplay) the image after a change.
+     * <p>
+     * Argument: the {@link #cIdx}
+     */
     @NonNull
     private final Consumer<Integer> reloadImageCallback;
     /** The local helper for loading/displaying images. */
@@ -147,29 +157,31 @@ public final class ImageHandler {
     private final ImageTransformationViewModel vm;
 
     private final ExtMenuLauncher menuLauncher;
-
-    /** Optional progress bar to display during operations. */
-    @Nullable
-    private final CircularProgressIndicator progressIndicator;
     @DrawableRes
     private final int placeholderDrawable;
-    /** The fragment root view; used for context, resources, Snackbar. */
+    /** progress bar displayed during operations. */
+    @Nullable
+    private CircularProgressIndicator progressIndicator;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
     private ActivityResultLauncher<TakePictureContract.Input> takePictureLauncher;
     private ActivityResultLauncher<EditPictureContract.Input> editPictureLauncher;
-
     private ActivityResultLauncher<CropImageContract.Input> cropImageLauncher;
     private ActivityResultLauncher<String> getFromFileLauncher;
 
     private ImageHandler(@NonNull final Builder builder) {
-        fragment = builder.fragment;
-        reloadImageCallback = builder.reloadImage;
-        progressIndicator = builder.progressIndicator;
-        placeholderDrawable = builder.placeholderDrawable;
-
         // We could store cIdx in the VM, but there really is no point
         cIdx = builder.cIdx;
+
+        fragment = Objects.requireNonNull(builder.fragment);
+        imageView = Objects.requireNonNull(builder.imageView);
+        imageViewParent = Objects.requireNonNull(builder.imageViewParent);
         imageSupplier = Objects.requireNonNull(builder.imageSupplier);
+
+        reloadImageCallback = builder.reloadImage;
+        placeholderDrawable = builder.placeholderDrawable;
+        coverBrowserTitleSupplier = builder.coverBrowserTitleSupplier;
+        coverBrowserIsbnSupplier = builder.coverBrowserIsbnSupplier;
+
         // we distinguish multiple vm in the same fragment by cIdx as the key
         vm = new ViewModelProvider(fragment)
                 .get(String.valueOf(this.cIdx), ImageTransformationViewModel.class);
@@ -185,14 +197,27 @@ public final class ImageHandler {
             coverBrowserLauncher = null;
         }
 
-        coverBrowserTitleSupplier = builder.coverBrowserTitleSupplier;
-        coverBrowserIsbnSupplier = builder.coverBrowserIsbnSupplier;
+        attachOnClickListeners();
 
         final FragmentManager fm = fragment.getChildFragmentManager();
         // concat the RK with the cIdx as we have more than ImageHandler
         //noinspection StringConcatenationMissingWhitespace
         menuLauncher = new ExtMenuLauncher(RK_MENU + this.cIdx, this::onMenuItemSelected);
         menuLauncher.registerForFragmentResult(fm, fragment);
+    }
+
+    /**
+     * Set the click-listeners on the view.
+     */
+    private void attachOnClickListeners() {
+        imageView.setOnClickListener(v -> {
+            // Allow zooming by clicking on the image;
+            imageSupplier.get().getImage(imageView.getContext(), cIdx).ifPresent(
+                    file -> ZoomedImageDialogFragment
+                            .launch(fragment.getChildFragmentManager(), file));
+        });
+
+        imageView.setOnLongClickListener(this::onCreateContextMenu);
     }
 
     /**
@@ -241,37 +266,16 @@ public final class ImageHandler {
 
     /**
      * Populate the view.
-     *
-     * @param view to update
      */
-    public void onBindView(@NonNull final ImageView view) {
-        // dev warning: in NO circumstances keep a reference to the view!
-        final Optional<File> file = imageSupplier.get().getImage(view.getContext(), cIdx);
+    public void onBindView() {
+        final Optional<File> file = imageSupplier.get().getImage(imageView.getContext(), cIdx);
         if (file.isPresent()) {
-            imageLoader.fromFile(view, file.get(), null, null);
-            view.setBackground(null);
+            imageLoader.fromFile(imageView, file.get(), null, null);
+            imageView.setBackground(null);
         } else {
-            imageLoader.placeholder(view, placeholderDrawable);
-            view.setBackgroundResource(R.drawable.bg_cover_not_set);
+            imageLoader.placeholder(imageView, placeholderDrawable);
+            imageView.setBackgroundResource(R.drawable.bg_cover_not_set);
         }
-    }
-
-    /**
-     * Set the click-listeners on the view.
-     *
-     * @param fragmentManager The FragmentManager
-     * @param view            to update
-     */
-    public void attachOnClickListeners(@NonNull final FragmentManager fragmentManager,
-                                       @NonNull final ImageView view) {
-        // dev warning: in NO circumstances keep a reference to the view!
-        view.setOnClickListener(v -> {
-            // Allow zooming by clicking on the image;
-            imageSupplier.get().getImage(view.getContext(), cIdx).ifPresent(
-                    file -> ZoomedImageDialogFragment.launch(fragmentManager, file));
-        });
-
-        view.setOnLongClickListener(this::onCreateContextMenu);
     }
 
     /**
@@ -731,14 +735,32 @@ public final class ImageHandler {
     }
 
     private void showProgress() {
-        if (progressIndicator != null) {
-            progressIndicator.hide();
+        if (progressIndicator != null && progressIndicator.getParent() != null) {
+            return;
         }
+
+        progressIndicator = new CircularProgressIndicator(imageView.getContext());
+        progressIndicator.setIndeterminate(true);
+        progressIndicator.setAlpha(PROGRESS_INDICATOR_ALPHA);
+        progressIndicator.setElevation(PROGRESS_INDICATOR_ELEVATION);
+
+        // Set size and constraints
+        final ConstraintLayout.LayoutParams params =
+                new ConstraintLayout.LayoutParams(imageView.getWidth(),
+                                                  imageView.getHeight());
+        params.topToTop = imageView.getId();
+        params.bottomToBottom = imageView.getId();
+        params.startToStart = imageView.getId();
+        params.endToEnd = imageView.getId();
+
+        progressIndicator.setLayoutParams(params);
+        imageViewParent.addView(progressIndicator);
     }
 
     private void hideProgress() {
-        if (progressIndicator != null) {
-            progressIndicator.hide();
+        if (progressIndicator != null && progressIndicator.getParent() != null) {
+            imageViewParent.removeView(progressIndicator);
+            progressIndicator = null;
         }
     }
 
@@ -780,6 +802,7 @@ public final class ImageHandler {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static class Builder {
 
         @NonNull
@@ -789,10 +812,11 @@ public final class ImageHandler {
         private final int maxWidth;
         private final int maxHeight;
 
+        private ImageView imageView;
+        private ConstraintLayout imageViewParent;
+
         private Consumer<Integer> reloadImage;
         private Supplier<ImageOwner> imageSupplier;
-        @Nullable
-        private CircularProgressIndicator progressIndicator;
         @Nullable
         private Supplier<String> coverBrowserIsbnSupplier;
         @Nullable
@@ -825,6 +849,50 @@ public final class ImageHandler {
         }
 
         /**
+         * Mandatory - Set the {@code ImageView}.
+         * Alternatively use {@link #setImageView(ImageView, ConstraintLayout)}.
+         *
+         * @param imageView to use
+         *
+         * @return {@code this} (for chaining)
+         *
+         * @throws IllegalStateException (debug) if the parent is not a {@code ConstraintLayout}
+         * @see #setImageView(ImageView, ConstraintLayout)
+         */
+        @NonNull
+        public Builder setImageView(@NonNull final ImageView imageView) {
+            this.imageView = imageView;
+            final ViewParent parent = imageView.getParent();
+            if (parent instanceof ConstraintLayout) {
+                imageViewParent = (ConstraintLayout) parent;
+            } else {
+                throw new IllegalStateException("Parent is not a ConstraintLayout");
+            }
+            return this;
+        }
+
+        /**
+         * Mandatory - Set the {@code ImageView}.
+         * Alternatively use {@link #setImageView(ImageView)}.
+         *
+         * @param imageView       to use
+         * @param imageViewParent to use
+         *
+         * @return {@code this} (for chaining)
+         *
+         * @throws IllegalStateException (debug) if the parent is not a {@code ConstraintLayout}
+         * @noinspection WeakerAccess
+         * @see #setImageView(ImageView)
+         */
+        @NonNull
+        public Builder setImageView(@NonNull final ImageView imageView,
+                                    @NonNull final ConstraintLayout imageViewParent) {
+            this.imageView = imageView;
+            this.imageViewParent = imageViewParent;
+            return this;
+        }
+
+        /**
          * Mandatory - Tell the handler where it can get the current {@link ImageOwner} from.
          *
          * @param supplier which can provide the current {@link ImageOwner}
@@ -847,19 +915,6 @@ public final class ImageHandler {
         @NonNull
         public Builder setOnReloadImage(@NonNull final Consumer<Integer> consumer) {
             this.reloadImage = consumer;
-            return this;
-        }
-
-        /**
-         * Optional - Set the progress View to use.
-         *
-         * @param view to use
-         *
-         * @return {@code this} (for chaining)
-         */
-        @NonNull
-        public Builder setProgressIndicator(@Nullable final CircularProgressIndicator view) {
-            this.progressIndicator = view;
             return this;
         }
 

@@ -179,11 +179,11 @@ public class EditBookFieldsFragment
                     //noinspection DataFlowIssue
                     imageHandler[cIdx] = new ImageHandler
                             .Builder(this, cIdx, maxWidth, maxHeight)
+                            .setImageView(coverViews[cIdx])
                             .setImageOwner(() -> vm.getBook())
-                            .setOnReloadImage(idx -> imageHandler[idx].onBindView(coverViews[idx]))
+                            .setOnReloadImage(idx -> imageHandler[idx].onBindView())
                             .setCoverBrowserTitleSupplier(() -> vb.title.getText().toString())
                             .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString())
-                            .setProgressIndicator(vb.coverOperationProgressBar)
                             .build();
                 } else {
                     coverViews[cIdx].setVisibility(View.GONE);
@@ -212,9 +212,7 @@ public class EditBookFieldsFragment
 
         for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
             if (imageHandler[cIdx] != null) {
-                imageHandler[cIdx].onBindView(coverViews[cIdx]);
-                imageHandler[cIdx].attachOnClickListeners(getChildFragmentManager(),
-                                                          coverViews[cIdx]);
+                imageHandler[cIdx].onBindView();
             }
         }
 

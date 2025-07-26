@@ -50,8 +50,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.progressindicator.CircularProgressIndicator;
-
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
@@ -132,15 +130,14 @@ public class ShowBookDetailsFragment
      * i.o.w. check for {@code null} !
      */
     private final ImageHandler[] imageHandler = new ImageHandler[DBKey.NR_OF_BOOK_COVERS];
+    private final ImageView[] coverViews = new ImageView[DBKey.NR_OF_BOOK_COVERS];
     private ToolbarMenuProvider toolbarMenuProvider;
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler calibreHandler;
     private ShowBookDetailsActivityViewModel aVm;
     private ShowBookDetailsViewModel vm;
-
     private RealNumberParser realNumberParser;
-
     /**
      * Callback - used when we're running inside another component;
      * e.g. when running on a tablet (or other bigger screen) the BoB is showing
@@ -148,16 +145,12 @@ public class ShowBookDetailsFragment
      */
     @Nullable
     private BookChangedListener bookChangedListener;
-
     /** View all works of an Author. */
     private ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher;
-
     /** User edits a book. */
     private ActivityResultLauncher<EditBookContract.Input> editBookLauncher;
-
     /** User updates a book with internet data. */
     private ActivityResultLauncher<Book> updateBookLauncher;
-
     /** Handle the edit-lender dialog. */
     private EditLenderLauncher editLenderLauncher;
 
@@ -264,7 +257,16 @@ public class ShowBookDetailsFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_book_details, container, false);
+        final View root = inflater.inflate(R.layout.fragment_book_details, container, false);
+        final TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images);
+        try {
+            for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+                coverViews[cIdx] = root.findViewById(coverResIds.getResourceId(cIdx, 0));
+            }
+        } finally {
+            coverResIds.recycle();
+        }
+        return root;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -361,10 +363,6 @@ public class ShowBookDetailsFragment
     }
 
     private void createCoverDelegates() {
-        //noinspection DataFlowIssue
-        final CircularProgressIndicator progressView =
-                getView().findViewById(R.id.cover_operation_progress_bar);
-
         final Context context = getContext();
         //noinspection DataFlowIssue
         final Resources res = context.getResources();
@@ -378,9 +376,9 @@ public class ShowBookDetailsFragment
 
                     imageHandler[cIdx] = new ImageHandler
                             .Builder(this, cIdx, maxWidth, maxHeight)
+                            .setImageView(coverViews[cIdx])
                             .setImageOwner(() -> vm.getBook())
                             .setOnReloadImage(this::reloadImage)
-                            .setProgressIndicator(progressView)
                             .build();
                 }
             }
@@ -534,22 +532,12 @@ public class ShowBookDetailsFragment
     }
 
     private void bindCoverImages() {
-        final View parentView = getView();
-
-        final TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images);
-        try {
-            for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
-                //noinspection DataFlowIssue
-                final ImageView view = parentView.findViewById(coverResIds.getResourceId(cIdx, 0));
-                if (imageHandler[cIdx] != null) {
-                    imageHandler[cIdx].onBindView(view);
-                    imageHandler[cIdx].attachOnClickListeners(getChildFragmentManager(), view);
-                } else if (view != null) {
-                    view.setVisibility(View.GONE);
-                }
+        for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+            if (imageHandler[cIdx] != null) {
+                imageHandler[cIdx].onBindView();
+            } else if (coverViews[cIdx] != null) {
+                coverViews[cIdx].setVisibility(View.GONE);
             }
-        } finally {
-            coverResIds.recycle();
         }
     }
 

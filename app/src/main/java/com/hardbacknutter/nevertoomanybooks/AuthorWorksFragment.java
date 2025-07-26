@@ -31,7 +31,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -45,7 +44,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Collections;
@@ -121,7 +119,6 @@ public class AuthorWorksFragment
 
     private Menu rowMenu;
     private TextView nameView;
-    private ImageView pictureView;
     private TextView birthDateView;
     private TextView bookshelfView;
     private TextView deathDateView;
@@ -254,21 +251,17 @@ public class AuthorWorksFragment
     }
 
     private void setupImageView(@NonNull final Toolbar toolbar) {
-        pictureView = toolbar.findViewById(R.id.picture);
-        final CircularProgressIndicator progressView =
-                toolbar.findViewById(R.id.cover_operation_progress_bar);
         final Resources res = getResources();
         final int width = res.getDimensionPixelSize(R.dimen.author_detail_picture_width);
         final int height = res.getDimensionPixelSize(R.dimen.author_detail_picture_height);
         imageHandler = new ImageHandler
                 .Builder(this, 0, width, height)
+                .setImageView(toolbar.findViewById(R.id.picture))
                 .setImageOwner(() -> vm.getPrimaryAuthor())
-                .setOnReloadImage(cIdx -> imageHandler.onBindView(pictureView))
-                .setProgressIndicator(progressView)
+                .setOnReloadImage(cIdx -> imageHandler.onBindView())
                 .setPlaceholderDrawable(R.drawable.person_24px)
                 .build();
-        imageHandler.onBindView(pictureView);
-        imageHandler.attachOnClickListeners(getChildFragmentManager(), pictureView);
+        imageHandler.onBindView();
     }
 
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
@@ -372,7 +365,7 @@ public class AuthorWorksFragment
         //noinspection DataFlowIssue
         nameView.setText(Html.fromHtml(author.getLabel(context, Details.Full, vm.getStyle()), 0));
 
-        imageHandler.onBindView(pictureView);
+        imageHandler.onBindView();
 
         // Don't hide when empty, we want the layout to be static
         birthDateView.setText(author.getBirthDate()
