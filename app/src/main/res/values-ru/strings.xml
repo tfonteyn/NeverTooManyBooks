@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -886,5 +883,5 @@
     </plurals>
     <string name="lbl_author_type_foreword">Предисловие</string>
     <string name="lbl_image_2">Изображение 3</string>
-    <string name="lbl_fastscroller_draghandle">азмер ползунка полосы прокрутки</string>
+    <string name="lbl_fastscroller_draghandle">Размер ползунка</string>
 </resources>
