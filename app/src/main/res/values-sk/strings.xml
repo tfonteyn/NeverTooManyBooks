@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -565,7 +562,7 @@
     <string name="lbl_sort_descending">Zostupne</string>
     <string name="lbl_read">Prečítané</string>
     <string name="lbl_reading">Čítam</string>
-    <string name="lbl_default">Predvolené</string>
+    <string name="lbl_default">Predvolená</string>
     <string name="lbl_default_x">Predvolené: %1$s</string>
     <string name="X_action_customize">Prispôsobiť…</string>
     <string name="X_action_use_default_setting">Použiť predvolené hodnoty</string>
@@ -875,4 +872,5 @@
     </plurals>
     <string name="lbl_author_type_foreword">Predslov</string>
     <string name="lbl_image_2">Obrázok 3</string>
+    <string name="lbl_fastscroller_draghandle">Veľkosť posuvníka</string>
 </resources>
