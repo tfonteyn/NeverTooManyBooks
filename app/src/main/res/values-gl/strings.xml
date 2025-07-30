@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -697,8 +694,8 @@
     <string name="pt_allow_editing_external_id">Permitir a edición do identificador do libro no sitio web</string>
     <string name="ps_cover_undo_enabled">A edición ou substitución de cubertas pode desfacerse (utiliza máis almacenamento)</string>
     <string name="pt_thumbnails_cache_resized">As imaxes redimensionadas almacénanse na caché</string>
-    <string name="pe_thumbnails_cache_resized_stored">Imaxes redimensionadas na caché (desprazamento máis rápido pero usa máis almacenamento)</string>
-    <string name="pe_thumbnails_cache_resized_each_time">Redimensiona as imaxes sempre que se precise (usa menos almacenamento pero o desprazamento será máis lento)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Imaxes redimensionadas na caché (arrastra máis rápido pero usa máis almacenamento)</string>
+    <string name="pe_thumbnails_cache_resized_each_time">Redimensiona as imaxes sempre que se precise (usa menos almacenamento pero o arrastrar será máis lento)</string>
     <string name="pt_fetch_author_info">Obter información sobre a autoría</string>
     <string name="pt_fetch_author_info_using_site_x">Obter información da autoría de %1$s</string>
     <string name="pt_search_reformat_format">Estandarizar nomes do «formato de libro»</string>
@@ -709,7 +706,7 @@
     <string name="pe_bob_list_rebuild_state_expanded">Todo expandido</string>
     <string name="pe_bob_row_menu_button_when_space">Amosar botón se hai espazo, se non, premer longo.</string>
     <string name="pe_bob_row_menu_long_click">Premer longo sempre.</string>
-    <string name="pt_fast_scroller_overlay">Burbulla de texto ao desprazar.</string>
+    <string name="pt_fast_scroller_overlay">Burbulla de texto ao arrastrar.</string>
     <string name="pe_fast_scroller_overlay_static">Estática</string>
     <string name="pt_ui_dialogs_mode">Diálogos</string>
     <string name="pt_ui_theme_colors">Cores</string>
@@ -866,4 +863,5 @@
     <string name="lbl_author_type_foreword">prólogo</string>
     <string name="lbl_author_type_afterword">epílogo</string>
     <string name="lbl_image_2">Imaxe 3</string>
+    <string name="lbl_fastscroller_draghandle">Tamaño do control de arrastre</string>
 </resources>
