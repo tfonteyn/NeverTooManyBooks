@@ -5,7 +5,7 @@ Draft notes for next version:
 NEW:
 - github #164: adding 2 extra image slots for books
 - The code for fetching images was rewritten. This finally fixes the issues with OpenLibrary.
-- DatabazeKnihSearchEngine parser updated for all site changes
+- DatabazeKnihSearchEngine & BOL parsers updated for site changes
 -
 
 FIXES:
