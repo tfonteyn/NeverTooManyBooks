@@ -320,23 +320,21 @@ public class BolSearchEngine
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
-        final Element section = document.selectFirst("div.product-title--inline");
-        // section will be null if there were no results.
-        if (section != null) {
-            // Grab the first search result, and redirect to that page
-            final Element urlElement = section.selectFirst(
-                    "a.product-title.px_list_page_product_click.list_page_product_tracking_target");
-            if (urlElement != null) {
-                String url = urlElement.attr("href");
-                // sanity check - it normally does NOT have the protocol/site part
-                if (url.startsWith("/")) {
-                    url = getHostUrl(context) + url;
-                }
-                final Document redirected = loadDocument(context, url, Map.of(
-                        HttpConstants.REFERER, document.location()));
-                if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book);
-                }
+
+        // Grab the first search result, and redirect to that page
+        final String aHref = String.format("a[href^=/%1$s/nl/p/]", getCountry(context));
+        final Element urlElement = document.selectFirst(aHref);
+        // urlElement will be null if there were no results.
+        if (urlElement != null) {
+            String url = urlElement.attr("href");
+            // sanity check - it normally does NOT have the protocol/site part
+            if (url.startsWith("/")) {
+                url = getHostUrl(context) + url;
+            }
+            final Document redirected = loadDocument(context, url, Map.of(
+                    HttpConstants.REFERER, document.location()));
+            if (!isCancelled()) {
+                parse(context, redirected, fetchCovers, book);
             }
         } else {
             final Element script = document.selectFirst("script");
