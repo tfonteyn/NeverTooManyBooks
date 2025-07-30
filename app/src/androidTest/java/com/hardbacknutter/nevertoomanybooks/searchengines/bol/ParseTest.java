@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -71,6 +73,12 @@ public class ParseTest
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
         searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+
+        // test data is pulled from the BE website
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putString(BolSearchEngine.PK_BOL_COUNTRY, "be")
+                         .apply();
     }
 
     /** Network access! */
