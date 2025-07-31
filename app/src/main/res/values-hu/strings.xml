@@ -866,4 +866,5 @@
         <item quantity="other">Korábban %1$d ISBN-kódot adtak meg. Szeretne keresést indítani rájuk, vagy törölni kell őket?</item>
     </plurals>
     <string name="lbl_image_2">Kép 3</string>
+    <string name="lbl_fastscroller_draghandle">Görgetősáv fogantyú</string>
 </resources>
