@@ -94,9 +94,6 @@ android {
         testInstrumentationRunnerArguments["runnerBuilder"] =
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
-        // enabled in release. TODO: remove the flag in the next-next release
-        buildConfigField("boolean", "ENABLE_ISFDB_LOGIN", "true")
-
         // Under development; disabled for release builds in buildTypes.release
         buildConfigField("boolean", "ENABLE_BOOKFINDER", "true")
         buildConfigField("boolean", "ENABLE_LIBRARYTHING", "true")

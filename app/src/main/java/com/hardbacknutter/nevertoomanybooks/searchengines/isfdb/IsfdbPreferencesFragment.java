@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
 
@@ -48,17 +47,13 @@ public class IsfdbPreferencesFragment
 
         initLoginPrefs();
 
-        if (BuildConfig.ENABLE_ISFDB_LOGIN) {
-            initValidator(R.string.site_isfdb);
-            initCredentialPreferences(IsfdbAuth.PK_HOST_USER,
-                                      IsfdbAuth.PK_HOST_PASS);
-        }
+        initValidator(R.string.site_isfdb);
+        initCredentialPreferences(IsfdbAuth.PK_HOST_USER, IsfdbAuth.PK_HOST_PASS);
     }
 
     @SuppressWarnings("DataFlowIssue")
     private void initLoginPrefs() {
         pLoginToSearch = findPreference(IsfdbSearchEngine.PK_LOGIN_TO_SEARCH);
-        pLoginToSearch.setVisible(BuildConfig.ENABLE_ISFDB_LOGIN);
         pLoginToSearch.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof Boolean) {
                 final boolean loginOn = (Boolean) newValue;
@@ -68,17 +63,11 @@ public class IsfdbPreferencesFragment
         });
 
         pcCredentials = findPreference(PSK_CREDENTIALS);
-        pcCredentials.setVisible(BuildConfig.ENABLE_ISFDB_LOGIN);
-        pcCredentials.setEnabled(BuildConfig.ENABLE_ISFDB_LOGIN
-                                 && pLoginToSearch.isChecked());
+        pcCredentials.setEnabled(pLoginToSearch.isChecked());
     }
 
     @Override
     protected boolean shouldProposeValidation() {
-        if (BuildConfig.ENABLE_ISFDB_LOGIN) {
-            return pLoginToSearch.isChecked();
-        } else {
-            return false;
-        }
+        return pLoginToSearch.isChecked();
     }
 }

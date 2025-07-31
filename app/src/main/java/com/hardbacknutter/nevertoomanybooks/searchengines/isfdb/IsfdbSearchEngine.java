@@ -563,12 +563,8 @@ public class IsfdbSearchEngine
 
     @Override
     public boolean isLoginToSearch(@NonNull final Context context) {
-        if (BuildConfig.ENABLE_ISFDB_LOGIN) {
-            return PreferenceManager.getDefaultSharedPreferences(context)
-                                    .getBoolean(PK_LOGIN_TO_SEARCH, false);
-        } else {
-            return false;
-        }
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_LOGIN_TO_SEARCH, false);
     }
 
     @Override
