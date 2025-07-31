@@ -22,21 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
-import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.badge.BadgeDrawable;
-import com.google.android.material.badge.BadgeUtils;
-import com.google.android.material.badge.ExperimentalBadgeUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -76,8 +68,6 @@ public class AuthorWorksAdapter
     private final List<Author> authors;
     @NonNull
     private final ClickableListFormatter<Author> authorFormatter;
-    @Px
-    private final int badgeOffset;
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
@@ -107,15 +97,6 @@ public class AuthorWorksAdapter
 
         authorFormatter = new ClickableListFormatter<>(context, author ->
                 author.getLabel(context, Details.AutoSelect, style));
-
-        badgeOffset = dp2px(context, 20);
-    }
-
-    @Px
-    private int dp2px(@NonNull final Context context,
-                      @Dimension(unit = Dimension.DP) final int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                                               context.getResources().getDisplayMetrics());
     }
 
     /**
@@ -147,7 +128,7 @@ public class AuthorWorksAdapter
         final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(inflater, parent, false);
         switch (AuthorWork.Type.getType((char) viewType)) {
             case TocEntry: {
-                holder = new TocEntryHolder(vb, style, authorFormatter, badgeOffset);
+                holder = new TocEntryHolder(vb, style, authorFormatter);
                 break;
             }
             case BookLight:
@@ -205,15 +186,11 @@ public class AuthorWorksAdapter
         private final String singleBookStr;
         @NonNull
         private final String multipleBooksStr;
-        @Px
-        private final int badgeOffset;
 
         TocEntryHolder(@NonNull final RowAuthorWorkBinding vb,
                        @NonNull final Style style,
-                       @NonNull final ClickableListFormatter<Author> authorFormatter,
-                       @Px final int badgeOffset) {
+                       @NonNull final ClickableListFormatter<Author> authorFormatter) {
             super(vb, style, authorFormatter);
-            this.badgeOffset = badgeOffset;
 
             final Resources res = itemView.getContext().getResources();
             // The entry is a story (etc...) which appears in one book only.
@@ -224,22 +201,16 @@ public class AuthorWorksAdapter
             vb.btnType.setIconResource(R.drawable.menu_book_24px);
         }
 
-        @OptIn(markerClass = ExperimentalBadgeUtils.class)
         @Override
         public void onBind(@NonNull final AuthorWork work) {
             super.onBind(work);
             if (work.getBookCount() > 1) {
                 vb.btnType.setContentDescription(multipleBooksStr);
-                final BadgeDrawable badgeDrawable = BadgeDrawable.create(vb.btnType.getContext());
-                badgeDrawable.setNumber(work.getBookCount());
-                vb.btnType.post(() -> {
-                    badgeDrawable.setVerticalOffset(badgeOffset);
-                    badgeDrawable.setHorizontalOffset(badgeOffset);
-                    BadgeUtils.attachBadgeDrawable(badgeDrawable, vb.btnType,
-                                                   vb.btnTypeLayout);
-                });
+                vb.btnTypeBadge.setVisibility(View.VISIBLE);
+                vb.btnTypeBadge.setText(String.valueOf(work.getBookCount()));
             } else {
                 vb.btnType.setContentDescription(singleBookStr);
+                vb.btnTypeBadge.setVisibility(View.GONE);
             }
         }
     }
@@ -311,6 +282,9 @@ public class AuthorWorksAdapter
             vb.author.setText(primaryAuthor != null
                               ? authorFormatter.format(context, List.of(primaryAuthor))
                               : null);
+
+            // not visible by default.
+            vb.btnTypeBadge.setVisibility(View.GONE);
 
             vb.btnType.setOnClickListener(anchor -> {
                 final String titles = work

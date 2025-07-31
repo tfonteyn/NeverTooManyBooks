@@ -63,6 +63,12 @@
                     tools:icon="@drawable/menu_book_24px"
                     tools:ignore="ContentDescription"
                     />
+
+                <TextView
+                    android:id="@+id/btn_type_badge"
+                    style="@style/Badge"
+                    tools:text="2"
+                    />
             </FrameLayout>
 
             <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
