@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,8 +23,6 @@ package com.hardbacknutter.util.logger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import static com.hardbacknutter.util.logger.Logger.concat;
-
 /**
  * This is really a test-logger only, but due to some gradle dependency issues
  * it's just so much easier to dump it into the regular source set. Oh well...
@@ -37,18 +35,18 @@ public class SystemOutLogger
     public void e(@NonNull final String tag,
                   @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|ERROR|" + tag + "|" + concat(e, params));
+        System.out.println("JUnit|ERROR|" + tag + "|" + Logger.concat(e, params));
     }
 
     @Override
     public void w(@NonNull final String tag,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|WARN|" + tag + "|" + concat(params));
+        System.out.println("JUnit|WARN|" + tag + "|" + Logger.concat(params));
     }
 
     @Override
     public void d(@NonNull final String tag,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|DEBUG|" + tag + "|" + concat(params));
+        System.out.println("JUnit|DEBUG|" + tag + "|" + Logger.concat(params));
     }
 }

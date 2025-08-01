@@ -42,8 +42,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-import static com.hardbacknutter.util.logger.Logger.concat;
-
 @SuppressWarnings({"WeakerAccess", "Unused"})
 public class FileLogger
         implements Logger {
@@ -245,7 +243,7 @@ public class FileLogger
     public void e(@NonNull final String tag,
                   @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        final String message = concat(e, params);
+        final String message = Logger.concat(e, params);
         writeToLog(tag, ERROR, message);
 
         if (BuildConfig.DEBUG /* always */) {
@@ -256,7 +254,7 @@ public class FileLogger
     @Override
     public void w(@NonNull final String tag,
                   @Nullable final Object... params) {
-        final String msg = concat(params);
+        final String msg = Logger.concat(params);
         writeToLog(tag, WARN, msg);
 
         if (BuildConfig.DEBUG /* always */) {
@@ -268,7 +266,7 @@ public class FileLogger
     public void d(@NonNull final String tag,
                   @Nullable final Object... params) {
 
-        final String msg = concat(params);
+        final String msg = Logger.concat(params);
         writeToLog(tag, DEBUG, msg);
 
         if (BuildConfig.DEBUG /* always */) {
