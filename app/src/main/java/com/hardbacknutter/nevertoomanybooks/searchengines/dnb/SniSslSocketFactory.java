@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.dnb;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Collections;
@@ -30,9 +32,10 @@ import javax.net.ssl.SSLSocketFactory;
 
 public class SniSslSocketFactory
         extends SSLSocketFactory {
+    @NonNull
     private final SSLSocketFactory delegate;
 
-    public SniSslSocketFactory(SSLSocketFactory delegate) {
+    SniSslSocketFactory(@NonNull final SSLSocketFactory delegate) {
         this.delegate = delegate;
     }
 
@@ -47,60 +50,58 @@ public class SniSslSocketFactory
     }
 
     @Override
-    public Socket createSocket(Socket s,
-                               String host,
-                               int port,
-                               boolean autoClose)
+    public Socket createSocket(@NonNull final Socket s,
+                               @NonNull final String host,
+                               final int port,
+                               final boolean autoClose)
             throws IOException {
-        SSLSocket sslSocket = (SSLSocket) delegate.createSocket(s, host, port, autoClose);
+        final SSLSocket sslSocket = (SSLSocket) delegate.createSocket(s, host, port, autoClose);
         enableSni(sslSocket, host);
         return sslSocket;
     }
 
     @Override
-    public Socket createSocket(String host,
-                               int port)
+    public Socket createSocket(@NonNull final String host,
+                               final int port)
             throws IOException {
-        SSLSocket sslSocket = (SSLSocket) delegate.createSocket(host, port);
+        final SSLSocket sslSocket = (SSLSocket) delegate.createSocket(host, port);
         enableSni(sslSocket, host);
         return sslSocket;
     }
 
     @Override
-    public Socket createSocket(String host,
-                               int port,
-                               java.net.InetAddress localHost,
-                               int localPort)
+    public Socket createSocket(@NonNull final String host,
+                               final int port,
+                               @NonNull final java.net.InetAddress localHost,
+                               final int localPort)
             throws IOException {
-        SSLSocket sslSocket = (SSLSocket) delegate.createSocket(host, port, localHost, localPort);
+        final SSLSocket sslSocket = (SSLSocket) delegate.createSocket(host, port, localHost,
+                                                                      localPort);
         enableSni(sslSocket, host);
         return sslSocket;
     }
 
     @Override
-    public Socket createSocket(java.net.InetAddress host,
-                               int port)
+    public Socket createSocket(@NonNull final java.net.InetAddress host,
+                               final int port)
             throws IOException {
-        SSLSocket sslSocket = (SSLSocket) delegate.createSocket(host, port);
         // no hostname here to set for SNI
-        return sslSocket;
+        return delegate.createSocket(host, port);
     }
 
     @Override
-    public Socket createSocket(java.net.InetAddress address,
-                               int port,
-                               java.net.InetAddress localAddress,
-                               int localPort)
+    public Socket createSocket(@NonNull final java.net.InetAddress address,
+                               final int port,
+                               @NonNull final java.net.InetAddress localAddress,
+                               final int localPort)
             throws IOException {
-        SSLSocket sslSocket = (SSLSocket) delegate.createSocket(address, port, localAddress,
-                                                                localPort);
         // no hostname here to set for SNI
-        return sslSocket;
+        return delegate.createSocket(address, port, localAddress, localPort);
     }
 
-    private void enableSni(SSLSocket sslSocket,
-                           String host) {
-        SSLParameters params = sslSocket.getSSLParameters();
+    private void enableSni(@NonNull final SSLSocket sslSocket,
+                           @NonNull final String host) {
+        final SSLParameters params = sslSocket.getSSLParameters();
         params.setServerNames(Collections.singletonList(new SNIHostName(host)));
         sslSocket.setSSLParameters(params);
     }
