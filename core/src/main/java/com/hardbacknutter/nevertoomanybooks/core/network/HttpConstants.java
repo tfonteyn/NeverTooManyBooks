@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 
 import java.net.HttpURLConnection;
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public final class HttpConstants {
 
     /**
@@ -256,6 +256,7 @@ public final class HttpConstants {
      * @return {@code true} if the content-encoding was "gzip"
      */
     public static boolean isZipped(@NonNull final HttpURLConnection response) {
-        return "gzip".equalsIgnoreCase(response.getHeaderField(RESPONSE_HEADER_CONTENT_ENCODING));
+        return ACCEPT_ENCODING_GZIP.equalsIgnoreCase(
+                response.getHeaderField(RESPONSE_HEADER_CONTENT_ENCODING));
     }
 }
