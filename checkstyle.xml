@@ -26,7 +26,6 @@
 
     Template:
     should match: https://source.android.com/setup/contribute/code-style
-    copied from: https://gist.github.com/shareme/4197561
 -->
 <module name="Checker">
     <property name="severity"
@@ -43,10 +42,7 @@
     <!--    <module name="JavadocPackage" />-->
 
     <!-- Require files to end with newline characters -->
-    <module name="NewlineAtEndOfFile">
-        <!--        <property name="lineSeparator"-->
-        <!--            value="lf" />-->
-    </module>
+    <module name="NewlineAtEndOfFile" />
 
     <!-- Checks for long source files. (default 2000 lines) -->
     <module name="FileLength" />
@@ -72,7 +68,7 @@
     <!-- <module name="RegexpOnFilename"/>-->
 
     <!-- <module name="Translation" />-->
-    <module name="UniqueProperties" />
+    <!-- <module name="UniqueProperties" />-->
 
     <module name="TreeWalker">
         <property name="tabWidth"
@@ -116,7 +112,9 @@
 
         <!-- ========== Coding ========== -->
         <!--        <module name="ArrayTrailingComma" />-->
+        <module name="AvoidDoubleBraceInitialization" />
         <!--        <module name="AvoidInlineConditionals" />-->
+        <module name="AvoidNoArgumentSuperConstructorCall" />
         <module name="ConstructorsDeclarationGrouping" />
         <module name="CovariantEquals" />
         <!-- <module name="DeclarationOrder"/>-->
@@ -145,9 +143,21 @@
         <module name="ModifiedControlVariable" />
         <module name="MultipleStringLiterals" />
         <module name="MultipleVariableDeclarations" />
-        <!-- <module name="NestedForDepth"/>-->
-        <!-- <module name="NestedIfDepth"/>-->
+        <module name="NestedForDepth">
+            <property name="max"
+                      value="2" />
+        </module>
+        <module name="NestedIfDepth">
+            <property name="max"
+                      value="3" />
+        </module>
+        <module name="NestedTryDepth">
+            <property name="max"
+                      value="2" />
+        </module>
+        <!--        <module name="NoArrayTrailingComma"/>-->
         <module name="NoClone" />
+        <module name="NoEnumTrailingComma" />
         <module name="NoFinalizer" />
         <module name="OneStatementPerLine" />
         <!-- <module name="OverloadMethodsDeclarationOrder" />-->
@@ -155,18 +165,22 @@
         <!-- <module name="RequireThis"/>-->
         <module name="ReturnCount">
             <property name="max"
-                      value="8" />
-            <property name="maxForVoid"
                       value="10" />
+            <property name="maxForVoid"
+                      value="12" />
         </module>
         <module name="SimplifyBooleanExpression" />
         <module name="SimplifyBooleanReturn" />
         <module name="StringLiteralEquality" />
         <module name="SuperClone" />
         <module name="SuperFinalize" />
+        <module name="UnnecessaryNullCheckWithInstanceOf" />
         <module name="UnnecessaryParentheses" />
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration" />
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
         <module name="UnnecessarySemicolonInEnumeration" />
         <module name="UnnecessarySemicolonInTryWithResources" />
+        <module name="UnusedLocalVariable" />
         <!-- <module name="VariableDeclarationUsageDistance"/>-->
 
         <!-- ========== Imports ========== -->
@@ -181,13 +195,14 @@
 
         <!-- ========== Javadoc Comments ========== -->
         <!-- <module name="AtclauseOrder" />-->
+        <module name="InvalidJavadocPosition" />
         <module name="JavadocMethod">
             <property name="validateThrows"
                       value="true" />
         </module>
         <!-- <module name="JavadocParagraph"/>-->
-        <!-- <module name="JavadocTagContinuationIndentation" />-->
         <!-- <module name="JavadocStyle" />-->
+        <!-- <module name="JavadocTagContinuationIndentation" />-->
         <module name="JavadocType" />
         <!-- <module name="JavadocVariable" />-->
         <module name="NonEmptyAtclauseDescription" />
@@ -290,8 +305,6 @@
         <module name="WhitespaceAfter" />
         <module name="WhitespaceAround" />
 
-
     </module>
-
 
 </module>
