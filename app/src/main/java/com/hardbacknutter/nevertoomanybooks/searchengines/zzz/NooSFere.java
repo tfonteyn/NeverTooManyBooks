@@ -24,7 +24,8 @@ public final class NooSFere {
 
     public static final String SITE_URL = "https://www.noosfere.org";
     public static final String BOOK_URL = "https://www.noosfere.org/livres/niourf.asp?numlivre=%s";
-    public static final String AUTHOR_URL = "https://www.noosfere.org/livres/auteur.asp?NumAuteur=%s";
+    public static final String AUTHOR_URL =
+            "https://www.noosfere.org/livres/auteur.asp?NumAuteur=%s";
 
     private NooSFere() {
     }
