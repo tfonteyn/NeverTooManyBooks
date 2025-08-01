@@ -67,7 +67,8 @@ public class AltEditionOpenLibrary
      * @param isbn      of the book book
      * @param langIso3  language ISO3 code of the book
      * @param publisher primary publisher name
-     * @param covers    the OL native cover id(s); up to {@code DBKey.NR_OF_BOOK_COVERS} will be used
+     * @param covers    the OL native cover id(s).
+     *                  Up to {@code DBKey.NR_OF_BOOK_COVERS} will be used.
      */
     AltEditionOpenLibrary(@NonNull final String olid,
                           @Nullable final String isbn,
