@@ -164,6 +164,7 @@ public class MoneyParser {
         CURRENCY_MAP.put("ff", "FRF");  // French Franc
         CURRENCY_MAP.put("fr", "BEF");  // Belgian Franc
         CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
+        CURRENCY_MAP.put("ft", "HUF");  // Hungarian Forint
         CURRENCY_MAP.put("kc", "CZK");  // Czech Koruna
         CURRENCY_MAP.put("kč", "CZK");  // Czech Koruna
         CURRENCY_MAP.put("l", "ITL");   // Italian Lira
@@ -179,11 +180,19 @@ public class MoneyParser {
         CURRENCY_MAP.put("元", CNY);    // Chinese Yuan
 
         // some others
-        CURRENCY_MAP.put("ft", "HUF");  // Hungarian Forint
         CURRENCY_MAP.put("kn", "HRK");  // Croatian Kuna
-        CURRENCY_MAP.put("kr", "DKK");  // Danish Krone
         CURRENCY_MAP.put("lei", "RON"); // Romanian Leu (Lei)
+        CURRENCY_MAP.put("ls", "LVL");  // Latvian Lats
         CURRENCY_MAP.put("r$", "BRL");  // Brazilian Real
+        CURRENCY_MAP.put("sk", "SKK");  // Slovak Koruna
+        CURRENCY_MAP.put("NT$", "TWD");  // Taiwan Dollar
+
+        // FIXME: These are a problem... they use the same symbol.
+        // We had DKK for quite a while, so leaving this as the default for now.
+        // We could pick one based on the user device locale and/or on
+        // a specific SearchEngine Local.
+        CURRENCY_MAP.put("kr", "DKK");  // Danish Krone
+        //CURRENCY_MAP.put("kr", "SEK");  // Swedish Krona
     }
 
 
