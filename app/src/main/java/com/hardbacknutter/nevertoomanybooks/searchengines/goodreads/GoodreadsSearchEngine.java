@@ -583,43 +583,53 @@ public class GoodreadsSearchEngine
                                    @Nullable final JSONObject contributor,
                                    @NonNull final Locale locale,
                                    @NonNull final Book book) {
-        if (contributor != null) {
-            final int role = authorTypeMapper.map(locale, contributor.optString("role"));
-            final JSONObject node = contributor.optJSONObject("node");
-            if (node != null) {
-                final String ref = node.optString("__ref");
-                if (!ref.isEmpty()) {
-                    final JSONObject refObj = apolloState.optJSONObject(ref);
-                    if (refObj != null) {
-                        final String name = refObj.optString("name");
-                        if (!name.isEmpty()) {
-                            final Author author = mapAuthor(context, name);
-                            author.setType(role);
-                            // Get the legacyId as the SID_GOODREADS_BOOK.
-                            // It is this one we need to construct url's.
-                            final String legacyId = refObj.optString("legacyId");
-                            if (!legacyId.isEmpty()) {
-                                author.setIdentifierValue(Identifier.SID_GOODREADS, legacyId);
-                            } else {
-                                // if the explicit legacyId is absent, try the webUrl
-                                final String webUrl = refObj.optString("webUrl");
-                                if (!webUrl.isEmpty()) {
-                                    final Matcher matcher = AUTHOR_WEB_URL_ID.matcher(webUrl);
-                                    if (matcher.find()) {
-                                        final String siId = matcher.group(1);
-                                        if (siId != null) {
-                                            author.setIdentifierValue(
-                                                    Identifier.SID_GOODREADS, siId);
-                                        }
-                                    }
-                                }
-                            }
-                            book.add(author);
-                        }
+        if (contributor == null) {
+            return;
+        }
+
+        final int role = authorTypeMapper.map(locale, contributor.optString("role"));
+        final JSONObject node = contributor.optJSONObject("node");
+        if (node == null) {
+            return;
+        }
+
+        final String ref = node.optString("__ref");
+        if (ref.isEmpty()) {
+            return;
+        }
+
+        final JSONObject refObj = apolloState.optJSONObject(ref);
+        if (refObj == null) {
+            return;
+        }
+
+        final String name = refObj.optString("name");
+        if (name.isEmpty()) {
+            return;
+        }
+
+        final Author author = mapAuthor(context, name);
+        author.setType(role);
+        // Get the legacyId as the SID_GOODREADS_BOOK.
+        // It is this one we need to construct url's.
+        final String legacyId = refObj.optString("legacyId");
+        if (!legacyId.isEmpty()) {
+            author.setIdentifierValue(Identifier.SID_GOODREADS, legacyId);
+        } else {
+            // if the explicit legacyId is absent, try the webUrl
+            final String webUrl = refObj.optString("webUrl");
+            if (!webUrl.isEmpty()) {
+                final Matcher matcher = AUTHOR_WEB_URL_ID.matcher(webUrl);
+                if (matcher.find()) {
+                    final String siId = matcher.group(1);
+                    if (siId != null) {
+                        author.setIdentifierValue(
+                                Identifier.SID_GOODREADS, siId);
                     }
                 }
             }
         }
+        book.add(author);
     }
 
     private void parseSeries(@NonNull final JSONObject apolloState,
