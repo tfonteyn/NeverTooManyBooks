@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.TopRowListPosition;
 import com.hardbacknutter.nevertoomanybooks.booklist.adapter.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.grouping.GroupKeyFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.grouping.ReadStatus;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.CoverScale;
@@ -280,7 +279,7 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Trigger a rebuild of the book list.
+     * Observable to receive a trigger to start rebuild of the book list.
      *
      * @return flag, whether the <strong>LayoutManager</strong> needs to be recreated or not.
      */
@@ -1066,7 +1065,7 @@ public class BooksOnBookshelfViewModel
      *
      * @param context      Current context
      * @param bookshelfIds bookshelf ids to set
-     * @param extras       containing "bookIds"
+     * @param extras       contains {@link #BKEY_BOOK_IDS}
      *
      * @throws IllegalArgumentException if the extras or bookIds are missing
      */
@@ -1099,7 +1098,7 @@ public class BooksOnBookshelfViewModel
      *
      * @param context  Current context
      * @param location to set
-     * @param extras   containing "bookIds"
+     * @param extras   contains {@link #BKEY_BOOK_IDS}
      *
      * @throws IllegalArgumentException if the extras or bookIds are missing
      */
@@ -1232,6 +1231,7 @@ public class BooksOnBookshelfViewModel
 
     /**
      * Receives notifications that an inline-string column was updated.
+     * This is a global update, affecting <strong>all</strong> books.
      *
      * @param dbKey    the request-key, a {@link DBKey}, from the update event
      * @param original the original text which was passed in to be edited
@@ -1240,14 +1240,10 @@ public class BooksOnBookshelfViewModel
     void onInlineStringUpdate(@NonNull final String dbKey,
                               @NonNull final String original,
                               @NonNull final String modified) {
-        if (getStyle().isShowField(FieldVisibility.Screen.List, dbKey)) {
-            // The entity is shown on the book level, do a full rebuild
-            triggerRebuildList.setValue(LiveDataEvent.of(false));
-        } else {
-            // Update only the levels, and trigger an adapter update
-            // ENHANCE: update the modified row without a rebuild.
-            triggerRebuildList.setValue(LiveDataEvent.of(false));
-        }
+        // We can ONLY get here if the given dbKey is used as a BooklistGroup.
+        // Books might move between groups when they (groups) are modified.
+        // So we have no choice and must always rebuild.
+        triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
     /**
@@ -1259,23 +1255,9 @@ public class BooksOnBookshelfViewModel
      */
     void onRowGroupEntityUpdate(@BooklistGroup.Id final int groupId,
                                 @Nullable final Entity entity) {
-
-        final String dbKey = GroupKeyFactory.getKeyDomainName(groupId);
-        if (getStyle().isShowField(FieldVisibility.Screen.List, dbKey)) {
-            // The entity is shown on the book level.
-            // A full rebuild is easier/faster than updating all books
-            triggerRebuildList.setValue(LiveDataEvent.of(false));
-        } else if (entity == null) {
-            // We don't have enough info to know what to update.
-            // Always rebuild.
-            triggerRebuildList.setValue(LiveDataEvent.of(false));
-        } else {
-            // Update only the levels, and trigger an adapter update
-            // ENHANCE: update the modified row without a rebuild.
-            //  with the group-id and the new value (entity label),
-            //  it should be fairly easy to update the list table directly.
-            triggerRebuildList.setValue(LiveDataEvent.of(false));
-        }
+        // Books might move between groups when they (groups) are modified.
+        // So we have no choice and must always rebuild.
+        triggerRebuildList.setValue(LiveDataEvent.of(false));
     }
 
     /**
