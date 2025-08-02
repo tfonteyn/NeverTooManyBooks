@@ -132,11 +132,9 @@ public class ServiceLocator {
     @NonNull
     private final Context appContext;
 
-    /** TODO: allow this to be injected. */
     @Nullable
     private DBHelper dbHelper;
 
-    /** TODO: allow this to be injected. */
     @Nullable
     private CacheDbHelper cacheDbHelper;
 
