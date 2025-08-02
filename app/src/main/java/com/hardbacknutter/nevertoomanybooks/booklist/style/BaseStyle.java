@@ -580,10 +580,6 @@ public abstract class BaseStyle
         groupRowUsesPreferredHeight = value;
     }
 
-    public void setShowGroupBookCount(final boolean value) {
-        showGroupBookCount = value;
-    }
-
     @Override
     public int getGroupCount() {
         return groups.size();
@@ -699,6 +695,10 @@ public abstract class BaseStyle
     @Override
     public boolean isShowGroupBookCount() {
         return showGroupBookCount;
+    }
+
+    public void setShowGroupBookCount(final boolean value) {
+        showGroupBookCount = value;
     }
 
     @Override
