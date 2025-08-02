@@ -237,6 +237,7 @@ public class Booklist
             return (int) stmt.simpleQueryForLongOrZero() - 1;
         }
     }
+
     /**
      * Count the total number of book records in the list.
      *
