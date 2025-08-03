@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2025 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/fab4_search_external_id"
+        android:orderInCategory="5"
+        android:icon="@drawable/find_in_page_24px"
+        android:title="@string/option_fab_add_book_by_external_id" />
+
+    <item
+        android:id="@+id/fab3_add_manually"
+        android:orderInCategory="4"
+        android:icon="@drawable/keyboard_24px"
+        android:title="@string/option_fab_add_book_manually" />
+
+    <item
+        android:id="@+id/fab2_search_text"
+        android:orderInCategory="3"
+        android:icon="@drawable/search_24px"
+        android:title="@string/option_fab_add_book_by_internet_search" />
+
+    <item
+        android:id="@+id/fab1_search_isbn"
+        android:orderInCategory="2"
+        android:icon="@drawable/dialpad_24px"
+        android:title="@string/option_fab_add_book_by_isbn" />
+
+    <item
+        android:id="@+id/fab0_scan_barcode_batch"
+        android:orderInCategory="1"
+        android:icon="@drawable/add_a_photo_24px"
+        android:title="@string/option_fab_add_book_by_barcode_scan_batch" />
+
+    <item
+        android:id="@+id/fab0_scan_barcode"
+        android:orderInCategory="0"
+        android:icon="@drawable/photo_camera_24px"
+        android:title="@string/option_fab_add_book_by_barcode_scan" />
+
+</menu>
