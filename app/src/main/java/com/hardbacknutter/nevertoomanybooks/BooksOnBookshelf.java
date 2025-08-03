@@ -709,7 +709,7 @@ public class BooksOnBookshelf
                               vb.fab4SearchExternalId);
 
         fabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
-        fabMenu.getItem(vb.fab4SearchExternalId.getId())
+        fabMenu.getItem(R.id.fab4_search_external_id)
                .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab(this)));
     }
 
@@ -988,7 +988,7 @@ public class BooksOnBookshelf
         updateBackActionForSearchCriteria(!vm.getSearchCriteria().isEmpty());
 
         // update the fab menu visibility depending on current user settings
-        fabMenu.getItem(vb.fab4SearchExternalId.getId())
+        fabMenu.getItem(R.id.fab4_search_external_id)
                .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab(this)));
 
         // Update the list of bookshelves
