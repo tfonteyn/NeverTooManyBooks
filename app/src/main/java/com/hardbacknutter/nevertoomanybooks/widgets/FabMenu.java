@@ -170,7 +170,7 @@ public class FabMenu {
     public void show(final boolean show) {
         if (show) {
             fabButton.setImageResource(R.drawable.close_24px);
-            // mFabOverlay overlaps the whole screen and intercepts clicks.
+            // The overlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
             fabOverlay.setVisibility(View.VISIBLE);
             fabOverlay.setOnClickListener(v -> hideMenu());
