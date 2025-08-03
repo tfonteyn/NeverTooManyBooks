@@ -19,6 +19,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- Overrule the base 'land' changes. -->
 <resources>
     <!-- All in one column. -->
     <dimen name="fab_menu_translationX_0">-30dp</dimen>
