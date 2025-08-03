@@ -162,8 +162,8 @@
             android:text="@string/option_fab_add_book_by_barcode_scan_batch"
             app:icon="@drawable/add_a_photo_24px"
             app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_0"
-            tools:translationY="@dimen/fab_menu_translationY_0"
+            tools:translationX="@dimen/fab_menu_translationX_1"
+            tools:translationY="@dimen/fab_menu_translationY_1"
             tools:visibility="visible"
             />
 
@@ -173,8 +173,8 @@
             android:text="@string/option_fab_add_book_by_barcode_scan"
             app:icon="@drawable/photo_camera_24px"
             app:layout_anchor="@id/fab"
-            tools:translationX="@dimen/fab_menu_translationX_1"
-            tools:translationY="@dimen/fab_menu_translationY_1"
+            tools:translationX="@dimen/fab_menu_translationX_0"
+            tools:translationY="@dimen/fab_menu_translationY_0"
             tools:visibility="visible"
             />
 
