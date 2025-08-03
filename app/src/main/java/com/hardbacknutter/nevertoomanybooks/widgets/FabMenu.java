@@ -19,13 +19,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
+import android.app.ActionBar;
+import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -51,6 +60,10 @@ public class FabMenu {
     private ExtendedFloatingActionButton[] fabMenuItems;
     @Nullable
     private Consumer<Boolean> onOpenListener;
+    /** Temp storage for the original icon while the menu is open. */
+    @Nullable
+    private Drawable fabDrawable;
+
     /** Define a scroller to show, or collapse/hide the FAB. */
     private final RecyclerView.OnScrollListener updateFabVisibility =
             new RecyclerView.OnScrollListener() {
@@ -97,6 +110,48 @@ public class FabMenu {
             fabMenuItems = new ExtendedFloatingActionButton[items.length];
             System.arraycopy(items, 0, fabMenuItems, 0, items.length);
         }
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param fabButton the FAB button to use as base
+     * @param menuResId to inflate
+     */
+    public FabMenu(@NonNull final FloatingActionButton fabButton,
+                   @MenuRes final int menuResId) {
+        this.fabButton = fabButton;
+        final CoordinatorLayout parent = (CoordinatorLayout) fabButton.getParent();
+        final Context context = fabButton.getContext();
+
+        fabOverlay = new View(context);
+        parent.addView(fabOverlay);
+        final CoordinatorLayout.LayoutParams overlayLp =
+                (CoordinatorLayout.LayoutParams) fabOverlay.getLayoutParams();
+        overlayLp.width = ActionBar.LayoutParams.MATCH_PARENT;
+        overlayLp.height = ActionBar.LayoutParams.MATCH_PARENT;
+
+        final Menu menu = new PopupMenu(context, null).getMenu();
+        new MenuInflater(context).inflate(menuResId, menu);
+        final int size = menu.size();
+        if (size > 0) {
+            fabMenuItems = new ExtendedFloatingActionButton[size];
+            for (int i = 0; i < size; i++) {
+                final MenuItem item = menu.getItem(i);
+                fabMenuItems[i] = new ExtendedFloatingActionButton(context);
+                fabMenuItems[i].setId(item.getItemId());
+                fabMenuItems[i].setText(item.getTitle());
+                fabMenuItems[i].setIcon(item.getIcon());
+
+                parent.addView(fabMenuItems[i]);
+
+                final CoordinatorLayout.LayoutParams lp =
+                        (CoordinatorLayout.LayoutParams) fabMenuItems[i].getLayoutParams();
+                lp.setAnchorId(fabButton.getId());
+            }
+        }
+
+        this.fabButton.setOnClickListener(v -> show(!fabMenuItems[0].isShown()));
     }
 
     /**
@@ -169,13 +224,14 @@ public class FabMenu {
      */
     public void show(final boolean show) {
         if (show) {
+            fabDrawable = fabButton.getDrawable();
             fabButton.setImageResource(R.drawable.close_24px);
             // The overlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
             fabOverlay.setVisibility(View.VISIBLE);
             fabOverlay.setOnClickListener(v -> hideMenu());
         } else {
-            fabButton.setImageResource(R.drawable.add_24px);
+            fabButton.setImageDrawable(fabDrawable);
             fabOverlay.setVisibility(View.GONE);
             fabOverlay.setOnClickListener(null);
         }
