@@ -206,15 +206,11 @@ public class FabMenu {
 
     /**
      * Hide the FAB menu if it's showing. Does not affect the FAB button itself.
-     *
-     * @return {@code true} if it was visible before. {@code false} if this was a no-operation.
      */
-    public boolean hideMenu() {
+    public void hideMenu() {
         if (fabMenuItems[0].isShown()) {
             show(false);
-            return true;
         }
-        return false;
     }
 
     /**
