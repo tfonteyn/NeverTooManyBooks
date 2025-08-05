@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.settings.DialogMode;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class Ext2EditTextPreferenceBottomSheet
         extends BottomSheetDialogFragment {
@@ -57,6 +58,10 @@ public class Ext2EditTextPreferenceBottomSheet
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         delegate.onViewCreated(DialogMode.BottomSheet);
+
+        InsetsListenerBuilder.create(view)
+                             .ime()
+                             .apply();
     }
 
     @Override

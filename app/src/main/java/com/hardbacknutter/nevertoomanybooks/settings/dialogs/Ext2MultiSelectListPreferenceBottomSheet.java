@@ -52,6 +52,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectMultipleSimpleBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.multichoice.MultiChoiceBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.ChecklistRecyclerAdapter;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * A variation on {@link MultiChoiceBottomSheet} specifically to deal with preferences.
@@ -81,6 +82,11 @@ public class Ext2MultiSelectListPreferenceBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        InsetsListenerBuilder.create(view)
+                             .ime()
+                             .apply();
+
         // Ensure the drag handle is visible.
         vb.dragHandle.setVisibility(View.VISIBLE);
 

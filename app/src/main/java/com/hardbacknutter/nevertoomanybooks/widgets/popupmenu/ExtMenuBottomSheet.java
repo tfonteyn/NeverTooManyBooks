@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,6 +39,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogLauncher;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class ExtMenuBottomSheet
         extends BottomSheetDialogFragment {
@@ -100,6 +101,10 @@ public class ExtMenuBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        InsetsListenerBuilder.create(view)
+                             .ime()
+                             .apply();
 
         if (title != null) {
             vb.title.setText(title);

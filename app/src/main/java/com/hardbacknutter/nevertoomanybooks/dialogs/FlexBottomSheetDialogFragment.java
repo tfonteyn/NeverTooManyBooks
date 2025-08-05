@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,6 +39,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 public class FlexBottomSheetDialogFragment
         extends BottomSheetDialogFragment {
@@ -65,6 +66,10 @@ public class FlexBottomSheetDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        InsetsListenerBuilder.create(view)
+                             .ime()
+                             .apply();
 
         final BottomSheetDialog dialog = (BottomSheetDialog) requireDialog();
 

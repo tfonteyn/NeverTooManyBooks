@@ -35,6 +35,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectSingleSimpleBinding;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * Note that we're NOT extending FlexBottomSheetDialogFragment.
@@ -68,6 +69,10 @@ public class SingleChoiceBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        InsetsListenerBuilder.create(view)
+                             .ime()
+                             .apply();
 
         final BottomSheetDialog dialog = (BottomSheetDialog) requireDialog();
 

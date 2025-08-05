@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogSelectSingleSimpleBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RadioGroupRecyclerAdapter;
+import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 
 /**
  * The layout is hardcoded to {@link DialogSelectSingleSimpleBinding}
@@ -63,6 +64,11 @@ public class Ext2ListPreferenceBottomSheet
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        InsetsListenerBuilder.create(view)
+                             .ime()
+                             .apply();
+
         // Ensure the drag handle is visible.
         vb.dragHandle.setVisibility(View.VISIBLE);
 

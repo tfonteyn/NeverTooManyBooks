@@ -6,9 +6,9 @@ NEW:
 - github #164: adding 2 extra image slots for books
 - The code for fetching images was rewritten. This finally fixes the issues with OpenLibrary.
 - DatabazeKnihSearchEngine & BOL parsers updated for site changes
--
 
 FIXES:
+- on-screen keyboard fixes for Android 15+ Edge2Edge usage
 
 REMOVED:
 
@@ -41,7 +41,7 @@ Android 15 insets / EdgeToEdge
 
 Need to make a decision on adding WindowInsetsCompat.Type.systemGestures()
 
-According to the docs, we should apply this to the ViewPager2 usage and BottomSheets.
+According to the docs, we should apply this to the ViewPager2 usage.
 Tried it out for the ViewPager2 usage:
 
 - book details + book edit
@@ -51,10 +51,6 @@ Tried it out for the ViewPager2 usage:
 - search-admin (settings)
   Effect is very visible making the site lists narrow.
   Not enabling for now.
-
-BottomSheets:
-I don't see the need... BottomSheet is the "focus". If the user decides they
-want to go 'back' while a BottomSheet is displayed, they should close the BottomSheet first.
 
 <hr style="border:1px solid blue;">
 
