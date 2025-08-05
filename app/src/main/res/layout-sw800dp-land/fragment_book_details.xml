@@ -87,6 +87,14 @@
             app:constraint_referenced_ids="cover_image_0,cover_image_1,cover_image_2,cover_image_3,publication_layout"
             />
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_covers_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,cover_image_2,cover_image_3"
+            />
+
         <TextView
             android:id="@+id/lend_to"
             style="@style/Field.LendOutToBar"
@@ -190,7 +198,7 @@
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toStartOf="@id/barrier_covers_end"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cover_image_1"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             >
 
             <include
