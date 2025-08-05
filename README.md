@@ -30,9 +30,9 @@ see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBook
 Scan the QR code to open this page on your phone:<br>
 ![QR Code](qr-code.png)
 
-### Download the latest release: 7.6.0
+### Download the latest release: 7.7.0
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.6.0/NeverTooManyBooks-7.6.0.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.6.0/NeverTooManyBooks-7.7.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">

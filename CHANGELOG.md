@@ -1,3 +1,19 @@
+### 7.7.0
+
+NEW:
+
+- github #164: adding 2 extra image slots for books.
+  When upgrading, all styles will get images 3+4 enabled/visible. As usual you can change their
+  visibility in the style settings..
+- The code for fetching images was rewritten. This finally fixes the issues with OpenLibrary.
+- DatabazeKnihSearchEngine & BOL parsers updated for site changes
+
+FIXES:
+
+- on-screen keyboard fixes for Android 15+ Edge2Edge usage
+
+---
+
 ### 7.6.0
 
 NEW:

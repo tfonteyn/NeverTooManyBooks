@@ -1,14 +1,10 @@
 Draft notes for next version:
 
-### 7.7.0
+### 7.7.1
 
 NEW:
-- github #164: adding 2 extra image slots for books
-- The code for fetching images was rewritten. This finally fixes the issues with OpenLibrary.
-- DatabazeKnihSearchEngine & BOL parsers updated for site changes
 
 FIXES:
-- on-screen keyboard fixes for Android 15+ Edge2Edge usage
 
 REMOVED:
 
