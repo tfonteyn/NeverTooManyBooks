@@ -18,7 +18,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-This is a book collection application, to keep track of your books and comics.
+This is a book collection application available for **Android** devices, to keep track of your books
+and comics.
 
 Add books by scanning their barcode, ISBN, or generic text searches.
 
