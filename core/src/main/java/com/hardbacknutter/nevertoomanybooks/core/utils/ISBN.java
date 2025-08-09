@@ -76,6 +76,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * <a href="https://en.wikipedia.org/wiki/International_Article_Number#GS1_prefix">
  * EAN GS1 prefix country code</a>
  * <p>
+ * The precursor of ISBN was known as the 9-digit Standard Book Numbering (SBN)
+ * created in 1966. An SBN can be converted to an ISBN-10 by prefixing with the digit {@code 0}.
+ * <p>
  * The EAN "country code" 978 (and later 979) has been allocated since the 1980s to reserve
  * a Unique Country Code (UCC) prefix for EAN identifiers of published books, regardless of
  * country of origin, so that the EAN space can catalog books by ISBNs rather than
@@ -88,6 +91,12 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 @SuppressWarnings("MagicNumber")
 public class ISBN {
 
+    /**
+     * Validity level.
+     * Type: int
+     *
+     * @see Validity
+     */
     @VisibleForTesting
     public static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
 
@@ -238,11 +247,15 @@ public class ISBN {
                             digits.add(calculateIsbn10Checksum(digits));
                             type = Type.Isbn10;
                         }
+                    } else if (type == Type.Sbn) {
+                        // can always be converted to ISBN-10
+                        digits = new ArrayList<>(digits.subList(0, 9));
+                        digits.add(0, 0);
+                        type = Type.Isbn10;
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        LoggerFactory.getLogger()
-                                     .e(TAG, e, "text=`" + text + '`');
+                        LoggerFactory.getLogger().e(TAG, e, "text=`" + text + '`');
                     }
                 }
 
@@ -549,43 +562,54 @@ public class ISBN {
 
         final int size = digits.size();
 
-        if (size == 8) {
-            if (calculateIssnChecksum(digits) == digits.get(7)) {
-                return Type.Issn8;
-            }
-        } else if (size == 10) {
-            if (calculateIsbn10Checksum(digits) == digits.get(9)) {
-                return Type.Isbn10;
-            }
-        } else if (size == 13) {
-            if (calculateEan13Checksum(digits) == digits.get(12)) {
-                // Prefix 978 is "Bookland"
-                if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 8) {
-                    return Type.Isbn13;
+        // Most common 13 digits
+        if (size == 13 && calculateEan13Checksum(digits) == digits.get(12)) {
+            // Prefix 978 is "Bookland"
+            if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 8) {
+                return Type.Isbn13;
 
-                } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 9) {
-                    if (digits.get(3) == 0) {
-                        // Prefix 979 with first digit 0 is "Musicland"
-                        return Type.Ismn;
-                    } else {
-                        // non-0 is "Bookland"... we PRESUME, it's not entirely clear
-                        // if these are simply 'reserved' or actual books.
-                        return Type.Isbn13;
-                    }
-                } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 7) {
-                    // Prefix 977 are periodicals; an ISSN packed in an EAN-13
-                    return Type.Issn13;
-
+            } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 9) {
+                if (digits.get(3) == 0) {
+                    // Prefix 979 with first digit 0 is "Musicland"
+                    return Type.Ismn;
                 } else {
-                    // it's a generic EAN-13
-                    return Type.Ean13;
+                    // non-0 is "Bookland"... we PRESUME, it's not entirely clear
+                    // if these are simply 'reserved' or actual books.
+                    return Type.Isbn13;
                 }
+            } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 7) {
+                // Prefix 977 are periodicals; an ISSN packed in an EAN-13
+                return Type.Issn13;
+
+            } else {
+                // it's a generic EAN-13
+                return Type.Ean13;
             }
-        } else if (size >= 12) {
-            // a UPC barcode might be longer than 12 characters due to allowed extensions.
-            // But only the first 12 characters are 'the' UPC_A code.
-            if (calculateUpcAChecksum(digits.subList(0, 12)) == digits.get(11)) {
-                return Type.UpcA;
+        }
+
+        // Older ISBN-10
+        if (size == 10 && calculateIsbn10Checksum(digits) == digits.get(9)) {
+            return Type.Isbn10;
+        }
+
+        // Magazines/Serials with ISSN numbers
+        if (size == 8 && calculateIssnChecksum(digits) == digits.get(7)) {
+            return Type.Issn8;
+        }
+
+        // Legacy UPC_A codes.
+        // a UPC barcode might be longer than 12 characters due to allowed extensions.
+        // But only the first 12 characters are 'the' UPC_A code.
+        if (size >= 12 && calculateUpcAChecksum(digits.subList(0, 12)) == digits.get(11)) {
+            return Type.UpcA;
+        }
+
+        // Legacy SBN with optional price digits.
+        if (size == 9 || size == 12) {
+            final List<Integer> sbn = new ArrayList<>(digits.subList(0, 9));
+            sbn.add(0, 0);
+            if (calculateIsbn10Checksum(sbn) == sbn.get(9)) {
+                return Type.Sbn;
             }
         }
 
@@ -850,6 +874,7 @@ public class ISBN {
     }
 
     public enum Type {
+        /** None of the below. */
         Invalid,
 
         /** The original ISBN number. 10 digits. */
@@ -858,8 +883,20 @@ public class ISBN {
         Isbn13,
         /** Generic 13 digit barcode. */
         Ean13,
-        /** Generic product barcode. Minimum 12 digits but can be any length. */
+        /**
+         * Generic product barcode. Minimum 12 digits but can be any length.
+         * May be automatically converted in the constructor when it's ISBN-10 compatible.
+         */
         UpcA,
+        /**
+         * The precursor of ISBN-10.
+         * Consists of a 9 digits number optionally followed by 3 digit price (in the US).
+         * Can be converted to ISBN-10 by taking the first 9 digits,
+         * and prefix them with a {@code 0}.
+         * <p>
+         * Internal use only, as the constructor will always convert these to ISBN-10.
+         */
+        Sbn,
         /** Periodicals. 8 digits. */
         Issn8,
         /** Periodicals. subtype of EAN-13. 13 digits. */
@@ -869,11 +906,17 @@ public class ISBN {
     }
 
     /**
-     * Describes how harsh we check for valid codes. This is a user-setting.
+     * Describes how we check for valid codes. This is a user-setting.
      */
     public enum Validity {
+        /** No checks are done, the code is used as-is. */
         None(0),
+        /** Any type as long as it's NOT {@link Type#Invalid}. */
         Loose(1),
+        /**
+         * Must be either {@link Type#Isbn10} or {@link Type#Isbn13}
+         * (or auto-converted) to be considered valid.
+         */
         Strict(2);
 
         private final int value;
@@ -924,6 +967,11 @@ public class ISBN {
             this.isbnValidityCheck = isbnValidityCheck;
         }
 
+        /**
+         * Update the validity level.
+         *
+         * @param isbnValidityCheck validity check-level for ISBN codes
+         */
         public void setValidityLevel(@NonNull final Validity isbnValidityCheck) {
             this.isbnValidityCheck = isbnValidityCheck;
             clean(editText.getEditableText());
@@ -1023,6 +1071,11 @@ public class ISBN {
             this.isbnValidityCheck = isbnValidityCheck;
         }
 
+        /**
+         * Update the validity level.
+         *
+         * @param isbnValidityCheck validity check-level for ISBN codes
+         */
         public void setValidityLevel(@NonNull final Validity isbnValidityCheck) {
             this.isbnValidityCheck = isbnValidityCheck;
             validate(editText.getEditableText());
@@ -1056,64 +1109,67 @@ public class ISBN {
         private void validate(@Nullable final Editable editable) {
             if (editable != null && editable.length() > 0) {
                 final String str = editable.toString().strip();
-                switch (str.length()) {
-                    case 13: {
-                        final ISBN isbn = new ISBN(str, isbnValidityCheck == Validity.Strict);
-                        if (isbn.isIsbn10Compat()) {
-                            altIsbn = isbn.asText(Type.Isbn10);
-                            layout.setStartIconVisible(true);
-                            layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                            return;
-                        } else if (isbn.isValid(isbnValidityCheck == Validity.Strict)) {
-                            layout.setStartIconVisible(true);
-                            layout.setStartIconOnClickListener(null);
-                            return;
-                        }
-                        break;
+                final int length = str.length();
+                final boolean strictIsbn = isbnValidityCheck == Validity.Strict;
+
+                if (length == 13) {
+                    final ISBN isbn = new ISBN(str, strictIsbn);
+                    if (isbn.isIsbn10Compat()) {
+                        altIsbn = isbn.asText(Type.Isbn10);
+                        layout.setStartIconVisible(true);
+                        layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
+                        return;
+                    } else if (isbn.isValid(strictIsbn)) {
+                        layout.setStartIconVisible(true);
+                        layout.setStartIconOnClickListener(null);
+                        return;
                     }
 
-                    case 10: {
-                        final ISBN isbn = new ISBN(str, isbnValidityCheck == Validity.Strict);
-                        if (isbn.isValid(isbnValidityCheck == Validity.Strict)) {
-                            altIsbn = isbn.asText(Type.Isbn13);
-                            layout.setStartIconVisible(true);
-                            layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
-                            return;
-                        }
-                        break;
+                } else if (length == 10 || length == 9) {
+                    // ISBN-10 or Legacy SBN
+                    final ISBN isbn = new ISBN(str, strictIsbn);
+                    if (isbn.isValid(strictIsbn)) {
+                        altIsbn = isbn.asText(Type.Isbn13);
+                        layout.setStartIconVisible(true);
+                        layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
+                        return;
                     }
 
-                    case 12: {
-                        // UPC: indicate the code is valid, but disable the swap functionality
-                        if (isbnValidityCheck != Validity.Strict) {
-                            final ISBN isbn = new ISBN(str, false);
-                            if (isbn.isType(Type.UpcA)) {
-                                layout.setStartIconVisible(true);
-                                layout.setStartIconOnClickListener(null);
-                                return;
-                            }
-                        }
-                        break;
+                } else if (length == 8 && !strictIsbn) {
+                    // ISSN: indicate the code is valid, but disable the swap functionality
+                    final ISBN isbn = new ISBN(str, false);
+                    if (isbn.isType(Type.Issn8)) {
+                        layout.setStartIconVisible(true);
+                        layout.setStartIconOnClickListener(null);
+                        return;
                     }
 
-                    case 8: {
-                        // ISSN: indicate the code is valid, but disable the swap functionality
-                        if (isbnValidityCheck != Validity.Strict) {
-                            final ISBN isbn = new ISBN(str, false);
-                            if (isbn.isType(Type.Issn8)) {
-                                layout.setStartIconVisible(true);
-                                layout.setStartIconOnClickListener(null);
-                                return;
-                            }
-                        }
-                        break;
+                } else if (length >= 12) {
+                    // UPC or Legacy SBN with price digits
+                    // Disregard the strict setting, as a 12 digit code MAY be a valid ISBN-10.
+                    // We'll explicitly check the type below.
+                    final ISBN isbn = new ISBN(str, false);
+
+                    // A UPC or a legacy SBN with price digits
+                    // which was auto-converted to ISBN-10 when created
+                    if (isbn.isType(Type.Isbn10)) {
+                        altIsbn = isbn.asText(Type.Isbn13);
+                        layout.setStartIconVisible(true);
+                        layout.setStartIconOnClickListener(v -> editText.setText(altIsbn));
+                        return;
                     }
 
-                    default:
-                        break;
+                    // A UPC which could NOT be converted to ISBN-10.
+                    // Indicate the code is valid, but disable the swap functionality
+                    if (!strictIsbn && isbn.isType(Type.UpcA)) {
+                        layout.setStartIconVisible(true);
+                        layout.setStartIconOnClickListener(null);
+                        return;
+                    }
                 }
             }
 
+            // invalid, not-strict, or the user is still typing
             layout.setStartIconVisible(false);
             layout.setStartIconOnClickListener(null);
         }

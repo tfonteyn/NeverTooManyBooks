@@ -64,6 +64,17 @@ class ISBNTest {
     }
 
     /**
+     * SBN codes which can be translated to ISBN-10.
+     */
+    @NonNull
+    static Stream<Arguments> validSbn() {
+        return Stream.of(
+                Arguments.of("345-21908-2", "0345219082"),
+                Arguments.of("345-21908-2-095", "0345219082")
+        );
+    }
+
+    /**
      * UPC codes which can be translated to ISBN-10.
      */
     @NonNull
@@ -83,7 +94,6 @@ class ISBNTest {
         );
     }
 
-    ;
 
     /**
      * Generic EAN-13 codes.
@@ -94,8 +104,6 @@ class ISBNTest {
                 Arguments.of("5410983535003", "5410983535003")
         );
     }
-
-    ;
 
     /**
      * pure 8 digit ISSN codes.
@@ -108,8 +116,6 @@ class ISBNTest {
         );
     }
 
-    ;
-
     /**
      * pure 13 digit ISSN codes.
      */
@@ -121,8 +127,6 @@ class ISBNTest {
         );
     }
 
-    ;
-
     /**
      * mixed 13 digit input; 8 digit expected ISSN codes.
      */
@@ -133,8 +137,6 @@ class ISBNTest {
                 Arguments.of("9770024984648", "0024984X")
         );
     }
-
-    ;
 
     @ParameterizedTest
     @MethodSource("validIsbn13")
@@ -149,6 +151,14 @@ class ISBNTest {
     void invalidIsbn13(@NonNull final String isbnStr) {
         final ISBN isbn = new ISBN(isbnStr, true);
         assertFalse(isbn.isValid(true));
+    }
+
+    @ParameterizedTest
+    @MethodSource("validSbn")
+    void validSbn(@NonNull final String isbnStr) {
+        final ISBN isbn = new ISBN(isbnStr, true);
+        assertTrue(isbn.isValid(true));
+        assertTrue(isbn.isType(ISBN.Type.Isbn10));
     }
 
     @ParameterizedTest
@@ -212,5 +222,4 @@ class ISBNTest {
         assertTrue(issn.isType(ISBN.Type.Issn13));
         assertEquals(expected, issn.asText(ISBN.Type.Issn8));
     }
-
 }
