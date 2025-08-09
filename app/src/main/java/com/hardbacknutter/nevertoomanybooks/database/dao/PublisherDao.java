@@ -185,6 +185,8 @@ public interface PublisherDao {
      * Find a {@link Publisher} by using the <strong>name</strong> fields
      * of the given {@link Publisher}.
      * The given {@link Publisher} is <strong>not</strong> modified.
+     <p>
+     * Searches on both original and (potentially) reordered name.
      *
      * @param context Current context
      * @param item    to find the id of

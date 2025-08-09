@@ -69,8 +69,13 @@ public abstract class BaseDBTest {
     protected ServiceLocator serviceLocator;
     protected Context context;
 
+    /**
+     * Setup.
+     *
+     * @param uiLocale the user configured UI Locale.
+     */
     @CallSuper
-    public void setup(@NonNull final String localeCode)
+    public void setup(@NonNull final String uiLocale)
             throws StorageException, DaoWriteException {
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                                        .detectLeakedSqlLiteObjects()
@@ -84,7 +89,7 @@ public abstract class BaseDBTest {
         context = serviceLocator.getAppContext();
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putString(Prefs.PK_UI_LOCALE, localeCode)
+                         .putString(Prefs.PK_UI_LOCALE, uiLocale)
                          .putString(CoverVolume.PK_VOLUME_INDEX, "0")
 
                          .putBoolean(EditBookFragment.PK_EDIT_BOOK_TABS_EXTERNAL_ID, false)

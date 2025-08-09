@@ -57,7 +57,7 @@ public interface Mergeable {
      *
      * @param that the one to compare with
      *
-     * @return {@code true} if its the same name (except for diacritics)
+     * @return {@code true} if it's the same name (except for diacritics)
      */
     default boolean isSameName(@NonNull final Mergeable that) {
         return Objects.hash(getNameFields()
@@ -76,7 +76,7 @@ public interface Mergeable {
      *
      * @param that the one to compare with
      *
-     * @return {@code true} if its the same name (including all diacritics)
+     * @return {@code true} if it's the same name (including all diacritics)
      */
     default boolean isIdenticalName(@NonNull final Mergeable that) {
         return Objects.hash(getNameFields())

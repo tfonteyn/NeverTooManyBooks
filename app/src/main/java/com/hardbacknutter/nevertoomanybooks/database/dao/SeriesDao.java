@@ -208,6 +208,8 @@ public interface SeriesDao {
     /**
      * Find a {@link Series} by using the <strong>name</strong> fields of the given {@link Series}.
      * The given {@link Series} is <strong>not</strong> modified.
+     * <p>
+     * Searches on both original and (potentially) reordered title.
      *
      * @param context Current context
      * @param item    to find the id of

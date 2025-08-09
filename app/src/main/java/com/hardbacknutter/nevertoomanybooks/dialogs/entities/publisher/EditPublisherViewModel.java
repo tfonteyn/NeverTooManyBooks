@@ -75,7 +75,7 @@ public class EditPublisherViewModel
     }
 
     /**
-     * Were any of the fields changed?
+     * Check if any of the fields were changed.
      *
      * @return {@code true} if modified
      */
@@ -122,7 +122,7 @@ public class EditPublisherViewModel
             return existingEntity;
         }
 
-        // Just insert or update as needed
+        // insert or update as needed
         if (original.getId() == 0) {
             dao.insert(context, original, locale);
         } else {

@@ -193,6 +193,7 @@ public class ISBN {
      *      <br>accepts as valid:
      *      <ul>
      *          <li>{@link Type#Isbn10}</li>
+     *          <li>{@link Type#Sbn}</li>
      *          <li>{@link Type#Isbn13}</li>
      *          <li>{@link Type#Ean13}</li>
      *          <li>{@link Type#Issn8}</li>
@@ -205,6 +206,7 @@ public class ISBN {
      *      <br>accepts as valid:
      *      <ul>
      *          <li>{@link Type#Isbn10}</li>
+     *          <li>{@link Type#Sbn}</li>
      *          <li>{@link Type#Isbn13}</li>
      *          <li>{@link Type#UpcA} <strong>if convertible to {@link Type#Isbn10}</strong></li>
      *      </ul>

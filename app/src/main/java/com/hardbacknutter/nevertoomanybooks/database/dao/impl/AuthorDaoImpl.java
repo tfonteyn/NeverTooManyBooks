@@ -988,6 +988,8 @@ public class AuthorDaoImpl
         /**
          * Find an {@link Author} by family and given name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
+         * <p>
+         * Searching on reordered is no applicable as the fields are separated.
          */
         static final String FIND_BY_NAME =
                 SELECT_ALL
