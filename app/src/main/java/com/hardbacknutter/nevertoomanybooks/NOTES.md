@@ -4,6 +4,8 @@ Draft notes for next version:
 
 NEW:
 
+- add support for SBN numbers (precursor of ISBN)
+
 FIXES:
 
 REMOVED:
