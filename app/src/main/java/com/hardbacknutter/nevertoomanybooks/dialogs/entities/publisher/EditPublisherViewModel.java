@@ -119,7 +119,12 @@ public class EditPublisherViewModel
         // Check if there is an another one with the same new name.
         final Optional<Publisher> existingEntity = dao.findByName(context, original, locale);
         if (existingEntity.isPresent()) {
-            return existingEntity;
+            // original can have an id==0, or id!=0. Both are acceptable.
+            if (original.getId() != existingEntity.get().getId()) {
+                // it's really another entry with the same name -> we could merge
+                return existingEntity;
+            }
+            // else: we found our own entry and the name is different due to re-ordering.
         }
 
         // insert or update as needed
