@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.75"
+            app:layout_constraintGuide_percent="0.25"
             />
 
 
@@ -47,9 +47,9 @@
             android:id="@+id/lbl_book_type"
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_book_type"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:materialThemeOverlay="@style/ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox.Dense"
-            app:layout_constraintStart_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             >
 
@@ -69,13 +69,12 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginEnd="@dimen/column_margin_end"
             android:clipToPadding="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/row_edit_toc_entry"
             />
