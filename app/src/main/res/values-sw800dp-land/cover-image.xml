@@ -26,8 +26,8 @@
 
     <!-- Multiplier: 6 : smaller than sw600 as we're in embedded mode here -->
     <dimen name="cover_details_0_width">144dp</dimen>
-    <!-- Multiplier: 3 -->
-    <dimen name="cover_details_1_width">72dp</dimen>
+    <!-- Multiplier: 2 : smaller than sw600 as we're in embedded mode here -->
+    <dimen name="cover_details_1_width">48dp</dimen>
 
     <!-- Multiplier: 4 -->
     <dimen name="cover_edit_0_width">96dp</dimen>
