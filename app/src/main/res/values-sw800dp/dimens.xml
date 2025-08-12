@@ -24,7 +24,7 @@
 
     <dimen name="container_above_bottom_appbar_margin_bottom">88dp</dimen>
 
-    <dimen name="centered_max_width">800dp</dimen>
+    <dimen name="centered_max_width">700dp</dimen>
 
     <dimen name="camera_preview_width">480dp</dimen>
     <dimen name="camera_preview_height">240dp</dimen>

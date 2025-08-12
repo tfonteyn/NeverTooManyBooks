@@ -73,6 +73,9 @@
           type="dimen">-2
     </item>
 
+    <!-- Used where we don't want to restrict a value on smaller screens. -->
+    <dimen name="unlimited">10000dp</dimen>
+
     <!-- Navigation panel header padding on all sides. -->
     <dimen name="nav_header_padding">16dp</dimen>
 
@@ -179,8 +182,8 @@
     </item>
 
 
-    <!-- The width for "@style/FragmentRoot.*" -->
-    <dimen name="centered_max_width">600dp</dimen>
+    <!-- The width for "@style/FragmentRoot.*"; unlimited for all screen less than sw800. -->
+    <dimen name="centered_max_width">@dimen/unlimited</dimen>
 
     <!-- Buttons *on* the toolbar get extra spacing for ease of use. -->
     <dimen name="toolbar_button_margin">4dp</dimen>

@@ -31,7 +31,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_body"
         style="@style/FragmentRoot.ConstraintLayout"
-        android:maxWidth="1000dp"
         >
 
         <androidx.constraintlayout.widget.Guideline
