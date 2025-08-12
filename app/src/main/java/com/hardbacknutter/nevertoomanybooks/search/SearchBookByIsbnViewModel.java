@@ -76,8 +76,14 @@ public class SearchBookByIsbnViewModel
     @NonNull
     private ScanMode scanMode = ScanMode.Off;
 
-    /** Only start the scanner automatically upon the very first start of the fragment. */
-    private boolean firstStart = true;
+    private boolean torchEnabled;
+
+    /**
+     * Flag indicating the scanner Activity is already started so we don't
+     * start it a second time after a device rotation.
+     */
+    private boolean scannerActivityStarted;
+
     /** The raw text. The 'isStrict' flag is get/set directly with SharedPreferences. */
     @Nullable
     private String isbnText;
@@ -115,16 +121,12 @@ public class SearchBookByIsbnViewModel
     }
 
     /**
-     * Auto-start scanner the first time this fragment starts.
+     * Should the scanner be started when the fragment starts.
      *
      * @return flag
      */
-    boolean isAutoStart() {
-        if (scanMode != ScanMode.Off && firstStart) {
-            firstStart = false;
-            return true;
-        }
-        return false;
+    boolean isStartScanner() {
+        return getScannerMode() != ScanMode.Off;
     }
 
     @NonNull
@@ -142,6 +144,14 @@ public class SearchBookByIsbnViewModel
         this.isbnText = isbnText;
     }
 
+    boolean isScannerActivityStarted() {
+        return scannerActivityStarted;
+    }
+
+    void setScannerActivityStarted(final boolean started) {
+        this.scannerActivityStarted = started;
+    }
+
     @NonNull
     ScanMode getScannerMode() {
         return scanMode;
@@ -152,6 +162,14 @@ public class SearchBookByIsbnViewModel
         synchronized (scanQueue) {
             scanQueueUpdate.setValue(scanQueue.iterator());
         }
+    }
+
+    boolean isTorchEnabled() {
+        return torchEnabled;
+    }
+
+    void setTorchEnabled(final boolean enabled) {
+        this.torchEnabled = enabled;
     }
 
     @NonNull

@@ -20,8 +20,12 @@
   -->
 
 <resources>
-    <dimen name="isbn_keypad_key_height">72dp</dimen>
+    <dimen name="camera_preview_width">300dp</dimen>
+    <dimen name="camera_preview_height">150dp</dimen>
+    <dimen name="camera_preview_button_margin">8dp</dimen>
+
     <dimen name="isbn_keypad_key_width">108dp</dimen>
+    <dimen name="isbn_keypad_key_height">64dp</dimen>
 
     <dimen name="isbn_keypad_number_text_size">22sp</dimen>
 

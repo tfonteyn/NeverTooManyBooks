@@ -19,9 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Criteria;
 import android.net.Uri;
@@ -40,10 +42,14 @@ import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.widget.Toolbar;
+import androidx.camera.core.CameraSelector;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
@@ -81,6 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -90,7 +97,7 @@ import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * Use-cases / logic flow....   WILL contain errors...
+ * Use-cases / logic flow....   might contain errors...
  * <p>
  * - start batch scan
  * - disable progress
@@ -230,16 +237,12 @@ public class SearchBookByIsbnFragment
 
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnFrag";
-    private static final String BKEY_SCANNER_ACTIVITY_STARTED = TAG + ":started";
 
-    /**
-     * Flag indicating the scanner Activity is already started so we don't
-     * start it a second time after a device rotation.
-     */
-    private boolean scannerActivityStarted;
     @Nullable
     private BarcodeScanner scanner;
     private boolean embeddedBarcodeScanner;
+    /** Does the device have a torch light. */
+    private boolean hasTorch;
 
     /** View Binding. */
     private FragmentBooksearchByIsbnBinding vb;
@@ -285,6 +288,8 @@ public class SearchBookByIsbnFragment
     /** The user wants to import a list of ISBNs to the queue. */
     private ActivityResultLauncher<String> openUriLauncher;
 
+    private ActivityResultLauncher<String> cameraPermissionLauncher;
+
     /** Scan barcodes using the scanner Activity. */
     private ActivityResultLauncher<ScanOptions> scannerActivityLauncher;
 
@@ -296,14 +301,25 @@ public class SearchBookByIsbnFragment
 
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
         vm.init(getArguments());
+
+        //noinspection DataFlowIssue
+        hasTorch = getContext().getPackageManager()
+                               .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 
     private void createActivityLaunchers() {
         openUriLauncher = registerForActivityResult(new GetContentUriForReadingContract(),
                                                     o -> o.ifPresent(this::onOpenUri));
 
+        cameraPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(), isGranted -> {
+                    if (isGranted) {
+                        askPermissionAndStartEmbeddedScanner(true);
+                    }
+                });
+
         scannerActivityLauncher = registerForActivityResult(new ScannerContract(), o -> {
-            scannerActivityStarted = false;
+            vm.setScannerActivityStarted(false);
             if (o.isPresent()) {
                 onBarcodeScanned(o.get());
             } else {
@@ -311,40 +327,6 @@ public class SearchBookByIsbnFragment
                 switchOffScanner();
             }
         });
-    }
-
-    /**
-     * Check screen size and orientation to decide whether we use the embedded
-     * scanner view, or the separate {@link ScannerContract}.
-     */
-    private void maybeInitEmbeddedScanner() {
-        if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
-            //noinspection DataFlowIssue
-            final ScreenSize screenSize = ScreenSize.compute(getActivity());
-            if (getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_PORTRAIT) {
-                embeddedBarcodeScanner = screenSize.getHeight() == ScreenSize.Value.Expanded;
-            } else {
-                embeddedBarcodeScanner = screenSize.getWidth() == ScreenSize.Value.Expanded;
-            }
-
-            // embedded scanner only
-            vb.btnStopScanning.setOnClickListener(v -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    v.performHapticFeedback(HapticFeedbackConstants.REJECT);
-                } else {
-                    v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                }
-                switchOffScanner();
-            });
-        }
-    }
-
-    // Not sure this is really needed, but it does no harm.
-    @Override
-    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        maybeInitEmbeddedScanner();
     }
 
     @Override
@@ -370,11 +352,6 @@ public class SearchBookByIsbnFragment
                      .addCallback(getViewLifecycleOwner(), backPressedWithActiveSearches);
 
         maybeInitEmbeddedScanner();
-
-        if (savedInstanceState != null) {
-            scannerActivityStarted = savedInstanceState
-                    .getBoolean(BKEY_SCANNER_ACTIVITY_STARTED, false);
-        }
 
         vm.onScanQueueUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
 
@@ -421,11 +398,62 @@ public class SearchBookByIsbnFragment
      */
     private void afterOnViewCreated() {
         vb.isbn.requestFocus();
-        if (vm.isAutoStart()) {
+        if (vm.isStartScanner()) {
             startScanner();
         }
     }
 
+    /**
+     * Check screen size and orientation to decide whether we use the embedded
+     * scanner view, or the separate {@link ScannerContract}.
+     */
+    private void maybeInitEmbeddedScanner() {
+        //noinspection DataFlowIssue
+        final ScreenSize screenSize = ScreenSize.compute(getActivity());
+        if (getResources().getConfiguration().orientation
+            == Configuration.ORIENTATION_PORTRAIT) {
+            embeddedBarcodeScanner = screenSize.getHeight() == ScreenSize.Value.Expanded;
+        } else {
+            embeddedBarcodeScanner = screenSize.getWidth() == ScreenSize.Value.Expanded;
+        }
+
+        if (embeddedBarcodeScanner) {
+            initEmbeddedScanner();
+        }
+    }
+
+    private void initEmbeddedScanner() {
+        if (hasTorch) {
+            updateTorchButtonIcon();
+            vb.btnTorch.setOnClickListener(v -> {
+                vm.setTorchEnabled(!vm.isTorchEnabled());
+                updateTorchButtonIcon();
+                if (scanner != null) {
+                    scanner.setTorch(vm.isTorchEnabled());
+                }
+            });
+        }
+
+        vb.btnStopScanning.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                v.performHapticFeedback(HapticFeedbackConstants.REJECT);
+            } else {
+                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            }
+            switchOffScanner();
+        });
+    }
+
+    private void updateTorchButtonIcon() {
+        // We're not using checkable and StateLists as managing the background
+        // color then makes things needlessly complicated.
+        // Hence simply swap the icon manually here.
+        vb.btnTorch.setIconResource(vm.isTorchEnabled()
+                                    ? com.hardbacknutter.tinyzxingwrapper.R.drawable
+                                            .tzw_ic_baseline_flashlight_off_24
+                                    : com.hardbacknutter.tinyzxingwrapper.R.drawable
+                                            .tzw_ic_baseline_flashlight_on_24);
+    }
 
     /**
      * The input field is not being limited in length. This is to allow entering UPC_A numbers.
@@ -518,12 +546,6 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(BKEY_SCANNER_ACTIVITY_STARTED, scannerActivityStarted);
-    }
-
-    @Override
     @NonNull
     Intent createResultIntent() {
         return vm.createResultIntent();
@@ -533,30 +555,59 @@ public class SearchBookByIsbnFragment
      * Switch the scanner on.
      *
      * @see #startScannerActivity()
-     * @see #startScannerEmbedded()
+     * @see #askPermissionAndStartEmbeddedScanner(boolean)
      */
     private void startScanner() {
         setEnableProgressMessages(!isBatchOrHasQueue());
         if (embeddedBarcodeScanner) {
-            startScannerEmbedded();
+            // The embedded scanner must handle permissions locally
+            askPermissionAndStartEmbeddedScanner(false);
         } else {
+            // The scanner Activity will take care of Camera permissions.
             startScannerActivity();
         }
     }
 
     /**
      * Start the embedded (in this Fragment) scanner view.
+     * Will ask for Camera permissions as needed.
+     *
+     * @param alreadyGranted set to {@code true} if we already got granted access.
+     *                       i.e. when called from the {@link #cameraPermissionLauncher}
      *
      * @see #startScanner()
      */
-    private void startScannerEmbedded() {
+    private void askPermissionAndStartEmbeddedScanner(final boolean alreadyGranted) {
+        final Context context = getContext();
+        //noinspection DataFlowIssue
+        if (alreadyGranted
+            || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+               == PackageManager.PERMISSION_GRANTED) {
+            startEmbeddedScanner();
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    @RequiresPermission(Manifest.permission.CAMERA)
+    private void startEmbeddedScanner() {
+        final Context context = getContext();
+
         vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
+        vb.btnTorch.setVisibility(hasTorch ? View.VISIBLE : View.GONE);
+
         if (scanner == null) {
-            // Use the default com.hardbacknutter.tinyzxingwrapper.scanner.ScanMode.Single
             //noinspection DataFlowIssue
             scanner = new BarcodeScanner.Builder()
                     .setBarcodeFormats(BarcodeFamily.PRODUCT)
-                    .build(getContext());
+                    .build(context);
+
+            // -1: no preference, otherwise set to 0 or 1
+            final int lensFacing = CameraDetection.getPreferredCameraLensFacing(context);
+            if (lensFacing == CameraSelector.LENS_FACING_FRONT
+                || lensFacing == CameraSelector.LENS_FACING_BACK) {
+                scanner.setCameraLensFacing(lensFacing);
+            }
 
             if (vb.cameraViewFinder.isShowResultPoints()) {
                 scanner.setResultPointListener(vb.cameraViewFinder);
@@ -571,8 +622,6 @@ public class SearchBookByIsbnFragment
                           @Nullable
                           private String lastCode;
 
-                          // com. hardbacknutter.tinyzxingwrapper.scanner.ScanMode.Single:
-                          // the scanner is stopped when we enter this method.
                           @Override
                           public void onResult(@NonNull final Result result) {
                               final String barCode = result.getText();
@@ -598,8 +647,8 @@ public class SearchBookByIsbnFragment
      * @see #startScanner()
      */
     private void startScannerActivity() {
-        if (!scannerActivityStarted) {
-            scannerActivityStarted = true;
+        if (!vm.isScannerActivityStarted()) {
+            vm.setScannerActivityStarted(true);
             //noinspection DataFlowIssue
             scannerActivityLauncher.launch(ScannerContract.createDefaultOptions(getContext()));
         }
@@ -817,7 +866,7 @@ public class SearchBookByIsbnFragment
     /**
      * The scanner returned a barcode.
      * Called when returning from {@link #startScannerActivity()}
-     * or by the {@link #startScannerEmbedded()} logic.
+     * or by the {@link #askPermissionAndStartEmbeddedScanner(boolean)} logic.
      *
      * @param barCode as returned by the scanner
      */

@@ -26,10 +26,6 @@
 
     <dimen name="centered_max_width">700dp</dimen>
 
-    <dimen name="camera_preview_width">480dp</dimen>
-    <dimen name="camera_preview_height">240dp</dimen>
-    <dimen name="camera_preview_button_margin">8dp</dimen>
-
     <dimen name="column_margin_end">64dp</dimen>
 
     <dimen name="toolbar_button_margin">8dp</dimen>

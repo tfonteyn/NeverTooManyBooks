@@ -20,12 +20,22 @@
   -->
 
 <resources>
+    <!-- inline barcode scanner preview -->
+    <dimen name="camera_preview_width">220dp</dimen>
+    <dimen name="camera_preview_height">110dp</dimen>
+    <!-- The "Stop scanning" button is the same width as the preview,
+         except we indent start/end with this value -->
+    <dimen name="camera_preview_button_margin">4dp</dimen>
+
     <!-- The ISBN keypad number/search keys -->
-    <dimen name="isbn_keypad_key_height">48dp</dimen>
-    <dimen name="isbn_keypad_key_width">96dp</dimen>
+    <dimen name="isbn_keypad_key_width">80dp</dimen>
+    <!-- 50% of the width. -->
+    <dimen name="isbn_keypad_key_height">40dp</dimen>
+
     <dimen name="isbn_keypad_key_margin">4dp</dimen>
+
     <!-- The ISBN keypad number keys -->
-    <dimen name="isbn_keypad_number_text_size">22sp</dimen>
+    <dimen name="isbn_keypad_number_text_size">16sp</dimen>
     <!-- The ISBN keypad search key -->
     <dimen name="isbn_keypad_search_icon_size">24dp</dimen>
     <dimen name="isbn_keypad_search_stroke_width">2dp</dimen>

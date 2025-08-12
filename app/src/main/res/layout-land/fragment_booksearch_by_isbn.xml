@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="barcode_scanner,btn_stop_scanning"
+            app:constraint_referenced_ids="barcode_scanner,btn_torch,btn_stop_scanning"
             tools:visibility="visible"
             />
 
@@ -69,6 +69,16 @@
                 android:layout_height="match_parent"
                 />
         </FrameLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_torch"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            app:icon="@drawable/tzw_ic_baseline_flashlight_on_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/barcode_scanner"
+            app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
+            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_stop_scanning"

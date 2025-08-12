@@ -102,8 +102,6 @@ android {
 
         buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "true")
         buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
-
-        buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "true")
     }
 
     buildTypes {
@@ -127,8 +125,6 @@ android {
 
             buildConfigField("boolean", "ENABLE_OPEN_LIBRARY_LOGIN", "false")
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
-
-            buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
         }
         beta {
             initWith(release)
