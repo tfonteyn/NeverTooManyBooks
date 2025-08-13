@@ -40,6 +40,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -229,7 +230,7 @@ public final class ImageHandler {
         cameraPermissionLauncher = fragment.registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(), isGranted -> {
                     if (isGranted) {
-                        takePicture(true);
+                        askPermissionAndTakePicture(true);
                     }
                 });
 
@@ -395,7 +396,7 @@ public final class ImageHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
-            takePicture(false);
+            askPermissionAndTakePicture(false);
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM) {
@@ -598,37 +599,43 @@ public final class ImageHandler {
      * @param alreadyGranted set to {@code true} if we already got granted access.
      *                       i.e. when called from the {@link #cameraPermissionLauncher}
      */
-    private void takePicture(final boolean alreadyGranted) {
+    private void askPermissionAndTakePicture(final boolean alreadyGranted) {
         final Context context = fragment.requireContext();
         if (alreadyGranted
             || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                == PackageManager.PERMISSION_GRANTED) {
 
-            try {
-                final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
-                final TakePictureContract.Input input =
-                        TakePictureContract.Input.create(context, tempFile);
-                takePictureLauncher.launch(input);
-
-            } catch (@NonNull final CoverStorageException e) {
-                ErrorDialog.show(context, TAG, e);
-
-            } catch (@NonNull final IllegalArgumentException e) {
-                // This is a bug; a permission issue with the GenericFileProvider
-                ErrorDialog.show(context, TAG, new CoverStorageException(
-                        ERROR_GENERIC_FILE_PROVIDER, e));
-
-            } catch (@NonNull final ActivityNotFoundException e) {
-                // No Camera? we should not get here as we should not have been
-                // to call this method in the first place... flw
-                // Fake an IOException...
-                ErrorDialog.show(context, TAG,
-                                 new IOException(context.getString(R.string.error_unexpected),
-                                                 e));
-            }
+            takePicture();
 
         } else {
             cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    @RequiresPermission(Manifest.permission.CAMERA)
+    private void takePicture() {
+        final Context context = fragment.requireContext();
+        try {
+            final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
+            final TakePictureContract.Input input =
+                    TakePictureContract.Input.create(context, tempFile);
+            takePictureLauncher.launch(input);
+
+        } catch (@NonNull final CoverStorageException e) {
+            ErrorDialog.show(context, TAG, e);
+
+        } catch (@NonNull final IllegalArgumentException e) {
+            // This is a bug; a permission issue with the GenericFileProvider
+            ErrorDialog.show(context, TAG, new CoverStorageException(
+                    ERROR_GENERIC_FILE_PROVIDER, e));
+
+        } catch (@NonNull final ActivityNotFoundException e) {
+            // No Camera? we should not get here as we should not have been
+            // to call this method in the first place... flw
+            // Fake an IOException...
+            ErrorDialog.show(context, TAG,
+                             new IOException(context.getString(R.string.error_unexpected),
+                                             e));
         }
     }
 
