@@ -64,10 +64,6 @@ class EditLenderDelegate
     @NonNull
     private final String requestKey;
 
-    /**
-     * See <a href="https://developer.android.com/training/permissions/requesting">
-     * developer.android.com</a>
-     */
     private final ActivityResultLauncher<String> requestPermissionLauncher;
     private ExtArrayAdapter<String> adapter;
     private DialogEditLoanContentBinding vb;
@@ -139,9 +135,7 @@ class EditLenderDelegate
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
             == PackageManager.PERMISSION_GRANTED) {
             addContacts();
-            // } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
-            // FIXME: implement shouldShowRequestPermissionRationale
-            //  but without using a dialog box inside a dialog box
+            // FIXME: implement shouldShowRequestPermissionRationale by using PermissionRequester
         } else {
             requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
         }
