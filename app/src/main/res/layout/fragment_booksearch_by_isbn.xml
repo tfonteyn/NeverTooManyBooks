@@ -37,51 +37,44 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="barcode_scanner,btn_torch,btn_stop_scanning"
+            app:constraint_referenced_ids="camera_preview,btn_torch,btn_stop_scanning"
             tools:visibility="visible"
             />
 
-        <FrameLayout
-            android:id="@+id/barcode_scanner"
+        <androidx.camera.view.PreviewView
+            android:id="@+id/camera_preview"
             android:layout_width="0dp"
             android:layout_height="@dimen/camera_preview_height"
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="@id/keypad"
             app:layout_constraintStart_toStartOf="@id/keypad"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="@dimen/camera_preview_width"
-            >
-
-            <androidx.camera.view.PreviewView
-                android:id="@+id/camera_preview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
+            app:layout_constraintWidth_max="@dimen/camera_preview_width">
 
             <com.hardbacknutter.tinyzxingwrapper.scanner.TzwViewfinderView
                 android:id="@+id/camera_view_finder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
-        </FrameLayout>
+        </androidx.camera.view.PreviewView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_torch"
             style="@style/Widget.Material3.Button.IconButton.Filled"
-            app:icon="@drawable/tzw_ic_baseline_flashlight_on_24"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/barcode_scanner"
-            app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
+            app:icon="@drawable/tzw_ic_baseline_flashlight_on_24"
+            app:layout_constraintBottom_toBottomOf="@id/camera_preview"
+            app:layout_constraintEnd_toEndOf="@id/camera_preview"
             />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_stop_scanning"
             style="@style/IsbnKeyPad.StopScanButton"
             android:text="@string/action_stop_scanning"
-            app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
-            app:layout_constraintStart_toStartOf="@id/barcode_scanner"
-            app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
+            app:layout_constraintEnd_toEndOf="@id/camera_preview"
+            app:layout_constraintStart_toStartOf="@id/camera_preview"
+            app:layout_constraintTop_toBottomOf="@id/camera_preview"
             />
 
         <com.google.android.material.textfield.TextInputLayout
