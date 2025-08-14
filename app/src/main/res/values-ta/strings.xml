@@ -206,6 +206,7 @@
     <string name="progress_msg_cleaning_up">தூய்மை செய்தல்…</string>
     <string name="info_authorized">அங்கீகரிக்கப்பட்ட</string>
     <string name="info_nothing_to_do">செய்ய எதுவும் இல்லை.</string>
+    <string name="info_read_contacts_permission">உங்கள் தொடர்புகளை அணுகுவது விருப்பமானது, ஆனால் நீங்கள் யாருக்கு புத்தகத்தை கடனாக வழங்குவது எளிதாக தேர்வு செய்ய உதவுகிறது.</string>
     <string name="info_story_in_multiple_books">பல புத்தகங்களில் “%1$s” உள்ளது:\n\n %2$s</string>
     <string name="info_story_in_single_book">ஒரு புத்தகத்தில் “%1$s” உள்ளது:\n\n %2$s</string>
     <string name="info_all_books_have_covers">இந்த அலமாரியில் உள்ள அனைத்து புத்தகங்களும் கவர்கள் உள்ளன</string>
@@ -867,4 +868,5 @@
         <item quantity="other">முன்னர் நுழைந்த %1$d உள்ளது. அவற்றுக்கான தேடல்களைத் தொடங்க விரும்புகிறீர்களா, அல்லது அவை அகற்றப்பட வேண்டுமா?</item>
     </plurals>
     <string name="lbl_fastscroller_draghandle">உருளைக் கட்டையின் விரலிசை</string>
+    <string name="lbl_permission_request">அனுமதி கோரிக்கை</string>
 </resources>

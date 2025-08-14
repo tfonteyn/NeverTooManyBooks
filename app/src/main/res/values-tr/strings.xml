@@ -435,6 +435,7 @@
     <string name="option_storage_select">“%1$s” kullan</string>
     <string name="lbl_storage_settings">Depolama</string>
     <string name="pt_storage_volume">Depolama hacmi</string>
+    <string name="info_read_contacts_permission">Kişilerinize erişim isteğe bağlıdır, ancak bir kitabı kime ödünç verdiğinizi kolayca seçmenizi sağlar.</string>
     <string name="info_story_in_multiple_books">“%1$s” birden fazla kitapta mevcuttur:\n\n%2$s</string>
     <string name="option_isbn_strict">Sıkı ISBN</string>
     <string name="lbl_style">Stil</string>
@@ -878,4 +879,5 @@
     <string name="lbl_author_type_foreword">Önsöz</string>
     <string name="lbl_image_2">Resim 3</string>
     <string name="lbl_fastscroller_draghandle">Kaydırma çubuğu tutamacı boyutu</string>
+    <string name="lbl_permission_request">İzin isteği</string>
 </resources>

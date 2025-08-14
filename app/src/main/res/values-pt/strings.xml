@@ -259,6 +259,7 @@
     <string name="progress_msg_x_updated">%1$d atualizado</string>
     <string name="progress_msg_x_skipped">%1$d ignorado</string>
     <string name="info_authorized">Autorizado</string>
+    <string name="info_read_contacts_permission">O acesso aos seus contatos é opcional, mas permite selecionar facilmente a quem você empresta um livro.</string>
     <string name="info_story_in_multiple_books">“%1$s” está presente em vários livros:\n\n%2$s</string>
     <string name="info_story_in_single_book">“%1$s” está presente num único livro:\n\n%2$s</string>
     <string name="info_all_books_have_covers">Todos os livros nesta prateleira têm capas</string>
@@ -872,4 +873,5 @@
     </plurals>
     <string name="lbl_image_2">Imagem 3</string>
     <string name="lbl_fastscroller_draghandle">Tamanho do controle de rolagem</string>
+    <string name="lbl_permission_request">Solicitação de permissão</string>
 </resources>

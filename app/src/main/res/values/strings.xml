@@ -415,10 +415,14 @@
     <string name="progress_msg_cleaning_up">Cleaning up…</string>
     <!-- endregion -->
     <!-- region ========== Informational/Explanatory messages. -->
+    <!-- [VERIFIED] - dialog title when asking for permissions. -->
+    <string name="lbl_permission_request">Permission request</string>
     <!-- Shown after a successful connection or login to a remote service. -->
     <string name="info_authorized">Authorized</string>
     <!-- Shown after a requested action when there was nothing to do. -->
     <string name="info_nothing_to_do">Nothing to do.</string>
+    <string name="info_read_contacts_permission">Access to your contacts is optional, but allows you to easily select who you’re lending a book to.</string>
+
     <!-- Param 1: story title -->
     <string name="info_story_in_multiple_books">“%1$s” is present in multiple books:\n\n%2$s</string>
     <!-- Param 1: story title -->

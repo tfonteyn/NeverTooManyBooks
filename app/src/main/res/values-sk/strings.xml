@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -131,6 +134,7 @@
     <string name="progress_msg_cleaning_up">Čistí sa…</string>
     <string name="info_authorized">Autorizované</string>
     <string name="info_nothing_to_do">Nič na práci.</string>
+    <string name="info_read_contacts_permission">Prístup ku kontaktom je voliteľný, ale umožňuje vám jednoduchý výber osoby, ktorej požičiavate knihu.</string>
     <string name="info_story_in_multiple_books">„%1$s“ sa nachádza vo viacerých knihách:\n\n%2$s</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d kníh, v %2$d záznamoch</string>
     <string name="info_tap_on_thumbnail_to_zoom">Klepnite na miniatúru pre zobrazenie väčšieho obrázka.</string>
@@ -874,4 +878,5 @@
     <string name="lbl_author_type_foreword">Predslov</string>
     <string name="lbl_image_2">Obrázok 3</string>
     <string name="lbl_fastscroller_draghandle">Veľkosť posuvníka</string>
+    <string name="lbl_permission_request">Žiadosť o povolenie</string>
 </resources>

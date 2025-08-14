@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -425,6 +428,7 @@
     <string name="option_storage_select">Verwende „%1$s“</string>
     <string name="lbl_storage_settings">Speicher</string>
     <string name="pt_storage_volume">Speichervolumen</string>
+    <string name="info_read_contacts_permission">Der Zugriff auf deine Kontakte ist optional, hilft dir aber, einfach auszuwählen, wem du ein Buch leihst.</string>
     <string name="info_story_in_multiple_books">„%1$s“ ist in mehreren Büchern vorhanden:\n\n%2$s</string>
     <string name="option_isbn_strict">Strikte ISBN</string>
     <string name="lbl_style">Stil</string>
@@ -864,4 +868,5 @@
     <string name="lbl_author_type_foreword">Vorwort</string>
     <string name="lbl_image_2">Bild 3</string>
     <string name="lbl_fastscroller_draghandle">Bildlaufleiste-Schieberegler</string>
+    <string name="lbl_permission_request">Berechtigungsanfrage</string>
 </resources>

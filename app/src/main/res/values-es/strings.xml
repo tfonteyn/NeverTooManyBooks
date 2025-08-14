@@ -433,6 +433,7 @@
     <string name="option_storage_select">Utilice «%1$s»</string>
     <string name="lbl_storage_settings">Almacenamiento</string>
     <string name="pt_storage_volume">Volumen de almacenamiento</string>
+    <string name="info_read_contacts_permission">El acceso a tus contactos es opcional, pero te permite seleccionar fácilmente a quién prestas un libro.</string>
     <string name="info_story_in_multiple_books">«%1$s» está presente en múltiples libros:\n\n%2$s</string>
     <string name="option_isbn_strict">ISBN estricto</string>
     <string name="lbl_style">Estilo</string>
@@ -872,4 +873,5 @@
     <string name="lbl_author_type_foreword">Prólogo</string>
     <string name="lbl_image_2">Imagen 3</string>
     <string name="lbl_fastscroller_draghandle">Tamaño del control deslizante de la barra de desplazamiento</string>
+    <string name="lbl_permission_request">Solicitud de permiso</string>
 </resources>

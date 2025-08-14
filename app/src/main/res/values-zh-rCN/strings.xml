@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -259,6 +262,7 @@
     <string name="citation_share_book_im_reading">我正在阅读“%1$s” %2$s 由 %3$s %4$s</string>
     <string name="info_site_list">搜索结果限于：%1$s</string>
     <string name="info_site_search_field_optional">可选。不是所有网站都支持。</string>
+    <string name="info_read_contacts_permission">访问您的联系人是可选的，但可让您轻松选择借书的人。</string>
     <string name="info_story_in_multiple_books">“%1$s”存在与多本书中：\n\n%2$s</string>
     <string name="info_story_in_single_book">“%1$s” 存在与一本书中：\n\n%2$s</string>
     <string name="info_tap_on_thumbnail_to_zoom">点击缩略图以显示大图。</string>
@@ -862,4 +866,5 @@
     <string name="lbl_author_type_afterword">后记</string>
     <string name="lbl_image_2">图片 3</string>
     <string name="lbl_fastscroller_draghandle">滚动栏缩略图</string>
+    <string name="lbl_permission_request">权限请求</string>
 </resources>

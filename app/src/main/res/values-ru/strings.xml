@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -440,6 +443,7 @@
     <string name="option_storage_select">Используйте «%1$s»</string>
     <string name="lbl_storage_settings">Хранилище</string>
     <string name="pt_storage_volume">Объем хранилища</string>
+    <string name="info_read_contacts_permission">Доступ к вашим контактам необязателен, но позволяет легко выбрать, кому вы даёте книгу на время.</string>
     <string name="info_story_in_multiple_books">«%1$s» присутствует в нескольких книгах:\n\n%2$s</string>
     <string name="option_isbn_strict">Строгий ISBN</string>
     <string name="lbl_style">стиль</string>
@@ -885,4 +889,5 @@
     <string name="lbl_author_type_foreword">Предисловие</string>
     <string name="lbl_image_2">Изображение 3</string>
     <string name="lbl_fastscroller_draghandle">Размер ползунка</string>
+    <string name="lbl_permission_request">Запрос разрешений</string>
 </resources>

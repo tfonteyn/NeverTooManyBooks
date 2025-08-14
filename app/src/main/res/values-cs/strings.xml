@@ -446,6 +446,7 @@
     <string name="option_storage_select">Použít „%1$s“</string>
     <string name="lbl_storage_settings">Úložiště</string>
     <string name="pt_storage_volume">Úložný prostor</string>
+    <string name="info_read_contacts_permission">Přístup ke kontaktům je volitelný, ale umožňuje vám snadno vybrat, komu knihu půjčujete.</string>
     <string name="info_story_in_multiple_books">„%1$s“ je přítomen ve více knihách:\n\n%2$s</string>
     <string name="option_isbn_strict">Přísné ISBN</string>
     <string name="lbl_style">Styl</string>
@@ -888,4 +889,5 @@
     <string name="lbl_author_type_foreword">Předmluva</string>
     <string name="lbl_image_2">Obrázek 3</string>
     <string name="lbl_fastscroller_draghandle">Velikost posuvníku</string>
+    <string name="lbl_permission_request">Žádost o oprávnění</string>
 </resources>

@@ -250,6 +250,7 @@
     <string name="lbl_citation_type">Opmaak citatie/delen</string>
     <string name="lbl_citation_type_default">Ik lees…</string>
     <string name="citation_share_book_im_reading">Ik lees %1$s %2$s door %3$s %4$s</string>
+    <string name="info_read_contacts_permission">Toegang tot je contacten is optioneel, maar laat je eenvoudig kiezen aan wie je een boek uitleent.</string>
     <string name="info_story_in_multiple_books">„%1$s” is present in meerdere boeken:\n\n%2$s</string>
     <string name="info_story_in_single_book">„%1$s” is present in één enkel book:\n\n%2$s</string>
     <string name="X_info_tap_on_image_to_select">Tik op de grotere afbeelding om deze te selecteren.</string>
@@ -867,4 +868,5 @@
     <string name="lbl_author_type_afterword">Nawoord</string>
     <string name="lbl_image_2">Afbeelding 3</string>
     <string name="lbl_fastscroller_draghandle">Schuifknopgrootte</string>
+    <string name="lbl_permission_request">Rechtenverzoek</string>
 </resources>

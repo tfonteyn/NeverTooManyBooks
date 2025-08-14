@@ -273,6 +273,7 @@
     <string name="progress_msg_cleaning_up">Tisztítás…</string>
     <string name="info_authorized">Engedélyezve</string>
     <string name="info_nothing_to_do">Nincs tennivaló.</string>
+    <string name="info_read_contacts_permission">A névjegyzékhez való hozzáférés választható, de megkönnyíti, hogy egyszerűen kiválaszd, kinek adod kölcsön a könyvet.</string>
     <string name="info_story_in_multiple_books">„%1$s” több könyvben is szerepel:\n\n%2$s</string>
     <string name="info_story_in_single_book">„%1$s” csak egyetlen könyvben szerepel:\n\n%2$s</string>
     <string name="info_all_books_have_covers">A polcon található összes könyvnek van borítója</string>
@@ -868,4 +869,5 @@
     </plurals>
     <string name="lbl_image_2">Kép 3</string>
     <string name="lbl_fastscroller_draghandle">Görgetősáv fogantyú</string>
+    <string name="lbl_permission_request">Engedélykérés</string>
 </resources>

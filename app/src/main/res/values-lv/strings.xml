@@ -212,5 +212,6 @@
     <string name="notification_channel_info">Informācija</string>
     <string name="lbl_permission_request">Atļaujas pieprasījums</string>
     <string name="warning_camera_permission_required">Lai skenētu svītrkodus vai uzņemtu fotoattēlus, nepieciešama piekļuve kamerai.</string>
+    <string name="info_read_contacts_permission">Piekļuve jūsu kontaktpersonām ir pēc izvēles, taču ļauj viegli izvēlēties, kam aizdod grāmatu.</string>
 
 </resources>

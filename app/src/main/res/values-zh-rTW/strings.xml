@@ -266,6 +266,7 @@
     <string name="citation_share_book_im_reading">我正在閱讀「%1$s」 %2$s 由 %3$s %4$s</string>
     <string name="info_site_list">搜尋結果限制在：%1$s</string>
     <string name="info_site_search_field_optional">可選。不是所有網站都支援。</string>
+    <string name="info_read_contacts_permission">存取您的聯絡人是可選的，但可讓您輕鬆選擇借書對象。</string>
     <string name="info_story_in_multiple_books">「%1$s」存在與多本書中：\n\n%2$s</string>
     <string name="info_tap_on_thumbnail_to_zoom">點擊縮圖以顯示大圖。</string>
     <string name="info_tap_to_select">點擊以選擇。</string>
@@ -866,4 +867,5 @@
     <string name="lbl_author_type_afterword">後記</string>
     <string name="lbl_image_2">圖片 3</string>
     <string name="lbl_fastscroller_draghandle">滾動欄縮圖</string>
+    <string name="lbl_permission_request">權限要求</string>
 </resources>
