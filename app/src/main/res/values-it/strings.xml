@@ -158,7 +158,7 @@
     <string name="confirm_delete_publisher_from_x_books">Eliminare davvero l’editore «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati. Considera la possibilità di modificare l’editore e di cambiare il nome dell’editore con quello di un altro editore per conservare questi dati.</string>
     <string name="confirm_delete_series_from_x_books">Cancellare la serie «%1$s»?\n\nVerrà eliminata da %2$s. I libri non verranno cancellati. Valuta se modificare la serie e cambiare il nome della serie in quello di un’altra serie per preservare i dati.</string>
     <string name="confirm_delete_style">Eliminare lo stile «%1$s»?</string>
-    <string name="confirm_delete_identifier_from_x_books">Cancellare l\'identificatore “%1$s”?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
+    <string name="confirm_delete_identifier_from_x_books">Cancellare l’identificatore “%1$s”?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
     <string name="confirm_delete_substitutions">Cancellare le sostituzioni per “%1$s”?</string>
     <string name="confirm_delete_tag_from_x_books">Eliminare il tag «%1$s»?\n\nVerrà eliminata da %2$s. I libri stessi non verranno eliminati.</string>
     <string name="confirm_delete_toc_entry_from_x_books">Cancellare davvero il titolo «%1$s» (di %2$s)?\n\nVerrà eliminata da %3$s. Libri stessi non saranno cancellati.</string>
@@ -460,7 +460,7 @@
     <string name="lbl_websites">Siti web</string>
     <string name="bookshelf_my_wishlist">Lista dei desideri</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
-    <string name="lbl_wikidata_claim_author_id">Codice Wikidata “claim/P” per l\'id dell\'autore</string>
+    <string name="lbl_wikidata_claim_author_id">Codice Wikidata “claim/P” per l’id dell’autore</string>
     <string name="lbl_year">Anno</string>
     <string name="list_and">e</string>
     <string name="brackets">(%1$s)</string>
@@ -543,7 +543,7 @@
     <string name="pt_field_visibility">Gestisci visibilità campi</string>
     <string name="preference_not_set">Non impostato</string>
     <string name="info_backup_successful">Backup riuscito</string>
-    <string name="info_tap_to_move_tag">Toccare un\'etichetta per spostarla nel/dal libro.</string>
+    <string name="info_tap_to_move_tag">Toccare un’etichetta per spostarla nel/dal libro.</string>
     <string name="lbl_add_or_edit_substitution">Aggiungere/modificare una regola di sostituzione</string>
     <string name="info_substitutions_one_per_line">Aggiungere una sostituzione per riga</string>
     <string name="info_download_successful">Download riuscito</string>
@@ -742,7 +742,7 @@
     <string name="lbl_author_is_a_pen_name_of">Questo è uno pseudonimo di:</string>
     <string name="vldt_real_author_must_be_valid">Deve essere vuoto o deve essere un autore esistente</string>
     <string name="confirm_create_real_author">“%1$s” non esiste ancora. Devono essere creati?</string>
-    <string name="pt_fetch_author_info_using_site_x">Recuperare le informazioni sull\'autore da %1$s</string>
+    <string name="pt_fetch_author_info_using_site_x">Recuperare le informazioni sull’autore da %1$s</string>
     <string name="pt_bedetheque_search_resolve_formats">Conserva la denominazione del formato Bedetheque (francese)</string>
     <string name="confirm_toc_list_update_with_books_main_author">Sostituire l’autore di tutte le voci con l’autore principale del libro «%1$s» ?</string>
     <string name="confirm_no_missing_covers_search_from_top">Tutti i libri sotto questa riga hanno copertine. Cercare di nuovo dall’alto?</string>
@@ -861,12 +861,12 @@
     <string name="lbl_select_style">Seleziona Stile</string>
     <string name="vldt_blank_or_valid_url_required">È richiesto un valore vuoto o un URL valido</string>
     <string name="lbl_book_uri">URL del libro</string>
-    <string name="lbl_author_uri">URL dell\'autore</string>
+    <string name="lbl_author_uri">URL dell’autore</string>
     <string name="info_identifier_editor"><![CDATA[Leggere la <a href="%1$s">documentazione</a> sugli identificatori prima di modificarla.]]></string>
     <string name="lbl_date_born">Nato</string>
-    <string name="pt_fetch_author_info">Recuperare le informazioni sull\'autore</string>
+    <string name="pt_fetch_author_info">Recuperare le informazioni sull’autore</string>
     <plurals name="confirm_queue_has_x_items">
-        <item quantity="one">C\'è %1$d codice ISBN inserito in precedenza. Si desidera avviare una ricerca per questo codice o è necessario rimuoverlo?</item>
+        <item quantity="one">C’è %1$d codice ISBN inserito in precedenza. Si desidera avviare una ricerca per questo codice o è necessario rimuoverlo?</item>
         <item quantity="many">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
         <item quantity="other">Ci sono %1$d codici ISBN inseriti in precedenza. Volete avviare le ricerche per questi codici o devono essere rimossi?</item>
     </plurals>
