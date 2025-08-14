@@ -20,14 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -370,23 +366,5 @@ public final class StandardDialogs {
                                              identifier.getName(),
                                              nrOfBooks);
         delete(context, onConfirm, msg);
-    }
-
-    public static void permissionsWarning(@NonNull final Context context,
-                                          @NonNull final Fragment fragment,
-                                          @NonNull final CharSequence message) {
-        new MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.lbl_permission_request)
-                .setMessage(message)
-                .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.lbl_settings, (d, w) -> {
-                    d.dismiss();
-                    fragment.startActivity(new Intent(
-                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.fromParts("package",
-                                          context.getPackageName(),
-                                          null)));
-                })
-                .show();
     }
 }

@@ -42,14 +42,11 @@ import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
 import androidx.appcompat.widget.Toolbar;
 import androidx.camera.core.CameraSelector;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
@@ -71,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
@@ -78,7 +76,6 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -289,7 +286,7 @@ public class SearchBookByIsbnFragment
     /** The user wants to import a list of ISBNs to the queue. */
     private ActivityResultLauncher<String> openUriLauncher;
 
-    private ActivityResultLauncher<String> cameraPermissionLauncher;
+    private PermissionRequester permissionRequester;
 
     /** Scan barcodes using the scanner Activity. */
     private ActivityResultLauncher<ScanOptions> scannerActivityLauncher;
@@ -309,19 +306,14 @@ public class SearchBookByIsbnFragment
     }
 
     private void createActivityLaunchers() {
+        //noinspection DataFlowIssue
+        permissionRequester = new PermissionRequester(getActivity(), this);
+        permissionRequester.addPermission(Manifest.permission.CAMERA,
+                                          getString(R.string.warning_camera_permission_required),
+                                          true);
+
         openUriLauncher = registerForActivityResult(new GetContentUriForReadingContract(),
                                                     o -> o.ifPresent(this::onOpenUri));
-
-        cameraPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(), isGranted -> {
-                    if (isGranted) {
-                        askPermissionAndStartEmbeddedScanner(true);
-                    } else {
-                        //noinspection DataFlowIssue
-                        StandardDialogs.permissionsWarning(getContext(), this, getString(
-                                R.string.warning_camera_permission_required));
-                    }
-                });
 
         scannerActivityLauncher = registerForActivityResult(new ScannerContract(), o -> {
             vm.setScannerActivityStarted(false);
@@ -560,41 +552,23 @@ public class SearchBookByIsbnFragment
      * Switch the scanner on.
      *
      * @see #startScannerActivity()
-     * @see #askPermissionAndStartEmbeddedScanner(boolean)
      */
     private void startScanner() {
         setEnableProgressMessages(!isBatchOrHasQueue());
         if (embeddedBarcodeScanner) {
             // The embedded scanner must handle permissions locally
-            askPermissionAndStartEmbeddedScanner(false);
+            permissionRequester.request(Manifest.permission.CAMERA, isGranted -> {
+                if (isGranted) {
+                    startEmbeddedScanner();
+                }
+            });
         } else {
             // The scanner Activity will take care of Camera permissions.
             startScannerActivity();
         }
     }
 
-    /**
-     * Start the embedded (in this Fragment) scanner view.
-     * Will ask for Camera permissions as needed.
-     *
-     * @param alreadyGranted set to {@code true} if we already got granted access.
-     *                       i.e. when called from the {@link #cameraPermissionLauncher}
-     *
-     * @see #startScanner()
-     */
-    private void askPermissionAndStartEmbeddedScanner(final boolean alreadyGranted) {
-        final Context context = getContext();
-        //noinspection DataFlowIssue
-        if (alreadyGranted
-            || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-               == PackageManager.PERMISSION_GRANTED) {
-            startEmbeddedScanner();
-        } else {
-            cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
-        }
-    }
-
-    @RequiresPermission(Manifest.permission.CAMERA)
+    // @RequiresPermission(Manifest.permission.CAMERA)
     private void startEmbeddedScanner() {
         final Context context = getContext();
 
@@ -870,8 +844,6 @@ public class SearchBookByIsbnFragment
 
     /**
      * The scanner returned a barcode.
-     * Called when returning from {@link #startScannerActivity()}
-     * or by the {@link #askPermissionAndStartEmbeddedScanner(boolean)} logic.
      *
      * @param barCode as returned by the scanner
      */

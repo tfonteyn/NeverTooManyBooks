@@ -54,6 +54,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FlexDialogDelegate;
  * <p>
  * Note the special treatment of the Book's current/original loanee.
  * This is done to minimize trips to the database.
+ * <p>
+ * TODO: we cannot use the PermissionRequester (yet) as it will keep displaying a dialog
+ *  after the delegate owner (BottomSheet/FlexDialog) is already gone.
  */
 class EditLenderDelegate
         implements FlexDialogDelegate {

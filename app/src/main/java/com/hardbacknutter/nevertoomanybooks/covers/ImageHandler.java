@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
@@ -34,15 +33,12 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
@@ -65,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -73,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -164,7 +160,7 @@ public final class ImageHandler {
     /** progress bar displayed during operations. */
     @Nullable
     private CircularProgressIndicator progressIndicator;
-    private ActivityResultLauncher<String> cameraPermissionLauncher;
+    private PermissionRequester permissionRequester;
     private ActivityResultLauncher<TakePictureContract.Input> takePictureLauncher;
     private ActivityResultLauncher<EditPictureContract.Input> editPictureLauncher;
     private ActivityResultLauncher<CropImageContract.Input> cropImageLauncher;
@@ -227,19 +223,10 @@ public final class ImageHandler {
      */
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private void onFragmentViewCreated() {
-
-        cameraPermissionLauncher = fragment.registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(), isGranted -> {
-                    if (isGranted) {
-                        askPermissionAndTakePicture(true);
-                    } else {
-                        final Context context = fragment.getContext();
-                        //noinspection DataFlowIssue
-                        final String message = context.getString(
-                                R.string.warning_camera_permission_required);
-                        StandardDialogs.permissionsWarning(context, fragment, message);
-                    }
-                });
+        //noinspection DataFlowIssue
+        permissionRequester = new PermissionRequester(fragment.getActivity(), fragment);
+        permissionRequester.addPermission(Manifest.permission.CAMERA, fragment.getString(
+                R.string.warning_camera_permission_required), true);
 
         takePictureLauncher = fragment.registerForActivityResult(
                 new TakePictureContract(), o -> o.ifPresent(this::onTakePictureResult));
@@ -403,7 +390,11 @@ public final class ImageHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
-            askPermissionAndTakePicture(false);
+            permissionRequester.request(Manifest.permission.CAMERA, isGranted -> {
+                if (isGranted) {
+                    takePicture();
+                }
+            });
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM) {
@@ -600,26 +591,7 @@ public final class ImageHandler {
         }
     }
 
-    /**
-     * Start the camera to get an image.
-     *
-     * @param alreadyGranted set to {@code true} if we already got granted access.
-     *                       i.e. when called from the {@link #cameraPermissionLauncher}
-     */
-    private void askPermissionAndTakePicture(final boolean alreadyGranted) {
-        final Context context = fragment.requireContext();
-        if (alreadyGranted
-            || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-               == PackageManager.PERMISSION_GRANTED) {
-
-            takePicture();
-
-        } else {
-            cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
-        }
-    }
-
-    @RequiresPermission(Manifest.permission.CAMERA)
+    // @RequiresPermission(Manifest.permission.CAMERA)
     private void takePicture() {
         final Context context = fragment.requireContext();
         try {
