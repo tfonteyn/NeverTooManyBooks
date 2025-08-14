@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -315,6 +316,10 @@ public class SearchBookByIsbnFragment
                 new ActivityResultContracts.RequestPermission(), isGranted -> {
                     if (isGranted) {
                         askPermissionAndStartEmbeddedScanner(true);
+                    } else {
+                        //noinspection DataFlowIssue
+                        StandardDialogs.permissionsWarning(getContext(), this, getString(
+                                R.string.warning_camera_permission_required));
                     }
                 });
 

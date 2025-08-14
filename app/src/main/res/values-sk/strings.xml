@@ -108,6 +108,7 @@
     <string name="warning_backup_request">Chcete zálohovať databázu na kartu SD?</string>
     <string name="warning_restart_required">Je potrebný reštart aplikácie</string>
     <string name="warning_requires_android_x">Vyžaduje Android %1$d alebo vyšší</string>
+    <string name="warning_camera_permission_required">Na skenovanie čiarových kódov alebo fotografovanie je potrebný prístup ku kamere.</string>
     <string name="vldt_failure">Overenie zlyhalo</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_date_expected_for_x">Očakáva sa dátum pre „%1$s“</string>

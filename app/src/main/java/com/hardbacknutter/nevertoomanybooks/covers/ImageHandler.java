@@ -73,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -231,6 +232,12 @@ public final class ImageHandler {
                 new ActivityResultContracts.RequestPermission(), isGranted -> {
                     if (isGranted) {
                         askPermissionAndTakePicture(true);
+                    } else {
+                        final Context context = fragment.getContext();
+                        //noinspection DataFlowIssue
+                        final String message = context.getString(
+                                R.string.warning_camera_permission_required);
+                        StandardDialogs.permissionsWarning(context, fragment, message);
                     }
                 });
 

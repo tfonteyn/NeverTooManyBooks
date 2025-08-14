@@ -172,6 +172,7 @@
     <string name="warning_backup_request">உங்கள் தரவுத்தளத்தை உங்கள் SDCARD க்கு காப்புப் பிரதி எடுக்க விரும்புகிறீர்களா?</string>
     <string name="warning_no_site_supports_this_method">எச்சரிக்கை: தற்போது தேர்ந்தெடுக்கப்பட்ட தளங்கள் எதுவும் %1$s தேடலை ஆதரிக்கவில்லை. மாற்று தளங்களை இயக்க தள மெனுவைப் பயன்படுத்தவும் அல்லது வேறு தேடல் முறையைப் பயன்படுத்தவும்.</string>
     <string name="warning_requires_android_x">ஆண்ட்ராய்டு %1$d அல்லது அதற்கு மேற்பட்டது தேவை</string>
+    <string name="warning_camera_permission_required">பார்கோடுகளை ஸ்கேன் செய்யவோ புகைப்படம் எடுக்கவோ கேமரா அணுகல் தேவை.</string>
     <string name="vldt_failure">சரிபார்ப்பு தோல்வி</string>
     <string name="vldt_list_message">( %1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">“%1$s” க்கு ஒரு முழு மதிப்பை எதிர்பார்க்கலாம்</string>

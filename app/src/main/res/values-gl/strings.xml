@@ -223,6 +223,7 @@
     <string name="warning_backup_request">Queres facer una copia da base de datos á tarxeta SD?</string>
     <string name="warning_restart_required">A aplicación precisa reiniciar</string>
     <string name="warning_requires_android_x">Require Android %1$d ou superior</string>
+    <string name="warning_camera_permission_required">Para escanear códigos de barras ou facer fotos é necesario permitir o acceso á cámara.</string>
     <string name="vldt_failure">Fallo de validación</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">«%1$s» debe ser un enteiro</string>

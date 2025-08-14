@@ -238,6 +238,7 @@
     <string name="warning_no_site_supports_this_method">FIGYELMEZTETÉS: a jelenleg kiválasztott oldalak egyike sem támogatja a(z) %1$s szerinti keresést. Kérjük, használja az oldalak menüt az alternatív oldalak engedélyezéséhez vagy használjon másik keresési módot.</string>
     <string name="warning_restart_required">Az alkalmazás újraindítása szükséges</string>
     <string name="warning_requires_android_x">Android %1$d vagy újabb szükséges</string>
+    <string name="warning_camera_permission_required">Vonalkódok beolvasásához vagy fényképek készítéséhez kamerahozzáférés szükséges.</string>
     <string name="vldt_failure">Érvényesítési hiba</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_date_expected_for_x">Az elvárt érték egy dátum a következőhöz: „%1$s”</string>

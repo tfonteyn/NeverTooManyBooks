@@ -681,6 +681,7 @@
     <string name="vldt_blank_required_for_x">«%1$s» debe estar en blanco</string>
     <string name="vldt_boolean_expected_for_x">«%1$s» debe ser (0,1,t,f,true,false)</string>
     <string name="vldt_date_expected_for_x">«%1$s» debe ser una fecha</string>
+    <string name="warning_camera_permission_required">Para escanear códigos de barras o tomar fotos se requiere acceso a la cámara.</string>
     <string name="vldt_failure">Fallo de validación</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">«%1$s» debe ser un entero</string>

@@ -685,6 +685,7 @@
     <string name="vldt_blank_required_for_x">È richiesto un valore vuoto per «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">È previsto un valore booleano (0,1,t,f,true,false) for «%1$s»</string>
     <string name="vldt_date_expected_for_x">È prevista una data per «%1$s»</string>
+    <string name="warning_camera_permission_required">Per scansionare i codici a barre o scattare foto è necessario l’accesso alla fotocamera.</string>
     <string name="vldt_failure">Errore di convalida</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">È previsto un valore intero per «%1$s»</string>

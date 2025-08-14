@@ -774,6 +774,7 @@
     <string name="vldt_blank_required_for_x">“%1$s”需要空值</string>
     <string name="vldt_boolean_expected_for_x">“%1$s” 应为布尔值（0、1、t、f、true、false）</string>
     <string name="vldt_date_expected_for_x">需要“%1$s”的日期</string>
+    <string name="warning_camera_permission_required">扫描条形码或拍照需要摄像头权限。</string>
     <string name="vldt_failure">验证失败</string>
     <string name="vldt_integer_expected_for_x">应为“%1$s”的整数值</string>
     <string name="vldt_list_message">（%1$d） %2$s</string>

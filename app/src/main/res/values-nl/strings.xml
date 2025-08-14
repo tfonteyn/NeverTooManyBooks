@@ -705,6 +705,7 @@
     <string name="vldt_blank_required_for_x">Veld „%1$s” moet leeg zijn</string>
     <string name="vldt_boolean_expected_for_x">Verwachtte een boolean waarde (0,1,t,f,true,false) voor „%1$s”</string>
     <string name="vldt_date_expected_for_x">Verwachtte een datum voor „%1$s”</string>
+    <string name="warning_camera_permission_required">Om barcodes te scannen of foto's te maken, is toegang tot de camera nodig.</string>
     <string name="vldt_failure">Validatiefout</string>
     <string name="vldt_integer_expected_for_x">Verwachtte een gehele waarde voor „%1$s”</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
