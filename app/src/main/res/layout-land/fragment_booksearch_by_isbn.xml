@@ -42,19 +42,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="camera_preview,btn_stop_scanning"
+            app:constraint_referenced_ids="barcode_scanner,btn_stop_scanning"
             tools:visibility="visible"
             />
 
-        <androidx.camera.view.PreviewView
-            android:id="@+id/camera_preview"
+        <FrameLayout
+            android:id="@+id/barcode_scanner"
             android:layout_width="0dp"
             android:layout_height="@dimen/camera_preview_height"
-            android:layout_marginTop="@dimen/section_margin_top"
+            android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
             app:layout_constraintEnd_toStartOf="@id/keypad"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="@dimen/camera_preview_width">
+            app:layout_constraintWidth_max="@dimen/camera_preview_width"
+            >
+
+            <androidx.camera.view.PreviewView
+                android:id="@+id/camera_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
 
             <com.hardbacknutter.tinyzxingwrapper.scanner.TzwViewfinderView
                 android:id="@+id/camera_view_finder"
@@ -68,16 +75,15 @@
                 android:visibility="gone"
                 tools:visibility="visible"
                 />
-        </androidx.camera.view.PreviewView>
-
+        </FrameLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_stop_scanning"
             style="@style/IsbnKeyPad.StopScanButton"
             android:text="@string/action_stop_scanning"
-            app:layout_constraintEnd_toEndOf="@id/camera_preview"
-            app:layout_constraintStart_toStartOf="@id/camera_preview"
-            app:layout_constraintTop_toBottomOf="@id/camera_preview"
+            app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
+            app:layout_constraintStart_toStartOf="@id/barcode_scanner"
+            app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
             />
 
         <androidx.constraintlayout.widget.Group
