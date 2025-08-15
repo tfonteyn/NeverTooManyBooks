@@ -20,5 +20,4 @@
   -->
 
 <resources>
-    <dimen name="camera_preview_button_margin">8dp</dimen>
 </resources>

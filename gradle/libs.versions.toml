@@ -1,7 +1,7 @@
 [versions]
 androidGradlePlugin = "8.12.0"
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
-androidKotlinPlugin = "2.2.0"
+androidKotlinPlugin = "2.2.10"
 # https://github.com/mannodermaus/android-junit5
 mannodermausPlugin = "1.13.1.0"
 
@@ -19,12 +19,12 @@ androidxConstraintlayoutCore = "1.1.1"
 androidxConstraintlayout = "2.2.1"
 androidxCoordinatorlayout = "1.3.0"
 androidxCoreSplashscreen = '1.0.1'
-androidxCore = "1.16.0"
+androidxCore = "1.17.0"
 androidxCustomview = "1.2.0"
 androidxDocumentfile = "1.1.0"
 androidxDrawerlayout = "1.2.0"
 androidxExifinterface = "1.4.1"
-androidxFragment = "1.8.8"
+androidxFragment = "1.8.9"
 androidxInterpolator = "1.0.0"
 androidxLifecycle = "2.9.2"
 androidxPreference = "1.2.1"
@@ -47,14 +47,14 @@ okhttpAndroid = "5.1.0"
 # https://github.com/zxing/zxing
 zxingCore = '3.5.3'
 # CameraX based scanner code from https://github.com/tfonteyn/TinyZXingWrapper
-tinyzxingwrapper = "1.1.0"
+tinyzxingwrapper = "1.3.0"
 
 # https://github.com/ACRA/acra
 # https://www.acra.ch/docs/Setup/
 acra = '5.12.0'
 
 # https://github.com/mockito/mockito
-mockito = "5.18.0"
+mockito = "5.19.0"
 
 # https://junit.org/junit5/docs/current/user-guide/#overview
 jupiter = "5.13.4"

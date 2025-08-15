@@ -22,5 +22,4 @@
 <resources>
     <dimen name="camera_preview_width">400dp</dimen>
     <dimen name="camera_preview_height">200dp</dimen>
-    <dimen name="camera_preview_button_margin">8dp</dimen>
 </resources>

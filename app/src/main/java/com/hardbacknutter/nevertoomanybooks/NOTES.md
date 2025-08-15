@@ -5,7 +5,7 @@ Draft notes for next version:
 NEW:
 
 - Barcode scanner is now embedded on the ISBN search screen, and much faster.
-  Note that small devices still use the full-screen scanner.
+  Note that small devices still use the full-screen scanner which received the same update.
 - add support for SBN numbers (precursor of ISBN)
 
 FIXES:

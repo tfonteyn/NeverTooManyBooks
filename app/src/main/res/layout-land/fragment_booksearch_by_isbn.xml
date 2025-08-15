@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="barcode_scanner,btn_stop_scanning"
+            app:constraint_referenced_ids="barcode_scanner,zoom_slider,btn_torch,btn_stop_scanning"
             tools:visibility="visible"
             />
 
@@ -57,10 +57,14 @@
             app:layout_constraintWidth_max="@dimen/camera_preview_width"
             >
 
+            <!-- See notes in the default portrait-layout.
+                 implementationMode/scaleType MUST be set correctly. -->
             <androidx.camera.view.PreviewView
                 android:id="@+id/camera_preview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:implementationMode="compatible"
+                app:scaleType="fillCenter"
                 />
 
             <com.hardbacknutter.tinyzxingwrapper.scanner.TzwViewfinderView
@@ -68,22 +72,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_torch"
-                style="@style/Scanner.TorchButton"
-                android:visibility="gone"
-                tools:visibility="visible"
-                />
         </FrameLayout>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/zoom_slider"
+            style="@style/Scanner.ZoomSlider"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/btn_torch"
+            app:layout_constraintStart_toStartOf="@id/barcode_scanner"
+            app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
+            tools:visibility="visible"
+            />
+
+        <!-- icon: see java code -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_torch"
+            style="@style/Scanner.TorchButton"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
+            app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
+            tools:visibility="visible"
+            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_stop_scanning"
             style="@style/IsbnKeyPad.StopScanButton"
             android:text="@string/action_stop_scanning"
-            app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
+            app:layout_constraintEnd_toStartOf="@id/btn_torch"
             app:layout_constraintStart_toStartOf="@id/barcode_scanner"
-            app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
+            app:layout_constraintTop_toBottomOf="@id/zoom_slider"
             />
 
         <androidx.constraintlayout.widget.Group

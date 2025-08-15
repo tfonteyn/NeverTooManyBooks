@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -87,6 +88,8 @@ public class SearchBookByIsbnViewModel
     /** The raw text. The 'isStrict' flag is get/set directly with SharedPreferences. */
     @Nullable
     private String isbnText;
+    @FloatRange(from = 0.0, to = 1.0)
+    private float zoomValue;
 
     @NonNull
     Intent createResultIntent() {
@@ -170,6 +173,15 @@ public class SearchBookByIsbnViewModel
 
     void setTorchEnabled(final boolean enabled) {
         this.torchEnabled = enabled;
+    }
+
+    @FloatRange(from = 0.0, to = 1.0)
+    public float getZoom() {
+        return zoomValue;
+    }
+
+    public void setZoom(@FloatRange(from = 0.0, to = 1.0) final float zoomValue) {
+        this.zoomValue = zoomValue;
     }
 
     @NonNull

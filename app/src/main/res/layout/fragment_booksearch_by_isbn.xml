@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="barcode_scanner,btn_stop_scanning"
+            app:constraint_referenced_ids="barcode_scanner,zoom_slider,btn_torch,btn_stop_scanning"
             tools:visibility="visible"
             />
 
@@ -45,17 +45,46 @@
             android:id="@+id/barcode_scanner"
             android:layout_width="0dp"
             android:layout_height="@dimen/camera_preview_height"
-            android:layout_marginTop="@dimen/section_margin_top"
+            android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
             app:layout_constraintEnd_toEndOf="@id/keypad"
             app:layout_constraintStart_toStartOf="@id/keypad"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_max="@dimen/camera_preview_width"
             >
 
+            <!--
+             There are severe problems with the layout of the PreviewView
+             when not going fullscreen as we used to (version 7.7.0 and earlier).
+
+             I've not found an exact bug-report, but it boils down to the
+             PreviewView using a SurfaceView which "pokes a hole" in the layout
+             to stream the video signal in.
+             Doing so can and will ignore certain (which? dunno) layout measurements
+             and some (which? dunno) constraints will fail and/or be ignored.
+
+             Solution: add this to the androidx.camera.view.PreviewView:
+
+                app:implementationMode="compatible"
+
+             It seems to be the only 100% reliable solution.
+             The only alternative is showing the PreviewView fullscreen,
+             which leads to slower barcode decoding.
+             <a href="https://developer.android.com/reference/androidx/camera/view/PreviewView.ImplementationMode">
+             PreviewView.ImplementationMode</a>
+
+             We also MUST crop the video-stream which will typically have an aspect ratio
+             which is higher than wide.
+
+                app:scaleType="fillCenter"
+
+             Do NOT use android:scaleType ! that's a different usage!
+            -->
             <androidx.camera.view.PreviewView
                 android:id="@+id/camera_preview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:implementationMode="compatible"
+                app:scaleType="fillCenter"
                 />
 
             <com.hardbacknutter.tinyzxingwrapper.scanner.TzwViewfinderView
@@ -63,23 +92,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_torch"
-                style="@style/Scanner.TorchButton"
-                android:visibility="gone"
-                tools:visibility="visible"
-                />
-
         </FrameLayout>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/zoom_slider"
+            style="@style/Scanner.ZoomSlider"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/btn_torch"
+            app:layout_constraintStart_toStartOf="@id/barcode_scanner"
+            app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
+            tools:visibility="visible"
+            />
+
+        <!-- icon: see java code -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_torch"
+            style="@style/Scanner.TorchButton"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
+            app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
+            tools:visibility="visible"
+            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_stop_scanning"
             style="@style/IsbnKeyPad.StopScanButton"
             android:text="@string/action_stop_scanning"
-            app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
+            app:layout_constraintEnd_toStartOf="@id/btn_torch"
             app:layout_constraintStart_toStartOf="@id/barcode_scanner"
-            app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
+            app:layout_constraintTop_toBottomOf="@id/zoom_slider"
             />
 
         <com.google.android.material.textfield.TextInputLayout

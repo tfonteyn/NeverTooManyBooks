@@ -20,9 +20,9 @@
   -->
 
 <resources>
-    <dimen name="camera_preview_width">300dp</dimen>
-    <dimen name="camera_preview_height">150dp</dimen>
-    <dimen name="camera_preview_button_margin">8dp</dimen>
+    <dimen name="camera_preview_width">320dp</dimen>
+    <dimen name="camera_preview_height">160dp</dimen>
+    <dimen name="camera_preview_stop_button_margin">16dp</dimen>
 
     <dimen name="isbn_keypad_key_width">108dp</dimen>
     <dimen name="isbn_keypad_key_height">64dp</dimen>

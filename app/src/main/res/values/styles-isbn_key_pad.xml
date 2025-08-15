@@ -77,19 +77,28 @@
            parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/camera_preview_button_margin</item>
-        <item name="android:layout_marginEnd">@dimen/camera_preview_button_margin</item>
-
+        <item name="android:layout_marginStart">@dimen/camera_preview_stop_button_margin</item>
+        <item name="android:layout_marginEnd">@dimen/camera_preview_stop_button_margin</item>
+        <item name="android:layout_marginTop">@dimen/camera_button_top_margin</item>
         <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
     </style>
 
+    <style name="Scanner.ZoomSlider"
+           parent="Widget.Material3.Slider">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/camera_button_top_margin</item>
+        <item name="android:value">0.0</item>
+        <item name="android:valueFrom">0.0</item>
+        <item name="android:valueTo">1.0</item>
+        <item name="labelBehavior">gone</item>
+    </style>
     <style name="Scanner.TorchButton"
            parent="Widget.Material3.Button.IconButton.Filled">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">bottom|end</item>
-        <item name="android:layout_margin">@dimen/camera_torch_button_margin</item>
+        <item name="android:layout_marginTop">@dimen/camera_button_top_margin</item>
         <item name="icon">@drawable/tzw_ic_baseline_flashlight_on_24</item>
     </style>
 </resources>

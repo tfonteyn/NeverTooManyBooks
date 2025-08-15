@@ -23,7 +23,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Criteria;
 import android.net.Uri;
@@ -236,11 +235,14 @@ public class SearchBookByIsbnFragment
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnFrag";
 
+    /** The embedded scanner. */
     @Nullable
     private BarcodeScanner scanner;
-    private boolean embeddedBarcodeScanner;
-    /** Does the device have a torch light. */
+    private boolean useEmbeddedScanner;
+    /** Embedded scanner usage: Does the device have a torch light. */
     private boolean hasTorch;
+    /** Embedded scanner usage: Does the camera have a zoom. */
+    private boolean hasZoom;
 
     /** View Binding. */
     private FragmentBooksearchByIsbnBinding vb;
@@ -299,10 +301,6 @@ public class SearchBookByIsbnFragment
 
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
         vm.init(getArguments());
-
-        //noinspection DataFlowIssue
-        hasTorch = getContext().getPackageManager()
-                               .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 
     private void createActivityLaunchers() {
@@ -409,27 +407,40 @@ public class SearchBookByIsbnFragment
         final ScreenSize screenSize = ScreenSize.compute(getActivity());
         if (getResources().getConfiguration().orientation
             == Configuration.ORIENTATION_PORTRAIT) {
-            embeddedBarcodeScanner = screenSize.getHeight() == ScreenSize.Value.Expanded;
+            useEmbeddedScanner = screenSize.getHeight() == ScreenSize.Value.Expanded;
         } else {
-            embeddedBarcodeScanner = screenSize.getWidth() == ScreenSize.Value.Expanded;
+            useEmbeddedScanner = screenSize.getWidth() == ScreenSize.Value.Expanded;
         }
 
-        if (embeddedBarcodeScanner) {
+        if (useEmbeddedScanner) {
             initEmbeddedScanner();
         }
     }
 
     private void initEmbeddedScanner() {
-        if (hasTorch) {
-            updateTorchButtonIcon();
-            vb.btnTorch.setOnClickListener(v -> {
-                vm.setTorchEnabled(!vm.isTorchEnabled());
-                updateTorchButtonIcon();
-                if (scanner != null) {
-                    scanner.setTorch(vm.isTorchEnabled());
+        vb.zoomSlider.setValue(vm.getZoom());
+        vb.zoomSlider.addOnChangeListener((slider, zoomValue, fromUser) -> {
+            if (fromUser) {
+                vm.setZoom(zoomValue);
+                //noinspection DataFlowIssue
+                scanner.setLinearZoom(zoomValue);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    slider.performHapticFeedback(
+                            HapticFeedbackConstants.SEGMENT_FREQUENT_TICK);
+                } else {
+                    slider.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
                 }
-            });
-        }
+            }
+        });
+
+        updateTorchButtonIcon();
+        vb.btnTorch.setOnClickListener(v -> {
+            vm.setTorchEnabled(!vm.isTorchEnabled());
+            updateTorchButtonIcon();
+            if (scanner != null) {
+                scanner.setTorch(vm.isTorchEnabled());
+            }
+        });
 
         vb.btnStopScanning.setOnClickListener(v -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -555,7 +566,7 @@ public class SearchBookByIsbnFragment
      */
     private void startScanner() {
         setEnableProgressMessages(!isBatchOrHasQueue());
-        if (embeddedBarcodeScanner) {
+        if (useEmbeddedScanner) {
             // The embedded scanner must handle permissions locally
             permissionRequester.request(Manifest.permission.CAMERA, isGranted -> {
                 if (isGranted) {
@@ -572,28 +583,33 @@ public class SearchBookByIsbnFragment
     private void startEmbeddedScanner() {
         final Context context = getContext();
 
-        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
-        vb.btnTorch.setVisibility(hasTorch ? View.VISIBLE : View.GONE);
-
         if (scanner == null) {
-            //noinspection DataFlowIssue
-            scanner = new BarcodeScanner.Builder()
-                    .setBarcodeFormats(BarcodeFamily.PRODUCT)
-                    .build(context);
+            final BarcodeScanner.Builder builder = new BarcodeScanner.Builder()
+                    .setBarcodeFormats(BarcodeFamily.PRODUCT);
+            builder.setAutoFocus(true);
 
             // -1: no preference, otherwise set to 0 or 1
+            //noinspection DataFlowIssue
             final int lensFacing = CameraDetection.getPreferredCameraLensFacing(context);
             if (lensFacing == CameraSelector.LENS_FACING_FRONT
                 || lensFacing == CameraSelector.LENS_FACING_BACK) {
-                scanner.setCameraLensFacing(lensFacing);
+                builder.setCameraLensFacing(lensFacing);
             }
 
             if (vb.cameraViewFinder.isShowResultPoints()) {
-                scanner.setResultPointListener(vb.cameraViewFinder);
+                builder.setResultPointCallback(vb.cameraViewFinder);
             }
+
+            scanner = builder.build(context);
+            hasTorch = scanner.hasTorch(context);
+            hasZoom = scanner.hasZoom(context);
 
             getLifecycle().addObserver(scanner);
         }
+
+        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
+        vb.btnTorch.setVisibility(hasTorch ? View.VISIBLE : View.GONE);
+        vb.zoomSlider.setVisibility(hasZoom ? View.VISIBLE : View.GONE);
 
         scanner.start(getViewLifecycleOwner(),
                       vb.cameraPreview,
@@ -640,7 +656,7 @@ public class SearchBookByIsbnFragment
      * the standalone scanner would already be stopped.
      */
     private void switchOffScanner() {
-        if (embeddedBarcodeScanner) {
+        if (useEmbeddedScanner) {
             if (scanner != null) {
                 scanner.stop();
             }

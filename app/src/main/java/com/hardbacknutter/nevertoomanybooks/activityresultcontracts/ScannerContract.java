@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,6 +60,7 @@ public class ScannerContract
     public static ScanOptions createDefaultOptions(@NonNull final Context context) {
         return new ScanOptions()
                 .setBarcodeFormats(BarcodeFamily.PRODUCT)
+                .setAutoFocus(true)
                 .setUseCameraWithLensFacing(
                         CameraDetection.getPreferredCameraLensFacing(context));
     }
