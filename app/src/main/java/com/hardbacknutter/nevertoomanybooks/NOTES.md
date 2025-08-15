@@ -1,12 +1,16 @@
 Draft notes for next version:
 
-### 7.7.1
+### 7.8.0
 
 NEW:
 
+- Barcode scanner is now embedded on the ISBN search screen, and much faster.
+  Note that small devices still use the full-screen scanner.
 - add support for SBN numbers (precursor of ISBN)
 
 FIXES:
+
+- renaming Series/Publishers from "Name, The" to "The Name" now works correctly.
 
 REMOVED:
 

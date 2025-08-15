@@ -41,7 +41,7 @@ tasks.register("clean", Delete) {
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
     applicationVersionCode = 108
-    applicationVersionName = "7.7.1"
+    applicationVersionName = "7.8.0"
 
     // JDK used by gradle
     toolChain = 21
