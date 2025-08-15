@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -24,7 +24,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- 0..9 and X -->
-    <style name="IsbnKeyPad.NumberButton" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="IsbnKeyPad.NumberButton"
+           parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
@@ -35,7 +36,8 @@
         <item name="android:textSize">@dimen/isbn_keypad_number_text_size</item>
     </style>
 
-    <style name="IsbnKeyPad.SearchButton" parent="Widget.Material3.Button.IconButton.Outlined">
+    <style name="IsbnKeyPad.SearchButton"
+           parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
@@ -48,7 +50,8 @@
         <item name="iconGravity">textTop</item>
     </style>
 
-    <style name="IsbnKeyPad.BackspaceButton" parent="Widget.Material3.Button.IconButton.Outlined">
+    <style name="IsbnKeyPad.BackspaceButton"
+           parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">@dimen/isbn_keypad_backspace_key_width</item>
         <item name="android:layout_height">wrap_content</item>
 
@@ -58,7 +61,8 @@
         <item name="android:contentDescription">@string/action_delete</item>
     </style>
 
-    <style name="IsbnKeyPad.ClearQueueButton" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="IsbnKeyPad.ClearQueueButton"
+           parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
@@ -78,5 +82,14 @@
 
         <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
+    </style>
+
+    <style name="Scanner.TorchButton"
+           parent="Widget.Material3.Button.IconButton.Filled">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:layout_margin">@dimen/camera_torch_button_margin</item>
+        <item name="icon">@drawable/tzw_ic_baseline_flashlight_on_24</item>
     </style>
 </resources>

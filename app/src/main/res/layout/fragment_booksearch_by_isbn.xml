@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="camera_preview,btn_torch,btn_stop_scanning"
+            app:constraint_referenced_ids="camera_preview,btn_stop_scanning"
             tools:visibility="visible"
             />
 
@@ -56,17 +56,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
-        </androidx.camera.view.PreviewView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_torch"
-            style="@style/Widget.Material3.Button.IconButton.Filled"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/tzw_ic_baseline_flashlight_on_24"
-            app:layout_constraintBottom_toBottomOf="@id/camera_preview"
-            app:layout_constraintEnd_toEndOf="@id/camera_preview"
-            />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_torch"
+                style="@style/Scanner.TorchButton"
+                android:visibility="gone"
+                tools:visibility="visible"
+                />
+        </androidx.camera.view.PreviewView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_stop_scanning"

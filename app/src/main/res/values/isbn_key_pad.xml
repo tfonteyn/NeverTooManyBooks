@@ -27,6 +27,8 @@
          except we indent start/end with this value -->
     <dimen name="camera_preview_button_margin">4dp</dimen>
 
+    <dimen name="camera_torch_button_margin">4dp</dimen>
+
     <!-- The ISBN keypad number/search keys -->
     <dimen name="isbn_keypad_key_width">80dp</dimen>
     <!-- 50% of the width. -->
