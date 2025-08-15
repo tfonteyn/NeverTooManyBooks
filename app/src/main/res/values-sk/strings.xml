@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -111,7 +108,7 @@
     <string name="warning_backup_request">Chcete zálohovať databázu na kartu SD?</string>
     <string name="warning_restart_required">Je potrebný reštart aplikácie</string>
     <string name="warning_requires_android_x">Vyžaduje Android %1$d alebo vyšší</string>
-    <string name="warning_camera_permission_required">Na skenovanie čiarových kódov alebo fotografovanie je potrebný prístup ku kamere.</string>
+    <string name="warning_camera_permission_required">Na skenovanie čiarových kódov alebo fotografovanie je potrebný prístup k fotoaparátu.</string>
     <string name="vldt_failure">Overenie zlyhalo</string>
     <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_date_expected_for_x">Očakáva sa dátum pre „%1$s“</string>
@@ -134,7 +131,7 @@
     <string name="progress_msg_cleaning_up">Čistí sa…</string>
     <string name="info_authorized">Autorizované</string>
     <string name="info_nothing_to_do">Nič na práci.</string>
-    <string name="info_read_contacts_permission">Prístup ku kontaktom je voliteľný, ale umožňuje vám jednoduchý výber osoby, ktorej požičiavate knihu.</string>
+    <string name="info_read_contacts_permission">Prístup ku kontaktom je voliteľný, ale umožňuje vám ľahko vybrať, komu knihu požičiavate.</string>
     <string name="info_story_in_multiple_books">„%1$s“ sa nachádza vo viacerých knihách:\n\n%2$s</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d kníh, v %2$d záznamoch</string>
     <string name="info_tap_on_thumbnail_to_zoom">Klepnite na miniatúru pre zobrazenie väčšieho obrázka.</string>
