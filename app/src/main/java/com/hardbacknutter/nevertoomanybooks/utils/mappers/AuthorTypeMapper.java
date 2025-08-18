@@ -111,9 +111,12 @@ public class AuthorTypeMapper {
         MAPPINGS.put("autorin", Author.TYPE_WRITER);
         MAPPINGS.put("künstler", Author.TYPE_ARTIST);
         MAPPINGS.put("mitwirkender", Author.TYPE_CONTRIBUTOR);
+        MAPPINGS.put("mitwirkende", Author.TYPE_CONTRIBUTOR);
         MAPPINGS.put("sonstige", Author.TYPE_CONTRIBUTOR);
         MAPPINGS.put("verfasser eines geleitworts", Author.TYPE_FOREWORD);
         MAPPINGS.put("verfasser von ergänzendem text", Author.TYPE_AFTERWORD);
+        MAPPINGS.put("verfasser eines vorworts", Author.TYPE_FOREWORD);
+        MAPPINGS.put("vorwort", Author.TYPE_FOREWORD);
         MAPPINGS.put("nachwort", Author.TYPE_AFTERWORD);
         MAPPINGS.put("verfasser", Author.TYPE_WRITER);
         MAPPINGS.put("übersetzer", Author.TYPE_TRANSLATOR);
