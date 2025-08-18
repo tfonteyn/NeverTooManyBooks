@@ -869,4 +869,5 @@
     </plurals>
     <string name="lbl_fastscroller_draghandle">உருளைக் கட்டையின் விரலிசை</string>
     <string name="lbl_permission_request">அனுமதி கோரிக்கை</string>
+    <string name="pt_barcode_sounds">ஒலிகள்</string>
 </resources>

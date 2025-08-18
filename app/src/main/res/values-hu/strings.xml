@@ -870,4 +870,5 @@
     <string name="lbl_image_2">Kép 3</string>
     <string name="lbl_fastscroller_draghandle">Görgetősáv fogantyú</string>
     <string name="lbl_permission_request">Engedélykérés</string>
+    <string name="pt_barcode_sounds">Hangok</string>
 </resources>

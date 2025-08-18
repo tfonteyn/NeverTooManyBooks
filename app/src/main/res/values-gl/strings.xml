@@ -870,4 +870,5 @@
     <string name="lbl_image_2">Imaxe 3</string>
     <string name="lbl_fastscroller_draghandle">Tamaño do control de arrastre</string>
     <string name="lbl_permission_request">Solicitude de permiso</string>
+    <string name="pt_barcode_sounds">Sons</string>
 </resources>

@@ -890,4 +890,5 @@
     <string name="lbl_image_2">Изображение 3</string>
     <string name="lbl_fastscroller_draghandle">Размер ползунка</string>
     <string name="lbl_permission_request">Запрос разрешений</string>
+    <string name="pt_barcode_sounds">Звуки</string>
 </resources>

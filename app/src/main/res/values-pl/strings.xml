@@ -882,4 +882,5 @@
     <string name="lbl_image_2">Obraz 3</string>
     <string name="lbl_fastscroller_draghandle">Wielkość suwaka</string>
     <string name="lbl_permission_request">Prośba o pozwolenie</string>
+    <string name="pt_barcode_sounds">Dźwięki</string>
 </resources>

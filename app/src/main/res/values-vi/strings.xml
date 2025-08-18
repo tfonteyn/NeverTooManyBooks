@@ -865,4 +865,5 @@
     <string name="lbl_image_2">Hình ảnh 3</string>
     <string name="lbl_fastscroller_draghandle">Kích thước thanh kéo cuộn</string>
     <string name="lbl_permission_request">Yêu cầu quyền</string>
+    <string name="pt_barcode_sounds">Âm thanh</string>
 </resources>

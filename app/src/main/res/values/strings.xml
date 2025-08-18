@@ -1530,6 +1530,8 @@
     <string name="pt_website_search_order_and_enable">Priority, enable &amp; disable</string>
     <!-- Preference Category -->
     <string name="pt_barcode_scanner">Barcode scanner</string>
+    <string name="pt_barcode_sounds">Sounds</string>
+
     <string name="pt_calibre_content_server"
             translatable="false">@string/lbl_calibre_content_server</string>
     <!-- Preference Category: the volume/sd-card where the covers will be stored.  -->

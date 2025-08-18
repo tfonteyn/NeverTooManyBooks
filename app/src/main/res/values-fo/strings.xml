@@ -133,4 +133,5 @@
     <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
     <string name="lbl_date_added_as_single_char">\u2795</string>
     <string name="lbl_location_symbol">\ud83d\udccd</string>
+    <string name="pt_barcode_sounds">Ljóð</string>
 </resources>
