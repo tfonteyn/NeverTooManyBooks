@@ -205,7 +205,8 @@ class Transformation {
                     bitmap = BitmapFactory.decodeFile(srcFile.getAbsolutePath());
                 }
             }
-        } catch (final IOException e) {
+        } catch (@NonNull final IOException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             return Optional.empty();
         }
 
