@@ -879,5 +879,6 @@
     <string name="lbl_image_2">Obrázok 3</string>
     <string name="lbl_fastscroller_draghandle">Veľkosť posuvníka</string>
     <string name="lbl_permission_request">Žiadosť o povolenie</string>
+    <string name="pt_barcode_zoom_control">Ovládanie priblíženia/oddialenia</string>
     <string name="pt_barcode_sounds">Zvuky</string>
 </resources>

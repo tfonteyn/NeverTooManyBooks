@@ -32,6 +32,15 @@
             app:useSimpleSummaryProvider="true"
             />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/loupe_24px"
+            android:key="camera.zoom.control"
+            android:summaryOff="@string/disabled"
+            android:summaryOn="@string/enabled"
+            android:title="@string/pt_barcode_zoom_control"
+            />
+
         <ListPreference
             android:defaultValue="1"
             android:entries="@array/pe_scan_mode_single"
@@ -68,7 +77,6 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_on_invalid" />
-
 
     </PreferenceCategory>
 </PreferenceScreen>

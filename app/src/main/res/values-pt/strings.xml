@@ -874,5 +874,6 @@
     <string name="lbl_image_2">Imagem 3</string>
     <string name="lbl_fastscroller_draghandle">Tamanho do controle de rolagem</string>
     <string name="lbl_permission_request">Solicitação de permissão</string>
+    <string name="pt_barcode_zoom_control">Controle de zoom</string>
     <string name="pt_barcode_sounds">Sons</string>
 </resources>

@@ -50,6 +50,7 @@ import androidx.core.util.Pair;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -234,6 +235,9 @@ public class SearchBookByIsbnFragment
 
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnFrag";
+
+    /** boolean: {@code true} show a zoom-control slider. */
+    private static final String PK_CAMERA_ZOOM_CONTROL = "camera.zoom.control";
 
     /** The embedded scanner. */
     @Nullable
@@ -601,8 +605,25 @@ public class SearchBookByIsbnFragment
             }
 
             scanner = builder.build(context);
+
+            // 2025-08-18 see github #181:
+            // User reported that their Xiaomi Note 12 Pro+, Android 13
+            // was having trouble focusing and more than half of the time, when
+            // focus finally worked, the image was not properly decoded.
+            // It seems Xiaomi devices have a known issue with focussing on close-up
+            // objects and tend to take bad/blurry (?) images at that range.
+            // Ultimate solution was to add a zoom-control slider.
+            // As this only affects Xiaomi users and the slider takes up quite
+            // some space we've made this a setting.
+            // TODO: allow finger-pinch gesture to zoom instead
+            // Does the user WANT to display the zoom-control?
+            final boolean wantZoom = PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getBoolean(PK_CAMERA_ZOOM_CONTROL, false);
+            // ... and does the camera HAVE a zoom?
+            hasZoom = wantZoom && scanner.hasZoom(context);
+            // Does the device have a torch light?
             hasTorch = scanner.hasTorch(context);
-            hasZoom = scanner.hasZoom(context);
 
             getLifecycle().addObserver(scanner);
         }

@@ -1530,6 +1530,9 @@
     <string name="pt_website_search_order_and_enable">Priority, enable &amp; disable</string>
     <!-- Preference Category -->
     <string name="pt_barcode_scanner">Barcode scanner</string>
+    <!-- [VERIFIED] Preference setting: show or hide a zoom-control slider -->
+    <string name="pt_barcode_zoom_control">Zoom control</string>
+    <!-- Preference Category -->
     <string name="pt_barcode_sounds">Sounds</string>
 
     <string name="pt_calibre_content_server"

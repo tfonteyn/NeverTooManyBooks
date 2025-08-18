@@ -869,5 +869,6 @@
     <string name="lbl_image_2">Bild 3</string>
     <string name="lbl_fastscroller_draghandle">Bildlaufleiste-Schieberegler</string>
     <string name="lbl_permission_request">Berechtigungsanfrage</string>
+    <string name="pt_barcode_zoom_control">Zoom-Steuerung</string>
     <string name="pt_barcode_sounds">Töne</string>
 </resources>

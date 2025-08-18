@@ -880,5 +880,6 @@
     <string name="lbl_image_2">Resim 3</string>
     <string name="lbl_fastscroller_draghandle">Kaydırma çubuğu tutamacı boyutu</string>
     <string name="lbl_permission_request">İzin isteği</string>
+    <string name="pt_barcode_zoom_control">Zum denetimi</string>
     <string name="pt_barcode_sounds">Sesler</string>
 </resources>

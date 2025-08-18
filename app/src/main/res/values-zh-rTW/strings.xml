@@ -868,5 +868,6 @@
     <string name="lbl_image_2">圖片 3</string>
     <string name="lbl_fastscroller_draghandle">滾動欄縮圖</string>
     <string name="lbl_permission_request">權限要求</string>
+    <string name="pt_barcode_zoom_control">縮放控制</string>
     <string name="pt_barcode_sounds">聲音</string>
 </resources>

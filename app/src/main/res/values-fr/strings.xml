@@ -876,5 +876,6 @@
     <string name="lbl_image_2">Image 3</string>
     <string name="lbl_fastscroller_draghandle">Curseur de défilement</string>
     <string name="lbl_permission_request">Demande d’autorisation</string>
+    <string name="pt_barcode_zoom_control">Contrôle du zoom</string>
     <string name="pt_barcode_sounds">Sons</string>
 </resources>

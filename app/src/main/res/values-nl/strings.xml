@@ -869,5 +869,6 @@
     <string name="lbl_image_2">Afbeelding 3</string>
     <string name="lbl_fastscroller_draghandle">Schuifknopgrootte</string>
     <string name="lbl_permission_request">Rechtenverzoek</string>
+    <string name="pt_barcode_zoom_control">Zoomregeling</string>
     <string name="pt_barcode_sounds">Geluiden</string>
 </resources>

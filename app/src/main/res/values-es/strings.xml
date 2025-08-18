@@ -874,5 +874,6 @@
     <string name="lbl_image_2">Imagen 3</string>
     <string name="lbl_fastscroller_draghandle">Tamaño del control deslizante de la barra de desplazamiento</string>
     <string name="lbl_permission_request">Solicitud de permiso</string>
+    <string name="pt_barcode_zoom_control">Control de zoom</string>
     <string name="pt_barcode_sounds">Sonidos</string>
 </resources>

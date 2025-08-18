@@ -875,5 +875,6 @@
     <string name="lbl_image_2">Immagine 3</string>
     <string name="lbl_fastscroller_draghandle">Dimensione del cursore della barra di scorrimento</string>
     <string name="lbl_permission_request">Richiesta di autorizzazione</string>
+    <string name="pt_barcode_zoom_control">Controllo zoom</string>
     <string name="pt_barcode_sounds">Suoni</string>
 </resources>
