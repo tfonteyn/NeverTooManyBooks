@@ -57,8 +57,6 @@ public final class Prefs {
     public static final String PK_NORMALIZE_TOC_TITLE = "normalize.toc.title";
     public static final String PK_NORMALIZE_PUBLISHER_NAME = "normalize.publisher.name";
 
-    public static final String PK_CAMERA_LENS_FACING = "camera.lens.facing";
-
     /** The prefix of all "acra" settings which need to be excluded during import/export. */
     private static final String EXCLUDE_ACRA_PREFIX = "^acra\\..*";
 
