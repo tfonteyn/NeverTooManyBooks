@@ -76,7 +76,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuPopupWindow;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -97,9 +96,12 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public final class ImageHandler {
 
-
     /** Log tag. */
     private static final String TAG = "ImageHandler";
+
+    private static final String PK_CAMERA_IMAGE_AUTOROTATE = "camera.image.autorotate";
+    private static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";
+
     private static final String RK_MENU = TAG + ":rk:menu";
     private static final String IMAGE_MIME_TYPE = "image/*";
     private static final String ERROR_GENERIC_FILE_PROVIDER = "GenericFileProvider";
@@ -635,7 +637,7 @@ public final class ImageHandler {
 
             // Should we apply an explicit rotation angle?
             final int explicitRotation = IntListPref
-                    .getInt(context, Prefs.PK_CAMERA_IMAGE_AUTOROTATE, 0);
+                    .getInt(context, PK_CAMERA_IMAGE_AUTOROTATE, 0);
 
             // What action (if any) should we take after we're done?
             final NextAction action = NextAction.getAction(context);
@@ -774,8 +776,7 @@ public final class ImageHandler {
         @NonNull
         static NextAction getAction(@NonNull final Context context) {
 
-            final int value = IntListPref.getInt(context, Prefs.PK_CAMERA_IMAGE_ACTION,
-                                                 Done.value);
+            final int value = IntListPref.getInt(context, PK_CAMERA_IMAGE_ACTION, Done.value);
             switch (value) {
                 case 2:
                     return Edit;
