@@ -62,7 +62,7 @@ public class ParseTest
         searchEngine = (LibraryThingSearchEngine) EngineId.LibraryThing.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()

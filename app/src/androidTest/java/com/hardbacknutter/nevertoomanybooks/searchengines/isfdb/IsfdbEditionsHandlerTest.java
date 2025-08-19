@@ -64,7 +64,7 @@ public class IsfdbEditionsHandlerTest
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
         sBaseUrl = searchEngine.getHostUrl(context);
     }

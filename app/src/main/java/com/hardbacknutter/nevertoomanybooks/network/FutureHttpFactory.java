@@ -66,7 +66,7 @@ public final class FutureHttpFactory {
         request.setConnectTimeout(config.getConnectTimeoutInMs(context))
                .setReadTimeout(config.getReadTimeoutInMs(context))
                .setThrottler(config.getThrottler())
-               .enableLogging(config.isLogHttpGetRequests(context));
+               .enableLogging(config.isLogHttpGetRequests());
 
         return request;
     }

@@ -530,7 +530,7 @@ public abstract class SearchEngineBase
                 imageDownloader = new ImageDownloader(httpClient,
                                                       config.getThrottler(),
                                                       config.getEngineId().getLabelResId(),
-                                                      config.isLogHttpGetRequests(context));
+                                                      config.isLogHttpGetRequests());
             }
         }
         final String tempFilename = ImageFileInfo.getTempFilename(

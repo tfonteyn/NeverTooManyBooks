@@ -72,7 +72,7 @@ public class ParseTest
         searchEngine = (BolSearchEngine) EngineId.Bol.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
         // test data is pulled from the BE website
         PreferenceManager.getDefaultSharedPreferences(context)

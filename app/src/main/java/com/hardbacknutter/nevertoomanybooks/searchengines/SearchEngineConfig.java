@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -187,16 +188,15 @@ public class SearchEngineConfig {
         }
     }
 
-    public boolean isLogHttpGetRequests(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+    public boolean isLogHttpGetRequests() {
+        return ServiceLocator.getInstance().getSharedPreferences().getBoolean(
                 engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING,
                 false);
     }
 
     @VisibleForTesting
-    public void setLogHttpGetRequests(@NonNull final Context context,
-                                      final boolean flag) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(
+    public void setLogHttpGetRequests(final boolean flag) {
+        ServiceLocator.getInstance().getSharedPreferences().edit().putBoolean(
                                  engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING, flag)
                          .apply();
     }

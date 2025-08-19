@@ -67,7 +67,7 @@ public class ParseTest
         searchEngine = (BertrandPtSearchEngine) EngineId.BertrandPt.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
     }
 
     @Test

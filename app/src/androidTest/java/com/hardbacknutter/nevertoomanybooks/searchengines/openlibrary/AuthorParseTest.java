@@ -63,7 +63,7 @@ public class AuthorParseTest
         searchEngine = (OpenLibrarySearchEngine) EngineId.OpenLibrary.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
         resolver = (OpenLibraryAuthorResolver) OpenLibraryAuthorResolver
                 .create(context, searchEngine);

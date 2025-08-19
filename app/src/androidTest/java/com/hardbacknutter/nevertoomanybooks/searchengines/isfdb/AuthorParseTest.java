@@ -66,7 +66,7 @@ public class AuthorParseTest
         searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine(context);
         searchEngine.setCaller(new TestProgressListener(TAG));
         //noinspection DataFlowIssue
-        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(context, true);
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
 
         resolver = (IsfdbAuthorResolver) IsfdbAuthorResolver.create(context, searchEngine);
 
