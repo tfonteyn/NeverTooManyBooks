@@ -436,7 +436,7 @@ public class GoodreadsSearchEngine
 
         final JSONArray genres = o.optJSONArray("bookGenres");
         if (genres != null) {
-            parseBookGenres(context, genres, book);
+            parseBookGenres(genres, book);
         }
 
         final JSONObject work = o.optJSONObject("work");
@@ -656,11 +656,10 @@ public class GoodreadsSearchEngine
         }
     }
 
-    private void parseBookGenres(@NonNull final Context context,
-                                 @NonNull final JSONArray genres,
+    private void parseBookGenres(@NonNull final JSONArray genres,
                                  @NonNull final Book book) {
         //noinspection DataFlowIssue
-        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore(context);
+        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
 
         final Set<Tag> result = new HashSet<>();
         for (int i = 0; i < genres.length(); i++) {

@@ -307,8 +307,7 @@ public class StripWebSearchEngine
 
         String tmpSeriesNr = null;
         //noinspection DataFlowIssue
-        final Set<String> tagsToIgnore =
-                getEngineId().getConfig().getTagsToIgnore(context);
+        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
 
         for (final Element divRows : techInfoSection.select("div")) {
             final Element th = divRows.selectFirst("strong");

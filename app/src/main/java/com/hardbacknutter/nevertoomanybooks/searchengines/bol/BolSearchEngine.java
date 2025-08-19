@@ -501,7 +501,7 @@ public class BolSearchEngine
                     }
                     case "Categorieën":
                     case "Catégories": {
-                        processTags(context, value, book);
+                        processTags(value, book);
                         break;
                     }
                     default:
@@ -574,11 +574,10 @@ public class BolSearchEngine
         }
     }
 
-    private void processTags(final Context context,
-                             @NonNull final Element value,
+    private void processTags(@NonNull final Element value,
                              @NonNull final Book book) {
         //noinspection DataFlowIssue
-        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore(context);
+        final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
         // its an 'ul' with 'li' each containing an 'a'
         final List<Tag> tags = value.select("a")
                                     .stream()

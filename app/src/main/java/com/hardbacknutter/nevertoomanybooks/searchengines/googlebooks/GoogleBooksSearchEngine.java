@@ -449,7 +449,7 @@ public class GoogleBooksSearchEngine
         a = volumeInfo.optJSONArray("categories");
         if (a != null && !a.isEmpty()) {
             //noinspection DataFlowIssue
-            final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore(context);
+            final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
 
             final List<Tag> tags = new ArrayList<>();
             for (int g = 0; g < a.length(); g++) {

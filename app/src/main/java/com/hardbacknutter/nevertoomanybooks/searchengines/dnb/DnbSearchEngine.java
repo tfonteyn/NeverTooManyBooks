@@ -421,7 +421,7 @@ public class DnbSearchEngine
                                 final String[] split = td.text().split(",");
                                 //noinspection DataFlowIssue
                                 final Set<String> tagsToIgnore =
-                                        getEngineId().getConfig().getTagsToIgnore(context);
+                                        getEngineId().getConfig().getTagsToIgnore();
 
                                 final List<Tag> tags = Arrays
                                         .stream(split)

@@ -96,7 +96,7 @@ public class SearchEngineConfig {
      * Prefixed with {@link EngineId#getPreferenceKey()}.
      * The set of Tags an engine will ignore when parsing a book.
      *
-     * @see #getTagsToIgnore(Context)
+     * @see #getTagsToIgnore()
      */
     private static final String PK_TAGS_IGNORE = "tags.ignore";
     /**
@@ -247,13 +247,11 @@ public class SearchEngineConfig {
     /**
      * Get the set of tags we need to ignore.
      *
-     * @param context Current context
-     *
      * @return set
      */
     @NonNull
-    public Set<String> getTagsToIgnore(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getStringSet(
+    public Set<String> getTagsToIgnore() {
+        return ServiceLocator.getInstance().getSharedPreferences().getStringSet(
                 engineId.getPreferenceKey() + '.' + PK_TAGS_IGNORE,
                 tagsToIgnore);
     }

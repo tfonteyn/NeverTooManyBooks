@@ -365,7 +365,7 @@ public class BertrandPtSearchEngine
                 "div#productPageSectionDetails-collapseDetalhes-content-themes > div.info");
         if (element != null) {
             //noinspection DataFlowIssue
-            final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore(context);
+            final Set<String> tagsToIgnore = getEngineId().getConfig().getTagsToIgnore();
 
             final Elements as = element.select("a");
             final List<Tag> tags = as.stream()
