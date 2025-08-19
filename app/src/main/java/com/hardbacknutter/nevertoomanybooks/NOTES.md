@@ -4,8 +4,13 @@ Draft notes for next version:
 
 NEW:
 
-- Barcode scanner is now embedded on the ISBN search screen, and much faster.
-  Note that small devices still use the full-screen scanner which received the same update.
+- github #181
+    - Barcode scanner is now embedded on the ISBN search screen, and much faster.
+      Note that small devices still use the full-screen scanner which received the same
+      enhancements.
+    - An optional zoom-slider can be made available in *Settings*, section *Edit*,
+      option "Barcode scanner" and enabling the switch "Zoom control".
+- github #182: add the read-progress bar on books in the list-screen.
 - add support for SBN numbers (precursor of ISBN)
 
 FIXES:
