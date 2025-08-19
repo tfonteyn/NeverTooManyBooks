@@ -455,9 +455,13 @@ public class BookHolder
             if (percentage == 0 || percentage == 100) {
                 // The Read/Unread status is already indicated by vb.iconRead
                 vb.readProgress.setVisibility(View.GONE);
+                vb.readProgressBar.setVisibility(View.GONE);
             } else {
-                vb.readProgress.setText(readingProgress.format(itemView.getContext()));
                 vb.readProgress.setVisibility(View.VISIBLE);
+                vb.readProgress.setText(readingProgress.format(itemView.getContext()));
+
+                vb.readProgressBar.setVisibility(View.VISIBLE);
+                vb.readProgressBar.setProgress(percentage);
             }
         }
     }
