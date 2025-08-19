@@ -220,8 +220,9 @@ public class CoverStorage {
                 final Bitmap bitmap = ImageDecoder.decodeBitmap(source);
                 return bitmap.getHeight() >= MIN_VALID_IMAGE_SIDE
                        && bitmap.getWidth() >= MIN_VALID_IMAGE_SIDE;
-            } catch (@NonNull final IOException ignore) {
-                // ignore, reject file
+            } catch (@NonNull final IOException e) {
+                // just reject the file; but log the e
+                LoggerFactory.getLogger().e(TAG, e);
             }
         } else {
             final BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -549,7 +550,8 @@ public class CoverStorage {
 
         try {
             return createVersionedFileService().restore(new File(coverDir, name));
-        } catch (@NonNull final CoverStorageException ignore) {
+        } catch (@NonNull final CoverStorageException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
     }
@@ -575,7 +577,8 @@ public class CoverStorage {
 
         try {
             return createVersionedFileService().hasBackup(new File(coverDir, name));
-        } catch (@NonNull final CoverStorageException ignore) {
+        } catch (@NonNull final CoverStorageException e) {
+            LoggerFactory.getLogger().e(TAG, e);
             return false;
         }
     }
