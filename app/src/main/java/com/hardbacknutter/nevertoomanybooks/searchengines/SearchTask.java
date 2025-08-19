@@ -225,13 +225,13 @@ final class SearchTask
                 break;
             }
             case Isbn: {
-                final String isbnStr = requireIsbnString(context);
+                final String isbnStr = requireIsbnString();
                 book = ((SearchEngine.ByIsbn) searchEngine)
                         .searchByIsbn(context, isbnStr, criteria.getFetchCovers());
                 break;
             }
             case Barcode: {
-                final String isbnStr = requireIsbnString(context);
+                final String isbnStr = requireIsbnString();
                 book = ((SearchEngine.ByBarcode) searchEngine)
                         .searchByBarcode(context, isbnStr, criteria.getFetchCovers());
                 break;
@@ -240,7 +240,7 @@ final class SearchTask
                 // FIXME: github #131 "ISBN: 01-001-86" allow searches with null/empty criteria
                 //  when there is an isbnStr
                 //  => must update code in ALL SearchEngines to allow this!
-                final String isbnStr = isbnToString(context);
+                final String isbnStr = isbnToString();
                 book = ((SearchEngine.ByText) searchEngine)
                         .search(context, criteria, isbnStr, criteria.getFetchCovers());
                 break;
@@ -257,8 +257,8 @@ final class SearchTask
     }
 
     @NonNull
-    private String requireIsbnString(@NonNull final Context context) {
-        final String s = isbnToString(context);
+    private String requireIsbnString() {
+        final String s = isbnToString();
         if (s == null || s.isEmpty()) {
             throw new IllegalArgumentException(ERROR_ISBN_STR_NOT_SET);
         }
@@ -266,7 +266,7 @@ final class SearchTask
     }
 
     @Nullable
-    private String isbnToString(@NonNull final Context context) {
+    private String isbnToString() {
         @Nullable
         final String isbnStr;
         // Do NOT check on validity, at this point the isbn IS
@@ -275,7 +275,7 @@ final class SearchTask
         if (isbn != null) {
             //noinspection DataFlowIssue
             if (searchEngine.getEngineId().getConfig()
-                            .prefersIsbn10(context) && isbn.isIsbn10Compat()) {
+                            .prefersIsbn10() && isbn.isIsbn10Compat()) {
                 isbnStr = isbn.asText(ISBN.Type.Isbn10);
             } else {
                 isbnStr = isbn.asText();

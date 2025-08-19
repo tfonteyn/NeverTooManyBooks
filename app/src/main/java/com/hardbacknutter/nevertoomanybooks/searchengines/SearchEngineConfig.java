@@ -233,12 +233,10 @@ public class SearchEngineConfig {
      * If set, and an ISBN13 is passed in, it will be translated to an ISBN10 before starting
      * the search.
      *
-     * @param context Current context
-     *
      * @return {@code true} if ISBN10 should be preferred.
      */
-    boolean prefersIsbn10(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+    boolean prefersIsbn10() {
+        return ServiceLocator.getInstance().getSharedPreferences().getBoolean(
                 engineId.getPreferenceKey() + '.' + PK_SEARCH_ISBN_PREFER_10,
                 prefersIsbn10);
 
