@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.location.Criteria;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -71,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUr
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -147,11 +145,11 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *     <li>{@link #prepare(ISBN)}</li>
  *     <li>{@link #preSearchInteractively(ISBN)}</li>
  *     <li>{@link #startSearch(ISBN)}</li>
- *     <li>{@link SearchBookBaseFragment#startSearch(Criteria)}</li>
- *     <li>{@link SearchCoordinator#startSearch(Criteria)}</li>
+ *     <li>{@link SearchBookBaseFragment}#startSearch(Criteria)</li>
+ *     <li>{@link SearchCoordinator}#startSearch(Criteria)</li>
  * </ol>
  * <ol>
- *     <li>{@link SearchBookBaseFragment#onSearchFinished(LiveDataEvent)}</li>
+ *     <li>{@link SearchBookBaseFragment}#onSearchFinished(LiveDataEvent)</li>
  *     <li>{@link #onSearchFinished(BookSearchResult)}</li>
  *     <li>{@link SearchBookBaseFragment#onSearchFinished(BookSearchResult)}</li>
  *     <li>{@link #onSearchResults(BookSearchResult)}</li>
@@ -195,11 +193,12 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  *     <li>User scans a code</li>
  *     <li>{@link #onBarcodeScanned(String)}</li>
  *     <li>{@link #preSearchAddToQueue(ISBN)}</li>
- *     <li>{@link SearchBookByIsbnViewModel#addToQueueAndStartSearch(Context, IsbnQueue.Item, Function)}</li>
+ *     <li>{@link SearchBookByIsbnViewModel#addToQueueAndStartSearch(Context, IsbnQueue.Item,
+ *                                                                   Function)}</li>
  *     <li>scanner starts again</li>
  * </ol>
  * <ol>
- *     <li>{@link SearchBookBaseFragment#onSearchFinished(LiveDataEvent)}</li>
+ *     <li>{@link SearchBookBaseFragment}#onSearchFinished(LiveDataEvent)</li>
  *     <li>{@link #onSearchFinished(BookSearchResult)}</li>
  *     <li>{@link SearchBookByIsbnViewModel#onQueueSearchResults(BookSearchResult)} </li>
  *     <li>all this in the background as the scanner is still running</li>
@@ -635,6 +634,7 @@ public class SearchBookByIsbnFragment
         scanner.start(getViewLifecycleOwner(),
                       vb.cameraPreview,
                       new DecoderResultListener() {
+                          /** Prevent duplicate results. */
                           @Nullable
                           private String lastCode;
 
