@@ -35,7 +35,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/loupe_24px"
-            android:key="camera.zoom.control"
+            android:key="camera.zoom.control.show"
             android:summaryOff="@string/disabled"
             android:summaryOn="@string/enabled"
             android:title="@string/pt_barcode_zoom_control"

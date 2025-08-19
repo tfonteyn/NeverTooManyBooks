@@ -49,7 +49,6 @@ import androidx.core.util.Pair;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -235,9 +234,6 @@ public class SearchBookByIsbnFragment
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnFrag";
 
-    /** boolean: {@code true} show a zoom-control slider. */
-    private static final String PK_CAMERA_ZOOM_CONTROL = "camera.zoom.control";
-
     /** The embedded scanner. */
     @Nullable
     private BarcodeScanner scanner;
@@ -349,7 +345,7 @@ public class SearchBookByIsbnFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedWithActiveSearches);
 
-        maybeInitEmbeddedScanner();
+        useEmbeddedScanner = maybeInitEmbeddedScanner();
 
         vm.onScanQueueUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
 
@@ -404,66 +400,18 @@ public class SearchBookByIsbnFragment
     /**
      * Check screen size and orientation to decide whether we use the embedded
      * scanner view, or the separate {@link ScannerContract}.
+     *
+     * @return flag
      */
-    private void maybeInitEmbeddedScanner() {
+    private boolean maybeInitEmbeddedScanner() {
         //noinspection DataFlowIssue
         final ScreenSize screenSize = ScreenSize.compute(getActivity());
         if (getResources().getConfiguration().orientation
             == Configuration.ORIENTATION_PORTRAIT) {
-            useEmbeddedScanner = screenSize.getHeight() == ScreenSize.Value.Expanded;
+            return screenSize.getHeight() == ScreenSize.Value.Expanded;
         } else {
-            useEmbeddedScanner = screenSize.getWidth() == ScreenSize.Value.Expanded;
+            return screenSize.getWidth() == ScreenSize.Value.Expanded;
         }
-
-        if (useEmbeddedScanner) {
-            initEmbeddedScanner();
-        }
-    }
-
-    private void initEmbeddedScanner() {
-        vb.zoomSlider.setValue(vm.getZoom());
-        vb.zoomSlider.addOnChangeListener((slider, zoomValue, fromUser) -> {
-            if (fromUser) {
-                vm.setZoom(zoomValue);
-                //noinspection DataFlowIssue
-                scanner.setLinearZoom(zoomValue);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    slider.performHapticFeedback(
-                            HapticFeedbackConstants.SEGMENT_FREQUENT_TICK);
-                } else {
-                    slider.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
-                }
-            }
-        });
-
-        updateTorchButtonIcon();
-        vb.btnTorch.setOnClickListener(v -> {
-            vm.setTorchEnabled(!vm.isTorchEnabled());
-            updateTorchButtonIcon();
-            if (scanner != null) {
-                scanner.setTorch(vm.isTorchEnabled());
-            }
-        });
-
-        vb.btnStopScanning.setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                v.performHapticFeedback(HapticFeedbackConstants.REJECT);
-            } else {
-                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            }
-            switchOffScanner();
-        });
-    }
-
-    private void updateTorchButtonIcon() {
-        // We're not using checkable and StateLists as managing the background
-        // color then makes things needlessly complicated.
-        // Hence simply swap the icon manually here.
-        vb.btnTorch.setIconResource(vm.isTorchEnabled()
-                                    ? com.hardbacknutter.tinyzxingwrapper.R.drawable
-                                            .tzw_ic_baseline_flashlight_off_24
-                                    : com.hardbacknutter.tinyzxingwrapper.R.drawable
-                                            .tzw_ic_baseline_flashlight_on_24);
     }
 
     /**
@@ -584,47 +532,9 @@ public class SearchBookByIsbnFragment
 
     // @RequiresPermission(Manifest.permission.CAMERA)
     private void startEmbeddedScanner() {
-        final Context context = getContext();
-
         if (scanner == null) {
-            final BarcodeScanner.Builder builder = new BarcodeScanner.Builder()
-                    .setBarcodeFormats(BarcodeFamily.PRODUCT);
-            builder.setAutoFocus(true);
-
-            // -1: no preference, otherwise set to 0 or 1
-            //noinspection DataFlowIssue
-            final int lensFacing = CameraDetection.getPreferredCameraLensFacing(context);
-            if (lensFacing == CameraSelector.LENS_FACING_FRONT
-                || lensFacing == CameraSelector.LENS_FACING_BACK) {
-                builder.setCameraLensFacing(lensFacing);
-            }
-
-            if (vb.cameraViewFinder.isShowResultPoints()) {
-                builder.setResultPointCallback(vb.cameraViewFinder);
-            }
-
-            scanner = builder.build(context);
-
-            // 2025-08-18 see github #181:
-            // User reported that their Xiaomi Note 12 Pro+, Android 13
-            // was having trouble focusing and more than half of the time, when
-            // focus finally worked, the image was not properly decoded.
-            // It seems Xiaomi devices have a known issue with focussing on close-up
-            // objects and tend to take bad/blurry (?) images at that range.
-            // Ultimate solution was to add a zoom-control slider.
-            // As this only affects Xiaomi users and the slider takes up quite
-            // some space we've made this a setting.
-            // TODO: allow finger-pinch gesture to zoom instead
-            // Does the user WANT to display the zoom-control?
-            final boolean wantZoom = PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .getBoolean(PK_CAMERA_ZOOM_CONTROL, false);
-            // ... and does the camera HAVE a zoom?
-            hasZoom = wantZoom && scanner.hasZoom(context);
-            // Does the device have a torch light?
-            hasTorch = scanner.hasTorch(context);
-
-            getLifecycle().addObserver(scanner);
+            initEmbeddedScannerViews();
+            createEmbeddedScanner();
         }
 
         vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
@@ -655,6 +565,89 @@ public class SearchBookByIsbnFragment
                               scanner = null;
                           }
                       });
+    }
+
+    private void initEmbeddedScannerViews() {
+        vb.zoomSlider.setValue(vm.getZoom());
+        vb.zoomSlider.addOnChangeListener((slider, zoomValue, fromUser) -> {
+            if (fromUser) {
+                vm.setZoom(zoomValue);
+                //noinspection DataFlowIssue
+                scanner.setLinearZoom(zoomValue);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    slider.performHapticFeedback(
+                            HapticFeedbackConstants.SEGMENT_FREQUENT_TICK);
+                } else {
+                    slider.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
+                }
+            }
+        });
+
+        updateTorchButtonIcon();
+        vb.btnTorch.setOnClickListener(v -> {
+            vm.setTorchEnabled(!vm.isTorchEnabled());
+            updateTorchButtonIcon();
+            if (scanner != null) {
+                scanner.setTorch(vm.isTorchEnabled());
+            }
+        });
+
+        vb.btnStopScanning.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                v.performHapticFeedback(HapticFeedbackConstants.REJECT);
+            } else {
+                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            }
+            switchOffScanner();
+        });
+    }
+
+    private void updateTorchButtonIcon() {
+        // We're not using checkable and StateLists as managing the background
+        // color then makes things needlessly complicated.
+        // Hence simply swap the icon manually here.
+        vb.btnTorch.setIconResource(vm.isTorchEnabled()
+                                    ? com.hardbacknutter.tinyzxingwrapper.R.drawable
+                                            .tzw_ic_baseline_flashlight_off_24
+                                    : com.hardbacknutter.tinyzxingwrapper.R.drawable
+                                            .tzw_ic_baseline_flashlight_on_24);
+    }
+
+    /**
+     * Build the scanner object, set the runtime parameters and apply user settings.
+     */
+    private void createEmbeddedScanner() {
+        final Context context = getContext();
+
+        final BarcodeScanner.Builder builder = new BarcodeScanner.Builder()
+                .setBarcodeFormats(BarcodeFamily.PRODUCT);
+        builder.setAutoFocus(true);
+
+        // -1: no preference, otherwise set to 0 or 1
+        //noinspection DataFlowIssue
+        final int lensFacing = CameraDetection.getPreferredCameraLensFacing(context);
+        if (lensFacing == CameraSelector.LENS_FACING_FRONT
+            || lensFacing == CameraSelector.LENS_FACING_BACK) {
+            builder.setCameraLensFacing(lensFacing);
+        }
+
+        if (vb.cameraViewFinder.isShowResultPoints()) {
+            builder.setResultPointCallback(vb.cameraViewFinder);
+        }
+
+        scanner = builder.build(context);
+
+        // Does the user WANT to display the zoom-control?
+        // and does the camera HAVE a zoom?
+        hasZoom = vm.showZoomControl() && scanner.hasZoom(context);
+
+        // Does the device have a torch light?
+        hasTorch = scanner.hasTorch(context);
+
+        scanner.setLinearZoom(vm.getZoom());
+        scanner.setTorch(vm.isTorchEnabled());
+
+        getLifecycle().addObserver(scanner);
     }
 
     /**

@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.FloatRange;
@@ -52,8 +53,31 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 public class SearchBookByIsbnViewModel
         extends ViewModel {
 
-    public static final int SEARCH_NOT_STARTED = 0;
-    public static final int SEARCH_DUPLICATE_ISBN = -1;
+    static final int SEARCH_NOT_STARTED = 0;
+    static final int SEARCH_DUPLICATE_ISBN = -1;
+
+    /**
+     * Show or hide the zoom-control slider.
+     * <p>
+     * 2025-08-18 see github #181:
+     * User reported that their Xiaomi Note 12 Pro+, Android 13
+     * was having trouble focusing and more than half of the time, when
+     * focus finally worked, the image was not properly decoded.
+     * It seems Xiaomi devices have a known issue with focussing on close-up
+     * objects and tend to take bad/blurry (?) images at that range.
+     * Ultimate solution was to add a zoom-control slider.
+     * As this only affects Xiaomi users and the slider takes up quite
+     * some space we've made this a setting.
+     * TODO: allow finger-pinch gesture to zoom instead
+     * <p>
+     * boolean: {@code true}
+     */
+    private static final String PK_CAMERA_ZOOM_CONTROL_SHOW = "camera.zoom.control.show";
+
+    /** Store the current value. */
+    private static final String PK_CAMERA_ZOOM_CONTROL_VALUE = "camera.zoom.control.value";
+    /** Store the current status. */
+    private static final String PK_CAMERA_TORCH_STATUS = "camera.torch.status";
 
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
@@ -77,8 +101,6 @@ public class SearchBookByIsbnViewModel
     @NonNull
     private ScanMode scanMode = ScanMode.Off;
 
-    private boolean torchEnabled;
-
     /**
      * Flag indicating the scanner Activity is already started so we don't
      * start it a second time after a device rotation.
@@ -88,8 +110,20 @@ public class SearchBookByIsbnViewModel
     /** The raw text. The 'isStrict' flag is get/set directly with SharedPreferences. */
     @Nullable
     private String isbnText;
+
+    private boolean showZoomControl;
     @FloatRange(from = 0.0, to = 1.0)
     private float zoomValue;
+    private boolean torchEnabled;
+
+    @Override
+    protected void onCleared() {
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putFloat(PK_CAMERA_ZOOM_CONTROL_VALUE, zoomValue)
+                      .putBoolean(PK_CAMERA_TORCH_STATUS, torchEnabled)
+                      .apply();
+    }
 
     @NonNull
     Intent createResultIntent() {
@@ -120,6 +154,12 @@ public class SearchBookByIsbnViewModel
                 final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
                 style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
             }
+
+            final SharedPreferences preferences =
+                    ServiceLocator.getInstance().getSharedPreferences();
+            showZoomControl = preferences.getBoolean(PK_CAMERA_ZOOM_CONTROL_SHOW, false);
+            zoomValue = preferences.getFloat(PK_CAMERA_ZOOM_CONTROL_VALUE, 0.0f);
+            torchEnabled = preferences.getBoolean(PK_CAMERA_TORCH_STATUS, false);
         }
     }
 
@@ -175,12 +215,16 @@ public class SearchBookByIsbnViewModel
         this.torchEnabled = enabled;
     }
 
+    boolean showZoomControl() {
+        return showZoomControl;
+    }
+
     @FloatRange(from = 0.0, to = 1.0)
-    public float getZoom() {
+    float getZoom() {
         return zoomValue;
     }
 
-    public void setZoom(@FloatRange(from = 0.0, to = 1.0) final float zoomValue) {
+    void setZoom(@FloatRange(from = 0.0, to = 1.0) final float zoomValue) {
         this.zoomValue = zoomValue;
     }
 
