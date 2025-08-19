@@ -215,7 +215,7 @@ public class StripInfoAuth
                 .add("frmName=login")
                 .toString();
 
-        httpPost = FutureHttpFactory.create(context, EngineId.StripInfoBe);
+        httpPost = FutureHttpFactory.create(EngineId.StripInfoBe);
         httpPost.post(url, postBody, null);
 
         userId = getUserId().orElseThrow(

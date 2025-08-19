@@ -104,7 +104,7 @@ class CollectionFormUploader {
         postUrl = EngineId.StripInfoBe.getConfig().getHostUrl(context)
                   + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
-        httpPost = FutureHttpFactory.create(context, EngineId.StripInfoBe);
+        httpPost = FutureHttpFactory.create(EngineId.StripInfoBe);
         httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
                                     HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED_UTF8);
 

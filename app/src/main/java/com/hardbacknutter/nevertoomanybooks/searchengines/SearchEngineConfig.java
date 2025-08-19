@@ -168,17 +168,15 @@ public class SearchEngineConfig {
     /**
      * Get the user-configured timeout value for the given key.
      *
-     * @param context      Current context
      * @param key          to fetch
      * @param defValueInMs default to use if not found
      *
      * @return timeout value in milliseconds
      */
-    public static int getTimeoutValueInMs(@NonNull final Context context,
-                                          @NonNull final String key,
+    public static int getTimeoutValueInMs(@NonNull final String key,
                                           final int defValueInMs) {
-        final int seconds = PreferenceManager.getDefaultSharedPreferences(context)
-                                             .getInt(key, 0);
+        final int seconds = ServiceLocator.getInstance().getSharedPreferences()
+                                          .getInt(key, 0);
         // The value from prefs is in SECONDS
         if (seconds > 0) {
             // convert to milliseconds
@@ -197,8 +195,8 @@ public class SearchEngineConfig {
     @VisibleForTesting
     public void setLogHttpGetRequests(final boolean flag) {
         ServiceLocator.getInstance().getSharedPreferences().edit().putBoolean(
-                                 engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING, flag)
-                         .apply();
+                              engineId.getPreferenceKey() + '.' + PK_ENABLE_HTTP_LOGGING, flag)
+                      .apply();
     }
 
     /**
@@ -257,26 +255,22 @@ public class SearchEngineConfig {
     /**
      * Timeout we allow for a connection to be established.
      *
-     * @param context Current context
-     *
      * @return milli seconds
      */
-    public int getConnectTimeoutInMs(@NonNull final Context context) {
-        return getTimeoutValueInMs(context, engineId.getPreferenceKey()
-                                            + '.' + PK_TIMEOUT_CONNECT_IN_SECONDS,
+    public int getConnectTimeoutInMs() {
+        return getTimeoutValueInMs(engineId.getPreferenceKey()
+                                   + '.' + PK_TIMEOUT_CONNECT_IN_SECONDS,
                                    connectTimeoutMs);
     }
 
     /**
      * Timeout we allow for getting a response from the remote server.
      *
-     * @param context Current context
-     *
      * @return milli seconds
      */
-    public int getReadTimeoutInMs(@NonNull final Context context) {
-        return getTimeoutValueInMs(context, engineId.getPreferenceKey()
-                                            + '.' + PK_TIMEOUT_READ_IN_SECONDS,
+    public int getReadTimeoutInMs() {
+        return getTimeoutValueInMs(engineId.getPreferenceKey()
+                                   + '.' + PK_TIMEOUT_READ_IN_SECONDS,
                                    readTimeoutMs);
     }
 

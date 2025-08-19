@@ -209,7 +209,7 @@ public class BedethequeSearchEngine
             throws SearchException {
         if (csrfCookie == null || csrfCookie.hasExpired()) {
             try {
-                final FutureHttp<HttpCookie> httpHead = createHeadRequest(context);
+                final FutureHttp<HttpCookie> httpHead = createHeadRequest();
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
                 csrfCookie = httpHead.head(getHostUrl(context) + SEARCH_URL, response ->

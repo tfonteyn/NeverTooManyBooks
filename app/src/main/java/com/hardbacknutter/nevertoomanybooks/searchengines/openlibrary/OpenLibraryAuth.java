@@ -206,7 +206,7 @@ public class OpenLibraryAuth
                 .add("debug_token=")
                 .toString();
 
-        httpPost = FutureHttpFactory.create(context, EngineId.OpenLibrary);
+        httpPost = FutureHttpFactory.create(EngineId.OpenLibrary);
         httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
                                     HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
                 .post(url, postBody, null);

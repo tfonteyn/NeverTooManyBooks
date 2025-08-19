@@ -215,7 +215,7 @@ public class IsfdbAuth
                 .add("argument=0")
                 .toString();
 
-        httpPost = FutureHttpFactory.create(context, EngineId.Isfdb);
+        httpPost = FutureHttpFactory.create(EngineId.Isfdb);
         httpPost.setRequestProperty(HttpConstants.CONTENT_TYPE,
                                     HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED)
                 .post(url, postBody, null);

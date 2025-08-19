@@ -203,15 +203,15 @@ public class DnbSearchEngine
 
     @NonNull
     @Override
-    protected OkHttpClient createHttpClient(@NonNull final Context context) {
+    protected OkHttpClient createHttpClient() {
         final SearchEngineConfig config = getEngineId().getConfig();
         //noinspection DataFlowIssue
         final OkHttpClient.Builder builder = ServiceLocator
                 .getInstance()
                 .getOkHttpClient()
                 .newBuilder()
-                .connectTimeout(config.getConnectTimeoutInMs(context), TimeUnit.MILLISECONDS)
-                .readTimeout(config.getReadTimeoutInMs(context), TimeUnit.MILLISECONDS);
+                .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
+                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS);
 
         // this is a kludge... see DnbSslContextFactory why
         final SSLContext sslContext = getSslContext();

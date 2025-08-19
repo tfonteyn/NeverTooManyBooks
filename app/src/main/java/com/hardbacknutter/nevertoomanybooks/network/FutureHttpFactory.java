@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.network;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
@@ -52,19 +50,17 @@ public final class FutureHttpFactory {
     /**
      * Create a FutureHttp based on the given engine configuration.
      *
-     * @param context  Current context
      * @param engineId to use
      * @param <R>      the type of the return value for the request
      *
      * @return new instance
      */
-    public static <R> FutureHttp<R> create(@NonNull final Context context,
-                                           @NonNull final EngineId engineId) {
+    public static <R> FutureHttp<R> create(@NonNull final EngineId engineId) {
         final FutureHttp<R> request = create(engineId.getLabelResId());
 
         final SearchEngineConfig config = Objects.requireNonNull(engineId.getConfig());
-        request.setConnectTimeout(config.getConnectTimeoutInMs(context))
-               .setReadTimeout(config.getReadTimeoutInMs(context))
+        request.setConnectTimeout(config.getConnectTimeoutInMs())
+               .setReadTimeout(config.getReadTimeoutInMs())
                .setThrottler(config.getThrottler())
                .enableLogging(config.isLogHttpGetRequests());
 

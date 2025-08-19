@@ -231,7 +231,7 @@ public class BolSearchEngine
      */
     private void ensureCookie(@NonNull final Context context)
             throws SearchException {
-        final FutureHttp<Boolean> httpHead = createHeadRequest(context);
+        final FutureHttp<Boolean> httpHead = createHeadRequest();
         try {
             httpHead.head(getHostUrl(context), con -> true);
         } catch (@NonNull final StorageException | IOException e) {

@@ -351,15 +351,13 @@ public final class CalibreContentServer
     /**
      * Constructor.
      *
-     * @param context          Current context
      * @param uri              for the content server
      * @param username         for the content server
      * @param password         for the content server
      * @param sslContext       (optional) for certificate handling
      * @param hostnameVerifier (optional) for certificate handling
      */
-    private CalibreContentServer(@NonNull final Context context,
-                                 @NonNull final Uri uri,
+    private CalibreContentServer(@NonNull final Uri uri,
                                  @NonNull final String username,
                                  @NonNull final String password,
                                  @Nullable final SSLContext sslContext,
@@ -378,10 +376,10 @@ public final class CalibreContentServer
         }
 
         connectTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
+                PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_CONNECT_IN_SECONDS,
                 CONNECT_TIMEOUT_IN_MS);
         readTimeoutInMs = SearchEngineConfig.getTimeoutValueInMs(
-                context, PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
+                PREFERENCE_KEY + '.' + SearchEngineConfig.PK_TIMEOUT_READ_IN_SECONDS,
                 READ_TIMEOUT_IN_MS);
 
         calibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()
@@ -1758,7 +1756,7 @@ public final class CalibreContentServer
                 }
             }
 
-            return new CalibreContentServer(context, uri, username, password,
+            return new CalibreContentServer(uri, username, password,
                                             sslContext, hostnameVerifier);
         }
     }

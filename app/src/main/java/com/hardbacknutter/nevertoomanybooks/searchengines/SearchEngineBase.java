@@ -134,7 +134,7 @@ public abstract class SearchEngineBase
                    SocketTimeoutException,
                    MalformedURLException {
         ServiceLocator.getInstance().getNetworkChecker().ping(
-                getHostUrl(context), config.getConnectTimeoutInMs(context));
+                getHostUrl(context), config.getConnectTimeoutInMs());
     }
 
     /**
@@ -251,15 +251,14 @@ public abstract class SearchEngineBase
      * Convenience method which uses the engines specific network configuration
      * to create a suitable {@code HEAD} request.
      *
-     * @param context Current context
      * @param <T>     return type
      *
      * @return new {@code HEAD} request instance
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public <T> FutureHttp<T> createHeadRequest(@NonNull final Context context) {
-        final FutureHttp<T> httpHead = FutureHttpFactory.create(context, config.getEngineId());
+    public <T> FutureHttp<T> createHeadRequest() {
+        final FutureHttp<T> httpHead = FutureHttpFactory.create(config.getEngineId());
         httpHead.setSSLContext(sslContext);
         return httpHead;
     }
@@ -277,7 +276,7 @@ public abstract class SearchEngineBase
      */
     @NonNull
     public <T> FutureHttp<T> createGetDocumentRequest(@NonNull final Context context) {
-        final FutureHttp<T> httpGet = FutureHttpFactory.create(context, config.getEngineId());
+        final FutureHttp<T> httpGet = FutureHttpFactory.create(config.getEngineId());
         httpGet.setSSLContext(sslContext);
 
         // Improve compatibility by sending standard headers.
@@ -347,21 +346,19 @@ public abstract class SearchEngineBase
      * <p>
      * Overridable for sites requiring quirks...
      *
-     * @param context Current context
-     *
      * @return new {@link OkHttpClient} instance
      *
      * @see #createGetDocumentRequest(Context)
      */
     @NonNull
     @EmptySuper
-    protected OkHttpClient createHttpClient(@NonNull final Context context) {
+    protected OkHttpClient createHttpClient() {
         final OkHttpClient.Builder builder = ServiceLocator
                 .getInstance()
                 .getOkHttpClient()
                 .newBuilder()
-                .connectTimeout(config.getConnectTimeoutInMs(context), TimeUnit.MILLISECONDS)
-                .readTimeout(config.getReadTimeoutInMs(context), TimeUnit.MILLISECONDS);
+                .connectTimeout(config.getConnectTimeoutInMs(), TimeUnit.MILLISECONDS)
+                .readTimeout(config.getReadTimeoutInMs(), TimeUnit.MILLISECONDS);
 
         if (sslContext != null) {
             builder.setSocketFactory$okhttp(sslContext.getSocketFactory());
@@ -526,7 +523,7 @@ public abstract class SearchEngineBase
 
         synchronized (this) {
             if (imageDownloader == null) {
-                final OkHttpClient httpClient = createHttpClient(context);
+                final OkHttpClient httpClient = createHttpClient();
                 imageDownloader = new ImageDownloader(httpClient,
                                                       config.getThrottler(),
                                                       config.getEngineId().getLabelResId(),
