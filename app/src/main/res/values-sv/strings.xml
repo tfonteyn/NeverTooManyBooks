@@ -38,6 +38,7 @@
     <string name="X_lbl_general">Allmänt</string>
     <string name="X_lbl_system">(System)</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="a_b">%1$s%2$s</string>
     <string name="a_space_b">%1$s %2$s</string>
     <string name="action_add">Lägg till</string>
     <string name="action_apply">Tillämpa</string>
@@ -108,6 +109,9 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="no">Nej</string>
     <string name="none">Inga</string>
+    <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
+    <string name="fallback_currency_format">%2$.2f %1$s</string>
+    <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Fel</string>
     <string name="notification_channel_warn">Varning</string>
     <string name="ok">OK</string>
@@ -134,4 +138,17 @@
     <string name="whichSendApplication">Dela</string>
     <string name="whichViewApplication">Öppna med</string>
     <string name="yes">Ja</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
+    <string name="brackets">(%1$s)</string>
+    <string name="lbl_date_first_publication_as_single_char">\u0031\ufe0f\u20e3</string>
+    <string name="lbl_date_added_as_single_char">\u2795</string>
+    <string name="lbl_date_acquired_as_single_char">\ud83c\udfe0</string>
+    <string name="lbl_location_symbol">\ud83d\udccd</string>
+    <string name="lbl_date_last_updated_as_single_char">\ud83d\udd04</string>
+    <string name="list_element">• %s</string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <string name="ellipsize">%1$s…</string>
+    <string name="and_others">%1$s…</string>
+    <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ID</small>]]></string>
+    <string name="lbl_series_num">#</string>
 </resources>
