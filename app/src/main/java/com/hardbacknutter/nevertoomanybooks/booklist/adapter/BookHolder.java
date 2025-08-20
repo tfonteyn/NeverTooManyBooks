@@ -449,6 +449,7 @@ public class BookHolder
         if (text.isEmpty()) {
             // no details available
             vb.readProgress.setVisibility(View.GONE);
+            vb.readProgressBar.setVisibility(View.GONE);
         } else {
             final ReadingProgress readingProgress = ReadingProgress.fromJson(text);
             final int percentage = readingProgress.getPercentage();
