@@ -185,12 +185,8 @@
             <!-- always shown as a percentage; when using pages, the code will convert to % -->
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/read_progress_bar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:max="100"
-                android:min="0"
+                style="@style/ReadProgressBar"
                 android:visibility="gone"
-                app:indicatorColor="?attr/colorSecondary"
                 app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
                 app:layout_constraintStart_toEndOf="@id/col1"
                 app:layout_constraintTop_toBottomOf="@id/read_progress"

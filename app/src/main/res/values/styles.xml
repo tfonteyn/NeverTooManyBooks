@@ -200,6 +200,15 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <style name="ReadProgressBar"
+           parent="Widget.Material3.LinearProgressIndicator">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:min">0</item>
+        <item name="android:max">100</item>
+        <item name="indicatorColor">?attr/colorSecondary</item>
+    </style>
+
     <style name="Badge">
         <!-- colorOnError is what "Widget.Material3.Badge" uses -->
         <item name="android:textColor">?attr/colorOnError</item>
