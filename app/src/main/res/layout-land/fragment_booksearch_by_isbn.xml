@@ -37,15 +37,6 @@
         style="@style/FragmentRoot.ConstraintLayout"
         >
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/barcode_scanner_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:constraint_referenced_ids="barcode_scanner,zoom_slider,btn_torch,btn_stop_scanning"
-            tools:visibility="visible"
-            />
-
         <FrameLayout
             android:id="@+id/barcode_scanner"
             android:layout_width="0dp"

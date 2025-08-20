@@ -537,9 +537,7 @@ public class SearchBookByIsbnFragment
             createEmbeddedScanner();
         }
 
-        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
-        vb.btnTorch.setVisibility(hasTorch ? View.VISIBLE : View.GONE);
-        vb.zoomSlider.setVisibility(hasZoom ? View.VISIBLE : View.GONE);
+        updateEmbeddedScannerViewsVisibility(true);
 
         scanner.start(getViewLifecycleOwner(),
                       vb.cameraPreview,
@@ -600,6 +598,16 @@ public class SearchBookByIsbnFragment
             }
             switchOffScanner();
         });
+    }
+
+    private void updateEmbeddedScannerViewsVisibility(final boolean visible) {
+        // We used a androidx.constraintlayout.widget.Group for all 4,
+        // but controlling torch/zoom individually did not work.
+        // Using a group just for preview/button was overhead.
+        vb.barcodeScanner.setVisibility(visible ? View.VISIBLE : View.GONE);
+        vb.btnStopScanning.setVisibility(visible ? View.VISIBLE : View.GONE);
+        vb.btnTorch.setVisibility(visible && hasTorch ? View.VISIBLE : View.GONE);
+        vb.zoomSlider.setVisibility(visible && hasZoom ? View.VISIBLE : View.GONE);
     }
 
     private void updateTorchButtonIcon() {
@@ -674,7 +682,7 @@ public class SearchBookByIsbnFragment
             if (scanner != null) {
                 scanner.stop();
             }
-            vb.barcodeScannerGroup.setVisibility(View.GONE);
+            updateEmbeddedScannerViewsVisibility(false);
         }
         vm.setScannerMode(ScanMode.Off);
     }
