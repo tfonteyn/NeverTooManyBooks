@@ -17,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes ”…”  - Regex to find wrong ones: ('|„|“|‘|’|«|») --><!-- suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes ”…”  - Regex to find wrong ones: ('|„|“|‘|’|«|») --><!-- suppress LongLine --><resources>
     <string name="X_action_clear_credentials">Rensa användaruppgifter</string>
     <string name="X_action_execute">Utför</string>
     <string name="X_action_go">Kör</string>
@@ -57,7 +54,7 @@
     <string name="action_not_now">Inte nu</string>
     <string name="action_remove">Ta bort</string>
     <string name="action_report">Rapportera</string>
-    <string name="action_reset_to_default">Återställ standardinst.</string>
+    <string name="action_reset_to_default">Återställ standardinst</string>
     <string name="action_retry">Försök igen</string>
     <string name="action_save">Spara</string>
     <string name="action_search">Sök</string>
