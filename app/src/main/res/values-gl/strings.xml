@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -251,7 +248,7 @@
     <string name="progress_msg_cleaning_up">Limpando…</string>
     <string name="info_authorized">Autorizada</string>
     <string name="info_nothing_to_do">Nada que facer.</string>
-    <string name="info_read_contacts_permission">O acceso aos teus contactos é opcional, pero permítache seleccionar facilmente a quen lle prestas un libro.</string>
+    <string name="info_read_contacts_permission">O acceso aos contactos é opcional, pero permíteche seleccionar facilmente a quen prestas un libro.</string>
     <string name="info_story_in_multiple_books">«%1$s» está presente en varios libros:\n\n%2$s</string>
     <string name="info_all_books_have_covers">Todos os libros deste andel teñen cubertas</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d libros, en %2$d entradas</string>
