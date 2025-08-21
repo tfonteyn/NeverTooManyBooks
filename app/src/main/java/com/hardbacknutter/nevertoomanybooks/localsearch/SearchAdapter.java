@@ -42,9 +42,9 @@ public class SearchAdapter
     @NonNull
     private final Consumer<Long> displayBook;
 
-    public SearchAdapter(@NonNull final Context context,
-                         @NonNull final List<FtsSearchResult> list,
-                         @NonNull final Consumer<Long> displayBook) {
+    SearchAdapter(@NonNull final Context context,
+                  @NonNull final List<FtsSearchResult> list,
+                  @NonNull final Consumer<Long> displayBook) {
         inflater = LayoutInflater.from(context);
         this.list = list;
         this.displayBook = displayBook;
@@ -77,7 +77,7 @@ public class SearchAdapter
         private final RowSearchResultBinding vb;
         private long id;
 
-        public Holder(@NonNull final RowSearchResultBinding vb,
+        Holder(@NonNull final RowSearchResultBinding vb,
                       @NonNull final Consumer<Long> displayBook) {
             super(vb.getRoot());
             this.vb = vb;

@@ -99,7 +99,7 @@ public class SearchFtsViewModel
     }
 
     @NonNull
-    public Bookshelf getBookshelf() {
+    Bookshelf getBookshelf() {
         return bookshelf;
     }
 
