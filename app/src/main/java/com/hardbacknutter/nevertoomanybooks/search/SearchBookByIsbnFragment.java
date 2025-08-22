@@ -24,9 +24,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,6 +52,8 @@ import androidx.core.util.Pair;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.window.layout.WindowMetrics;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -70,7 +75,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRe
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.widgets.ScreenSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
@@ -233,6 +237,18 @@ public class SearchBookByIsbnFragment
 
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnFrag";
+
+    /**
+     * The minimum height (portrait) or width (landscape) in dp the screen
+     * must have to use the embedded scanner.
+     * <p>
+     * ScreenSize.Value.Expanded is 840 ... but that's too large;
+     * Most 6-inch Android phones have a height of ~800 dp.
+     * => use embedded
+     * Most 5-inch Android phones have a height of ~640 dp.
+     * => use full-screen
+     */
+    private static final int MINIMUM_SCREEN_SIZE_EMBEDDED_SCANNER = 790;
 
     /** The embedded scanner. */
     @Nullable
@@ -409,12 +425,21 @@ public class SearchBookByIsbnFragment
      */
     private boolean maybeInitEmbeddedScanner() {
         //noinspection DataFlowIssue
-        final ScreenSize screenSize = ScreenSize.compute(getActivity());
-        if (getResources().getConfiguration().orientation
-            == Configuration.ORIENTATION_PORTRAIT) {
-            return screenSize.getHeight() == ScreenSize.Value.Expanded;
+        final WindowMetrics metrics = WindowMetricsCalculator
+                .getOrCreate().computeCurrentWindowMetrics(getActivity());
+        final float density = metrics.getDensity();
+        final Rect bounds = metrics.getBounds();
+        final float widthDp = bounds.width() / density;
+        final float heightDp = bounds.height() / density;
+
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "widthDp=" + widthDp + "|heightDp=" + heightDp);
+        }
+        final Resources resources = getResources();
+        if (resources.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            return heightDp > MINIMUM_SCREEN_SIZE_EMBEDDED_SCANNER;
         } else {
-            return screenSize.getWidth() == ScreenSize.Value.Expanded;
+            return widthDp > MINIMUM_SCREEN_SIZE_EMBEDDED_SCANNER;
         }
     }
 
