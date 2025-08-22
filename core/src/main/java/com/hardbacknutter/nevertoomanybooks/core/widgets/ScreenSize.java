@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Rect;
+import android.util.Log;
 
 import androidx.annotation.Discouraged;
 import androidx.annotation.NonNull;
@@ -33,6 +34,8 @@ import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import java.util.Objects;
+
+import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 
 /**
  * Screen size support.
@@ -60,6 +63,15 @@ import java.util.Objects;
  * </pre>
  */
 public final class ScreenSize {
+
+    private static final String TAG = "ScreenSize";
+
+    /** androidx.window.core.layout.WindowSizeClass. */
+    private static final int WIDTH_DP_MEDIUM_LOWER_BOUND = 600;
+    private static final int WIDTH_DP_EXPANDED_LOWER_BOUND = 840;
+
+    private static final int HEIGHT_DP_MEDIUM_LOWER_BOUND = 480;
+    private static final int HEIGHT_DP_EXPANDED_LOWER_BOUND = 900;
 
     @NonNull
     private final Value width;
@@ -94,36 +106,44 @@ public final class ScreenSize {
      * @return window size definition
      *
      * @see <a href="https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-main/window/window-core/src/commonMain/kotlin/androidx/window/core/layout/WindowSizeClass.kt#144">
-     *     WindowSizeClass.kt#144</a>
+     *         WindowSizeClass.kt#144</a>
      */
     @NonNull
     public static ScreenSize compute(@NonNull final Activity activity) {
         final WindowMetrics metrics = WindowMetricsCalculator
                 .getOrCreate().computeCurrentWindowMetrics(activity);
 
-        final float density = activity.getResources().getDisplayMetrics().density;
+        final float density = metrics.getDensity();
         final Rect bounds = metrics.getBounds();
         final float widthDp = bounds.width() / density;
+        final float heightDp = bounds.height() / density;
+
         final Value width;
-        if (widthDp < 600f) {
+        if (widthDp < WIDTH_DP_MEDIUM_LOWER_BOUND) {
             width = Value.Compact;
-        } else if (widthDp < 840f) {
+        } else if (widthDp < WIDTH_DP_EXPANDED_LOWER_BOUND) {
             width = Value.Medium;
         } else {
             width = Value.Expanded;
         }
 
-        final float heightDp = bounds.height() / density;
         final Value height;
-        if (heightDp < 480f) {
+        if (heightDp < HEIGHT_DP_MEDIUM_LOWER_BOUND) {
             height = Value.Compact;
-        } else if (heightDp < 900f) {
+        } else if (heightDp < HEIGHT_DP_EXPANDED_LOWER_BOUND) {
             height = Value.Medium;
         } else {
             height = Value.Expanded;
         }
 
-        return new ScreenSize(width, height);
+        final ScreenSize screenSize = new ScreenSize(width, height);
+
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "widthDp=" + widthDp + "|heightDp=" + heightDp
+                       + "|screenSize=" + screenSize);
+        }
+
+        return screenSize;
     }
 
     /**
