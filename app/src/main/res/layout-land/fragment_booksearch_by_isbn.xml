@@ -42,10 +42,12 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/camera_preview_height"
             android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/keypad"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_max="@dimen/camera_preview_width"
+            tools:visibility="visible"
             >
 
             <!-- See notes in the default portrait-layout.
@@ -89,9 +91,11 @@
             android:id="@+id/btn_stop_scanning"
             style="@style/IsbnKeyPad.StopScanButton"
             android:text="@string/action_stop_scanning"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/btn_torch"
             app:layout_constraintStart_toStartOf="@id/barcode_scanner"
             app:layout_constraintTop_toBottomOf="@id/zoom_slider"
+            tools:visibility="visible"
             />
 
         <androidx.constraintlayout.widget.Group

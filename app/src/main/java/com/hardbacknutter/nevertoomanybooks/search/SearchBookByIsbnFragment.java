@@ -346,6 +346,10 @@ public class SearchBookByIsbnFragment
                      .addCallback(getViewLifecycleOwner(), backPressedWithActiveSearches);
 
         useEmbeddedScanner = maybeInitEmbeddedScanner();
+        if (!useEmbeddedScanner) {
+            // make sure to hide all!
+            updateEmbeddedScannerViewsVisibility(false);
+        }
 
         vm.onScanQueueUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
 
