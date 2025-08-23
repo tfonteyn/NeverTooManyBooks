@@ -22,16 +22,19 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnViewModel;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
 import com.hardbacknutter.tinyzxingwrapper.ScanIntentResult;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
@@ -39,6 +42,7 @@ import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
+ * Full-screen {@code com.hardbacknutter.tinyzxingwrapper} scanner activity.
  * <ul>
  *     <li>return: the barcode String</li>
  * </ul>
@@ -58,11 +62,17 @@ public class ScannerContract
      */
     @NonNull
     public static ScanOptions createDefaultOptions(@NonNull final Context context) {
+        final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+
+        final boolean wantZoom = p.getBoolean(SearchBookByIsbnViewModel.PK_CAMERA_ZOOM_CONTROL_SHOW,
+                                              false);
+        final int lensFacing = CameraDetection.getPreferredCameraLensFacing(context);
+
         return new ScanOptions()
                 .setBarcodeFormats(BarcodeFamily.PRODUCT)
                 .setAutoFocus(true)
-                .setUseCameraWithLensFacing(
-                        CameraDetection.getPreferredCameraLensFacing(context));
+                .setUseCameraWithLensFacing(lensFacing)
+                .setShowZoomControl(wantZoom);
     }
 
     @NonNull

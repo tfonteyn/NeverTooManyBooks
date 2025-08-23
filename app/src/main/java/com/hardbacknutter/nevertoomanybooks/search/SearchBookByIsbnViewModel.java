@@ -67,15 +67,17 @@ public class SearchBookByIsbnViewModel
      * objects and tend to take bad/blurry (?) images at that range.
      * Ultimate solution was to add a zoom-control slider.
      * As this only affects Xiaomi users and the slider takes up quite
-     * some space we've made this a setting.
+     * some space when using the embedded scanner, we've made this a setting.
      * TODO: allow finger-pinch gesture to zoom instead
      * <p>
      * boolean: {@code true}
      */
-    private static final String PK_CAMERA_ZOOM_CONTROL_SHOW = "camera.zoom.control.show";
+    public static final String PK_CAMERA_ZOOM_CONTROL_SHOW = "camera.zoom.control.show";
 
     /** Store the current value. */
     private static final String PK_CAMERA_ZOOM_CONTROL_VALUE = "camera.zoom.control.value";
+    private static final float DEFAULT_ZOOM_VALUE = 0.3f;
+
     /** Store the current status. */
     private static final String PK_CAMERA_TORCH_STATUS = "camera.torch.status";
 
@@ -158,7 +160,7 @@ public class SearchBookByIsbnViewModel
             final SharedPreferences preferences =
                     ServiceLocator.getInstance().getSharedPreferences();
             showZoomControl = preferences.getBoolean(PK_CAMERA_ZOOM_CONTROL_SHOW, false);
-            zoomValue = preferences.getFloat(PK_CAMERA_ZOOM_CONTROL_VALUE, 0.0f);
+            zoomValue = preferences.getFloat(PK_CAMERA_ZOOM_CONTROL_VALUE, DEFAULT_ZOOM_VALUE);
             torchEnabled = preferences.getBoolean(PK_CAMERA_TORCH_STATUS, false);
         }
     }

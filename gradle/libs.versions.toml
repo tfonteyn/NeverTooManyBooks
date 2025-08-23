@@ -47,7 +47,7 @@ okhttpAndroid = "5.1.0"
 # https://github.com/zxing/zxing
 zxingCore = '3.5.3'
 # CameraX based scanner code from https://github.com/tfonteyn/TinyZXingWrapper
-tinyzxingwrapper = "1.3.0"
+tinyzxingwrapper = "1.3.1-beta"
 
 # https://github.com/ACRA/acra
 # https://www.acra.ch/docs/Setup/
