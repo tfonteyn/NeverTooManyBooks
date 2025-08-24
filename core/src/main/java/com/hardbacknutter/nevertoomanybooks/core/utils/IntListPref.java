@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.preference.ListPreference;
@@ -44,8 +45,15 @@ public final class IntListPref {
     public static int getInt(@NonNull final Context context,
                              @NonNull final String key,
                              final int defValue) {
-        final String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                              .getString(key, null);
+        final SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(context);
+        return getInt(preferences, key, defValue);
+    }
+
+    public static int getInt(@NonNull final SharedPreferences preferences,
+                             @NonNull final String key,
+                             final int defValue) {
+        final String value = preferences.getString(key, null);
         if (value == null || value.isEmpty()) {
             return defValue;
         }
