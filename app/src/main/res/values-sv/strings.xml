@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,38 +17,30 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes ”…”  - Regex to find wrong ones: ('|„|“|‘|’|«|») --><!-- suppress LongLine -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<!-- Quotes ”…”  - Regex to find wrong ones: ('|„|“|‘|’|«|») --><!-- suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="n_books">
         <item quantity="one">%1$d bok</item>
         <item quantity="other">%1$d böcker</item>
     </plurals>
-
     <plurals name="n_books_found">
         <item quantity="one">%1$d bok hittad</item>
         <item quantity="other">%1$d böcker hittade</item>
     </plurals>
-
     <plurals name="n_stars">
         <item quantity="one">%1$s stjärna</item>
         <item quantity="other">%1$s stjärnor</item>
     </plurals>
-
     <plurals name="n_tags">
         <item quantity="one">%1$d tagg</item>
         <item quantity="other">%1$d taggar</item>
     </plurals>
-
     <plurals name="confirm_queue_has_x_items">
         <item quantity="one">Det finns %1$d tidigare inmatad ISBN-kod. Vill du starta en sökning efter den, eller ska den tas bort?</item>
         <item quantity="other">Det finns %1$d tidigare inmatade ISBN-koder. Vill du starta sökningar efter dem, eller ska de tas bort?</item>
     </plurals>
-
     <string name="X_action_clear_credentials">Rensa användaruppgifter</string>
     <string name="X_action_customize">Anpassa…</string>
     <string name="X_action_execute">Utför</string>
@@ -288,8 +279,7 @@
     <string name="info_tap_to_move_tag">Tryck på en tagg för att flytta den till/från boken.</string>
     <string name="info_tap_to_select">Tryck för att välja.</string>
     <string name="info_tip_reset_done">Tipsen har återställts</string>
-    <string name="info_x_pages"
-            tools:ignore="PluralsCandidate">%1$d sidor</string>
+    <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d sidor</string>
     <string name="lbl_about">Om</string>
     <string name="lbl_about_contact">Kontakt:</string>
     <string name="lbl_add_book">Lägg till bok</string>
@@ -532,7 +522,7 @@
     <string name="lbl_year">År</string>
     <string name="list_and">och</string>
     <string name="list_element">• %s</string>
-    <string name="list_semicolon">;</string>
+    <string name="list_semicolon">"; "</string>
     <string name="loose">Lös</string>
     <string name="menu_search_updates">Sök efter uppdateringar</string>
     <string name="menu_update_books">Uppdatera böcker</string>
@@ -648,17 +638,17 @@
     <string name="pc_image_cache">Bildcache</string>
     <string name="pc_lists">Listor</string>
     <string name="pc_ui">Användargränssnitt</string>
-    <string name="pe_bob_cover_click_details">Öppna bokens detaljsida</string>
-    <string name="pe_bob_cover_click_zoom">Zooma in på omslaget</string>
-    <string name="pe_bob_cover_long_click_ignore">Genom att trycka på en knapp</string>
-    <string name="pe_bob_cover_long_click_popupmenu">Genom långtryck på omslaget</string>
+    <string name="pe_bob_cover_click_details">Öppna bokens detaljsida.</string>
+    <string name="pe_bob_cover_click_zoom">Zooma in på omslaget.</string>
+    <string name="pe_bob_cover_long_click_ignore">Genom att trycka på en knapp.</string>
+    <string name="pe_bob_cover_long_click_popupmenu">Genom långtryck på omslaget.</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Starta alltid ihopvikt</string>
     <string name="pe_bob_list_rebuild_state_expanded">Starta alltid utvidgad</string>
     <string name="pe_bob_list_rebuild_state_preferred">Använd föredragen expansion</string>
     <string name="pe_bob_list_rebuild_state_preserve">Behåll aktuell status</string>
-    <string name="pe_bob_row_menu_button">Visa alltid knapp</string>
-    <string name="pe_bob_row_menu_button_when_space">Visa knapp om plats finns, annars långtryck</string>
-    <string name="pe_bob_row_menu_long_click">Använd alltid långtryck</string>
+    <string name="pe_bob_row_menu_button">Visa alltid knapp.</string>
+    <string name="pe_bob_row_menu_button_when_space">Visa knapp om plats finns, annars långtryck.</string>
+    <string name="pe_bob_row_menu_long_click">Använd alltid långtryck.</string>
     <string name="pe_camera_back">Bakkamera</string>
     <string name="pe_camera_front">Frontkamera</string>
     <string name="pe_camera_other">Övrigt</string>
@@ -723,8 +713,8 @@
     <string name="pt_bob_books_under_multiple_authors">Visa böcker med flera författare</string>
     <string name="pt_bob_books_under_multiple_publishers">Visa böcker med flera förlag</string>
     <string name="pt_bob_books_under_multiple_series">Visa böcker i flera serier</string>
-    <string name="pt_bob_cover_click">Tryck på omslagsbilden</string>
-    <string name="pt_bob_cover_long_click">Öppna bokmenyn</string>
+    <string name="pt_bob_cover_click">Tryck på omslagsbilden.</string>
+    <string name="pt_bob_cover_long_click">Öppna bokmenyn.</string>
     <string name="pt_bob_cover_scale">Omslagsstorlek</string>
     <string name="pt_bob_cover_show">Visa omslag</string>
     <string name="pt_bob_font_size">Teckenstorlek</string>
@@ -741,7 +731,7 @@
     <string name="pt_cover_undo_enabled">Ångra ändringar på bokomslag</string>
     <string name="pt_edit_book_isbn_checks">ISBN-validitetskontroller</string>
     <string name="pt_enable_extra_logging">Aktivera extra loggning</string>
-    <string name="pt_fast_scroller_overlay">Textbubbla vid scrollning</string>
+    <string name="pt_fast_scroller_overlay">Textbubbla vid scrollning.</string>
     <string name="pt_fetch_author_info">Hämta författarinformation</string>
     <string name="pt_fetch_author_info_using_site_x">Hämta författarinformation från %1$s</string>
     <string name="pt_field_visibility">Fältets synlighet</string>
@@ -882,5 +872,4 @@
     <string name="ps_show_titles_reordered_off">Visa som det står, t.ex. “The Lord of The Rings”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN SWEDISH. -->
     <string name="ps_show_titles_reordered_on">Flytta en artikel i början av en titel till slutet,\nt.ex. ”Lord of The Rings, The”</string>
-
 </resources>
