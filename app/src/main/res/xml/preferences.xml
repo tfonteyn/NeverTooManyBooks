@@ -141,7 +141,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment"
-            android:icon="@drawable/barcode_24px"
+            android:icon="@drawable/barcode_scanner_24px"
             android:key="psk_barcode"
             android:title="@string/pt_barcode_scanner"
             />
