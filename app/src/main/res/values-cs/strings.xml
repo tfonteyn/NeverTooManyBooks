@@ -110,7 +110,7 @@
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Chybí autor)</string>
     <string name="bob_empty_day">(Den není nastaven)</string>
-    <string name="bob_empty_field">(Prázdné)</string>
+    <string name="bob_empty_field">(Žádné)</string>
     <string name="bob_empty_language">(Není vyplněn žádný jazyk)</string>
     <string name="bob_empty_month">(Měsíc není nastaven)</string>
     <string name="bob_empty_publisher">(Žádný vydavatel)</string>

@@ -323,7 +323,7 @@
     <string name="tip_authors_works_book">Könyv.</string>
     <string name="tip_authors_works_multiple_books">A cím több könyvnél is szerepel.</string>
     <string name="tip_authors_works_single_book">A cím csak egy könyvnél szerepel.</string>
-    <string name="bob_empty_field">(Üres))</string>
+    <string name="bob_empty_field">(Nincs)</string>
     <string name="bob_empty_author">(Hiányzik a szerző)</string>
     <string name="bob_empty_series">(Nincs sorozat)</string>
     <string name="bob_empty_publisher">(Nincs kiadó)</string>

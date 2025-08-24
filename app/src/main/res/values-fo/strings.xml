@@ -135,4 +135,5 @@
     <string name="lbl_location_symbol">\ud83d\udccd</string>
     <string name="pt_barcode_sounds">Ljóð</string>
     <string name="pt_camera_auto_focus">Sjálvvirkin brennidepil</string>
+    <string name="bob_empty_field">(Eingin)</string>
 </resources>

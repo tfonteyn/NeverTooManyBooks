@@ -117,7 +117,7 @@
     <string name="anonymous_author">［匿名］</string>
     <string name="bob_empty_author">（无作者）</string>
     <string name="bob_empty_day">（未设置）</string>
-    <string name="bob_empty_field">（未设置）</string>
+    <string name="bob_empty_field">（无）</string>
     <string name="bob_empty_language">（语言未设置）</string>
     <string name="bob_empty_month">（未设置出版月）</string>
     <string name="bob_empty_publisher">（无出版商）</string>

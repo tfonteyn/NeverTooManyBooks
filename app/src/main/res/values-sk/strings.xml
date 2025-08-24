@@ -656,7 +656,7 @@
     <string name="book_format_digest">Kompaktné vydanie</string>
     <string name="tip_configure_sites">Jednotlivé webové stránky je možné konfigurovať pomocou ikony nastavení v hornej časti obrazovky.</string>
     <string name="tip_authors_works">Použité ikony</string>
-    <string name="bob_empty_field">(Prázdné)</string>
+    <string name="bob_empty_field">(Žiadne)</string>
     <string name="bob_empty_rating">(Nehodnotené)</string>
     <string name="lbl_condition_fair">Prijateľný</string>
     <string name="size_megabytes">%1$.2fMB</string>

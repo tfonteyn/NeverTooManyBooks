@@ -115,7 +115,7 @@
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(De auteur ontbreekt)</string>
     <string name="bob_empty_day">(Dag niet ingevuld)</string>
-    <string name="bob_empty_field">(Leeg)</string>
+    <string name="bob_empty_field">(Geen)</string>
     <string name="bob_empty_language">(Taal niet ingevuld)</string>
     <string name="bob_empty_month">(Maand niet ingevuld)</string>
     <string name="bob_empty_publisher">(Geen uitgever)</string>

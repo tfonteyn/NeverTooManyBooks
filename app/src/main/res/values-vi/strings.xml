@@ -113,7 +113,7 @@
     <string name="anonymous_author">[Vô danh]</string>
     <string name="bob_empty_author">(Đang thiếu tác giả)</string>
     <string name="bob_empty_day">(Chưa đặt ngày)</string>
-    <string name="bob_empty_field">(Trống)</string>
+    <string name="bob_empty_field">(Không có)</string>
     <string name="bob_empty_language">(Chưa đặt ngôn ngữ)</string>
     <string name="bob_empty_month">(Chưa đặt tháng)</string>
     <string name="bob_empty_publisher">(Không nhà xuất bản)</string>

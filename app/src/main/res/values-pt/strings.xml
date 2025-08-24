@@ -86,7 +86,7 @@
     <string name="and_others">%1$s…</string>
     <string name="and_others_textual">%1$s e outras pessoas</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
-    <string name="bob_empty_field">(Vazio)</string>
+    <string name="bob_empty_field">(Nenhum)</string>
     <string name="cancelled">Cancelado</string>
     <string name="acra_dialog_message">Parece que o &APP_NAME; foi bloqueado. Toque em “%1$s” para guardar um relatório numa localização à sua escolha. Pode utilizar este relatório para comunicar um novo problema no site do projeto.</string>
     <string name="debug_select_items">Seleccione o que gostaria de incluir:</string>

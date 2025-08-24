@@ -101,7 +101,7 @@
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Yazar eksik)</string>
     <string name="bob_empty_day">(Gün ayarlanmadı)</string>
-    <string name="bob_empty_field">(Boş)</string>
+    <string name="bob_empty_field">(Yok)</string>
     <string name="bob_empty_language">(Doldurulmuş dil yok)</string>
     <string name="bob_empty_month">(Ay ayarlanmadı)</string>
     <string name="bob_empty_publisher">(Yayıncı Yok)</string>

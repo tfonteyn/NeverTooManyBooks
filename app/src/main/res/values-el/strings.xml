@@ -109,7 +109,7 @@ A question mark is written as the character semicolon: ';'
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Ο συγγραφέας λείπει)</string>
     <string name="bob_empty_day">(Ημέρα δεν έχει οριστεί)</string>
-    <string name="bob_empty_field">(Κενή)</string>
+    <string name="bob_empty_field">(Κανένα)</string>
     <string name="bob_empty_language">(Δεν υπάρχει πλήρης γλώσσα)</string>
     <string name="bob_empty_month">(Μήνας δεν έχει οριστεί)</string>
     <string name="bob_empty_publisher">(Χωρίς εκδότη)</string>

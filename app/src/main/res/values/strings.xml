@@ -546,10 +546,8 @@
     <string name="tip_authors_works_single_book">The title is present in a single book.</string>
     <!-- endregion -->
     <!-- region ========== BoB specific place holder text for empty fields. -->
-    <!-- [VERIFIED] from android-29#keyguard_accessibility_widget_empty_slot
-        BoB generic place holder text for EMPTY fields.
-        The actual text is different from info_not_set in Translations. -->
-    <string name="bob_empty_field">(Not Set)</string>
+    <!-- BoB generic place holder text for EMPTY fields. -->
+    <string name="bob_empty_field">(None)</string>
     <!-- BoB specific place holder text for Author rows.
      Theoretically this string will never be shown unless there is ever bad data. -->
     <string name="bob_empty_author">(The author is missing)</string>

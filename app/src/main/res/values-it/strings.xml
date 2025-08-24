@@ -105,7 +105,7 @@
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(L’autore è mancante)</string>
     <string name="bob_empty_day">(Giorno non impostato)</string>
-    <string name="bob_empty_field">(Vuoto)</string>
+    <string name="bob_empty_field">(Nessuno)</string>
     <string name="bob_empty_language">(Nessuna lingua compilata)</string>
     <string name="bob_empty_month">(Mese non impostato)</string>
     <string name="bob_empty_publisher">(Nessun editore)</string>

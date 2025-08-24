@@ -97,6 +97,7 @@
     <string name="option_image_rotate">Pagriezt…</string>
     <string name="btn_just_this_shelf">Tikai šis grāmatu plaukts</string>
     <string name="option_level_expand">Izvērst visu</string>
+    <string name="bob_empty_field">(Nav)</string>
     <string name="bob_empty_author">(Trūkst autora)</string>
     <string name="tip_authors_works_book">Grāmata.</string>
     <string name="bookshelf_my_books">Manas grāmatas</string>
