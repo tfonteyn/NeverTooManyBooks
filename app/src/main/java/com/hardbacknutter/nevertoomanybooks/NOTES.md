@@ -12,6 +12,7 @@ NEW:
       option "Barcode scanner" and enabling the switch "Zoom control".
 - github #182: add the read-progress bar on books in the list-screen.
 - add support for SBN numbers (precursor of ISBN)
+- new UI language: Swedish; translated with ChatGPT as a test; quality unknown.
 
 FIXES:
 
