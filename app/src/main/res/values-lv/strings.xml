@@ -27,6 +27,7 @@
     <string name="action_crop">Apgriezt</string>
     <string name="lbl_publisher">Izdevējs</string>
     <string name="list_and">un</string>
+    <string name="and_others_textual">%1$s u.c.</string>
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="unknown_currency">¤%1$.2f</string>
@@ -194,6 +195,7 @@
     <string name="username">Lietotājvārds</string>
     <string name="whichEditApplication">Rediģēt, izmantojot</string>
     <string name="whichSendApplication">Kopīgot</string>
+    <string name="lbl_calibre_content_server">Calibre Satura Serveri</string>
     <string name="whichViewApplication">Atvērt, izmantojot</string>
     <string name="yes">Jā</string>
     <string name="lbl_location_symbol">\ud83d\udccd</string>
@@ -208,7 +210,7 @@
     <string name="quoted">“%1$s”</string>
     <string name="ellipsize">%1$s…</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
-    <string name="x_of_y">%1$d di %2$d</string>
+    <string name="x_of_y">%1$d no %2$d</string>
     <string name="and_others">%1$s…</string>
     <string name="notification_channel_info">Informācija</string>
     <string name="lbl_permission_request">Atļaujas pieprasījums</string>
