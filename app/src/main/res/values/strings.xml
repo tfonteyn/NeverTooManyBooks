@@ -163,7 +163,7 @@
     <!-- [VERIFIED] -->
     <string name="notification_channel_error">Error</string>
     <string name="notification_channel_warn">Warning</string>
-    <string name="notification_channel_info">Info</string>
+    <string name="notification_channel_info">Information</string>
     <!-- endregion -->
     <!-- region ========== Fatal/Crash/Debug messages. -->
     <!-- Crash-report dialog: asking the user which data should be included. -->
@@ -572,7 +572,6 @@
     <string name="bob_empty_day">(Day not set)</string>
     <!-- endregion -->
     <!-- region ========== Size measurements. -->
-    <!-- Size of a file: MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
     <!-- Size of a file: MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
     <string name="size_megabytes">%1$.2fMB</string>
     <!-- Size of a file: MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->

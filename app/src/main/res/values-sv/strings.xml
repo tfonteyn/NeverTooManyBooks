@@ -114,6 +114,7 @@
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Fel</string>
     <string name="notification_channel_warn">Varning</string>
+    <string name="notification_channel_info">Information</string>
     <string name="ok">OK</string>
     <string name="option_barcode_scan_mode_manual">Handbok</string>
     <string name="option_bug_report">Felrapport</string>

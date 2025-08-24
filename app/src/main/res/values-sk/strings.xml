@@ -582,7 +582,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Chyba</string>
-    <string name="notification_channel_info">Info</string>
+    <string name="notification_channel_info">Informácie</string>
     <string name="notification_channel_warn">Upozornenie</string>
     <string name="ellipsize">%1$s…</string>
     <string name="list_semicolon">"; "</string>

@@ -40,7 +40,7 @@
     <string name="unknown_currency">¤%1$.2f</string>
     <string name="notification_channel_error">Hiba</string>
     <string name="notification_channel_warn">Figyelmeztetés</string>
-    <string name="notification_channel_info">Infó</string>
+    <string name="notification_channel_info">Információ</string>
     <string name="httpErrorFailedSslHandshake">Nem sikerült biztonságos kapcsolatot létrehozni.</string>
     <string name="httpErrorAuth">Nem sikerült hitelesíteni.</string>
     <string name="httpError">Hálózati hiba történt.</string>
