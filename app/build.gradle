@@ -85,7 +85,7 @@ android {
         // NEWTHINGS: add app language: add the string res file. No other app changes needed.
         def supportedLocales = [
                 "cs", "de", "el", "en", "en_GB", "es", "fr", "gl", "hu", "it", "nl",
-                "pl", "pt", "pt_BR", "ru", "sk", "ta", "tr", "vi",
+                "pl", "pt", "pt_BR", "ru", "sk", "sv", "ta", "tr", "vi",
                 "zh_CN", "zh_TW"]
         resourceConfigurations += supportedLocales
 
