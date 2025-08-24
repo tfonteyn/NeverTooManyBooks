@@ -700,6 +700,7 @@
     <string name="pe_fast_scroller_overlay_dynamic">Dinamikus</string>
     <string name="pt_thumbnails_rotate_auto">Képek forgatása</string>
     <string name="camera_next_action">Művelet fényképezés után</string>
+    <string name="pt_camera_auto_focus">Autofókusz</string>
     <string name="pe_camera_front">Előlapi kamera</string>
     <string name="pe_camera_back">Hátlapi kamera</string>
     <string name="pt_search_show_menu_options">Kereső menük megjelenítése</string>

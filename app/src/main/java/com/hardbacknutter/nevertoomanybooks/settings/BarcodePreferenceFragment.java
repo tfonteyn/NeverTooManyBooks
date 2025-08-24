@@ -29,7 +29,7 @@ import androidx.preference.ListPreference;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
 /**
@@ -46,7 +46,9 @@ public class BarcodePreferenceFragment
         setPreferencesFromResource(R.xml.preferences_barcodes, rootKey);
 
         //noinspection DataFlowIssue
-        final List<Integer> cameras = CameraDetection.getCameras(getContext());
+        final CameraConfig cameraConfig = new CameraConfig(getContext());
+
+        final List<Integer> cameras = cameraConfig.getAvailableLensFacingIds();
         final int max = cameras.size() + 1;
         final CharSequence[] cameraLabels = new CharSequence[max];
         final CharSequence[] cameraValues = new CharSequence[max];
@@ -63,7 +65,7 @@ public class BarcodePreferenceFragment
                 cameraLabels[i] = getString(R.string.pe_camera_back);
             }
         }
-        final ListPreference cameraPref = findPreference(CameraDetection.PK_CAMERA_LENS_FACING);
+        final ListPreference cameraPref = findPreference(CameraConfig.PK_CAMERA_LENS_FACING);
         //noinspection DataFlowIssue
         cameraPref.setEntries(cameraLabels);
         cameraPref.setEntryValues(cameraValues);

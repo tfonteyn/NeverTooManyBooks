@@ -151,6 +151,7 @@
     <string name="password">Senha</string>
     <string name="pc_advanced_options">Avançado</string>
     <string name="pc_camera">Câmera</string>
+    <string name="pt_camera_auto_focus">Foco automático</string>
     <string name="pe_camera_front">Câmera frontal</string>
     <string name="pe_camera_other">Outros</string>
     <string name="preference_not_set">Não definido</string>

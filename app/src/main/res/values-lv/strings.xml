@@ -215,5 +215,6 @@
     <string name="info_read_contacts_permission">Piekļuve jūsu kontaktpersonām ir pēc izvēles, taču ļauj viegli izvēlēties, kam aizdod grāmatu.</string>
     <string name="pt_barcode_zoom_control">Tālummaiņas vadība</string>
     <string name="pt_barcode_sounds">Skaņas</string>
+    <string name="pt_camera_auto_focus">Automātiskā fokusēšana</string>
 
 </resources>

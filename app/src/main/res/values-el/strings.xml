@@ -149,6 +149,7 @@ A question mark is written as the character semicolon: ';'
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Κάμερα</string>
     <string name="pe_camera_back">Πίσω Κάμερα</string>
+    <string name="pt_camera_auto_focus">Αυτόματη εστίαση</string>
     <string name="pe_camera_front">Μπροστινή Κάμερα</string>
     <string name="camera_next_action">Ενέργεια μετά τη λήψη μιας φωτογραφίας</string>
     <string name="pe_camera_other">Άλλο</string>

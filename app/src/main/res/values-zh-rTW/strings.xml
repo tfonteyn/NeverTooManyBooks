@@ -623,6 +623,7 @@
     <string name="pe_bob_row_menu_button_when_space">若有空間則顯示按鈕，否則使用長按。</string>
     <string name="pe_bob_row_menu_long_click">總使用長按。</string>
     <string name="pe_camera_back">後攝影機</string>
+    <string name="pt_camera_auto_focus">自動對焦</string>
     <string name="pe_camera_front">前置攝影機</string>
     <string name="pe_camera_other">其他</string>
     <string name="pe_fast_scroller_overlay_dynamic">動態</string>

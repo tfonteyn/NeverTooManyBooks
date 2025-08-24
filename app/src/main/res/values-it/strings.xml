@@ -145,6 +145,7 @@
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Fotocamera</string>
     <string name="pe_camera_back">Fotocamera posteriore</string>
+    <string name="pt_camera_auto_focus">Messa a fuoco auto</string>
     <string name="pe_camera_front">Fotocamera frontale</string>
     <string name="camera_next_action">Azione dopo aver scattato una foto</string>
     <string name="pe_camera_other">Altro</string>

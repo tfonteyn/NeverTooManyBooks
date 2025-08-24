@@ -21,10 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -48,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 public class SearchBookByIsbnViewModel
@@ -55,31 +54,6 @@ public class SearchBookByIsbnViewModel
 
     static final int SEARCH_NOT_STARTED = 0;
     static final int SEARCH_DUPLICATE_ISBN = -1;
-
-    /**
-     * Show or hide the zoom-control slider.
-     * <p>
-     * 2025-08-18 see github #181:
-     * User reported that their Xiaomi Note 12 Pro+, Android 13
-     * was having trouble focusing and more than half of the time, when
-     * focus finally worked, the image was not properly decoded.
-     * It seems Xiaomi devices have a known issue with focussing on close-up
-     * objects and tend to take bad/blurry (?) images at that range.
-     * Ultimate solution was to add a zoom-control slider.
-     * As this only affects Xiaomi users and the slider takes up quite
-     * some space when using the embedded scanner, we've made this a setting.
-     * TODO: allow finger-pinch gesture to zoom instead
-     * <p>
-     * boolean: {@code true}
-     */
-    public static final String PK_CAMERA_ZOOM_CONTROL_SHOW = "camera.zoom.control.show";
-
-    /** Store the current value. */
-    private static final String PK_CAMERA_ZOOM_CONTROL_VALUE = "camera.zoom.control.value";
-    private static final float DEFAULT_ZOOM_VALUE = 0.3f;
-
-    /** Store the current status. */
-    private static final String PK_CAMERA_TORCH_STATUS = "camera.torch.status";
 
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
@@ -113,18 +87,11 @@ public class SearchBookByIsbnViewModel
     @Nullable
     private String isbnText;
 
-    private boolean showZoomControl;
-    @FloatRange(from = 0.0, to = 1.0)
-    private float zoomValue;
-    private boolean torchEnabled;
+    private CameraConfig cameraConfig;
 
     @Override
     protected void onCleared() {
-        ServiceLocator.getInstance().getSharedPreferences()
-                      .edit()
-                      .putFloat(PK_CAMERA_ZOOM_CONTROL_VALUE, zoomValue)
-                      .putBoolean(PK_CAMERA_TORCH_STATUS, torchEnabled)
-                      .apply();
+        cameraConfig.saveSettings();
     }
 
     @NonNull
@@ -139,9 +106,11 @@ public class SearchBookByIsbnViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Fragment#getArguments()}
      */
-    void init(@Nullable final Bundle args) {
+    void init(@NonNull final Context context,
+              @Nullable final Bundle args) {
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
 
@@ -157,11 +126,7 @@ public class SearchBookByIsbnViewModel
                 style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
             }
 
-            final SharedPreferences preferences =
-                    ServiceLocator.getInstance().getSharedPreferences();
-            showZoomControl = preferences.getBoolean(PK_CAMERA_ZOOM_CONTROL_SHOW, false);
-            zoomValue = preferences.getFloat(PK_CAMERA_ZOOM_CONTROL_VALUE, DEFAULT_ZOOM_VALUE);
-            torchEnabled = preferences.getBoolean(PK_CAMERA_TORCH_STATUS, false);
+            cameraConfig = new CameraConfig(context);
         }
     }
 
@@ -209,25 +174,9 @@ public class SearchBookByIsbnViewModel
         }
     }
 
-    boolean isTorchEnabled() {
-        return torchEnabled;
-    }
-
-    void setTorchEnabled(final boolean enabled) {
-        this.torchEnabled = enabled;
-    }
-
-    boolean showZoomControl() {
-        return showZoomControl;
-    }
-
-    @FloatRange(from = 0.0, to = 1.0)
-    float getZoom() {
-        return zoomValue;
-    }
-
-    void setZoom(@FloatRange(from = 0.0, to = 1.0) final float zoomValue) {
-        this.zoomValue = zoomValue;
+    @NonNull
+    CameraConfig getCameraConfig() {
+        return cameraConfig;
     }
 
     @NonNull

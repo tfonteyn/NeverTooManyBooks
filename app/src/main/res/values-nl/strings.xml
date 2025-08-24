@@ -571,6 +571,7 @@
     <string name="pe_bob_row_menu_button_when_space">Toon een knop als er ruimte is, gebruik anders lang klikken.</string>
     <string name="pe_bob_row_menu_long_click">Gebruik altijd een lange klik.</string>
     <string name="pe_camera_back">Camera aan de achterzijde</string>
+    <string name="pt_camera_auto_focus">Autofocus</string>
     <string name="pe_camera_front">Camera aan de voorzijde</string>
     <string name="pe_camera_other">Overig</string>
     <string name="loose">Ruim</string>

@@ -1694,6 +1694,9 @@
     <!-- ListPreference title: shows a list of cameras of the device by lens-facing -->
     <string name="pt_camera_lens_facing"
             translatable="false">@string/pc_camera</string>
+    <!-- Preference option title. -->
+    <string name="pt_camera_auto_focus">Auto focus</string>
+
     <!-- [VERIFIED] ListPreference value -->
     <string name="pe_camera_front">Front Camera</string>
     <!-- ListPreference value -->

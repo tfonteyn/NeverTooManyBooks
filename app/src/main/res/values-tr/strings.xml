@@ -141,6 +141,7 @@
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Kamera</string>
     <string name="pe_camera_back">Arka kamera</string>
+    <string name="pt_camera_auto_focus">Otomatik odaklama</string>
     <string name="pe_camera_front">Ön kamera</string>
     <string name="camera_next_action">Fotoğraf çektikten sonraki eylem</string>
     <string name="pe_camera_other">Diğer</string>

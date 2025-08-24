@@ -25,6 +25,15 @@
         android:title="@string/pt_barcode_scanner">
 
         <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pe_scan_mode_single"
+            android:entryValues="@array/pv_scan_mode_single"
+            android:icon="@drawable/barcode_24px"
+            android:key="scan.mode.single"
+            android:title="@string/pt_scan_mode"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
             android:defaultValue="-1"
             android:icon="@drawable/photo_camera_24px"
             android:key="camera.lens.facing"
@@ -41,14 +50,14 @@
             android:title="@string/pt_barcode_zoom_control"
             />
 
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/pe_scan_mode_single"
-            android:entryValues="@array/pv_scan_mode_single"
-            android:icon="@drawable/barcode_24px"
-            android:key="scan.mode.single"
-            android:title="@string/pt_scan_mode"
-            app:useSimpleSummaryProvider="true" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/center_focus_weak_24px"
+            android:key="camera.auto.focus"
+            android:summaryOff="@string/disabled"
+            android:summaryOn="@string/enabled"
+            android:title="@string/pt_camera_auto_focus"
+            />
 
     </PreferenceCategory>
 

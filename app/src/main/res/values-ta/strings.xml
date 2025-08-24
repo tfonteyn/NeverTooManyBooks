@@ -651,6 +651,7 @@
     <string name="pe_fast_scroller_overlay_dynamic">மாறும்</string>
     <string name="pt_thumbnails_rotate_auto">படங்களை சுழற்றுங்கள்</string>
     <string name="camera_next_action">படம் எடுத்த பிறகு நடவடிக்கை</string>
+    <string name="pt_camera_auto_focus">தானியங்கி ﬁோகஸ்</string>
     <string name="pe_camera_front">முன் கேமரா</string>
     <string name="pe_camera_back">பின் கேமரா</string>
     <string name="pe_camera_other">மற்றொன்று</string>

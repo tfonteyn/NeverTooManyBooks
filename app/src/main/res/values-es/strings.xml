@@ -145,6 +145,7 @@
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Cámara</string>
     <string name="pe_camera_back">Cámara trasera</string>
+    <string name="pt_camera_auto_focus">Enfoque automático</string>
     <string name="pe_camera_front">Cámara frontal</string>
     <string name="camera_next_action">Acción después de tomar una foto</string>
     <string name="pe_camera_other">Otra</string>

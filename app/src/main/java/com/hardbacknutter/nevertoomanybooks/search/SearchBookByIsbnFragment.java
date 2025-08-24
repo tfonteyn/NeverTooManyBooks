@@ -86,7 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.searchengines.BookSearchResult;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -315,7 +315,8 @@ public class SearchBookByIsbnFragment
         createActivityLaunchers();
 
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
-        vm.init(getArguments());
+        //noinspection DataFlowIssue
+        vm.init(getContext(), getArguments());
     }
 
     private void createActivityLaunchers() {
@@ -595,10 +596,10 @@ public class SearchBookByIsbnFragment
     }
 
     private void initEmbeddedScannerViews() {
-        vb.zoomSlider.setValue(vm.getZoom());
+        vb.zoomSlider.setValue(vm.getCameraConfig().getZoomValue());
         vb.zoomSlider.addOnChangeListener((slider, zoomValue, fromUser) -> {
             if (fromUser) {
-                vm.setZoom(zoomValue);
+                vm.getCameraConfig().setZoomValue(zoomValue);
                 //noinspection DataFlowIssue
                 scanner.setLinearZoom(zoomValue);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -610,12 +611,15 @@ public class SearchBookByIsbnFragment
             }
         });
 
-        updateTorchButtonIcon();
+        updateTorchButtonIcon(vm.getCameraConfig().isTorchEnabled());
         vb.btnTorch.setOnClickListener(v -> {
-            vm.setTorchEnabled(!vm.isTorchEnabled());
-            updateTorchButtonIcon();
+            final CameraConfig cameraConfig = vm.getCameraConfig();
+            // Flip the status
+            final boolean enabled = !cameraConfig.isTorchEnabled();
+            cameraConfig.setTorchEnabled(enabled);
+            updateTorchButtonIcon(enabled);
             if (scanner != null) {
-                scanner.setTorch(vm.isTorchEnabled());
+                scanner.setTorch(enabled);
             }
         });
 
@@ -639,11 +643,11 @@ public class SearchBookByIsbnFragment
         vb.zoomSlider.setVisibility(visible && hasZoom ? View.VISIBLE : View.GONE);
     }
 
-    private void updateTorchButtonIcon() {
+    private void updateTorchButtonIcon(final boolean torchEnabled) {
         // We're not using checkable and StateLists as managing the background
         // color then makes things needlessly complicated.
         // Hence simply swap the icon manually here.
-        vb.btnTorch.setIconResource(vm.isTorchEnabled()
+        vb.btnTorch.setIconResource(torchEnabled
                                     ? com.hardbacknutter.tinyzxingwrapper.R.drawable
                                             .tzw_ic_baseline_flashlight_off_24
                                     : com.hardbacknutter.tinyzxingwrapper.R.drawable
@@ -656,13 +660,14 @@ public class SearchBookByIsbnFragment
     private void createEmbeddedScanner() {
         final Context context = getContext();
 
-        final BarcodeScanner.Builder builder = new BarcodeScanner.Builder()
-                .setBarcodeFormats(BarcodeFamily.PRODUCT);
-        builder.setAutoFocus(true);
+        final CameraConfig cameraConfig = vm.getCameraConfig();
 
-        // -1: no preference, otherwise set to 0 or 1
-        //noinspection DataFlowIssue
-        final int lensFacing = CameraDetection.getPreferredCameraLensFacing(context);
+        final BarcodeScanner.Builder builder = new BarcodeScanner.Builder()
+                .setBarcodeFormats(BarcodeFamily.PRODUCT)
+                .setAutoFocus(cameraConfig.isAutoFocus());
+
+        // -1: no preference: do NOT set, otherwise set to 0 or 1
+        final int lensFacing = cameraConfig.getLensFacing();
         if (lensFacing == CameraSelector.LENS_FACING_FRONT
             || lensFacing == CameraSelector.LENS_FACING_BACK) {
             builder.setCameraLensFacing(lensFacing);
@@ -672,17 +677,18 @@ public class SearchBookByIsbnFragment
             builder.setResultPointCallback(vb.cameraViewFinder);
         }
 
+        //noinspection DataFlowIssue
         scanner = builder.build(context);
 
         // Does the user WANT to display the zoom-control?
         // and does the camera HAVE a zoom?
-        hasZoom = vm.showZoomControl() && scanner.hasZoom(context);
+        hasZoom = cameraConfig.isZoomControlEnabled() && scanner.hasZoom(context);
 
         // Does the device have a torch light?
         hasTorch = scanner.hasTorch(context);
 
-        scanner.setLinearZoom(vm.getZoom());
-        scanner.setTorch(vm.isTorchEnabled());
+        scanner.setLinearZoom(cameraConfig.getZoomValue());
+        scanner.setTorch(cameraConfig.isTorchEnabled());
 
         getLifecycle().addObserver(scanner);
     }
@@ -695,8 +701,8 @@ public class SearchBookByIsbnFragment
     private void startScannerActivity() {
         if (!vm.isScannerActivityStarted()) {
             vm.setScannerActivityStarted(true);
-            //noinspection DataFlowIssue
-            scannerActivityLauncher.launch(ScannerContract.createDefaultOptions(getContext()));
+            scannerActivityLauncher.launch(
+                    ScannerContract.createDefaultOptions(vm.getCameraConfig()));
         }
     }
 

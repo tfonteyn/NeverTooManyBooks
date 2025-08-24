@@ -616,6 +616,7 @@
     <string name="pe_bob_row_menu_button_when_space">若有空间则显示按钮，否则使用长按。</string>
     <string name="pe_bob_row_menu_long_click">总使用长按。</string>
     <string name="pe_camera_back">后置摄像头</string>
+    <string name="pt_camera_auto_focus">自动对焦</string>
     <string name="pe_camera_front">前置摄像头</string>
     <string name="pe_camera_other">其他</string>
     <string name="pe_fast_scroller_overlay_dynamic">动态</string>

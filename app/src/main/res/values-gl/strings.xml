@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -654,6 +657,7 @@
     <string name="pe_fast_scroller_overlay_dynamic">Dinámica</string>
     <string name="pt_thumbnails_rotate_auto">Xirar imaxes</string>
     <string name="camera_next_action">Acción despois de tirar unha foto</string>
+    <string name="pt_camera_auto_focus">Enfoque automático</string>
     <string name="pe_camera_front">Cámara frontal</string>
     <string name="pe_camera_back">Cámara traseira</string>
     <string name="pt_search_show_menu_options">Amosar menús da busca</string>

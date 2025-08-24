@@ -629,6 +629,7 @@
     <string name="pe_bob_row_menu_button_when_space">Hiển thị một nút nếu có không gian, nếu không thì hãy nhấn giữ.</string>
     <string name="pe_bob_row_menu_long_click">Luôn sử dụng nhấn giữ.</string>
     <string name="pe_camera_back">Máy ảnh mặt sau</string>
+    <string name="pt_camera_auto_focus">Lấy nét tự động</string>
     <string name="pe_camera_front">Máy ảnh mặt trước</string>
     <string name="pe_camera_other">Khác</string>
     <string name="pe_fast_scroller_overlay_dynamic">Động</string>

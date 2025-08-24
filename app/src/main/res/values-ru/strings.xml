@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -146,6 +149,7 @@
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Камера</string>
     <string name="pe_camera_back">Задняя камера</string>
+    <string name="pt_camera_auto_focus">Автофокус</string>
     <string name="pe_camera_front">Фронтальная камера</string>
     <string name="camera_next_action">Действие после съемки</string>
     <string name="pe_camera_other">Другое</string>

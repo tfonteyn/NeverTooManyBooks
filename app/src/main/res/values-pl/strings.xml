@@ -149,6 +149,7 @@
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Aparat</string>
     <string name="pe_camera_back">Tylny aparat</string>
+    <string name="pt_camera_auto_focus">Autofokus</string>
     <string name="pe_camera_front">Przedni aparat</string>
     <string name="camera_next_action">Działanie po zrobieniu zdjęcia</string>
     <string name="pe_camera_other">Inne</string>

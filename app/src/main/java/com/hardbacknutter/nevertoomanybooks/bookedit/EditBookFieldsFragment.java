@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 
@@ -163,7 +164,7 @@ public class EditBookFieldsFragment
                 vb.lblIsbn, vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
         vb.lblIsbn.setEndIconOnClickListener(v -> scanLauncher.launch(
-                ScannerContract.createDefaultOptions(getContext())));
+                ScannerContract.createDefaultOptions(new CameraConfig(v.getContext()))));
     }
 
     private void createCoverDelegates() {

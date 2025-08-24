@@ -22,20 +22,17 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnViewModel;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.tinyzxingwrapper.ScanIntentResult;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -56,23 +53,18 @@ public class ScannerContract
      * Create a default {@link ScanOptions} objects using the user-configured
      * camera and a set of barcodes suited for ISBN and UPC codes.
      *
-     * @param context Current context
+     * @param cameraConfig to use
      *
      * @return options
      */
     @NonNull
-    public static ScanOptions createDefaultOptions(@NonNull final Context context) {
-        final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-
-        final boolean wantZoom = p.getBoolean(SearchBookByIsbnViewModel.PK_CAMERA_ZOOM_CONTROL_SHOW,
-                                              false);
-        final int lensFacing = CameraDetection.getPreferredCameraLensFacing(context);
+    public static ScanOptions createDefaultOptions(@NonNull final CameraConfig cameraConfig) {
 
         return new ScanOptions()
                 .setBarcodeFormats(BarcodeFamily.PRODUCT)
-                .setAutoFocus(true)
-                .setUseCameraWithLensFacing(lensFacing)
-                .setShowZoomControl(wantZoom);
+                .setAutoFocus(cameraConfig.isAutoFocus())
+                .setUseCameraWithLensFacing(cameraConfig.getLensFacing())
+                .setShowZoomControl(cameraConfig.isZoomControlEnabled());
     }
 
     @NonNull
