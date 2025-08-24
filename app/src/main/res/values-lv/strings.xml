@@ -17,13 +17,10 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
-    <!ENTITY APP_NAME "NeverTooManyBooks">
-    ]>
-<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine -->
-<resources>
+  --><!DOCTYPE resources [
+<!ENTITY APP_NAME "NeverTooManyBooks">
+]>
+<!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources>
     <string name="action_crop">Apgriezt</string>
     <string name="lbl_publisher">Izdevējs</string>
     <string name="list_and">un</string>
@@ -109,7 +106,6 @@
     <string name="book_color_support_color">Divkrāsains, divtoņu</string>
     <string name="option_image_restore">Atjaunot iepriekšējo attēlu</string>
     <string name="option_level_collapse">Sakļaut visu</string>
-
     <string name="X_action_clear_credentials">Notīrīt akreditācijas datus</string>
     <string name="X_action_execute">Izpildīt</string>
     <string name="X_action_go">Doties uz</string>
@@ -219,5 +215,4 @@
     <string name="pt_barcode_zoom_control">Tālummaiņas vadība</string>
     <string name="pt_barcode_sounds">Skaņas</string>
     <string name="pt_camera_auto_focus">Automātiskā fokusēšana</string>
-
 </resources>
