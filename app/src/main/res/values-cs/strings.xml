@@ -107,7 +107,7 @@
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Chybí autor)</string>
     <string name="bob_empty_day">(Den není nastaven)</string>
-    <string name="bob_empty_field">(Žádné)</string>
+    <string name="bob_empty_field">(Žádný)</string>
     <string name="bob_empty_language">(Není vyplněn žádný jazyk)</string>
     <string name="bob_empty_month">(Měsíc není nastaven)</string>
     <string name="bob_empty_publisher">(Žádný vydavatel)</string>
@@ -147,7 +147,7 @@
     <string name="size_bytes">%1$.0fB</string>
     <string name="pc_camera">Fotoaparát</string>
     <string name="pe_camera_back">Zadní fotoaparát</string>
-    <string name="pt_camera_auto_focus">Automatické zaostření</string>
+    <string name="pt_camera_auto_focus">Autofokus</string>
     <string name="pe_camera_front">Přední fotoaparát</string>
     <string name="camera_next_action">Akce po pořízení snímku</string>
     <string name="pe_camera_other">Ostatní</string>
