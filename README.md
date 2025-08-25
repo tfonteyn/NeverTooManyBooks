@@ -31,9 +31,9 @@ see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBook
 Scan the QR code to open this page on your phone:<br>
 ![QR Code](qr-code.png)
 
-### Download the latest release: 7.7.0
+### Download the latest release: 7.8.0
 
-<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.6.0/NeverTooManyBooks-7.7.0.apk">
+<a href="https://github.com/tfonteyn/NeverTooManyBooks/releases/download/v7.8.0/NeverTooManyBooks-7.8.0.apk">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.hardbacknutter.nevertoomanybooks">
@@ -45,10 +45,9 @@ df971ce7d58d3cdf377c32e0e2f53d6599bd7f130a50c0529c45583ddc12a008
 ## User Interface languages:
 
 - Chinese Simplified(CN), Chinese Traditional(TW),
-  Czech, Dutch, English, French, Galician, German, Hungarian, Italian,
-  Portuguese, Portuguese(Brazil), Slovak, Spanish, Tamil, Turkish, Vietnamese.
-- Mostly machine translated, but being improved: Polish, Russian.
-- Machine translated, no guarantees for quality: Greek.
+  Czech, Dutch, English, French, Galician, German, Hungarian, Italian, Polish
+  Portuguese, Portuguese(Brazil), Russian, Slovak, Spanish, Tamil, Turkish, Vietnamese.
+- Machine translated, no guarantees for quality: Greek, Swedish.
 
 Translations are editable on [Weblate](https://hosted.weblate.org/engage/nevertoomanybooks/)
 

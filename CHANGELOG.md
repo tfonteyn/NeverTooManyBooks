@@ -1,3 +1,25 @@
+### 7.8.0
+
+NEW:
+
+- github #181
+  - The Barcode scanner is now embedded on the ISBN search screen, and typically much faster.
+  - An optional zoom-slider can be made available in *Settings*, section *Edit*,
+    option "Barcode scanner" and enabling the switch "Zoom control".
+  - Small devices still use the full-screen scanner which received the same enhancements.
+  - Please see
+    the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki/Home/_edit#barcode-scanning)
+    for some details
+- github #182: add the read-progress bar on books in the list-screen.
+- add support for SBN numbers (precursor of ISBN)
+- new UI language: Swedish; translated with ChatGPT as a test; quality unknown.
+
+FIXES:
+
+- renaming Series/Publishers from "Name, The" to "The Name" now works correctly.
+
+---
+
 ### 7.7.0
 
 NEW:
