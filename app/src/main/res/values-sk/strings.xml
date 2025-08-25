@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -451,7 +448,7 @@
     <string name="pe_fast_scroller_overlay_static">Statická</string>
     <string name="pe_fast_scroller_overlay_dynamic">Dynamická</string>
     <string name="pt_thumbnails_rotate_auto">Otočiť obrázky</string>
-    <string name="pt_camera_auto_focus">Automatické zaostrenie</string>
+    <string name="pt_camera_auto_focus">Autofókus</string>
     <string name="pe_camera_front">Predný fotoaparát</string>
     <string name="pe_camera_back">Zadný fotoaparát</string>
     <string name="pe_camera_other">Iné</string>
@@ -656,7 +653,7 @@
     <string name="book_format_digest">Kompaktné vydanie</string>
     <string name="tip_configure_sites">Jednotlivé webové stránky je možné konfigurovať pomocou ikony nastavení v hornej časti obrazovky.</string>
     <string name="tip_authors_works">Použité ikony</string>
-    <string name="bob_empty_field">(Žiadne)</string>
+    <string name="bob_empty_field">(Žiadny)</string>
     <string name="bob_empty_rating">(Nehodnotené)</string>
     <string name="lbl_condition_fair">Prijateľný</string>
     <string name="size_megabytes">%1$.2fMB</string>
