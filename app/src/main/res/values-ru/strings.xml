@@ -106,7 +106,7 @@
     <string name="and_others_plus"><![CDATA[%1$s… <small>[+%2$d]</small>]]></string>
     <string name="bob_empty_author">(Автор отсутствует)</string>
     <string name="bob_empty_day">(День не назначен)</string>
-    <string name="bob_empty_field">(Нет)</string>
+    <string name="bob_empty_field">(Никакой)</string>
     <string name="bob_empty_language">(Язык не указан)</string>
     <string name="bob_empty_month">(Месяц не установлен)</string>
     <string name="bob_empty_publisher">(Нет издателя)</string>
