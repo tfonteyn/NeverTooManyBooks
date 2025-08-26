@@ -123,6 +123,7 @@ public class AuthorTypeMapper {
         MAPPINGS.put("übersetzung", Author.TYPE_TRANSLATOR);
         MAPPINGS.put("letterer", Author.TYPE_LETTERING);
         MAPPINGS.put("herausgeber", Author.TYPE_EDITOR);
+        MAPPINGS.put("zeichnungen", Author.TYPE_ARTIST);
 
         // Spanish, unless listed above
         MAPPINGS.put("escritor", Author.TYPE_WRITER);
