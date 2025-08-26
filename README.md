@@ -31,7 +31,7 @@ see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBook
 Scan the QR code to open this page on your phone:<br>
 ![QR Code](qr-code.png)
 
-### Download the latest release: 7.8.0
+### Download the latest release: 7.8.1
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>

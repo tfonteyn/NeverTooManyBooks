@@ -1,3 +1,15 @@
+### 7.8.1
+
+FIXES:
+github #185 : in some circumstances when skipping a number of upgrades, the update to 7.8.0 might
+fail with an error mentioning
+
+    table identifiers has no column named wd_p_author_id
+
+Solution: install 7.8.1.
+
+---
+
 ### 7.8.0
 
 NEW:
