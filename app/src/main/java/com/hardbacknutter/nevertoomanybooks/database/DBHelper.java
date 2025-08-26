@@ -470,17 +470,6 @@ public class DBHelper
         }
         if (oldVersion < 39) {
             LegacyUpgrades.v39AddIdentifierAuthorUrl(db);
-
-            // add new identifiers
-            addIdentifier(context, db, new Identifier(
-                    Identifier.SID_DATABAZE_KNIH,
-                    Identifier.TYPE_LONG,
-                    context.getString(R.string.identifier_databaze_knih),
-                    "P10387",
-                    DatabazeKnihSearchEngine.SITE_URL,
-                    DatabazeKnihSearchEngine.BOOK_URL,
-                    DatabazeKnihSearchEngine.AUTHOR_URL));
-
             // this is new for this release
             TBL_AUTHOR_IDENTIFIER.create(db, true);
         }
@@ -499,39 +488,6 @@ public class DBHelper
                 stmt.bindString(2, Identifier.SID_DNB);
                 stmt.executeUpdateDelete();
             }
-            // add new identifiers
-            addIdentifier(context, db, new Identifier(
-                    Identifier.SID_ISNI,
-                    Identifier.TYPE_STRING,
-                    context.getString(R.string.identifier_isni),
-                    "P213",
-                    ISNI.SITE_URL,
-                    null,
-                    ISNI.AUTHOR_URL));
-            addIdentifier(context, db, new Identifier(
-                    Identifier.SID_STORYGRAPH,
-                    Identifier.TYPE_STRING,
-                    context.getString(R.string.identifier_storygraph),
-                    "P12430",
-                    StoryGraph.SITE_URL,
-                    StoryGraph.BOOK_URL,
-                    StoryGraph.AUTHOR_URL));
-            addIdentifier(context, db, new Identifier(
-                    Identifier.SID_URN,
-                    Identifier.TYPE_STRING,
-                    context.getString(R.string.identifier_urn),
-                    null,
-                    null,
-                    null,
-                    null));
-            addIdentifier(context, db, new Identifier(
-                    Identifier.SID_VIAF,
-                    Identifier.TYPE_LONG,
-                    context.getString(R.string.identifier_viaf),
-                    "P214",
-                    VIAF.SITE_URL,
-                    null,
-                    VIAF.AUTHOR_URL));
         }
         if (oldVersion < 41) {
             TBL_AUTHORS.alterTableAddColumns(db,
@@ -554,6 +510,11 @@ public class DBHelper
                        + '|' + FieldVisibility.getBitValue(Set.of(DBKey.COVER[2], DBKey.COVER[3])));
         }
 
+        // We have to do this here as we're always inserting all columns,
+        // which may be created at various points in the updates.
+        // Any identifier already existing will simply be skipped.
+        addIdentifiers(context, db);
+
         // We have to do this here due to some users skipping updates (see github #30)
         // The issue is that this only works ok if the TBL_BOOKLIST_STYLES contains
         // ALL columns at the time we're executing it.
@@ -569,21 +530,50 @@ public class DBHelper
         Triggers.create(db);
     }
 
-    private void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
-                                                        @NonNull final SQLiteDatabase db) {
-        try (SQLiteStatement stmt = db.compileStatement(
-                "UPDATE " + TBL_IDENTIFIERS.getName()
-                + " SET " + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
-                + " WHERE " + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
-            Identifier.createInitialList(context)
-                      .stream()
-                      .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
-                      .forEach(identifier -> {
-                          stmt.bindString(1, identifier.getWikidataClaimAuthorId().get());
-                          stmt.bindString(2, identifier.getKey());
-                          stmt.executeUpdateDelete();
-                      });
-        }
+    /** Add new identifiers if not already present. */
+    private void addIdentifiers(@NonNull final Context context,
+                                @NonNull final SQLiteDatabase db) {
+
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_DATABAZE_KNIH,
+                Identifier.TYPE_LONG,
+                context.getString(R.string.identifier_databaze_knih),
+                "P10387",
+                DatabazeKnihSearchEngine.SITE_URL,
+                DatabazeKnihSearchEngine.BOOK_URL,
+                DatabazeKnihSearchEngine.AUTHOR_URL));
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_ISNI,
+                Identifier.TYPE_STRING,
+                context.getString(R.string.identifier_isni),
+                "P213",
+                ISNI.SITE_URL,
+                null,
+                ISNI.AUTHOR_URL));
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_STORYGRAPH,
+                Identifier.TYPE_STRING,
+                context.getString(R.string.identifier_storygraph),
+                "P12430",
+                StoryGraph.SITE_URL,
+                StoryGraph.BOOK_URL,
+                StoryGraph.AUTHOR_URL));
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_URN,
+                Identifier.TYPE_STRING,
+                context.getString(R.string.identifier_urn),
+                null,
+                null,
+                null,
+                null));
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_VIAF,
+                Identifier.TYPE_LONG,
+                context.getString(R.string.identifier_viaf),
+                "P214",
+                VIAF.SITE_URL,
+                null,
+                VIAF.AUTHOR_URL));
     }
 
     private void addIdentifier(@NonNull final Context context,
@@ -601,6 +591,7 @@ public class DBHelper
             // ignore
         }
         if (found) {
+            // The identifier is already present
             return;
         }
 
@@ -609,6 +600,7 @@ public class DBHelper
                 + '(' + DBKey.IDENTIFIERS.KEY
                 + ',' + DBKey.IDENTIFIERS.TYPE
                 + ',' + DBKey.IDENTIFIERS.NAME
+                // Added in db42
                 + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
                 + ',' + DBKey.IDENTIFIERS.SITE_URL
                 + ',' + DBKey.IDENTIFIERS.BOOK_URI
@@ -643,6 +635,23 @@ public class DBHelper
                 stmt.bindString(7, authorUrl);
             }
             stmt.executeInsert();
+        }
+    }
+
+    private void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
+                                                        @NonNull final SQLiteDatabase db) {
+        try (SQLiteStatement stmt = db.compileStatement(
+                "UPDATE " + TBL_IDENTIFIERS.getName()
+                + " SET " + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
+                + " WHERE " + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
+            Identifier.createInitialList(context)
+                      .stream()
+                      .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
+                      .forEach(identifier -> {
+                          stmt.bindString(1, identifier.getWikidataClaimAuthorId().get());
+                          stmt.bindString(2, identifier.getKey());
+                          stmt.executeUpdateDelete();
+                      });
         }
     }
 
