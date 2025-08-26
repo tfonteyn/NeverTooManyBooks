@@ -23,7 +23,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
@@ -37,7 +36,6 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -50,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.core.database.UpgradeFailedException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
@@ -58,11 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Porbase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -513,7 +507,8 @@ public class DBHelper
         // We have to do this here as we're always inserting all columns,
         // which may be created at various points in the updates.
         // Any identifier already existing will simply be skipped.
-        addIdentifiers(context, db);
+        // See github #185
+        LegacyUpgrades.addIdentifiersIfNotYetDone(context, db);
 
         // We have to do this here due to some users skipping updates (see github #30)
         // The issue is that this only works ok if the TBL_BOOKLIST_STYLES contains
@@ -528,114 +523,6 @@ public class DBHelper
 
         // Rebuild all triggers
         Triggers.create(db);
-    }
-
-    /** Add new identifiers if not already present. */
-    private void addIdentifiers(@NonNull final Context context,
-                                @NonNull final SQLiteDatabase db) {
-
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_DATABAZE_KNIH,
-                Identifier.TYPE_LONG,
-                context.getString(R.string.identifier_databaze_knih),
-                "P10387",
-                DatabazeKnihSearchEngine.SITE_URL,
-                DatabazeKnihSearchEngine.BOOK_URL,
-                DatabazeKnihSearchEngine.AUTHOR_URL));
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_ISNI,
-                Identifier.TYPE_STRING,
-                context.getString(R.string.identifier_isni),
-                "P213",
-                ISNI.SITE_URL,
-                null,
-                ISNI.AUTHOR_URL));
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_STORYGRAPH,
-                Identifier.TYPE_STRING,
-                context.getString(R.string.identifier_storygraph),
-                "P12430",
-                StoryGraph.SITE_URL,
-                StoryGraph.BOOK_URL,
-                StoryGraph.AUTHOR_URL));
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_URN,
-                Identifier.TYPE_STRING,
-                context.getString(R.string.identifier_urn),
-                null,
-                null,
-                null,
-                null));
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_VIAF,
-                Identifier.TYPE_LONG,
-                context.getString(R.string.identifier_viaf),
-                "P214",
-                VIAF.SITE_URL,
-                null,
-                VIAF.AUTHOR_URL));
-    }
-
-    private void addIdentifier(@NonNull final Context context,
-                               @NonNull final SQLiteDatabase db,
-                               @NonNull final Identifier identifier) {
-
-        // key must be unique
-        boolean found = false;
-        try (SQLiteStatement stmt = db.compileStatement(
-                "SELECT 1 FROM " + TBL_IDENTIFIERS.getName()
-                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
-            stmt.bindString(1, identifier.getKey());
-            found = 1 == stmt.simpleQueryForLong();
-        } catch (@NonNull final SQLiteDoneException ignore) {
-            // ignore
-        }
-        if (found) {
-            // The identifier is already present
-            return;
-        }
-
-        try (SQLiteStatement stmt = db.compileStatement(
-                "INSERT INTO " + TBL_IDENTIFIERS.getName()
-                + '(' + DBKey.IDENTIFIERS.KEY
-                + ',' + DBKey.IDENTIFIERS.TYPE
-                + ',' + DBKey.IDENTIFIERS.NAME
-                // Added in db42
-                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
-                + ',' + DBKey.IDENTIFIERS.SITE_URL
-                + ',' + DBKey.IDENTIFIERS.BOOK_URI
-                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
-                + ") VALUES(?,?,?,?,?,?,?)")) {
-            stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
-            stmt.bindString(2, String.valueOf(identifier.getType()));
-            stmt.bindString(3, identifier.getName());
-
-            final String wdc = identifier.getWikidataClaimAuthorId().orElse(null);
-            if (wdc == null) {
-                stmt.bindNull(4);
-            } else {
-                stmt.bindString(4, wdc);
-            }
-            final String siteUrl = identifier.getSiteUrl(context);
-            if (siteUrl == null) {
-                stmt.bindNull(5);
-            } else {
-                stmt.bindString(5, siteUrl);
-            }
-            final String bookUrl = identifier.getBookUri(context).orElse(null);
-            if (bookUrl == null) {
-                stmt.bindNull(6);
-            } else {
-                stmt.bindString(6, bookUrl);
-            }
-            final String authorUrl = identifier.getAuthorUri(context).orElse(null);
-            if (authorUrl == null) {
-                stmt.bindNull(7);
-            } else {
-                stmt.bindString(7, authorUrl);
-            }
-            stmt.executeInsert();
-        }
     }
 
     private void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,

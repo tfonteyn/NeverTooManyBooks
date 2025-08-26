@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Pair;
 
@@ -36,12 +37,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.header.BooklistHeader;
@@ -55,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.Domain;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.core.database.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
@@ -64,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
@@ -77,7 +82,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.NooSFere;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -1090,5 +1097,112 @@ public final class LegacyUpgrades {
 
         // replaced by a database table in db36
         context.deleteSharedPreferences("language2iso3");
+    }
+
+    static void addIdentifiersIfNotYetDone(@NonNull final Context context,
+                                           @NonNull final SQLiteDatabase db) {
+
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_DATABAZE_KNIH,
+                Identifier.TYPE_LONG,
+                context.getString(R.string.identifier_databaze_knih),
+                "P10387",
+                DatabazeKnihSearchEngine.SITE_URL,
+                DatabazeKnihSearchEngine.BOOK_URL,
+                DatabazeKnihSearchEngine.AUTHOR_URL));
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_ISNI,
+                Identifier.TYPE_STRING,
+                context.getString(R.string.identifier_isni),
+                "P213",
+                ISNI.SITE_URL,
+                null,
+                ISNI.AUTHOR_URL));
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_STORYGRAPH,
+                Identifier.TYPE_STRING,
+                context.getString(R.string.identifier_storygraph),
+                "P12430",
+                StoryGraph.SITE_URL,
+                StoryGraph.BOOK_URL,
+                StoryGraph.AUTHOR_URL));
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_URN,
+                Identifier.TYPE_STRING,
+                context.getString(R.string.identifier_urn),
+                null,
+                null,
+                null,
+                null));
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_VIAF,
+                Identifier.TYPE_LONG,
+                context.getString(R.string.identifier_viaf),
+                "P214",
+                VIAF.SITE_URL,
+                null,
+                VIAF.AUTHOR_URL));
+    }
+
+    private static void addIdentifier(@NonNull final Context context,
+                                      @NonNull final SQLiteDatabase db,
+                                      @NonNull final Identifier identifier) {
+
+        // key must be unique
+        boolean found = false;
+        try (SQLiteStatement stmt = db.compileStatement(
+                "SELECT 1 FROM " + TBL_IDENTIFIERS.getName()
+                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+            stmt.bindString(1, identifier.getKey());
+            found = 1 == stmt.simpleQueryForLong();
+        } catch (@NonNull final SQLiteDoneException ignore) {
+            // ignore
+        }
+        if (found) {
+            // The identifier is already present
+            return;
+        }
+
+        try (SQLiteStatement stmt = db.compileStatement(
+                "INSERT INTO " + TBL_IDENTIFIERS.getName()
+                + '(' + DBKey.IDENTIFIERS.KEY
+                + ',' + DBKey.IDENTIFIERS.TYPE
+                + ',' + DBKey.IDENTIFIERS.NAME
+                // Added in db42
+                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
+                + ',' + DBKey.IDENTIFIERS.SITE_URL
+                + ',' + DBKey.IDENTIFIERS.BOOK_URI
+                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
+                + ") VALUES(?,?,?,?,?,?,?)")) {
+            stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
+            stmt.bindString(2, String.valueOf(identifier.getType()));
+            stmt.bindString(3, identifier.getName());
+
+            final String wdc = identifier.getWikidataClaimAuthorId().orElse(null);
+            if (wdc == null) {
+                stmt.bindNull(4);
+            } else {
+                stmt.bindString(4, wdc);
+            }
+            final String siteUrl = identifier.getSiteUrl(context);
+            if (siteUrl == null) {
+                stmt.bindNull(5);
+            } else {
+                stmt.bindString(5, siteUrl);
+            }
+            final String bookUrl = identifier.getBookUri(context).orElse(null);
+            if (bookUrl == null) {
+                stmt.bindNull(6);
+            } else {
+                stmt.bindString(6, bookUrl);
+            }
+            final String authorUrl = identifier.getAuthorUri(context).orElse(null);
+            if (authorUrl == null) {
+                stmt.bindNull(7);
+            } else {
+                stmt.bindString(7, authorUrl);
+            }
+            stmt.executeInsert();
+        }
     }
 }
