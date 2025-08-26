@@ -116,7 +116,7 @@ public class BedethequeSearchEngine
             .compile("(.*)\\s+\\((le|la|les|l'|the)\\)",
                      Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    private static final String COOKIE = "csrf_cookie_bel";
+    private static final String COOKIE_NAME = "csrf_cookie_bel";
     private static final String COOKIE_DOMAIN = ".bedetheque.com";
     private static final String SEARCH_URL = "/search";
 
@@ -126,7 +126,7 @@ public class BedethequeSearchEngine
      * Param 1: cookie
      * Param 2: ISBN
      *
-     * @see #requireCookieNameValueString(Context)
+     * @see #ensureCookie(Context)
      */
     private static final String BY_ISBN = SEARCH_URL + "/albums?"
                                           + "RechIdSerie="
@@ -159,7 +159,7 @@ public class BedethequeSearchEngine
     private final Map<String, String> extraRequestProperties;
     private final DateParser<PartialDate> dateParser = new PartialDateParser();
     @Nullable
-    private HttpCookie csrfCookie;
+    private HttpCookie sessionCookie;
 
     /**
      * Constructor.
@@ -204,32 +204,41 @@ public class BedethequeSearchEngine
                         .build(SearchEngineConfig::new));
     }
 
+    /**
+     * Fetch the session cookie. We only fetch it once, then cache it in this instance.
+     *
+     * @param context Current context
+     *
+     * @return name=value string for the cookie
+     *
+     * @throws SearchException on generic exceptions (wrapped) during search
+     */
     @NonNull
-    private String requireCookieNameValueString(@NonNull final Context context)
+    private String ensureCookie(@NonNull final Context context)
             throws SearchException {
-        if (csrfCookie == null || csrfCookie.hasExpired()) {
+        if (sessionCookie == null || sessionCookie.hasExpired()) {
             try {
                 final FutureHttp<HttpCookie> httpHead = createHeadRequest();
                 // Reminder: the "request" will be connected and the response code will be OK,
                 // so just extract the cookie we need for the next request
-                csrfCookie = httpHead.head(getHostUrl(context) + SEARCH_URL, response ->
+                sessionCookie = httpHead.head(getHostUrl(context) + SEARCH_URL, response ->
                         cookieManager.getCookieStore()
                                      .getCookies()
                                      .stream()
                                      .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
-                                                  && COOKIE.equals(c.getName()))
+                                                  && COOKIE_NAME.equals(c.getName()))
                                      .findFirst()
-                                     .orElse(new HttpCookie(COOKIE, "")));
+                                     .orElse(new HttpCookie(COOKIE_NAME, "")));
             } catch (@NonNull final IOException | UncheckedIOException | StorageException e) {
                 throw new SearchException(getEngineId(), e);
             }
         }
-        if (csrfCookie == null || csrfCookie.getValue().isEmpty()) {
+        if (sessionCookie == null || sessionCookie.getValue().isEmpty()) {
             throw new SearchException(getEngineId(), null,
                                       context.getString(R.string.httpError));
         }
 
-        return csrfCookie.getName() + '=' + Objects.requireNonNull(csrfCookie.getValue());
+        return sessionCookie.getName() + '=' + Objects.requireNonNull(sessionCookie.getValue());
     }
 
     @NonNull
@@ -243,7 +252,7 @@ public class BedethequeSearchEngine
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
         final String url = getHostUrl(context) + String.format(
-                BY_ISBN, requireCookieNameValueString(context), validIsbn);
+                BY_ISBN, ensureCookie(context), validIsbn);
 
         final Document document = loadDocument(context, url, extraRequestProperties);
 
