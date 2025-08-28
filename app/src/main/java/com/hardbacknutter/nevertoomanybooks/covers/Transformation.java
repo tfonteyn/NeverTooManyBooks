@@ -206,7 +206,7 @@ class Transformation {
                 }
             }
         } catch (@NonNull final IOException e) {
-            LoggerFactory.getLogger().e(TAG, e);
+            LoggerFactory.getLogger().e(TAG, e, srcFile.getAbsolutePath());
             return Optional.empty();
         }
 
