@@ -33,9 +33,8 @@ public class SystemOutLogger
 
     @Override
     public void e(@NonNull final String tag,
-                  @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        System.out.println("JUnit|ERROR|" + tag + "|" + Logger.concat(e, params));
+        System.out.println("JUnit|ERROR|" + tag + "|" + Logger.concat(params));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,11 +68,9 @@ public interface Logger {
      * ERROR message.
      *
      * @param tag    log tag
-     * @param e      cause
      * @param params objects/text to log
      */
     void e(@NonNull String tag,
-           @Nullable Throwable e,
            @Nullable Object... params);
 
     /**

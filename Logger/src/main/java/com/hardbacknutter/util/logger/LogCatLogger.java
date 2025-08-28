@@ -31,9 +31,8 @@ public class LogCatLogger
 
     @Override
     public void e(@NonNull final String tag,
-                  @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        Log.e(tag, Logger.concat(e, params));
+        Log.e(tag, Logger.concat(params));
     }
 
     @Override

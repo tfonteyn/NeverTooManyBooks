@@ -241,13 +241,12 @@ public class FileLogger
 
     @Override
     public void e(@NonNull final String tag,
-                  @Nullable final Throwable e,
                   @Nullable final Object... params) {
-        final String message = Logger.concat(e, params);
+        final String message = Logger.concat(params);
         writeToLog(tag, ERROR, message);
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.e(tag, message, e);
+            Log.e(tag, message);
         }
     }
 

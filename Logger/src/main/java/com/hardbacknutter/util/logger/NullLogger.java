@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ public class NullLogger
 
     @Override
     public void e(@NonNull final String tag,
-                  @Nullable final Throwable e,
                   @Nullable final Object... params) {
         // ignore
 
