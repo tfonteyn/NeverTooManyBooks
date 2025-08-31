@@ -291,7 +291,7 @@ public abstract class FlexClassicDialogFragment
         int lpWidth = ViewGroup.LayoutParams.MATCH_PARENT;
         int lpHeight = ViewGroup.LayoutParams.MATCH_PARENT;
 
-        if (screenSize.getWidth() == ScreenSize.Value.Expanded) {
+        if (screenSize.getWidth().isAtLeast(ScreenSize.Value.Expanded)) {
             lpWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
 
@@ -310,7 +310,7 @@ public abstract class FlexClassicDialogFragment
 
         // So we can't rely on Android being consistent (surprise...)
         // 2023-06-09: patch 4.4.2: adjust the recyclerView manually
-        if (screenSize.getHeight() == ScreenSize.Value.Expanded) {
+        if (screenSize.getHeight().isAtLeast(ScreenSize.Value.Expanded)) {
             lpHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
             if (recyclerView != null) {
                 final ViewGroup.LayoutParams rvLp = recyclerView.getLayoutParams();

@@ -33,6 +33,9 @@ import androidx.annotation.UiContext;
 import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
@@ -40,27 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.core.BuildConfig;
 /**
  * Screen size support.
  * <p>
- * <a href="https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes">
- * support-different-screen-sizes</a>
+ * <a href="https://developer.android.com/develop/ui/compose/layouts/adaptive/use-window-size-classes">
+ * use-window-size-classes</a>
  * <p>
- * This class is basically a rewrite of using androidx.window.core.*;
- * The advantage (IMHO) is that we get to use an {@code enum} instead
- * of a set of class singletons.
- * <pre>
- *     {@code
- *         WindowMetrics windowMetrics =
- *                 WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
- *         int width = windowMetrics.getBounds().width();
- *         int height = windowMetrics.getBounds().height();
- *         float density = activity.getResources().getDisplayMetrics().density;
- *         WindowSizeClass windowSizeClass = WindowSizeClass.compute(width / density,
- *                                                                   height / density);
- *         final WindowHeightSizeClass windowHeightSizeClass =
- *              windowSizeClass.getWindowHeightSizeClass();
- *         final WindowWidthSizeClass windowWidthSizeClass =
- *              windowSizeClass.getWindowWidthSizeClass();
- *     }
- * </pre>
+ * This class is basically a rewrite of the above API.
+ * The advantage (IMHO) is that we get to use simple {@code enum}s instead
+ * of rather convoluted and kotlin-only mess.
  */
 public final class ScreenSize {
 
@@ -69,6 +57,8 @@ public final class ScreenSize {
     /** androidx.window.core.layout.WindowSizeClass. */
     private static final int WIDTH_DP_MEDIUM_LOWER_BOUND = 600;
     private static final int WIDTH_DP_EXPANDED_LOWER_BOUND = 840;
+    private static final int WIDTH_DP_LARGE_LOWER_BOUND = 1200;
+    private static final int WIDTH_DP_EXTRA_LARGE_LOWER_BOUND = 1600;
 
     private static final int HEIGHT_DP_MEDIUM_LOWER_BOUND = 480;
     private static final int HEIGHT_DP_EXPANDED_LOWER_BOUND = 900;
@@ -118,23 +108,18 @@ public final class ScreenSize {
         final float widthDp = bounds.width() / density;
         final float heightDp = bounds.height() / density;
 
-        final Value width;
-        if (widthDp < WIDTH_DP_MEDIUM_LOWER_BOUND) {
-            width = Value.Compact;
-        } else if (widthDp < WIDTH_DP_EXPANDED_LOWER_BOUND) {
-            width = Value.Medium;
-        } else {
-            width = Value.Expanded;
-        }
+        final List<Value> list = Arrays.asList(Value.values());
+        Collections.reverse(list);
 
-        final Value height;
-        if (heightDp < HEIGHT_DP_MEDIUM_LOWER_BOUND) {
-            height = Value.Compact;
-        } else if (heightDp < HEIGHT_DP_EXPANDED_LOWER_BOUND) {
-            height = Value.Medium;
-        } else {
-            height = Value.Expanded;
-        }
+        final Value width = list.stream()
+                                .filter(value -> widthDp > value.widthLowerBound)
+                                .findFirst()
+                                .orElse(Value.Compact);
+
+        final Value height = list.stream()
+                                 .filter(v -> heightDp > v.heightLowerBound)
+                                 .findFirst()
+                                 .orElse(Value.Compact);
 
         final ScreenSize screenSize = new ScreenSize(width, height);
 
@@ -212,9 +197,7 @@ public final class ScreenSize {
      * @return {@code true} when large
      */
     public boolean isLargeScreen() {
-        return width == Value.Expanded && height != Value.Compact
-               ||
-               height == Value.Expanded && width != Value.Compact;
+        return width.isAtLeast(Value.Medium) && height.isAtLeast(Value.Medium);
     }
 
     /**
@@ -229,9 +212,7 @@ public final class ScreenSize {
      * @return {@code true} when small
      */
     public boolean isSmallScreen() {
-        return width == Value.Compact && height != Value.Expanded
-               ||
-               height == Value.Compact && width != Value.Expanded;
+        return !(width.isAtLeast(Value.Expanded) && height.isAtLeast(Value.Expanded));
     }
 
     @Override
@@ -266,8 +247,40 @@ public final class ScreenSize {
      * Never change the order!
      */
     public enum Value {
-        Compact,
-        Medium,
-        Expanded
+        /**
+         * base; phone in portrait.
+         * base; small phone in landscape.
+         */
+        Compact(0, 0),
+        /**
+         * sw600; phone in landscape + tablet in portrait.
+         * sw600; phone in portrait + tablet in landscape.
+         */
+        Medium(WIDTH_DP_MEDIUM_LOWER_BOUND, HEIGHT_DP_MEDIUM_LOWER_BOUND),
+        /**
+         * sw800; tablet in landscape.
+         * sw800; tablet in portrait;
+         */
+        Expanded(WIDTH_DP_EXPANDED_LOWER_BOUND, HEIGHT_DP_EXPANDED_LOWER_BOUND);
+
+        private final int widthLowerBound;
+        private final int heightLowerBound;
+
+        Value(final int widthLowerBound,
+              final int heightLowerBound) {
+            this.widthLowerBound = widthLowerBound;
+            this.heightLowerBound = heightLowerBound;
+        }
+
+        /**
+         * {@code this} >= {@code that}.
+         *
+         * @param that arg
+         *
+         * @return boolean
+         */
+        public boolean isAtLeast(@NonNull final Value that) {
+            return this.ordinal() >= that.ordinal();
+        }
     }
 }

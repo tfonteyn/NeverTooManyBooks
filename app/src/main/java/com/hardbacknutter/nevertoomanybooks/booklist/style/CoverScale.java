@@ -279,7 +279,7 @@ public enum CoverScale {
         if (this == Maximum) {
             if (res.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 final ScreenSize screenSize = ScreenSize.compute(context);
-                if (screenSize.getWidth() == ScreenSize.Value.Expanded) {
+                if (screenSize.getWidth().isAtLeast(ScreenSize.Value.Expanded)) {
                     return 3;
                 }
                 return 2;

@@ -161,13 +161,12 @@ public class RowViewHolder
                 break;
             }
             case IfRoom: {
-                final ScreenSize.Value size =
-                        ScreenSize.compute(itemView.getContext()).getWidth();
-                if (size == ScreenSize.Value.Medium
-                    || size == ScreenSize.Value.Expanded) {
-                    visibility = View.VISIBLE;
-                } else {
+                if (ScreenSize.compute(itemView.getContext()).getWidth()
+                    == ScreenSize.Value.Compact) {
                     visibility = View.GONE;
+                } else {
+                    // ScreenSize.Value.Medium and up
+                    visibility = View.VISIBLE;
                 }
                 break;
             }

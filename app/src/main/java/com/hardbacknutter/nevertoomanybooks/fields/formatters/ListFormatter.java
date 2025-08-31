@@ -98,43 +98,33 @@ public class ListFormatter<T extends Entity>
             final ScreenSize screenSize = ScreenSize.compute(context);
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 // In landscape
-                switch (screenSize.getWidth()) {
-                    case Expanded:
-                    case Medium:
-                        listDetails = Details.Normal;
-                        itemDetails = Details.Full;
-                        break;
-
-                    case Compact:
-                        listDetails = Details.Short;
-                        itemDetails = Details.Short;
-                        break;
-
-                    default:
-                        throw new IllegalArgumentException("WindowSizeClass="
-                                                           + screenSize.getWidth());
+                if (screenSize.getWidth().isAtLeast(ScreenSize.Value.Medium)) {
+                    listDetails = Details.Normal;
+                    itemDetails = Details.Full;
+                } else {
+                    // Compact
+                    listDetails = Details.Short;
+                    itemDetails = Details.Short;
                 }
             } else {
                 // In portrait
                 switch (screenSize.getHeight()) {
-                    case Expanded:
-                        listDetails = Details.Full;
-                        itemDetails = Details.Full;
-                        break;
-
-                    case Medium:
-                        listDetails = Details.Normal;
-                        itemDetails = Details.Normal;
-                        break;
-
-                    case Compact:
+                    case Compact: {
                         listDetails = Details.Short;
                         itemDetails = Details.Short;
                         break;
-
-                    default:
-                        throw new IllegalArgumentException("WindowSizeClass="
-                                                           + screenSize.getHeight());
+                    }
+                    case Medium: {
+                        listDetails = Details.Normal;
+                        itemDetails = Details.Normal;
+                        break;
+                    }
+                    default: {
+                        // ScreenSize.Value.Expanded and up
+                        listDetails = Details.Full;
+                        itemDetails = Details.Full;
+                        break;
+                    }
                 }
             }
 

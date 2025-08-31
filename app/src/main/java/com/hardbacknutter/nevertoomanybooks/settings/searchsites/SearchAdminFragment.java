@@ -152,6 +152,7 @@ public class SearchAdminFragment
             if (ScreenSize.compute(getActivity()).getWidth() == ScreenSize.Value.Compact) {
                 tab.setText(getString(tabAdapter.getTabTitle(position)));
             } else {
+                // ScreenSize.Value.Medium and up
                 tab.setText(getString(tabAdapter.getTabDescription(position)));
             }
             // 2024-05-07: this turned out to be a dud...

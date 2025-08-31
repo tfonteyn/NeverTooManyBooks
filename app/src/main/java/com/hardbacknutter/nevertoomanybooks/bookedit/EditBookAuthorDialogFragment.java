@@ -48,7 +48,7 @@ public class EditBookAuthorDialogFragment
         final ScreenSize screenSize = ScreenSize.compute(getActivity());
         // Tablets and medium phones in landscape mode;
         // Maximize the width to show as many checkboxes as possible without scrolling.
-        if (screenSize.getWidth() == ScreenSize.Value.Expanded) {
+        if (screenSize.getWidth().isAtLeast(ScreenSize.Value.Expanded)) {
             final Dialog dialog = getDialog();
             // sanity check
             if (dialog != null) {
