@@ -113,6 +113,7 @@ public final class TipManager {
         if (shouldBeDisplayed(context, tip)) {
             tip.create(context, postRun, textArgs)
                .show();
+            hasBeenDisplayed.add(tip);
         } else {
             if (postRun != null) {
                 postRun.run();
