@@ -21,7 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.bookreadstatus;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
 
 /**
  * Common interface for the show- and edit-book screens ViewModel's.
@@ -83,5 +83,5 @@ public interface BookReadStatusViewModel {
      * @see #updateReadStatus(boolean)
      */
     @NonNull
-    MutableLiveData<Boolean> onUpdateReadStatus();
+    LiveData<Boolean> onUpdateReadStatus();
 }

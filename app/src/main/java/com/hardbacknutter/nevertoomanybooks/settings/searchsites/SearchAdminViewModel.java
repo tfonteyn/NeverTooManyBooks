@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -59,7 +60,7 @@ public class SearchAdminViewModel
     private final MutableLiveData<Site.Type> siteListUpdated = new MutableLiveData<>();
 
     @NonNull
-    MutableLiveData<Site.Type> onSiteListUpdated() {
+    LiveData<Site.Type> onSiteListUpdated() {
         return siteListUpdated;
     }
 

@@ -23,6 +23,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -84,17 +85,17 @@ public class SearchFtsViewModel
     }
 
     @NonNull
-    MutableLiveData<LocalSearchCriteria> onInitSearchCriteria() {
+    LiveData<LocalSearchCriteria> onInitSearchCriteria() {
         return onInitSearchCriteria;
     }
 
     @NonNull
-    MutableLiveData<Void> onSearchStart() {
+    LiveData<Void> onSearchStart() {
         return onSearchStart;
     }
 
     @NonNull
-    MutableLiveData<Void> onSearchFinished() {
+    LiveData<Void> onSearchFinished() {
         return onSearchFinished;
     }
 

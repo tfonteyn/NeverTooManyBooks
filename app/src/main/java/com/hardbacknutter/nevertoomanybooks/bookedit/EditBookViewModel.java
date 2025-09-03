@@ -29,6 +29,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -448,7 +449,7 @@ public class EditBookViewModel
 
     @NonNull
     @Override
-    public MutableLiveData<Boolean> onUpdateReadStatus() {
+    public LiveData<Boolean> onUpdateReadStatus() {
         return onReadStatusUpdateUI;
     }
 

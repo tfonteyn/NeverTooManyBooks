@@ -26,6 +26,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -109,7 +110,7 @@ public class MaintenanceViewModel
     }
 
     @NonNull
-    MutableLiveData<Boolean> onAllowPurgeFiles() {
+    LiveData<Boolean> onAllowPurgeFiles() {
         return allowPurgeFiles;
     }
 

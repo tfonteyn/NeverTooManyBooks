@@ -790,7 +790,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    MutableLiveData<Boolean> getSearchCriteriaAreActive() {
+    LiveData<Boolean> getSearchCriteriaAreActive() {
         return searchCriteriaAreActive;
     }
 

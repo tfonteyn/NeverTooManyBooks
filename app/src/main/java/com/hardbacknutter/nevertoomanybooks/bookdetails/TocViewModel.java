@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -89,7 +90,7 @@ public class TocViewModel
     }
 
     @NonNull
-    MutableLiveData<Long> onReloadBook() {
+    LiveData<Long> onReloadBook() {
         return onReloadBook;
     }
 

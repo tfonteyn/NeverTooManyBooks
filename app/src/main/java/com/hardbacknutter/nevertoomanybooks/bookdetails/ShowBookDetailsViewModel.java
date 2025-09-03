@@ -27,6 +27,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -121,7 +122,7 @@ public class ShowBookDetailsViewModel
      * @return book
      */
     @NonNull
-    MutableLiveData<Book> onBookLoaded() {
+    LiveData<Book> onBookLoaded() {
         return onBookLoaded;
     }
 
@@ -237,7 +238,7 @@ public class ShowBookDetailsViewModel
 
     @Override
     @NonNull
-    public MutableLiveData<Boolean> onUpdateReadStatus() {
+    public LiveData<Boolean> onUpdateReadStatus() {
         return onReadStatusUpdateUI;
     }
 

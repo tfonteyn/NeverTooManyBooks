@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -167,12 +168,12 @@ public class StyleViewModel
     }
 
     @NonNull
-    MutableLiveData<Void> onModified() {
+    LiveData<Void> onModified() {
         return onModified;
     }
 
     @NonNull
-    MutableLiveData<String> onNameNotUnique() {
+    LiveData<String> onNameNotUnique() {
         return onNameNotUnique;
     }
 
