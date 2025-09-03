@@ -52,7 +52,7 @@ public class SearchAdminViewModel
      * <p>
      * Type: {@code java.util.ArrayList<? extends android.os.Parcelable>)}
      */
-    public static final String BKEY_LIST = TAG + ":list";
+    static final String BKEY_LIST = TAG + ":list";
 
     /** Ordered list. */
     private final Map<Site.Type, List<Site>> typeAndSites = new LinkedHashMap<>();
