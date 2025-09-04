@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Porbase;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -95,10 +97,11 @@ public class DBHelper
      * v7.4.0: 41
      * v7.6.0: 42
      * v7.7.0: 43
+     * v7.9.0: 44
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 43;
+    public static final int DATABASE_VERSION = 44;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -502,6 +505,14 @@ public class DBHelper
                        + " SET " + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
                        + '=' + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
                        + '|' + FieldVisibility.getBitValue(Set.of(DBKey.COVER[2], DBKey.COVER[3])));
+        }
+        if (oldVersion < 44) {
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+            // If the user never enabled the zoom-slider, force the default back to zero
+            if (!prefs.getBoolean(CameraConfig.PK_CAMERA_ZOOM_CONTROL_SHOW, false)) {
+                prefs.edit().putFloat(CameraConfig.PK_CAMERA_ZOOM_CONTROL_VALUE, 0f).apply();
+            }
         }
 
         // We have to do this here as we're always inserting all columns,

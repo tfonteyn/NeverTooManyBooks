@@ -68,14 +68,13 @@ public final class CameraConfig {
      * <p>
      * boolean, default {@code false}.
      */
-    private static final String PK_CAMERA_ZOOM_CONTROL_SHOW = "camera.zoom.control.show";
+    public static final String PK_CAMERA_ZOOM_CONTROL_SHOW = "camera.zoom.control.show";
+    /** Stores the current value. */
+    public static final String PK_CAMERA_ZOOM_CONTROL_VALUE = "camera.zoom.control.value";
+    private static final float DEFAULT_ZOOM_VALUE = 0.0f;
 
     /** boolean, default {@code true}. */
     private static final String PK_CAMERA_AUTO_FOCUS = "camera.auto.focus";
-
-    /** Stores the current value. */
-    private static final String PK_CAMERA_ZOOM_CONTROL_VALUE = "camera.zoom.control.value";
-    private static final float DEFAULT_ZOOM_VALUE = 0.3f;
 
     /** Stores the current status. */
     private static final String PK_CAMERA_TORCH_STATUS = "camera.torch.status";
