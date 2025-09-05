@@ -625,7 +625,7 @@ public class SearchBookByIsbnFragment
 
         vb.btnStopScanning.setOnClickListener(v -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                v.performHapticFeedback(HapticFeedbackConstants.REJECT);
+                v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
             } else {
                 v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             }
