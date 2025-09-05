@@ -634,13 +634,14 @@ public class SearchBookByIsbnFragment
     }
 
     private void updateEmbeddedScannerViewsVisibility(final boolean visible) {
-        // We used a androidx.constraintlayout.widget.Group for all 4,
-        // but controlling torch/zoom individually did not work.
-        // Using a group just for preview/button was overhead.
         vb.barcodeScanner.setVisibility(visible ? View.VISIBLE : View.GONE);
         vb.btnStopScanning.setVisibility(visible ? View.VISIBLE : View.GONE);
+
         vb.btnTorch.setVisibility(visible && hasTorch ? View.VISIBLE : View.GONE);
-        vb.zoomSlider.setVisibility(visible && hasZoom ? View.VISIBLE : View.GONE);
+
+        vb.zoomSlider.setVisibility(
+                visible && hasZoom && vm.getCameraConfig().isZoomControlEnabled()
+                ? View.VISIBLE : View.GONE);
     }
 
     private void updateTorchButtonIcon(final boolean torchEnabled) {
@@ -680,11 +681,7 @@ public class SearchBookByIsbnFragment
         //noinspection DataFlowIssue
         scanner = builder.build(context);
 
-        // Does the user WANT to display the zoom-control?
-        // and does the camera HAVE a zoom?
-        hasZoom = cameraConfig.isZoomControlEnabled() && scanner.hasZoom(context);
-
-        // Does the device have a torch light?
+        hasZoom = scanner.hasZoom(context);
         hasTorch = scanner.hasTorch(context);
 
         scanner.setLinearZoom(cameraConfig.getZoomValue());
