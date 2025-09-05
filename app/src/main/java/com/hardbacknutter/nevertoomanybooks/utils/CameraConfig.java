@@ -29,7 +29,6 @@ import android.hardware.camera2.CameraMetadata;
 import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.core.math.MathUtils;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,11 +83,6 @@ public final class CameraConfig {
 
     private final List<Integer> lensIds = new ArrayList<>();
 
-    private final boolean showZoomControl;
-    private final boolean autoFocus;
-
-    private int lensFacing;
-
     private boolean torchEnabled;
     @FloatRange(from = 0.0, to = 1.0)
     private float zoomValue;
@@ -110,22 +104,11 @@ public final class CameraConfig {
             LoggerFactory.getLogger().e(TAG, e);
         }
 
-        final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-
-        // By default -1, which for the scanner contract call means 'no preference'
-        lensFacing = IntListPref.getInt(p, PK_CAMERA_LENS_FACING, NO_LENS_FACING_PREFERENCE);
-        // we must verify the id, as the preference could have been imported from another device
-        if (!lensIds.contains(lensFacing)) {
-            lensFacing = NO_LENS_FACING_PREFERENCE;
-        }
-
-        showZoomControl = p.getBoolean(PK_CAMERA_ZOOM_CONTROL_SHOW, false);
-        autoFocus = p.getBoolean(PK_CAMERA_AUTO_FOCUS, true);
+        final SharedPreferences p = ServiceLocator.getInstance().getSharedPreferences();
 
         torchEnabled = p.getBoolean(PK_CAMERA_TORCH_STATUS, false);
         zoomValue = p.getFloat(PK_CAMERA_ZOOM_CONTROL_VALUE, DEFAULT_ZOOM_VALUE);
     }
-
 
     /**
      * Get available lens-facing id's.
@@ -155,7 +138,15 @@ public final class CameraConfig {
      * @return lens-facing identifier, or {@link #NO_LENS_FACING_PREFERENCE} for no-preference
      */
     public int getLensFacing() {
-        return lensFacing;
+        final SharedPreferences p = ServiceLocator.getInstance().getSharedPreferences();
+        // By default -1, which for the scanner contract call means 'no preference'
+        final int lensFacing = IntListPref.getInt(p, PK_CAMERA_LENS_FACING,
+                                                  NO_LENS_FACING_PREFERENCE);
+        // we must verify the id, as the preference could have been imported from another device
+        if (lensIds.contains(lensFacing)) {
+            return lensFacing;
+        }
+        return NO_LENS_FACING_PREFERENCE;
     }
 
     /**
@@ -178,22 +169,28 @@ public final class CameraConfig {
 
     /**
      * Whether a zoom-control slider should be shown or hidden in the UI.
+     * <p>
+     * Default: {@code false}.
      *
      * @return flag
      */
     public boolean isZoomControlEnabled() {
-        return showZoomControl;
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_CAMERA_ZOOM_CONTROL_SHOW, false);
     }
 
     /**
      * Whether auto-focus should be
      * {@code false}: left to the device,
      * or {@code true}: controlled by the app .
+     * <p>
+     * Default: {@code true}
      *
      * @return flag
      */
     public boolean isAutoFocus() {
-        return autoFocus;
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_CAMERA_AUTO_FOCUS, true);
     }
 
     /**
