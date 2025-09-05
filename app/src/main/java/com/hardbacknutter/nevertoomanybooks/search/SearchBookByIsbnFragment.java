@@ -363,7 +363,9 @@ public class SearchBookByIsbnFragment
                      .addCallback(getViewLifecycleOwner(), backPressedWithActiveSearches);
 
         useEmbeddedScanner = maybeInitEmbeddedScanner();
-        if (!useEmbeddedScanner) {
+        if (useEmbeddedScanner) {
+            initEmbeddedScannerViews();
+        } else {
             // make sure to hide all!
             updateEmbeddedScannerViewsVisibility(false);
         }
@@ -601,7 +603,6 @@ public class SearchBookByIsbnFragment
     // @RequiresPermission(Manifest.permission.CAMERA)
     private void startEmbeddedScanner() {
         if (scanner == null) {
-            initEmbeddedScannerViews();
             createEmbeddedScanner();
         }
 
