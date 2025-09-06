@@ -444,6 +444,44 @@ public class SearchBookByIsbnFragment
         }
     }
 
+    private void initEmbeddedScannerViews() {
+        vb.zoomSlider.setValue(vm.getCameraConfig().getZoomValue());
+        vb.zoomSlider.addOnChangeListener((slider, zoomValue, fromUser) -> {
+            if (fromUser) {
+                vm.getCameraConfig().setZoomValue(zoomValue);
+                //noinspection DataFlowIssue
+                scanner.setLinearZoom(zoomValue);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    slider.performHapticFeedback(
+                            HapticFeedbackConstants.SEGMENT_FREQUENT_TICK);
+                } else {
+                    slider.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
+                }
+            }
+        });
+
+        updateTorchButtonIcon(vm.getCameraConfig().isTorchEnabled());
+        vb.btnTorch.setOnClickListener(v -> {
+            final CameraConfig cameraConfig = vm.getCameraConfig();
+            // Flip the status
+            final boolean enabled = !cameraConfig.isTorchEnabled();
+            cameraConfig.setTorchEnabled(enabled);
+            updateTorchButtonIcon(enabled);
+            if (scanner != null) {
+                scanner.setTorch(enabled);
+            }
+        });
+
+        vb.btnStopScanning.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+            } else {
+                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            }
+            switchOffScanner();
+        });
+    }
+
     /**
      * The input field is not being limited in length. This is to allow entering UPC_A numbers.
      */
@@ -593,44 +631,6 @@ public class SearchBookByIsbnFragment
                               scanner = null;
                           }
                       });
-    }
-
-    private void initEmbeddedScannerViews() {
-        vb.zoomSlider.setValue(vm.getCameraConfig().getZoomValue());
-        vb.zoomSlider.addOnChangeListener((slider, zoomValue, fromUser) -> {
-            if (fromUser) {
-                vm.getCameraConfig().setZoomValue(zoomValue);
-                //noinspection DataFlowIssue
-                scanner.setLinearZoom(zoomValue);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    slider.performHapticFeedback(
-                            HapticFeedbackConstants.SEGMENT_FREQUENT_TICK);
-                } else {
-                    slider.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
-                }
-            }
-        });
-
-        updateTorchButtonIcon(vm.getCameraConfig().isTorchEnabled());
-        vb.btnTorch.setOnClickListener(v -> {
-            final CameraConfig cameraConfig = vm.getCameraConfig();
-            // Flip the status
-            final boolean enabled = !cameraConfig.isTorchEnabled();
-            cameraConfig.setTorchEnabled(enabled);
-            updateTorchButtonIcon(enabled);
-            if (scanner != null) {
-                scanner.setTorch(enabled);
-            }
-        });
-
-        vb.btnStopScanning.setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
-            } else {
-                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            }
-            switchOffScanner();
-        });
     }
 
     private void updateEmbeddedScannerViewsVisibility(final boolean visible) {
