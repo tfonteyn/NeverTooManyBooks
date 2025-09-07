@@ -36,7 +36,7 @@ androidxWindow = "1.4.0"
 desugar = "2.1.5"
 
 # https://github.com/material-components/material-components-android/releases
-material = '1.12.0'
+material = '1.13.0'
 
 # jsoup HTML parser library @ https://jsoup.org/
 jsoup = "1.21.2"
