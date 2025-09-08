@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,9 +33,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
  * Show a context menu on a view - will show icons if present.

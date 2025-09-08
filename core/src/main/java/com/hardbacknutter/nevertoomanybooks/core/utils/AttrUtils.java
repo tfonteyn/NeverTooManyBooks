@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.core.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -34,16 +34,14 @@ import androidx.annotation.NonNull;
  * If the resource is a plain color, then this is the same as the code used above.
  * However, if the resource is a reference (using a string) then
  * - MaterialColors.getColor  DOES NOT RESOLVE THIS
- * - getResources().getColor will resolve it correctly.
+ * - context.getColor(..) will resolve it correctly.
  * <p>
  * example, for "R.attr.colorControlNormal" we get:
  * TypedValue{t=0x3/d=0x9f3 "res/color/text_color_secondary.xml" a=1 r=0x1060233}
  * - MaterialColors.getColor returns the data part: 0x9f3  (tv.data)
- * - getResources().getColor resolves it and return the correct color int.
+ * - context.getColor(..) resolves it and return the correct color int.
  */
 public final class AttrUtils {
-
-    private static final String ERROR_FAILED_TO_RESOLVE_ATTRIBUTE = "Failed to resolve attribute ";
 
     private AttrUtils() {
     }
@@ -64,14 +62,17 @@ public final class AttrUtils {
             throws Resources.NotFoundException {
         final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
         try {
-            final int resId = a.getResourceId(0, 0);
-            if (resId != 0) {
-                return resId;
+            if (a.hasValue(0)) {
+                final int resId = a.getResourceId(0, 0);
+                // Paranoia... should never happen when hasValue==true
+                if (resId != 0) {
+                    return resId;
+                }
             }
         } finally {
             a.recycle();
         }
-        throw new Resources.NotFoundException(ERROR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
+        throw new Resources.NotFoundException(String.valueOf(attr));
     }
 
     /**
@@ -90,14 +91,13 @@ public final class AttrUtils {
             throws Resources.NotFoundException {
         final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
         try {
-            final int color = a.getColor(0, 0);
-            if (color != 0) {
-                return color;
+            if (a.hasValue(0)) {
+                return a.getColor(0, 0);
             }
         } finally {
             a.recycle();
         }
-        throw new Resources.NotFoundException(ERROR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
+        throw new Resources.NotFoundException(String.valueOf(attr));
     }
 
     /**
@@ -116,14 +116,17 @@ public final class AttrUtils {
             throws Resources.NotFoundException {
         final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
         try {
-            final Drawable drawable = a.getDrawable(0);
-            if (drawable != null) {
-                return drawable;
+            if (a.hasValue(0)) {
+                final Drawable drawable = a.getDrawable(0);
+                // Paranoia... should never happen when hasValue==true
+                if (drawable != null) {
+                    return drawable;
+                }
             }
         } finally {
             a.recycle();
         }
-        throw new Resources.NotFoundException(ERROR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
+        throw new Resources.NotFoundException(String.valueOf(attr));
     }
 
     /**
@@ -141,13 +144,12 @@ public final class AttrUtils {
             throws Resources.NotFoundException {
         final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
         try {
-            final int dimension = a.getDimensionPixelSize(0, 0);
-            if (dimension != 0) {
-                return dimension;
+            if (a.hasValue(0)) {
+                return a.getDimensionPixelSize(0, 0);
             }
         } finally {
             a.recycle();
         }
-        throw new Resources.NotFoundException(ERROR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
+        throw new Resources.NotFoundException(String.valueOf(attr));
     }
 }

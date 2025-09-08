@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 
 public class HostUrlValidator
         implements Preference.SummaryProvider<EditTextPreference> {

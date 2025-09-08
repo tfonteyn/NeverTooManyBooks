@@ -27,6 +27,7 @@ package com.hardbacknutter.zratingbar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ClipDrawable;
@@ -134,13 +135,16 @@ class MaterialRatingDrawable
     }
 
     private static int getTintColor(@NonNull final Context context,
-                                    @AttrRes final int tintAttrId) {
-        final TypedArray a = context.obtainStyledAttributes(new int[]{tintAttrId});
+                                    @AttrRes final int attr) {
+        final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
         try {
-            return a.getColor(0, 0);
+            if (a.hasValue(0)) {
+                return a.getColor(0, 0);
+            }
         } finally {
             a.recycle();
         }
+        throw new Resources.NotFoundException(String.valueOf(attr));
     }
 
     float getTileRatio() {

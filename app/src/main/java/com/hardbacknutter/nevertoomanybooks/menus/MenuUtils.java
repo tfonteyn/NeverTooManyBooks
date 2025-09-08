@@ -43,7 +43,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 
 public final class MenuUtils {
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,8 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.core.widgets.adapters;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -29,7 +27,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.util.TypedValue;
 import android.view.View;
 
-import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
@@ -37,6 +34,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 
 /**
  * Original code from
@@ -94,39 +93,13 @@ public class GridDividerItemDecoration
         this.horizontalDivider = horizontalDivider;
         this.verticalDivider = verticalDivider;
 
-        color = getColorInt(context, com.google.android.material.R.attr.colorOutline);
+        color = AttrUtils.getColorInt(context, com.google.android.material.R.attr.colorOutline);
 
         thickness = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1,
                                                     context.getResources().getDisplayMetrics());
 
         dividerDrawable = new ShapeDrawable();
         setDividerColor(color);
-    }
-
-    /**
-     * Get a color int value for the given attribute.
-     *
-     * @param context Current context
-     * @param attr    attribute id to resolve
-     *
-     * @return A single color value in the form 0xAARRGGBB.
-     *
-     * @throws Resources.NotFoundException if the requested attribute/resource does not exist.
-     */
-    @ColorInt
-    private static int getColorInt(@NonNull final Context context,
-                                   @AttrRes final int attr)
-            throws Resources.NotFoundException {
-        final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
-        try {
-            final int color = a.getColor(0, 0);
-            if (color != 0) {
-                return color;
-            }
-        } finally {
-            a.recycle();
-        }
-        throw new Resources.NotFoundException(String.valueOf(attr));
     }
 
     /**

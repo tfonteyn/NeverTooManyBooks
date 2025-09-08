@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,8 +30,6 @@ import androidx.annotation.NonNull;
 
 public final class AttrUtils {
 
-    private static final String ERR_FAILED_TO_RESOLVE_ATTRIBUTE = "Failed to resolve attribute ";
-
     private AttrUtils() {
     }
 
@@ -51,14 +49,13 @@ public final class AttrUtils {
             throws Resources.NotFoundException {
         final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
         try {
-            final int color = a.getColor(0, 0);
-            if (color != 0) {
-                return color;
+            if (a.hasValue(0)) {
+                return a.getColor(0, 0);
             }
         } finally {
             a.recycle();
         }
-        throw new Resources.NotFoundException(ERR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
+        throw new Resources.NotFoundException(String.valueOf(attr));
     }
 
     /**
@@ -72,18 +69,21 @@ public final class AttrUtils {
      * @throws Resources.NotFoundException if the requested attribute/resource does not exist.
      */
     @NonNull
-    static Drawable getDrawable(@NonNull final Context context,
-                                @AttrRes final int attr)
+    public static Drawable getDrawable(@NonNull final Context context,
+                                       @AttrRes final int attr)
             throws Resources.NotFoundException {
         final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
         try {
-            final Drawable drawable = a.getDrawable(0);
-            if (drawable != null) {
-                return drawable;
+            if (a.hasValue(0)) {
+                final Drawable drawable = a.getDrawable(0);
+                // Paranoia... should never happen when hasValue==true
+                if (drawable != null) {
+                    return drawable;
+                }
             }
         } finally {
             a.recycle();
         }
-        throw new Resources.NotFoundException(ERR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
+        throw new Resources.NotFoundException(String.valueOf(attr));
     }
 }

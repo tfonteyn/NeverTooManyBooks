@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
@@ -67,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.settings.tags.TagAdminContract;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**

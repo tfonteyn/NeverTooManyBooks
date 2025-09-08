@@ -33,8 +33,8 @@ import androidx.annotation.Nullable;
 import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.core.widgets.drapdropswipe.ItemTouchHelperViewHolder;
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 
 /**

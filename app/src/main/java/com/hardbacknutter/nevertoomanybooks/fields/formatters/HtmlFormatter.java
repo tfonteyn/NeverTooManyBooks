@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 
 /**
  * FieldFormatter for HTML fields.
