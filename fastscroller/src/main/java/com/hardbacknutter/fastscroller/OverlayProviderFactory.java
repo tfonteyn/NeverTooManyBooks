@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -127,9 +127,9 @@ public final class OverlayProviderFactory {
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
-        //reminder: don't use colorSurface; that's already used for the list view background.
+        // reminder: don't use colorSurface; that's already used for the list view background.
         final int bgColor = AttrUtils
-                .getColorInt(context, com.google.android.material.R.attr.colorBackgroundFloating);
+                .getColorInt(context, androidx.appcompat.R.attr.colorBackgroundFloating);
         popupView.setBackground(new Md2PopupBackground(context, bgColor));
         popupView.setElevation(res.getDimensionPixelOffset(R.dimen.fs_md2_popup_elevation));
 

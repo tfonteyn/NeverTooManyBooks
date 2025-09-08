@@ -169,9 +169,10 @@ public class SearchBookByTextFragment
         }
         // There are no sites which support searching by Text
         vb.btnSearch.setEnabled(false);
+        // don't use android.R.attr.colorError which is API 29+ only
         //noinspection DataFlowIssue
         final int textColor = AttrUtils
-                .getColorInt(context, com.google.android.material.R.attr.colorError);
+                .getColorInt(context, androidx.appcompat.R.attr.colorError);
         vb.txtLimitations.setTextColor(textColor);
         vb.txtLimitations.setText(getString(R.string.warning_no_site_supports_this_method,
                                             getString(R.string.lbl_author)

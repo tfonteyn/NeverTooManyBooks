@@ -144,7 +144,7 @@ public class BooklistAdapter
 
         if (style.isGroupRowUsesPreferredHeight()) {
             groupRowHeight = AttrUtils.getDimensionPixelSize(
-                    context, com.google.android.material.R.attr.listPreferredItemHeightSmall);
+                    context, android.R.attr.listPreferredItemHeightSmall);
         } else {
             groupRowHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
         }

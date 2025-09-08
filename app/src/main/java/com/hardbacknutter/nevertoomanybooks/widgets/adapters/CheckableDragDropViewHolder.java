@@ -72,8 +72,8 @@ public class CheckableDragDropViewHolder
         super(itemView);
         setClickTargetViewFocusable(false);
 
-        itemDraggedBackgroundColor = AttrUtils.getColorInt(
-                itemView.getContext(), com.google.android.material.R.attr.colorPrimary);
+        itemDraggedBackgroundColor = AttrUtils
+                .getColorInt(itemView.getContext(), androidx.appcompat.R.attr.colorPrimary);
 
         // optional
         dragHandleView = itemView.findViewById(R.id.ROW_DRAG_HANDLE);

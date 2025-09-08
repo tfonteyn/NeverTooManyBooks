@@ -537,9 +537,10 @@ public class SettingsFragment
                 //noinspection DataFlowIssue
                 if (preference.getSharedPreferences()
                               .getBoolean(StartupViewModel.PK_REBUILD_TITLE_OB, false)) {
+                    // don't use android.R.attr.colorError which is API 29+ only
                     @ColorInt
-                    final int color = AttrUtils.getColorInt(
-                            context, com.google.android.material.R.attr.colorError);
+                    final int color = AttrUtils
+                            .getColorInt(context, androidx.appcompat.R.attr.colorError);
 
                     final int warningStart = summary.length() + 1;
                     // Add the warning

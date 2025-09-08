@@ -83,8 +83,9 @@ public class HostUrlValidator
             text = context.getString(R.string.name_colon_value,
                                      context.getString(R.string.error_invalid_url), text);
             final Spannable spannable = new SpannableString(text);
+            // don't use android.R.attr.colorError which is API 29+ only
             final int colorInt = AttrUtils
-                    .getColorInt(context, com.google.android.material.R.attr.colorError);
+                    .getColorInt(context, androidx.appcompat.R.attr.colorError);
             spannable.setSpan(new ForegroundColorSpan(colorInt), 0, text.length(), 0);
             return spannable;
         }
