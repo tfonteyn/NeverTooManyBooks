@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 
@@ -83,7 +82,7 @@ public class ExtMenuPopupWindow {
      *
      * @param context Current context
      */
-    @SuppressLint("InflateParams")
+    @SuppressLint({"InflateParams", "UseCompatLoadingForDrawables"})
     public ExtMenuPopupWindow(@NonNull final Context context) {
         final Resources res = context.getResources();
         paddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
@@ -96,8 +95,7 @@ public class ExtMenuPopupWindow {
         popupWindow.setFocusable(true);
         popupWindow.setContentView(vb.getRoot());
 
-        popupWindow.setBackgroundDrawable(AttrUtils.getDrawable(
-                context, com.google.android.material.R.attr.popupMenuBackground));
+        popupWindow.setBackgroundDrawable(context.getDrawable(R.drawable.bg_popupmenu));
         popupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
 
         adapter = new MenuItemListAdapter(context, menuCallback);
