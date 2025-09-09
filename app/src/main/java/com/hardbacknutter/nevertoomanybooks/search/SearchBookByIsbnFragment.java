@@ -335,7 +335,7 @@ public class SearchBookByIsbnFragment
                 onBarcodeScanned(o.get());
             } else {
                 // the user hit 'back' (they are done) or there was something was wrong
-                switchOffScanner();
+                onScanningFinished();
             }
         });
     }
@@ -480,7 +480,7 @@ public class SearchBookByIsbnFragment
             } else {
                 v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             }
-            switchOffScanner();
+            onScanningFinished();
         });
     }
 
@@ -627,8 +627,7 @@ public class SearchBookByIsbnFragment
 
                           @Override
                           public void onError(@NonNull final Throwable e) {
-                              // quit scanning, and destroy the scanner
-                              switchOffScanner();
+                              onScanningFinished();
                           }
                       });
     }
@@ -702,12 +701,9 @@ public class SearchBookByIsbnFragment
     }
 
     /**
-     * Switch the scanner off.
-     * <p>
-     * Dev. note: this used to be called "stopScanning" but that was confusing as
-     * the standalone scanner would already be stopped.
+     * Clean up after scanning finished.
      */
-    private void switchOffScanner() {
+    private void onScanningFinished() {
         if (useEmbeddedScanner) {
             if (scanner != null) {
                 scanner.stop();
@@ -780,7 +776,7 @@ public class SearchBookByIsbnFragment
                                       @NonNull final List<Pair<Long, String>> existingIds,
                                       @NonNull final Runnable onAdd) {
         // always quit scanning until the user manually starts it again
-        switchOffScanner();
+        onScanningFinished();
 
         // we always use the first one... really should offer the user a choice.
         final long firstFound = existingIds.get(0).first;
@@ -859,7 +855,7 @@ public class SearchBookByIsbnFragment
                 .setMessage(R.string.error_book_search_failed)
                 .setNegativeButton(R.string.action_stop_scanning, (d, w) -> {
                     d.dismiss();
-                    switchOffScanner();
+                    onScanningFinished();
                 })
                 .setPositiveButton(R.string.ok, (d, w) -> {
                     d.dismiss();
@@ -937,7 +933,7 @@ public class SearchBookByIsbnFragment
                     break;
                 }
                 case Single: {
-                    switchOffScanner();
+                    onScanningFinished();
                     vm.setIsbnText(barCode);
                     modelToView();
                     prepare(code);
@@ -960,7 +956,7 @@ public class SearchBookByIsbnFragment
                 startScanner();
             } else {
                 // invalid code, always quit scanning and let the user edit the code
-                switchOffScanner();
+                onScanningFinished();
                 vm.setIsbnText(barCode);
                 modelToView();
                 vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
