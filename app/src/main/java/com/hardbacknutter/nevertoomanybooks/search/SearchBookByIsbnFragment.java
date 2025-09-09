@@ -330,7 +330,6 @@ public class SearchBookByIsbnFragment
                                                     o -> o.ifPresent(this::onOpenUri));
 
         scannerActivityLauncher = registerForActivityResult(new ScannerContract(), o -> {
-            vm.setScannerActivityStarted(false);
             if (o.isPresent()) {
                 onBarcodeScanned(o.get());
             } else {
@@ -609,6 +608,7 @@ public class SearchBookByIsbnFragment
 
         updateEmbeddedScannerViewsVisibility(true);
 
+        vm.setScannerStarted(true);
         scanner.start(getViewLifecycleOwner(),
                       vb.cameraPreview,
                       new DecoderResultListener() {
@@ -693,8 +693,8 @@ public class SearchBookByIsbnFragment
      * @see #startScanner()
      */
     private void startScannerActivity() {
-        if (!vm.isScannerActivityStarted()) {
-            vm.setScannerActivityStarted(true);
+        if (!vm.isScannerStarted()) {
+            vm.setScannerStarted(true);
             scannerActivityLauncher.launch(
                     ScannerContract.createDefaultOptions(vm.getCameraConfig()));
         }
@@ -712,6 +712,7 @@ public class SearchBookByIsbnFragment
             }
             updateEmbeddedScannerViewsVisibility(false);
         }
+        vm.setScannerStarted(false);
         vm.setScannerMode(ScanMode.Off);
     }
 

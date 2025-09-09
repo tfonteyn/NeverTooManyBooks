@@ -81,7 +81,7 @@ public class SearchBookByIsbnViewModel
      * Flag indicating the scanner Activity is already started so we don't
      * start it a second time after a device rotation.
      */
-    private boolean scannerActivityStarted;
+    private boolean scannerStarted;
 
     /** The raw text. The 'isStrict' flag is get/set directly with SharedPreferences. */
     @Nullable
@@ -154,12 +154,30 @@ public class SearchBookByIsbnViewModel
         this.isbnText = isbnText;
     }
 
-    boolean isScannerActivityStarted() {
-        return scannerActivityStarted;
+    /**
+     * Return the current scanner status.
+     * <p>
+     * This is independent from the {@link #getScannerMode()}.
+     *
+     * @return flag
+     *
+     * @see #setScannerStarted(boolean)
+     */
+    boolean isScannerStarted() {
+        return scannerStarted;
     }
 
-    void setScannerActivityStarted(final boolean started) {
-        this.scannerActivityStarted = started;
+    /**
+     * Remember the current scanner status.
+     * <p>
+     * This is independent from the {@link #getScannerMode()}.
+     *
+     * @param started flag
+     *
+     * @see #isScannerStarted()
+     */
+    void setScannerStarted(final boolean started) {
+        this.scannerStarted = started;
     }
 
     @NonNull
