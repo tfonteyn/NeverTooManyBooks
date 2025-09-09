@@ -629,8 +629,6 @@ public class SearchBookByIsbnFragment
                           public void onError(@NonNull final Throwable e) {
                               // quit scanning, and destroy the scanner
                               switchOffScanner();
-                              getLifecycle().removeObserver(scanner);
-                              scanner = null;
                           }
                       });
     }
@@ -713,6 +711,8 @@ public class SearchBookByIsbnFragment
         if (useEmbeddedScanner) {
             if (scanner != null) {
                 scanner.stop();
+                getLifecycle().removeObserver(scanner);
+                scanner = null;
             }
             updateEmbeddedScannerViewsVisibility(false);
         }
