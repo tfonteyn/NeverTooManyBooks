@@ -604,6 +604,7 @@ public class SearchBookByIsbnFragment
     private void startEmbeddedScanner() {
         if (scanner == null) {
             createEmbeddedScanner();
+            getLifecycle().addObserver(scanner);
         }
 
         updateEmbeddedScannerViewsVisibility(true);
@@ -687,8 +688,6 @@ public class SearchBookByIsbnFragment
 
         scanner.setLinearZoom(cameraConfig.getZoomValue());
         scanner.setTorch(cameraConfig.isTorchEnabled());
-
-        getLifecycle().addObserver(scanner);
     }
 
     /**
