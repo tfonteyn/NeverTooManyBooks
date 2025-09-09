@@ -88,6 +88,7 @@ public class SearchBookByIsbnViewModel
     private String isbnText;
 
     private CameraConfig cameraConfig;
+    private boolean inSettings;
 
     @Override
     protected void onCleared() {
@@ -383,5 +384,27 @@ public class SearchBookByIsbnViewModel
             }
             scanQueue.remove(context, item);
         }
+    }
+
+    /**
+     * Remember that the user has started the settings fragment.
+     *
+     * @see #onResumeFromSettings()
+     */
+    void inSettings() {
+        this.inSettings = true;
+    }
+
+    /**
+     * Check if the user is returning from Settings, and <strong>reset</strong> the flag.
+     *
+     * @return flag
+     *
+     * @see #inSettings()
+     */
+    boolean onResumeFromSettings() {
+        final boolean tmp = inSettings;
+        inSettings = false;
+        return tmp;
     }
 }

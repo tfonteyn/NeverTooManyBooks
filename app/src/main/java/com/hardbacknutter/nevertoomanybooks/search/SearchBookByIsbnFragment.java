@@ -570,6 +570,16 @@ public class SearchBookByIsbnFragment
     @Override
     public void onResume() {
         super.onResume();
+        if (vm.onResumeFromSettings()) {
+            // we have just returned from the settings screen
+            if (useEmbeddedScanner && vm.isScannerStarted()
+                // Paranoia, should never be null here
+                && scanner != null) {
+                scanner.stop();
+                vm.setScannerStarted(false);
+                startScanner();
+            }
+        }
         onQueueUpdated(vm.getScanQueue());
     }
 
@@ -1342,9 +1352,8 @@ public class SearchBookByIsbnFragment
                 return true;
 
             } else if (menuItemId == R.id.MENU_SETTINGS) {
-                final BarcodePreferenceFragment fragment =
-                        new BarcodePreferenceFragment();
-
+                final BarcodePreferenceFragment fragment = new BarcodePreferenceFragment();
+                vm.inSettings();
                 getParentFragmentManager()
                         .beginTransaction()
                         .setReorderingAllowed(true)
