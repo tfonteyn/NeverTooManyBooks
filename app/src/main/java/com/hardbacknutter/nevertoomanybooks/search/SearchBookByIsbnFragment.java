@@ -366,7 +366,7 @@ public class SearchBookByIsbnFragment
         if (useEmbeddedScanner) {
             initEmbeddedScannerViews();
         } else {
-            // make sure to hide all!
+            // Hide all related views
             updateEmbeddedScannerViewsVisibility(false);
         }
 
