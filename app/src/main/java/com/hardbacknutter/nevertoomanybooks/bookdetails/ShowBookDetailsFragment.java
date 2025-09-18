@@ -461,24 +461,36 @@ public class ShowBookDetailsFragment
 
     public void onResume() {
         super.onResume();
+        // (re)Load the book data, and trigger a UI update
+        vm.displayBook();
 
         if (!vm.isEmbedded()) {
-            final Toolbar toolbar = getToolbar();
-            final Book book = vm.getBook();
-
-            //noinspection DataFlowIssue
-            toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
-
-            String bookTitle = book.getTitle();
-            if (BuildConfig.DEBUG /* always */) {
-                bookTitle = "[" + book.getId() + "] " + bookTitle;
-            }
-            toolbar.setSubtitle(bookTitle);
+            updateToolbarTitle();
         }
     }
 
-    // Dev. note: this will get called FOR EACH fragment currently existing
-    // in the ViewPager ... so ALSO for the fragments off-screen.
+    private void updateToolbarTitle() {
+        final Toolbar toolbar = getToolbar();
+        final Book book = vm.getBook();
+
+        //noinspection DataFlowIssue
+        toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
+
+        String bookTitle = book.getTitle();
+        if (BuildConfig.DEBUG /* always */) {
+            bookTitle = "[" + book.getId() + "] " + bookTitle;
+        }
+        toolbar.setSubtitle(bookTitle);
+    }
+
+    /**
+     * Called when the ViewModel triggers an update.
+     * Dev. note: this will get called FOR EACH fragment currently existing
+     * in the ViewPager ... so ALSO for the fragments off-screen.
+     * Hence DO NOT update the toolbar title here!
+     *
+     * @param book to display
+     */
     private void onBindBook(@NonNull final Book book) {
         // The menu is entirely dependent on the book we're displaying,
         // so we need to remove the old menu if present,

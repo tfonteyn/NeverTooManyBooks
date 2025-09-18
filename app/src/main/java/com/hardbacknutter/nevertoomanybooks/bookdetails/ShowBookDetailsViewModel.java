@@ -85,11 +85,18 @@ public class ShowBookDetailsViewModel
 
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
-    @Nullable
-    private Book book;
+
     private List<MenuHandler<DataHolder>> menuHandlers;
 
     private boolean embedded;
+
+    /**
+     * Initially set from the args, but can be overwritten by {@link #displayBook(long)}
+     * when we're in embedded mode.
+     */
+    private long bookId;
+    @Nullable
+    private Book book;
 
     /**
      * Pseudo constructor.
@@ -97,12 +104,19 @@ public class ShowBookDetailsViewModel
      * @param context current context
      * @param args    Bundle with arguments
      * @param style   to apply
+     *
+     * @throws IllegalArgumentException (debug) if the args did not contain a book id
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args,
                      @NonNull final Style style) {
-        if (book == null) {
+        if (bookId == 0) {
+            bookId = args.getLong(DBKey.FK_BOOK, 0);
+            if (bookId <= 0) {
+                throw new IllegalArgumentException(DBKey.FK_BOOK);
+            }
+
             embedded = args.getBoolean(ShowBookDetailsFragment.BKEY_EMBEDDED, false);
 
             menuHandlers = List.of(new ViewBookOnSiteMenuHandler(),
@@ -110,10 +124,6 @@ public class ShowBookDetailsViewModel
 
             initFields(context, style, ServiceLocator.getInstance().getLanguages());
         }
-
-        book = Book.from(args.getLong(DBKey.FK_BOOK, 0));
-
-        updateUI();
     }
 
     /**
@@ -126,12 +136,6 @@ public class ShowBookDetailsViewModel
         return onBookLoaded;
     }
 
-    private void updateUI() {
-        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        onBookLoaded.setValue(book);
-        updateReadStatus(false);
-    }
-
     /**
      * Are we running in embedded mode.
      *
@@ -142,21 +146,22 @@ public class ShowBookDetailsViewModel
     }
 
     /**
+     * (Re)load the data for the current book and trigger a UI update.
+     */
+    void displayBook() {
+        book = Book.from(bookId);
+        onBookLoaded.setValue(book);
+        updateReadStatus(false);
+    }
+
+    /**
      * Load the data for the given book id and trigger a UI update.
      *
      * @param bookId to display
      */
     public void displayBook(final long bookId) {
-        book = Book.from(bookId);
-        updateUI();
-    }
-
-    /**
-     * Reload the data for the current book and trigger a UI update.
-     */
-    void displayBook() {
-        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
-        displayBook(book.getId());
+        this.bookId = bookId;
+        displayBook();
     }
 
     /**

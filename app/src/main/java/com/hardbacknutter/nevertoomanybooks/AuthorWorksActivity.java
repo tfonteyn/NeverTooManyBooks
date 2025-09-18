@@ -60,6 +60,10 @@ public class AuthorWorksActivity
      */
     @Override
     protected void onNewIntent(@NonNull final Intent intent) {
+        // {@link #getIntent} would still return the original Intent.
+        // Update it to this new Intent.
+        setIntent(intent);
+
         super.onNewIntent(intent);
         vm.init(this, Objects.requireNonNull(intent.getExtras()));
     }
