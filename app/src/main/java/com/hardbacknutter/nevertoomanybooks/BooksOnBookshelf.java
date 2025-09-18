@@ -847,10 +847,11 @@ public class BooksOnBookshelf
      */
     @Override
     protected void onNewIntent(@NonNull final Intent intent) {
-        super.onNewIntent(intent);
         // {@link #getIntent} would still return the original Intent.
         // Update it to this new Intent.
         setIntent(intent);
+
+        super.onNewIntent(intent);
 
         handleStandardSearchIntent(intent);
         vm.setForceRebuildInOnResume();
