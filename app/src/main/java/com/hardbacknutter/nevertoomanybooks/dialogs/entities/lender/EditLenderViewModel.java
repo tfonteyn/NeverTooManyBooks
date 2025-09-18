@@ -73,6 +73,8 @@ public class EditLenderViewModel
      * Pseudo constructor.
      *
      * @param args {@link Fragment#requireArguments()}
+     *
+     * @throws IllegalArgumentException (debug) if the args did not contain a book id
      */
     public void init(@NonNull final Bundle args) {
         if (dao == null) {
@@ -87,7 +89,10 @@ public class EditLenderViewModel
             // We're NOT adding the null check to the DAO though leaving future investigation open
             people.addAll(list.stream().filter(Objects::nonNull).collect(Collectors.toList()));
 
-            bookId = args.getLong(DBKey.FK_BOOK);
+            bookId = args.getLong(DBKey.FK_BOOK, 0);
+            if (bookId <= 0) {
+                throw new IllegalArgumentException(DBKey.FK_BOOK);
+            }
             bookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
 
             loanee = dao.findLoaneeByBookId(bookId);
