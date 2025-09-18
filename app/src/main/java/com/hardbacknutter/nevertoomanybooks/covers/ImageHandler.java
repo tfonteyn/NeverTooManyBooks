@@ -73,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuLauncher;
@@ -90,9 +89,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Handles displaying and zooming for images on the details/edit screens.
  * For BoB displaying,
  * see {@code com.hardbacknutter.nevertoomanybooks.booklist.adapter.CoverHelper}
- * <p>
- * Dev. Note: a bit nasty: we check the type of the ImageOwner to be a Book or not...
- * we really should split this class...
  */
 public final class ImageHandler {
 
@@ -181,7 +177,13 @@ public final class ImageHandler {
         placeholderDrawable = builder.placeholderDrawable;
         coverBrowserTitleSupplier = builder.coverBrowserTitleSupplier;
         coverBrowserIsbnSupplier = builder.coverBrowserIsbnSupplier;
-
+        // Minor hack...  if we have a title/isbn supplier, then we have a Book
+        // and will need a coverBrowserLauncher.
+        if (coverBrowserTitleSupplier != null) {
+            coverBrowserLauncher = new CoverBrowserLauncher(cIdx, this::onFileSelected);
+        } else {
+            coverBrowserLauncher = null;
+        }
         // we distinguish multiple vm in the same fragment by cIdx as the key
         vm = new ViewModelProvider(fragment)
                 .get(String.valueOf(this.cIdx), ImageTransformationViewModel.class);
@@ -190,12 +192,6 @@ public final class ImageHandler {
                                           ImageView.ScaleType.FIT_START,
                                           ImageViewLoader.ApplySizing.Constrained,
                                           builder.maxWidth, builder.maxHeight);
-
-        if (imageSupplier.get() instanceof Book) {
-            coverBrowserLauncher = new CoverBrowserLauncher(cIdx, this::onFileSelected);
-        } else {
-            coverBrowserLauncher = null;
-        }
 
         attachOnClickListeners();
 
@@ -906,10 +902,11 @@ public final class ImageHandler {
         }
 
         /**
-         * Optional - <strong>Only set if {@link #setImageOwner} returns a book</strong>.
+         * <strong>Mandatory if the {@link #setImageOwner} supplier returns a book</strong>.
          * <p>
          * Tell the handler where it can get the current ISBN from.
-         * This is normally a Supplier which reads it from a TextView on the screen.
+         * This is can either be directly from the book,
+         * or via a Supplier which reads it from a TextView on the screen.
          *
          * @param supplier which can provide the current ISBN
          *
@@ -922,10 +919,11 @@ public final class ImageHandler {
         }
 
         /**
-         * Optional - <strong>Only set if {@link #setImageOwner} returns a book</strong>.
+         * <strong>Mandatory if the {@link #setImageOwner} supplier returns a book</strong>.
          * <p>
          * Tell the handler where it can get the current book-title from.
-         * This is normally a Supplier which reads it from a TextView on the screen.
+         * This is can either be directly from the book,
+         * or via a Supplier which reads it from a TextView on the screen.
          *
          * @param supplier which can provide the current book-title
          *
@@ -962,15 +960,6 @@ public final class ImageHandler {
         public ImageHandler build() {
             Objects.requireNonNull(imageSupplier, "imageSupplier");
             Objects.requireNonNull(reloadImage, "ownerReloadCallback");
-
-            if (imageSupplier.get() instanceof Book) {
-                if (coverBrowserTitleSupplier == null) {
-                    coverBrowserTitleSupplier = () -> ((Book) (imageSupplier.get())).getTitle();
-                }
-                if (coverBrowserIsbnSupplier == null) {
-                    coverBrowserIsbnSupplier = () -> ((Book) (imageSupplier.get())).getIsbn();
-                }
-            }
 
             final ImageHandler imageHandler = new ImageHandler(this);
             imageHandler.onFragmentViewCreated();

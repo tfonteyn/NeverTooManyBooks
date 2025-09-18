@@ -379,6 +379,8 @@ public class ShowBookDetailsFragment
                             .setImageView(coverViews[cIdx])
                             .setImageOwner(() -> vm.getBook())
                             .setOnReloadImage(this::reloadImage)
+                            .setCoverBrowserTitleSupplier(() -> vm.getBook().getTitle())
+                            .setCoverBrowserIsbnSupplier(() -> vm.getBook().getIsbn())
                             .build();
                 }
             }
