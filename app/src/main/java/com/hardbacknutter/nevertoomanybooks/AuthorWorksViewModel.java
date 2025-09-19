@@ -155,7 +155,11 @@ public class AuthorWorksViewModel
             throw new IllegalArgumentException(DBKey.FK_AUTHOR);
         }
 
-        // note we only use/add a single author. Using a list for future compatibility though
+        // The author id from the arguments has priority if we get here a second time.
+        // 1. If the author list is empty -> load the author etc etc
+        // 2. If we already have an author loaded, check if it's the one from the author id
+        //      if not reload the author etc etc; otherwise don't bother reloading.
+        // Note we only use/add a single author. Using a list for future compatibility though
         if (authors.isEmpty() || getPrimaryAuthor().getId() != authorId) {
             authors.clear();
             authors.add(ServiceLocator.getInstance().getAuthorDao()
