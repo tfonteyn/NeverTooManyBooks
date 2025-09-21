@@ -23,7 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.LoaneeFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.localsearch.LocalSearchCriteria;
 import com.hardbacknutter.util.logger.LoggerFactory;
@@ -53,14 +53,6 @@ public final class FtsDaoHelper {
     private static final String TAG = "FtsDaoHelper";
 
     private static final String LIST_DELIMITER = "; ";
-
-    /**
-     * Keep only alpha/digit and space characters.
-     *
-     * @see #normalize(CharSequence)
-     */
-    private static final Pattern NORMALIZER_PATTERN =
-            Pattern.compile("[^\\p{Alpha}\\d ]");
 
     /**
      * Keep only alpha/digit, space and the '-' characters.
@@ -97,7 +89,7 @@ public final class FtsDaoHelper {
         }
 
         // Convert the text to pure alpha/digits. We'll use an array to loop over it.
-        final String normalized = Normalizer.normalize(searchText, Normalizer.Form.NFD);
+        final String normalized = SqlEncode.normalize(searchText);
         final char[] chars = PREPARE_SEARCH_TEXT_PATTERN.matcher(normalized)
                                                         .replaceAll("")
                                                         .toCharArray();
@@ -192,19 +184,6 @@ public final class FtsDaoHelper {
     }
 
     /**
-     * Normalize the given text by stripping all non-alpha/digits.
-     *
-     * @param text to normalize
-     *
-     * @return normalized string
-     */
-    @NonNull
-    static String normalize(@NonNull final CharSequence text) {
-        final String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
-        return NORMALIZER_PATTERN.matcher(normalized).replaceAll("");
-    }
-
-    /**
      * Normalize each element in the list by stripping all non-alpha/digits;
      * and concatenate them to a semi-colon separated string-list.
      *
@@ -215,7 +194,7 @@ public final class FtsDaoHelper {
     @NonNull
     static String normalize(@NonNull final List<String> list) {
         return list.stream()
-                   .map(FtsDaoHelper::normalize)
+                   .map(SqlEncode::normalize)
                    .collect(Collectors.joining(LIST_DELIMITER));
     }
 

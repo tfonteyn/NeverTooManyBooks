@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -103,7 +104,7 @@ public class FtsDaoImpl
         if (text == null || text.isBlank()) {
             stmt.bindNull(position);
         } else {
-            stmt.bindString(position, FtsDaoHelper.normalize(text));
+            stmt.bindString(position, SqlEncode.normalize(text));
         }
     }
 
