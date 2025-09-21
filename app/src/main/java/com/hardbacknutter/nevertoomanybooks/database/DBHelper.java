@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -493,10 +494,15 @@ public class DBHelper
                                              DBDefinitions.DOM_AUTHOR_PICTURE_UUID);
         }
         if (oldVersion < 42) {
-            TBL_IDENTIFIERS.alterTableAddColumns(
-                    db,
-                    DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID);
-
+            // depending on the install/upgrade path, we might already have
+            // added the WIKIDATA_CLAIM_AUTHOR_ID column
+            final ColumnInfo wdCId = TBL_IDENTIFIERS
+                    .getTableInfo(db).getColumn(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID);
+            if (wdCId == null) {
+                TBL_IDENTIFIERS.alterTableAddColumns(
+                        db,
+                        DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID);
+            }
             updateIdentifierWikidataAuthorIdClaims(context, db);
         }
         if (oldVersion < 43) {
