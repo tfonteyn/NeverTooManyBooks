@@ -111,13 +111,21 @@ public class MaintenanceDaoImpl
         try {
             int i;
             i = serviceLocator.getSeriesDao().purge();
-            logger.w(TAG, "Purged Series: " + i);
+            if (i > 0) {
+                logger.w(TAG, "Purged Series: " + i);
+            }
             i = serviceLocator.getAuthorDao().purge();
-            logger.w(TAG, "Purged Author: " + i);
+            if (i > 0) {
+                logger.w(TAG, "Purged Author: " + i);
+            }
             i = serviceLocator.getPublisherDao().purge();
-            logger.w(TAG, "Purged Publishers: " + i);
+            if (i > 0) {
+                logger.w(TAG, "Purged Publishers: " + i);
+            }
             i = serviceLocator.getTocEntryDao().purge();
-            logger.w(TAG, "Purged TocEntries: " + i);
+            if (i > 0) {
+                logger.w(TAG, "Purged TocEntries: " + i);
+            }
 
             db.analyze();
 
@@ -130,6 +138,7 @@ public class MaintenanceDaoImpl
     @Override
     @WorkerThread
     public void rebuildOrderByTitleColumns(@NonNull final Context context) {
+        final Logger logger = LoggerFactory.getLogger();
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final List<Locale> locales = LocaleListUtils.asList(context);
 
@@ -145,6 +154,7 @@ public class MaintenanceDaoImpl
 
             try (Cursor cursor = db.rawQuery(BOOK_TITLES, null);
                  SynchronizedStatement stmt = db.compileStatement(BOOK_REBUILD)) {
+                int i = 0;
                 while (cursor.moveToNext()) {
                     final long id = cursor.getLong(0);
                     final String title = cursor.getString(1);
@@ -161,7 +171,11 @@ public class MaintenanceDaoImpl
                         stmt.bindString(1, SqlEncode.orderByColumn(rebuildObTitle, bookLocale));
                         stmt.bindLong(2, id);
                         stmt.executeUpdateDelete();
+                        i++;
                     }
+                }
+                if (i > 0) {
+                    logger.w(TAG, "Books rebuild: " + i);
                 }
             }
 
@@ -169,6 +183,7 @@ public class MaintenanceDaoImpl
             // but that is a huge overhead so we use the user-locale directly.
             try (Cursor cursor = db.rawQuery(SERIES_TITLES, null);
                  SynchronizedStatement stmt = db.compileStatement(SERIES_REBUILD)) {
+                int i = 0;
                 while (cursor.moveToNext()) {
                     final long id = cursor.getLong(0);
                     final String title = cursor.getString(1);
@@ -182,13 +197,18 @@ public class MaintenanceDaoImpl
                         stmt.bindString(1, SqlEncode.orderByColumn(rebuildObTitle, userLocale));
                         stmt.bindLong(2, id);
                         stmt.executeUpdateDelete();
+                        i++;
                     }
+                }
+                if (i > 0) {
+                    logger.w(TAG, "Series rebuild: " + i);
                 }
             }
 
             // A publisher is not linked to a Locale, so we use the user-locale directly.
             try (Cursor cursor = db.rawQuery(PUBLISHERS_NAMES, null);
                  SynchronizedStatement stmt = db.compileStatement(PUBLISHERS_REBUILD)) {
+                int i = 0;
                 while (cursor.moveToNext()) {
                     final long id = cursor.getLong(0);
                     final String title = cursor.getString(1);
@@ -202,7 +222,11 @@ public class MaintenanceDaoImpl
                         stmt.bindString(1, SqlEncode.orderByColumn(rebuildObTitle, userLocale));
                         stmt.bindLong(2, id);
                         stmt.executeUpdateDelete();
+                        i++;
                     }
+                }
+                if (i > 0) {
+                    logger.w(TAG, "Publishers rebuild: " + i);
                 }
             }
 
@@ -210,6 +234,7 @@ public class MaintenanceDaoImpl
             // but that is a huge overhead, so we use the user-locale directly.
             try (Cursor cursor = db.rawQuery(TOC_ENTRY_TITLES, null);
                  SynchronizedStatement stmt = db.compileStatement(TOC_REBUILD)) {
+                int i = 0;
                 while (cursor.moveToNext()) {
                     final long id = cursor.getLong(0);
                     final String title = cursor.getString(1);
@@ -223,7 +248,11 @@ public class MaintenanceDaoImpl
                         stmt.bindString(1, SqlEncode.orderByColumn(rebuildObTitle, userLocale));
                         stmt.bindLong(2, id);
                         stmt.executeUpdateDelete();
+                        i++;
                     }
+                }
+                if (i > 0) {
+                    logger.w(TAG, "TocEntry rebuild: " + i);
                 }
             }
 
