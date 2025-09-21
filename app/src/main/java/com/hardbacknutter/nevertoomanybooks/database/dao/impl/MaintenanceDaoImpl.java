@@ -163,12 +163,13 @@ public class MaintenanceDaoImpl
                     final Locale bookLocale = appLocale
                             .getLocale(context, cursor.getString(3))
                             .orElse(userLocale);
-                    final String rebuildObTitle = reorderHelper
+                    final String rTitle = reorderHelper
                             .reorderForSorting(context, title, bookLocale, locales);
+                    final String rObTitle = SqlEncode.orderByColumn(rTitle, bookLocale);
 
                     // only update the database if actually needed.
-                    if (!currentObTitle.equals(rebuildObTitle)) {
-                        stmt.bindString(1, SqlEncode.orderByColumn(rebuildObTitle, bookLocale));
+                    if (!currentObTitle.equals(rObTitle)) {
+                        stmt.bindString(1, rObTitle);
                         stmt.bindLong(2, id);
                         stmt.executeUpdateDelete();
                         i++;
@@ -189,12 +190,13 @@ public class MaintenanceDaoImpl
                     final String title = cursor.getString(1);
                     final String currentObTitle = cursor.getString(2);
 
-                    final String rebuildObTitle = reorderHelper
+                    final String rTitle = reorderHelper
                             .reorderForSorting(context, title, userLocale, locales);
+                    final String rObTitle = SqlEncode.orderByColumn(rTitle, userLocale);
 
                     // only update the database if actually needed.
-                    if (!currentObTitle.equals(rebuildObTitle)) {
-                        stmt.bindString(1, SqlEncode.orderByColumn(rebuildObTitle, userLocale));
+                    if (!currentObTitle.equals(rObTitle)) {
+                        stmt.bindString(1, rObTitle);
                         stmt.bindLong(2, id);
                         stmt.executeUpdateDelete();
                         i++;
@@ -214,12 +216,13 @@ public class MaintenanceDaoImpl
                     final String title = cursor.getString(1);
                     final String currentObTitle = cursor.getString(2);
 
-                    final String rebuildObTitle = reorderHelper
+                    final String rTitle = reorderHelper
                             .reorderForSorting(context, title, userLocale, locales);
+                    final String rObTitle = SqlEncode.orderByColumn(rTitle, userLocale);
 
                     // only update the database if actually needed.
-                    if (!currentObTitle.equals(rebuildObTitle)) {
-                        stmt.bindString(1, SqlEncode.orderByColumn(rebuildObTitle, userLocale));
+                    if (!currentObTitle.equals(rObTitle)) {
+                        stmt.bindString(1, rObTitle);
                         stmt.bindLong(2, id);
                         stmt.executeUpdateDelete();
                         i++;
@@ -240,12 +243,13 @@ public class MaintenanceDaoImpl
                     final String title = cursor.getString(1);
                     final String currentObTitle = cursor.getString(2);
 
-                    final String rebuildObTitle = reorderHelper
+                    final String rTitle = reorderHelper
                             .reorderForSorting(context, title, userLocale, locales);
+                    final String rObTitle = SqlEncode.orderByColumn(rTitle, userLocale);
 
                     // only update the database if actually needed.
-                    if (!currentObTitle.equals(rebuildObTitle)) {
-                        stmt.bindString(1, SqlEncode.orderByColumn(rebuildObTitle, userLocale));
+                    if (!currentObTitle.equals(rObTitle)) {
+                        stmt.bindString(1, rObTitle);
                         stmt.bindLong(2, id);
                         stmt.executeUpdateDelete();
                         i++;
