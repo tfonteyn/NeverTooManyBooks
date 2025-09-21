@@ -37,7 +37,6 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,6 +46,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
+
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 
 /**
  * A copy of the {@link android.widget.ArrayAdapter} code from Android-30, rev. 1 (2021-01-25)
@@ -824,7 +825,7 @@ public class ExtArrayAdapter<T>
          */
         @NonNull
         private String normalizeAndLowercase(@NonNull final CharSequence text) {
-            final String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+            final String normalized = SqlEncode.normalize(text);
             return diacriticsPattern.matcher(normalized)
                                     .replaceAll("")
                                     .toLowerCase(Locale.getDefault());
