@@ -31,6 +31,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -56,6 +57,10 @@ public class AuthorTest
     private static final String PHILIP_JOSE_FARMER_VARIANT = "Philip José Farmer";
 
     private static final String PHILIP_DICK = "Philip K. Dick";
+
+    private static final String GERMAN_GROSS = "Groß";
+    private static final String GERMAN_GROSS_1 = "Jan Groß";
+    private static final String GERMAN_GROSS_2 = "Jan Gross";
 
     private static final long FAKE_ID_0 = 2_000_100;
     private static final long FAKE_ID_1 = 2_000_200;
@@ -336,5 +341,38 @@ public class AuthorTest
 
         final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
         assertFalse(modified);
+    }
+
+    @Test
+    public void pruneGermanBeta() {
+        final Locale bookLocale = Locale.GERMANY;
+
+        final List<Author> authorList = new ArrayList<>();
+        Author author;
+
+        author = Author.from(GERMAN_GROSS_1);
+        authorDao.fixId(context, author, bookLocale);
+        authorList.add(author);
+
+        author = Author.from(GERMAN_GROSS_2);
+        authorDao.fixId(context, author, bookLocale);
+        authorList.add(author);
+
+        final boolean modified = authorDao.pruneList(context, authorList, item -> bookLocale);
+        assertTrue(modified);
+
+        assertEquals(1, authorList.size());
+        assertEquals(GERMAN_GROSS, authorList.get(0).getFamilyName());
+
+    }
+
+    @Test
+    public void norm() {
+        final Locale bookLocale = Locale.GERMANY;
+        final String n1 = SqlEncode.normalize(GERMAN_GROSS_1).toLowerCase(bookLocale);
+        final String n2 = SqlEncode.normalize(GERMAN_GROSS_2).toLowerCase(bookLocale);
+        ;
+
+        assertEquals(n1, n2);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,9 +80,10 @@ public class SqlEncodeTest {
         assertEquals("Jager", SqlEncode.normalize(source));
         assertEquals("jager", orderByColumn(source, locale));
 
+        // 2025-09-21: behaviour change: "ß" is transliterated to "ss"
         source = "Jäger, (größte)";
-        assertEquals("Jagergroßte", SqlEncode.normalize(source));
-        assertEquals("jagergroßte", orderByColumn(source, locale));
+        assertEquals("Jagergrosste", SqlEncode.normalize(source));
+        assertEquals("jagergrosste", orderByColumn(source, locale));
     }
 
     @Test

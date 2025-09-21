@@ -19,13 +19,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.database;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 
-import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.regex.Pattern;
+
+import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi26;
+import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
 
 /**
  * Used to create {@code ORDER BY} suitable strings, quotes, dates etc.
@@ -52,6 +56,9 @@ import java.util.regex.Pattern;
  * </pre>
  * <p>
  * Passes "androidTest" on API 26,27,31,33
+ *
+ * @see TextNormalizerApi26
+ * @see TextNormalizerApi29
  */
 public final class SqlEncode {
 
@@ -59,9 +66,6 @@ public final class SqlEncode {
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
     /** See {@link #dateTime(LocalDateTime)}. */
     private static final Pattern T = Pattern.compile("T");
-
-    /** Keep only alpha/digit characters. */
-    private static final Pattern NORMALIZER_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
 
     private SqlEncode() {
     }
@@ -133,7 +137,10 @@ public final class SqlEncode {
      */
     @NonNull
     public static String normalize(@NonNull final CharSequence text) {
-        final String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
-        return NORMALIZER_PATTERN.matcher(normalized).replaceAll("");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return TextNormalizerApi29.normalize(text);
+        } else {
+            return TextNormalizerApi26.normalize(text);
+        }
     }
 }
