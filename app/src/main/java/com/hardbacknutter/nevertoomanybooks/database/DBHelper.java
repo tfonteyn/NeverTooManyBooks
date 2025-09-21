@@ -42,6 +42,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
+import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
@@ -519,6 +520,9 @@ public class DBHelper
             if (!prefs.getBoolean(CameraConfig.PK_CAMERA_ZOOM_CONTROL_SHOW, false)) {
                 prefs.edit().putFloat(CameraConfig.PK_CAMERA_ZOOM_CONTROL_VALUE, 0f).apply();
             }
+
+            // we need to rebuild the Author OB columns
+            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB, true);
         }
 
         // We have to do this here as we're always inserting all columns,
