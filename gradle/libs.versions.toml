@@ -1,7 +1,7 @@
 [versions]
 androidGradlePlugin = "8.13.0"
 # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android
-androidKotlinPlugin = "2.2.10"
+androidKotlinPlugin = "2.2.20"
 # https://github.com/mannodermaus/android-junit5
 mannodermausPlugin = "1.13.4.0"
 
@@ -26,7 +26,7 @@ androidxDrawerlayout = "1.2.0"
 androidxExifinterface = "1.4.1"
 androidxFragment = "1.8.9"
 androidxInterpolator = "1.0.0"
-androidxLifecycle = "2.9.3"
+androidxLifecycle = "2.9.4"
 androidxPreference = "1.2.1"
 androidxRecyclerview = "1.4.0"
 androidxViewpager2 = '1.1.0'
@@ -54,7 +54,7 @@ tinyzxingwrapper = "1.3.1-beta"
 acra = '5.12.0'
 
 # https://github.com/mockito/mockito
-mockito = "5.19.0"
+mockito = "5.20.0"
 
 # https://junit.org/junit5/docs/current/user-guide/#overview
 jupiter = "5.13.4"
