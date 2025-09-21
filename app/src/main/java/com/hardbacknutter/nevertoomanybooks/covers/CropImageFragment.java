@@ -105,7 +105,7 @@ public class CropImageFragment
                 Snackbar.make(vb.coverImage0, R.string.error_insufficient_storage,
                               Snackbar.LENGTH_LONG).show();
             }
-        } catch (@NonNull final IOException e) {
+        } catch (@NonNull final CoverStorageException | IOException e) {
             // just log, do not display exception data
             LoggerFactory.getLogger().e(TAG, e);
             //noinspection DataFlowIssue

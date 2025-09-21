@@ -102,6 +102,8 @@ public class CoverStorage {
     private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
     /**
      * Initialised in {@link #initDir()}.
+     * <p>
+     * <strong>Always use {@link #getDir()} to access elsewhere.</strong>
      */
     private File coverDir;
 
@@ -242,10 +244,18 @@ public class CoverStorage {
      *
      * @return directory
      *
+     * @throws CoverStorageException The covers directory is not available
      * @see #initDir()
      */
     @NonNull
-    public File getDir() {
+    public File getDir()
+            throws CoverStorageException {
+        synchronized (this) {
+            // This should never be possible, but see github #184
+            if (coverDir == null) {
+                coverDir = ensureDir();
+            }
+        }
         return Objects.requireNonNull(coverDir);
     }
 
@@ -262,7 +272,7 @@ public class CoverStorage {
      */
     @Discouraged(message = "Avoid using this method if possible to avoid overhead")
     @NonNull
-    public File ensureDir()
+    private File ensureDir()
             throws CoverStorageException {
 
         final Context context = appContextSupplier.get();
@@ -330,9 +340,16 @@ public class CoverStorage {
 
         @Nullable
         File coverFile;
+        final File dir;
+        try {
+            dir = getDir();
+        } catch (@NonNull final CoverStorageException e) {
+            LoggerFactory.getLogger().e(TAG, e);
+            return Optional.empty();
+        }
 
         // Try finding a jpg
-        coverFile = new File(coverDir, name + EXT_JPG);
+        coverFile = new File(dir, name + EXT_JPG);
         if (coverFile.exists()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                 LoggerFactory.getLogger()
@@ -345,13 +362,13 @@ public class CoverStorage {
 
         } else {
             // not found, try finding a png
-            coverFile = new File(coverDir, name + EXT_PNG);
+            coverFile = new File(dir, name + EXT_PNG);
             if (coverFile.exists()) {
                 // rename it to the standard extension regardless of type
                 // #isUndoEnabled(String,int) relies on the jpg extension
                 try {
-                    FileUtils.rename(coverFile, new File(coverDir, name + EXT_JPG));
-                    coverFile = new File(coverDir, name + EXT_JPG);
+                    FileUtils.rename(coverFile, new File(dir, name + EXT_JPG));
+                    coverFile = new File(dir, name + EXT_JPG);
                 } catch (@NonNull final IOException ignore) {
                     // ignore a rename failure, and return the png file regardless
                 }
@@ -398,7 +415,7 @@ public class CoverStorage {
             throws IOException, CoverStorageException {
 
         final String name = createName(uuid, cIdx) + EXT_JPG;
-        final File destination = new File(coverDir, name);
+        final File destination = new File(getDir(), name);
 
         return persist(source, destination);
     }
@@ -549,7 +566,7 @@ public class CoverStorage {
         final String name = createName(uuid, cIdx) + EXT_JPG;
 
         try {
-            return createVersionedFileService().restore(new File(coverDir, name));
+            return createVersionedFileService().restore(new File(getDir(), name));
         } catch (@NonNull final CoverStorageException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
@@ -576,7 +593,7 @@ public class CoverStorage {
         final String name = createName(uuid, cIdx) + EXT_JPG;
 
         try {
-            return createVersionedFileService().hasBackup(new File(coverDir, name));
+            return createVersionedFileService().hasBackup(new File(getDir(), name));
         } catch (@NonNull final CoverStorageException e) {
             LoggerFactory.getLogger().e(TAG, e);
             return false;
