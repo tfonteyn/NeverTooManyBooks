@@ -27,6 +27,7 @@ import androidx.annotation.WorkerThread;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -41,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
@@ -53,6 +55,14 @@ public class MaintenanceDaoImpl
     /** Log tag. */
     private static final String TAG = "MaintenanceDaoImpl";
 
+    /** All Authors for a rebuild of the {@link DBKey.AUTHOR} name columns. */
+    private static final String AUTHOR_NAMES =
+            SELECT_ + DBKey.PK_ID
+            + ',' + DBKey.AUTHOR.FAMILY_NAME
+            + ',' + DBKey.AUTHOR.FAMILY_NAME_OB
+            + ',' + DBKey.AUTHOR.GIVEN_NAMES
+            + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB
+            + _FROM_ + TBL_AUTHORS.getName();
     /** All Book titles for a rebuild of the {@link DBKey#TITLE_OB} column. */
     private static final String BOOK_TITLES =
             SELECT_ + DBKey.PK_ID
@@ -80,6 +90,11 @@ public class MaintenanceDaoImpl
             + ',' + DBKey.TITLE_OB
             + _FROM_ + TBL_TOC_ENTRIES.getName();
 
+    private static final String AUTHORS_REBUILD =
+            UPDATE_ + TBL_AUTHORS.getName() + _SET_
+            + DBKey.AUTHOR.FAMILY_NAME_OB + "=?"
+            + ',' + DBKey.AUTHOR.GIVEN_NAMES_OB + "=?"
+            + _WHERE_ + DBKey.PK_ID + "=?";
     private static final String BOOK_REBUILD =
             UPDATE_ + TBL_BOOKS.getName() + _SET_ + DBKey.TITLE_OB + "=?"
             + _WHERE_ + DBKey.PK_ID + "=?";
@@ -151,6 +166,37 @@ public class MaintenanceDaoImpl
             final ServiceLocator serviceLocator = ServiceLocator.getInstance();
             final AppLocale appLocale = serviceLocator.getAppLocale();
             final ReorderHelper reorderHelper = serviceLocator.getReorderHelper();
+
+            // We should use the locale from the 1st book in the series...
+            // but that is a huge overhead so we use the user-locale directly.
+            try (Cursor cursor = db.rawQuery(AUTHOR_NAMES, null);
+                 SynchronizedStatement stmt = db.compileStatement(AUTHORS_REBUILD)) {
+                int i = 0;
+                while (cursor.moveToNext()) {
+                    final long id = cursor.getLong(0);
+                    final String familyName = cursor.getString(1);
+                    final String familyNameOb = cursor.getString(2);
+                    final String givenNames = cursor.getString(3);
+                    final String givenNamesOb = cursor.getString(4);
+
+                    // reordering is not applicable, we just want to re-normalize.
+                    final String newFamilyOb = SqlEncode.orderByColumn(familyName, userLocale);
+                    final String newGivenOb = SqlEncode.orderByColumn(givenNames, userLocale);
+
+                    // only update the database if actually needed.
+                    if (!Objects.equals(familyNameOb, newFamilyOb)
+                        || !Objects.equals(givenNamesOb, newGivenOb)) {
+                        stmt.bindString(1, newFamilyOb);
+                        stmt.bindString(2, newGivenOb);
+                        stmt.bindLong(3, id);
+                        stmt.executeUpdateDelete();
+                        i++;
+                    }
+                }
+                if (i > 0) {
+                    logger.w(TAG, "Authors rebuild: " + i);
+                }
+            }
 
             try (Cursor cursor = db.rawQuery(BOOK_TITLES, null);
                  SynchronizedStatement stmt = db.compileStatement(BOOK_REBUILD)) {
