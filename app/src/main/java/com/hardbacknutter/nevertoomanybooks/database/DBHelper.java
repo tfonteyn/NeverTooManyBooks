@@ -27,7 +27,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-import android.util.Pair;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -58,13 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
-import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Porbase;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
@@ -468,31 +463,13 @@ public class DBHelper
             LegacyUpgrades.v38onUpgrade(db);
         }
         if (oldVersion < 39) {
-            LegacyUpgrades.v39AddIdentifierAuthorUrl(db);
-            // this is new for this release
-            TBL_AUTHOR_IDENTIFIER.create(db, true);
+            LegacyUpgrades.v39onUpgrade(db);
         }
         if (oldVersion < 40) {
-            // fix urls
-            updateIdentifierBookUrl(db,
-                                    new Pair<>(Identifier.SID_BNF, BNF.BOOK_URL),
-                                    new Pair<>(Identifier.SID_PORBASE, Porbase.BOOK_URL));
-
-            // fix name
-            try (SQLiteStatement stmt = db.compileStatement(
-                    "UPDATE " + TBL_IDENTIFIERS
-                    + " SET " + DBKey.IDENTIFIERS.NAME + "=?"
-                    + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
-                stmt.bindString(1, context.getString(R.string.identifier_dnb));
-                stmt.bindString(2, Identifier.SID_DNB);
-                stmt.executeUpdateDelete();
-            }
+            LegacyUpgrades.v40onUpgrade(context, db);
         }
         if (oldVersion < 41) {
-            TBL_AUTHORS.alterTableAddColumns(db,
-                                             DBDefinitions.DOM_AUTHOR_BIRTH_DATE,
-                                             DBDefinitions.DOM_AUTHOR_DEATH_DATE,
-                                             DBDefinitions.DOM_AUTHOR_PICTURE_UUID);
+            LegacyUpgrades.v41onUpgrade(db);
         }
         if (oldVersion < 42) {
             // depending on the install/upgrade path, we might already have
@@ -560,22 +537,6 @@ public class DBHelper
                           stmt.bindString(2, identifier.getKey());
                           stmt.executeUpdateDelete();
                       });
-        }
-    }
-
-    @SafeVarargs
-    private void updateIdentifierBookUrl(@NonNull final SQLiteDatabase db,
-                                         @NonNull final Pair<String, String>... keyUrlPairs) {
-        try (SQLiteStatement stmt = db.compileStatement(
-                "UPDATE " + TBL_IDENTIFIERS
-                + " SET " + DBKey.IDENTIFIERS.BOOK_URI + "=?"
-                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
-
-            for (final Pair<String, String> ku : keyUrlPairs) {
-                stmt.bindString(1, ku.second);
-                stmt.bindString(2, ku.first);
-                stmt.executeUpdateDelete();
-            }
         }
     }
 

@@ -82,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.BNF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantLab;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.FantaScienza;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.NooSFere;
+import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.Porbase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
@@ -90,6 +91,7 @@ import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_IDENTIFIER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -866,7 +868,13 @@ public final class LegacyUpgrades {
                 DBDefinitions.DOM_STYLE_SHOW_GROUP_BOOK_COUNT);
     }
 
-    static void v39AddIdentifierAuthorUrl(@NonNull final SQLiteDatabase db) {
+    static void v39onUpgrade(@NonNull final SQLiteDatabase db) {
+        v39AddIdentifierAuthorUrl(db);
+        // this is new for this release
+        TBL_AUTHOR_IDENTIFIER.create(db, true);
+    }
+
+    private static void v39AddIdentifierAuthorUrl(@NonNull final SQLiteDatabase db) {
         // depending on the install/upgrade path, we might already have
         // added the AUTHOR_URI column and the identifier updates.
         final ColumnInfo authorUri = TBL_IDENTIFIERS
@@ -934,6 +942,48 @@ public final class LegacyUpgrades {
                 stmt.executeUpdateDelete();
             }
         }
+    }
+
+    static void v40onUpgrade(@NonNull final Context context,
+                             @NonNull final SQLiteDatabase db) {
+        // fix urls
+        v40updateIdentifierBookUrl(db,
+                                   new Pair<>(Identifier.SID_BNF, BNF.BOOK_URL),
+                                   new Pair<>(Identifier.SID_PORBASE, Porbase.BOOK_URL));
+
+        // fix name
+        try (SQLiteStatement stmt = db.compileStatement(
+                "UPDATE " + TBL_IDENTIFIERS
+                + " SET " + DBKey.IDENTIFIERS.NAME + "=?"
+                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+            stmt.bindString(1, context.getString(R.string.identifier_dnb));
+            stmt.bindString(2, Identifier.SID_DNB);
+            stmt.executeUpdateDelete();
+        }
+    }
+
+    @SafeVarargs
+    private static void v40updateIdentifierBookUrl(@NonNull final SQLiteDatabase db,
+                                                   @NonNull final Pair<String, String>...
+                                                           keyUrlPairs) {
+        try (SQLiteStatement stmt = db.compileStatement(
+                "UPDATE " + TBL_IDENTIFIERS
+                + " SET " + DBKey.IDENTIFIERS.BOOK_URI + "=?"
+                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+
+            for (final Pair<String, String> ku : keyUrlPairs) {
+                stmt.bindString(1, ku.second);
+                stmt.bindString(2, ku.first);
+                stmt.executeUpdateDelete();
+            }
+        }
+    }
+
+    static void v41onUpgrade(@NonNull final SQLiteDatabase db) {
+        TBL_AUTHORS.alterTableAddColumns(db,
+                                         DBDefinitions.DOM_AUTHOR_BIRTH_DATE,
+                                         DBDefinitions.DOM_AUTHOR_DEATH_DATE,
+                                         DBDefinitions.DOM_AUTHOR_PICTURE_UUID);
     }
 
     static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
