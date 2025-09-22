@@ -344,7 +344,7 @@ public class AuthorTest
     }
 
     @Test
-    public void pruneGermanBeta() {
+    public void pruneGermanEszett() {
         final Locale bookLocale = Locale.GERMANY;
 
         final List<Author> authorList = new ArrayList<>();
