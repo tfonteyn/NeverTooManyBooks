@@ -528,15 +528,21 @@ public class TableDefinition {
     }
 
     /**
-     * Alter the physical table in the database: add the given domains.
+     * Alter the physical table in the database: add the given domain(s).
+     * <p>
+     * Will only add a domain if it's not already present.
+     * Otherwise it is silently skipped.
      *
      * @param db      Database Access
      * @param domains to add
      */
     public void alterTableAddColumns(@NonNull final SQLiteDatabase db,
                                      @NonNull final Domain... domains) {
+        final TableInfo ti = getTableInfo(db);
         for (final Domain domain : domains) {
-            db.execSQL("ALTER TABLE " + name + " ADD " + domain.def(true));
+            if (ti.getColumn(domain.getName()) == null) {
+                db.execSQL("ALTER TABLE " + name + " ADD " + domain.def(true));
+            }
         }
     }
 
@@ -577,7 +583,7 @@ public class TableDefinition {
      * <ol>
      *  <li>If foreign key constraints are enabled,
      *      disable them using PRAGMA foreign_keys=OFF.</li>
-     *   <li>Start transaction</li
+     *  <li>Start transaction</li>
      *  <li>Create new table</li>
      *          <li>Copy data</li>
      *          <li>Drop old table</li>
@@ -827,6 +833,8 @@ public class TableDefinition {
          * format: ([parent alias].[column] = [child alias].[column] [ AND ...])
          *
          * @return SQL fragment
+         *
+         * @throws IllegalStateException (debug) if there is no primary key
          */
         @NonNull
         String getPredicate() {
