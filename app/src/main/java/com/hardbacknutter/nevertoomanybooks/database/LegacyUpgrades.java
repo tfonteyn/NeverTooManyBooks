@@ -550,8 +550,8 @@ public final class LegacyUpgrades {
         TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TRANSLATION_ORIGINAL_TITLE);
     }
 
-    static void v25onUpgrade(@NonNull final SQLiteDatabase db,
-                             final Context context) {
+    static void v25onUpgrade(final Context context,
+                             @NonNull final SQLiteDatabase db) {
         TBL_DELETED_BOOKS.create(db, true);
         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
     }

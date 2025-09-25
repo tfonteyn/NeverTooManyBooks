@@ -430,7 +430,7 @@ public class DBHelper
             LegacyUpgrades.v24onUpgrade(db);
         }
         if (oldVersion < 25) {
-            LegacyUpgrades.v25onUpgrade(db, context);
+            LegacyUpgrades.v25onUpgrade(context, db);
         }
         if (oldVersion < 26) {
             LegacyUpgrades.v26onUpgrade(db);
