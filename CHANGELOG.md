@@ -1,7 +1,20 @@
+### 7.8.2
+
+FIXES:
+
+- #189 improve title/name normalization/transliteration for sorting and duplication detection
+- #187 fix continuous-scanning mode
+- #186 apply barcode setting changes without restart
+- #184 infrequent crash when storing images
+- #177 reload book-data after renaming authors
+
+---
+
 ### 7.8.1
 
 FIXES:
-github #185 : in some circumstances when skipping a number of upgrades, the update to 7.8.0 might
+
+#185 : in some circumstances when skipping a number of upgrades, the update to 7.8.0 might
 fail with an error mentioning
 
     table identifiers has no column named wd_p_author_id
@@ -14,7 +27,7 @@ Solution: install 7.8.1.
 
 NEW:
 
-- github #181
+- #181
   - The Barcode scanner is now embedded on the ISBN search screen, and typically much faster.
   - An optional zoom-slider can be made available in *Settings*, section *Edit*,
     option "Barcode scanner" and enabling the switch "Zoom control".
@@ -22,7 +35,7 @@ NEW:
   - Please see
     the [documentation](https://github.com/tfonteyn/NeverTooManyBooks/wiki/Home/_edit#barcode-scanning)
     for some details
-- github #182: add the read-progress bar on books in the list-screen.
+- #182: add the read-progress bar on books in the list-screen.
 - add support for SBN numbers (precursor of ISBN)
 - new UI language: Swedish; translated with ChatGPT as a test; quality unknown.
 
@@ -36,7 +49,7 @@ FIXES:
 
 NEW:
 
-- github #164: adding 2 extra image slots for books.
+- #164: adding 2 extra image slots for books.
   When upgrading, all styles will get images 3+4 enabled/visible. As usual you can change their
   visibility in the style settings..
 - The code for fetching images was rewritten. This finally fixes the issues with OpenLibrary.

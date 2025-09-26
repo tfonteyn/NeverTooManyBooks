@@ -1,0 +1,7 @@
+FIXES:
+
+- #189 improve title/name normalization/transliteration for sorting and duplication detection
+- #187 fix continuous-scanning mode
+- #186 apply barcode setting changes without restart
+- #184 infrequent crash when storing images
+- #177 reload book-data after renaming authors
