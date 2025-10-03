@@ -1743,6 +1743,7 @@ public class Book
                                 + (coverFile == null ? "null" : coverFile.getAbsolutePath())
                              );
             }
+            // If it exists, it will be a valid file as we check before storing it
             if (coverFile != null && coverFile.exists()) {
                 return Optional.of(coverFile);
             }

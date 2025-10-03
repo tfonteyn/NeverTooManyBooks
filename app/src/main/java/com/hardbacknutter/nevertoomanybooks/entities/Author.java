@@ -1034,6 +1034,7 @@ public class Author
         final Optional<String> oFileSpec = getTmpPictureFileSpec();
         if (oFileSpec.isPresent()) {
             final File file = new File(oFileSpec.get());
+            // If it exists, it will be a valid file as we check before storing it
             if (file.exists()) {
                 return Optional.of(file);
             } else {

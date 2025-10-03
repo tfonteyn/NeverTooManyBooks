@@ -350,6 +350,7 @@ public class CoverStorage {
 
         // Try finding a jpg
         coverFile = new File(dir, name + EXT_JPG);
+        // If it exists, it will be a valid file as we check before storing it
         if (coverFile.exists()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
                 LoggerFactory.getLogger()
@@ -363,6 +364,7 @@ public class CoverStorage {
         } else {
             // not found, try finding a png
             coverFile = new File(dir, name + EXT_PNG);
+            // If it exists, it will be a valid file as we check before storing it
             if (coverFile.exists()) {
                 // rename it to the standard extension regardless of type
                 // #isUndoEnabled(String,int) relies on the jpg extension
