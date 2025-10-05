@@ -55,6 +55,7 @@ class Transformation {
     private static final int MAX_IMAGE_WIDTH_PX = 1280;
     @Dimension
     private static final int MAX_IMAGE_HEIGHT_PX = (int) (MAX_IMAGE_WIDTH_PX / CoverScale.HW_RATIO);
+    static final String ERROR_INVALID_IMAGE_SIZE = "Invalid image size";
     @Nullable
     private File srcFile;
     @Dimension
@@ -186,8 +187,17 @@ class Transformation {
     @WorkerThread
     @NonNull
     Optional<Bitmap> transform() {
-        if (srcFile == null || !srcFile.exists()) {
+        // Paranoia... the caller should never start the task with an invalid file
+        if (srcFile == null) {
             throw new IllegalArgumentException("No file");
+        }
+
+        // This is likely a redundant/duplicate call as the caller
+        // will/should already have checked the size. Paranoia...
+        if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(srcFile)) {
+            LoggerFactory.getLogger().w(TAG, ERROR_INVALID_IMAGE_SIZE,
+                                        srcFile.getAbsolutePath());
+            return Optional.empty();
         }
 
         final Bitmap bitmap;
@@ -326,16 +336,10 @@ class Transformation {
 
     @Nullable
     private Bitmap decodeAndScaleApi26(@NonNull final String pathName) {
-        // First decode with inJustDecodeBounds=true to check dimensions
+        // First decode with inJustDecodeBounds=true to get the dimensions ('out' values)
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
-
-        // Abort if no size info, or if the image is too small to be used.
-        final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
-        if (!coverStorage.isAcceptableSize(options)) {
-            return null;
-        }
 
         // Calculate the inSampleSize
         options.inSampleSize = 1;
