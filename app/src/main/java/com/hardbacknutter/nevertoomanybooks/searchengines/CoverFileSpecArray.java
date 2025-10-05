@@ -75,7 +75,8 @@ public final class CoverFileSpecArray {
         // Loop, finding biggest image
         for (int i = 0; i < imageList.size(); i++) {
             final String fileSpec = imageList.get(i);
-            if (new File(fileSpec).exists()) {
+            final File file = new File(fileSpec);
+            if (file.exists() && file.length() > 0) {
                 BitmapFactory.decodeFile(fileSpec, opt);
                 // If no size info, assume file bad and skip
                 if (opt.outHeight > 0 && opt.outWidth > 0) {

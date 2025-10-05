@@ -1729,7 +1729,7 @@ public class Book
             File coverFile = null;
             if (!fileSpec.isEmpty()) {
                 coverFile = new File(fileSpec);
-                if (!coverFile.exists()) {
+                if (!coverFile.exists() || coverFile.length() == 0) {
                     coverFile = null;
                 }
             }

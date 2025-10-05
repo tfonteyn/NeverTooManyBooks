@@ -453,6 +453,7 @@ public final class ImageHandler {
                             "imageOwner.id=" + imageOwner.getId()
                             + "|cIdx=" + cIdx
                             + "|exists=" + tmpFile.exists()
+                            + "|length=" + tmpFile.length()
                             + "|file=" + tmpFile.getAbsolutePath()
                          );
         }
@@ -501,7 +502,7 @@ public final class ImageHandler {
 
         final File srcFile = new File(fileSpec);
         final Context context = fragment.getContext();
-        if (srcFile.exists()) {
+        if (srcFile.exists() && srcFile.length() > 0) {
             try {
                 //noinspection DataFlowIssue
                 imageSupplier.get().setImage(context, cIdx, srcFile);
@@ -550,7 +551,7 @@ public final class ImageHandler {
      * @param file edited image file
      */
     private void onPictureResult(@NonNull final File file) {
-        if (file.exists()) {
+        if (file.exists() && file.length() > 0) {
             showProgress();
             vm.execute(new Transformation()
                                .setSource(file)
@@ -617,7 +618,7 @@ public final class ImageHandler {
     }
 
     private void onTakePictureResult(@NonNull final File file) {
-        if (file.exists()) {
+        if (file.exists() && file.length() > 0) {
             final Context context = fragment.getContext();
 
             final int surfaceRotation;

@@ -693,7 +693,7 @@ public class AuthorDaoImpl
                 // This could be a bug... it's getting pretty complicated dealing with
                 // multiple resolvers and multiple sites.
                 // Call it a workaround/bug/solution/paranoia... it works.
-                if (file.exists()) {
+                if (file.exists() && file.length() > 0) {
                     final String uuid = UUID.randomUUID().toString();
                     ServiceLocator.getInstance().getCoverStorage()
                                   .persist(file, uuid, 0);

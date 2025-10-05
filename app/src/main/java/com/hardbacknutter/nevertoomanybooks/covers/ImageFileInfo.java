@@ -181,11 +181,16 @@ public class ImageFileInfo
         return Objects.requireNonNull(engineId);
     }
 
+    /**
+     * Get the physical file if present.
+     *
+     * @return file
+     */
     @NonNull
     public Optional<File> getFile() {
         if (fileSpec != null && !fileSpec.isEmpty()) {
             final File file = new File(fileSpec);
-            if (file.exists()) {
+            if (file.exists() && file.length() > 0) {
                 return Optional.of(file);
             }
         }
