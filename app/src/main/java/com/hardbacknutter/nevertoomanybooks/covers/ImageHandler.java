@@ -180,7 +180,7 @@ public final class ImageHandler {
         // Minor hack...  if we have a title/isbn supplier, then we have a Book
         // and will need a coverBrowserLauncher.
         if (coverBrowserTitleSupplier != null) {
-            coverBrowserLauncher = new CoverBrowserLauncher(cIdx, this::onFileSelected);
+            coverBrowserLauncher = new CoverBrowserLauncher(cIdx, this::onPictureSelected);
         } else {
             coverBrowserLauncher = null;
         }
@@ -465,7 +465,7 @@ public final class ImageHandler {
      * Use the isbn to fetch other possible images from the internet
      * and present to the user to choose one.
      * <p>
-     * The results comes back in {@link #onFileSelected(String)}
+     * The results comes back in {@link #onPictureSelected(String)}
      */
     private void startBookCoverBrowser() {
         Objects.requireNonNull(coverBrowserIsbnSupplier, "coverBrowserIsbnSupplier");
@@ -495,7 +495,7 @@ public final class ImageHandler {
      *
      * @throws IllegalArgumentException (debug) if the fileSpec is invalid
      */
-    private void onFileSelected(@NonNull final String fileSpec) {
+    private void onPictureSelected(@NonNull final String fileSpec) {
         if (fileSpec.isEmpty()) {
             throw new IllegalArgumentException("fileSpec.isEmpty()");
         }
