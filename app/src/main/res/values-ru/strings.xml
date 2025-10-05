@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -712,6 +715,7 @@
     <string name="warning_import_csv_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">и еще %1$d.</string>
     <string name="warning_import_failed_for_these_books">Для этих книг/рядов импорт не удался:</string>
+    <string name="warning_image_invalid">Недопустимое или отсутствующее изображение.</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске.</string>
     <string name="warning_no_matching_book_found">Нет совпавших книг</string>
     <string name="warning_no_search_data_for_active_sites">Нет действительных поисковых данных для активных сайтов.</string>

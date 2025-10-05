@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes « … »  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -715,6 +718,7 @@
     <string name="warning_import_csv_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">et %1$d autres.</string>
     <string name="warning_import_failed_for_these_books">L’importation a échoué pour ces livres/rangs :</string>
+    <string name="warning_image_invalid">Image invalide ou manquante.</string>
     <string name="warning_no_editions">Aucune information d’édition supplémentaire disponible.</string>
     <string name="warning_no_matching_book_found">Aucun livre correspondant n’a été trouvé</string>
     <string name="warning_no_search_data_for_active_sites">Aucune donnée de recherche valide pour les sites actifs.</string>

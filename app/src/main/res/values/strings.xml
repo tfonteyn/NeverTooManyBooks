@@ -321,8 +321,12 @@
     <string name="warning_no_extra_info_found">No (additional) info found</string>
     <!-- the ISBN (or similar codes) entered is not valid -->
     <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
+    <!-- When searching for an image on an external website, none were found. -->
     <string name="warning_image_not_found">Image could not be found.</string>
+    <!-- The user attempted to edit/copy an image, but the device or external editor refused for an unknown reason. -->
     <string name="warning_image_copy_failed">Image could not be copied.</string>
+    <!-- An image was received from an external source (download, camera, file-system,...) but it is not valid/corrupt/empty/... -->
+    <string name="warning_image_invalid">Invalid or missing image.</string>
     <!-- a search for alternative editions of a book failed to find any -->
     <string name="warning_no_editions">No additional edition information available.</string>
     <!-- when entering a partial date; e.g. publication data.  -->

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“  - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -703,6 +706,7 @@
     <string name="warning_import_csv_unescaped_quote">Ungeescapte Anführungszeichen in Zeile %1$d, Position %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">und %1$d weitere.</string>
     <string name="warning_import_failed_for_these_books">Import für diese Bücher/Zeilen fehlgeschlagen:</string>
+    <string name="warning_image_invalid">Ungültiges oder fehlendes Bild.</string>
     <string name="warning_no_editions">Keine zusätzlichen Informationen zur Ausgabe verfügbar.</string>
     <string name="warning_no_matching_book_found">Kein passendes Buch gefunden</string>
     <string name="warning_no_search_data_for_active_sites">Keine gültigen Suchdaten für aktive Websites.</string>

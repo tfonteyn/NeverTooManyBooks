@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -711,6 +714,7 @@ A question mark is written as the character semicolon: ';'
     <string name="warning_import_csv_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">και %1$d ακόμη.</string>
     <string name="warning_import_failed_for_these_books">Η εισαγωγή απέτυχε για αυτά τα βιβλία/σειρές:</string>
+    <string name="warning_image_invalid">Μη έγκυρη ή ανύπαρκτη εικόνα.</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις.</string>
     <string name="warning_no_matching_book_found">Δεν βρέθηκε βιβλίο που να ταιριάζει</string>
     <string name="warning_no_search_data_for_active_sites">Δεν υπάρχουν έγκυρα δεδομένα αναζήτησης για ενεργούς ιστότοπους.</string>

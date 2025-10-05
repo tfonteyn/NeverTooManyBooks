@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -64,6 +67,7 @@
     <string name="warning_x_is_not_a_valid_code">“%1$s” சரியான குறியீடு அல்ல</string>
     <string name="warning_image_not_found">படத்தைக் கண்டுபிடிக்க முடியவில்லை.</string>
     <string name="warning_image_copy_failed">படத்தை நகலெடுக்க முடியவில்லை.</string>
+    <string name="warning_image_invalid">தவறான அல்லது காணவில்லை படம்.</string>
     <string name="warning_no_editions">கூடுதல் பதிப்பு செய்தி எதுவும் கிடைக்கவில்லை.</string>
     <string name="warning_if_day_set_month_and_year_must_be">ஒரு நாள் குறிப்பிடப்பட்டால், மாதம் மற்றும் ஆண்டு இரண்டுமே குறிப்பிடப்பட வேண்டும்.</string>
     <string name="warning_if_month_set_year_must_be">ஒரு மாதம் குறிப்பிடப்பட்டால், ஒரு வருடமும் குறிப்பிடப்பட வேண்டும்.</string>

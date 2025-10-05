@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -730,6 +733,7 @@
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
     <string name="warning_import_failed_for_these_books_and_more">en nog %1$d anderen.</string>
     <string name="warning_import_failed_for_these_books">Importeren is mislukt voor deze boeken/rijen:</string>
+    <string name="warning_image_invalid">Ongeldig of ontbrekende afbeelding.</string>
     <string name="warning_no_editions">Geen verdere uitgave informatie beschikbaar.</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="warning_no_search_data_for_active_sites">Geen geldige zoekgegevens voor actieve sites.</string>

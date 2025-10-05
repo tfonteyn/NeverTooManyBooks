@@ -230,6 +230,7 @@
     <string name="warning_x_is_not_a_valid_code">„%1$s” érvénytelen kód</string>
     <string name="warning_image_not_found">A kép nem található.</string>
     <string name="warning_image_copy_failed">A kép nem másolható.</string>
+    <string name="warning_image_invalid">Érvénytelen vagy hiányzó kép.</string>
     <string name="warning_no_editions">NIncs információ további kiadásról.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Ha a nap meg van adva, akkor a hónapot és az évet is meg kell adni.</string>
     <string name="warning_if_month_set_year_must_be">Ha a hónap meg van adva, akkor az évet is meg kell adni.</string>

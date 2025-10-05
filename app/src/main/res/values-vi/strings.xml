@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -823,6 +826,7 @@
     <string name="warning_import_failed_for_these_books">Nhập không thành công cho các sách/hàng này:</string>
     <string name="warning_import_failed_for_these_books_and_more">và %1$d nữa.</string>
     <string name="warning_missing_title_or_author">Tiêu đề và/hoặc tác giả phải được chỉ định.</string>
+    <string name="warning_image_invalid">Hình ảnh không hợp lệ hoặc bị thiếu.</string>
     <string name="warning_no_editions">Không có thông tin bổ sung về phiên bản.</string>
     <string name="warning_no_matching_book_found">Không tìm thấy sách phù hợp</string>
     <string name="warning_no_search_data_for_active_sites">Không có dữ liệu tìm kiếm hợp lệ cho các trang web đang hoạt động.</string>

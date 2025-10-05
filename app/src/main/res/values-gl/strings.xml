@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -280,6 +283,7 @@
     <string name="site_description_portuguese_and_more">Portugués e outros</string>
     <string name="warning_image_not_found">No se puido atopar a imaxe.</string>
     <string name="warning_if_month_set_year_must_be">De especificarse un mes, tamén debe facerse co ano.</string>
+    <string name="warning_image_invalid">Imaxe non válida ou ausente.</string>
     <string name="warning_no_editions">Non se dispón de información adicional da edición.</string>
     <string name="warning_toc_confirm">Por favor, confirma que os títulos (na súa maioría) son correctos.</string>
     <string name="vldt_non_blank_required_for_x">«%1$s» non pode estar baleiro</string>
