@@ -23,8 +23,6 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ImageDecoder;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 
@@ -182,61 +180,26 @@ public class CoverStorage {
 
     /**
      * Check if a file is an image with an acceptable size.
+     * This is a cheap check for {@code null}, file-size and image dimensions
+     * without fully decoding the bitmap.
      *
-     * @param options of which the height/width will be checked
-     *
-     * @return {@code true} if the image is acceptable.
-     */
-    boolean isAcceptableSize(@NonNull final BitmapFactory.Options options) {
-        return options.outHeight >= MIN_VALID_IMAGE_SIDE
-               && options.outWidth >= MIN_VALID_IMAGE_SIDE;
-    }
-
-    /**
-     * Check if a file is an image with an acceptable size.
-     * <p>
-     * This is a slow check, use only when import/saving.
-     * When displaying do a simple {@code srcFile.exists()} instead.
-     * <p>
-     * <strong>If the image is not acceptable, then the file will be deleted.</strong>
-     *
-     * @param srcFile to check
+     * @param file to check
      *
      * @return {@code true} if image is acceptable.
      */
     @WorkerThread
-    public boolean isAcceptableSize(@Nullable final File srcFile) {
-        if (srcFile == null) {
+    public boolean isAcceptableSize(@Nullable final File file) {
+        if (file == null || file.length() < MIN_VALID_IMAGE_FILE_SIZE) {
             return false;
         }
 
-        if (srcFile.length() < MIN_VALID_IMAGE_FILE_SIZE) {
-            FileUtils.delete(srcFile);
-            return false;
-        }
+        // Read the image options (without generating a bitmap) to get file size
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
 
-        // Read the image files to get file size
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            final ImageDecoder.Source source = ImageDecoder.createSource(srcFile);
-            try {
-                final Bitmap bitmap = ImageDecoder.decodeBitmap(source);
-                return bitmap.getHeight() >= MIN_VALID_IMAGE_SIDE
-                       && bitmap.getWidth() >= MIN_VALID_IMAGE_SIDE;
-            } catch (@NonNull final IOException e) {
-                // just reject the file; but log the e
-                LoggerFactory.getLogger().e(TAG, e, srcFile.getAbsolutePath());
-            }
-        } else {
-            final BitmapFactory.Options opt = new BitmapFactory.Options();
-            opt.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
-
-            if (isAcceptableSize(opt)) {
-                return true;
-            }
-        }
-        FileUtils.delete(srcFile);
-        return false;
+        return options.outHeight >= MIN_VALID_IMAGE_SIDE
+               && options.outWidth >= MIN_VALID_IMAGE_SIDE;
     }
 
     /**

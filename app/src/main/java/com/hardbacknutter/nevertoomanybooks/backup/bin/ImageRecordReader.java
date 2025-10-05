@@ -134,6 +134,9 @@ public class ImageRecordReader
                         } else {
                             results.imagesCreated++;
                         }
+                    } else {
+                        // discard
+                        FileUtils.delete(dstFile);
                     }
                 } catch (@NonNull final IOException e) {
                     if (BuildConfig.DEBUG /* always */) {
