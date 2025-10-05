@@ -224,7 +224,7 @@ public class CoverStorage {
                        && bitmap.getWidth() >= MIN_VALID_IMAGE_SIDE;
             } catch (@NonNull final IOException e) {
                 // just reject the file; but log the e
-                LoggerFactory.getLogger().e(TAG, e);
+                LoggerFactory.getLogger().e(TAG, e, srcFile.getAbsolutePath());
             }
         } else {
             final BitmapFactory.Options opt = new BitmapFactory.Options();
