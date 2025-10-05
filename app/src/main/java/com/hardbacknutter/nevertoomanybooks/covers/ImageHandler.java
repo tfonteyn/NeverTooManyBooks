@@ -500,18 +500,19 @@ public final class ImageHandler {
             throw new IllegalArgumentException("fileSpec.isEmpty()");
         }
 
-        final File srcFile = new File(fileSpec);
-        final Context context = fragment.getContext();
-        if (srcFile.exists() && srcFile.length() > 0) {
+        final File file = new File(fileSpec);
+        if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
             try {
                 //noinspection DataFlowIssue
-                imageSupplier.get().setImage(context, cIdx, srcFile);
+                imageSupplier.get().setImage(fragment.getContext(), cIdx, file);
             } catch (@NonNull final StorageException | IOException ignore) {
                 // safe to ignore, we just checked existence...
             }
         } else {
             //noinspection DataFlowIssue
-            imageSupplier.get().removeImage(context, cIdx);
+            imageSupplier.get().removeImage(fragment.getContext(), cIdx);
+            Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
+                          Snackbar.LENGTH_LONG).show();
         }
 
         reloadImageCallback.accept(cIdx);
@@ -551,12 +552,15 @@ public final class ImageHandler {
      * @param file edited image file
      */
     private void onPictureResult(@NonNull final File file) {
-        if (file.exists() && file.length() > 0) {
+        if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
             showProgress();
             vm.execute(new Transformation()
                                .setSource(file)
                                .setScale(true),
                        file);
+        } else {
+            Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -575,11 +579,17 @@ public final class ImageHandler {
             final File tmpFile = ServiceLocator.getInstance().getCoverStorage()
                                                .writeTempFile(is);
 
-            vm.execute(new Transformation()
-                               .setSource(tmpFile)
-                               .setScale(true),
-                       tmpFile);
-
+            if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(tmpFile)) {
+                vm.execute(new Transformation()
+                                   .setSource(tmpFile)
+                                   .setScale(true),
+                           tmpFile);
+            } else {
+                // abort
+                hideProgress();
+                Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
+                              Snackbar.LENGTH_LONG).show();
+            }
         } catch (@NonNull final CoverStorageException e) {
             ErrorDialog.show(context, TAG, e);
         } catch (@NonNull final IOException e) {
@@ -617,8 +627,13 @@ public final class ImageHandler {
         }
     }
 
+    /**
+     * Called when the user used their camera (or other scanner-like device) to take a picture.
+     *
+     * @param file the image
+     */
     private void onTakePictureResult(@NonNull final File file) {
-        if (file.exists() && file.length() > 0) {
+        if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
             final Context context = fragment.getContext();
 
             final int surfaceRotation;
@@ -647,6 +662,9 @@ public final class ImageHandler {
                                .setRotation(explicitRotation),
                        file,
                        action);
+        } else {
+            Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
