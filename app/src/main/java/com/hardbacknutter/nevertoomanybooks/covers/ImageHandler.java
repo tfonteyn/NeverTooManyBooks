@@ -511,6 +511,7 @@ public final class ImageHandler {
         } else {
             //noinspection DataFlowIssue
             imageSupplier.get().removeImage(fragment.getContext(), cIdx);
+            //noinspection DataFlowIssue
             Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -559,6 +560,7 @@ public final class ImageHandler {
                                .setScale(true),
                        file);
         } else {
+            //noinspection DataFlowIssue
             Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -587,6 +589,7 @@ public final class ImageHandler {
             } else {
                 // abort
                 hideProgress();
+                //noinspection DataFlowIssue
                 Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
                               Snackbar.LENGTH_LONG).show();
             }
@@ -663,6 +666,7 @@ public final class ImageHandler {
                        file,
                        action);
         } else {
+            //noinspection DataFlowIssue
             Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
                           Snackbar.LENGTH_LONG).show();
         }
