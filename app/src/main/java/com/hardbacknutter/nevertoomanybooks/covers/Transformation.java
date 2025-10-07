@@ -47,6 +47,8 @@ class Transformation {
 
     /** Log tag. */
     private static final String TAG = "Transformation";
+    private static final String ERROR_INVALID_IMAGE_SIZE = "Invalid image size";
+
     /**
      * By default, covers will always be downsized to a maximum width of 1280.
      * Override with {@link #setScale(int, int)}
@@ -55,7 +57,6 @@ class Transformation {
     private static final int MAX_IMAGE_WIDTH_PX = 1280;
     @Dimension
     private static final int MAX_IMAGE_HEIGHT_PX = (int) (MAX_IMAGE_WIDTH_PX / CoverScale.HW_RATIO);
-    static final String ERROR_INVALID_IMAGE_SIZE = "Invalid image size";
     @Nullable
     private File srcFile;
     @Dimension
