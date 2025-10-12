@@ -70,6 +70,7 @@
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
+    <integer name="MENU_ORDER_BARCODE_SETTINGS">9995</integer>
     <integer name="MENU_ORDER_SETTINGS">9997</integer>
 
     <!-- Used by the ExtMenuItem. -->
@@ -334,6 +335,9 @@
           type="id" />
     <!-- Toolbar menu: start a file import of barcodes. -->
     <item name="MENU_BARCODE_IMPORT"
+          type="id" />
+    <!-- Toolbar menu: show the barcode/scanner settings screen -->
+    <item name="MENU_BARCODE_SETTINGS"
           type="id" />
 
     <!-- Toolbar menu: enforce ISBN validity checks during input -->

@@ -1359,7 +1359,7 @@ public class SearchBookByIsbnFragment
                 isbnValidationTextWatcher.setValidityLevel(validity);
                 return true;
 
-            } else if (menuItemId == R.id.MENU_SETTINGS) {
+            } else if (menuItemId == R.id.MENU_BARCODE_SETTINGS) {
                 final BarcodePreferenceFragment fragment = new BarcodePreferenceFragment();
                 vm.inSettings();
                 getParentFragmentManager()

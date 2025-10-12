@@ -59,8 +59,8 @@
     </group>
 
     <item
-        android:id="@id/MENU_SETTINGS"
-        android:orderInCategory="@integer/MENU_ORDER_SETTINGS"
+        android:id="@id/MENU_BARCODE_SETTINGS"
+        android:orderInCategory="@integer/MENU_ORDER_BARCODE_SETTINGS"
         android:title="@string/pt_barcode_scanner"
         app:showAsAction="never" />
 </menu>
