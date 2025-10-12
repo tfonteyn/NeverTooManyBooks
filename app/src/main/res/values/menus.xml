@@ -26,8 +26,6 @@
     <integer name="MENU_ORDER_BARCODE_SCAN_BATCH">42</integer>
     <integer name="MENU_ORDER_BARCODE_IMPORT">44</integer>
 
-    <integer name="MENU_ORDER_SEARCH_SITES">90</integer>
-
     <integer name="MENU_ORDER_SEARCH">100</integer>
 
     <integer name="MENU_ORDER_FILTERS">200</integer>
@@ -69,6 +67,8 @@
     <integer name="MENU_ORDER_SEARCH_BOOKS_ON_SITE">900</integer>
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
+
+    <integer name="MENU_ORDER_SEARCH_SITES">9900</integer>
 
     <integer name="MENU_ORDER_BARCODE_SETTINGS">9995</integer>
     <integer name="MENU_ORDER_SETTINGS">9997</integer>
