@@ -85,6 +85,7 @@
     <string name="action_discard">Odrzuć</string>
     <string name="action_done">Gotowe</string>
     <string name="action_duplicate">Kopia</string>
+    <string name="action_add_all">Dodaj wszystko</string>
     <string name="action_edit">Edytuj</string>
     <string name="action_edit_ellipsis">Edytuj…</string>
     <string name="action_export">Eksportuj</string>
@@ -96,6 +97,7 @@
     <string name="action_reset_to_default">Resetuj ustawienia</string>
     <string name="action_retry">Ponów</string>
     <string name="action_remove">Usuń</string>
+    <string name="action_remove_all">Usuń wszystko</string>
     <string name="action_save">Zapisz</string>
     <string name="action_search">Szukaj</string>
     <string name="action_select">Wybierz</string>

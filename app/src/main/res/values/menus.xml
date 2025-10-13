@@ -197,6 +197,10 @@
           type="id" />
     <item name="MENU_TAG_EDIT"
           type="id" />
+    <item name="MENU_TAG_ADD_ALL"
+          type="id" />
+    <item name="MENU_TAG_REMOVE_ALL"
+          type="id" />
 
     <item name="MENU_FORMAT_EDIT"
           type="id" />

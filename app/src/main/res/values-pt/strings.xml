@@ -67,6 +67,7 @@
     <string name="action_delete">Excluir</string>
     <string name="action_discard">Descartar</string>
     <string name="action_done">Concluído</string>
+    <string name="action_add_all">Adicionar tudo</string>
     <string name="action_edit">Editar</string>
     <string name="action_edit_ellipsis">Editar…</string>
     <string name="action_email">E-mail</string>
@@ -78,6 +79,7 @@
     <string name="action_reset_to_default">Redefinir para o padrão</string>
     <string name="action_retry">Repetir</string>
     <string name="action_remove">Remover</string>
+    <string name="action_remove_all">Remover tudo</string>
     <string name="action_save">Salvar</string>
     <string name="action_search">Pesquisar</string>
     <string name="action_select">Selecionar</string>

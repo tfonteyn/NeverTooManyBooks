@@ -25,6 +25,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -53,6 +54,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.adapters.SimpleAdapterDataOb
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 
+/**
+ * Edit the list of Tags of a Book.
+ * <p>
+ * This is a plain fullscreen DialogFragment.
+ * Displayed on top of edit-book fragment(s) which run inside a ViewPager.
+ */
 public class EditBookTagsDialogFragment
         extends DialogFragment
         implements FlexToolbar {
@@ -200,6 +207,23 @@ public class EditBookTagsDialogFragment
     }
 
     @Override
+    public boolean onToolbarMenuItemClick(@Nullable final MenuItem menuItem) {
+        if (menuItem == null) {
+            return false;
+        }
+        final int menuItemId = menuItem.getItemId();
+        if (menuItemId == R.id.MENU_TAG_ADD_ALL) {
+            availableTagsAdapter.moveAll();
+            return true;
+
+        } else if (menuItemId == R.id.MENU_TAG_REMOVE_ALL) {
+            bookTagsAdapter.moveAll();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean onToolbarButtonClick(@Nullable final View button) {
         return false;
     }
@@ -280,20 +304,29 @@ public class EditBookTagsDialogFragment
          * Move the given tag from this adapter(list) to the destination adapter.
          *
          * @param tag to move
-         *
-         * @return {@code true} if the tag was present and moved
          */
-        boolean move(@NonNull final Tag tag) {
+        void move(@NonNull final Tag tag) {
             for (int position = 0; position < tags.size(); position++) {
                 final Tag tmp = tags.get(position);
                 if (tmp.compareTo(tag) == 0) {
                     destination.add(tmp);
                     tags.remove(tmp);
                     notifyItemRemoved(position);
-                    return true;
+                    return;
                 }
             }
-            return false;
+        }
+
+        /**
+         * Move all tags from this adapter(list) to the destination adapter.
+         */
+        void moveAll() {
+            for (int position = tags.size() - 1; position >= 0; position--) {
+                final Tag tmp = tags.get(position);
+                destination.add(tmp);
+                tags.remove(tmp);
+                notifyItemRemoved(position);
+            }
         }
 
         /**

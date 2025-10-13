@@ -85,6 +85,7 @@
     <string name="action_discard">Отменить</string>
     <string name="action_done">Готово</string>
     <string name="action_duplicate">копия</string>
+    <string name="action_add_all">Добавить всё</string>
     <string name="action_edit">Изменить</string>
     <string name="action_edit_ellipsis">Изменить…</string>
     <string name="action_export">Экспортировать</string>
@@ -96,6 +97,7 @@
     <string name="action_reset_to_default">Сбросить настройки</string>
     <string name="action_retry">Повторить\n попытку</string>
     <string name="action_remove">Удалить</string>
+    <string name="action_remove_all">Удалить всё</string>
     <string name="action_save">Сохранить</string>
     <string name="action_search">Поиск</string>
     <string name="action_select">Выбрать</string>

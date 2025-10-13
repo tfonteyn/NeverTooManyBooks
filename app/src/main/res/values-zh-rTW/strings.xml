@@ -89,6 +89,7 @@
     <string name="action_discard">捨棄</string>
     <string name="action_done">完成</string>
     <string name="action_duplicate">重複</string>
+    <string name="action_add_all">新增全部</string>
     <string name="action_edit">編輯</string>
     <string name="action_edit_defaults">編輯預設設定</string>
     <string name="action_edit_ellipsis">編輯…</string>
@@ -105,6 +106,7 @@
     <string name="action_reset_to_default">還原為預設狀態</string>
     <string name="action_retry">重試</string>
     <string name="action_remove">移除</string>
+    <string name="action_remove_all">移除全部</string>
     <string name="action_save">儲存</string>
     <string name="action_search">搜尋</string>
     <string name="action_select">選取</string>

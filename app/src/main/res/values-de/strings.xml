@@ -78,6 +78,7 @@
     <string name="action_discard">Verwerfen</string>
     <string name="action_done">Fertig</string>
     <string name="action_duplicate">Vervielfältigen</string>
+    <string name="action_add_all">Alle hinzufügen</string>
     <string name="action_edit">Bearbeiten</string>
     <string name="action_edit_ellipsis">Bearbeiten…</string>
     <string name="action_export">Exportieren</string>
@@ -89,6 +90,7 @@
     <string name="action_reset_to_default">Auf Standard zurücksetzen</string>
     <string name="action_retry">Erneut versuchen</string>
     <string name="action_remove">Entfernen</string>
+    <string name="action_remove_all">Alle entfernen</string>
     <string name="action_save">Speichern</string>
     <string name="action_search">Suchen</string>
     <string name="action_select">Auswählen</string>

@@ -40,6 +40,7 @@
         <item quantity="other">%1$d grāmatas</item>
     </plurals>
     <string name="action_remove">Noņemt</string>
+    <string name="action_remove_all">Noņemt visu</string>
     <string name="action_save">Saglabāt</string>
     <plurals name="n_tags">
         <item quantity="zero">%1$d birkas</item>
@@ -127,6 +128,7 @@
     <string name="action_clear">Notīrīt</string>
     <string name="action_discard">Atmest</string>
     <string name="action_done">Gatavs</string>
+    <string name="action_add_all">Pievienot visu</string>
     <string name="action_edit">Rediģēt</string>
     <string name="action_email">E-pasts</string>
     <string name="action_export">Eksportēt</string>

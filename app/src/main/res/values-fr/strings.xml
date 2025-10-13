@@ -88,6 +88,7 @@
     <string name="action_discard">Annuler</string>
     <string name="action_done">OK</string>
     <string name="action_duplicate">Dupliquer</string>
+    <string name="action_add_all">Tout ajouter</string>
     <string name="action_edit">Modifier</string>
     <string name="action_edit_ellipsis">Modifier…</string>
     <string name="action_export">Exporter</string>
@@ -99,6 +100,7 @@
     <string name="action_reset_to_default">Rétablir param. par défaut</string>
     <string name="action_retry">Réessayer</string>
     <string name="action_remove">Supprimer</string>
+    <string name="action_remove_all">Tout supprimer</string>
     <string name="action_save">Enregistrer</string>
     <string name="action_search">Rechercher</string>
     <string name="action_select">Sélectionner</string>

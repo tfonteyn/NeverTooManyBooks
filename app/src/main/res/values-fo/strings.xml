@@ -137,4 +137,6 @@
     <string name="pt_camera_auto_focus">Sjálvvirkin brennidepil</string>
     <string name="bob_empty_field">(Eingin)</string>
     <string name="warning_image_invalid">Ógild ella manglandi mynd.</string>
+    <string name="action_add_all">Legg alt aftrat</string>
+    <string name="action_remove_all">Fjern alt</string>
 </resources>

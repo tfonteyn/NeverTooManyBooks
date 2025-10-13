@@ -261,12 +261,14 @@
     <string name="confirm_create_real_author">„%1$s“ ešte neexistuje. Mali by byť vytvorení?</string>
     <string name="confirm_rebuild_index">Týmto sa prebudujú indexy pri reštarte aplikácie. Ste si istý, že chcete pokračovať?</string>
     <string name="action_add_with_details">Pridať s podrobnosťami</string>
+    <string name="action_add_all">Pridať všetko</string>
     <string name="action_edit">Upraviť</string>
     <string name="action_edit_ellipsis">Upraviť…</string>
     <string name="action_edit_defaults">Upraviť predvolené nastavenia</string>
     <string name="action_apply">Použiť</string>
     <string name="action_delete">Odstrániť</string>
     <string name="action_remove">Odstrániť</string>
+    <string name="action_remove_all">Odstrániť všetko</string>
     <string name="action_save">Uložiť</string>
     <string name="action_discard">Zahodiť</string>
     <string name="action_help">Pomocník</string>

@@ -86,6 +86,7 @@
     <string name="action_discard">Zahodit</string>
     <string name="action_done">Hotovo</string>
     <string name="action_duplicate">Kopírovat</string>
+    <string name="action_add_all">Přidat vše</string>
     <string name="action_edit">Upravit</string>
     <string name="action_edit_ellipsis">Upravit…</string>
     <string name="action_export">Exportovat</string>
@@ -97,6 +98,7 @@
     <string name="action_reset_to_default">Obnovit výchozí</string>
     <string name="action_retry">Opakovat</string>
     <string name="action_remove">Odstranit</string>
+    <string name="action_remove_all">Odebrat vše</string>
     <string name="action_save">Uložit</string>
     <string name="action_search">Hledat</string>
     <string name="action_select">Vybrat</string>

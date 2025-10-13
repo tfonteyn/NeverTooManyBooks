@@ -37,6 +37,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog.Fullscreen"
+            app:menu="@menu/edit_book_tag_list"
             app:navigationIcon="?attr/homeAsUpIndicator"
             app:title="@string/lbl_tags"
             />

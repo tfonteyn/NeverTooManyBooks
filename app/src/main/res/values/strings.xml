@@ -1029,6 +1029,8 @@
     <!-- [VERIFIED] -->
     <string name="action_add">Add</string>
     <string name="action_add_with_details">Add with details</string>
+    <string name="action_add_all">Add all</string>
+
     <!-- [VERIFIED] -->
     <string name="action_edit">Edit</string>
     <!-- [VERIFIED] -->
@@ -1043,6 +1045,7 @@
     <string name="action_delete">Delete</string>
     <!-- [VERIFIED] -->
     <string name="action_remove">Remove</string>
+    <string name="action_remove_all">Remove all</string>
     <!-- [VERIFIED] -->
     <string name="action_save">Save</string>
     <!-- [VERIFIED] -->

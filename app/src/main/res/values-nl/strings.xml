@@ -86,6 +86,7 @@
     <string name="action_discard">Weggooien</string>
     <string name="action_done">Klaar</string>
     <string name="action_duplicate">Dupliceer</string>
+    <string name="action_add_all">Alles toevoegen</string>
     <string name="action_edit">Bewerken</string>
     <string name="action_edit_ellipsis">Bewerken…</string>
     <string name="action_email">e-mail</string>
@@ -100,6 +101,7 @@
     <string name="action_reset_to_default">Standaardinstellingen herstellen</string>
     <string name="action_retry">Opnieuw</string>
     <string name="action_remove">Verwijderen</string>
+    <string name="action_remove_all">Alles verwijderen</string>
     <string name="action_save">Opslaan</string>
     <string name="action_search">Zoeken</string>
     <string name="action_select">Selecteren</string>

@@ -77,6 +77,7 @@
     <string name="action_discard">Sil</string>
     <string name="action_done">Bitti</string>
     <string name="action_duplicate">Çift</string>
+    <string name="action_add_all">Tümünü ekle</string>
     <string name="action_edit">Düzenle</string>
     <string name="action_edit_ellipsis">Düzenle…</string>
     <string name="action_export">Dışa aktar</string>
@@ -88,6 +89,7 @@
     <string name="action_reset_to_default">Varsayılana sıfırla</string>
     <string name="action_retry">Tekrar dene</string>
     <string name="action_remove">Kaldır</string>
+    <string name="action_remove_all">Tümünü kaldır</string>
     <string name="action_save">Kaydet</string>
     <string name="action_search">Ara</string>
     <string name="action_select">Seç</string>

@@ -84,6 +84,7 @@
     <string name="action_discard">Ignorera</string>
     <string name="action_done">Klart</string>
     <string name="action_duplicate">Duplicera</string>
+    <string name="action_add_all">Lägg till alla</string>
     <string name="action_edit">Redigera</string>
     <string name="action_edit_defaults">Redigera standardinställningar</string>
     <string name="action_edit_ellipsis">Redigera…</string>
@@ -101,6 +102,7 @@
     <string name="action_reset_to_default">Återställ standardinst</string>
     <string name="action_restore_default_identifiers">Återställ standardidentifierare</string>
     <string name="action_retry">Försök igen</string>
+    <string name="action_remove_all">Ta bort alla</string>
     <string name="action_save">Spara</string>
     <string name="action_save_for_later">Spara till senare</string>
     <string name="action_search">Sök</string>

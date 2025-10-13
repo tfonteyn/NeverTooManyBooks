@@ -85,6 +85,7 @@
     <string name="action_discard">舍弃</string>
     <string name="action_done">完成</string>
     <string name="action_duplicate">创建副本</string>
+    <string name="action_add_all">添加全部</string>
     <string name="action_edit">编辑</string>
     <string name="action_edit_defaults">编辑默认设置</string>
     <string name="action_edit_ellipsis">修改…</string>
@@ -101,6 +102,7 @@
     <string name="action_reset_to_default">重置为默认设置</string>
     <string name="action_retry">重试</string>
     <string name="action_remove">移除</string>
+    <string name="action_remove_all">移除全部</string>
     <string name="action_save">保存</string>
     <string name="action_search">搜索</string>
     <string name="action_select">选择</string>

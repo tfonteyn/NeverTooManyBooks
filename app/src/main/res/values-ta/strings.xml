@@ -432,12 +432,14 @@
     <string name="confirm_registration_benefits">இந்த நற்பொருத்தம் %1$s உடன் பதிவு செய்வதிலிருந்து பயனடைகிறது. மேலும் தகவல்களைக் காண விரும்புகிறீர்களா, அல்லது இந்த செய்தியை முடக்க விரும்புகிறீர்களா?\n அமைப்புகளில் “%2$s” பிரிவின் கீழ் இந்த தகவலை பிற்காலத்தில் காணலாம்.</string>
     <string name="action_add">கூட்டு</string>
     <string name="action_add_with_details">விவரங்களுடன் சேர்க்கவும்</string>
+    <string name="action_add_all">அனைத்தையும் சேர்க்கவும்</string>
     <string name="action_edit">தொகு</string>
     <string name="action_edit_ellipsis">திருத்து…</string>
     <string name="action_edit_defaults">இயல்புநிலை அமைப்புகளைத் திருத்தவும்</string>
     <string name="action_apply">பயன்படுத்து</string>
     <string name="action_delete">நீக்கு</string>
     <string name="action_remove">அகற்று</string>
+    <string name="action_remove_all">அனைத்தையும் நீக்கவும்</string>
     <string name="action_save">சேமி</string>
     <string name="action_discard">நிராகரிக்கவும்</string>
     <string name="action_help">உதவி</string>

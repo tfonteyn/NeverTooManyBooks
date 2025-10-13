@@ -145,6 +145,7 @@
     <string name="action_delete">Eliminar</string>
     <string name="action_discard">Descartar</string>
     <string name="action_done">Feito</string>
+    <string name="action_add_all">Engadir todo</string>
     <string name="action_edit">Editar</string>
     <string name="action_email">Correo electrónico</string>
     <string name="action_export">Exportar</string>
@@ -156,6 +157,7 @@
     <string name="action_reset_to_default">Restablecer valores predeterminados</string>
     <string name="action_retry">Tentar de novo</string>
     <string name="action_remove">Quitar</string>
+    <string name="action_remove_all">Eliminar todo</string>
     <string name="action_save">Gardar</string>
     <string name="action_select">Seleccionar</string>
     <string name="action_show_all">Mostrar todo</string>

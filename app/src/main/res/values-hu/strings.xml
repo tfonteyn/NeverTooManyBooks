@@ -109,6 +109,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_discard">Elvetés</string>
     <string name="action_done">Kész</string>
+    <string name="action_add_all">Mindet hozzáad</string>
     <string name="action_edit">Szerkesztés</string>
     <string name="action_email">E-mail</string>
     <string name="action_export">Exportálás</string>
@@ -120,6 +121,7 @@
     <string name="action_reset_to_default">Visszaállítás alaphelyzetbe</string>
     <string name="action_retry">Újra</string>
     <string name="action_remove">Eltávolítás</string>
+    <string name="action_remove_all">Összes eltávolítása</string>
     <string name="action_save">Mentés</string>
     <string name="action_search">Keresés</string>
     <string name="action_select">Kiválasztás</string>

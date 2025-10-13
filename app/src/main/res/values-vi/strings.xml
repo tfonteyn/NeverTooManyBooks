@@ -81,6 +81,7 @@
     <string name="action_discard">Loại bỏ</string>
     <string name="action_done">Xong</string>
     <string name="action_duplicate">Nhân đôi</string>
+    <string name="action_add_all">Thêm tất cả</string>
     <string name="action_edit">Chỉnh sửa</string>
     <string name="action_edit_defaults">Chỉnh sửa thiết đặt mặc định</string>
     <string name="action_edit_ellipsis">Chỉnh sửa…</string>
@@ -97,6 +98,7 @@
     <string name="action_reset_to_default">Đặt lại về mặc định</string>
     <string name="action_retry">Thử lại</string>
     <string name="action_remove">Xóa</string>
+    <string name="action_remove_all">Xóa tất cả</string>
     <string name="action_save">Lưu</string>
     <string name="action_search">Tìm kiếm</string>
     <string name="action_select">Chọn</string>
