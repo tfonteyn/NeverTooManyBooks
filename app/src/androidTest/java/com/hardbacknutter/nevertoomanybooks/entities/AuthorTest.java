@@ -371,7 +371,6 @@ public class AuthorTest
         final Locale bookLocale = Locale.GERMANY;
         final String n1 = SqlEncode.normalize(GERMAN_GROSS_1).toLowerCase(bookLocale);
         final String n2 = SqlEncode.normalize(GERMAN_GROSS_2).toLowerCase(bookLocale);
-        ;
 
         assertEquals(n1, n2);
     }

@@ -31,7 +31,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
@@ -187,7 +186,6 @@ public class CoverStorage {
      *
      * @return {@code true} if image is acceptable.
      */
-    @WorkerThread
     public boolean isAcceptableSize(@Nullable final File file) {
         if (file == null || file.length() < MIN_VALID_IMAGE_FILE_SIZE) {
             return false;
