@@ -86,10 +86,11 @@ public class DBHelper
      * v7.6.0: 42
      * v7.7.0: 43
      * v7.8.2: 44
+     * v7.8.3: 45
      * <p>
      * Current version.
      */
-    public static final int DATABASE_VERSION = 44;
+    public static final int DATABASE_VERSION = 45;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -471,9 +472,9 @@ public class DBHelper
         if (oldVersion < 44) {
             LegacyUpgrades.v44onUpgrade(context);
         }
-
-            // we need to rebuild the Author OB columns
-            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB, true);
+        if (oldVersion < 45) {
+            // Github #193: rebuild to restore the spaces
+            StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
         }
 
         // We have to do this here as we're always inserting all columns,
