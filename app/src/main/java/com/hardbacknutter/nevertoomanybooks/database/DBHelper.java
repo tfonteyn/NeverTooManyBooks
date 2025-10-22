@@ -20,13 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -36,14 +34,11 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.core.database.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
@@ -56,13 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.IdentifierDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TagMappingDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
-import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_IDENTIFIERS;
 
 /**
  * {@link SQLiteOpenHelper} for the main database.
@@ -472,31 +463,14 @@ public class DBHelper
             LegacyUpgrades.v41onUpgrade(db);
         }
         if (oldVersion < 42) {
-            // depending on the install/upgrade path, we might already have
-            // added the WIKIDATA_CLAIM_AUTHOR_ID column
-            final ColumnInfo wdCId = TBL_IDENTIFIERS
-                    .getTableInfo(db).getColumn(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID);
-            if (wdCId == null) {
-                TBL_IDENTIFIERS.alterTableAddColumns(
-                        db,
-                        DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID);
-            }
-            updateIdentifierWikidataAuthorIdClaims(context, db);
+            LegacyUpgrades.v42onUpgrade(db, context);
         }
         if (oldVersion < 43) {
-            // enable the cover image 2+3 for ALL styles.
-            db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES.getName()
-                       + " SET " + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
-                       + '=' + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
-                       + '|' + FieldVisibility.getBitValue(Set.of(DBKey.COVER[2], DBKey.COVER[3])));
+            LegacyUpgrades.v43onUpgrade(db);
         }
         if (oldVersion < 44) {
-            final SharedPreferences prefs = PreferenceManager
-                    .getDefaultSharedPreferences(context);
-            // If the user never enabled the zoom-slider, force the default back to zero
-            if (!prefs.getBoolean(CameraConfig.PK_CAMERA_ZOOM_CONTROL_SHOW, false)) {
-                prefs.edit().putFloat(CameraConfig.PK_CAMERA_ZOOM_CONTROL_VALUE, 0f).apply();
-            }
+            LegacyUpgrades.v44onUpgrade(context);
+        }
 
             // we need to rebuild the Author OB columns
             StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB, true);
@@ -521,23 +495,6 @@ public class DBHelper
 
         // Rebuild all triggers
         Triggers.create(db);
-    }
-
-    private void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
-                                                        @NonNull final SQLiteDatabase db) {
-        try (SQLiteStatement stmt = db.compileStatement(
-                "UPDATE " + TBL_IDENTIFIERS.getName()
-                + " SET " + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
-                + " WHERE " + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
-            Identifier.createInitialList(context)
-                      .stream()
-                      .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
-                      .forEach(identifier -> {
-                          stmt.bindString(1, identifier.getWikidataClaimAuthorId().get());
-                          stmt.bindString(2, identifier.getKey());
-                          stmt.executeUpdateDelete();
-                      });
-        }
     }
 
     @Override

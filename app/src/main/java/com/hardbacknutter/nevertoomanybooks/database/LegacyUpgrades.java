@@ -87,6 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.StoryGraph;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.TerceraFundacion;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.VIAF;
 import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraConfig;
 import com.hardbacknutter.util.logger.Logger;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -986,6 +987,40 @@ public final class LegacyUpgrades {
                                          DBDefinitions.DOM_AUTHOR_PICTURE_UUID);
     }
 
+    static void v42onUpgrade(@NonNull final SQLiteDatabase db,
+                             final Context context) {
+        // depending on the install/upgrade path, we might already have
+        // added the WIKIDATA_CLAIM_AUTHOR_ID column
+        final ColumnInfo wdCId = TBL_IDENTIFIERS
+                .getTableInfo(db).getColumn(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID);
+        if (wdCId == null) {
+            TBL_IDENTIFIERS.alterTableAddColumns(
+                    db,
+                    DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID);
+        }
+        updateIdentifierWikidataAuthorIdClaims(context, db);
+    }
+
+    static void v43onUpgrade(@NonNull final SQLiteDatabase db) {
+        // enable the cover image 2+3 for ALL styles.
+        db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES.getName()
+                   + " SET " + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
+                   + '=' + DBKey.STYLE.BOOK_DETAIL_FIELD_VISIBILITY
+                   + '|' + FieldVisibility.getBitValue(Set.of(DBKey.COVER[2], DBKey.COVER[3])));
+    }
+
+    static void v44onUpgrade(final Context context) {
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        // If the user never enabled the zoom-slider, force the default back to zero
+        if (!prefs.getBoolean(CameraConfig.PK_CAMERA_ZOOM_CONTROL_SHOW, false)) {
+            prefs.edit().putFloat(CameraConfig.PK_CAMERA_ZOOM_CONTROL_VALUE, 0f).apply();
+        }
+
+        // we need to rebuild the Author OB columns
+        StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB, true);
+    }
+
     static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
                                               @NonNull final SQLiteDatabase db) {
         final boolean install;
@@ -1147,6 +1182,23 @@ public final class LegacyUpgrades {
 
         // replaced by a database table in db36
         context.deleteSharedPreferences("language2iso3");
+    }
+
+    private static void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
+                                                               @NonNull final SQLiteDatabase db) {
+        try (SQLiteStatement stmt = db.compileStatement(
+                "UPDATE " + TBL_IDENTIFIERS.getName()
+                + " SET " + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
+                + " WHERE " + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
+            Identifier.createInitialList(context)
+                      .stream()
+                      .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
+                      .forEach(identifier -> {
+                          stmt.bindString(1, identifier.getWikidataClaimAuthorId().get());
+                          stmt.bindString(2, identifier.getKey());
+                          stmt.executeUpdateDelete();
+                      });
+        }
     }
 
     static void addIdentifiersIfNotYetDone(@NonNull final Context context,
