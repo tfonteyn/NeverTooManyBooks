@@ -36,8 +36,8 @@ import java.util.regex.Pattern;
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public final class TextNormalizerApi29 {
 
-    /** Keep only alpha/digit characters. */
-    private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
+    /** Keep only alpha/digit and space characters. */
+    private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
 
     private static final Transliterator TRANSLITERATOR = Transliterator.getInstance(
             "NFD; [:Nonspacing Mark:] Remove; Latin-ASCII");

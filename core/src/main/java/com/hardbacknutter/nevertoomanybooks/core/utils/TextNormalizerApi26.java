@@ -48,13 +48,13 @@ import java.util.regex.Pattern;
  */
 public final class TextNormalizerApi26 {
 
-    // Remove Unicode combining marks (accents, diacritics)
+    /** Remove Unicode combining marks (accents, diacritics). */
     private static final Pattern DIACRITICS_PATTERN = Pattern.compile("\\p{M}");
 
-    // Remove all characters except letters and digits
-    private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
+    /** Keep only alpha/digit and space characters. */
+    private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
 
-    // Manual replacements for characters that don’t decompose into ASCII
+    /** Manual replacements for characters that don’t decompose into ASCII. */
     private static final Map<Character, String> EXTRA_REPLACEMENTS = new HashMap<>();
 
     static {

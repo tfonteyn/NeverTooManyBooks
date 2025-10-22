@@ -45,12 +45,12 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
  *     When using {Alnum} Android will NOT use unicode contradicting the above.
  *
  *  2. Combining explicit unicode {IsAlphabetic} with 'd' for digits
- *     Pattern.compile("[^\\p{IsAlphabetic}\\d]");
+ *     Pattern.compile("[^\\p{IsAlphabetic}\\d ]");
  *     and unit testing on JDK 17 (Windows) works fine, but fails with on-device test.
  *     google bug: https://issuetracker.google.com/issues/181655428
  *
  *  3. Using as per google bug:
- *     Pattern.compile("[^\\p{Alpha}\\d]");
+ *     Pattern.compile("[^\\p{Alpha}\\d ]");
  *     unit testing fails on the hosting JDK 17 for non-latin (but works for latin),
  *     but works with on-device test.
  * </pre>

@@ -133,7 +133,8 @@ public final class FtsDaoHelper {
         if (!Character.isWhitespace(prev) && prev != '-') {
             parameter.append('*');
         }
-        // reminder to self: we do not need to prepend with a '*' for MATCH to work.
+        // reminder to self: do not prepend with a '*' when using MATCH
+        // SqLite FTS supports Prefix Matching only!
         final String cleanedText = parameter.toString().strip();
 
         if (domain != null) {
