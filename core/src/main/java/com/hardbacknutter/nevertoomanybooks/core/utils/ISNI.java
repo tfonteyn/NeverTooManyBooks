@@ -46,14 +46,20 @@ public class ISNI {
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ -]");
     /** 16 zeros for normalizing shorter strings. */
     private static final String ZEROS = "0000000000000000";
+    private static final int MAX_LEN = 16;
 
     private final String isni;
     private final boolean valid;
 
+    /**
+     * Constructor.
+     *
+     * @param isni string to digest
+     */
     public ISNI(@NonNull final CharSequence isni) {
         final String str = WHITESPACE_PATTERN.matcher(isni).replaceAll("");
 
-        if (str.length() < 2 || str.length() > 16) {
+        if (str.length() < 2 || str.length() > MAX_LEN) {
             this.isni = str;
             valid = false;
             return;
@@ -78,6 +84,7 @@ public class ISNI {
      *
      * @return the checksum digit {@code 0..9 or X}
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public static String generateCheckDigit(@NonNull final CharSequence baseDigits) {
         final String cleanStr = WHITESPACE_PATTERN.matcher(baseDigits).replaceAll("");
@@ -92,11 +99,21 @@ public class ISNI {
         return result == 10 ? "X" : String.valueOf(result);
     }
 
+    /**
+     * Get the code as a 16-digit text string.
+     *
+     * @return string
+     */
     @NonNull
     public String getIsni() {
         return isni;
     }
 
+    /**
+     * Check if we have a valid code.
+     *
+     * @return validity
+     */
     public boolean isValid() {
         return valid;
     }
