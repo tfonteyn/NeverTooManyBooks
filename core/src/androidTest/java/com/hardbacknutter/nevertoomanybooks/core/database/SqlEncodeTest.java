@@ -191,4 +191,18 @@ public class SqlEncodeTest {
         assertEquals("Федор Александрович Абрамов", normalize(source));
         assertEquals("федор александрович абрамов", orderedByColumn(source, locale));
     }
+
+    @Test
+    public void whitespace() {
+        final Locale locale = new Locale("nl", "NL");
+        final String source =
+                "aBc  Def " +
+                (char) 0x0009 +
+                (char) 0x000D +
+                (char) 0x00A0 +
+                (char) 0x3000 +
+                "ghi";
+        assertEquals("aBc Def ghi", normalize(source));
+        assertEquals("abc def ghi", orderedByColumn(source, locale));
+    }
 }

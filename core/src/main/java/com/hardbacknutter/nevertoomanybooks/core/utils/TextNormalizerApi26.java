@@ -131,7 +131,11 @@ public final class TextNormalizerApi26 {
         }
 
         // Step 4: filter
-        return keep.matcher(builder.toString()).replaceAll("");
+        String result = builder.toString();
+        // Condense all special or duplicate whitespace into single spaces
+        result = TextNormalizer.WHITESPACE.matcher(result).replaceAll(" ");
+        // Remove unwanted characters
+        return keep.matcher(result).replaceAll("");
     }
 }
 

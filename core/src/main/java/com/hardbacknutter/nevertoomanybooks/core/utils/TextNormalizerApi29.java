@@ -54,7 +54,10 @@ public final class TextNormalizerApi29 {
     @NonNull
     public static String normalize(@NonNull final CharSequence text,
                                    @NonNull final Pattern keep) {
-        final String result = TRANSLITERATOR.transliterate(text.toString());
+        String result = TRANSLITERATOR.transliterate(text.toString());
+        // Condense all special or duplicate whitespace into single spaces
+        result = TextNormalizer.WHITESPACE.matcher(result).replaceAll(" ");
+        // Remove unwanted characters
         return keep.matcher(result).replaceAll("");
     }
 }

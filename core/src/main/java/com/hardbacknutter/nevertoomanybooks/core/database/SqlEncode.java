@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
  * of the flag {@code Pattern.UNICODE_CHARACTER_CLASS}.
  * <p>
  * See <a href="https://issuetracker.google.com/issues/181655428">Google bug 181655428</a>
+ * and <a href="https://issuetracker.google.com/issues/127290684">Google bug 127290684</a>
  * <pre>
  *  1. Normally we should use the flag:
  *          {@code Pattern.UNICODE_CHARACTER_CLASS}
