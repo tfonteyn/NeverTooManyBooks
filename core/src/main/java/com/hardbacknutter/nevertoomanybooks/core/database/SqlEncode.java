@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizer;
 import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi26;
 import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
 
@@ -36,23 +37,27 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
  * <p>
  * This class (and similar UNICODE handling classes) MUST be tested with "androidTest"
  * as unit-testing will cause false positives/failures due to the lack/presence
- * of the flag {@code use the flag: Pattern.UNICODE_CHARACTER_CLASS}.
+ * of the flag {@code Pattern.UNICODE_CHARACTER_CLASS}.
  * <p>
  * See <a href="https://issuetracker.google.com/issues/181655428">Google bug 181655428</a>
  * <pre>
- *  1. Normally we should use the flag: Pattern.UNICODE_CHARACTER_CLASS
- *     but android does not need/support it as it always uses unicode (it says...)
- *     When using {Alnum} Android will NOT use unicode contradicting the above.
+ *  1. Normally we should use the flag:
+ *          {@code Pattern.UNICODE_CHARACTER_CLASS}
+ *     but android does not need/support it as it always uses
+ *     unicode (it says...)
+ *     When using {Alnum} Android will NOT use unicode contradicting
+ *     the above.
  *
  *  2. Combining explicit unicode {IsAlphabetic} with 'd' for digits
  *     Pattern.compile("[^\\p{IsAlphabetic}\\d ]");
- *     and unit testing on JDK 17 (Windows) works fine, but fails with on-device test.
+ *     and unit testing on JDK 17 (Windows) works fine, but fails
+ *     with on-device test.
  *     google bug: https://issuetracker.google.com/issues/181655428
  *
  *  3. Using as per google bug:
  *     Pattern.compile("[^\\p{Alpha}\\d ]");
- *     unit testing fails on the hosting JDK 17 for non-latin (but works for latin),
- *     but works with on-device test.
+ *     unit testing fails on the hosting JDK 17 for non-latin
+ *     (works for latin), but works with on-device test.
  * </pre>
  * <p>
  * Passes "androidTest" on API 26,27,31,33
@@ -128,7 +133,7 @@ public final class SqlEncode {
     }
 
     /**
-     * Normalize the given string and remove any non-alpha/digit characters.
+     * Normalize the given string and remove any non-alpha/digit/space characters.
      * The case is preserved.
      *
      * @param text to normalize
@@ -137,10 +142,25 @@ public final class SqlEncode {
      */
     @NonNull
     public static String normalize(@NonNull final CharSequence text) {
+        return normalize(text, TextNormalizer.ALPHANUMERIC_PATTERN);
+    }
+
+    /**
+     * Normalize the given string and apply the given pattern.
+     * The case is preserved.
+     *
+     * @param text to normalize
+     * @param keep negated pattern of characters to keep after transliteration
+     *
+     * @return normalized text
+     */
+    @NonNull
+    public static String normalize(@NonNull final CharSequence text,
+                                   @NonNull final Pattern keep) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return TextNormalizerApi29.normalize(text);
+            return TextNormalizerApi29.normalize(text, keep);
         } else {
-            return TextNormalizerApi26.normalize(text);
+            return TextNormalizerApi26.normalize(text, keep);
         }
     }
 }

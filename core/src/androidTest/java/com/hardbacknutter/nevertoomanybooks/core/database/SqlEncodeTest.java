@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizer;
 import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi26;
 import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
 
@@ -63,9 +64,9 @@ public class SqlEncodeTest {
     @NonNull
     private String normalize(@NonNull final CharSequence source) {
         if (api == Build.VERSION_CODES.Q) {
-            return TextNormalizerApi29.normalize(source);
+            return TextNormalizerApi29.normalize(source, TextNormalizer.ALPHANUMERIC_PATTERN);
         } else {
-            return TextNormalizerApi26.normalize(source);
+            return TextNormalizerApi26.normalize(source, TextNormalizer.ALPHANUMERIC_PATTERN);
         }
     }
 

@@ -51,9 +51,6 @@ public final class TextNormalizerApi26 {
     /** Remove Unicode combining marks (accents, diacritics). */
     private static final Pattern DIACRITICS_PATTERN = Pattern.compile("\\p{M}");
 
-    /** Keep only alpha/digit and space characters. */
-    private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
-
     /** Manual replacements for characters that don’t decompose into ASCII. */
     private static final Map<Character, String> EXTRA_REPLACEMENTS = new HashMap<>();
 
@@ -108,14 +105,16 @@ public final class TextNormalizerApi26 {
     }
 
     /**
-     * Normalize the given string and remove any non-alpha/digit characters.
+     * Normalize the given string.
      * The case is preserved.
      *
-     * @param text to normalize
+     * @param text to process
+     * @param keep negated pattern of characters to keep after transliteration
      *
-     * @return normalized text
+     * @return normalized/filtered text
      */
-    public static String normalize(@NonNull final CharSequence text) {
+    public static String normalize(@NonNull final CharSequence text,
+                                   @NonNull final Pattern keep) {
 
         // Step 1: Decompose accents (NFD)
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
@@ -131,8 +130,8 @@ public final class TextNormalizerApi26 {
             builder.append(replacement != null ? replacement : c);
         }
 
-        // Step 4: Remove non-alphanumeric characters (punctuation, spaces, etc.)
-        return ALPHANUMERIC_PATTERN.matcher(builder.toString()).replaceAll("");
+        // Step 4: filter
+        return keep.matcher(builder.toString()).replaceAll("");
     }
 }
 

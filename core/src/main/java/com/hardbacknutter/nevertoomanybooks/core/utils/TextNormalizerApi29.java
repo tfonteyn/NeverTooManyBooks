@@ -36,9 +36,6 @@ import java.util.regex.Pattern;
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public final class TextNormalizerApi29 {
 
-    /** Keep only alpha/digit and space characters. */
-    private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
-
     private static final Transliterator TRANSLITERATOR = Transliterator.getInstance(
             "NFD; [:Nonspacing Mark:] Remove; Latin-ASCII");
 
@@ -46,16 +43,18 @@ public final class TextNormalizerApi29 {
     }
 
     /**
-     * Normalize the given string and remove any non-alpha/digit characters.
+     * Normalize the given string.
      * The case is preserved.
      *
-     * @param text to normalize
+     * @param text to process
+     * @param keep negated pattern of characters to keep after transliteration
      *
-     * @return normalized text
+     * @return normalized/filtered text
      */
     @NonNull
-    public static String normalize(@NonNull final CharSequence text) {
+    public static String normalize(@NonNull final CharSequence text,
+                                   @NonNull final Pattern keep) {
         final String result = TRANSLITERATOR.transliterate(text.toString());
-        return ALPHANUMERIC_PATTERN.matcher(result).replaceAll("");
+        return keep.matcher(result).replaceAll("");
     }
 }
