@@ -45,7 +45,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 
@@ -700,7 +699,7 @@ public class ExtArrayAdapter<T>
      * a prefix. Each item that does not start with the supplied prefix
      * is removed from the list.</p>
      */
-    private class ArrayFilter
+    private final class ArrayFilter
             extends AbstractArrayFilter {
 
         @Override
@@ -759,11 +758,8 @@ public class ExtArrayAdapter<T>
      * a prefix. Each item that does not start with the supplied prefix
      * is removed from the list.</p>
      */
-    private class DiacriticArrayFilter
+    private final class DiacriticArrayFilter
             extends AbstractArrayFilter {
-
-        /** Keep only alpha/digit and space characters. */
-        private final Pattern diacriticsPattern = Pattern.compile("[^\\p{Alpha}\\d ]");
 
         @Override
         @NonNull
@@ -825,10 +821,7 @@ public class ExtArrayAdapter<T>
          */
         @NonNull
         private String normalizeAndLowercase(@NonNull final CharSequence text) {
-            final String normalized = SqlEncode.normalize(text);
-            return diacriticsPattern.matcher(normalized)
-                                    .replaceAll("")
-                                    .toLowerCase(Locale.getDefault());
+            return SqlEncode.normalize(text).toLowerCase(Locale.getDefault());
         }
     }
 
@@ -836,7 +829,7 @@ public class ExtArrayAdapter<T>
      * Does no actual filtering.
      * Should be used with the Material ExposedDropDownMenu
      */
-    private class PassthroughFilter
+    private final class PassthroughFilter
             extends AbstractArrayFilter {
 
         @Override
