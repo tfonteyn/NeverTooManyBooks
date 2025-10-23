@@ -88,11 +88,10 @@ public final class FtsDaoHelper {
             return "";
         }
 
-        // Convert the text to pure alpha/digits. We'll use an array to loop over it.
-        final String normalized = SqlEncode.normalize(searchText);
-        final char[] chars = PREPARE_SEARCH_TEXT_PATTERN.matcher(normalized)
-                                                        .replaceAll("")
-                                                        .toCharArray();
+        // Keep only alpha/digit, space and '-' characters.
+        // We'll use an array to loop over it.
+        final char[] chars = SqlEncode.normalize(searchText, PREPARE_SEARCH_TEXT_PATTERN)
+                                      .toCharArray();
         // Initial position
         int pos = 0;
         // 'previous' character
