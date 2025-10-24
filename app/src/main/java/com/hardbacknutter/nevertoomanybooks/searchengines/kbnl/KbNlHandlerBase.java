@@ -51,7 +51,8 @@ abstract class KbNlHandlerBase
     private static final String PSI_URL = "psi:url";
     /** XML tags. */
     private static final String PSI_RECORD = "psi:record";
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s{2,}");
+
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 
     private static final String URL_PERMALINK = "PERMALINK";
 
@@ -216,7 +217,7 @@ abstract class KbNlHandlerBase
                     if (inLabel && inLine && inText) {
                         currentLabel = builder.toString().split(":")[0].strip();
                     } else if (inData && inLine) {
-                        // reduce whitespace; this also removes cr/lf
+                        // reduce whitespace/cr/lf to single spaces
                         final String s = WHITESPACE_PATTERN.matcher(builder.toString())
                                                            .replaceAll(" ")
                                                            .strip();
