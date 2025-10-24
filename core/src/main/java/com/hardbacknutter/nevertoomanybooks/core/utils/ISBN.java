@@ -130,8 +130,8 @@ public class ISBN {
      * @see <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">Info</a>
      */
     private static final Map<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
-    /** Remove '-' and space chars. */
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ -]");
+    /** Remove the '-' character and all whitespace. */
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[-\\s+]");
     private static final String L978 = "978";
     private static final String L979 = "979";
 
