@@ -26,7 +26,7 @@ public final class TextNormalizer {
     /** Keep only alpha/digit and space characters. */
     public static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
 
-    static final Pattern WHITESPACE = Pattern.compile("\\s+");
+    public static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
     private TextNormalizer() {
     }

@@ -26,6 +26,8 @@ import androidx.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizer;
+
 public final class SearchEngineUtils {
 
     /** Fields can contain div tags which we remove to make the text shorter. */
@@ -42,8 +44,12 @@ public final class SearchEngineUtils {
     /** a Left-to-right is replaced with a space. */
     private static final Pattern RTL_LITERAL = Pattern.compile(RTL_CHAR, Pattern.LITERAL);
 
-    /** Trim extraneous punctuation and whitespace from the titles and authors. */
-    private static final Pattern CLEANUP_TITLE_PATTERN =
+    /**
+     * Trim extraneous punctuation suffixes from titles, authors and other types of names.
+     *
+     * @see #cleanName(String)
+     */
+    private static final Pattern CLEAN_NAME_PATTERN =
             Pattern.compile("[,.':;`~@#$%^&*(\\-=_+\u200E\u200F]*$");
 
     private SearchEngineUtils() {
@@ -73,7 +79,8 @@ public final class SearchEngineUtils {
     }
 
     /**
-     * Clean the given text. Currently cleans up {@code &}, {@code div} and {@code \n}.
+     * Clean the given text. Currently cleans up {@code &}, {@code div} and {@code \n}
+     * and Amazon specific unicode LRM/RTL characters.
      *
      * @param s to clean
      *
@@ -114,7 +121,7 @@ public final class SearchEngineUtils {
     @NonNull
     public static String cleanName(@NonNull final String s) {
         final String tmp = cleanText(s.strip());
-        return CLEANUP_TITLE_PATTERN.matcher(tmp).replaceAll("").strip();
+        return CLEAN_NAME_PATTERN.matcher(tmp).replaceAll("").strip();
     }
 
     /**
@@ -130,19 +137,11 @@ public final class SearchEngineUtils {
             return "";
         }
 
-        final StringBuilder out = new StringBuilder(search.length());
-        char prev = ' ';
-        for (final char curr : search.toCharArray()) {
-            if (Character.isLetterOrDigit(curr)) {
-                out.append(curr);
-                prev = curr;
-            } else {
-                if (!Character.isWhitespace(prev)) {
-                    out.append(' ');
-                }
-                prev = ' ';
-            }
-        }
-        return out.toString().strip();
+        final String result = TextNormalizer.WHITESPACE
+                .matcher(search)
+                .replaceAll(" ");
+        return TextNormalizer.ALPHANUMERIC_PATTERN
+                .matcher(result)
+                .replaceAll("");
     }
 }
