@@ -185,7 +185,7 @@ public class MoneyParser {
         CURRENCY_MAP.put("ls", "LVL");  // Latvian Lats
         CURRENCY_MAP.put("r$", "BRL");  // Brazilian Real
         CURRENCY_MAP.put("sk", "SKK");  // Slovak Koruna
-        CURRENCY_MAP.put("NT$", "TWD");  // Taiwan Dollar
+        CURRENCY_MAP.put("¥", "JPY");   // Japanese Yen
 
         // FIXME: These are a problem... they use the same symbol.
         // We had DKK for quite a while, so leaving this as the default for now.
