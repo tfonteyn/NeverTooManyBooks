@@ -43,6 +43,7 @@ import org.junit.rules.TestRule;
 
 import static org.junit.Assert.fail;
 
+@SuppressWarnings("MissingJavadoc")
 public class SearchCoordinatorTest
         extends BaseDBTest {
 
@@ -71,22 +72,20 @@ public class SearchCoordinatorTest
         final List<BookSearchResult> receivedValues = new ArrayList<>();
         final CountDownLatch latch = new CountDownLatch(2);
 
-        coordinator.onSearchFinished().observeForever(msg -> {
-            msg.process(trigger -> {
-                @Nullable
-                final BookSearchResult result = coordinator.pollFinishedQueue();
-                if (result == null) {
-                    return;
-                }
-                final Book book = result.getBook();
-                Log.d("search01-" + result.getSearchId(), book.toString());
+        coordinator.onSearchFinished().observeForever(msg -> msg.process(trigger -> {
+            @Nullable
+            final BookSearchResult result = coordinator.pollFinishedQueue();
+            if (result == null) {
+                return;
+            }
+            final Book book = result.getBook();
+            Log.d("search01-" + result.getSearchId(), book.toString());
 
-                receivedValues.add(result);
-                latch.countDown();
+            receivedValues.add(result);
+            latch.countDown();
 
-                coordinator.retriggerSearchFinished();
-            });
-        });
+            coordinator.retriggerSearchFinished();
+        }));
 
         BookSearchCriteria criteria;
 
