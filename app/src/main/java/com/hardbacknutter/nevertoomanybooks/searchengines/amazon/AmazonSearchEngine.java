@@ -170,16 +170,24 @@ public class AmazonSearchEngine
 
     /** Depending on the specific site, the labels translations we check for. */
     private static final List<String> LABEL_FORMAT = List.of(
+            // English
+            "kindle edition", "audiobook",
             // English AND Dutch
-            "hardcover", "paperback",
+            "hardcover", "paperback", "paperback (mass market)",
+            // Dutch
+            "kindle-editie", "cd",
             // French
+            "format kindle", "livre audio",
             "relié", "broché",
             // German
-            "taschenbuch", "gebundene ausgabe",
+            "kindle", "hörbuch",
+            "taschenbuch", "gebundene ausgabe", "gebundenes buch",
             // Spanish; bolsillo==paperback... but more correctly a "boxset"
             // leave the latter to the user, don't add it to the format mapper
+            "versión kindle", "audiolibro",
             "tapa dura", "tapa blanda", "libro de bolsillo",
             // Portuguese
+            "audiolivro",
             "capa dura", "capa blanda"
     );
 

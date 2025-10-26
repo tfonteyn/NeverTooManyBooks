@@ -62,6 +62,8 @@ public final class FormatMapper
         MAPPINGS.put("couverture rigide", R.string.book_format_hardcover);
         // french - Stripweb
         MAPPINGS.put("relié", R.string.book_format_hardcover);
+        // german - Amazon
+        MAPPINGS.put("gebundenes buch", R.string.book_format_hardcover);
         // portuguese
         MAPPINGS.put("capa dura", R.string.book_format_hardcover);
         // simplified chinese - Douban
@@ -101,7 +103,9 @@ public final class FormatMapper
 
 
         // ################## e-books ##################
-        // Do not add "Kindle Edition" to this list, leave it as-is!
+        // Do not add "Kindle" to this list, leave it as-is!
+        // The user will typically only use a single amazon site, so the
+        // kindle-label will always be in their language already.
         MAPPINGS.put("ebook", R.string.book_format_ebook);
         MAPPINGS.put("e-book", R.string.book_format_ebook);
         // dutch - stripinfo.be
@@ -117,12 +121,17 @@ public final class FormatMapper
         MAPPINGS.put("audiobook", R.string.book_format_audiobook);
         MAPPINGS.put("audio cassette", R.string.book_format_audiobook);
         MAPPINGS.put("audio cd", R.string.book_format_audiobook);
+        MAPPINGS.put("cd", R.string.book_format_audiobook);
         // dutch - BOL
         MAPPINGS.put("digitaal luisterboek", R.string.book_format_audiobook);
         // french - BOL
         MAPPINGS.put("livre audio numérique", R.string.book_format_audiobook);
+        // german
+        MAPPINGS.put("hörbuch", R.string.book_format_audiobook);
         // portuguese
         MAPPINGS.put("audiolivro", R.string.book_format_audiobook);
+        // spanish
+        MAPPINGS.put("audiolibro", R.string.book_format_audiobook);
         // czech
         MAPPINGS.put("audiokniha", R.string.book_format_audiobook);
 
