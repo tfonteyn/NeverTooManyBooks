@@ -1,3 +1,13 @@
+### 7.8.3
+
+FIXES:
+
+- #195 update amazon.de label usage.
+- #193 Fix full-text-search needed due to latest Google changes.
+- #192 provide an "add all" + "remove all" button for book tags.
+
+---
+
 ### 7.8.2
 
 FIXES:
