@@ -23,7 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +35,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
@@ -63,20 +63,15 @@ public class StylesHelper {
     private final Map<String, Style> cache = new LinkedHashMap<>();
     @NonNull
     private final Supplier<StyleDao> styleDaoSupplier;
-    @NonNull
-    private final Supplier<Context> appContextSupplier;
     @Nullable
     private Style globalStyle;
 
     /**
      * Constructor.
      *
-     * @param appContextSupplier deferred supplier for the raw Application Context
      * @param styleDaoSupplier   deferred supplier for the {@link StyleDao}
      */
-    public StylesHelper(@NonNull final Supplier<Context> appContextSupplier,
-                        @NonNull final Supplier<StyleDao> styleDaoSupplier) {
-        this.appContextSupplier = appContextSupplier;
+    public StylesHelper(@NonNull final Supplier<StyleDao> styleDaoSupplier) {
         this.styleDaoSupplier = styleDaoSupplier;
     }
 
@@ -120,9 +115,10 @@ public class StylesHelper {
         final Map<String, Style> allStyles = getAllStyles();
 
         // read the global user default, or if not present the hardcoded default.
-        final String uuid = PreferenceManager
-                .getDefaultSharedPreferences(appContextSupplier.get())
-                .getString(PK_DEFAULT_STYLE, BuiltinStyle.HARD_DEFAULT_UUID);
+        final String uuid = ServiceLocator.getInstance()
+                                          .getSharedPreferences()
+                                          .getString(PK_DEFAULT_STYLE,
+                                                     BuiltinStyle.HARD_DEFAULT_UUID);
 
         // Get the user or built-in or worst case the built-in default.
         final Style style = allStyles.get(uuid);
@@ -136,8 +132,9 @@ public class StylesHelper {
      * @param uuid style to set
      */
     public void setDefault(@NonNull final String uuid) {
-        PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
-                         .edit().putString(PK_DEFAULT_STYLE, uuid).apply();
+        ServiceLocator.getInstance()
+                      .getSharedPreferences()
+                      .edit().putString(PK_DEFAULT_STYLE, uuid).apply();
     }
 
     /**

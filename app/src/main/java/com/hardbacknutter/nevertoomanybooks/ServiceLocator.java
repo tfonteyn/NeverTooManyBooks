@@ -369,8 +369,7 @@ public class ServiceLocator {
     public StylesHelper getStyles() {
         synchronized (this) {
             if (stylesHelper == null) {
-                stylesHelper = new StylesHelper(this::getAppContext,
-                                                this::getStyleDao);
+                stylesHelper = new StylesHelper(this::getStyleDao);
             }
         }
         return stylesHelper;
