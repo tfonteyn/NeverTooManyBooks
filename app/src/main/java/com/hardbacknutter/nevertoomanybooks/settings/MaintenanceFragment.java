@@ -176,7 +176,7 @@ public class MaintenanceFragment
     }
 
     private void onResetTips(final View v) {
-        TipManager.getInstance().reset(v.getContext());
+        TipManager.getInstance().reset();
         //noinspection DataFlowIssue
         Snackbar.make(getView(), R.string.info_tip_reset_done, Snackbar.LENGTH_LONG).show();
     }

@@ -24,11 +24,12 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public final class TipManager {
     private static final TipManager INSTANCE = new TipManager();
@@ -52,23 +53,20 @@ public final class TipManager {
     /**
      * Reset all tips so that they will be displayed again.
      *
-     * @param context Current context
      */
-    public void reset(@NonNull final Context context) {
+    public void reset() {
         // remove all. This has the benefit of removing any obsolete keys.
-        reset(context, Tip.PK_TIP);
+        reset(Tip.PK_TIP);
         hasBeenDisplayed.clear();
     }
 
     /**
      * Reset a sub set of tips, all starting (in preferences) with the given prefix.
      *
-     * @param context Current context
      * @param prefix  to match
      */
-    public void reset(@NonNull final Context context,
-                      @NonNull final String prefix) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public void reset(@NonNull final String prefix) {
+        final SharedPreferences prefs = ServiceLocator.getInstance().getSharedPreferences();
         final SharedPreferences.Editor ed = prefs.edit();
         for (final String key : prefs.getAll().keySet()) {
             if (key.toLowerCase(Locale.ENGLISH).startsWith(prefix.toLowerCase(Locale.ENGLISH))) {
@@ -78,9 +76,8 @@ public final class TipManager {
         ed.apply();
     }
 
-    private boolean shouldBeDisplayed(@NonNull final Context context,
-                                      @NonNull final Tip tip) {
-        return !hasBeenDisplayed.contains(tip) && tip.isEnabled(context);
+    private boolean shouldBeDisplayed(@NonNull final Tip tip) {
+        return !hasBeenDisplayed.contains(tip) && tip.isEnabled();
     }
 
     /**
@@ -110,7 +107,7 @@ public final class TipManager {
                      @NonNull final Tip tip,
                      @Nullable final Runnable postRun,
                      @Nullable final Object... textArgs) {
-        if (shouldBeDisplayed(context, tip)) {
+        if (shouldBeDisplayed(tip)) {
             tip.create(context, postRun, textArgs)
                .show();
             hasBeenDisplayed.add(tip);

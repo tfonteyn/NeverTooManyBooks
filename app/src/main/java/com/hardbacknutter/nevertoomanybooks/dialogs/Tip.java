@@ -33,11 +33,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 
 /**
@@ -108,9 +108,9 @@ public enum Tip {
         this.layoutId = layoutId;
     }
 
-    boolean isEnabled(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_TIP + key, true);
+    boolean isEnabled() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_TIP + key, true);
     }
 
     /**
@@ -140,7 +140,7 @@ public enum Tip {
 
         root.findViewById(R.id.btn_positive).setOnClickListener(v -> alertDialog.dismiss());
         root.findViewById(R.id.btn_neutral).setOnClickListener(v -> {
-            disable(context);
+            disable();
             alertDialog.dismiss();
         });
 
@@ -175,8 +175,8 @@ public enum Tip {
         }
     }
 
-    private void disable(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putBoolean(PK_TIP + key, false).apply();
+    private void disable() {
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit().putBoolean(PK_TIP + key, false).apply();
     }
 }
