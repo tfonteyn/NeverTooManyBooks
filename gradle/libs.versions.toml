@@ -42,7 +42,7 @@ material = '1.13.0'
 jsoup = "1.21.2"
 
 # https://github.com/square/okhttp
-okhttpAndroid = "5.2.1"
+okhttpAndroid = "5.3.0"
 
 # https://github.com/zxing/zxing
 zxingCore = '3.5.3'
