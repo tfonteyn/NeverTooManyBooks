@@ -43,7 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  *     book
  *     A book with an explicit publisher.
  *     Required fields: author/editor, title, publisher, year
- *     Optional fields: volume/number, series, address, edition, month, note, key, url
+ *     Optional fields: volume/number, series, address,
+ *                      edition, month, note, key, url
  * </pre>
  * Example:
  * <pre>
