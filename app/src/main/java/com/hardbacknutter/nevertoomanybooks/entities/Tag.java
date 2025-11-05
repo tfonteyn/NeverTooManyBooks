@@ -183,7 +183,6 @@ public class Tag
             return false;
         }
 
-        // The ids MAY be different, but at least one is != 0
         return Objects.equals(name, that.name);
     }
 
