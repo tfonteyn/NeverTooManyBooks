@@ -193,11 +193,9 @@ class Transformation {
             throw new IllegalArgumentException("No file");
         }
 
-        // This is likely a redundant/duplicate call as the caller
-        // will/should already have checked the size. Paranoia...
+        // yes, check again!
         if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(srcFile)) {
-            LoggerFactory.getLogger().w(TAG, ERROR_INVALID_IMAGE_SIZE,
-                                        srcFile.getAbsolutePath());
+            LoggerFactory.getLogger().w(TAG, ERROR_INVALID_IMAGE_SIZE, srcFile.getAbsolutePath());
             return Optional.empty();
         }
 
