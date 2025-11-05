@@ -596,6 +596,19 @@ public final class ImageHandler {
         } catch (@NonNull final CoverStorageException e) {
             ErrorDialog.show(context, TAG, e);
         } catch (@NonNull final IOException e) {
+            // 2025-11-05: bug report #197:
+            // java.io.FileNotFoundException: open failed: ENOENT (No such file or directory)
+            //	at android.database.DatabaseUtils.readExceptionWithFileNotFoundExceptionFromParcel(DatabaseUtils.java:162)
+            //	at android.content.ContentProviderProxy.openTypedAssetFile(ContentProviderProxy.java:814)
+            //	at android.content.ContentResolver.openTypedAssetFileDescriptor(ContentResolver.java:2045)
+            //	at android.content.ContentResolver.openAssetFileDescriptor(ContentResolver.java:1860)
+            //	at android.content.ContentResolver.openInputStream(ContentResolver.java:1530)
+            //	at com.hardbacknutter.nevertoomanybooks.covers.ImageHandler.onPictureResult(ImageHandler.java:577)
+            //
+            // So the user picked a file from storage, and we get the Uri.
+            // When we open the Uri, the systems tells us the file does not exist ¯\_(ツ)_/¯
+            //
+            //
             // Don't call generic IOException; we *know* what went wrong
             ErrorDialog.show(context, TAG, e,
                              context.getString(R.string.error_storage_not_writable),
