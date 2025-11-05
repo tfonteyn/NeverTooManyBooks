@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -1245,12 +1246,14 @@ public class Book
 
     /**
      * Convenience method combining get/add/set.
+     * Eliminates duplicates.
      *
      * @param tags to add
      */
     public void addTags(@NonNull final Collection<Tag> tags) {
-        final List<Tag> bt = getParcelableArrayList(BKEY_TAG_LIST);
+        List<Tag> bt = getParcelableArrayList(BKEY_TAG_LIST);
         bt.addAll(tags);
+        bt = bt.stream().distinct().collect(Collectors.toList());
         putParcelableCollection(BKEY_TAG_LIST, bt);
     }
 
