@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Tag;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
@@ -1244,6 +1245,14 @@ public final class LegacyUpgrades {
                 VIAF.SITE_URL,
                 null,
                 VIAF.AUTHOR_URL));
+        addIdentifier(context, db, new Identifier(
+                Identifier.SID_BIBLIOTECE_PL,
+                Identifier.TYPE_LONG,
+                context.getString(R.string.identifier_bibliotece_pl),
+                null,
+                BibliotecePlSearchEngine.SITE_URL,
+                BibliotecePlSearchEngine.BOOK_URL,
+                BibliotecePlSearchEngine.AUTHOR_URL));
     }
 
     private static void addIdentifier(@NonNull final Context context,

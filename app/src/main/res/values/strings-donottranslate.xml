@@ -39,6 +39,8 @@
             translatable="false">Bedetheque</string>
     <string name="site_bertrand_pt"
             translatable="false">Bertrand.pt</string>
+    <string name="site_bibliotece_pl"
+            translatable="false">Bibliotece.pl</string>
     <string name="site_bol_com"
             translatable="false">bol.com</string>
     <string name="site_bookfinder"
@@ -87,6 +89,8 @@
             translatable="false">Bedetheque</string>
     <string name="identifier_kbr"
             translatable="false">Koninklijke Bibliotheek van België / Bibliothèque royale de Belgique</string>
+    <string name="identifier_bibliotece_pl"
+            translatable="false">Bibliotece Polska</string>
     <string name="identifier_bnf"
             translatable="false">Bibliothèque nationale de France</string>
     <string name="identifier_british_library"

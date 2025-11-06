@@ -1,0 +1,490 @@
+/*
+ * @Copyright 2018-2025 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl;
+
+import android.util.Log;
+
+import androidx.preference.PreferenceManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.Tag;
+import com.hardbacknutter.nevertoomanybooks.searchengines.CoverFileSpecArray;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+
+import org.jsoup.nodes.Document;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * 2025-11-06: image downloads may fail randomly.
+ * Parsing has been verified manually, and the failing url's ARE CORRECT.
+ */
+@SuppressWarnings("MissingJavadoc")
+public class ParseTest
+        extends BaseDBTest {
+
+    private static final String TAG = "ParseTest";
+    private static final String UTF_8 = "UTF-8";
+
+    private BibliotecePlSearchEngine searchEngine;
+    private RealNumberParser realNumberParser;
+
+    @Before
+    public void setup()
+            throws DaoWriteException, StorageException {
+        super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        searchEngine = (BibliotecePlSearchEngine) EngineId.BibliotecePl.createSearchEngine(context);
+        searchEngine.setCaller(new TestProgressListener(TAG));
+        //noinspection DataFlowIssue
+        searchEngine.getEngineId().getConfig().setLogHttpGetRequests(true);
+
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putBoolean("bibliotecepl.resolve.authors.wikidata", true)
+                         .apply();
+
+        realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
+    }
+
+    @Test
+    public void parse9788384252963()
+            throws IOException, SearchException, CredentialsException, StorageException {
+        final String locationHeader =
+                "https://w.bibliotece.pl/6985469/Ziele%C5%84";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bibliotece_pl_9788384252963;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        // emulate searchEngine#searchByIsbn behaviour
+        book.setIsbn("9788384252963");
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Zieleń - Kolory zła", book.getString(DBKey.TITLE, null));
+        assertEquals("9788384252963", book.getString(DBKey.ISBN, null));
+
+        assertEquals("2026", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("2025", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
+        assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
+
+        Assert.assertEquals("6985469", book.requireIdentifierValue(
+                Identifier.SID_BIBLIOTECE_PL));
+
+        final String description = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(description);
+        assertTrue(description.startsWith("Nowy kolor bestsellerowej"));
+        assertTrue(description.endsWith("metodami śledczymi. [Azymut]"));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(3, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("druk"));
+        assertTrue(tags.contains("powieści"));
+        assertTrue(tags.contains("proza"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(2, allPublishers.size());
+        assertEquals("Grupa Wydawnicza Foksal", allPublishers.get(0).getName());
+        assertEquals("Wydawnictwo WAB", allPublishers.get(1).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        Optional<String> oIv;
+        final Author author;
+        author = authors.get(0);
+        assertEquals("Sobczak", author.getFamilyName());
+        assertEquals("Małgorzata Oliwia", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1982-04-20", author.getBirthDate().orElse(null));
+        assertEquals(1, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q120435809", oIv.get());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.BibliotecePl.getPreferenceKey()
+                                          + "_9788384252963_0_.jpg"));
+    }
+
+    @Test
+    public void parse9788380837744()
+            throws IOException, SearchException, CredentialsException, StorageException {
+        final String locationHeader =
+                "https://w.bibliotece.pl/3451326/Ona+i+dom+kt%C3%B3ry+ta%C5%84czy";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bibliotece_pl_9788380837744;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        // emulate searchEngine#searchByIsbn behaviour
+        book.setIsbn("9788380837744");
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Ona i dom, który tańczy", book.getString(DBKey.TITLE, null));
+        assertEquals("9788380837744", book.getString(DBKey.ISBN, null));
+        assertEquals("2024", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("2017", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
+
+        assertEquals(1.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+
+        assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
+
+        Assert.assertEquals("3451326", book.requireIdentifierValue(
+                Identifier.SID_BIBLIOTECE_PL));
+
+        final String description = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(description);
+        assertTrue(description.startsWith("Trzy kobiety, których"));
+        assertTrue(description.endsWith("trosk jego mieszkańców."));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(8, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("beletrystyka"));
+        assertTrue(tags.contains("druk"));
+        assertTrue(tags.contains("epika"));
+        assertTrue(tags.contains("literatura"));
+        assertTrue(tags.contains("literatura piękna"));
+        assertTrue(tags.contains("powieści"));
+        assertTrue(tags.contains("proza"));
+        assertTrue(tags.contains("rodzina"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(5, allPublishers.size());
+        assertEquals("Wydawnictwo W. A. B", allPublishers.get(0).getName());
+        assertEquals("Wydawnictwo WAB", allPublishers.get(1).getName());
+        assertEquals("Novae Res-Wydawnictwo Innowacyjne", allPublishers.get(2).getName());
+        assertEquals("Legimi", allPublishers.get(3).getName());
+        assertEquals("Grupa Wydawnicza Foksal", allPublishers.get(4).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(1, authors.size());
+
+        Optional<String> oIv;
+        final Author author;
+        author = authors.get(0);
+        assertEquals("Sobczak", author.getFamilyName());
+        assertEquals("Małgorzata Oliwia", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1982-04-20", author.getBirthDate().orElse(null));
+        assertEquals(1, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q120435809", oIv.get());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.BibliotecePl.getPreferenceKey()
+                                          + "_9788380837744_0_.jpg"));
+    }
+
+    @Test
+    public void parse9788368591095()
+            throws IOException, SearchException, CredentialsException, StorageException {
+        final String locationHeader =
+                "https://w.bibliotece.pl/2261259/Studnia+wst%C4%85pienia";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bibliotece_pl_9788368591095;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        // emulate searchEngine#searchByIsbn behaviour
+        book.setIsbn("9788367023290");
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Studnia wstąpienia", book.getString(DBKey.TITLE, null));
+        assertEquals("Well of ascension", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+        assertEquals("9788367023290", book.getString(DBKey.ISBN, null));
+        assertEquals("2023", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("2008", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
+
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+
+        assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
+
+        Assert.assertEquals("2261259", book.requireIdentifierValue(
+                Identifier.SID_BIBLIOTECE_PL));
+
+        final String description = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(description);
+        assertTrue(description.startsWith("Doskonała kontynuacja Z mgły"));
+        assertTrue(description.endsWith("Orson Scott Card"));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(15, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("audiobooki"));
+        assertTrue(tags.contains("CD"));
+        assertTrue(tags.contains("druk"));
+        assertTrue(tags.contains("MP3"));
+        assertTrue(tags.contains("powieści"));
+        assertTrue(tags.contains("proza"));
+        assertTrue(tags.contains("beletrystyka"));
+        assertTrue(tags.contains("dokumenty elektroniczne"));
+        assertTrue(tags.contains("e-booki"));
+        assertTrue(tags.contains("epika"));
+        assertTrue(tags.contains("fantasy"));
+        assertTrue(tags.contains("literatura"));
+        assertTrue(tags.contains("literatura piękna"));
+        assertTrue(tags.contains("nagrania"));
+        assertTrue(tags.contains("zasoby elektroniczne"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(3, allPublishers.size());
+        assertEquals("Wydawnictwo Mag Jacek Rodek", allPublishers.get(0).getName());
+        assertEquals("we współpr. z Biblioteka Akustyczna", allPublishers.get(1).getName());
+        assertEquals("Legimi", allPublishers.get(2).getName());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(3, authors.size());
+
+        Optional<String> oIv;
+        Author author;
+        author = authors.get(0);
+        assertEquals("Sanderson", author.getFamilyName());
+        assertEquals("Brandon", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1975-12-19", author.getBirthDate().orElse(null));
+        assertEquals(18, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q457608", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_ASIN);
+        assertTrue(oIv.isPresent());
+        assertEquals("B001IGFHW6", oIv.get());
+        // There are 16 more... no need to check them all
+
+        final File authorImageFile = author.getImage(context, 0).orElse(null);
+        assertNotNull(authorImageFile);
+        assertTrue(authorImageFile.getName().endsWith("_wikidata_Q457608_0_.jpg"));
+
+        author = authors.get(1);
+        assertEquals("Studniarek-Więch", author.getFamilyName());
+        assertEquals("Anna", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+
+        author = authors.get(2);
+        assertEquals("Popczyński", author.getFamilyName());
+        assertEquals("Marcin", author.getGivenNames());
+        assertEquals(Author.TYPE_NARRATOR, author.getType());
+        assertEquals("1974-01-01", author.getBirthDate().orElse(null));
+        assertEquals(3, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q111578216", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_ISNI);
+        assertTrue(oIv.isPresent());
+        assertEquals("0000000113550691", oIv.get());
+        oIv = author.getIdentifierValue(Identifier.SID_VIAF);
+        assertTrue(oIv.isPresent());
+        assertEquals("165891730", oIv.get());
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.BibliotecePl.getPreferenceKey()
+                                          + "_9788367023290_0_.jpg"));
+    }
+
+    @Test
+    public void parse9788328172241()
+            throws IOException, SearchException, CredentialsException, StorageException {
+        final String locationHeader =
+                "https://w.bibliotece.pl/6976045/Ruchome+miasto";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bibliotece_pl_9788328172241;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        // emulate searchEngine#searchByIsbn behaviour
+        book.setIsbn("9788328172241");
+        searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Ruchome miasto", book.getString(DBKey.TITLE, null));
+        assertEquals("Cité mouvante", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+        assertEquals("9788328172241", book.getString(DBKey.ISBN, null));
+        assertEquals("2025", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("2025", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
+
+        assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
+
+        Assert.assertEquals("6976045", book.requireIdentifierValue(
+                Identifier.SID_BIBLIOTECE_PL));
+
+        final String description = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(description);
+        assertTrue(description.startsWith("Komiks, piąty tom cyklu. Thorgal"));
+        assertTrue(description.endsWith("tytuł \"Szron i ogień\"."));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(6, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("beletrystyka"));
+        assertTrue(tags.contains("druk"));
+        assertTrue(tags.contains("film i wideo"));
+        assertTrue(tags.contains("ikonografia"));
+        assertTrue(tags.contains("komiksy"));
+        assertTrue(tags.contains("komiksy i książki obrazkowe"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Story House Egmont", allPublishers.get(0).getName());
+
+        final List<Series> allSeries = book.getSeries();
+        assertNotNull(allSeries);
+        assertEquals(2, allSeries.size());
+        assertEquals("Thorgal Saga", allSeries.get(0).getTitle());
+        assertEquals("Klub Świata Komiksu", allSeries.get(1).getTitle());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(7, authors.size());
+
+        Optional<String> oIv;
+        Author author;
+        File authorImageFile;
+        author = authors.get(0);
+        assertEquals("Tatti", author.getFamilyName());
+        assertEquals("Bruno", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals("1969-01-01", author.getBirthDate().orElse(null));
+        assertEquals(3, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q130420130", oIv.get());
+
+        author = authors.get(1);
+        assertEquals("Aouamri", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals(1, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q108765966", oIv.get());
+
+        author = authors.get(2);
+        assertEquals("Aouamri", author.getFamilyName());
+        assertEquals("Mohamed", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+        assertEquals("1957-03-24", author.getBirthDate().orElse(null));
+        assertEquals(7, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q2422857", oIv.get());
+
+        author = authors.get(3);
+        assertEquals("Ozanam", author.getFamilyName());
+        assertEquals("Antoine", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1970-05-20", author.getBirthDate().orElse(null));
+        assertEquals(8, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q27075287", oIv.get());
+
+        author = authors.get(4);
+        assertEquals("Birek", author.getFamilyName());
+        assertEquals("Wojciech", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals("1961-10-17", author.getBirthDate().orElse(null));
+        assertEquals(6, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q9376359", oIv.get());
+
+        authorImageFile = author.getImage(context, 0).orElse(null);
+        assertNotNull(authorImageFile);
+        assertTrue(authorImageFile.getName().endsWith("_wikidata_Q9376359_0_.jpg"));
+
+        author = authors.get(5);
+        assertEquals("Rosiński", author.getFamilyName());
+        assertEquals("Grzegorz", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1941-08-03", author.getBirthDate().orElse(null));
+        assertEquals(11, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q744325", oIv.get());
+
+        authorImageFile = author.getImage(context, 0).orElse(null);
+        assertNotNull(authorImageFile);
+        assertTrue(authorImageFile.getName().endsWith("_wikidata_Q744325_0_.jpg"));
+
+        author = authors.get(6);
+        assertEquals("Van Hamme", author.getFamilyName());
+        assertEquals("Jean", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1939-01-16", author.getBirthDate().orElse(null));
+        assertEquals(13, author.getIdentifiers().size());
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q428160", oIv.get());
+
+        authorImageFile = author.getImage(context, 0).orElse(null);
+        assertNotNull(authorImageFile);
+        assertTrue(authorImageFile.getName().endsWith("_wikidata_Q428160_0_.jpg"));
+
+        final List<String> covers = CoverFileSpecArray.getList(book, 0);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertTrue(covers.get(0).endsWith(EngineId.BibliotecePl.getPreferenceKey()
+                                          + "_9788328172241_0_.jpg"));
+    }
+}

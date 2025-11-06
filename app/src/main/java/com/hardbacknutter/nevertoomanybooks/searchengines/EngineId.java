@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bertrandpt.BertrandPtSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bol.BolSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bookfinder.BookFinderSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
@@ -111,6 +112,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *
  *      <li>Add a new {@link Site} instance to the one or more list(s) in {@link #registerSites}
  *      </li>
+ *
+ *      <li>Configure {@link AuthorResolverFactory} as needed</li>
  * </ol>
  *
  * <strong>Note: NEVER change the {@link #key} of the sites</strong>.
@@ -127,6 +130,7 @@ public enum EngineId
     Amazon(AmazonSearchEngine.class, true),
     Bedetheque(BedethequeSearchEngine.class, true),
     BertrandPt(BertrandPtSearchEngine.class, true),
+    BibliotecePl(BibliotecePlSearchEngine.class, true),
     Bol(BolSearchEngine.class, true),
     BookFinder(BookFinderSearchEngine.class, BuildConfig.ENABLE_BOOKFINDER),
     DatabazeKnih(DatabazeKnihSearchEngine.class, true),
@@ -248,14 +252,15 @@ public enum EngineId
 
         // Site activation is partially done depending on the device or user set language
         // matching the site language.
+
         final boolean isChinese = languages.isUserLanguage(context, "zho");
         final boolean isCzech = languages.isUserLanguage(context, "cze");
-        final boolean isSlovak = languages.isUserLanguage(context, "slo");
-
         final boolean isDutch = languages.isUserLanguage(context, "nld");
         final boolean isFrench = languages.isUserLanguage(context, "fra");
         final boolean isGerman = languages.isUserLanguage(context, "deu");
+        final boolean isPolish = languages.isUserLanguage(context, "pol");
         final boolean isPortuguese = languages.isUserLanguage(context, "por");
+        final boolean isSlovak = languages.isUserLanguage(context, "slo");
 
         //NEWTHINGS: adding a new search engine: add to the list type as needed.
 
@@ -271,6 +276,9 @@ public enum EngineId
                 // {@link SearchEngine.ByText}
 
                 // Try to optimize by putting the most-likely-wanted at the top
+                if (isPolish) {
+                    type.addSite(BibliotecePl, true);
+                }
                 if (isPortuguese) {
                     type.addSite(BertrandPt, true);
                 }
@@ -302,6 +310,9 @@ public enum EngineId
 
                 type.addSite(Bol, isDutch || isFrench);
 
+                if (!isPolish) {
+                    type.addSite(BibliotecePl, false);
+                }
                 if (!isPortuguese) {
                     type.addSite(BertrandPt, false);
                 }

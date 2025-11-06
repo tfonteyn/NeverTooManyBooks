@@ -494,6 +494,8 @@
     <string name="site_description_german">German</string>
     <!-- website info: short description in which language(s) a search-site provides book data in. -->
     <string name="site_description_portuguese_and_more">Portuguese and more</string>
+    <!-- website info: short description in which language(s) a search-site provides book data in. -->
+    <string name="site_description_polish">Polish</string>
 
     <!-- website info: short description of the type of search-site. -->
     <string name="site_description_shop">Shop</string>

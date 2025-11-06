@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.ISNI;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bibliotecepl.BibliotecePlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.databazeknih.DatabazeKnihSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.dnb.DnbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.douban.DoubanSearchEngine;
@@ -99,6 +100,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.zzz.WorldCat;
  *     <li>P7865    CoBiS author ID</li>
  *     <li>P8287    Worlds Without End author ID</li>
  * </ul>
+ *
+ * @see <a href="https://www.wikidata.org/wiki/Wikidata:Database_reports/List_of_properties/all">
+ *     All Wikidata claim number - WARNING: LONG LIST</a>
  */
 public class Identifier
         implements Parcelable, Entity, Mergeable {
@@ -107,6 +111,7 @@ public class Identifier
     public static final String SID_AUDIBLE = "audible-asin";
     public static final String SID_BARNES_AND_NOBLE = "bn";
     public static final String SID_BEDETHEQUE = "bedetheque";
+    public static final String SID_BIBLIOTECE_PL = "bibliotece";
     public static final String SID_BNF = "bnf";
     public static final String SID_BRITISH_LIBRARY = "bl";
     public static final String SID_DATABAZE_KNIH = "databazeknih";
@@ -282,7 +287,6 @@ public class Identifier
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     @NonNull
     public static List<Identifier> createInitialList(@NonNull final Context context) {
-        // links have been verified at the date listed.
         return List.of(
                 // links empty on purpose; created dynamically
                 new Identifier(SID_ASIN, TYPE_STRING,
@@ -309,6 +313,13 @@ public class Identifier
                                BedethequeSearchEngine.SITE_URL,
                                BedethequeSearchEngine.BOOK_URL,
                                BedethequeSearchEngine.AUTHOR_URL),
+                new Identifier(SID_BIBLIOTECE_PL, TYPE_LONG,
+                               context.getString(R.string.identifier_bibliotece_pl),
+                               // 2025-11-04: none found
+                               null,
+                               BibliotecePlSearchEngine.SITE_URL,
+                               BibliotecePlSearchEngine.BOOK_URL,
+                               BibliotecePlSearchEngine.AUTHOR_URL),
                 new Identifier(SID_BNF, TYPE_STRING,
                                context.getString(R.string.identifier_bnf),
                                "P268",

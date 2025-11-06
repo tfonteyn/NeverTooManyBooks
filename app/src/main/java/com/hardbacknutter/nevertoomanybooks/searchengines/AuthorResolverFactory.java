@@ -70,6 +70,12 @@ public final class AuthorResolverFactory {
                 }
                 break;
             }
+            case BibliotecePl: {
+                if (isEnabled(context, engineId, EngineId.Wikidata, false)) {
+                    return List.of(WikidataAuthorResolver.create(context, searchEngine));
+                }
+                break;
+            }
             case DatabazeKnih: {
                 if (isEnabled(context, engineId)) {
                     return List.of(DatabazeKnihAuthorResolver.create(context, searchEngine));
