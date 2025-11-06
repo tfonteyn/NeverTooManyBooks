@@ -1476,7 +1476,7 @@ public class Book
         if (list.isEmpty()) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
             Bookshelf bookshelf = bookshelfDao
-                    .getBookshelf(context, Bookshelf.CURRENT)
+                    .getCurrent(context)
                     .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
                     .orElseThrow();
             if (bookshelf.getId() == Bookshelf.ALL_BOOKS) {

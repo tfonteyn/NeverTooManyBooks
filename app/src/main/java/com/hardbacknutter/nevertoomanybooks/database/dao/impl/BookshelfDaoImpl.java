@@ -136,8 +136,9 @@ public class BookshelfDaoImpl
         return Optional.of(bookshelf);
     }
 
+    @Override
     @NonNull
-    private Optional<Bookshelf> getCurrent(@NonNull final Context context) {
+    public Optional<Bookshelf> getCurrent(@NonNull final Context context) {
         final String name = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getString(PK_BOOKSHELF_CURRENT, null);
         if (name != null && !name.isEmpty()) {
@@ -162,8 +163,6 @@ public class BookshelfDaoImpl
             return Optional.empty();
         } else if (id == Bookshelf.ALL_BOOKS) {
             return getAllBooksBookshelf(context);
-        } else if (id == Bookshelf.CURRENT) {
-            return getCurrent(context);
         } else {
             return findById(id);
         }

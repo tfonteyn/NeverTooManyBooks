@@ -140,7 +140,7 @@ abstract class LibraryBase
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         final Bookshelf current = bookshelfDao
-                .getBookshelf(context, Bookshelf.CURRENT)
+                .getCurrent(context)
                 .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
                 .orElseThrow();
 

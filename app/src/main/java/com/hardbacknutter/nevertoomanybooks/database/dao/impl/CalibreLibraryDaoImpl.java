@@ -139,7 +139,7 @@ public class CalibreLibraryDaoImpl
         // using the mapped bookshelf-if, lookup the actual Bookshelf (with fallbacks)
         final Bookshelf libBookshelf = bookshelfDao
                 .getBookshelf(context, library.getMappedBookshelfId())
-                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.CURRENT))
+                .or(() -> bookshelfDao.getCurrent(context))
                 .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
                 .orElseThrow();
         // and update the id

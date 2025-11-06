@@ -688,7 +688,7 @@ public final class CalibreContentServer
         final CalibreLibraryDao libraryDao = serviceLocator.getCalibreLibraryDao();
         final BookshelfDao bookshelfDao = serviceLocator.getBookshelfDao();
 
-        final long currentBookshelfId = bookshelfDao.getBookshelf(context, Bookshelf.CURRENT)
+        final long currentBookshelfId = bookshelfDao.getCurrent(context)
                                                     .map(Bookshelf::getId)
                                                     .orElse((long) Bookshelf.HARD_DEFAULT);
 

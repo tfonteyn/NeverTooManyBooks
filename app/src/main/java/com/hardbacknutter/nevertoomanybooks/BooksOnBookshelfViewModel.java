@@ -386,7 +386,7 @@ public class BooksOnBookshelfViewModel
         // or use the default == first start of the app
         if (bookshelf == null) {
             bookshelf = bookshelfDao
-                    .getBookshelf(context, Bookshelf.CURRENT)
+                    .getCurrent(context)
                     .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
                     .orElseThrow();
         }
@@ -529,7 +529,7 @@ public class BooksOnBookshelfViewModel
 
         bookshelf = bookshelfDao.findById(bookshelfId).orElseGet(
                 () -> bookshelfDao
-                        .getBookshelf(context, Bookshelf.CURRENT)
+                        .getCurrent(context)
                         .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
                         .orElseThrow());
         bookshelf.setAsCurrent(context);
@@ -546,7 +546,7 @@ public class BooksOnBookshelfViewModel
     private boolean reloadSelectedBookshelf(@NonNull final Context context) {
 
         final Bookshelf newBookshelf = bookshelfDao
-                .getBookshelf(context, Bookshelf.CURRENT)
+                .getCurrent(context)
                 .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
                 .orElseThrow();
         if (newBookshelf.equals(bookshelf)) {

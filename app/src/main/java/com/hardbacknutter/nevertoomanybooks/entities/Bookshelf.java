@@ -83,12 +83,6 @@ public class Bookshelf
      */
     public static final int ALL_BOOKS = -1;
 
-    /**
-     * The user preferred shelf as stored in preferences.
-     * WARNING: this can be either a normal bookshelf, or the "All Books" virtual shelf.
-     */
-    public static final int CURRENT = -2;
-
     @SuppressWarnings("FieldNotUsedInToString")
     private final List<PFilter<?>> filters = new ArrayList<>();
 
