@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -33,6 +32,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -62,13 +62,11 @@ public class StripInfoBookshelfMappingFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_stripinfo_mapping, rootKey);
 
-        final Context context = getContext();
-        //noinspection DataFlowIssue
-        final long id = ServiceLocator.getInstance()
-                                      .getBookshelfDao()
-                                      .getCurrent(context)
-                                      .map(Bookshelf::getId)
-                                      .orElse((long) Bookshelf.HARD_DEFAULT);
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+        final long id = bookshelfDao.getCurrent()
+                                    .or(bookshelfDao::getDefault)
+                                    .map(Bookshelf::getId)
+                                    .orElseThrow();
         final Pair<CharSequence[], CharSequence[]> values = getBookshelves();
         initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, id, values);
         initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_DIGITAL, id, values);

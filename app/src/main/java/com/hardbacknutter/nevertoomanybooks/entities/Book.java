@@ -1475,15 +1475,13 @@ public class Book
         final List<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
         if (list.isEmpty()) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-            Bookshelf bookshelf = bookshelfDao
-                    .getCurrent(context)
-                    .or(() -> bookshelfDao.getDefault(context))
-                    .orElseThrow();
+            Bookshelf bookshelf = bookshelfDao.getCurrent()
+                                              .or(bookshelfDao::getDefault)
+                                              .orElseThrow();
             if (bookshelf.getId() == Bookshelf.ALL_BOOKS) {
                 // the user was "on" the "All Books" virtual shelf.
                 // For lack of anything better, set the default shelf instead.
-                bookshelf = bookshelfDao.getDefault(context)
-                                        .orElseThrow();
+                bookshelf = bookshelfDao.getDefault().orElseThrow();
             }
             list.add(bookshelf);
         }

@@ -171,15 +171,6 @@ public class Bookshelf
         topRowAdapterPosition = new TopRowListPosition(in.readInt(), in.readInt());
     }
 
-    /**
-     * Set this bookshelf as the current.
-     *
-     * @param context Current context
-     */
-    public void setAsCurrent(@NonNull final Context context) {
-        ServiceLocator.getInstance().getBookshelfDao().setCurrent(context, this);
-    }
-
     @Override
     public long getId() {
         return id;

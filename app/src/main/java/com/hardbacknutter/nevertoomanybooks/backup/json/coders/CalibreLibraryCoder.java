@@ -80,8 +80,8 @@ public class CalibreLibraryCoder
 
         final Bookshelf libraryBookshelf = bookshelfDao
                 .getBookshelf(context, library.getMappedBookshelfId())
-                .or(() -> bookshelfDao.getCurrent(context))
-                .or(() -> bookshelfDao.getDefault(context))
+                .or(bookshelfDao::getCurrent)
+                .or(bookshelfDao::getDefault)
                 .orElseThrow();
 
         // We could just encode a reference to the bookshelf,

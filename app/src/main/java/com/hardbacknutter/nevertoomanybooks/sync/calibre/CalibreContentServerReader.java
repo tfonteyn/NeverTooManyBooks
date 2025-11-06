@@ -771,8 +771,8 @@ public class CalibreContentServerReader
         //noinspection DataFlowIssue
         final Bookshelf mappedBookshelf = bookshelfDao
                 .getBookshelf(context, library.getMappedBookshelfId())
-                .or(() -> bookshelfDao.getCurrent(context))
-                .or(() -> bookshelfDao.getDefault(context))
+                .or(bookshelfDao::getCurrent)
+                .or(bookshelfDao::getDefault)
                 .orElseThrow();
 
         if (bookShelves.isEmpty()) {
@@ -801,8 +801,8 @@ public class CalibreContentServerReader
                        .ifPresent(vlib -> {
                            final Bookshelf vlibMappedBookshelf = bookshelfDao
                                    .getBookshelf(context, vlib.getMappedBookshelfId())
-                                   .or(() -> bookshelfDao.getBookshelf(context,
-                                                                       library.getMappedBookshelfId()))
+                                   .or(() -> bookshelfDao.getBookshelf(
+                                           context, library.getMappedBookshelfId()))
                                    .orElseThrow();
 
                            // add the vlib mapped bookshelf if not already present.

@@ -27,7 +27,6 @@ import android.os.Build;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -115,14 +114,12 @@ public class BookshelfDaoImpl
                    + "'," + BuiltinStyle.HARD_DEFAULT_ID
                    + ')');
 
-        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
+        // inserts a 'Default' bookshelf with _id==1
         db.execSQL(INSERT_INTO_ + TBL_BOOKSHELF
                    + '(' + DBKey.PK_ID
                    + ',' + DBKey.BOOKSHELF.NAME
                    + ',' + DBKey.FK_STYLE
-                   + ") VALUES ("
-                   + Bookshelf.HARD_DEFAULT
-                   + ",'" + context.getString(R.string.bookshelf_my_books)
+                   + ") VALUES (1,'" + context.getString(R.string.bookshelf_my_books)
                    + "'," + BuiltinStyle.HARD_DEFAULT_ID
                    + ')');
     }
@@ -136,17 +133,17 @@ public class BookshelfDaoImpl
         return Optional.of(bookshelf);
     }
 
-    @NonNull
     @Override
-    public Optional<Bookshelf> getDefault(@NonNull final Context context) {
-        return getBookshelf(context, Bookshelf.HARD_DEFAULT);
+    @NonNull
+    public Optional<Bookshelf> getDefault() {
+        return findById(Bookshelf.HARD_DEFAULT);
     }
 
     @Override
     @NonNull
-    public Optional<Bookshelf> getCurrent(@NonNull final Context context) {
-        final String name = PreferenceManager.getDefaultSharedPreferences(context)
-                                             .getString(PK_BOOKSHELF_CURRENT, null);
+    public Optional<Bookshelf> getCurrent() {
+        final String name = ServiceLocator.getInstance().getSharedPreferences()
+                                          .getString(PK_BOOKSHELF_CURRENT, null);
         if (name != null && !name.isEmpty()) {
             return findByName(name);
         }
@@ -154,20 +151,17 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public void setCurrent(@NonNull final Context context,
-                           @NonNull final Bookshelf bookshelf) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putString(PK_BOOKSHELF_CURRENT, bookshelf.getName())
-                         .apply();
+    public void setCurrent(@NonNull final Bookshelf bookshelf) {
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putString(PK_BOOKSHELF_CURRENT, bookshelf.getName())
+                      .apply();
     }
 
     @NonNull
     public Optional<Bookshelf> getBookshelf(@NonNull final Context context,
                                             final long id) {
-        if (id == 0) {
-            return Optional.empty();
-        } else if (id == Bookshelf.ALL_BOOKS) {
+        if (id == Bookshelf.ALL_BOOKS) {
             return getAllBooksBookshelf(context);
         } else {
             return findById(id);
@@ -176,7 +170,12 @@ public class BookshelfDaoImpl
 
     @NonNull
     @Override
-    public Optional<Bookshelf> findById(@IntRange(from = 1) final long id) {
+    public Optional<Bookshelf> findById(final long id) {
+        if (id == 0) {
+            return Optional.empty();
+        }
+        // Search for both positive and negative id's
+        // (although the only negative id in use is the ALL_BOOKS bookshelf)
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return Optional.of(new Bookshelf(id, new CursorRow(cursor)));
@@ -599,7 +598,7 @@ public class BookshelfDaoImpl
     @Override
     public boolean delete(@NonNull final Context context,
                           @NonNull final Bookshelf bookshelf) {
-        // Sanity check
+        // Sanity check; we cannot delete 0==new; or -1==all_books
         if (bookshelf.getId() <= Bookshelf.HARD_DEFAULT) {
             return false;
         }

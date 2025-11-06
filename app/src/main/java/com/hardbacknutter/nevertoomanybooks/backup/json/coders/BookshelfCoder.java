@@ -132,8 +132,6 @@ public class BookshelfCoder
             }
         }
 
-        return bookshelfDao
-                .getCurrent(context)
-                .or(() -> bookshelfDao.getDefault(context));
+        return bookshelfDao.getCurrent().or(bookshelfDao::getDefault);
     }
 }

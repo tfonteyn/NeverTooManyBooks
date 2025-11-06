@@ -39,33 +39,27 @@ public interface BookshelfDao {
 
     /**
      * Get the user's default {@link Bookshelf}.
-     * Do not confuse this with the currently displayed shelf from {@link #getCurrent(Context)}.
-     *
-     * @param context Current context
+     * Do not confuse this with the currently displayed shelf from {@link #getCurrent()}.
      *
      * @return bookshelf
      */
     @NonNull
-    Optional<Bookshelf> getDefault(@NonNull Context context);
+    Optional<Bookshelf> getDefault();
 
     /**
      * Get the user's preferred/current {@link Bookshelf}.
      *
-     * @param context Current context
-     *
      * @return bookshelf
      */
     @NonNull
-    Optional<Bookshelf> getCurrent(@NonNull Context context);
+    Optional<Bookshelf> getCurrent();
 
     /**
      * Set the given {@link Bookshelf} as the current.
      *
-     * @param context   Current context
      * @param bookshelf to set
      */
-    void setCurrent(@NonNull Context context,
-                    @NonNull Bookshelf bookshelf);
+    void setCurrent(@NonNull Bookshelf bookshelf);
 
     /**
      * Get the specified bookshelf.
@@ -211,7 +205,7 @@ public interface BookshelfDao {
      * @return the {@link Bookshelf}
      */
     @NonNull
-    Optional<Bookshelf> findById(@IntRange(from = 1) long id);
+    Optional<Bookshelf> findById(long id);
 
     /**
      * Find a {@link Bookshelf} by using the <strong>name</strong> fields
