@@ -779,6 +779,7 @@
     <string name="site_description_french_and_more">Francese e non solo</string>
     <string name="site_description_portuguese_and_more">Portoghese e non solo</string>
     <string name="site_description_various_languages">Varie lingue</string>
+    <string name="site_description_polish">Polacco</string>
     <string name="site_description_shop">Shopping</string>
     <string name="info_maintenance_sync_deleted_book_records">In questo modo si controllerà la cronologia dei libri eliminati da una precedente importazione da un altro dispositivo e si sincronizzeranno tali eliminazioni. In altre parole, i libri eliminati sull’altro dispositivo saranno eliminati anche su questo dispositivo.</string>
     <string name="option_clear_deleted_book_records">Cancella la cronologia dei libri eliminati</string>

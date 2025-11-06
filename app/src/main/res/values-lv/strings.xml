@@ -221,4 +221,5 @@
     <string name="pt_barcode_sounds">Skaņas</string>
     <string name="pt_camera_auto_focus">Automātiskā fokusēšana</string>
     <string name="warning_image_invalid">Nederīgs vai trūkstošs attēls.</string>
+    <string name="site_description_polish">Poļu</string>
 </resources>

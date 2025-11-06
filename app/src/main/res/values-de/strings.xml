@@ -774,6 +774,7 @@
     <string name="site_description_french_and_more">Französisch und mehr</string>
     <string name="site_description_portuguese_and_more">Portugiesisch und mehr</string>
     <string name="site_description_various_languages">Verschiedene Sprachen</string>
+    <string name="site_description_polish">Polnisch</string>
     <string name="site_description_shop">Shop</string>
     <string name="info_maintenance_sync_deleted_book_records">Hiermit wird der Verlauf der gelöschten Bücher aus einem früheren Import von einem anderen Gerät überprüft und diese Löschungen werden synchronisiert. Mit anderen Worten: Bücher, die auf dem anderen Gerät gelöscht wurden, werden auch auf diesem Gerät gelöscht.</string>
     <string name="option_clear_deleted_book_records">Verlauf gelöschter Bücher leeren</string>

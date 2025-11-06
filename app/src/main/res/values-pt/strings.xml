@@ -778,6 +778,7 @@
     <string name="site_description_french_and_more">Francês e mais</string>
     <string name="site_description_portuguese_and_more">Português e muito mais</string>
     <string name="site_description_various_languages">Várias línguas</string>
+    <string name="site_description_polish">Polaco</string>
     <string name="site_description_shop">Compras</string>
     <string name="info_maintenance_sync_deleted_book_records">Isto irá verificar o histórico de livros eliminados de uma importação anterior de outro dispositivo e sincronizar essas eliminações. Por outras palavras, os livros eliminados no outro dispositivo também serão eliminados neste dispositivo.</string>
     <string name="option_clear_deleted_book_records">Limpar o histórico de livros eliminados</string>

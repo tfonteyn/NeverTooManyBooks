@@ -772,6 +772,7 @@ A question mark is written as the character semicolon: ';'
     <string name="option_sync_deleted_book_records">Συγχρονισμός διαγραμμένων βιβλίων</string>
     <string name="info_site_search_field_optional">Προαιρετικά. Δεν υποστηρίζεται από όλους τους δικτυακούς τόπους.</string>
     <string name="site_description_various_languages">Διάφορες γλώσσες</string>
+    <string name="site_description_polish">Πολωνικά</string>
     <string name="site_description_shop">Αγορές</string>
     <string name="site_description_catalog">Κατάστημα</string>
     <string name="site_description_chinese">Κινέζικα</string>

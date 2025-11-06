@@ -784,6 +784,7 @@
     <string name="site_description_french_and_more">Francouzština a další</string>
     <string name="site_description_portuguese_and_more">Portugalština a další</string>
     <string name="site_description_various_languages">Různé jazyky</string>
+    <string name="site_description_polish">Polština</string>
     <string name="site_description_shop">Obchod</string>
     <string name="info_maintenance_sync_deleted_book_records">Zkontroluje se historie smazaných knih z předchozího importu z jiného zařízení a tato smazání se synchronizují. Jinými slovy, knihy smazané v jiném zařízení budou smazány i v tomto zařízení.</string>
     <string name="option_clear_deleted_book_records">Vymazání historie smazaných knih</string>

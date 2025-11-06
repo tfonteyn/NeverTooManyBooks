@@ -783,6 +783,7 @@
     <string name="site_description_french_and_more">Французский и более</string>
     <string name="site_description_portuguese_and_more">Португальский язык и многое другое</string>
     <string name="site_description_various_languages">Разные языки</string>
+    <string name="site_description_polish">польский</string>
     <string name="site_description_shop">Покупки</string>
     <string name="info_maintenance_sync_deleted_book_records">Это позволит проверить историю удаленных книг из предыдущего импорта с другого устройства и синхронизировать эти удаления. Другими словами, книги, удаленные на другом устройстве, будут удалены и на этом устройстве.</string>
     <string name="option_clear_deleted_book_records">Очистить историю удаленных книг</string>

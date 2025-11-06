@@ -783,6 +783,7 @@
     <string name="site_description_french_and_more">Fransızca ve daha fazlası</string>
     <string name="site_description_portuguese_and_more">Portekizce ve daha fazlası</string>
     <string name="site_description_various_languages">Çeşitli diller</string>
+    <string name="site_description_polish">Lehçe</string>
     <string name="site_description_shop">Alışveriş</string>
     <string name="info_maintenance_sync_deleted_book_records">Bu, başka bir cihazdan önceki bir içe aktarma işleminden silinen kitap geçmişini kontrol edecek ve bu silme işlemlerini senkronize edecektir. Başka bir deyişle, diğer cihazda silinen kitaplar bu cihazda da silinecektir.</string>
     <string name="option_clear_deleted_book_records">Silinen kitaplar geçmişini temizle</string>
