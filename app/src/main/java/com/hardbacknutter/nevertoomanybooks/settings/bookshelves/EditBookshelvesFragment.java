@@ -197,8 +197,6 @@ public class EditBookshelvesFragment
                                  final int position) {
         final Context context = anchor.getContext();
         final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
-        menu.findItem(R.id.MENU_DELETE).setEnabled(vm.getBookshelf(position).getId()
-                                                   != Bookshelf.HARD_DEFAULT);
 
         //noinspection DataFlowIssue
         final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);

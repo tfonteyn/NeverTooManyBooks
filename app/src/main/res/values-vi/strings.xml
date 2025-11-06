@@ -812,11 +812,11 @@
     <string name="vldt_read_start_after_end">Ngày bắt đầu đọc là sau ngày kết thúc</string>
     <string name="vldt_real_author_must_be_valid">Phải để trống hoặc phải có Tác giả</string>
     <string name="vldt_real_expected_for_x">Cần một số thực cho “%1$s”</string>
+    <string name="warning_cannot_delete_only_bookshelf">Bạn chỉ có một giá sách, vì vậy không thể xóa nó.</string>
     <string name="warning_already_in_list">Đã có trong danh sách!</string>
     <string name="warning_backup_request">Bạn có muốn sao lưu cơ sở dữ liệu vào thẻ sd của mình không?</string>
     <string name="warning_book_not_always_found">Không phải tất cả các trang web đều trả về dữ liệu hợp lệ.</string>
     <string name="warning_book_not_found">Không thể tìm thấy sách được chỉ định.</string>
-    <string name="warning_cannot_delete_1st_bs">Không thể xóa kệ sách đầu tiên.</string>
     <string name="warning_enable_at_least_1_website">Kích hoạt ít nhất một trang web cho mỗi danh mục.</string>
     <string name="warning_export_contains_no_data">Không có gì để xuất.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Nếu chỉ định ngày thì phải chỉ định cả tháng và năm.</string>

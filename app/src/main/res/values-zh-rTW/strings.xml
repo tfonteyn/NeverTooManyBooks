@@ -783,11 +783,11 @@
     <string name="vldt_read_start_after_end">閱讀開始日期，在結束日期之後</string>
     <string name="vldt_real_author_must_be_valid">必須為空或現有作者</string>
     <string name="vldt_real_expected_for_x">「%1$s」需要一個真實的數字</string>
+    <string name="warning_cannot_delete_only_bookshelf">你只有一個書架，因此無法刪除。</string>
     <string name="warning_already_in_list">已經在清單中！</string>
     <string name="warning_backup_request">您想將資料庫備份到內部儲存嗎？</string>
     <string name="warning_book_not_always_found">並非所有網站都傳回有效資料。</string>
     <string name="warning_book_not_found">無法找到指定的書籍。</string>
-    <string name="warning_cannot_delete_1st_bs">第一個書架不能刪除。</string>
     <string name="warning_enable_at_least_1_website">每個類別至少啟用一個網站。</string>
     <string name="warning_export_contains_no_data">沒有內容可以匯出。</string>
     <string name="warning_if_day_set_month_and_year_must_be">如果指定了日期，則必須指定月份和年份。</string>

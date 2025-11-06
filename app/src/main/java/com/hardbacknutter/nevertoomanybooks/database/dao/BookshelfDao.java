@@ -47,6 +47,16 @@ public interface BookshelfDao {
     Bookshelf getDefault();
 
     /**
+     * Set the user's default {@link Bookshelf}.
+     * Do not confuse this with the currently displayed shelf from {@link #getCurrent()}.
+     * <p>
+     * <strong>The bookshelf MUST have a valid id; no checks are made.</strong>
+     *
+     * @param bookshelf to set
+     */
+    void setDefault(@NonNull Bookshelf bookshelf);
+
+    /**
      * Get the user's preferred/current {@link Bookshelf}.
      *
      * @return bookshelf

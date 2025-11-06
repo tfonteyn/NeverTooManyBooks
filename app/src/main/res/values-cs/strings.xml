@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources>
@@ -701,11 +704,11 @@
     <string name="vldt_non_blank_required_for_x">Neprázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_read_start_after_end">Datum začátku čtení musí předcházet datu ukončení čtení</string>
     <string name="vldt_real_expected_for_x">Očekáváno reálné číslo pro „%1$s“</string>
+    <string name="warning_cannot_delete_only_bookshelf">Máš jen jednu knihovnu, takže ji nejde smazat.</string>
     <string name="warning_already_in_list">Již v seznamu!</string>
     <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu?</string>
     <string name="warning_book_not_always_found">Ne všechny weby vrátily platná data.</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt zadanou knihu.</string>
-    <string name="warning_cannot_delete_1st_bs">První knihovnu nelze odstranit.</string>
     <string name="warning_enable_at_least_1_website">Pro každou kategorii povolte alespoň jeden web.</string>
     <string name="warning_export_contains_no_data">Nebylo co exportovat.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Je-li zadán den, musí být také uveden měsíc i rok.</string>

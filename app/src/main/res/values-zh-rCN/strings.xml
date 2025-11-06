@@ -791,11 +791,11 @@
     <string name="vldt_read_start_after_end">阅读开始日期，在结束日期之后</string>
     <string name="vldt_real_author_must_be_valid">必须为空或现有作者</string>
     <string name="vldt_real_expected_for_x">“%1$s”需要一个真实的数字</string>
+    <string name="warning_cannot_delete_only_bookshelf">你只有一个书架，因此无法删除。</string>
     <string name="warning_already_in_list">已经在列表中！</string>
     <string name="warning_backup_request">您想将数据库备份到内部储存吗？</string>
     <string name="warning_book_not_always_found">并非所有站点都返回有效数据。</string>
     <string name="warning_book_not_found">找不到指定的书。</string>
-    <string name="warning_cannot_delete_1st_bs">第一个书架不能删除。</string>
     <string name="warning_enable_at_least_1_website">为每个类别启用至少一个网站。</string>
     <string name="warning_export_contains_no_data">没有内容可以导出。</string>
     <string name="warning_if_day_set_month_and_year_must_be">如果指定了日期，则必须指定月份和年份。</string>

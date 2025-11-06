@@ -164,7 +164,7 @@
     <string name="warning_missing_title_or_author">தலைப்பு மற்றும்/அல்லது ஆசிரியர் குறிப்பிடப்பட வேண்டும்.</string>
     <string name="warning_requires_isbn">இந்த நடவடிக்கைக்கு செல்லுபடியாகும் ஐ.எச்.பி.என் தேவைப்படுகிறது.</string>
     <string name="warning_requires_site_and_id">ஒரு தளத்தைத் தேர்ந்தெடுத்து ஐடியை உள்ளிடவும்.</string>
-    <string name="warning_cannot_delete_1st_bs">முதல் புத்தக அலமாரியை நீக்க முடியாது.</string>
+    <string name="warning_cannot_delete_only_bookshelf">உனக்குப் ஒரு புத்தக அலமாரி மட்டுமே உள்ளது, அதனால் அதை நீக்க முடியாது.</string>
     <string name="warning_already_in_list">ஏற்கனவே பட்டியலில்!</string>
     <string name="error_import_csv_line">%1$d வரிசையில் தெரியாத பிழை</string>
     <string name="lbl_identifier_suffix"><![CDATA[%1$s <small>ஐடி</small>]]></string>

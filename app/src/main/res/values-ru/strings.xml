@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) --><!--suppress LongLine --><resources>
@@ -698,11 +701,11 @@
     <string name="vldt_non_blank_required_for_x">Требуется не пустое значение для: «%1$s»</string>
     <string name="vldt_read_start_after_end">Дата начала чтения позже даты завершения</string>
     <string name="vldt_real_expected_for_x">Введите действительное число: «%1$s»</string>
+    <string name="warning_cannot_delete_only_bookshelf">У тебя только одна книжная полка, поэтому удалить её нельзя.</string>
     <string name="warning_already_in_list">Уже в списке!</string>
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
     <string name="warning_book_not_always_found">Не все сайты вернули достоверные данные.</string>
     <string name="warning_book_not_found">Поиск указанной книги не удался.</string>
-    <string name="warning_cannot_delete_1st_bs">Первая книжная полка не может быть удалена.</string>
     <string name="warning_enable_at_least_1_website">Включите хотя бы один веб-сайт для каждой категории.</string>
     <string name="warning_export_contains_no_data">Экспортировать было нечего.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Если указан день, также необходимо указать месяц и год.</string>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -693,11 +696,11 @@
     <string name="vldt_non_blank_required_for_x">Oczekiwana wartość niepusta dla „%1$s”</string>
     <string name="vldt_read_start_after_end">Data rozpoczęcia czytania późniejsza od daty zakończenia</string>
     <string name="vldt_real_expected_for_x">Oczekiwana wartość liczbowa dla „%1$s”</string>
+    <string name="warning_cannot_delete_only_bookshelf">Masz tylko jedną półkę na książki, więc nie możesz jej usunąć.</string>
     <string name="warning_already_in_list">Już na liście!</string>
     <string name="warning_backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
     <string name="warning_book_not_always_found">Nie wszystkie witryny zwróciły prawidłowe dane.</string>
     <string name="warning_book_not_found">Nie mogę znaleźć tej książki.</string>
-    <string name="warning_cannot_delete_1st_bs">Pierwszej półki nie można usunąć.</string>
     <string name="warning_enable_at_least_1_website">Włącz przynajmniej jedną stronę internetową dla każdej kategorii.</string>
     <string name="warning_export_contains_no_data">Nie było co eksportować.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Jeśli określono dzień, należy również określić miesiąc i rok.</string>

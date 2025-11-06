@@ -32,8 +32,8 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivityLauncher;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.bookshelves.EditBookshelvesFragment;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -77,6 +77,11 @@ public class EditBookshelvesContract
         }
 
         // the last edited/inserted shelf
-        return Optional.of(intent.getLongExtra(DBKey.FK_BOOKSHELF, Bookshelf.HARD_DEFAULT));
+        long id = intent.getLongExtra(DBKey.FK_BOOKSHELF, 0);
+        if (id == 0) {
+            // paranoia...
+            id = ServiceLocator.getInstance().getBookshelfDao().getDefault().getId();
+        }
+        return Optional.of(id);
     }
 }

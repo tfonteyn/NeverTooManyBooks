@@ -217,6 +217,7 @@
     <string name="warning_enable_at_least_1_website">Active pelo menos um site para cada categoria.</string>
     <string name="warning_no_matching_book_found">Nenhum livro correspondente encontrado</string>
     <string name="warning_requires_site_and_id">Selecione um site e insira um id.</string>
+    <string name="warning_cannot_delete_only_bookshelf">Tens apenas uma estante, por isso não a podes eliminar.</string>
     <string name="warning_already_in_list">Já está na lista!</string>
     <string name="site_description_german">Alemão</string>
     <string name="info_tip_reset_done">As dicas foram repostas</string>
@@ -243,7 +244,6 @@
     <string name="warning_image_not_found">A imagem não pôde ser encontrada.</string>
     <string name="warning_image_invalid">Imagem inválida ou ausente.</string>
     <string name="warning_no_editions">Nenhuma informação adicional de edição disponível.</string>
-    <string name="warning_cannot_delete_1st_bs">A primeira prateleira não pode ser eliminada.</string>
     <string name="warning_if_month_set_year_must_be">Se um mês é especificado, então um ano também deve ser especificado.</string>
     <string name="warning_toc_confirm">Por favor, confirme que estes títulos estão (maioritariamente) corretos.</string>
     <string name="warning_backup_request">Gostaria de fazer uma cópia de segurança da sua base de dados para o seu cartão SD?</string>

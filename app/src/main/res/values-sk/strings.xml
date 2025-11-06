@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -17,7 +18,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  --><!DOCTYPE resources [
+  -->
+
+<!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») --><!--suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
@@ -588,7 +591,6 @@
     <string name="ellipsize">%1$s…</string>
     <string name="list_semicolon">"; "</string>
     <string name="brackets">(%1$s)</string>
-    <string name="warning_cannot_delete_1st_bs">Prvá polica s knihami sa nedá odstrániť.</string>
     <string name="vldt_integer_expected_for_x">Očakáva sa celočíselná hodnota pre „%1$s“</string>
     <string name="vldt_real_expected_for_x">Očakáva sa reálne číslo pre „%1$s“</string>
     <string name="progress_msg_upgrading">Aktualizuje sa…</string>
@@ -620,6 +622,7 @@
     <string name="warning_enable_at_least_1_website">Povoľte aspoň jednu webovú stránku pre každú kategóriu.</string>
     <string name="warning_import_csv">UPOZORNENIE: Import údajov môže aktualizovať existujúce záznamy kníh novými informáciami, ak stĺpec UUID nie je prítomný a ID v importovanom súbore je rovnaké ako existujúce ID. Zvyčajne je to v poriadku, ak ste zmenili pole v exportovanom súbore. Ak ste vytvorili nový záznam knihy alebo importujete knihy niekoho iného, uistite sa, že pole UUID je prítomné alebo je pole ID prázdne.</string>
     <string name="progress_msg_searching">Vyhľadáva sa…</string>
+    <string name="warning_cannot_delete_only_bookshelf">Máš iba jednu knižnicu, preto ju nemôžeš odstrániť.</string>
     <string name="warning_already_in_list">Už je v zozname!</string>
     <string name="warning_no_matching_book_found">Žiadna zodpovedajúca kniha nebola nájdená</string>
     <string name="progress_msg_rebuilding_search_index">Obnovuje sa index vyhľadávania…</string>

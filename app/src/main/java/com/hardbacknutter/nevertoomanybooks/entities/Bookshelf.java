@@ -72,11 +72,6 @@ public class Bookshelf
     };
 
     /**
-     * The 'first' bookshelf created at install time. We allow renaming it, but not deleting.
-     */
-    public static final int HARD_DEFAULT = 1;
-
-    /**
      * The virtual 'All Books' representing our complete library.
      * Note we use -1, as {@code 0} is generally used for a 'new' item.
      * i.e. when the user creates a new shelf, it has id==0 before it's saved.

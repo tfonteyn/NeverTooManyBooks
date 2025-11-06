@@ -74,8 +74,19 @@ public class BookshelfDaoImpl
     /**
      * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
+     * <p>
+     * The CamelCase is legacy...
      */
     private static final String PK_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
+    /**
+     * The id of the default Bookshelf.
+     * <p>
+     * int: Initially always {@code 1}.
+     *
+     * @see #onPostCreate(Context, SQLiteDatabase)
+     */
+    private static final String PK_BOOKSHELF_DEFAULT = "bookshelf.default.id";
+
     /** Log tag. */
     private static final String TAG = "BookshelfDaoImpl";
     private static final String ERROR_INSERT_FROM = "Insert from\n";
@@ -135,8 +146,35 @@ public class BookshelfDaoImpl
 
     @Override
     @NonNull
-    public Optional<Bookshelf> getDefault() {
-        return findById(Bookshelf.HARD_DEFAULT);
+    public Bookshelf getDefault() {
+        long id = ServiceLocator.getInstance().getSharedPreferences()
+                                .getLong(PK_BOOKSHELF_DEFAULT, 1);
+        final Optional<Bookshelf> bookshelf = findById(id);
+        if (bookshelf.isPresent()) {
+            return bookshelf.get();
+        }
+        // We should never get here... flw.
+        // But if we do, find the smallest id (i.e. oldest added).
+        // We trust we will ALWAYS have at least one shelf.
+        id = getAll().stream()
+                     .map(Bookshelf::getId)
+                     .sorted()
+                     .findFirst()
+                     .orElseThrow();
+        setDefault(id);
+        return findById(id).orElseThrow();
+    }
+
+    @Override
+    public void setDefault(@NonNull final Bookshelf bookshelf) {
+        setDefault(bookshelf.getId());
+    }
+
+    private void setDefault(final long id) {
+        ServiceLocator.getInstance().getSharedPreferences()
+                      .edit()
+                      .putLong(PK_BOOKSHELF_DEFAULT, id)
+                      .apply();
     }
 
     @Override
@@ -599,7 +637,9 @@ public class BookshelfDaoImpl
     public boolean delete(@NonNull final Context context,
                           @NonNull final Bookshelf bookshelf) {
         // Sanity check; we cannot delete 0==new; or -1==all_books
-        if (bookshelf.getId() <= Bookshelf.HARD_DEFAULT) {
+        // and we're not allowed to delete the default shelf
+        // The latter is normally prevented in the UI, but paranoia...
+        if (bookshelf.getId() <= 0 || bookshelf.getId() == getDefault().getId()) {
             return false;
         }
 
@@ -684,9 +724,7 @@ public class BookshelfDaoImpl
             }
 
             // delete the obsolete source.
-            if (source.getId() > Bookshelf.HARD_DEFAULT) {
-                delete(context, source);
-            }
+            delete(context, source);
 
             if (txLock != null) {
                 db.setTransactionSuccessful();

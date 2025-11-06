@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
@@ -246,26 +247,60 @@ public final class StandardDialogs {
     public static void deleteBookshelf(@NonNull final Context context,
                                        @NonNull final Bookshelf bookshelf,
                                        @NonNull final Runnable onConfirm) {
-        if (bookshelf.getId() > Bookshelf.HARD_DEFAULT) {
-            final int books = ServiceLocator.getInstance().getBookshelfDao().countBooks(bookshelf);
-            final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
-                                                                              books, books);
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
-            final String msg = context.getString(R.string.confirm_delete_bookshelf_from_x_books,
-                                                 bookshelf.getLabel(context),
-                                                 nrOfBooks,
-                                                 context.getString(R.string.bookshelf_all_books));
-            delete(context, onConfirm, msg);
+        // Create the base message with the name of the shelf and the number of books on it.
+        final int books = bookshelfDao.countBooks(bookshelf);
+        final String nrOfBooks = context.getResources().getQuantityString(R.plurals.n_books,
+                                                                          books, books);
+        String msg = context.getString(R.string.confirm_delete_bookshelf_from_x_books,
+                                       bookshelf.getLabel(context),
+                                       nrOfBooks,
+                                       context.getString(R.string.bookshelf_all_books));
 
+        // Check for this being the default shelf and/or if it can be deleted
+        final long defShelfId = bookshelfDao.getDefault().getId();
+        @Nullable
+        final Bookshelf futureDefault;
+        if (bookshelf.getId() == defShelfId) {
+            // Find the smallest id (i.e. oldest added) which is not the current default.
+            final long futureDefaultId = bookshelfDao.getAll()
+                                                     .stream()
+                                                     .map(Bookshelf::getId)
+                                                     .sorted()
+                                                     .filter(id -> id != defShelfId)
+                                                     .findFirst()
+                                                     .orElse(0L);
+
+            if (futureDefaultId == 0) {
+                // There is only a single shelf, and the user wants to delete it... sigh...
+                new MaterialAlertDialogBuilder(context)
+                        .setIcon(R.drawable.warning_24px)
+                        .setMessage(R.string.warning_cannot_delete_only_bookshelf)
+                        .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
+                        .create()
+                        .show();
+                return;
+            }
+
+            futureDefault = bookshelfDao.getBookshelf(context, futureDefaultId).orElseThrow();
+
+            // Deletion is allowed.
+            // Prefix with an extra warning that the default shelf will be changed.
+            msg = context.getString(R.string.warning_delete_default_bookshelf,
+                                    futureDefault.getLabel(context),
+                                    context.getString(R.string.lbl_bookshelves))
+                  + "\n\n" + msg;
         } else {
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.warning_24px)
-                    .setMessage(R.string.warning_cannot_delete_1st_bs)
-                    .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
-
+            futureDefault = null;
         }
+
+        delete(context, () -> {
+            if (futureDefault != null) {
+                bookshelfDao.setDefault(futureDefault);
+            }
+            onConfirm.run();
+        }, msg);
     }
 
     /**

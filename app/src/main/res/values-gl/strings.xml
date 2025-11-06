@@ -92,7 +92,7 @@
     <string name="warning_nothing_selected">Nada seleccionado</string>
     <string name="warning_requires_at_least_1_field">Polo menos un campo non debe ficar en branco.</string>
     <string name="warning_missing_title_or_author">Hai que especificar título e/ou autor.</string>
-    <string name="warning_cannot_delete_1st_bs">O primeiro andel non se pode borrar.</string>
+    <string name="warning_cannot_delete_only_bookshelf">Só tes unha estantería, polo que non se pode eliminar.</string>
     <string name="warning_already_in_list">Xa na lista!</string>
     <string name="warning_no_matching_book_found">Non se atopou ningún libro</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>

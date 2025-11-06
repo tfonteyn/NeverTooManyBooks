@@ -90,7 +90,6 @@
     <string name="lbl_settings">Iestatījumi</string>
     <string name="lbl_images">Attēli</string>
     <string name="bookshelf_all_books">Visas grāmatas</string>
-    <string name="warning_cannot_delete_1st_bs">Pirmo grāmatplauktu nevar izdzēst.</string>
     <string name="progress_msg_loading">Ielādē…</string>
     <string name="error_import_file_not_supported">Atlasīto datni nevar ievietot.</string>
     <string name="option_image_rotate_automatic">Automātiski</string>
@@ -222,4 +221,5 @@
     <string name="pt_camera_auto_focus">Automātiskā fokusēšana</string>
     <string name="warning_image_invalid">Nederīgs vai trūkstošs attēls.</string>
     <string name="site_description_polish">Poļu</string>
+    <string name="warning_cannot_delete_only_bookshelf">Tev ir tikai viens grāmatu plaukts, tāpēc to nevar izdzēst.</string>
 </resources>

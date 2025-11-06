@@ -225,7 +225,7 @@
     <string name="warning_missing_title_or_author">Meg kell adni a címet és/vagy a szerzőt.</string>
     <string name="warning_requires_isbn">Ez a művelet érvényes ISBN-t igényel.</string>
     <string name="warning_requires_site_and_id">Válasszon ki egy oldalt és adjon meg egy azonosítót.</string>
-    <string name="warning_cannot_delete_1st_bs">Az első könyvespolc nem törölhető.</string>
+    <string name="warning_cannot_delete_only_bookshelf">Csak egy könyvespolcod van, ezért nem törölheted.</string>
     <string name="warning_already_in_list">Már szerepel a listán!</string>
     <string name="warning_no_matching_book_found">Nem található egyező könyv</string>
     <string name="warning_no_extra_info_found">Nincs (további) információ</string>

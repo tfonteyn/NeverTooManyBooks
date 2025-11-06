@@ -830,12 +830,12 @@
     <string name="vldt_read_start_after_end">Startdatumet för läsningen är efter slutdatumet</string>
     <string name="vldt_real_author_must_be_valid">Måste vara tomt eller en existerande författare</string>
     <string name="vldt_real_expected_for_x">Förväntade ett decimaltal för ”%1$s”</string>
+    <string name="warning_cannot_delete_only_bookshelf">Du har bara en bokhylla, så den kan inte tas bort.</string>
     <string name="warning_already_in_list">Finns redan i listan!</string>
     <string name="warning_backup_request">Vill du säkerhetskopiera din databas till ditt SD-kort?</string>
     <string name="warning_book_not_always_found">Inte alla webbplatser returnerade giltig data.</string>
     <string name="warning_book_not_found">Det gick inte att hitta den angivna boken.</string>
     <string name="warning_camera_permission_required">För att skanna streckkoder eller ta bilder krävs tillgång till kameran.</string>
-    <string name="warning_cannot_delete_1st_bs">Den första bokhyllan kan inte tas bort.</string>
     <string name="warning_enable_at_least_1_website">Aktivera minst en webbplats för varje kategori.</string>
     <string name="warning_export_contains_no_data">Det fanns inget att exportera.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Om dag anges måste både månad och år anges.</string>

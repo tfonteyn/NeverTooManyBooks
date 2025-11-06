@@ -692,11 +692,11 @@
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Leerer Wert oder gültige „https“-URL mit einem einzelnen „%s“-ID-Platzhalter erforderlich</string>
     <string name="vldt_read_start_after_end">Das Leseende-Datum liegt vor dem Lesebeginn-Datum</string>
     <string name="vldt_real_expected_for_x">Es wird ein Gleitkomma-Wert für „%1$s“ erwartet</string>
+    <string name="warning_cannot_delete_only_bookshelf">Du hast nur ein Bücherregal, daher kann es nicht gelöscht werden.</string>
     <string name="warning_already_in_list">Schon in der Liste!</string>
     <string name="warning_backup_request">Möchtest du deine Datenbank auf der SD-Karte sichern?</string>
     <string name="warning_book_not_always_found">Nicht alle Websites haben gültige Daten zurückgegeben.</string>
     <string name="warning_book_not_found">Das angegebene Buch wurde nicht gefunden.</string>
-    <string name="warning_cannot_delete_1st_bs">Das erste Bücherregal kann nicht gelöscht werden.</string>
     <string name="warning_enable_at_least_1_website">Aktiviere mindestens eine Website für jede Kategorie.</string>
     <string name="warning_export_contains_no_data">Es gab nichts zu exportieren.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Wenn der Tag angegeben wird, muss auch Monat und Jahr angegeben werden.</string>

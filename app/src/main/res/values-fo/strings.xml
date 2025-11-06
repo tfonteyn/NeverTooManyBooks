@@ -140,4 +140,5 @@
     <string name="action_add_all">Legg alt aftrat</string>
     <string name="action_remove_all">Fjern alt</string>
     <string name="site_description_polish">Pólskt</string>
+    <string name="warning_cannot_delete_only_bookshelf">Tú hevur bara eina bókahillu, so hana ber ikki at sletta.</string>
 </resources>

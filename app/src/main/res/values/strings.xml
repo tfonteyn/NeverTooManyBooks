@@ -312,7 +312,8 @@
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
     <!-- Search using a websites native book-id -->
     <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
-    <string name="warning_cannot_delete_1st_bs">The first bookshelf cannot be deleted.</string>
+    <!-- The user is trying to delete the only bookshelf they have. Tell them they are being silly. -->
+    <string name="warning_cannot_delete_only_bookshelf">You only have one bookshelf, so it can’t be deleted.</string>
     <!-- When the user tries to add e.g. an Author which is already listed on the book -->
     <string name="warning_already_in_list">Already in the list!</string>
     <!-- result of a search. -->
@@ -2276,4 +2277,5 @@
     -->
     <string name="info_registration_benefits"
             translatable="false">This feature benefits from registration at %1$s.\nThis is <b>optional</b>. %2$s</string>
+    <string name="warning_delete_default_bookshelf">This is your default bookshelf. If you delete it, the new default will be: %1$s.\nUse “%2$s” from the main menu to choose a different shelf.</string>
 </resources>

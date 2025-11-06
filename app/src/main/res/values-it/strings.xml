@@ -698,11 +698,11 @@
     <string name="vldt_blank_or_valid_uri_with_1s_param_required">Valore vuoto o URL «https» valido con un singolo segnaposto id «%s» richiesto</string>
     <string name="vldt_read_start_after_end">Data di inizio lettura successiva alla data di fine lettura</string>
     <string name="vldt_real_expected_for_x">È previsto un valore reale per «%1$s»</string>
+    <string name="warning_cannot_delete_only_bookshelf">Hai solo una libreria, quindi non puoi eliminarla.</string>
     <string name="warning_already_in_list">Già nella lista!</string>
     <string name="warning_backup_request">Vuoi effettuare il backup del database nella scheda SD?</string>
     <string name="warning_book_not_always_found">Non tutti i siti hanno restituito dati validi.</string>
     <string name="warning_book_not_found">Impossibile trovare il libro specificato.</string>
-    <string name="warning_cannot_delete_1st_bs">La prima libreria non può essere eliminata.</string>
     <string name="warning_enable_at_least_1_website">Abilita almeno un sito Web per ogni categoria.</string>
     <string name="warning_export_contains_no_data">Non c’era niente da esportare.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se si indica il giorno, occorre indicare anche mese ed anno.</string>

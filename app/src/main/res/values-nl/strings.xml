@@ -719,11 +719,11 @@
     <string name="vldt_read_start_after_end">De begindatum moet vóór de einddatum liggen</string>
     <string name="vldt_real_author_must_be_valid">Moet leeg zijn of een bestaande auteur zijn</string>
     <string name="vldt_real_expected_for_x">Verwachtte een reëele waarde voor „%1$s”</string>
+    <string name="warning_cannot_delete_only_bookshelf">Je hebt maar één boekenplank, dus je kunt die niet verwijderen.</string>
     <string name="warning_already_in_list">Al in de lijst!</string>
     <string name="warning_backup_request">Wil je een back-up van uw database op uw SD kaart maken?</string>
     <string name="warning_book_not_always_found">Niet alle sites hebben geldige gegevens geretourneerd.</string>
     <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden.</string>
-    <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet worden verwijderd.</string>
     <string name="warning_enable_at_least_1_website">Schakel ten minste één website in voor elke categorie.</string>
     <string name="warning_export_contains_no_data">Er viel niets te exporteren.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Als de dag is gespecificeerd dan moet ook de maand en het jaar ingevuld worden.</string>
