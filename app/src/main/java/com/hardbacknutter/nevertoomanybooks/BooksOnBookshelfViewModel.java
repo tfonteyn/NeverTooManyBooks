@@ -385,7 +385,7 @@ public class BooksOnBookshelfViewModel
         // Set the last/preferred bookshelf if not explicitly set above
         // or use the default == first start of the app
         if (bookshelf == null) {
-            bookshelf = bookshelfDao.getCurrent().or(bookshelfDao::getDefault).orElseThrow();
+            bookshelf = bookshelfDao.getCurrent().orElseGet(bookshelfDao::getDefault);
         }
     }
 
@@ -488,7 +488,7 @@ public class BooksOnBookshelfViewModel
         // fallback if no selection found
         Integer defaultPosition = null;
 
-        final long defBookshelfId = bookshelfDao.getDefault().map(Bookshelf::getId).orElseThrow();
+        final long defBookshelfId = bookshelfDao.getDefault().getId();
         for (int i = 0; i < bookshelfList.size(); i++) {
             final long id = bookshelfList.get(i).getId();
             // find the position of the default shelf.
@@ -1446,6 +1446,8 @@ public class BooksOnBookshelfViewModel
 
     void onManageBookshelvesFinished(@NonNull final Context context,
                                      final long bookshelfId) {
+        // If it's a valid bookshelf id and different from the currently displayed shelf,
+        // store it, and force a rebuild
         if (bookshelfId != 0 && bookshelfId != getBookshelf().getId()) {
             selectBookshelf(context, bookshelfId);
             forceRebuildInOnResume = true;

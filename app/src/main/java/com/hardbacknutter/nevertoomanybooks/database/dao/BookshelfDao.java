@@ -44,7 +44,7 @@ public interface BookshelfDao {
      * @return bookshelf
      */
     @NonNull
-    Optional<Bookshelf> getDefault();
+    Bookshelf getDefault();
 
     /**
      * Get the user's preferred/current {@link Bookshelf}.

@@ -51,6 +51,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
+@SuppressWarnings("MissingJavadoc")
 public class BooklistBuilderTest
         extends BaseDBTest {
 
@@ -70,7 +71,7 @@ public class BooklistBuilderTest
         serviceLocator.getStyles().insertOrUpdate(context, style);
 
         bookshelfDao = serviceLocator.getBookshelfDao();
-        bookshelf = bookshelfDao.getDefault().orElseThrow();
+        bookshelf = bookshelfDao.getDefault();
         bookshelf.setStyle(context, style);
         bookshelfDao.update(context, bookshelf, Locale.UK);
     }

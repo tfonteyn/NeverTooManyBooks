@@ -132,6 +132,7 @@ public class BookshelfCoder
             }
         }
 
-        return bookshelfDao.getCurrent().or(bookshelfDao::getDefault);
+        final Optional<Bookshelf> current = bookshelfDao.getCurrent();
+        return current.isPresent() ? current : Optional.of(bookshelfDao.getDefault());
     }
 }

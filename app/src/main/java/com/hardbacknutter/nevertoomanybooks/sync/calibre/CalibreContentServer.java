@@ -88,7 +88,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpFactory;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -690,9 +689,8 @@ public final class CalibreContentServer
 
         // use the current bookshelf (or default if not set)
         final long currentBookshelfId = bookshelfDao.getCurrent()
-                                                    .or(bookshelfDao::getDefault)
-                                                    .map(Bookshelf::getId)
-                                                    .orElseThrow();
+                                                    .orElseGet(bookshelfDao::getDefault)
+                                                    .getId();
 
         final String url = String.format(GET_LIBRARY_INFO, serverUri);
         final JSONObject source = new JSONObject(fetch(url, BUFFER_SMALL));

@@ -132,7 +132,7 @@ public class FragmentHostActivity
             });
 
             manageBookshelvesLauncher = registerForActivityResult(
-                    new EditBookshelvesContract(), optBookshelfId -> {
+                    new EditBookshelvesContract(), ignored -> {
                     });
 
             editSettingsLauncher = registerForActivityResult(

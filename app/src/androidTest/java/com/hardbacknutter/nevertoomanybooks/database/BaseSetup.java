@@ -85,7 +85,7 @@ public abstract class BaseSetup
         bookshelfArray = new Bookshelf[TestConstants.BOOKSHELF.length];
 
         final Style defStyle = serviceLocator.getStyles().getDefault();
-        bookshelfArray[0] = serviceLocator.getBookshelfDao().getDefault().orElseThrow();
+        bookshelfArray[0] = serviceLocator.getBookshelfDao().getDefault();
         for (int i = 1; i < TestConstants.BOOKSHELF.length; i++) {
             bookshelfArray[i] = new Bookshelf(TestConstants.PUBLISHER[i], defStyle);
         }

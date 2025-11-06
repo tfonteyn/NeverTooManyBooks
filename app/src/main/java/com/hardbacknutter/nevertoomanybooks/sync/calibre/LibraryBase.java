@@ -139,10 +139,7 @@ abstract class LibraryBase
 
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
-        final Bookshelf current = bookshelfDao
-                .getCurrent()
-                .or(bookshelfDao::getDefault)
-                .orElseThrow();
+        final Bookshelf current = bookshelfDao.getCurrent().orElseGet(bookshelfDao::getDefault);
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         final Bookshelf bookshelf = new Bookshelf(name, current.getStyle());

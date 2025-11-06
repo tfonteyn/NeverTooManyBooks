@@ -772,8 +772,7 @@ public class CalibreContentServerReader
         final Bookshelf mappedBookshelf = bookshelfDao
                 .getBookshelf(context, library.getMappedBookshelfId())
                 .or(bookshelfDao::getCurrent)
-                .or(bookshelfDao::getDefault)
-                .orElseThrow();
+                .orElseGet(bookshelfDao::getDefault);
 
         if (bookShelves.isEmpty()) {
             // new book

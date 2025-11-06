@@ -81,8 +81,7 @@ public class CalibreLibraryCoder
         final Bookshelf libraryBookshelf = bookshelfDao
                 .getBookshelf(context, library.getMappedBookshelfId())
                 .or(bookshelfDao::getCurrent)
-                .or(bookshelfDao::getDefault)
-                .orElseThrow();
+                .orElseGet(bookshelfDao::getDefault);
 
         // We could just encode a reference to the bookshelf,
         // but the space-saving would be minuscule.
