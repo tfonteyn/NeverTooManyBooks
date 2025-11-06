@@ -386,7 +386,7 @@ public class BooksOnBookshelfViewModel
         // or use the default == first start of the app
         if (bookshelf == null) {
             bookshelf = bookshelfDao.getBookshelf(context,
-                                                  Bookshelf.USER_DEFAULT,
+                                                  Bookshelf.CURRENT,
                                                   Bookshelf.HARD_DEFAULT)
                                     .orElseThrow();
         }
@@ -518,10 +518,10 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Load and set the desired {@link Bookshelf}.
+     * Load and set the desired/current {@link Bookshelf}.
      *
      * @param context     Current context
-     * @param bookshelfId of desired {@link Bookshelf}
+     * @param bookshelfId of the {@link Bookshelf}
      */
     void selectBookshelf(@NonNull final Context context,
                          final long bookshelfId) {
@@ -529,10 +529,10 @@ public class BooksOnBookshelfViewModel
 
         bookshelf = bookshelfDao.findById(bookshelfId).orElseGet(
                 () -> bookshelfDao.getBookshelf(context,
-                                                Bookshelf.USER_DEFAULT,
+                                                Bookshelf.CURRENT,
                                                 Bookshelf.ALL_BOOKS)
                                   .orElseThrow());
-        bookshelf.setAsPreferred(context);
+        bookshelf.setAsCurrent(context);
 
         if (previousBookshelfId != bookshelf.getId()) {
             currentLayout = null;
@@ -546,7 +546,7 @@ public class BooksOnBookshelfViewModel
     private boolean reloadSelectedBookshelf(@NonNull final Context context) {
 
         final Bookshelf newBookshelf = bookshelfDao
-                .getBookshelf(context, Bookshelf.USER_DEFAULT, Bookshelf.ALL_BOOKS)
+                .getBookshelf(context, Bookshelf.CURRENT, Bookshelf.ALL_BOOKS)
                 .orElseThrow();
         if (newBookshelf.equals(bookshelf)) {
             return false;
@@ -584,7 +584,7 @@ public class BooksOnBookshelfViewModel
         // set as the global default.
         stylesHelper.setDefault(style.getUuid());
         // save the new bookshelf/style combination
-        bookshelf.setAsPreferred(context);
+        bookshelf.setAsCurrent(context);
         bookshelf.setStyle(context, style);
         currentLayout = null;
     }

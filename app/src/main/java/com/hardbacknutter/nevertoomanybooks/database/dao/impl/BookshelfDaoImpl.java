@@ -137,7 +137,7 @@ public class BookshelfDaoImpl
     }
 
     @NonNull
-    private Optional<Bookshelf> getPreferredBookshelf(@NonNull final Context context) {
+    private Optional<Bookshelf> getCurrent(@NonNull final Context context) {
         final String name = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getString(PK_BOOKSHELF_CURRENT, null);
         if (name != null && !name.isEmpty()) {
@@ -147,8 +147,8 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public void setAsPreferred(@NonNull final Context context,
-                               @NonNull final Bookshelf bookshelf) {
+    public void setCurrent(@NonNull final Context context,
+                           @NonNull final Bookshelf bookshelf) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
                          .putString(PK_BOOKSHELF_CURRENT, bookshelf.getName())
@@ -162,8 +162,8 @@ public class BookshelfDaoImpl
             return Optional.empty();
         } else if (id == Bookshelf.ALL_BOOKS) {
             return getAllBooksBookshelf(context);
-        } else if (id == Bookshelf.USER_DEFAULT) {
-            return getPreferredBookshelf(context);
+        } else if (id == Bookshelf.CURRENT) {
+            return getCurrent(context);
         } else {
             return findById(id);
         }

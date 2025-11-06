@@ -109,7 +109,7 @@ public class BookshelfCoder
 
     /**
      * Decode a {@link Bookshelf} referenced by {@link DBKey.BOOKSHELF#NAME}.
-     * If not found, the {@link Bookshelf#USER_DEFAULT} bookshelf is returned.
+     * If not found, the {@link Bookshelf#CURRENT} bookshelf is returned.
      *
      * @param data json object
      *
@@ -132,6 +132,6 @@ public class BookshelfCoder
             }
         }
 
-        return bookshelfDao.getBookshelf(context, Bookshelf.USER_DEFAULT, Bookshelf.HARD_DEFAULT);
+        return bookshelfDao.getBookshelf(context, Bookshelf.CURRENT, Bookshelf.HARD_DEFAULT);
     }
 }

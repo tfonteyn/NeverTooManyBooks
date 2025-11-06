@@ -38,13 +38,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 public interface BookshelfDao {
 
     /**
-     * Set the given {@link Bookshelf} as the current/preferred.
+     * Set the given {@link Bookshelf} as the current.
      *
      * @param context   Current context
      * @param bookshelf to set
      */
-    void setAsPreferred(@NonNull Context context,
-                        @NonNull Bookshelf bookshelf);
+    void setCurrent(@NonNull Context context,
+                    @NonNull Bookshelf bookshelf);
 
     /**
      * Get the specified bookshelf.

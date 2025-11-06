@@ -65,7 +65,7 @@ public class StripInfoBookshelfMappingFragment
         final Context context = getContext();
         //noinspection DataFlowIssue
         final long id = ServiceLocator.getInstance().getBookshelfDao()
-                                      .getBookshelf(context, Bookshelf.USER_DEFAULT)
+                                      .getBookshelf(context, Bookshelf.CURRENT)
                                       .map(Bookshelf::getId)
                                       .orElse((long) Bookshelf.HARD_DEFAULT);
         final Pair<CharSequence[], CharSequence[]> values = getBookshelves();

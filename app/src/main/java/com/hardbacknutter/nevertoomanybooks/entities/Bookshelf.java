@@ -85,9 +85,9 @@ public class Bookshelf
 
     /**
      * The user preferred shelf as stored in preferences.
-     * WARNING: this can be either a normal bookshelf, ot the "All Books" virtual shelf.
+     * WARNING: this can be either a normal bookshelf, or the "All Books" virtual shelf.
      */
-    public static final int USER_DEFAULT = -2;
+    public static final int CURRENT = -2;
 
     @SuppressWarnings("FieldNotUsedInToString")
     private final List<PFilter<?>> filters = new ArrayList<>();
@@ -178,12 +178,12 @@ public class Bookshelf
     }
 
     /**
-     * Set this bookshelf as the current/preferred.
+     * Set this bookshelf as the current.
      *
      * @param context Current context
      */
-    public void setAsPreferred(@NonNull final Context context) {
-        ServiceLocator.getInstance().getBookshelfDao().setAsPreferred(context, this);
+    public void setAsCurrent(@NonNull final Context context) {
+        ServiceLocator.getInstance().getBookshelfDao().setCurrent(context, this);
     }
 
     @Override
