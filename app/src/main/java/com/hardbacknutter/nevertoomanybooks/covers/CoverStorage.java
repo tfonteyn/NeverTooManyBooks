@@ -87,7 +87,7 @@ public class CoverStorage {
     /** The minimum side (height/width) an image must be to be considered valid; in pixels. */
     private static final int MIN_VALID_IMAGE_SIDE = 10;
     /** The minimum size an image file on disk must be to be considered valid; in bytes. */
-    private static final int MIN_VALID_IMAGE_FILE_SIZE = 2048;
+    private static final int MIN_VALID_IMAGE_FILE_SIZE = 1024;
     private static final String EXT_JPG = ".jpg";
     private static final String EXT_PNG = ".png";
     /** Compression percentage is actually ignored as we're using PNG. */
