@@ -769,11 +769,11 @@ public class CalibreContentServerReader
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
         // Add the physical library mapped Bookshelf
         //noinspection DataFlowIssue
-        final Bookshelf mappedBookshelf = bookshelfDao.getBookshelf(context,
-                                                                    library.getMappedBookshelfId(),
-                                                                    Bookshelf.CURRENT,
-                                                                    Bookshelf.HARD_DEFAULT)
-                                                      .orElseThrow();
+        final Bookshelf mappedBookshelf = bookshelfDao
+                .getBookshelf(context, library.getMappedBookshelfId())
+                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.CURRENT))
+                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
+                .orElseThrow();
 
         if (bookShelves.isEmpty()) {
             // new book
@@ -800,9 +800,9 @@ public class CalibreContentServerReader
                        // it will always be present of course.
                        .ifPresent(vlib -> {
                            final Bookshelf vlibMappedBookshelf = bookshelfDao
-                                   .getBookshelf(context,
-                                                 vlib.getMappedBookshelfId(),
-                                                 library.getMappedBookshelfId())
+                                   .getBookshelf(context, vlib.getMappedBookshelfId())
+                                   .or(() -> bookshelfDao.getBookshelf(context,
+                                                                       library.getMappedBookshelfId()))
                                    .orElseThrow();
 
                            // add the vlib mapped bookshelf if not already present.

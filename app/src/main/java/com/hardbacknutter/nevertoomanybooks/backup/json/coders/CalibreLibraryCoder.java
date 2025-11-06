@@ -79,10 +79,9 @@ public class CalibreLibraryCoder
         data.put(DBKey.CALIBRE.LIBRARY_LAST_SYNC_DATE__UTC, library.getLastSyncDateAsString());
 
         final Bookshelf libraryBookshelf = bookshelfDao
-                .getBookshelf(context,
-                              library.getMappedBookshelfId(),
-                              Bookshelf.CURRENT,
-                              Bookshelf.HARD_DEFAULT)
+                .getBookshelf(context, library.getMappedBookshelfId())
+                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.CURRENT))
+                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
                 .orElseThrow();
 
         // We could just encode a reference to the bookshelf,

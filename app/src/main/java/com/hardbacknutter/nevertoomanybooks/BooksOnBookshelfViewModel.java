@@ -385,10 +385,10 @@ public class BooksOnBookshelfViewModel
         // Set the last/preferred bookshelf if not explicitly set above
         // or use the default == first start of the app
         if (bookshelf == null) {
-            bookshelf = bookshelfDao.getBookshelf(context,
-                                                  Bookshelf.CURRENT,
-                                                  Bookshelf.HARD_DEFAULT)
-                                    .orElseThrow();
+            bookshelf = bookshelfDao
+                    .getBookshelf(context, Bookshelf.CURRENT)
+                    .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
+                    .orElseThrow();
         }
     }
 
@@ -528,10 +528,10 @@ public class BooksOnBookshelfViewModel
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
         bookshelf = bookshelfDao.findById(bookshelfId).orElseGet(
-                () -> bookshelfDao.getBookshelf(context,
-                                                Bookshelf.CURRENT,
-                                                Bookshelf.ALL_BOOKS)
-                                  .orElseThrow());
+                () -> bookshelfDao
+                        .getBookshelf(context, Bookshelf.CURRENT)
+                        .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
+                        .orElseThrow());
         bookshelf.setAsCurrent(context);
 
         if (previousBookshelfId != bookshelf.getId()) {
@@ -546,7 +546,8 @@ public class BooksOnBookshelfViewModel
     private boolean reloadSelectedBookshelf(@NonNull final Context context) {
 
         final Bookshelf newBookshelf = bookshelfDao
-                .getBookshelf(context, Bookshelf.CURRENT, Bookshelf.ALL_BOOKS)
+                .getBookshelf(context, Bookshelf.CURRENT)
+                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
                 .orElseThrow();
         if (newBookshelf.equals(bookshelf)) {
             return false;

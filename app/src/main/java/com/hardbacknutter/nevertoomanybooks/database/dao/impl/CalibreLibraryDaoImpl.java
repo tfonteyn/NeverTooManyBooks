@@ -137,11 +137,11 @@ public class CalibreLibraryDaoImpl
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // using the mapped bookshelf-if, lookup the actual Bookshelf (with fallbacks)
-        final Bookshelf libBookshelf = bookshelfDao.getBookshelf(context,
-                                                                 library.getMappedBookshelfId(),
-                                                                 Bookshelf.CURRENT,
-                                                                 Bookshelf.HARD_DEFAULT)
-                                                   .orElseThrow();
+        final Bookshelf libBookshelf = bookshelfDao
+                .getBookshelf(context, library.getMappedBookshelfId())
+                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.CURRENT))
+                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
+                .orElseThrow();
         // and update the id
         library.setMappedBookshelf(libBookshelf.getId());
 

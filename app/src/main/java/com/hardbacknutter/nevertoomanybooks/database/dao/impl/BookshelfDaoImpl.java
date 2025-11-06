@@ -170,18 +170,6 @@ public class BookshelfDaoImpl
     }
 
     @NonNull
-    public Optional<Bookshelf> getBookshelf(@NonNull final Context context,
-                                            @NonNull final long... ids) {
-        for (final long id : ids) {
-            final Optional<Bookshelf> bookshelf = getBookshelf(context, id);
-            if (bookshelf.isPresent()) {
-                return bookshelf;
-            }
-        }
-        return Optional.empty();
-    }
-
-    @NonNull
     @Override
     public Optional<Bookshelf> findById(@IntRange(from = 1) final long id) {
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_ID, new String[]{String.valueOf(id)})) {

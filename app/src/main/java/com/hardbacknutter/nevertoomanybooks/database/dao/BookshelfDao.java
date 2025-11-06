@@ -59,18 +59,6 @@ public interface BookshelfDao {
                                      long id);
 
     /**
-     * Get the first of the specified bookshelf id's found.
-     *
-     * @param context Current context
-     * @param ids     list of bookshelves to get in order of preference
-     *
-     * @return the bookshelf
-     */
-    @NonNull
-    Optional<Bookshelf> getBookshelf(@NonNull Context context,
-                                     @NonNull long... ids);
-
-    /**
      * Find a {@link Bookshelf} with the given name.
      *
      * @param name of bookshelf to find
