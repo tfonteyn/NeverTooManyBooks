@@ -387,7 +387,7 @@ public class BooksOnBookshelfViewModel
         if (bookshelf == null) {
             bookshelf = bookshelfDao
                     .getCurrent(context)
-                    .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
+                    .or(() -> bookshelfDao.getDefault(context))
                     .orElseThrow();
         }
     }

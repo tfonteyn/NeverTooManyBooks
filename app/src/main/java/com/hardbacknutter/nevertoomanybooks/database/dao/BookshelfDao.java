@@ -38,6 +38,17 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 public interface BookshelfDao {
 
     /**
+     * Get the user's default {@link Bookshelf}.
+     * Do not confuse this with the currently displayed shelf from {@link #getCurrent(Context)}.
+     *
+     * @param context Current context
+     *
+     * @return bookshelf
+     */
+    @NonNull
+    Optional<Bookshelf> getDefault(@NonNull Context context);
+
+    /**
      * Get the user's preferred/current {@link Bookshelf}.
      *
      * @param context Current context

@@ -57,7 +57,7 @@ public class DomainExpressionsTest
         serviceLocator.getStyles().insertOrUpdate(context, style);
 
         bookshelfDao = serviceLocator.getBookshelfDao();
-        bookshelf = bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT)
+        bookshelf = bookshelfDao.getDefault(context)
                                 .orElseThrow();
         bookshelf.setStyle(context, style);
         bookshelfDao.update(context, bookshelf, Locale.UK);

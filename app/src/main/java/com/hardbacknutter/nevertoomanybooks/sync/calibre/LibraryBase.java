@@ -141,7 +141,7 @@ abstract class LibraryBase
 
         final Bookshelf current = bookshelfDao
                 .getCurrent(context)
-                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.HARD_DEFAULT))
+                .or(() -> bookshelfDao.getDefault(context))
                 .orElseThrow();
 
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);

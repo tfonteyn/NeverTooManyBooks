@@ -136,6 +136,12 @@ public class BookshelfDaoImpl
         return Optional.of(bookshelf);
     }
 
+    @NonNull
+    @Override
+    public Optional<Bookshelf> getDefault(@NonNull final Context context) {
+        return getBookshelf(context, Bookshelf.HARD_DEFAULT);
+    }
+
     @Override
     @NonNull
     public Optional<Bookshelf> getCurrent(@NonNull final Context context) {
