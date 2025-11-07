@@ -1446,6 +1446,9 @@ public class BooksOnBookshelfViewModel
 
     void onManageBookshelvesFinished(@NonNull final Context context,
                                      final long bookshelfId) {
+        // Always update the list of bookshelves
+        reloadBookshelfList(context);
+
         // If it's a valid bookshelf id and different from the currently displayed shelf,
         // store it, and force a rebuild.
         // This also covers the situation where the current one was deleted.
