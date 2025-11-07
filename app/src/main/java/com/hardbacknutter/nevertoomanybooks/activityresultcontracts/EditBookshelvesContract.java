@@ -76,12 +76,13 @@ public class EditBookshelvesContract
             return Optional.empty();
         }
 
-        // the last edited/inserted shelf
+        // the selected shelf, can be {@code 0} for none.
         long id = intent.getLongExtra(DBKey.FK_BOOKSHELF, 0);
         if (id == 0) {
-            // paranoia...
+            // easier to deal with it here
             id = ServiceLocator.getInstance().getBookshelfDao().getDefault().getId();
         }
+        // NEVER {@code 0}
         return Optional.of(id);
     }
 }

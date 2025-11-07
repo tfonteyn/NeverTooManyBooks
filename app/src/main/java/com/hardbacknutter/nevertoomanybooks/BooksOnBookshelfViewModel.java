@@ -1447,8 +1447,11 @@ public class BooksOnBookshelfViewModel
     void onManageBookshelvesFinished(@NonNull final Context context,
                                      final long bookshelfId) {
         // If it's a valid bookshelf id and different from the currently displayed shelf,
-        // store it, and force a rebuild
-        if (bookshelfId != 0 && bookshelfId != getBookshelf().getId()) {
+        // store it, and force a rebuild.
+        // This also covers the situation where the current one was deleted.
+        // i.e. #getBookshelf() will actually be the deleted one,
+        // but it will immediately be replaced in #selectBookshelf(..) with the new one
+        if (bookshelfId != getBookshelf().getId()) {
             selectBookshelf(context, bookshelfId);
             forceRebuildInOnResume = true;
         }

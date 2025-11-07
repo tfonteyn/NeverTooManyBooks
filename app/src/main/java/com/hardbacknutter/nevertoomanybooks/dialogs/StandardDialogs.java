@@ -239,7 +239,11 @@ public final class StandardDialogs {
 
     /**
      * Ask the user to confirm a delete.
-     *
+     * <ul>
+     *   <li>Prevents deleting when it's the only bookshelf present.</li>
+     *   <li>Warns and auto-promotes the 'oldest' bookshelf when the one
+     *   to delete is the current default.</li>
+     * </ul>
      * @param context   Current context
      * @param bookshelf Bookshelf we're about to delete
      * @param onConfirm Runnable to execute if the user clicks the confirm button.

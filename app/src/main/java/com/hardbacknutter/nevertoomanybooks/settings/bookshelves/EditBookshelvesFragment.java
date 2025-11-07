@@ -320,7 +320,7 @@ public class EditBookshelvesFragment
          *
          * @param context         Current context
          * @param columnCount     from the grid layout
-         * @param items   to display
+         * @param items           to display
          * @param positionHandler Proxy between adapter and ViewModel.
          */
         BookshelfAdapter(@NonNull final Context context,
@@ -405,8 +405,7 @@ public class EditBookshelvesFragment
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             return EditBookshelvesFragment.this.onMenuItemSelected(vm.getSelectedPosition(),
-                                                                   menuItem.getItemId()
-            );
+                                                                   menuItem.getItemId());
         }
     }
 }

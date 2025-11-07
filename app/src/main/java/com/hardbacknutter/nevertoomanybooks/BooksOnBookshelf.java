@@ -454,6 +454,8 @@ public class BooksOnBookshelf
                 new EditStyleContract(), o -> o.ifPresent(
                         data -> vm.onEditStyleFinished(this, data)));
 
+        // The return value will in fact always be present
+        // and guaranteed to be a valid/existing bookshelf id
         manageBookshelvesLauncher = registerForActivityResult(
                 new EditBookshelvesContract(), o -> o.ifPresent(
                         id -> vm.onManageBookshelvesFinished(this, id)));
@@ -992,7 +994,9 @@ public class BooksOnBookshelf
         fabMenu.getItem(R.id.fab4_search_external_id)
                .ifPresent(item -> item.setEnabled(EditBookFragment.isShowExternalIdTab(this)));
 
-        // Update the list of bookshelves
+        // Always update the list of bookshelves
+        // This will be redundant if the user just came back from
+        // managing the bookshelf list, but we cannot risk not doing it.
         vm.reloadBookshelfList(this);
         bookshelfAdapter.notifyDataSetChanged();
         // and select the current shelf.
@@ -2302,6 +2306,7 @@ public class BooksOnBookshelf
 
             } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {
                 final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
+                // We're handling default/only bookshelf situations in the dialog method
                 StandardDialogs.deleteBookshelf(context, bookshelf,
                                                 () -> vm.delete(context, bookshelf));
                 return true;

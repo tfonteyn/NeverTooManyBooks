@@ -155,7 +155,7 @@ public class BookshelfDaoImpl
         }
         // We should never get here... flw.
         // But if we do, find the smallest id (i.e. oldest added).
-        // We trust we will ALWAYS have at least one shelf.
+        // We trust we will ALWAYS have at least one shelf. If not, then we are in deep trouble.
         id = getAll().stream()
                      .map(Bookshelf::getId)
                      .sorted()
