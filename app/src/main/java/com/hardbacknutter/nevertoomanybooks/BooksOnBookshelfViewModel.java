@@ -525,11 +525,12 @@ public class BooksOnBookshelfViewModel
                          final long bookshelfId) {
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
-        bookshelf = bookshelfDao.findById(bookshelfId).orElseGet(
-                () -> bookshelfDao
-                        .getCurrent()
-                        .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
-                        .orElseThrow());
+        // Note the fallback is to the Bookshelf.ALL_BOOKS and not the default one.
+        bookshelf = bookshelfDao
+                .findById(bookshelfId)
+                .or(() -> bookshelfDao.getCurrent())
+                .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
+                .orElseThrow();
         ServiceLocator.getInstance().getBookshelfDao().setCurrent(bookshelf);
 
         if (previousBookshelfId != bookshelf.getId()) {
@@ -540,18 +541,16 @@ public class BooksOnBookshelfViewModel
         }
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    private boolean reloadSelectedBookshelf(@NonNull final Context context) {
-
+    private void reloadSelectedBookshelf(@NonNull final Context context) {
+        // Note the fallback is to the Bookshelf.ALL_BOOKS and not the default one.
         final Bookshelf newBookshelf = bookshelfDao
                 .getCurrent()
                 .or(() -> bookshelfDao.getBookshelf(context, Bookshelf.ALL_BOOKS))
                 .orElseThrow();
         if (newBookshelf.equals(bookshelf)) {
-            return false;
+            return;
         }
         bookshelf = newBookshelf;
-        return true;
     }
 
     /**

@@ -542,7 +542,8 @@
     <string name="tip_book_list">Tapping on a book will show you the details of the book. A long-press on an item in the list will give you more options.</string>
     <!-- Help text shown in a dialog. Shown on the "Settings/Websites" screen. -->
     <string name="tip_configure_sites">Individual websites can be configured using the settings-icon at the top of the screen.</string>
-
+    <!-- Help text shown in a dialog. Shown on the "Bookshelves" management screen. -->
+    <string name="tip_bookshelf_management">The highlighted line indicates your current bookshelf.\n\nThe default bookshelf (marked with *) will be used automatically if your current one isn’t available for any reason.</string>
     <!-- Help text shown in a dialog. The dialog title and explanations for the icons used. -->
     <string name="tip_authors_works">Icons used</string>
     <!-- Help text shown in a dialog. See "tip_authors_works": shown next to the Book icon -->
@@ -963,6 +964,11 @@
     -->
     <string name="confirm_delete_bookshelf_from_x_books">Delete the bookshelf “%1$s”?\n\nIt will be removed from %2$s. The books themselves will not be deleted. They will still be present on any other shelves, or on the “%3$s” shelf.</string>
 
+    <!-- Param 1: Bookshelf name
+         Param 2: the menu title from "lbl_bookshelves": Bookshelves
+    -->
+    <string name="warning_delete_default_bookshelf">This is your default bookshelf. If you delete it, the new default will become: “%1$s”.\n\nUse “%2$s” from the main menu to choose a different default bookshelf.</string>
+
     <!-- Param 1: Series name
          Param 2: content of plural "n_books", e.g.: "It will be removed from 5 books."
     -->
@@ -1132,6 +1138,9 @@
 
     <!-- Menu option -->
     <string name="action_restore_default_identifiers">Restore the default Identifiers</string>
+
+    <!-- Menu option -->
+    <string name="action_set_as_default">Set as default</string>
 
     <!-- endregion -->
     <!-- region ========== Toolbar, Activity and Dialog titles. -->
@@ -2277,5 +2286,4 @@
     -->
     <string name="info_registration_benefits"
             translatable="false">This feature benefits from registration at %1$s.\nThis is <b>optional</b>. %2$s</string>
-    <string name="warning_delete_default_bookshelf">This is your default bookshelf. If you delete it, the new default will be: %1$s.\nUse “%2$s” from the main menu to choose a different shelf.</string>
 </resources>

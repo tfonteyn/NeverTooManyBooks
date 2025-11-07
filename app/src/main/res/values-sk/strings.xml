@@ -886,4 +886,8 @@
     <string name="lbl_permission_request">Žiadosť o povolenie</string>
     <string name="pt_barcode_zoom_control">Ovládanie priblíženia/oddialenia</string>
     <string name="pt_barcode_sounds">Zvuky</string>
+    <string name="warning_delete_default_bookshelf">Toto je tvoja predvolená polica. Ak ju odstrániš, novou predvolenou bude: „%1$s“.\n\nPomocou „%2$s“ v hlavnom menu si môžeš vybrať inú predvolenú policu.</string>
+    <string name="action_set_as_default">Nastaviť ako predvolenú</string>
+    <string name="tip_bookshelf_management">Zvýraznený riadok ukazuje tvoju aktuálnu policu.\n\nPredvolená polica (označená hviezdičkou *) sa použije automaticky, ak aktuálna z akéhokoľvek dôvodu nie je dostupná.</string>
+
 </resources>

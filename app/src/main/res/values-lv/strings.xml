@@ -222,4 +222,8 @@
     <string name="warning_image_invalid">Nederīgs vai trūkstošs attēls.</string>
     <string name="site_description_polish">Poļu</string>
     <string name="warning_cannot_delete_only_bookshelf">Tev ir tikai viens grāmatu plaukts, tāpēc to nevar izdzēst.</string>
+    <string name="warning_delete_default_bookshelf">Šis ir tavs noklusējuma grāmatplaukts. Ja tu to izdzēsīsi, jaunais noklusējuma plaukts būs: “%1$s”.\n\nIzmanto “%2$s” galvenajā izvēlnē, lai izvēlētos citu noklusējuma grāmatplauktu.</string>
+    <string name="action_set_as_default">Iestatīt kā noklusējuma</string>
+    <string name="tip_bookshelf_management">Izceltā rinda norāda tavu pašreizējo grāmatplauktu.\n\nNoklusējuma grāmatplaukts (atzīmēts ar *) tiks automātiski izmantots, ja pašreizējais nav pieejams jebkāda iemesla dēļ.</string>
+
 </resources>

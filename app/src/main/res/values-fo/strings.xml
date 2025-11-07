@@ -141,4 +141,8 @@
     <string name="action_remove_all">Fjern alt</string>
     <string name="site_description_polish">Pólskt</string>
     <string name="warning_cannot_delete_only_bookshelf">Tú hevur bara eina bókahillu, so hana ber ikki at sletta.</string>
+    <string name="warning_delete_default_bookshelf">Hetta er tín sjálvvalda bókahilla. Um tú strikar hana, verður nýggja sjálvvalda: “%1$s”.\n\nBrúk “%2$s” í høvuðsvalmyndini fyri at velja aðra sjálvvalda bókahillu.</string>
+    <string name="action_set_as_default">Set sum sjálvvalda</string>
+    <string name="tip_bookshelf_management">Línjan, sum er merkt, vísir tín núverandi bókahillu.\n\nSjálvvalda bókahillan (merkt við *) verður nýtt sjálvvirkandi, um tann núverandi av einhvørjum orsøkum ikki er tøk.</string>
+
 </resources>

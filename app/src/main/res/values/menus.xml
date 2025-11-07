@@ -48,6 +48,8 @@
     <integer name="MENU_ORDER_DUPLICATE">510</integer>
     <integer name="MENU_ORDER_DELETE">520</integer>
 
+    <integer name="MENU_ORDER_MENU_SET_DEFAULT">530</integer>
+
     <integer name="MENU_ORDER_ISBN_VALIDITY">550</integer>
 
     <integer name="MENU_ORDER_SET_BOOKSHELVES">600</integer>
@@ -112,6 +114,9 @@
     <!-- An option of the SearchBookUpdatesFragment option menu to quickly
          flip all fields to "skip". -->
     <item name="MENU_UPDATE_FROM_INTERNET_SKIP_ALL"
+          type="id" />
+
+    <item name="MENU_SET_DEFAULT"
           type="id" />
 
     <item name="MENU_SET_BOOKSHELVES"

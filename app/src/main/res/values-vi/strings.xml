@@ -872,4 +872,8 @@
     <string name="lbl_permission_request">Yêu cầu quyền</string>
     <string name="pt_barcode_zoom_control">Điều khiển thu phóng</string>
     <string name="pt_barcode_sounds">Âm thanh</string>
+    <string name="warning_delete_default_bookshelf">Đây là giá sách mặc định của bạn. Nếu bạn xóa nó, giá sách mặc định mới sẽ là: “%1$s”.\n\nDùng “%2$s” trong menu chính để chọn giá sách mặc định khác.</string>
+    <string name="action_set_as_default">Đặt làm mặc định</string>
+    <string name="tip_bookshelf_management">Dòng được tô sáng cho biết giá sách hiện tại của bạn.\n\nGiá sách mặc định (được đánh dấu bằng *) sẽ được dùng tự động nếu giá sách hiện tại không khả dụng vì bất kỳ lý do nào.</string>
+
 </resources>

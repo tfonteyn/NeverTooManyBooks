@@ -880,4 +880,8 @@ A question mark is written as the character semicolon: ';'
     <string name="lbl_permission_request">Αίτημα άδειας</string>
     <string name="pt_barcode_zoom_control">Έλεγχος εστίασης</string>
     <string name="pt_barcode_sounds">Ήχοι</string>
+    <string name="warning_delete_default_bookshelf">Αυτό είναι το προεπιλεγμένο ράφι σου. Αν το διαγράψεις, το νέο προεπιλεγμένο θα γίνει: «%1$s».\n\nΧρησιμοποίησε το «%2$s» από το κύριο μενού για να διαλέξεις άλλο προεπιλεγμένο ράφι.</string>
+    <string name="action_set_as_default">Ορίσε ως προεπιλεγμένο</string>
+    <string name="tip_bookshelf_management">Η επισημασμένη γραμμή δείχνει τη τρέχουσα βιβλιοθήκη σου.\n\nΗ προεπιλεγμένη βιβλιοθήκη (με * δίπλα) θα χρησιμοποιηθεί αυτόματα αν η τρέχουσα δεν είναι διαθέσιμη για οποιονδήποτε λόγο.</string>
+
 </resources>

@@ -897,4 +897,8 @@
     <string name="lbl_permission_request">Запрос разрешений</string>
     <string name="pt_barcode_zoom_control">Зум</string>
     <string name="pt_barcode_sounds">Звуки</string>
+    <string name="warning_delete_default_bookshelf">Это твоя полка по умолчанию. Если ты её удалишь, новой полкой по умолчанию станет: «%1$s».\n\nИспользуй «%2$s» в главном меню, чтобы выбрать другую полку по умолчанию.</string>
+    <string name="action_set_as_default">Сделать по умолчанию</string>
+    <string name="tip_bookshelf_management">Выделенная строка показывает твою текущую полку.\n\nПолка по умолчанию (отмеченная *) будет использоваться автоматически, если текущая по какой-либо причине недоступна.</string>
+
 </resources>

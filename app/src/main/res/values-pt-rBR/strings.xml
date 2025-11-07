@@ -263,4 +263,8 @@
         <item quantity="other">Há %1$d códigos ISBN inseridos anteriormente. Você gostaria de iniciar as buscas por eles ou eles devem ser removidos?</item>
     </plurals>
     <string name="site_description_polish">Polonês</string>
+    <string name="warning_delete_default_bookshelf">Esta é a sua estante padrão. Se você apagar, a nova padrão será: “%1$s”.\n\nUse “%2$s” no menu principal para escolher outra estante padrão.</string>
+    <string name="action_set_as_default">Definir como padrão</string>
+    <string name="tip_bookshelf_management">A linha destacada mostra a sua estante atual.\n\nA estante padrão (marcada com *) será usada automaticamente se a atual não estiver disponível por qualquer motivo.</string>
+
 </resources>

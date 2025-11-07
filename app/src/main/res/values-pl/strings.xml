@@ -889,4 +889,8 @@
     <string name="lbl_permission_request">Prośba o pozwolenie</string>
     <string name="pt_barcode_zoom_control">Sterowanie powiększeniem</string>
     <string name="pt_barcode_sounds">Dźwięki</string>
+    <string name="warning_delete_default_bookshelf">To jest twoja domyślna półka. Jeśli ją usuniesz, nową domyślną będzie: „%1$s”.\n\nUżyj opcji „%2$s” w menu głównym, żeby wybrać inną domyślną półkę.</string>
+    <string name="action_set_as_default">Ustaw jako domyślną</string>
+    <string name="tip_bookshelf_management">Podświetlony wiersz pokazuje twoją obecną półkę.\n\nDomyślna półka (oznaczona *) zostanie użyta automatycznie, jeśli obecna z jakiegokolwiek powodu nie będzie dostępna.</string>
+
 </resources>

@@ -2307,8 +2307,8 @@ public class BooksOnBookshelf
             } else if (menuItemId == R.id.MENU_BOOKSHELF_DELETE) {
                 final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
                 // We're handling default/only bookshelf situations in the dialog method
-                StandardDialogs.deleteBookshelf(context, bookshelf,
-                                                () -> vm.delete(context, bookshelf));
+                StandardDialogs.deleteBookshelf(context, bookshelf, () ->
+                        vm.delete(context, bookshelf));
                 return true;
             }
             return false;

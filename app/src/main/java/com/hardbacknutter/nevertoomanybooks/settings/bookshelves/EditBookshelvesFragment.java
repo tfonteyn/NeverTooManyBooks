@@ -24,10 +24,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.SuperscriptSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -37,8 +38,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuCompat;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -58,13 +57,14 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditParcelableLauncher;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfBottomSheet;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.bookshelf.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.menus.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.settings.MenuMode;
-import com.hardbacknutter.nevertoomanybooks.widgets.adapters.BindableViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 import com.hardbacknutter.nevertoomanybooks.widgets.popupmenu.ExtMenuButton;
@@ -95,8 +95,19 @@ public class EditBookshelvesFragment
                     getActivity().finish();
                 }
             };
-
+    /** The adapter for the list. */
+    private BookshelfAdapter adapter;
+    /** Accept the result from the dialog. */
+    private EditParcelableLauncher<Bookshelf> editLauncher;
+    private ExtMenuLauncher menuLauncher;
     private final PositionHandler positionHandler = new PositionHandler() {
+
+        @Override
+        @NonNull
+        public Bookshelf getDefaultBookshelf() {
+            return vm.getDefaultBookshelf();
+        }
+
         @Override
         public int getSelectedPosition() {
             return vm.getSelectedPosition();
@@ -113,22 +124,15 @@ public class EditBookshelvesFragment
             showContextMenu(anchor, position);
         }
     };
-
-    /** The adapter for the list. */
-    private BookshelfAdapter adapter;
-    /** Accept the result from the dialog. */
-    private EditParcelableLauncher<Bookshelf> editLauncher;
-    private ExtMenuLauncher menuLauncher;
     /** View Binding. */
     private FragmentEditBookshelvesBinding vb;
-
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
-        vm.init(getArguments());
+        vm.init(requireArguments());
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -164,7 +168,6 @@ public class EditBookshelvesFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_bookshelves);
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         // FAB button to add a new Bookshelf
         final FloatingActionButton fab = getFab();
@@ -173,15 +176,20 @@ public class EditBookshelvesFragment
         fab.setOnClickListener(v -> createNewBookshelf());
 
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.list.getLayoutManager();
+        final Context context = getContext();
         //noinspection DataFlowIssue
-        adapter = new BookshelfAdapter(getContext(), layoutManager.getSpanCount(),
+        adapter = new BookshelfAdapter(context, layoutManager.getSpanCount(),
                                        vm.getList(), positionHandler);
 
         final GridDividerItemDecoration decoration =
-                new GridDividerItemDecoration(getContext(), false, true);
+                new GridDividerItemDecoration(context, false, true);
         vb.list.addItemDecoration(decoration);
 
         vb.list.setAdapter(adapter);
+
+        if (savedInstanceState == null) {
+            TipManager.getInstance().show(context, Tip.BOOKSHELF_MANAGEMENT);
+        }
     }
 
     private void createNewBookshelf() {
@@ -197,6 +205,14 @@ public class EditBookshelvesFragment
                                  final int position) {
         final Context context = anchor.getContext();
         final Menu menu = MenuUtils.create(context, R.menu.edit_bookshelves);
+
+        final boolean isDefaultBookshelf =
+                vm.getBookshelf(position).getId() == vm.getDefaultBookshelf().getId();
+        // enable/disable as needed
+        menu.findItem(R.id.MENU_SET_DEFAULT).setEnabled(!isDefaultBookshelf);
+        // - deleting the default is not allowed
+        // - prevents deleting the last/only shelf, as that would also be the default.
+        menu.findItem(R.id.MENU_DELETE).setEnabled(!isDefaultBookshelf);
 
         //noinspection DataFlowIssue
         final MenuMode menuMode = MenuMode.getMode(getActivity(), menu);
@@ -236,12 +252,21 @@ public class EditBookshelvesFragment
             return true;
 
         } else if (menuItemId == R.id.MENU_DELETE) {
+            // We have prevented deletion of the default/only bookshelf already
             //noinspection DataFlowIssue
             StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
                 vm.deleteBookshelf(getContext(), bookshelf);
-                // due to transposing row and columns, we MUST refresh the whole set.
+                // - we're transposing row and columns
+                // - and potentially changing the default/selected shelf
+                // => we always MUST refresh the whole set.
                 adapter.notifyDataSetChanged();
             });
+            return true;
+
+        } else if (menuItemId == R.id.MENU_SET_DEFAULT) {
+            vm.setDefaultBookshelf(bookshelf);
+            // see above
+            adapter.notifyDataSetChanged();
             return true;
 
         } else if (menuItemId == R.id.MENU_PURGE_BLNS) {
@@ -270,6 +295,9 @@ public class EditBookshelvesFragment
      */
     private interface PositionHandler {
 
+        @NonNull
+        Bookshelf getDefaultBookshelf();
+
         int getSelectedPosition();
 
         void setSelectedPosition(int position);
@@ -285,8 +313,15 @@ public class EditBookshelvesFragment
     }
 
     public static class Holder
-            extends RowViewHolder
-            implements BindableViewHolder<Bookshelf> {
+            extends RowViewHolder {
+
+        private static final SpannableString ASTERISK_SUFFIX;
+
+        static {
+            ASTERISK_SUFFIX = new SpannableString(" *");
+            ASTERISK_SUFFIX.setSpan(new SuperscriptSpan(), 0, 1,
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
 
         @NonNull
         private final RowEditBookshelfBinding vb;
@@ -296,14 +331,21 @@ public class EditBookshelvesFragment
             this.vb = vb;
         }
 
-        @Override
-        public void onBind(@Nullable final Bookshelf bookshelf) {
+        public void onBind(@Nullable final Bookshelf bookshelf,
+                           final boolean isDefault) {
             if (bookshelf == null) {
                 vb.getRoot().setVisibility(View.INVISIBLE);
             } else {
                 vb.getRoot().setVisibility(View.VISIBLE);
 
-                vb.bookshelfName.setText(bookshelf.getName());
+                final Context context = itemView.getContext();
+                final String name;
+                if (isDefault) {
+                    name = context.getString(R.string.a_b, bookshelf.getName(), ASTERISK_SUFFIX);
+                } else {
+                    name = bookshelf.getName();
+                }
+                vb.bookshelfName.setText(name);
             }
         }
     }
@@ -371,9 +413,11 @@ public class EditBookshelvesFragment
                                      final int position) {
             final int listIndex = gridToListPosition(position);
             if (listIndex == RecyclerView.NO_POSITION) {
-                holder.onBind(null);
+                holder.onBind(null, false);
             } else {
-                holder.onBind(items.get(listIndex));
+                final Bookshelf bookshelf = items.get(listIndex);
+                holder.onBind(bookshelf, bookshelf.getId()
+                                         == positionHandler.getDefaultBookshelf().getId());
                 holder.itemView.setSelected(listIndex == positionHandler.getSelectedPosition());
             }
         }
@@ -381,31 +425,6 @@ public class EditBookshelvesFragment
         @Override
         protected int getListSize() {
             return items.size();
-        }
-    }
-
-    private final class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.edit_bookshelves, menu);
-            onPrepareMenu(menu);
-        }
-
-        @Override
-        public void onPrepareMenu(@NonNull final Menu menu) {
-            // only if a shelf is selected
-            menu.findItem(R.id.MENU_PURGE_BLNS)
-                .setEnabled(vm.getSelectedPosition() != RecyclerView.NO_POSITION);
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return EditBookshelvesFragment.this.onMenuItemSelected(vm.getSelectedPosition(),
-                                                                   menuItem.getItemId());
         }
     }
 }

@@ -23,7 +23,8 @@
 <!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
-<!-- Quotes ”…”  - Regex to find wrong ones: ('|„|“|‘|’|«|») --><!-- suppress LongLine --><resources xmlns:tools="http://schemas.android.com/tools">
+<!-- Quotes ”…”  - Regex to find wrong ones: ('|„|“|‘|’|«|») --><!--suppress LongLine -->
+<resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="n_books">
         <item quantity="one">%1$d bok</item>
         <item quantity="other">%1$d böcker</item>
@@ -879,4 +880,8 @@
     <string name="ps_show_titles_reordered_off">Visa som det står,\nt.ex. “The Lord of The Rings”</string>
     <!-- NOT APPLICABLE FOR BOOKS IN SWEDISH. -->
     <string name="ps_show_titles_reordered_on">Flytta en artikel i början av en titel till slutet,\nt.ex. ”Lord of The Rings, The”</string>
+    <string name="warning_delete_default_bookshelf">Detta är din standardbokhylla. Om du tar bort den blir den nya standarden: ”%1$s”.\n\nAnvänd ”%2$s” i huvudmenyn för att välja en annan standardbokhylla.</string>
+    <string name="action_set_as_default">Ställ in som standard</string>
+    <string name="tip_bookshelf_management">Den markerade raden visar din nuvarande bokhylla.\n\nStandardbokhyllan (markerad med *) används automatiskt om den nuvarande inte är tillgänglig av någon anledning.</string>
+
 </resources>

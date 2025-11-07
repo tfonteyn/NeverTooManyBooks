@@ -875,4 +875,8 @@
     <string name="lbl_permission_request">權限要求</string>
     <string name="pt_barcode_zoom_control">縮放控制</string>
     <string name="pt_barcode_sounds">聲音</string>
+    <string name="warning_delete_default_bookshelf">這是你的預設書架。如果你刪除它，新的預設書架將變為：「%1$s」。\n\n請在主選單中使用「%2$s」來選擇其他預設書架。</string>
+    <string name="action_set_as_default">設為預設</string>
+    <string name="tip_bookshelf_management">反白的行表示你目前的書架。\n\n當目前的書架因任何原因無法使用時，帶有 * 的預設書架會自動使用。</string>
+
 </resources>

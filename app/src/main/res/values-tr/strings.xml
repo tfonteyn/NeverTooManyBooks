@@ -887,4 +887,8 @@
     <string name="lbl_permission_request">İzin isteği</string>
     <string name="pt_barcode_zoom_control">Zum denetimi</string>
     <string name="pt_barcode_sounds">Sesler</string>
+    <string name="warning_delete_default_bookshelf">Bu senin varsayılan kitaplığın. Silersen yeni varsayılan: “%1$s” olur.\n\nAna menüden “%2$s” seçeneğini kullanarak başka bir varsayılan kitaplık seçebilirsin.</string>
+    <string name="action_set_as_default">Varsayılan olarak ayarla</string>
+    <string name="tip_bookshelf_management">Vurgulanan satır mevcut kitaplığını gösterir.\n\nVarsayılan kitaplık (* ile işaretli), mevcut kitaplık herhangi bir nedenle kullanılamadığında otomatik olarak kullanılır.</string>
+
 </resources>

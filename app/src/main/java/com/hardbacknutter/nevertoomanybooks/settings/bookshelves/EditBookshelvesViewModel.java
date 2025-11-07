@@ -20,11 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.settings.bookshelves;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,34 +45,40 @@ public class EditBookshelvesViewModel
 
     private static final String TAG = "EditBookshelvesViewMode";
 
-    /** Currently selected row. */
-    private int selectedPosition = RecyclerView.NO_POSITION;
-
-    /** The list we're editing. */
-    private List<Bookshelf> list;
-
     /**
      * Stores the {@link Bookshelf} id we received when the fragment/vm got started.
      * We'll return it if there is no selected {@link Bookshelf} when the user taps 'back'
+     * <p>
+     * Can be {@code 0}.
      */
+    @IntRange(from = 0)
     private long initialBookshelfId;
+
+    /**
+     * Currently selected {@link Bookshelf} id.
+     * <p>
+     * Can be {@code 0} when nothing is selected.
+     */
+    @IntRange(from = 0)
+    private long selectedBookshelfId;
+
+    /** The list we're editing. */
+    private List<Bookshelf> list;
 
     private BookshelfDao bookshelfDao;
 
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args {@link Fragment#requireArguments()} ()}
      */
-    void init(@Nullable final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (bookshelfDao == null) {
             bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-
             list = bookshelfDao.getAll();
-            if (args != null) {
-                initialBookshelfId = args.getLong(DBKey.FK_BOOKSHELF);
-                selectedPosition = findSelectedPosition(initialBookshelfId);
-            }
+
+            initialBookshelfId = args.getLong(DBKey.FK_BOOKSHELF);
+            selectedBookshelfId = initialBookshelfId;
         }
     }
 
@@ -103,30 +108,37 @@ public class EditBookshelvesViewModel
         return list;
     }
 
-    /**
-     * Get the currently selected {@link Bookshelf} id,
-     * or the id we originally got when started.
-     *
-     * @return Bookshelf id
-     */
-    long getSelectedBookshelfId() {
-        if (selectedPosition != RecyclerView.NO_POSITION) {
-            return list.get(selectedPosition).getId();
-        }
-        return initialBookshelfId;
-    }
-
     @NonNull
     Bookshelf getBookshelf(final int position) {
         return Objects.requireNonNull(list.get(position), () -> String.valueOf(position));
     }
 
+    @NonNull
+    Bookshelf getDefaultBookshelf() {
+        return bookshelfDao.getDefault();
+    }
+
+    void setDefaultBookshelf(@NonNull final Bookshelf bookshelf) {
+        bookshelfDao.setDefault(bookshelf);
+    }
+
+    /**
+     * Get the currently selected {@link Bookshelf} id,
+     * or the bookshelf id we initially where on when started
+     * or the default bookshelf if the initial one was deleted.
+     *
+     * @return id, can be {@code 0}.
+     */
+    long getSelectedBookshelfId() {
+        return selectedBookshelfId;
+    }
+
     int getSelectedPosition() {
-        return selectedPosition;
+        return findSelectedPosition(selectedBookshelfId);
     }
 
     void setSelectedPosition(final int position) {
-        selectedPosition = position;
+        selectedBookshelfId = list.get(position).getId();
     }
 
     /**
@@ -143,7 +155,7 @@ public class EditBookshelvesViewModel
 
         list.clear();
         list.addAll(bookshelfDao.getAll());
-        selectedPosition = findSelectedPosition(bookshelf.getId());
+        selectedBookshelfId = bookshelf.getId();
     }
 
     /**
@@ -154,9 +166,24 @@ public class EditBookshelvesViewModel
      */
     void deleteBookshelf(@NonNull final Context context,
                          @NonNull final Bookshelf bookshelf) {
+        // preserve before deleting
+        final long deletedId = bookshelf.getId();
+
+        // delete first so that findSelectedPosition will get post-delete positions correct
         bookshelfDao.delete(context, bookshelf);
         list.remove(bookshelf);
-        selectedPosition = findSelectedPosition(initialBookshelfId);
+
+        if (deletedId == initialBookshelfId) {
+            // we've deleted the initially selected shelf,
+            // select the default as the new initial
+            initialBookshelfId = getDefaultBookshelf().getId();
+        }
+
+        if (deletedId == getSelectedBookshelfId()) {
+            // we've deleted the currently selected shelf,
+            // reselect the initial shelf.
+            selectedBookshelfId = initialBookshelfId;
+        }
     }
 
     /**

@@ -897,4 +897,8 @@
     <string name="lbl_permission_request">Žádost o oprávnění</string>
     <string name="pt_barcode_zoom_control">Ovládání přiblížení/oddálení</string>
     <string name="pt_barcode_sounds">Zvuky</string>
+    <string name="warning_delete_default_bookshelf">Tohle je tvoje výchozí knihovna. Když ji smažeš, novou výchozí se stane: „%1$s“.\n\nPomocí „%2$s“ v hlavní nabídce můžeš vybrat jinou výchozí knihovnu.</string>
+    <string name="action_set_as_default">Nastavit jako výchozí</string>
+    <string name="tip_bookshelf_management">Zvýrazněný řádek ukazuje tvoji aktuální knihovnu.\n\nVýchozí knihovna (označená hvězdičkou *) se použije automaticky, pokud tvoje aktuální není dostupná z jakéhokoli důvodu.</string>
+
 </resources>

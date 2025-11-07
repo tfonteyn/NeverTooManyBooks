@@ -882,4 +882,8 @@
     <string name="lbl_permission_request">Richiesta di autorizzazione</string>
     <string name="pt_barcode_zoom_control">Controllo zoom</string>
     <string name="pt_barcode_sounds">Suoni</string>
+    <string name="warning_delete_default_bookshelf">Questa è la tua libreria predefinita. Se la elimini, la nuova predefinita sarà: “%1$s”.\n\nUsa “%2$s” dal menu principale per scegliere un’altra libreria predefinita.</string>
+    <string name="action_set_as_default">Imposta come predefinita</string>
+    <string name="tip_bookshelf_management">La riga evidenziata indica la tua libreria attuale.\n\nLa libreria predefinita (contrassegnata con *) verrà usata automaticamente se quella attuale non è disponibile per qualsiasi motivo.</string>
+
 </resources>
