@@ -69,7 +69,7 @@ public class StylePickerViewModel
 
             showAllStyles = args.getBoolean(StylePickerLauncher.BKEY_SHOW_ALL_STYLES, false);
 
-            builtinLabelSuffix = new SpannableString("*");
+            builtinLabelSuffix = new SpannableString(" *");
             builtinLabelSuffix.setSpan(new SuperscriptSpan(), 0, 1,
                                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
