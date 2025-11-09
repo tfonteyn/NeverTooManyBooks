@@ -102,21 +102,38 @@ public class BibliotecePlSearchEngine
     private static final String TAG = "BibliotecePlSearchEng";
     private static final Pattern SID_FROM_LOCATION_PATTERN = Pattern.compile(
             "https://w\\.bibliotece\\.pl/(\\d+).*/.*");
-    // Use all lowercase labels!
+    private static final Pattern AUTHOR_DATE_SUFFIX = Pattern.compile(
+            "^(.*?)\\s*(?:\\(|$)");
+
+    // Use all lowercase labels and include the trailing ':'
+    private static final String LABEL_SUBTITLE = "inne tytuły:";
+    private static final String LABEL_ORIGINAL_TITLE = "tytuł oryginalny:";
+
     private static final String LABEL_AUTHOR = "autor:";
-    /** Literally: "Other". */
+    private static final String LABEL_AUTHORS = "autorzy:";
+
+    private static final String LABEL_AFTERWORD = "posłowie:";
     private static final String LABEL_CONTRIBUTOR = "oraz:";
-    private static final String LABEL_TRANSLATOR = "tłumacz:";
-    private static final String LABEL_NARRATOR = "lektor:";
     private static final String LABEL_EDITOR = "redakcja:";
+    private static final String LABEL_FOREWORD = "przedmowa:";
     private static final String LABEL_ILLUSTRATOR = "ilustracje:";
+    private static final String LABEL_INTRODUCTION = "wstęp:";
+    private static final String LABEL_NARRATOR = "lektor:";
+    private static final String LABEL_NARRATORS = "lektorzy:";
     private static final String LABEL_SCENARIST = "scenariusz:";
-    private static final String LABEL_AUTHOR2 = "autorzy:";
+    private static final String LABEL_TRANSLATOR = "tłumacz:";
+    private static final String LABEL_TRANSLATORS = "tłumaczenie:";
+
+    private static final String LABEL_FIRST_PUB_DATE = "wyd. w latach:";
     private static final String LABEL_PUBLISHER = "wydawca:";
+    private static final String LABEL_PUBLISHERS = "wydawcy:";
     private static final String LABEL_SERIES = "wydane w seriach:";
-    private static final String SPAN_DATA_IPUB_SEARCH_T = "span[data-ipub-search=t]";
+    private static final String LABEL_TAGS = "autotagi:";
+
     private static final String SPAN_DATA_IPUB_SEARCH_O = "span[data-ipub-search=o]";
+    private static final String SPAN_DATA_IPUB_SEARCH_T = "span[data-ipub-search=t]";
     private static final String SPAN_DATA_IPUB_SEARCH_W = "span[data-ipub-search=w]";
+
     @NonNull
     private final RatingParser ratingParser;
 
@@ -310,66 +327,25 @@ public class BibliotecePlSearchEngine
         }
 
         book.setTitle(titleElement.text());
+        // Some books have a subtitle as an element next to the title
+        parseSubtitle(work, "h2.subtitle", book);
 
         parseSid(document, book);
         parseMetas(document, book);
-        parseSubtitle(bookData, book);
-        parseOriginalTitle(bookData, book);
-        parseAuthors(bookData, book);
-        parsePublishers(bookData, book);
 
-        // label: Wyd. w latach
-        // publication year... but given as a range. Parse the first only
-        if (!book.contains(DBKey.FIRST_PUBLICATION_DATE)) {
-            final Element th = bookData.selectFirst("th:contains(Wyd. w latach:)");
-            if (th != null) {
-                final Element td = th.nextElementSibling();
-                if (td != null && "td".equals(td.tagName())) {
-                    final Element div = td.selectFirst("div");
-                    if (div != null) {
-                        final String year = div.text().split(" ")[0];
-                        if (year != null && year.length() == 4) {
-                            book.setFirstPublicationDate(year);
-                        }
-                    }
-                }
-            }
-        }
-
-        // label: Wydane w seriach
-        // ignore... this is unstructured data about Series
-
-        // There can be multiple of these, we grab the first if we don't have an isbn already.
-        final Element isbnElement = bookData.selectFirst("span[data-ipub-search=isbn]");
-        if (isbnElement != null && !book.hasIsbn()) {
-            book.setIsbn(ISBN.cleanText(isbnElement.text()));
-        }
-
-        parseTags(bookData, "div", book);
-
-        // Might already have come from a head/meta tag
-        if (!book.contains(DBKey.RATING)) {
-            parseRating(bookData, book);
-        }
-
+        // parsed by scanning for labels
+        parseMain(bookData, book);
+        // parsed without label usage
+        parseIsbn(bookData, book);
+        parseRating(bookData, book);
         parseDescription(context, bookData, book);
 
         // Optional secondary details section
         final Element bookDetails = work.selectFirst("table#details");
         if (bookDetails != null) {
-            parseAuthors2(bookDetails, book);
-
-            parsePublishers(bookDetails, book);
-            parseTags(bookDetails, "span", book);
-
-            // label: Serie wydawnicze
-            // The publication series... and it's a mess.
-            // Some of the entries are genuine, but others are totally generic (e.g. 'Audiobook')
-            // ignore for now...
-
-            // The details section can contain a list of ISBN numbers
-            // but the amount of them does not match up with the publisher names.
-            // ignore for now...
+            parseSecondary(bookDetails, book);
+            // Some books have no isbn in the main section, so try again.
+            parseIsbn(bookDetails, book);
         }
 
         // Language is not available, we presume these are all polish.
@@ -384,6 +360,51 @@ public class BibliotecePlSearchEngine
         if (fetchCovers[0]) {
             parseCovers(context, work, book.getIsbn(), 0).ifPresent(
                     fileSpec -> CoverFileSpecArray.setFileSpec(book, 0, fileSpec));
+        }
+    }
+
+    private void parseSubtitle(@NonNull final Element work,
+                               @NonNull final String cssQuery,
+                               @NonNull final Book book) {
+        // We only get the first element. There can be a second,
+        // but from the limited tests done, those are sticker-text, author name repeating...
+        final Element stElement = work.selectFirst(cssQuery);
+        if (stElement != null) {
+            final String text = stElement.text();
+            if (!text.isEmpty()) {
+                // just concat it; if both main and secondary sections had a subtitle,
+                // we end up with the concatenation of ALL titles.
+                // But we've not observed this during testing.
+                book.setTitle(book.getTitle() + " - " + text);
+            }
+        }
+    }
+
+    private void parseIsbn(@NonNull final Element bookData,
+                           @NonNull final Book book) {
+        // There can be multiple ISBN's listed
+        final Elements isbnElements = bookData.select("span[data-ipub-search=isbn]");
+        if (isbnElements.isEmpty()) {
+            return;
+        }
+
+        if (isbnElements.size() == 1) {
+            final String isbnStr = ISBN.cleanText(isbnElements.get(0).text());
+            if (book.hasIsbn()) {
+                // If it's an isbn-10 equal to the one we searched for, grab it.
+                final ISBN siteIsbn = new ISBN(isbnStr, true);
+                final ISBN searchIsbn = new ISBN(book.getIsbn(), true);
+                if (siteIsbn.isType(ISBN.Type.Isbn10) && searchIsbn.isType(ISBN.Type.Isbn13)
+                    && siteIsbn.equals(searchIsbn)) {
+                    book.setIsbn(isbnStr);
+                }
+            } else {
+                // we got here searching-by-text, grab it
+                book.setIsbn(isbnStr);
+            }
+        } else if (!book.hasIsbn()) {
+            // if we don't have an isbn already, simply grab the first
+            book.setIsbn(ISBN.cleanText(isbnElements.get(0).text()));
         }
     }
 
@@ -436,59 +457,8 @@ public class BibliotecePlSearchEngine
         }
     }
 
-    private void parseOriginalTitle(@NonNull final Element bookData,
-                                    @NonNull final Book book) {
-        // <tr>
-        //  <th>Tytuł oryginalny:</th>
-        //  <td>
-        //      <div itemprop="alternateName">
-        //          <span data-ipub-search="t">Well of ascension</span>
-        //      </div>
-        //  </td>
-        // </tr>
-        final Element th = bookData.selectFirst("th:contains(Tytuł oryginalny:)");
-        if (th != null) {
-            final Element td = th.nextElementSibling();
-            if (td != null && "td".equals(td.tagName())) {
-                final Element element = td.selectFirst(SPAN_DATA_IPUB_SEARCH_T);
-                if (element != null) {
-                    final String text = element.text();
-                    if (!text.isEmpty()) {
-                        book.setTranslatedFromTitle(text);
-                    }
-                }
-            }
-        }
-    }
-
-    private void parseSubtitle(@NonNull final Element bookData,
-                               @NonNull final Book book) {
-        // <tr>
-        //  <th>Inne tytuły:</th>
-        //  <td>
-        //      <div itemprop="alternateName">
-        //          <span data-ipub-search="t">Kolory zła</span>
-        //      </div>
-        //  </td>
-        // </tr>
-        final Element th = bookData.selectFirst("th:contains(Inne tytuły:)");
-        if (th != null) {
-            final Element td = th.nextElementSibling();
-            if (td != null && "td".equals(td.tagName())) {
-                final Element element = bookData.selectFirst(SPAN_DATA_IPUB_SEARCH_T);
-                if (element != null) {
-                    final String text = element.text();
-                    if (!text.isEmpty()) {
-                        // just concat it
-                        book.setTitle(book.getTitle() + " - " + text);
-                    }
-                }
-            }
-        }
-    }
-
-    private void parseAuthors(@NonNull final Element bookData,
-                              @NonNull final Book book) {
+    private void parseMain(@NonNull final Element bookData,
+                           @NonNull final Book book) {
         // Rather annoying...
         // all authors names are listed with the "o" indicator.
         //     <span data-ipub-search="o" itemprop="name">blah</span>
@@ -498,42 +468,71 @@ public class BibliotecePlSearchEngine
         bookData.select("th")
                 .forEach(th -> {
                     final Element td = th.nextElementSibling();
-                    if (td != null) {
-                        switch (th.text().toLowerCase(SITE_LOCALE)) {
-                            // Keep in sync with parseAuthors2(..)
+                    if (td != null && "td".equals(td.tagName())) {
+                        final String lcLabel = th.text().toLowerCase(SITE_LOCALE);
+                        switch (lcLabel) {
                             case LABEL_AUTHOR:
-                            case LABEL_AUTHOR2: {
-                                parseAuthor(td, AUTHOR_IS_CREATOR, Author.TYPE_WRITER, book);
+                            case LABEL_AUTHORS: {
+                                parseAuthor(td, AUTHOR_IS_CREATOR,
+                                            Author.TYPE_WRITER, book);
                                 break;
                             }
                             case LABEL_CONTRIBUTOR: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR, Author.TYPE_CONTRIBUTOR,
+                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                            Author.TYPE_CONTRIBUTOR,
+                                            book);
+                                break;
+                            }
+                            case LABEL_FOREWORD: {
+                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                            Author.TYPE_FOREWORD, book);
+                                break;
+                            }
+                            case LABEL_AFTERWORD: {
+                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                            Author.TYPE_AFTERWORD, book);
+                                break;
+                            }
+                            case LABEL_INTRODUCTION: {
+                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                            Author.TYPE_INTRODUCTION,
                                             book);
                                 break;
                             }
                             case LABEL_ILLUSTRATOR: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR, Author.TYPE_ARTIST, book);
+                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                            Author.TYPE_ARTIST, book);
                                 break;
                             }
                             case LABEL_EDITOR: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR, Author.TYPE_EDITOR, book);
+                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                            Author.TYPE_EDITOR, book);
                                 break;
                             }
-                            case LABEL_NARRATOR: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR, Author.TYPE_NARRATOR, book);
+                            case LABEL_NARRATOR:
+                            case LABEL_NARRATORS: {
+                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                            Author.TYPE_NARRATOR, book);
                                 break;
                             }
                             case LABEL_SCENARIST: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR, Author.TYPE_WRITER, book);
+                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                            Author.TYPE_WRITER, book);
                                 break;
                             }
-                            case LABEL_TRANSLATOR: {
-                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR, Author.TYPE_TRANSLATOR,
-                                            book);
+                            case LABEL_TRANSLATOR:
+                            case LABEL_TRANSLATORS: {
+                                parseAuthor(td, AUTHOR_IS_CONTRIBUTOR,
+                                            Author.TYPE_TRANSLATOR, book);
                                 break;
                             }
-                            // Do NOT add the below to parseAuthors2(..)
-                            case LABEL_PUBLISHER: {
+
+                            case LABEL_SUBTITLE: {
+                                parseSubtitle(td, SPAN_DATA_IPUB_SEARCH_T, book);
+                                break;
+                            }
+                            case LABEL_PUBLISHER:
+                            case LABEL_PUBLISHERS: {
                                 parsePublishers(td, book);
                                 break;
                             }
@@ -541,6 +540,40 @@ public class BibliotecePlSearchEngine
                                 parseSeries(td, book);
                                 break;
                             }
+                            case LABEL_TAGS: {
+                                parseTags(td, "div", book);
+                                break;
+                            }
+
+                            // Do NOT add the below to parseAuthors2(..)
+                            case LABEL_ORIGINAL_TITLE: {
+                                final Element element = td.selectFirst(SPAN_DATA_IPUB_SEARCH_T);
+                                if (element != null) {
+                                    final String text = element.text();
+                                    if (!text.isEmpty()) {
+                                        book.setTranslatedFromTitle(text);
+                                    }
+                                }
+                                break;
+                            }
+
+                            case LABEL_FIRST_PUB_DATE: {
+                                // publication year... but given as a range. Parse the first only
+                                if (!book.contains(DBKey.FIRST_PUBLICATION_DATE)) {
+                                    final Element div = td.selectFirst("div");
+                                    if (div != null) {
+                                        final String year = div.text().split(" ")[0];
+                                        if (year != null && year.length() == 4) {
+                                            book.setFirstPublicationDate(year);
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+
+                            // Other labels we know about, but ignore
+                            // "Źródło opisu" -> Source of description
+
                         }
                     }
                 });
@@ -555,8 +588,19 @@ public class BibliotecePlSearchEngine
           .stream()
           .flatMap(pe -> pe.select(SPAN_DATA_IPUB_SEARCH_O).stream())
           .map(Element::text)
-          .map(Author::from)
-          .forEach(author -> addAuthor(author, type, book));
+          .forEach(text -> parseAuthorText(text, type, book));
+    }
+
+    private void parseAuthorText(@NonNull final CharSequence text,
+                                 @Author.Type final int type,
+                                 @NonNull final Book book) {
+        final Matcher matcher = AUTHOR_DATE_SUFFIX.matcher(text);
+        if (matcher.find()) {
+            final String g1 = matcher.group(1);
+            if (g1 != null) {
+                addAuthor(Author.from(g1), type, book);
+            }
+        }
     }
 
     private void parseSeries(@NonNull final Element td,
@@ -592,7 +636,7 @@ public class BibliotecePlSearchEngine
         // the cssQuery is based on the page source, and not on the page-inspect
         // as the td.tags element is transformed by javascript by the time we inspect it.
         // The sub element can be a 'div' or a 'span'
-        final List<Tag> tags = bookData.select("td.tags > " + subElement)
+        final List<Tag> tags = bookData.select(subElement)
                                        .stream()
                                        .map(Element::text)
                                        .filter(t -> !tagsToIgnore.contains(t))
@@ -606,7 +650,10 @@ public class BibliotecePlSearchEngine
 
     private void parseRating(@NonNull final Element bookData,
                              @NonNull final Book book) {
-
+        // Might already have come from a head/meta tag
+        if (book.contains(DBKey.RATING)) {
+            return;
+        }
         final Element ratingElement = bookData.selectFirst("span[itemprop=ratingValue]");
         if (ratingElement != null) {
             ratingParser.parse(ratingElement.text()).ifPresent(book::setRating);
@@ -645,22 +692,35 @@ public class BibliotecePlSearchEngine
         }
     }
 
-    private void parseAuthors2(@NonNull final Element bookDetails,
-                               @NonNull final Book book) {
+    private void parseSecondary(@NonNull final Element bookDetails,
+                                @NonNull final Book book) {
         bookDetails.select("th")
                    .forEach(th -> {
                        final Element td = th.nextElementSibling();
                        if (td != null) {
                            // Keep in sync with parseAuthors(..)
-                           switch (th.text().toLowerCase(SITE_LOCALE)) {
+                           final String lcLabel = th.text().toLowerCase(SITE_LOCALE);
+                           switch (lcLabel) {
                                case LABEL_AUTHOR:
-                               case LABEL_AUTHOR2:
+                               case LABEL_AUTHORS:
                                case LABEL_SCENARIST: {
                                    parseAuthor2(td, Author.TYPE_WRITER, book);
                                    break;
                                }
                                case LABEL_CONTRIBUTOR: {
                                    parseAuthor2(td, Author.TYPE_CONTRIBUTOR, book);
+                                   break;
+                               }
+                               case LABEL_FOREWORD: {
+                                   parseAuthor2(td, Author.TYPE_FOREWORD, book);
+                                   break;
+                               }
+                               case LABEL_AFTERWORD: {
+                                   parseAuthor2(td, Author.TYPE_AFTERWORD, book);
+                                   break;
+                               }
+                               case LABEL_INTRODUCTION: {
+                                   parseAuthor2(td, Author.TYPE_INTRODUCTION, book);
                                    break;
                                }
                                case LABEL_ILLUSTRATOR: {
@@ -671,12 +731,33 @@ public class BibliotecePlSearchEngine
                                    parseAuthor2(td, Author.TYPE_EDITOR, book);
                                    break;
                                }
-                               case LABEL_NARRATOR: {
+                               case LABEL_NARRATOR:
+                               case LABEL_NARRATORS: {
                                    parseAuthor2(td, Author.TYPE_NARRATOR, book);
                                    break;
                                }
-                               case LABEL_TRANSLATOR: {
+                               case LABEL_TRANSLATOR:
+                               case LABEL_TRANSLATORS: {
                                    parseAuthor2(td, Author.TYPE_TRANSLATOR, book);
+                                   break;
+                               }
+
+                               case LABEL_SUBTITLE: {
+                                   parseSubtitle(td, SPAN_DATA_IPUB_SEARCH_T, book);
+                                   break;
+                               }
+                               case LABEL_PUBLISHER:
+                               case LABEL_PUBLISHERS: {
+                                   parsePublishers(td, book);
+                                   break;
+                               }
+                               // label: Serie wydawnicze
+                               // The publication series... and it's a mess.
+                               // Some of the entries are genuine, but others are totally generic (e.g. 'Audiobook')
+                               // ignore for now...
+
+                               case LABEL_TAGS: {
+                                   parseTags(td, "span", book);
                                    break;
                                }
                            }
@@ -690,8 +771,7 @@ public class BibliotecePlSearchEngine
         td.select(SPAN_DATA_IPUB_SEARCH_O)
           .stream()
           .map(Element::text)
-          .map(Author::from)
-          .forEach(author -> addAuthor(author, type, book));
+          .forEach(text -> parseAuthorText(text, type, book));
     }
 
     /**

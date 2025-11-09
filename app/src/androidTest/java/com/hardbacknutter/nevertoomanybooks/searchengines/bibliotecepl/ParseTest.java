@@ -88,6 +88,25 @@ public class ParseTest
         realNumberParser = new RealNumberParser(List.of(searchEngine.getLocale(context)));
     }
 
+    /** Short test to verify ISBN 10/13 handling only. */
+    @Test
+    public void parse9788321331966()
+            throws IOException, SearchException, CredentialsException, StorageException {
+        final String locationHeader =
+                "https://w.bibliotece.pl/546206/Historia+sztuki";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bibliotece_pl_9788321331966;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        // emulate searchEngine#searchByIsbn behaviour
+        book.setIsbn("9788321331966");
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("8321331963", book.getString(DBKey.ISBN, null));
+    }
+
     @Test
     public void parse9788384252963()
             throws IOException, SearchException, CredentialsException, StorageException {
@@ -291,7 +310,7 @@ public class ParseTest
 
         final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
-        assertEquals(3, authors.size());
+        assertEquals(5, authors.size());
 
         Optional<String> oIv;
         Author author;
@@ -316,7 +335,7 @@ public class ParseTest
         author = authors.get(1);
         assertEquals("Studniarek-Więch", author.getFamilyName());
         assertEquals("Anna", author.getGivenNames());
-        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals(Author.TYPE_TRANSLATOR | Author.TYPE_NARRATOR, author.getType());
 
         author = authors.get(2);
         assertEquals("Popczyński", author.getFamilyName());
@@ -333,6 +352,17 @@ public class ParseTest
         oIv = author.getIdentifierValue(Identifier.SID_VIAF);
         assertTrue(oIv.isPresent());
         assertEquals("165891730", oIv.get());
+
+        author = authors.get(3);
+        assertEquals("Studniarek", author.getFamilyName());
+        assertEquals("Anna", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+
+        author = authors.get(4);
+        assertEquals("Hesko-Kołodzińska", author.getFamilyName());
+        assertEquals("Małgorzata", author.getGivenNames());
+        assertEquals(Author.TYPE_TRANSLATOR, author.getType());
+
 
         final List<String> covers = CoverFileSpecArray.getList(book, 0);
         assertNotNull(covers);
@@ -486,5 +516,169 @@ public class ParseTest
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.BibliotecePl.getPreferenceKey()
                                           + "_9788328172241_0_.jpg"));
+    }
+
+    @Test
+    public void parse9788377052730()
+            throws IOException, SearchException, CredentialsException, StorageException {
+        final String locationHeader =
+                "https://w.bibliotece.pl/3779215/Kr%C3%B3tkie+odpowiedzi+na+wielkie+pytania";
+        final int resId = com.hardbacknutter.nevertoomanybooks.test
+                .R.raw.bibliotece_pl_9788377052730;
+
+        final Document document = loadDocument(resId, UTF_8, locationHeader);
+        final Book book = new Book();
+        // emulate searchEngine#searchByIsbn behaviour
+        book.setIsbn("9788377052730");
+        searchEngine.parse(context, document, new boolean[]{false, false, false, false}, book);
+        Log.d(TAG, book.toString());
+
+        assertEquals("Krótkie odpowiedzi na wielkie pytania - 22066",
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("Brief answers to the big questions",
+                     book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
+        assertEquals("eng", book.getString(DBKey.TRANSLATION_ORIGINAL_LANGUAGE, null));
+        assertEquals("9788377052730", book.getString(DBKey.ISBN, null));
+        assertEquals("2023", book.getString(DBKey.PUBLICATION_DATE, null));
+        assertEquals("2007", book.getString(DBKey.FIRST_PUBLICATION_DATE, null));
+
+        assertEquals(4.0f, book.getFloat(DBKey.RATING, realNumberParser), 0.1f);
+
+        assertEquals("pl", book.getString(DBKey.LANGUAGE, null));
+
+        Assert.assertEquals("3779215", book.requireIdentifierValue(
+                Identifier.SID_BIBLIOTECE_PL));
+
+        final String description = book.getString(DBKey.DESCRIPTION, null);
+        assertNotNull(description);
+        assertTrue(description.startsWith("Krótkie odpowiedzi na wielkie"));
+        assertTrue(description.endsWith("inne materiały archiwalne."));
+
+        final List<Tag> bookTags = book.getTags();
+        assertEquals(21, bookTags.size());
+        final List<String> tags = bookTags.stream().map(Tag::getName).collect(Collectors.toList());
+        assertTrue(tags.contains("audiobooki"));
+        assertTrue(tags.contains("dokumenty elektroniczne"));
+        assertTrue(tags.contains("druk"));
+        assertTrue(tags.contains("e-booki"));
+        assertTrue(tags.contains("beletrystyka"));
+        assertTrue(tags.contains("CD"));
+        assertTrue(tags.contains("czytak"));
+        assertTrue(tags.contains("DVD"));
+        assertTrue(tags.contains("epika"));
+        assertTrue(tags.contains("literatura"));
+        assertTrue(tags.contains("literatura faktu"));
+        assertTrue(tags.contains("literatura faktu, eseje, publicystyka"));
+        assertTrue(tags.contains("literatura piękna"));
+        assertTrue(tags.contains("literatura stosowana"));
+        assertTrue(tags.contains("MP3"));
+        assertTrue(tags.contains("muzyka"));
+        assertTrue(tags.contains("nagrania"));
+        assertTrue(tags.contains("nagrania muzyczne"));
+        assertTrue(tags.contains("proza"));
+        assertTrue(tags.contains("publikacje popularnonaukowe"));
+        assertTrue(tags.contains("zasoby elektroniczne"));
+
+        final List<Publisher> allPublishers = book.getPublishers();
+        assertNotNull(allPublishers);
+        assertEquals(8, allPublishers.size());
+        int p = 0;
+        assertEquals("Legimi", allPublishers.get(p++).getName());
+        assertEquals("Zysk i Spółka Wydawnictwo", allPublishers.get(p++).getName());
+        assertEquals("Storybox.pl", allPublishers.get(p++).getName());
+        assertEquals("Stowarzyszenie Pomocy Osobom Niepełnosprawnym Larix",
+                     allPublishers.get(p++).getName());
+        assertEquals("NASBI", allPublishers.get(p++).getName());
+        assertEquals("ebookpoint BIBLIO", allPublishers.get(p++).getName());
+        assertEquals("Heraclon International", allPublishers.get(p++).getName());
+        assertEquals("Stowarzyszenie Pomocy Osobom Niepełnosprawnym Larix im. Henryka Ruszczyca",
+                     allPublishers.get(p++).getName());
+
+        final List<Series> series = book.getSeries();
+        assertNotNull(series);
+        assertEquals(1, series.size());
+
+        assertEquals("Czytak Larix", series.get(0).getTitle());
+
+        final List<Author> authors = book.getAuthors();
+        assertNotNull(authors);
+        assertEquals(8, authors.size());
+
+        Optional<String> oIv;
+        Author author;
+        File authorImageFile;
+        p = 0;
+        author = authors.get(p++);
+        assertEquals("Hawking", author.getFamilyName());
+        assertEquals("Stephen", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+        assertEquals("1942-01-08", author.getBirthDate().orElse(null));
+        assertEquals("2018-03-14", author.getDeathDate().orElse(null));
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q17714", oIv.get());
+
+        authorImageFile = author.getImage(context, 0).orElse(null);
+        assertNotNull(authorImageFile);
+        assertTrue(authorImageFile.getName().endsWith("_wikidata_Q17714_0_.jpg"));
+
+        author = authors.get(p++);
+        assertEquals("Krośniak", author.getFamilyName());
+        assertEquals("Marek", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER | Author.TYPE_TRANSLATOR, author.getType());
+        assertEquals("1955-01-01", author.getBirthDate().orElse(null));
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q122943159", oIv.get());
+
+        author = authors.get(p++);
+        assertEquals("Krajewski", author.getFamilyName());
+        assertEquals("Artur", author.getGivenNames());
+        assertEquals(Author.TYPE_NARRATOR, author.getType());
+        assertEquals("1968-08-04", author.getBirthDate().orElse(null));
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q9160680", oIv.get());
+
+        author = authors.get(p++);
+        assertEquals("Plewako-Szczerbiński", author.getFamilyName());
+        assertEquals("Krzysztof", author.getGivenNames());
+        assertEquals(Author.TYPE_NARRATOR, author.getType());
+
+        author = authors.get(p++);
+        assertEquals("Szczerbiński", author.getFamilyName());
+        assertEquals("Krzysztof", author.getGivenNames());
+        assertEquals(Author.TYPE_NARRATOR, author.getType());
+        assertEquals("1978-01-09", author.getBirthDate().orElse(null));
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q11749718", oIv.get());
+
+        author = authors.get(p++);
+        assertEquals("Hawking", author.getFamilyName());
+        assertEquals("Lucy", author.getGivenNames());
+        assertEquals(Author.TYPE_AFTERWORD, author.getType());
+        assertEquals("1969-11-02", author.getBirthDate().orElse(null));
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q2209781", oIv.get());
+
+        author = authors.get(p++);
+        assertEquals("Thorne", author.getFamilyName());
+        assertEquals("Kip S.", author.getGivenNames());
+        assertEquals(Author.TYPE_INTRODUCTION, author.getType());
+        assertEquals("1940-06-01", author.getBirthDate().orElse(null));
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q323320", oIv.get());
+
+        author = authors.get(p++);
+        assertEquals("Redmayne", author.getFamilyName());
+        assertEquals("Eddie", author.getGivenNames());
+        assertEquals(Author.TYPE_FOREWORD, author.getType());
+        assertEquals("1982-01-06", author.getBirthDate().orElse(null));
+        oIv = author.getIdentifierValue(Identifier.SID_WIKIDATA);
+        assertTrue(oIv.isPresent());
+        assertEquals("Q28288", oIv.get());
     }
 }
