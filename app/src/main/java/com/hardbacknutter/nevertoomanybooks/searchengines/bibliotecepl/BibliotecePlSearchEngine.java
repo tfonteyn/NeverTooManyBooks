@@ -74,12 +74,7 @@ public class BibliotecePlSearchEngine
     // The site has no author ids - they use a pure text search when searching
     // all books for a specific author.
     public static final String AUTHOR_URL = null;
-    static final String SEARCH_PREFIX_ISBN = "isbn:";
-    static final String SEARCH_PREFIX_TITLE = "t:";
-    static final String SEARCH_PREFIX_PERSON = "o:";
-    static final String SEARCH_PREFIX_PUBLISHER = "w:";
-    static final String AUTHOR_IS_CREATOR = "creator";
-    static final String AUTHOR_IS_CONTRIBUTOR = "contributor";
+
     private static final Locale SITE_LOCALE = new Locale("pl", "PL");
     // also used as the identifier value
     private static final String PREFERENCE_KEY = "bibliotecepl";
@@ -134,6 +129,12 @@ public class BibliotecePlSearchEngine
     private static final String SPAN_DATA_IPUB_SEARCH_T = "span[data-ipub-search=t]";
     private static final String SPAN_DATA_IPUB_SEARCH_W = "span[data-ipub-search=w]";
 
+    private static final String SEARCH_PREFIX_ISBN = "isbn:";
+    private static final String SEARCH_PREFIX_TITLE = "t:";
+    private static final String SEARCH_PREFIX_PERSON = "o:";
+    private static final String SEARCH_PREFIX_PUBLISHER = "w:";
+    private static final String AUTHOR_IS_CREATOR = "creator";
+    private static final String AUTHOR_IS_CONTRIBUTOR = "contributor";
     @NonNull
     private final RatingParser ratingParser;
 
@@ -760,8 +761,8 @@ public class BibliotecePlSearchEngine
                                }
                                // label: Serie wydawnicze
                                // The publication series... and it's a mess.
-                               // Some of the entries are genuine, but others are totally generic (e.g. 'Audiobook')
-                               // ignore for now...
+                               // Some of the entries are genuine, but others are totally
+                               // generic (e.g. 'Audiobook'). Ignore for now...
 
                                case LABEL_TAGS: {
                                    parseTags(td, "span", book);
