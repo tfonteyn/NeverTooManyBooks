@@ -264,7 +264,8 @@ public class ParseTest
         searchEngine.parse(context, document, new boolean[]{true, false, false, false}, book);
         Log.d(TAG, book.toString());
 
-        assertEquals("Studnia wstąpienia", book.getString(DBKey.TITLE, null));
+        assertEquals("Studnia wstąpienia - The well of ascension",
+                     book.getString(DBKey.TITLE, null));
         assertEquals("Well of ascension", book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE, null));
         assertEquals("9788367023290", book.getString(DBKey.ISBN, null));
         assertEquals("2023", book.getString(DBKey.PUBLICATION_DATE, null));

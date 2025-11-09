@@ -372,10 +372,17 @@ public class BibliotecePlSearchEngine
         if (stElement != null) {
             final String text = stElement.text();
             if (!text.isEmpty()) {
-                // just concat it; if both main and secondary sections had a subtitle,
-                // we end up with the concatenation of ALL titles.
-                // But we've not observed this during testing.
-                book.setTitle(book.getTitle() + " - " + text);
+                // some translated books have their original title in
+                // both LABEL_ORIGINAL_TITLE and LABEL_SUBTITLE (in the details section)
+                // check this before accepting the subtitle.
+                // This will not always work, as the site is a bit sloppy...
+                // "The well..." versus "Well..."
+                if (!text.equalsIgnoreCase(book.getString(DBKey.TRANSLATION_ORIGINAL_TITLE))) {
+                    // just concat it; if both main and secondary sections had a subtitle,
+                    // we end up with the concatenation of ALL titles.
+                    // But we've not observed this during testing.
+                    book.setTitle(book.getTitle() + " - " + text);
+                }
             }
         }
     }
