@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2018-2025 HardBackNutter
   ~ @License GNU General Public License
@@ -18,9 +17,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!DOCTYPE resources [
+  --><!DOCTYPE resources [
 <!ENTITY APP_NAME "NeverTooManyBooks">
 ]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
@@ -92,7 +89,7 @@
     <string name="warning_nothing_selected">Nada seleccionado</string>
     <string name="warning_requires_at_least_1_field">Polo menos un campo non debe ficar en branco.</string>
     <string name="warning_missing_title_or_author">Hai que especificar título e/ou autor.</string>
-    <string name="warning_cannot_delete_only_bookshelf">Só tes unha estantería, polo que non se pode eliminar.</string>
+    <string name="warning_cannot_delete_only_bookshelf">Só tes un andel, polo que non se pode eliminar.</string>
     <string name="warning_already_in_list">Xa na lista!</string>
     <string name="warning_no_matching_book_found">Non se atopou ningún libro</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
@@ -880,5 +877,4 @@
     <string name="warning_delete_default_bookshelf">Este é o teu andel predeterminado. Se o borras, o novo predeterminado será: «%1$s».\n\nUsa «%2$s» desde o menú principal para escoller outro andel predeterminado.</string>
     <string name="action_set_as_default">Establecer como predeterminada</string>
     <string name="tip_bookshelf_management">A liña resaltada indica o teu andel actual.\n\nO andel predeterminado (marcado con *) usarase automaticamente se o actual non está dispoñible por calquera motivo.</string>
-
 </resources>
