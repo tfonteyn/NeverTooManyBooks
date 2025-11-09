@@ -23,12 +23,13 @@ package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TagDao;
@@ -42,8 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.TagMapping;
 public class TagMapper
         implements Mapper {
 
-    private final List<TagMapping> mappings;
+    /** All mappings as read from the {@code TagMappingDao}. */
+    @NonNull
+    private final List<TagMapping> allMappings;
+    @NonNull
     private final Locale locale;
+    @NonNull
     private final TagDao tagDao;
 
     /**
@@ -54,7 +59,15 @@ public class TagMapper
     public TagMapper(@NonNull final Context context) {
         locale = context.getResources().getConfiguration().getLocales().get(0);
         tagDao = ServiceLocator.getInstance().getTagDao();
-        mappings = ServiceLocator.getInstance().getTagMappingDao().getAll();
+        allMappings = ServiceLocator.getInstance().getTagMappingDao().getAll();
+    }
+
+    @VisibleForTesting
+    public TagMapper(@NonNull final Context context,
+                     @NonNull final List<TagMapping> mappings) {
+        locale = context.getResources().getConfiguration().getLocales().get(0);
+        tagDao = ServiceLocator.getInstance().getTagDao();
+        allMappings = mappings;
     }
 
     @Override
@@ -74,23 +87,39 @@ public class TagMapper
     @NonNull
     public List<Tag> map(@NonNull final Context context,
                          @NonNull final Collection<Tag> source) {
-        if (source.isEmpty() || mappings.isEmpty()) {
+        // shortcut
+        if (source.isEmpty() || allMappings.isEmpty()) {
             return List.of();
         }
 
         final List<Tag> result = new ArrayList<>();
         source.forEach(tag -> {
-            final List<Tag> replacement = mappings
-                    .stream()
-                    .filter(tm -> tm.getName().equalsIgnoreCase(tag.getName()))
-                    .flatMap(tm -> tm.getMappings().stream())
-                    .map(Tag::new)
-                    .collect(Collectors.toList());
+            boolean delete = false;
+            final List<Tag> replacement = new ArrayList<>();
+            // loop the mappings until we have a match (or no more mappings)
+            for (final TagMapping tm : allMappings) {
+                if (tm.getName().equalsIgnoreCase(tag.getName())) {
+                    final Set<String> substitutions = tm.getMappings();
+                    if (substitutions.isEmpty()) {
+                        delete = true;
+                    } else {
+                        for (final String s : substitutions) {
+                            if (!s.isEmpty()) {
+                                replacement.add(new Tag(s));
+                            }
+                        }
+                    }
+                    // We can quit the for-loop when we had a match
+                    break;
+                }
+            }
 
-            if (replacement.isEmpty()) {
-                result.add(tag);
-            } else {
-                result.addAll(replacement);
+            if (!delete) {
+                if (replacement.isEmpty()) {
+                    result.add(tag);
+                } else {
+                    result.addAll(replacement);
+                }
             }
         });
 

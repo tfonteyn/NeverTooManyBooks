@@ -76,6 +76,11 @@ public class TagMapping
         this.mappings = mappings;
     }
 
+    /**
+     * Copy constructor.
+     *
+     * @param source to copy from
+     */
     public TagMapping(@NonNull final TagMapping source) {
         copyFrom(source);
     }
@@ -115,7 +120,11 @@ public class TagMapping
      */
     @NonNull
     private static Set<String> decodeMappingString(@NonNull final CharSequence s) {
-        return Set.of(SPLIT.split(s));
+        if (s.length() != 0) {
+            return Set.of(SPLIT.split(s));
+        }
+        // the database stores an empty string as the 'delete-tag' rule
+        return Set.of();
     }
 
     /**
@@ -167,20 +176,42 @@ public class TagMapping
         mappings = new HashSet<>(source.mappings);
     }
 
+    /**
+     * Get the source tag name.
+     *
+     * @return name
+     */
     @NonNull
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the source tag name.
+     *
+     * @param name source
+     */
     public void setName(@NonNull final String name) {
         this.name = name;
     }
 
+    /**
+     * Get the substitution mappings.
+     * Can be empty, in which case the original tag should be deleted.
+     *
+     * @return set of substitutions
+     */
     @NonNull
     public Set<String> getMappings() {
         return mappings;
     }
 
+    /**
+     * Set the substitution mappings.
+     * An empty set indication the source should be deleted.
+     *
+     * @param mappings to use
+     */
     public void setMappings(@NonNull final Set<String> mappings) {
         this.mappings = mappings;
     }
@@ -223,6 +254,4 @@ public class TagMapping
     public int compareTo(@NonNull final TagMapping o) {
         return name.compareTo(o.name);
     }
-
-
 }

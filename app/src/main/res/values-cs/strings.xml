@@ -562,7 +562,7 @@
     <string name="info_backup_successful">Zálohování proběhlo úspěšně</string>
     <string name="info_tap_to_move_tag">Klepnutím na štítek jej přesunete do/z knihy.</string>
     <string name="lbl_add_or_edit_substitution">Přidání/úprava pravidla nahrazení</string>
-    <string name="info_substitutions_one_per_line">Přidejte jedno nahrazení na řádek</string>
+    <string name="info_substitutions_one_per_line">Přidej jeden náhradní výraz na řádek, nebo nech prázdné, pokud chceš tag smazat</string>
     <string name="info_download_successful">Stahování bylo úspěšné</string>
     <string name="info_export_report">Ve vybrané složce byl vytvořen soubor %1$s s názvem „%2$s“. Měli byste jej ručně zkopírovat jinam, abyste ochránili data pro případ poškození, ztráty nebo krádeže zařízení.</string>
     <string name="info_export_successful">Export byl úspěšný</string>

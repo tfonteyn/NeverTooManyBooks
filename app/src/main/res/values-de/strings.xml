@@ -544,7 +544,7 @@
     <string name="info_backup_successful">Backup erfolgreich</string>
     <string name="info_tap_to_move_tag">Tippe auf einen Tag, um ihn in das Buch oder aus dem Buch zu verschieben.</string>
     <string name="lbl_add_or_edit_substitution">Hinzufügen/Bearbeiten einer Ersetzungsregel</string>
-    <string name="info_substitutions_one_per_line">Eine Ersetzung pro Zeile hinzufügen</string>
+    <string name="info_substitutions_one_per_line">Füge eine Ersetzung pro Zeile hinzu, oder lass es leer, um das Tag zu löschen</string>
     <string name="info_download_successful">Herunterladen erfolgreich</string>
     <string name="info_export_report">Eine %1$s-Datei namens “%2$s“ wurde im ausgewählten Ordner erstellt. Sie sollte manuell an einen anderen Ort kopiert werden, um die Daten zu schützen, falls das Gerät beschädigt wird, verloren geht oder gestohlen wird.</string>
     <string name="info_export_successful">Export erfolgreich</string>

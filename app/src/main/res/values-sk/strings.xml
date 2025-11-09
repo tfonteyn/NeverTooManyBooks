@@ -637,7 +637,7 @@
     <string name="tip_book_search_by_text">Pridávanie kníh cez ISBN je oveľa presnejšie ako pridávanie podľa autora a názvu a vo všeobecnosti sa uprednostňuje. Nezabudnite, že správny čiarový kód nájdete niekedy na vnútornej strane prednej obálky.</string>
     <string name="tip_booklist_style_defaults">Túto obrazovku použite na nastavenie predvolených charakteristík všetkých štýlov. Tieto sa používajú všetkými zabudovanými štýlmi a ako výchozí bod pre každý štýl, ktorý si sami definujete.</string>
     <string name="info_partial_date_picker">Klepnite na predtým vybratý mesiac alebo deň pre zrušenie jeho výberu.</string>
-    <string name="info_substitutions_one_per_line">Pridajte jedno nahradenie na riadok</string>
+    <string name="info_substitutions_one_per_line">Pridaj jednu náhradu na riadok alebo nechaj prázdne pre odstránenie značky</string>
     <string name="info_site_search_field_optional">Voliteľné. Nepodporované všetkými webovými stránkami.</string>
     <string name="site_description_various_languages">Rôzne jazyky</string>
     <string name="tip_booklist_styles_editor">Túto obrazovku použite na prispôsobenie zoznamu štýlov, ktoré sa zobrazia v predvolenej ponuke štýlov. Pomocou začiarkavacieho políčka vyberte, ktoré štýly sa zobrazia v zozname. Ak nie sú vybraté žiadne štýly, zobrazia sa všetky štýly. Hierarchiu môžete zmeniť potiahnutím ikony vpravo na konci každého riadku nahor alebo nadol. Dlhým stlačením kdekoľvek inde v riadku môžete upraviť alebo naklonovať podrobnosti konkrétneho štýlu. Ak ste štýl naklonovali a zmenili ste potom svoj názor, budete ho musieť sami odstrániť.</string>

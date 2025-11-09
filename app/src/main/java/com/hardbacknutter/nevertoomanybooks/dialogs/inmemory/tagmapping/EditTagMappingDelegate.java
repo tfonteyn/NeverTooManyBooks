@@ -150,10 +150,6 @@ class EditTagMappingDelegate
             vb.lblTagName.setError(context.getString(R.string.vldt_non_blank_required));
             return false;
         }
-        if (currentEdit.getMappings().isEmpty()) {
-            vb.lblTagMapping.setError(context.getString(R.string.vldt_non_blank_required));
-            return false;
-        }
 
         // anything actually changed ? If not, we're done.
         if (!vm.isModified()) {

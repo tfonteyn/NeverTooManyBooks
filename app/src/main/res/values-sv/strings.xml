@@ -280,7 +280,7 @@
     <string name="info_site_search_field_optional">Valfritt. Stöds inte av alla webbplatser.</string>
     <string name="info_story_in_multiple_books">”%1$s” finns i flera böcker:\n\n%2$s</string>
     <string name="info_story_in_single_book">”%1$s” finns i en enda bok:\n\n%2$s</string>
-    <string name="info_substitutions_one_per_line">Lägg till en ersättning per rad</string>
+    <string name="info_substitutions_one_per_line">Lägg till en ersättning per rad eller lämna tomt för att ta bort taggen</string>
     <string name="info_tap_on_thumbnail_to_zoom">Tryck på en miniatyrbild för att visa en större bild.</string>
     <string name="info_tap_to_move_tag">Tryck på en tagg för att flytta den till/från boken.</string>
     <string name="info_tap_to_select">Tryck för att välja.</string>

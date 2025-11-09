@@ -553,7 +553,7 @@
     <string name="info_backup_successful">Kopia zapasowa powiodła się</string>
     <string name="info_tap_to_move_tag">Stuknij tag, aby przenieść go do/z książki.</string>
     <string name="lbl_add_or_edit_substitution">Dodanie/edycja reguły zastępowania</string>
-    <string name="info_substitutions_one_per_line">Dodaj jedno podstawienie w każdym wierszu</string>
+    <string name="info_substitutions_one_per_line">Dodaj jedno zastąpienie na linię lub zostaw puste, jeśli chcesz usunąć tag</string>
     <string name="info_download_successful">Pobieranie powiodło się</string>
     <string name="info_export_report">W wybranym folderze został utworzony plik %1$s o nazwie „%2$s”. Należy go ręcznie skopiować w inne miejsce, aby chronić dane w przypadku uszkodzenia, zgubienia lub kradzieży urządzenia.</string>
     <string name="info_export_successful">Eksport powiódł się</string>

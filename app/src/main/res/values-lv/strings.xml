@@ -225,5 +225,6 @@
     <string name="warning_delete_default_bookshelf">Šis ir tavs noklusējuma grāmatplaukts. Ja tu to izdzēsīsi, jaunais noklusējuma plaukts būs: “%1$s”.\n\nIzmanto “%2$s” galvenajā izvēlnē, lai izvēlētos citu noklusējuma grāmatplauktu.</string>
     <string name="action_set_as_default">Iestatīt kā noklusējuma</string>
     <string name="tip_bookshelf_management">Izceltā rinda norāda tavu pašreizējo grāmatplauktu.\n\nNoklusējuma grāmatplaukts (atzīmēts ar *) tiks automātiski izmantots, ja pašreizējais nav pieejams jebkāda iemesla dēļ.</string>
+    <string name="info_substitutions_one_per_line">Pievieno vienu aizstājēju katrai rindai vai atstāj tukšu, lai dzēstu tagu</string>
 
 </resources>

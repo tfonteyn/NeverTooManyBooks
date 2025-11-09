@@ -285,7 +285,7 @@
     <string name="info_tap_to_select">Érintse meg a kiválasztáshoz.</string>
     <string name="info_tap_to_move_tag">Érintsen meg egy címkét az áthelyezéshez.</string>
     <string name="lbl_add_or_edit_substitution">Helyettesítési szabály hozzáadása/szerkesztése</string>
-    <string name="info_substitutions_one_per_line">Soronként egy helyettesítést adjon hozzá</string>
+    <string name="info_substitutions_one_per_line">Adj meg egy helyettesítést soronként, vagy hagyd üresen a címke törléséhez</string>
     <string name="info_download_successful">Sikeres letöltés</string>
     <string name="info_calibre_content_server_extension">A Calibre tartalomszerver bővítmény nincs telepítve. A virtuális könyvtárak nem lesznek elérhetők.</string>
     <string name="cd_btn_drag_handle">Húzza a lista átrendezéséhez</string>

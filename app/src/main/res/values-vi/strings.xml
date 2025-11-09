@@ -250,7 +250,7 @@
     <string name="info_displaying_n_books_in_m_entries">%1$d sách, trong %2$d mục</string>
     <string name="info_tap_to_move_tag">Chạm vào thẻ để di chuyển nó đến/ra khỏi cuốn sách.</string>
     <string name="lbl_add_or_edit_substitution">Thêm/Chỉnh sửa quy tắc thay thế</string>
-    <string name="info_substitutions_one_per_line">Thêm một thay thế cho mỗi dòng</string>
+    <string name="info_substitutions_one_per_line">Thêm một thay thế mỗi dòng hoặc để trống để xóa thẻ</string>
     <string name="info_download_successful">Tải xuống thành công</string>
     <string name="info_export_books_option_since_last_full_backup">Sách được thêm hoặc cập nhật kể từ lần sao lưu đầy đủ gần đây nhất.</string>
     <string name="info_export_report">Tệp %1$s có tên “%2$s” đã được tạo trong thư mục đã chọn và bạn nên sao chép thủ công tệp đó sang nơi khác để bảo vệ dữ liệu trong trường hợp thiết bị của bạn bị hỏng, bị mất hoặc bị đánh cắp.</string>

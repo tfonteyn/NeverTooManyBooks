@@ -260,7 +260,7 @@
     <string name="info_tap_to_select">Toca para seleccionar.</string>
     <string name="info_tap_to_move_tag">Preme unha etiqueta para movela a/desde o libro.</string>
     <string name="lbl_add_or_edit_substitution">Engadir/Editar unha regra de substitución</string>
-    <string name="info_substitutions_one_per_line">Engadir unha substitución por liña</string>
+    <string name="info_substitutions_one_per_line">Engade unha substitución por liña ou deixa baleiro para borrar a etiqueta</string>
     <string name="info_download_successful">Descarga con éxito</string>
     <string name="cd_btn_drag_handle">Arrastra para reordenar esta lista</string>
     <string name="cd_clear_text_end_icon">Borrar texto</string>

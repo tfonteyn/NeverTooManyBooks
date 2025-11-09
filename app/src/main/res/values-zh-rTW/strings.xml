@@ -249,7 +249,7 @@
     <string name="info_cleanup_files">可刪除檔案目前佔用 SD 卡 %1$s 空間。當您備份資料庫或應用程式崩潰時，會將日誌與其他資料檔案儲存在 SD 卡上。點擊下方按鈕以從 SD 卡刪除這些檔案。如果您遇到了崩潰或其他問題，請考慮先使用「%2$s」按鈕。</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d書，在 %2$d條目中</string>
     <string name="lbl_add_or_edit_substitution">新增/編輯替換規則</string>
-    <string name="info_substitutions_one_per_line">每行添加一個替代</string>
+    <string name="info_substitutions_one_per_line">每行新增一個替代，或留空刪除標籤</string>
     <string name="info_download_successful">下載成功</string>
     <string name="info_export_books_option_since_last_full_backup">自上次完整備份後新增或更新的圖書。</string>
     <string name="info_export_successful">匯出成功</string>

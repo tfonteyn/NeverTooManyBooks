@@ -236,7 +236,7 @@
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="info_tap_to_move_tag">Tik op een tag om deze te verplaatsen van/naar het boek.</string>
     <string name="lbl_add_or_edit_substitution">Een substitutieregel toevoegen/bewerken</string>
-    <string name="info_substitutions_one_per_line">Voeg één substitutie per regel toe</string>
+    <string name="info_substitutions_one_per_line">Voeg één substitutie per regel toe of laat leeg om de tag te verwijderen</string>
     <string name="info_download_successful">Download succesvol</string>
     <string name="info_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up.</string>
     <string name="info_export_report">Een %1$s bestand genaamd „%2$s” werd aangemaakt in de geselecteerde map. U moet het handmatig naar elders kopiëren om de gegevens te beschermen in geval van beschadiging, verlies of diefstal van uw apparaat.</string>

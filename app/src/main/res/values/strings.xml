@@ -445,9 +445,10 @@
 
     <!-- Menu option to add/edit a tag-substitution rule.-->
     <string name="lbl_add_or_edit_substitution">Add/Edit a substitution rule</string>
-    <!-- hint/label above a multi-line txt field where the user should
-         enter one Substitution text on each line. -->
-    <string name="info_substitutions_one_per_line">Add one substitution per line</string>
+    <!-- Tag-substitution rule.
+         Hint/label above a multi-line txt field where the user should
+         enter one Substitution text on each line (or keep the entire field empty to delete). -->
+    <string name="info_substitutions_one_per_line">Add one substitution per line or leave empty to delete the tag</string>
 
     <string name="info_download_successful">Download successful</string>
     <!-- See GitHub docs... there is optional code to be added to Calibre.
