@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -155,6 +156,9 @@ class ResultsAccumulator {
                     //ENHANCE: don't take first rating, but calc the average
                     processRating(key, result, book, realNumberParser);
 
+                } else if (DBKey.ISBN.equals(key)) {
+                    // We need to check isbn-13 versus isbn-10 values specifically
+                    processIsbn(key, result, book);
                 } else {
                     // when we get here, we should only have String, int, or long data
                     processGenericKey(key, result, book, realNumberParser);
@@ -167,6 +171,45 @@ class ResultsAccumulator {
 
         // Pick the best covers for each list (if any) and clean/delete all others.
         CoverFileSpecArray.process(book);
+    }
+
+    /**
+     * Compare the user-input they searched for with the ISBN/code we got from the
+     * SearchEngine/Site and use the most appropriate one.
+     *
+     * @param key      Key of data
+     * @param siteData Source Bundle
+     * @param book     Destination bundle
+     */
+    private void processIsbn(@NonNull final String key,
+                             @NonNull final Book siteData,
+                             @NonNull final Book book) {
+        // No new data ? we're done.
+        final String dataToAdd = siteData.getString(key, null);
+        if (dataToAdd == null || dataToAdd.isBlank()) {
+            return;
+        }
+
+        final String previous = book.getString(key, null);
+        if (previous == null || previous.isEmpty()) {
+            // copy the new data
+            book.putString(key, dataToAdd);
+
+        } else {
+            // The user-input for the search.
+            final ISBN prevIsbn = new ISBN(previous, false);
+            // The code we got from the website.
+            final ISBN dataIsbn = new ISBN(dataToAdd, false);
+
+            // If the user searched for an isbn-13,
+            // and the website returned an isbn-10
+            // AND they are really the same, THEN we preserve the isbn-10
+            // If the codes are different, we KEEP the one the user searched for.
+            if (dataIsbn.isType(ISBN.Type.Isbn10) && prevIsbn.isType(ISBN.Type.Isbn13)
+                && dataIsbn.equals(prevIsbn)) {
+                book.putString(key, dataToAdd);
+            }
+        }
     }
 
     /**

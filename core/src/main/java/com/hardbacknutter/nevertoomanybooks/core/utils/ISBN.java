@@ -345,7 +345,6 @@ public class ISBN {
      *
      * @return {@code true} if it is
      */
-    @VisibleForTesting
     public boolean isType(@NonNull final Type type) {
         if (type == Type.Ean13) {
             // ISBN-13 and ISSN-13 are sub-types of EAN13
