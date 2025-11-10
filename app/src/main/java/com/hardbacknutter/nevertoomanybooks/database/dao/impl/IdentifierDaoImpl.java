@@ -432,5 +432,8 @@ public class IdentifierDaoImpl
                 SELECT_ + TBL_IDENTIFIERS.dotAs(DBKey.PK_ID)
                 + _FROM_ + TBL_IDENTIFIERS.ref()
                 + _WHERE_ + TBL_IDENTIFIERS.dot(DBKey.IDENTIFIERS.KEY) + "=?";
+
+        private Sql() {
+        }
     }
 }
