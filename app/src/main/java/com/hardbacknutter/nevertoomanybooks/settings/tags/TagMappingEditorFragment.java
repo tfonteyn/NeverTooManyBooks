@@ -98,11 +98,6 @@ public class TagMappingEditorFragment
     private TagAdapter adapter;
     private ExtMenuLauncher menuLauncher;
     private EditTagMappingLauncher editLauncher;
-
-    private TagAdminViewModel vm;
-    @Nullable
-    private ProgressDelegate progressDelegate;
-
     private final PositionHandler positionHandler = new PositionHandler() {
 
         @Override
@@ -116,6 +111,9 @@ public class TagMappingEditorFragment
             showContextMenu(v, position);
         }
     };
+    private TagAdminViewModel vm;
+    @Nullable
+    private ProgressDelegate progressDelegate;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -520,8 +518,16 @@ public class TagMappingEditorFragment
                 vb.getRoot().setVisibility(View.VISIBLE);
 
                 vb.name.setText(mapping.getName());
-                vb.mapping.setText(mapping.getMappings().stream().sorted().collect(
-                        Collectors.joining("; ")));
+                final Set<String> r = mapping.getMappings();
+                final String text;
+                if (r.isEmpty()) {
+                    final Context context = itemView.getContext();
+                    text = context.getString(R.string.brackets,
+                                             context.getString(R.string.action_delete));
+                } else {
+                    text = r.stream().sorted().collect(Collectors.joining("; "));
+                }
+                vb.mapping.setText(text);
             }
         }
     }
