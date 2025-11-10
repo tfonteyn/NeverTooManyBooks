@@ -67,6 +67,7 @@ public class SearchBookByExternalIdFragment
      */
     private static final Map<Integer, EngineId> VIEW_TO_ENGINE = Map.ofEntries(
             Map.entry(R.id.site_bedetheque, EngineId.Bedetheque),
+            Map.entry(R.id.site_bibliotece, EngineId.BibliotecePl),
             Map.entry(R.id.site_databaze_knih, EngineId.DatabazeKnih),
             Map.entry(R.id.site_dnb, EngineId.Dnb),
             Map.entry(R.id.site_goodreads, EngineId.Goodreads),

@@ -67,6 +67,7 @@ import org.jsoup.select.Elements;
 public class BibliotecePlSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
+                   SearchEngine.ByExternalId,
                    SearchEngine.ByText {
 
     public static final String SITE_URL = "https://w.bibliotece.pl";
@@ -178,6 +179,23 @@ public class BibliotecePlSearchEngine
                         // "books"
                         .setTagsToIgnore(Set.of("książki"))
                         .build(SearchEngineConfig::new));
+    }
+
+    @NonNull
+    @Override
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final String externalId,
+                                   @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+        final Book book = new Book();
+
+        final String url = getHostUrl(context) + '/' + externalId;
+        final Document document = loadDocument(context, url, null);
+
+        if (!isCancelled()) {
+            parse(context, document, fetchCovers, book);
+        }
+        return book;
     }
 
     @NonNull

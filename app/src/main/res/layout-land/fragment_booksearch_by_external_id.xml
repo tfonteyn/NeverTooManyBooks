@@ -65,7 +65,7 @@
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_bedetheque,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
+            app:constraint_referenced_ids="site_bedetheque,site_bibliotece,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
             tools:ignore="MissingConstraints"
             />
 
@@ -75,7 +75,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:constraint_referenced_ids="site_amazon,site_bedetheque,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
+            app:constraint_referenced_ids="site_bedetheque,site_bibliotece,site_databaze_knih,site_dnb,site_goodreads,site_isfdb,site_kbnl,site_last_dodo_nl,site_open_library,site_strip_info_be"
             app:flow_horizontalAlign="start"
             app:flow_horizontalBias="0.5"
             app:flow_horizontalGap="@dimen/field_margin_inline"
@@ -90,14 +90,21 @@
             app:layout_constraintEnd_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
             />
+
         <RadioButton
-            android:id="@+id/site_amazon"
+            android:id="@+id/site_bedetheque"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_amazon"
-            android:visibility="gone"
-            tools:visibility="visible"
+            android:text="@string/site_bedetheque"
+            />
+
+        <RadioButton
+            android:id="@+id/site_bibliotece"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_bibliotece_pl"
             />
 
         <RadioButton
@@ -143,27 +150,19 @@
             />
 
         <RadioButton
-            android:id="@+id/site_open_library"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_open_library"
-            />
-
-        <RadioButton
-            android:id="@+id/site_bedetheque"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_bedetheque"
-            />
-
-        <RadioButton
             android:id="@+id/site_last_dodo_nl"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_lastdodo_nl"
+            />
+
+        <RadioButton
+            android:id="@+id/site_open_library"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/site_open_library"
             />
 
         <RadioButton
