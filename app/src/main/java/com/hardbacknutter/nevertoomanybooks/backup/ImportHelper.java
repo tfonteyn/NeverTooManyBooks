@@ -86,7 +86,11 @@ public final class ImportHelper
                               RecordType.Cover);
                 setUpdateOption(DataReader.Updates.OnlyNewer);
                 break;
-
+            case Tar:
+                addRecordType(RecordType.Books,
+                              RecordType.Cover);
+                setUpdateOption(DataReader.Updates.OnlyNewer);
+                break;
             case SqLiteDb:
                 addRecordType(RecordType.Books);
                 setUpdateOption(DataReader.Updates.Skip);

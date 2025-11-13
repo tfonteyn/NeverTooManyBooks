@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.UriInfo;
@@ -77,6 +78,9 @@ public enum ArchiveReaderEncoding
      * Full support for export/import.
      */
     Json,
+
+    /** The legacy BC archive restore support. NOT compressed. */
+    Tar,
 
     /** Database. Recognized, but not supported for now. */
     SqLiteDb;
@@ -132,6 +136,13 @@ public enum ArchiveReaderEncoding
                 if (len > 4
                     && b[0] == 0x50 && b[1] == 0x4B && b[2] == 0x03 && b[3] == 0x04) {
                     return Optional.of(Zip);
+                }
+
+                // tar file: offset 0x101, the string "ustar"
+                if (len > 0x110
+                    && b[0x101] == 0x75 && b[0x102] == 0x73 && b[0x103] == 0x74
+                    && b[0x104] == 0x61 && b[0x105] == 0x72) {
+                    return Optional.of(Tar);
                 }
 
                 // sqlite v3, offset 0, 53 51 4c 69 74 65 20 66 6f 72 6d 61 74 20 33 00
@@ -237,6 +248,10 @@ public enum ArchiveReaderEncoding
         switch (this) {
             case Zip: {
                 reader = new ZipArchiveReader(context, uri, updateOption, recordTypes);
+                break;
+            }
+            case Tar: {
+                reader = new TarArchiveReader(context, uri, updateOption, recordTypes);
                 break;
             }
             case Csv: {

@@ -44,6 +44,11 @@ jsoup = "1.21.2"
 # https://github.com/square/okhttp
 okhttpAndroid = "5.3.0"
 
+# http://commons.apache.org/proper/commons-codec/
+apacheCommonsCodec = "1.20.0"
+# http://commons.apache.org/proper/commons-compress/
+apacheCommonsCompress = "1.28.0"
+
 # https://github.com/zxing/zxing
 zxingCore = '3.5.3'
 # CameraX based scanner code from https://github.com/tfonteyn/TinyZXingWrapper
@@ -112,6 +117,8 @@ google-desugar = { group = "com.android.tools", name = "desugar_jdk_libs_nio", v
 
 acra-core = { group = "ch.acra", name = "acra-core", version.ref = "acra" }
 acra-dialog = { group = "ch.acra", name = "acra-dialog", version.ref = "acra" }
+apache-commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "apacheCommonsCodec" }
+apache-commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "apacheCommonsCompress" }
 hardbacknutter-tinyzxingwrapper = { module = "com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper", version.ref = "tinyzxingwrapper" }
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttpAndroid" }

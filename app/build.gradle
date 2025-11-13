@@ -279,6 +279,10 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.urlconnection)
 
+    // Tar file import for BC backups
+    implementation(libs.apache.commons.codec)
+    implementation(libs.apache.commons.compress)
+
     // CameraX based scanner code from "TinyZXingWrapper"
     releaseImplementation(libs.hardbacknutter.tinyzxingwrapper) {
         artifact {

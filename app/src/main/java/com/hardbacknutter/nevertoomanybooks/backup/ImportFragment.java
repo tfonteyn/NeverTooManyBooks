@@ -302,6 +302,14 @@ public class ImportFragment
                 vb.cbxDeleteRemovedBooks.setVisibility(View.VISIBLE);
                 break;
             }
+            case Tar: {
+                vb.cbxBooks.setVisibility(View.VISIBLE);
+                vb.cbxCovers.setVisibility(View.VISIBLE);
+                vb.cbxPrefs.setVisibility(View.GONE);
+                vb.cbxStyles.setVisibility(View.GONE);
+                vb.cbxDeleteRemovedBooks.setVisibility(View.GONE);
+                break;
+            }
             case Csv:
             case SqLiteDb: {
                 // Show only the book options;
