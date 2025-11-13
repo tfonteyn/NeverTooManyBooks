@@ -1,8 +1,16 @@
 Draft notes for next version:
 
-### 7.8.4
+### 7.9.0
 
 NEW:
+
+- #196 Add "w.bibliotece.pl" as a source for polish language books.
+  There are some limitations with this site. See the project documentation for details.
+- #198 Allow choosing a different bookshelf as a default.
+  This finally allows users to delete the "My Books" (also known as "1st") bookshelf.
+- the tag-substitution rules now support automatic removal of unwanted tags during searches.
+- preserve ISBN-10 codes in search results even when searching by ISBN-13 code.
+- support for directly importing Book-Catalogue _bcbk_ files.
 
 FIXES:
 
