@@ -31,7 +31,7 @@ see [importing-from-book-catalogue](https://github.com/tfonteyn/NeverTooManyBook
 Scan the QR code to open this page on your phone:<br>
 ![QR Code](qr-code.png)
 
-### Download the latest release: 7.8.3
+### Download the latest release: 7.9.0
 
 <a href="https://github.com/tfonteyn/NeverTooManyBooks/releases">
 <img src="metadata/en-US/images/get-it-on-github.png" alt="Get it on GitHub" style="width:150px;"/></a>
@@ -78,6 +78,7 @@ You can enable/disable and prioritize the sites in Settings/Search/Websites..
 
 - **Bedetheque** (French and more; Catalogue; European Comics)
 - **Bertrand.pt** (Portuguese and more; Shop)
+- **Bibliotece.pl** (Polish; Catalogue)
 - **BOL.com** (Dutch and more; Shop)
 - **databazeknih.cz** (Czech and more; Catalogue)
 - **dnb.de** (German; Catalogue)
