@@ -89,6 +89,7 @@
  * <li>db: nothing actually implemented for now</li>
  * <li>json: all data (except covers)</li>
  * <li>zip: all data in json,xml,csv formats + covers</li>
+ * <li>tar: BookCatalogue csv format + covers</li>
  * </ul>
  * <p>
  * An entry in an archive will have a Type (books, styles,...) and an Encoding (json, csv, ...)

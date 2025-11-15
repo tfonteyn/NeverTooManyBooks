@@ -371,6 +371,7 @@ public class ZipArchiveReader
 
             Optional<ArchiveReaderRecord> nextRecord;
             // process each entry based on type, unless we are cancelled.
+            //noinspection NestedAssignment
             while ((nextRecord = next()).isPresent()
                    && !progressListener.isCancelled()) {
 

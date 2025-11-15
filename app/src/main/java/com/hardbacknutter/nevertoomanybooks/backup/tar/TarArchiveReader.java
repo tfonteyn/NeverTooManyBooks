@@ -55,7 +55,16 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
 /**
- * Implementation of TAR-specific reader functions.
+ * The TAR based archive {@link DataReader}.
+ * <p>
+ * Currently supported formats.
+ * <p>
+ * v1: the original BookCatalogue format; Styles and Preferences cannot be imported.
+ * <ul>
+ *     <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Xml}</li>
+ *     <li>{@link RecordType#Books} :        {@link RecordEncoding#Csv}</li>
+ *     <li>Multiple {@link RecordType#Cover}</li>
+ * </ul>
  */
 public class TarArchiveReader
         implements DataReader<ArchiveMetaData, ImportResults> {
