@@ -78,6 +78,7 @@ public class AuthorTypeMapper {
         MAPPINGS.put("foreword", Author.TYPE_FOREWORD);
         MAPPINGS.put("foreword by", Author.TYPE_FOREWORD);
         MAPPINGS.put("afterword", Author.TYPE_AFTERWORD);
+        MAPPINGS.put("postface", Author.TYPE_AFTERWORD);
 
         MAPPINGS.put("introduction", Author.TYPE_INTRODUCTION);
 
