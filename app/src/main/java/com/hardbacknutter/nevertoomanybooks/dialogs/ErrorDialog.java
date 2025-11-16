@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,21 +85,6 @@ public final class ErrorDialog {
     public static void show(@NonNull final Context context,
                             @NonNull final String tag,
                             @NonNull final DaoWriteException e) {
-        LoggerFactory.getLogger().e(tag, e);
-        showDialog(context, e, context.getString(R.string.error_unexpected), null,
-                   (d, w) -> d.dismiss());
-    }
-
-    /**
-     * Show an error message after an {@link SecurityException} was thrown.
-     *
-     * @param context Current context
-     * @param tag     log tag
-     * @param e       The SecurityException
-     */
-    public static void show(@NonNull final Context context,
-                            @NonNull final String tag,
-                            @NonNull final SecurityException e) {
         LoggerFactory.getLogger().e(tag, e);
         showDialog(context, e, context.getString(R.string.error_unexpected), null,
                    (d, w) -> d.dismiss());

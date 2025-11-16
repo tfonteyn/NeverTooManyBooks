@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.inmemory.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.utils.FileSize;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
+import com.hardbacknutter.util.logger.LoggerFactory;
 
 @Keep
 public class MaintenanceFragment
@@ -199,7 +200,9 @@ public class MaintenanceFragment
             ErrorDialog.show(context, TAG, e);
             return;
         } catch (@NonNull final SecurityException e) {
-            ErrorDialog.show(context, TAG, e);
+            // SecurityException is never thrown as the
+            // System.getSecurityManager() always return null
+            LoggerFactory.getLogger().e(TAG, e);
             return;
         }
 
@@ -223,7 +226,9 @@ public class MaintenanceFragment
                         } catch (@NonNull final CoverStorageException e) {
                             ErrorDialog.show(context, TAG, e);
                         } catch (@NonNull final SecurityException e) {
-                            ErrorDialog.show(context, TAG, e);
+                            // SecurityException is never thrown as the
+                            // System.getSecurityManager() always return null
+                            LoggerFactory.getLogger().e(TAG, e);
                         }
                     })
                     .create()
