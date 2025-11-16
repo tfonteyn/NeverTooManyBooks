@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -751,8 +752,7 @@ public class StripInfoSearchEngine
                     final byte[] digest = md5(file);
                     if (Arrays.equals(digest, NO_COVER_MD5)
                         || Arrays.equals(digest, MATURE_COVER_MD5)) {
-                        //noinspection ResultOfMethodCallIgnored
-                        file.delete();
+                        FileUtils.delete(file);
                         return Optional.empty();
                     }
                 }
