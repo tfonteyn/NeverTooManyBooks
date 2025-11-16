@@ -494,7 +494,8 @@ public class AmazonSearchEngine
         // It's too difficult to cover all possibilities, we're leaving that to the user.
         final Element titleElement = document.selectFirst("h1#title > span#productTitle");
         if (titleElement == null) {
-            LoggerFactory.getLogger().w(TAG, "parse", "no title?");
+            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+                                        "parse", "no title?");
             return;
         }
 
@@ -544,19 +545,22 @@ public class AmazonSearchEngine
                             @NonNull final Book book) {
         final Element tmmSwatches = document.selectFirst("div#tmmSwatches");
         if (tmmSwatches == null) {
-            LoggerFactory.getLogger().w(TAG, "parsePrice", "no tmmSwatches?");
+            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+                                        "parsePrice", "no tmmSwatches?");
             return;
         }
 
         final Element swatchElement = tmmSwatches.selectFirst("div.swatchElement.selected");
         if (swatchElement == null) {
-            LoggerFactory.getLogger().w(TAG, "parsePrice", "no swatchElement.selected?");
+            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+                                        "parsePrice", "no swatchElement.selected?");
             return;
         }
 
         final Element slotPrice = swatchElement.selectFirst("span.slot-price");
         if (slotPrice == null) {
-            LoggerFactory.getLogger().w(TAG, "parsePrice", "no span.slot-price?");
+            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+                                        "parsePrice", "no span.slot-price?");
             return;
         }
 
@@ -565,7 +569,8 @@ public class AmazonSearchEngine
         // but some books (.com?) have a "from $xx"
         final Element price = slotPrice.selectFirst("span");
         if (price == null) {
-            LoggerFactory.getLogger().w(TAG, "parsePrice", "no span below span.slot-price?");
+            LoggerFactory.getLogger().w(TAG, getHostUrl(context),
+                                        "parsePrice", "no span below span.slot-price?");
             return;
         }
 
@@ -678,7 +683,8 @@ public class AmazonSearchEngine
                     } else {
                         if (BuildConfig.DEBUG /* always */) {
                             if (!LABEL_IGNORED.contains(lcLabel)) {
-                                LoggerFactory.getLogger().d(TAG, "parse", "label=" + label);
+                                LoggerFactory.getLogger().d(TAG, getHostUrl(context),
+                                                            "parse", "label=" + label);
                             }
                         }
                     }
