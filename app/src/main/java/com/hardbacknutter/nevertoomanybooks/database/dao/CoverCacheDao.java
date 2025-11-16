@@ -25,7 +25,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -85,7 +84,6 @@ public interface CoverCacheDao {
      * @param bitmap to save
      * @param width  desired/maximum width
      */
-    @UiThread
     void saveCover(@NonNull String uuid,
                    @IntRange(from = 0, to = 3) int cIdx,
                    @NonNull Bitmap bitmap,

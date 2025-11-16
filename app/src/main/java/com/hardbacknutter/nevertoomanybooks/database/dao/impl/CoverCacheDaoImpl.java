@@ -29,7 +29,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -187,7 +186,6 @@ public class CoverCacheDaoImpl
     }
 
     @Override
-    @UiThread
     public void saveCover(@NonNull final String uuid,
                           @IntRange(from = 0, to = 3) final int cIdx,
                           @NonNull final Bitmap bitmap,

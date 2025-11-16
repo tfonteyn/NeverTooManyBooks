@@ -630,7 +630,6 @@ public class CoverStorage {
      *
      * @see CoverCacheDao#saveCover(String, int, Bitmap, int)
      */
-    @UiThread
     public void saveToCache(@NonNull final String uuid,
                             @IntRange(from = 0, to = 3) final int cIdx,
                             @NonNull final Bitmap bitmap,
