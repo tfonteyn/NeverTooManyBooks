@@ -405,13 +405,10 @@ public final class CalibreContentServer
      *
      * @param context Current context
      * @param uri     for the local folder
-     *
-     * @throws SecurityException on any issue
      */
     @AnyThread
     static void setFolderUri(@NonNull final Context context,
-                             @NonNull final Uri uri)
-            throws SecurityException {
+                             @NonNull final Uri uri) {
         final ContentResolver contentResolver = context.getContentResolver();
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -435,6 +432,8 @@ public final class CalibreContentServer
                  .putString(PK_LOCAL_FOLDER_URI, uri.toString())
                  .apply();
         } catch (@NonNull final SecurityException e) {
+            // SecurityException is never thrown as the
+            // System.getSecurityManager() always return null
             LoggerFactory.getLogger().e(TAG, e, "uri=" + uri);
             throw e;
         }

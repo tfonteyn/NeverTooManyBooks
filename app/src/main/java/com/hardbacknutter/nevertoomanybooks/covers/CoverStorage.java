@@ -149,6 +149,8 @@ public class CoverStorage {
                 //noinspection ResultOfMethodCallIgnored
                 mif.createNewFile();
             } catch (@NonNull final IOException | SecurityException e) {
+                // SecurityException is never thrown as the
+                // System.getSecurityManager() always return null
                 throw new CoverStorageException("Failed to write Pictures/.nomedia", e);
             }
         }

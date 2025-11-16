@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -164,6 +164,8 @@ public final class FileUtils {
             throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination);
 
         } catch (@NonNull final SecurityException e) {
+            // SecurityException is never thrown as the
+            // System.getSecurityManager() always return null
             throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination, e);
         }
     }
@@ -180,7 +182,8 @@ public final class FileUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (@NonNull final /* SecurityException */ RuntimeException ignore) {
-                // ignore
+                // SecurityException is never thrown as the
+                // System.getSecurityManager() always return null
             }
         }
     }

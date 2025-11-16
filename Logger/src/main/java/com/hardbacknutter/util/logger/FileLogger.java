@@ -235,6 +235,8 @@ public class FileLogger
             throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination);
 
         } catch (@NonNull final SecurityException e) {
+            // SecurityException is never thrown as the
+            // System.getSecurityManager() always return null
             throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination, e);
         }
     }
