@@ -552,6 +552,10 @@ public class AmazonSearchEngine
 
         final Element swatchElement = tmmSwatches.selectFirst("div.swatchElement.selected");
         if (swatchElement == null) {
+            // 2025-11-16: seen this happen while the page structure was not changed.
+            // This would only be the case when the page has NO selected format.
+            // Not sure how this can happen; multiple checks showed the structured
+            // to be correct and no way was found to have NO format selected.
             LoggerFactory.getLogger().w(TAG, getHostUrl(context),
                                         "parsePrice", "no swatchElement.selected?");
             return;
