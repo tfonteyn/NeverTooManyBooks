@@ -681,7 +681,7 @@ public class Author
     /**
      * Set the real-author for this Author.
      *
-     * @param author to use
+     * @param author to use; use {@code null} to remove
      *
      * @return the resolved real-author; or {@code null} if there is none
      */
@@ -689,6 +689,8 @@ public class Author
     public Author setRealAuthor(@Nullable final Author author) {
         if (author != null) {
             realAuthor = resolveRealAuthor(author);
+        } else {
+            realAuthor = null;
         }
         return realAuthor;
     }
