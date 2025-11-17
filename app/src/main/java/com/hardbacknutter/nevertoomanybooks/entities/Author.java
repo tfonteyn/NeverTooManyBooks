@@ -1339,7 +1339,8 @@ public class Author
     }
 
     /**
-     * Equality: <strong>id, family and given-names, realAuthor(id,names)</strong>.
+     * Equality: <strong>id, family and given-names, realAuthor(id,names), image</strong>
+     * (see code for details on the image).
      * <ul>
      *   <li>'complete' is a user setting and is ignored here.</li>
      *   <li>'type' is a book field and is ignored here.</li>
@@ -1348,6 +1349,50 @@ public class Author
      *
      * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.
+     * <p>
+     * <strong>github #200</strong>: adding the below notes for easy reference:
+     * <pre>
+     * Author equality is based on:
+     *
+     *     name
+     *     birth/death dates
+     *     alias: i.e. if both authors are aliases to the same real (author) name
+     *     image
+     *
+     * NOT based on
+     *
+     *     type
+     *     identifiers
+     *     complete flag
+     *
+     * So basically, if you add
+     *
+     *     Joe Bar, with a birth-date
+     *     Joe Bar, without a birth-date
+     *     Joe Bar, without a birth-date, but with a death-date
+     *
+     * They are considered THREE authors while editing. Mainly due to performance...
+     * this avoids repeated merge operations (with database access) during edits.
+     *
+     * When subsequently saving the book, the authors will be merged as much as possible.
+     * In the above example, the 3 entries have an identical name and no conflicting
+     * other fields, so they get merged into one.
+     *
+     * If there are conflicting fields, for example:
+     *
+     *     Joe Bar, with a birth-date
+     *     Joe Bar, without a birth-date
+     *     Joe Bar, with a different birth-date
+     *
+     * After saving you would have:
+     *
+     *     1+2 merged
+     *     3
+     *
+     * So while it may be a little confusing during edits, it's working as designed
+     * and I think is acceptable behaviour.
+     *
+     * </pre>
      *
      * @see #isIdentical(Author)
      */
