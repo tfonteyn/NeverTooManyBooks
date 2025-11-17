@@ -274,6 +274,7 @@ class EditAuthorDelegate
             return false;
         }
 
+        // We have no book, use the Locale from the user.
         final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
         // We let this call go ahead even if real-author is switched off by the user

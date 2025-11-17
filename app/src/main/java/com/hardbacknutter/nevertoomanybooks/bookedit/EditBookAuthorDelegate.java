@@ -176,6 +176,17 @@ class EditBookAuthorDelegate
 
         final Author currentEdit = authorVm.getCurrentEdit();
 
+        setupNames(context, currentEdit);
+        setupRealAuthorField(context);
+        setupAuthorTypeField(currentEdit.getType());
+
+        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
+
+        vb.familyName.requestFocus();
+    }
+
+    private void setupNames(@NonNull final Context context,
+                            @NonNull final Author currentEdit) {
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
@@ -190,13 +201,6 @@ class EditBookAuthorDelegate
                 vm.getAllAuthorGivenNames());
         vb.givenNames.setText(currentEdit.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
-
-        setupRealAuthorField(context);
-        setupAuthorTypeField(currentEdit.getType());
-
-        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
-
-        vb.familyName.requestFocus();
     }
 
     private void setupRealAuthorField(@NonNull final Context context) {
@@ -316,6 +320,7 @@ class EditBookAuthorDelegate
             currentEdit.setType(Author.TYPE_UNKNOWN);
         }
 
+        // Use the Locale from the book.
         final Locale locale = ServiceLocator
                 .getInstance().getLanguages()
                 .toLocale(context, vm.getBook().getString(DBKey.LANGUAGE));
@@ -357,6 +362,7 @@ class EditBookAuthorDelegate
 
     private void viewToModel() {
         final Author currentEdit = authorVm.getCurrentEdit();
+
         currentEdit.setName(vb.familyName.getText().toString().strip(),
                             vb.givenNames.getText().toString().strip());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
