@@ -189,7 +189,7 @@ public class ExportHelper
             // The zip archiver (maybe others as well?) can throw an IOException
             // when the user cancels, so only throw when this is not the case
             if (!progressListener.isCancelled()) {
-                FileUtils.delete(tmpFile);
+                FileUtils.backgroundDelete(tmpFile);
                 throw e;
             }
         } finally {
@@ -217,7 +217,7 @@ public class ExportHelper
         }
 
         // Whether success, failure or an empty-result, the temp file is always cleaned up.
-        FileUtils.delete(tmpFile);
+        FileUtils.backgroundDelete(tmpFile);
         return results;
     }
 
