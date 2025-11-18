@@ -136,7 +136,7 @@ public class ImageRecordReader
                         }
                     } else {
                         // discard
-                        FileUtils.delete(dstFile);
+                        FileUtils.backgroundDelete(dstFile);
                     }
                 } catch (@NonNull final IOException e) {
                     if (BuildConfig.DEBUG /* always */) {
