@@ -30,6 +30,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -91,11 +92,13 @@ public final class CoverFileSpecArray {
 
         // Delete all but the best one.
         // Note there *may* be no best one, so all would be deleted. This is fine.
+        final Collection<File> toDelete = new ArrayList<>();
         for (int i = 0; i < imageList.size(); i++) {
             if (i != bestFileIndex) {
-                FileUtils.delete(new File(imageList.get(i)));
+                toDelete.add(new File(imageList.get(i)));
             }
         }
+        FileUtils.backgroundDelete(toDelete);
 
         if (bestFileIndex >= 0) {
             return imageList.get(bestFileIndex);
