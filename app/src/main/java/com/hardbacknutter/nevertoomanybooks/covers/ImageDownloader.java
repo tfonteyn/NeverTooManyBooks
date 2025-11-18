@@ -220,11 +220,11 @@ public class ImageDownloader {
                 return Optional.of(savedFile);
             }
             // discard
-            FileUtils.delete(savedFile);
+            FileUtils.backgroundDelete(savedFile);
             return Optional.empty();
 
         } catch (@NonNull final IOException e) {
-            FileUtils.delete(destFile);
+            FileUtils.backgroundDelete(destFile);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES || IGNORE_RENAME_FAILURE) {
                 LoggerFactory.getLogger().e(TAG, e, "fetch");
