@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -97,17 +99,19 @@ public final class TaskFileUtils {
         if (root.isDirectory()) {
             final File[] files = root.listFiles(filter);
             if (files != null) {
+                final Collection<File> toDelete = new ArrayList<>();
                 for (final File file : files) {
                     if (progressListener != null && progressListener.isCancelled()) {
                         return totalSize;
                     }
                     if (file.isFile()) {
                         totalSize += file.length();
-                        FileUtils.delete(file);
+                        toDelete.add(file);
                     } else if (file.isDirectory()) {
                         totalSize += deleteDirectory(file, filter, progressListener);
                     }
                 }
+                FileUtils.backgroundDelete(toDelete);
             }
         }
         return totalSize;
