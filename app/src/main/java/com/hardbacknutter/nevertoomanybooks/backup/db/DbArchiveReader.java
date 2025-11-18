@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,8 +86,9 @@ public class DbArchiveReader
             final File tmpDb = new File(context.getCacheDir(), System.nanoTime() + ".db");
             try (OutputStream os = new FileOutputStream(tmpDb)) {
                 FileUtils.copy(is, os);
-            } finally {
-                FileUtils.delete(tmpDb);
+            } catch (@NonNull final IOException e) {
+                FileUtils.backgroundDelete(tmpDb);
+                throw e;
             }
             sqLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
                                                          SQLiteDatabase.OPEN_READONLY);
@@ -162,7 +163,7 @@ public class DbArchiveReader
             if (sqLiteDatabase != null) {
                 sqLiteDatabase.close();
                 // all done, no need to keep this file.
-                FileUtils.delete(new File(sqLiteDatabase.getPath()));
+                FileUtils.backgroundDelete(new File(sqLiteDatabase.getPath()));
             }
         }
     }
