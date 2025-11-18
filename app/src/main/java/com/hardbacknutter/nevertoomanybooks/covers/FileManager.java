@@ -27,6 +27,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -36,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -254,13 +257,16 @@ class FileManager {
      * Clean up all files we handled in this class.
      */
     public void purge() {
-        downloads.values()
-                 .stream()
-                 .filter(Objects::nonNull)
-                 .map(ImageFileInfo::getFile)
-                 .forEach(file -> file.ifPresent(FileUtils::delete));
-
+        final Collection<File> files = downloads.values()
+                                                .stream()
+                                                .filter(Objects::nonNull)
+                                                .map(ImageFileInfo::getFile)
+                                                .filter(Optional::isPresent)
+                                                .map(Optional::get)
+                                                .collect(Collectors.toList());
         // not strictly needed, but future-proof
         downloads.clear();
+
+        FileUtils.backgroundDelete(files);
     }
 }
