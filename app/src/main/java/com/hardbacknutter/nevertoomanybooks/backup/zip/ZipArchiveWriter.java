@@ -225,7 +225,7 @@ public class ZipArchiveWriter
                             tmpBooksFile, true);
                 } finally {
                     // no longer needed
-                    FileUtils.delete(tmpBooksFile);
+                    FileUtils.backgroundDelete(tmpBooksFile);
                 }
             }
 
