@@ -41,8 +41,11 @@ import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.zip.CRC32;
+
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 
 /**
  * Class to wrap common storage related functions.
@@ -189,6 +192,28 @@ public final class FileUtils {
     }
 
     /**
+     * Convenience wrapper for {@link File#delete()} which executes on {@link ASyncExecutor#MAIN}.
+     *
+     * @param file to delete
+     */
+    public static void backgroundDelete(@Nullable final File file) {
+        if (file != null) {
+            ASyncExecutor.MAIN.execute(() -> delete(file));
+        }
+    }
+
+    /**
+     * Convenience wrapper for {@link File#delete()} which executes on {@link ASyncExecutor#MAIN}.
+     *
+     * @param files to delete
+     */
+    public static void backgroundDelete(@Nullable final Collection<File> files) {
+        if (files != null && !files.isEmpty()) {
+            ASyncExecutor.MAIN.execute(() -> files.forEach(FileUtils::delete));
+        }
+    }
+
+    /**
      * Recursively delete files.
      * Does <strong>NOT</strong> delete the actual directory or any actual subdirectories.
      *
@@ -209,14 +234,16 @@ public final class FileUtils {
             final File[] files = root.listFiles(filter);
             // sanity check
             if (files != null) {
+                final Collection<File> toDelete = new ArrayList<>();
                 for (final File file : files) {
                     if (file.isFile()) {
                         totalSize += file.length();
-                        delete(file);
+                        toDelete.add(file);
                     } else if (file.isDirectory()) {
                         totalSize += deleteDirectory(file, filter);
                     }
                 }
+                backgroundDelete(toDelete);
             }
         }
         return totalSize;
