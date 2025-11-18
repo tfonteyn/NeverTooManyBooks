@@ -752,7 +752,7 @@ public class StripInfoSearchEngine
                     final byte[] digest = md5(file);
                     if (Arrays.equals(digest, NO_COVER_MD5)
                         || Arrays.equals(digest, MATURE_COVER_MD5)) {
-                        FileUtils.delete(file);
+                        FileUtils.backgroundDelete(file);
                         return Optional.empty();
                     }
                 }
