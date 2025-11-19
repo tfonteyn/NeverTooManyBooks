@@ -31,7 +31,7 @@ import com.hardbacknutter.util.logger.LoggerFactory;
 /**
  * Provides a rudimentary versioning for files.
  * Previous versions of a file can be kept in the same directory of the file,
- * or in a common directory given at creation time.
+ * or in a directory set in the constructor.
  */
 public class VersionedFileService {
 
@@ -47,18 +47,17 @@ public class VersionedFileService {
      * @param copies Number of copies to keep.
      */
     public VersionedFileService(final int copies) {
-        this.backupDir = null;
-        this.copies = copies;
+        this(null, copies);
     }
 
     /**
      * Constructor.
      *
-     * @param backupDir Where to put the backup files.
+     * @param backupDir (optional) Where to put the backup files.
      *                  Must be on the same volume as the file(s).
      * @param copies    Number of copies to keep.
      */
-    public VersionedFileService(@NonNull final File backupDir,
+    public VersionedFileService(@Nullable final File backupDir,
                                 final int copies) {
         this.backupDir = backupDir;
         this.copies = copies;
