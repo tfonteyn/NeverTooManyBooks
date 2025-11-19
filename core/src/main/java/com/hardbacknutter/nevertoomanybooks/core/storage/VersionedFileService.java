@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,11 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.core.storage;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
-
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Provides a rudimentary versioning for files.
@@ -35,7 +34,8 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class VersionedFileService {
 
-    private static final String TAG = "VersionedFileService";
+    /** the first suffix for a backup. */
+    private static final String FIRST_SUFFIX = ".1";
 
     private final int copies;
     @Nullable
@@ -64,45 +64,6 @@ public class VersionedFileService {
     }
 
     /**
-     * Rename the given "file" to "file.1", keeping {@link #copies} of the old file,
-     * i.e. the number of the copy is added as a SUFFIX to the name.
-     * <p>
-     * Upon success, the "file" is no longer available.
-     * Any exception is ignored. The presence of "file" is not defined, and should be assume
-     * to be no longer available.
-     * <p>
-     * <strong>Important:</strong> it's a 'rename', so single volume use only!
-     *
-     * @param file file to rename
-     */
-    public void save(@NonNull final File file) {
-
-        final String backupFilePath = createBackupFilePath(file);
-
-        // remove the oldest copy (if there is one)
-        File previous = new File(backupFilePath + "." + copies);
-        FileUtils.delete(previous);
-
-        try {
-            // now bump each copy up one suffix.
-            for (int i = copies - 1; i > 0; i--) {
-                final File current = new File(backupFilePath + "." + i);
-                if (current.exists()) {
-                    FileUtils.rename(current, previous);
-                }
-                previous = current;
-            }
-
-            // Rename the current file giving it a suffix.
-            if (file.exists()) {
-                FileUtils.rename(file, previous);
-            }
-        } catch (@NonNull final IOException e) {
-            LoggerFactory.getLogger().e(TAG, e);
-        }
-    }
-
-    /**
      * Check if the given filename has a backup file in storage.
      *
      * @param file to check
@@ -111,7 +72,48 @@ public class VersionedFileService {
      */
     public boolean hasBackup(@NonNull final File file) {
         final String backupFilePath = createBackupFilePath(file);
-        return new File(backupFilePath + ".1").exists();
+        return new File(backupFilePath + FIRST_SUFFIX).exists();
+    }
+
+    /**
+     * Rename the given "file" to "file.1", keeping {@link #copies} of the old file,
+     * i.e. the number of the copy is added as a SUFFIX to the name.
+     * <p>
+     * Upon success, the "file" is no longer available.
+     * If an Exception is thrown, the "file" should be considered invalid.
+     * <p>
+     * <strong>Important:</strong> it's a 'rename', so single volume use only!
+     *
+     * @param file file to rename
+     *
+     * @throws IOException           on generic/other IO failures
+     */
+    public void save(@NonNull final File file)
+            throws IOException {
+        if (!file.exists()) {
+            return;
+        }
+
+        final String backupFilePath = createBackupFilePath(file);
+
+        // remove the oldest copy (if there is one)
+        File previous = new File(backupFilePath + "." + copies);
+        // synchronous! The 'previous' file MUST be deleted before
+        // we can start renaming below.
+        // TODO: call this save method only from a WorkerThread
+        FileUtils.delete(previous);
+
+        // now bump each copy up one suffix.
+        for (int i = copies - 1; i > 0; i--) {
+            final File current = new File(backupFilePath + "." + i);
+            if (current.exists()) {
+                FileUtils.rename(current, previous);
+            }
+            previous = current;
+        }
+
+        // Rename the current file giving it a suffix.
+        FileUtils.rename(file, previous);
     }
 
     /**
@@ -120,29 +122,35 @@ public class VersionedFileService {
      * @param file to restore
      *
      * @return {@code true} if we restored successfully
+     *         {@code false} if there was no file available to restore
      *
      * @throws IOException on generic/other IO failures
      */
+    @WorkerThread
     public boolean restore(@NonNull final File file)
             throws IOException {
 
         final String backupFilePath = createBackupFilePath(file);
 
-        File previous = new File(backupFilePath + ".1");
-        if (previous.exists()) {
-            // Remove the current file, and re-instate the previous one
-            FileUtils.delete(file);
-            FileUtils.rename(previous, file);
-
-            // now bump each copy down one suffix.
-            for (int i = 2; i < copies; i++) {
-                final File current = new File(backupFilePath + "." + i);
-                if (current.exists()) {
-                    FileUtils.rename(current, previous);
-                }
-                previous = current;
-            }
+        File previous = new File(backupFilePath + FIRST_SUFFIX);
+        if (!previous.exists()) {
+            // There is nothing to restore
+            return false;
         }
+
+        // Remove the current file, and re-instate the previous one
+        FileUtils.delete(file);
+        FileUtils.rename(previous, file);
+
+        // now bump each copy down one suffix. e.g. ".2" becomes ".1" etc...
+        for (int i = 2; i < copies; i++) {
+            final File current = new File(backupFilePath + "." + i);
+            if (current.exists()) {
+                FileUtils.rename(current, previous);
+            }
+            previous = current;
+        }
+
         return true;
     }
 
