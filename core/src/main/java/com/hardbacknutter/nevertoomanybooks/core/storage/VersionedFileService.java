@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.storage;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -46,6 +47,7 @@ public class VersionedFileService {
      *
      * @param copies Number of copies to keep.
      */
+    @AnyThread
     public VersionedFileService(final int copies) {
         this(null, copies);
     }
@@ -57,6 +59,7 @@ public class VersionedFileService {
      *                  Must be on the same volume as the file(s).
      * @param copies    Number of copies to keep.
      */
+    @AnyThread
     public VersionedFileService(@Nullable final File backupDir,
                                 final int copies) {
         this.backupDir = backupDir;
@@ -154,6 +157,7 @@ public class VersionedFileService {
         return true;
     }
 
+    @AnyThread
     @NonNull
     private String createBackupFilePath(@NonNull final File file) {
         final String backupFilePath;
