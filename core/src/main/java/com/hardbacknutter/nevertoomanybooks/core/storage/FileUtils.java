@@ -25,9 +25,11 @@ import android.system.ErrnoException;
 import android.system.OsConstants;
 import android.webkit.MimeTypeMap;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.File;
@@ -196,6 +198,7 @@ public final class FileUtils {
      *
      * @param file to delete
      */
+    @AnyThread
     public static void backgroundDelete(@Nullable final File file) {
         if (file != null) {
             ASyncExecutor.MAIN.execute(() -> delete(file));
@@ -207,6 +210,7 @@ public final class FileUtils {
      *
      * @param files to delete
      */
+    @AnyThread
     public static void backgroundDelete(@Nullable final Collection<File> files) {
         if (files != null && !files.isEmpty()) {
             ASyncExecutor.MAIN.execute(() -> files.forEach(FileUtils::delete));
@@ -222,6 +226,7 @@ public final class FileUtils {
      *
      * @return number of bytes deleted
      */
+    @WorkerThread
     public static long deleteDirectory(@Nullable final File root,
                                        @Nullable final FileFilter filter) {
         if (root == null) {
@@ -234,16 +239,14 @@ public final class FileUtils {
             final File[] files = root.listFiles(filter);
             // sanity check
             if (files != null) {
-                final Collection<File> toDelete = new ArrayList<>();
                 for (final File file : files) {
                     if (file.isFile()) {
                         totalSize += file.length();
-                        toDelete.add(file);
+                        delete(file);
                     } else if (file.isDirectory()) {
                         totalSize += deleteDirectory(file, filter);
                     }
                 }
-                backgroundDelete(toDelete);
             }
         }
         return totalSize;
@@ -347,6 +350,7 @@ public final class FileUtils {
      * @throws IOException on generic/other IO failures
      */
     @NonNull
+    @WorkerThread
     public static CRC32 getCrc32(@NonNull final File file)
             throws IOException {
         final CRC32 crc32 = new CRC32();
@@ -382,6 +386,7 @@ public final class FileUtils {
      *
      * @throws FileNotFoundException on ...
      */
+    @AnyThread
     @NonNull
     public static String buildValidFilename(@Nullable final String name)
             throws FileNotFoundException {
@@ -426,6 +431,7 @@ public final class FileUtils {
      *
      * @return flag
      */
+    @AnyThread
     private static boolean isValidFilenameChar(final char c) {
         if (c <= ASCII_CONTROL) {
             return false;
@@ -454,6 +460,7 @@ public final class FileUtils {
      *
      * @return the MIME type
      */
+    @AnyThread
     @NonNull
     public static String getMimeTypeFromExtension(@NonNull final String fileExt) {
         final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
@@ -478,6 +485,7 @@ public final class FileUtils {
      *
      * @return {@code true} if it is
      */
+    @AnyThread
     public static boolean isDiskFull(@Nullable final Exception e) {
         return e instanceof IOException
                && e.getCause() instanceof ErrnoException
