@@ -47,6 +47,7 @@ import androidx.preference.SwitchPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
@@ -68,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.settings.tags.TagAdminContract;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
+import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -368,11 +370,10 @@ public class SettingsFragment
                     break;
                 }
                 case OPTION_MOVE: {
-                    // check space and start the task
-                    if (!vm.moveData(context, oldVolumeIndex, newVolumeIndex)) {
-                        //noinspection DataFlowIssue
-                        Snackbar.make(getView(), R.string.error_storage_not_writable,
-                                      Snackbar.LENGTH_LONG).show();
+                    try {
+                        vm.moveData(context, oldVolumeIndex, newVolumeIndex);
+                    } catch (@NonNull final IOException e) {
+                        ErrorDialog.show(context, TAG, e);
                     }
                     break;
                 }
@@ -457,7 +458,18 @@ public class SettingsFragment
         void onMoveCancelled(@NonNull final LiveDataEvent<Integer> message) {
             closeProgressDialog();
 
-            message.process(ignored -> {
+            message.process(volumeOrCancelCode -> {
+                if (volumeOrCancelCode == StorageMoverTask.CANCELLED_NO_SPACE_ON_DISK) {
+                    new MaterialAlertDialogBuilder(context)
+                            .setIcon(R.drawable.warning_24px)
+                            .setTitle(R.string.lbl_storage_settings)
+                            .setMessage(R.string.error_storage_not_writable)
+                            .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
+                            .create()
+                            .show();
+                    return;
+                }
+
                 // FIXME: need better msg + tell user to clean up the destination
                 showMessageAndFinishActivity(getString(R.string.cancelled));
             });

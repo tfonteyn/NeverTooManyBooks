@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,9 +25,7 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
@@ -35,6 +33,11 @@ import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
 
 public class StorageMoverTask
         extends MTask<Integer> {
+
+    /** Return code from {@link #doWork()} for a standard task cancellation. */
+    public static final int CANCELLED = -1;
+    /** Return code from {@link #doWork()} if the destination did not have enough space. */
+    public static final int CANCELLED_NO_SPACE_ON_DISK = -2;
 
     private static final String TAG = "StorageMoverTask";
 
@@ -53,9 +56,10 @@ public class StorageMoverTask
     }
 
     /**
-     * Set the source and destination directories.
+     * Start the task.
      * <p>
-     * The indexes must be valid values for {@link Context#getExternalFilesDirs(String)}.
+     * The source and destination directory indexes must be valid values for
+     * {@link Context#getExternalFilesDirs(String)}.
      *
      * @param context     Current context
      * @param sourceIndex 0..
@@ -63,9 +67,18 @@ public class StorageMoverTask
      *
      * @throws IOException if one of the indexed directories does not exist
      */
-    public void setDirs(@NonNull final Context context,
-                        final int sourceIndex,
-                        final int destIndex)
+    public void start(@NonNull final Context context,
+                      final int sourceIndex,
+                      final int destIndex)
+            throws IOException {
+
+        setDirs(context, sourceIndex, destIndex);
+        execute();
+    }
+
+    private void setDirs(@NonNull final Context context,
+                         final int sourceIndex,
+                         final int destIndex)
             throws IOException {
         this.destIndex = destIndex;
 
@@ -80,25 +93,11 @@ public class StorageMoverTask
         destDir = dirs[destIndex];
     }
 
-    public boolean checkSpace()
+    private boolean checkSpace()
             throws IOException {
-        if (BuildConfig.DEBUG /* always */) {
-            Objects.requireNonNull(sourceDir);
-            Objects.requireNonNull(destDir);
-        }
-
         final long usedSpace = FileUtils.getUsedSpace(sourceDir, null);
         final long freeSpace = FileUtils.getFreeSpace(destDir);
         return freeSpace > (usedSpace * OVERHEAD);
-    }
-
-    public void start() {
-        if (BuildConfig.DEBUG /* always */) {
-            Objects.requireNonNull(sourceDir);
-            Objects.requireNonNull(destDir);
-        }
-
-        execute();
     }
 
     @NonNull
@@ -109,10 +108,16 @@ public class StorageMoverTask
 
         publishProgress(0, context.getString(R.string.progress_msg_please_wait));
 
+        if (!checkSpace()) {
+            // force cancellation
+            cancel();
+            return CANCELLED_NO_SPACE_ON_DISK;
+        }
+
         // two steps, so we don't delete anything if the copy fails or is cancelled
         TaskFileUtils.copyDirectory(sourceDir, destDir, this);
         if (isCancelled()) {
-            return -1;
+            return CANCELLED;
         }
 
         publishProgress(0, context.getString(R.string.progress_msg_cleaning_up));
@@ -120,7 +125,7 @@ public class StorageMoverTask
         // Delete(File) swallows all exceptions as none are deemed critical.
         TaskFileUtils.deleteDirectory(sourceDir, null, this);
         if (isCancelled()) {
-            return -1;
+            return CANCELLED;
         }
 
         return destIndex;

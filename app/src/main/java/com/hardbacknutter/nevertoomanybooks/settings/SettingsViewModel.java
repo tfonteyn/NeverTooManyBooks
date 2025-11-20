@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverVolume;
 import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
-import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
  * Shared on the Activity level as it's needed by more than 1 Fragment.
@@ -83,6 +82,7 @@ public class SettingsViewModel
     private String[] uiLanguageEntries;
 
     private boolean initDone;
+
     /**
      * Pseudo constructor.
      *
@@ -166,20 +166,20 @@ public class SettingsViewModel
         return storedVolumeIndex;
     }
 
-    boolean moveData(@NonNull final Context context,
+    /**
+     * Start the task moving the data.
+     *
+     * @param context     Current context
+     * @param sourceIndex 0..
+     * @param destIndex   0..
+     *
+     * @throws IOException on generic/other IO failures
+     */
+    void moveData(@NonNull final Context context,
                      final int sourceIndex,
-                     final int destIndex) {
-        try {
-            storageMoverTask.setDirs(context, sourceIndex, destIndex);
-            if (storageMoverTask.checkSpace()) {
-                storageMoverTask.start();
-                return true;
-            }
-        } catch (@NonNull final IOException e) {
-            // log but ignore, just report we can't move
-            LoggerFactory.getLogger().e(TAG, e);
-        }
-        return false;
+                  final int destIndex)
+            throws IOException {
+        storageMoverTask.start(context, sourceIndex, destIndex);
     }
 
     @NonNull
@@ -187,6 +187,12 @@ public class SettingsViewModel
         return storageMoverTask.onProgress();
     }
 
+    /**
+     * Observable to receive cancellation.
+     *
+     * @return the result is one of {@link StorageMoverTask#CANCELLED}
+     *         or {@link StorageMoverTask#CANCELLED_NO_SPACE_ON_DISK}
+     */
     @NonNull
     LiveData<LiveDataEvent<Integer>> onMoveCancelled() {
         return storageMoverTask.onCancelled();
@@ -202,6 +208,11 @@ public class SettingsViewModel
         return storageMoverTask.onFailure();
     }
 
+    /**
+     * Observable to receive success.
+     *
+     * @return the result is the destination volume index
+     */
     @NonNull
     LiveData<LiveDataEvent<Integer>> onMoveFinished() {
         return storageMoverTask.onFinished();
