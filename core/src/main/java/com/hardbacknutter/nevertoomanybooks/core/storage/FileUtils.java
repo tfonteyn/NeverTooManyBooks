@@ -192,7 +192,7 @@ public final class FileUtils {
     }
 
     /**
-     * Convenience wrapper for {@link File#delete()} which executes on {@link ASyncExecutor#MAIN}.
+     * Convenience wrapper for {@link #delete(File)} which executes on {@link ASyncExecutor#MAIN}.
      *
      * @param file to delete
      */
@@ -203,7 +203,7 @@ public final class FileUtils {
     }
 
     /**
-     * Convenience wrapper for {@link File#delete()} which executes on {@link ASyncExecutor#MAIN}.
+     * Convenience wrapper for {@link #delete(File)} which executes on {@link ASyncExecutor#MAIN}.
      *
      * @param files to delete
      */
