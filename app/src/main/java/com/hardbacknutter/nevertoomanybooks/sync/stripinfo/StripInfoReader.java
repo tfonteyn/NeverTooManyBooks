@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -134,8 +135,9 @@ public class StripInfoReader
         bookIdentifierDao = locator.getBookIdentifierDao();
     }
 
-    @NonNull
+    @WorkerThread
     @Override
+    @NonNull
     public ReaderResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException,

@@ -286,9 +286,9 @@ public class ZipArchiveReader
      *                             The user MUST take action on it NOW.
      * @throws IOException         on generic/other IO failures
      */
-    @NonNull
-    @Override
     @WorkerThread
+    @Override
+    @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException, IOException, StorageException {

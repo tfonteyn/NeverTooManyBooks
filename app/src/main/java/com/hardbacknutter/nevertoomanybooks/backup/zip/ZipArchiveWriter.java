@@ -146,9 +146,9 @@ public class ZipArchiveWriter
                 RecordWriter.BUFFER_SIZE));
     }
 
-    @NonNull
-    @Override
     @WorkerThread
+    @Override
+    @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
             throws DataWriterException,

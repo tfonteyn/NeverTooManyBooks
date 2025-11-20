@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -94,8 +95,9 @@ public class JsonArchiveWriter
         this.sinceDateTime = sinceDateTime;
     }
 
-    @NonNull
+    @WorkerThread
     @Override
+    @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
             throws DataWriterException,

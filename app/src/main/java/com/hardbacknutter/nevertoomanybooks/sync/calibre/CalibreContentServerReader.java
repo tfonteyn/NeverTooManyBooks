@@ -237,9 +237,9 @@ public class CalibreContentServerReader
         return Optional.of(new SyncReaderMetaData(args));
     }
 
-    @NonNull
-    @Override
     @WorkerThread
+    @Override
+    @NonNull
     public ReaderResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException,

@@ -127,9 +127,9 @@ public class JsonArchiveReader
         return Optional.of(metaData);
     }
 
-    @NonNull
-    @Override
     @WorkerThread
+    @Override
+    @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException,

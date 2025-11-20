@@ -25,6 +25,7 @@ import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -132,8 +133,9 @@ public class CalibreContentServerWriter
         server.cancel();
     }
 
-    @NonNull
+    @WorkerThread
     @Override
+    @NonNull
     public SyncWriterResults write(@NonNull final Context context,
                                    @NonNull final ProgressListener progressListener)
             throws DataWriterException,

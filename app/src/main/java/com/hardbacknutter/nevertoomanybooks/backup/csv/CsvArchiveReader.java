@@ -111,9 +111,9 @@ public class CsvArchiveReader
         return Optional.of(new ArchiveMetaData(0, bundle));
     }
 
-    @NonNull
-    @Override
     @WorkerThread
+    @Override
+    @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException, IOException, StorageException {

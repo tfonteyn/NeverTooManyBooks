@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.db;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,8 +58,9 @@ public class DbArchiveWriter
         this.databasePath = databasePath;
     }
 
-    @NonNull
+    @WorkerThread
     @Override
+    @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
             throws IOException {

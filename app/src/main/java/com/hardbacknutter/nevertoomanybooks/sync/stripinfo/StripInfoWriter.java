@@ -25,6 +25,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -92,8 +93,9 @@ public class StripInfoWriter
         collectionForm.cancel();
     }
 
-    @NonNull
+    @WorkerThread
     @Override
+    @NonNull
     public SyncWriterResults write(@NonNull final Context context,
                                    @NonNull final ProgressListener progressListener)
             throws IOException {
