@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
@@ -216,27 +217,34 @@ public class MaintenanceFragment
                     .setTitle(R.string.option_purge_files)
                     .setMessage(msg)
                     .setNegativeButton(R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(R.string.ok, (d, w) -> {
-                        try {
-                            FileUtils.deleteDirectory(serviceLocator.getLogDir(), null);
-                            FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
-                            FileUtils.deleteDirectory(coverStorage.getTempDir(), null);
-                            FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
-
-                        } catch (@NonNull final CoverStorageException e) {
-                            ErrorDialog.show(context, TAG, e);
-                        } catch (@NonNull final SecurityException e) {
-                            // SecurityException is never thrown as the
-                            // System.getSecurityManager() always return null
-                            LoggerFactory.getLogger().e(TAG, e);
-                        }
-                    })
+                    .setPositiveButton(R.string.ok, (d, w) ->
+                            doPurgeFiles(serviceLocator, coverStorage, coverFilter))
                     .create()
                     .show();
         } else {
             //noinspection DataFlowIssue
             Snackbar.make(getView(), R.string.info_nothing_to_do, Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    private void doPurgeFiles(@NonNull final ServiceLocator serviceLocator,
+                              @NonNull final CoverStorage coverStorage,
+                              @NonNull final FileFilter coverFilter) {
+        ASyncExecutor.MAIN.execute(() -> {
+            try {
+                FileUtils.deleteDirectory(serviceLocator.getLogDir(), null);
+                FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);
+                FileUtils.deleteDirectory(coverStorage.getTempDir(), null);
+                FileUtils.deleteDirectory(coverStorage.getDir(), coverFilter);
+
+            } catch (@NonNull final CoverStorageException | SecurityException e) {
+                // CoverStorageException will not be thrown as we
+                // already did the same 'gets' to read the used-space above.
+                // SecurityException is never thrown as the
+                // System.getSecurityManager() always return null
+                LoggerFactory.getLogger().e(TAG, e);
+            }
+        });
     }
 
     @NonNull
