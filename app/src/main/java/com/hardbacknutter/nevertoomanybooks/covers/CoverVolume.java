@@ -126,6 +126,10 @@ public final class CoverVolume {
             // but the SDCARD was ejected AND removed.
             available = false;
 
+        } else if (volume < 0) {
+            // Paranoia... in case we got a broken setting from somewhere
+            available = false;
+
         } else //noinspection RedundantIfStatement
             if (!Environment.MEDIA_MOUNTED.equals(storageVolumes.get(volume).getState())) {
                 // The second most obvious issue:
@@ -141,7 +145,7 @@ public final class CoverVolume {
                 available = true;
             }
 
-        if (BuildConfig.DEBUG /* always */) {
+        if (!available || BuildConfig.DEBUG /* always */) {
             LoggerFactory.getLogger().d(TAG, "isAvailable",
                                         "volumeWanted=" + volume
                                         + "|available=" + available);
@@ -216,7 +220,7 @@ public final class CoverVolume {
         final List<StorageVolume> storageVolumes = manager.getStorageVolumes();
         for (final StorageVolume sv : storageVolumes) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                logger.d(TAG, "init",
+                logger.d(TAG, "dumpStorageInfo",
                          "uuid=" + sv.getUuid()
                          + "|sv.getDescription=" + sv.getDescription(context)
                          + "|getDirectory=" + sv.getDirectory()
@@ -226,7 +230,7 @@ public final class CoverVolume {
                          + "|isRemovable=" + sv.isRemovable()
                          + "|getState=" + sv.getState());
             } else {
-                logger.d(TAG, "init",
+                logger.d(TAG, "dumpStorageInfo",
                          "uuid=" + sv.getUuid()
                          + "|sv.getDescription=" + sv.getDescription(context)
                          + "|isPrimary=" + sv.isPrimary()
