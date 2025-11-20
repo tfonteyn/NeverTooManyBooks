@@ -22,14 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
@@ -50,6 +49,7 @@ public final class TaskFileUtils {
      *
      * @throws IOException on generic/other IO failures
      */
+    @WorkerThread
     static void copyDirectory(@NonNull final File sourceDir,
                               @NonNull final File destDir,
                               @Nullable final ProgressListener progressListener)
@@ -91,6 +91,7 @@ public final class TaskFileUtils {
      *
      * @see FileUtils#deleteDirectory(File, FileFilter)
      */
+    @WorkerThread
     public static long deleteDirectory(@NonNull final File root,
                                        @Nullable final FileFilter filter,
                                        @Nullable final ProgressListener progressListener) {
@@ -99,19 +100,17 @@ public final class TaskFileUtils {
         if (root.isDirectory()) {
             final File[] files = root.listFiles(filter);
             if (files != null) {
-                final Collection<File> toDelete = new ArrayList<>();
                 for (final File file : files) {
                     if (progressListener != null && progressListener.isCancelled()) {
                         return totalSize;
                     }
                     if (file.isFile()) {
                         totalSize += file.length();
-                        toDelete.add(file);
+                        FileUtils.delete(file);
                     } else if (file.isDirectory()) {
                         totalSize += deleteDirectory(file, filter, progressListener);
                     }
                 }
-                FileUtils.backgroundDelete(toDelete);
             }
         }
         return totalSize;
