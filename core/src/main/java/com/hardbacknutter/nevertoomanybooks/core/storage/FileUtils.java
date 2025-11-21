@@ -80,6 +80,8 @@ public final class FileUtils {
     /**
      * Copy the InputStream to the OutputStream.
      * Neither stream is closed here.
+     * <p>
+     * For real files, use {@link #copy(File, File)} instead.
      *
      * @param is InputStream
      * @param os OutputStream
@@ -105,6 +107,9 @@ public final class FileUtils {
 
     /**
      * Copy the source File to the destination File.
+     * <p>
+     * For real files, the FileChannel approach is faster
+     * than {@link #copy(InputStream, OutputStream)}.
      *
      * @param source      file
      * @param destination file
@@ -116,25 +121,11 @@ public final class FileUtils {
             throws IOException {
         try (FileInputStream fis = new FileInputStream(source);
              FileOutputStream fos = new FileOutputStream(destination)) {
-            copy(fis, fos);
-        }
-    }
 
-    /**
-     * Copy the source File to the destination File.
-     *
-     * @param source      file
-     * @param destination file
-     *
-     * @throws IOException on generic/other IO failures
-     */
-    public static void copy(@NonNull final FileInputStream source,
-                            @NonNull final FileOutputStream destination)
-            throws IOException {
-
-        try (FileChannel inChannel = source.getChannel();
-             FileChannel outChannel = destination.getChannel()) {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
+            try (FileChannel inChannel = fis.getChannel();
+                 FileChannel outChannel = fos.getChannel()) {
+                inChannel.transferTo(0, inChannel.size(), outChannel);
+            }
         }
     }
 
