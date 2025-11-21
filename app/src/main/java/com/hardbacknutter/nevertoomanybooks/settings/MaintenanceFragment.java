@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +38,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileFilter;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -54,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUr
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
@@ -79,9 +78,9 @@ public class MaintenanceFragment
     private MaintenanceViewModel vm;
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<GetContentUriForWritingContract.Input>
-            createDocumentLauncher =
-            registerForActivityResult(new GetContentUriForWritingContract(),
-                                      o -> o.ifPresent(this::createBugReport));
+            createDocumentLauncher = registerForActivityResult(
+            new GetContentUriForWritingContract(),
+            o -> o.ifPresent(uri -> vm.writeDebugFile(uri)));
     private SettingsViewModel settingsVm;
     /** View Binding. */
     private FragmentMaintenanceBinding vb;
@@ -129,6 +128,11 @@ public class MaintenanceFragment
 
         vm.onAllowPurgeFiles().observe(getViewLifecycleOwner(),
                                        m -> vb.btnPurgeFiles.setEnabled(m));
+
+        //vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        vm.onWriteDebugCancelled().observe(getViewLifecycleOwner(), this::onWriteDebugCancelled);
+        vm.onWriteDebugFailure().observe(getViewLifecycleOwner(), this::onWriteDebugFailure);
+        vm.onWriteDebugFinished().observe(getViewLifecycleOwner(), this::onWriteDebugFinished);
 
         vb.btnResetTips.setOnClickListener(this::onResetTips);
         vb.btnPurgeFiles.setOnClickListener(this::onPurgeFiles);
@@ -404,20 +408,29 @@ public class MaintenanceFragment
                 .show();
     }
 
-    private void createBugReport(@NonNull final Uri uri) {
-        //noinspection CheckStyle
-        try {
-            //noinspection DataFlowIssue
-            vm.sendDebug(getContext(), uri);
-
+    private void onWriteDebugFinished(@NonNull final LiveDataEvent<Boolean> message) {
+        message.process(ignored -> {
             if (vm.isCatastrophe() == MaintenanceViewModel.Catastrophe.Dialog) {
                 vm.setCatastrophe(MaintenanceViewModel.Catastrophe.Finished);
             }
-        } catch (@NonNull final RuntimeException | IOException e) {
+            // 2025-11-21: new behaviour, we close this Activity
+            showMessageAndFinishActivity(getString(R.string.action_done));
+        });
+    }
+
+    private void onWriteDebugCancelled(@NonNull final LiveDataEvent<Boolean> message) {
+        //noinspection DataFlowIssue
+        message.process(ignored -> Snackbar.make(getView(), R.string.cancelled,
+                                                 Snackbar.LENGTH_LONG).show());
+    }
+
+    private void onWriteDebugFailure(@NonNull final LiveDataEvent<Throwable> message) {
+        message.process(e -> {
             //noinspection DataFlowIssue
-            Snackbar.make(getView(), R.string.error_export_failed,
-                          Snackbar.LENGTH_LONG).show();
-        }
+            ErrorDialog.show(getContext(), TAG, e,
+                             getString(R.string.option_bug_report),
+                             getString(R.string.error_export_failed));
+        });
     }
 
     private void onTuning(@NonNull final View v) {

@@ -35,6 +35,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -72,6 +77,9 @@ public class MaintenanceViewModel
     /** After clicking the header 3 more times, the SQLite shell will allow updates. */
     private static final int DEBUG_CLICKS_ALLOW_SQL_UPDATES = 6;
 
+    @NonNull
+    private final DebugFileWriterTask debugWriterTask = new DebugFileWriterTask();
+
     private final MutableLiveData<Boolean> allowPurgeFiles = new MutableLiveData<>();
 
     @NonNull
@@ -80,6 +88,32 @@ public class MaintenanceViewModel
     private int debugClicks;
     @NonNull
     private Catastrophe catastrophe = Catastrophe.None;
+
+    @Override
+    protected void onCleared() {
+        debugWriterTask.cancel();
+        super.onCleared();
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
+        return debugWriterTask.onProgress();
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<Throwable>> onWriteDebugFailure() {
+        return debugWriterTask.onFailure();
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<Boolean>> onWriteDebugCancelled() {
+        return debugWriterTask.onCancelled();
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<Boolean>> onWriteDebugFinished() {
+        return debugWriterTask.onFinished();
+    }
 
     void init(@Nullable final Bundle args) {
         // If we're not (yet) in catastrophe mode, but we have been asked to do so...
@@ -147,27 +181,13 @@ public class MaintenanceViewModel
         return debugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES;
     }
 
-    void sendDebug(@NonNull final Context context,
-                   @NonNull final Uri uri)
-            throws IOException {
-
-        final DebugReport builder = new DebugReport(context)
-                .addDefaultMessage()
-                .addScreenParams();
-
-        if (bugReportOptions.contains(DBG_SEND_DATABASE)) {
-            builder.addDatabase();
-        }
-        if (bugReportOptions.contains(DBG_SEND_DATABASE_UPGRADE)) {
-            builder.addDatabaseUpgrades(1);
-        }
-        if (bugReportOptions.contains(DBG_SEND_LOGFILES)) {
-            builder.addLogs(10);
-        }
-        if (bugReportOptions.contains(DBG_SEND_PREFERENCES)) {
-            builder.addPreferences();
-        }
-        builder.sendToFile(uri);
+    /**
+     * Start the task.
+     *
+     * @param uri to write to
+     */
+    void writeDebugFile(@NonNull final Uri uri) {
+        debugWriterTask.start(uri, bugReportOptions);
     }
 
     enum Catastrophe {
@@ -184,6 +204,56 @@ public class MaintenanceViewModel
 
         boolean isOver() {
             return this == Finished || this == Ignored;
+        }
+    }
+
+    /**
+     * Returns a boolean, always {@code true} as we can't return a {@code Void/null}.
+     */
+    private static class DebugFileWriterTask
+            extends MTask<Boolean> {
+
+        private static final String TAG = "DebugFileWriterTask";
+        private Uri uri;
+        private Collection<Integer> items;
+
+        DebugFileWriterTask() {
+            super(R.id.TASK_ID_EXPORT, TAG);
+        }
+
+        void start(@NonNull final Uri uri,
+                   @NonNull final Collection<Integer> selectedItems) {
+            this.uri = uri;
+            this.items = selectedItems;
+
+            execute();
+        }
+
+        @NonNull
+        @Override
+        protected Boolean doWork()
+                throws IOException {
+            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
+            final DebugReport builder = new DebugReport(context)
+                    .addDefaultMessage()
+                    .addScreenParams();
+
+            if (items.contains(DBG_SEND_DATABASE)) {
+                builder.addDatabase();
+            }
+            if (items.contains(DBG_SEND_DATABASE_UPGRADE)) {
+                builder.addDatabaseUpgrades(1);
+            }
+            if (items.contains(DBG_SEND_LOGFILES)) {
+                builder.addLogs(10);
+            }
+            if (items.contains(DBG_SEND_PREFERENCES)) {
+                builder.addPreferences();
+            }
+            builder.sendToFile(uri);
+
+            return true;
         }
     }
 }
