@@ -25,8 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
@@ -65,10 +63,7 @@ public class DbArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (FileInputStream fis = new FileInputStream(databasePath);
-             FileOutputStream fos = new FileOutputStream(destFile)) {
-            FileUtils.copy(fis, fos);
-        }
+        FileUtils.copy(databasePath, destFile);
 
         final ExportResults results = new ExportResults();
         results.database = true;

@@ -56,9 +56,12 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 public class DbArchiveReader
         implements DataReader<ArchiveMetaData, ImportResults> {
 
+    @NonNull
+    private final Uri uri;
+    @NonNull
+    private final Updates updateOption;
     @Nullable
-    private final SQLiteDatabase sqLiteDatabase;
-
+    private SQLiteDatabase sqLiteDatabase;
     @SuppressWarnings("unused")
     @Nullable
     private DataReader<ArchiveMetaData, ImportResults> delegateDataReader;
@@ -67,32 +70,13 @@ public class DbArchiveReader
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param uri     to read from
-     *
-     * @throws IOException           on failure to copy the database file
-     * @throws FileNotFoundException if the uri cannot be resolved
+     * @param uri          to read from
+     * @param updateOption options
      */
-    public DbArchiveReader(@NonNull final Context context,
-                           @NonNull final Uri uri)
-    throws IOException {
-
-        try (InputStream is = context.getContentResolver().openInputStream(uri)) {
-            if (is == null) {
-                throw new FileNotFoundException(uri.toString());
-            }
-
-            // Copy the file from the uri to a place where we can access it as a database.
-            final File tmpDb = new File(context.getCacheDir(), System.nanoTime() + ".db");
-            try (OutputStream os = new FileOutputStream(tmpDb)) {
-                FileUtils.copy(is, os);
-            } catch (@NonNull final IOException e) {
-                FileUtils.backgroundDelete(tmpDb);
-                throw e;
-            }
-            sqLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
-                                                         SQLiteDatabase.OPEN_READONLY);
-        }
+    public DbArchiveReader(@NonNull final Uri uri,
+                           @NonNull final Updates updateOption) {
+        this.uri = uri;
+        this.updateOption = updateOption;
     }
 
     @WorkerThread
@@ -101,9 +85,24 @@ public class DbArchiveReader
             throws DataReaderException,
                    IOException, CredentialsException {
 
-        // sanity check
+        // copy from the Uri and open the (now private) database
         if (sqLiteDatabase == null) {
-            throw new FileNotFoundException("no db file");
+            try (InputStream is = context.getContentResolver().openInputStream(uri)) {
+                if (is == null) {
+                    throw new FileNotFoundException(uri.toString());
+                }
+
+                // Copy the file from the uri to a place where we can access it as a database.
+                final File tmpDb = new File(context.getCacheDir(), System.nanoTime() + ".db");
+                try (OutputStream os = new FileOutputStream(tmpDb)) {
+                    FileUtils.copy(is, os);
+                } catch (@NonNull final IOException e) {
+                    FileUtils.backgroundDelete(tmpDb);
+                    throw e;
+                }
+                sqLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
+                                                             SQLiteDatabase.OPEN_READONLY);
+            }
         }
 
         // Determine if the database file is a supported format

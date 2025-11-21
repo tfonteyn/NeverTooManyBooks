@@ -259,7 +259,7 @@ public enum ArchiveReaderEncoding
                 break;
             }
             case SqLiteDb: {
-                reader = new DbArchiveReader(context, uri);
+                reader = new DbArchiveReader(uri, updateOption);
                 break;
             }
             case Json: {
