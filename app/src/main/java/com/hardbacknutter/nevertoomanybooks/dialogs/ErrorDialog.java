@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -42,60 +41,45 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Done this way to ensure specific exceptions are ALWAYS showing the same message
  * and to allow {@link #showDialog} to recurse.
  */
+@SuppressWarnings("ChainOfInstanceofChecks")
 public final class ErrorDialog {
+
+    private static final String DOUBLE_LF = "\n\n";
+
     private ErrorDialog() {
     }
 
     /**
-     * Show an error message after an {@link IOException} was thrown.
+     * Show an error message after a generic error was thrown.
      *
      * @param context Current context
      * @param tag     log tag
-     * @param e       The IOException
+     * @param e       the error
      */
     public static void show(@NonNull final Context context,
                             @NonNull final String tag,
-                            @NonNull final IOException e) {
+                            @NonNull final Throwable e) {
         LoggerFactory.getLogger().e(tag, e);
-        showDialog(context, e, null, null, (d, w) -> d.dismiss());
+
+        @Nullable
+        final String title;
+        if (e instanceof StorageException) {
+            title = context.getString(R.string.error_storage_not_accessible);
+        } else if (e instanceof DaoWriteException) {
+            title = context.getString(R.string.error_unexpected);
+        } else {
+            title = null;
+        }
+
+        showDialog(context, e, title, null, (d, w) -> d.dismiss());
     }
 
     /**
-     * Show an error message after a {@link StorageException} was thrown.
-     *
-     * @param context Current context
-     * @param tag     log tag
-     * @param e       The StorageException
-     */
-    public static void show(@NonNull final Context context,
-                            @NonNull final String tag,
-                            @NonNull final StorageException e) {
-        LoggerFactory.getLogger().e(tag, e);
-        showDialog(context, e, context.getString(R.string.error_storage_not_accessible), null,
-                   (d, w) -> d.dismiss());
-    }
-
-    /**
-     * Show an error message after a {@link DaoWriteException} was thrown.
-     *
-     * @param context Current context
-     * @param tag     log tag
-     * @param e       The DaoWriteException
-     */
-    public static void show(@NonNull final Context context,
-                            @NonNull final String tag,
-                            @NonNull final DaoWriteException e) {
-        LoggerFactory.getLogger().e(tag, e);
-        showDialog(context, e, context.getString(R.string.error_unexpected), null,
-                   (d, w) -> d.dismiss());
-    }
-
-    /**
-     * Show an error message after a generic Exception was thrown.
+     * Show an error message after a generic error was thrown.
      *
      * @param context       Current context
      * @param tag           log tag
-     * @param e             The error
+     * @param e             the error
      * @param title         Dialog title
      * @param closingAction to use for the positive button
      */
@@ -109,11 +93,11 @@ public final class ErrorDialog {
     }
 
     /**
-     * Show an error message after a generic Exception was thrown.
+     * Show an error message after a generic error was thrown.
      *
      * @param context Current context
      * @param tag     log tag
-     * @param e       The error
+     * @param e       the error
      * @param title   Dialog title
      * @param message The message to show
      */
@@ -127,11 +111,11 @@ public final class ErrorDialog {
     }
 
     /**
-     * Show an error message after a generic Exception was thrown.
+     * Show an error message after a generic error was thrown.
      *
      * @param context       Current context
      * @param tag           log tag
-     * @param e             The error
+     * @param e             the error
      * @param title         Dialog title
      * @param message       The message to show
      * @param closingAction to use for the positive button
@@ -187,7 +171,7 @@ public final class ErrorDialog {
                     // Pass in a null exception to the recursive call to 'showDialog()'
                     // to make sure we don't loop.
                     builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                            showDialog(context, null, title, message + "\n\n" + eMessage,
+                            showDialog(context, null, title, message + DOUBLE_LF + eMessage,
                                        closingAction)
                     );
                 }
@@ -221,7 +205,7 @@ public final class ErrorDialog {
                         // Pass in a null exception to the recursive call to 'showDialog()'
                         // to make sure we don't loop.
                         builder.setNeutralButton(R.string.action_more_ellipsis, (d, w) ->
-                                showDialog(context, null, title, message2 + "\n\n" + eMessage,
+                                showDialog(context, null, title, message2 + DOUBLE_LF + eMessage,
                                            closingAction)
                         );
                     }
