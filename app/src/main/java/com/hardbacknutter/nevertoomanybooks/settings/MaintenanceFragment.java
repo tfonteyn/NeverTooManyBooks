@@ -234,7 +234,7 @@ public class MaintenanceFragment
     private void doPurgeFiles(@NonNull final ServiceLocator serviceLocator,
                               @NonNull final CoverStorage coverStorage,
                               @NonNull final FileFilter coverFilter) {
-        ASyncExecutor.MAIN.execute(() -> {
+        ASyncExecutor.PARALLEL.execute(() -> {
             try {
                 FileUtils.deleteDirectory(serviceLocator.getLogDir(), null);
                 FileUtils.deleteDirectory(serviceLocator.getUpgradesDir(), null);

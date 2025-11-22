@@ -62,12 +62,12 @@ public final class ASyncExecutor {
      * including a backup-executor for rejections.
      */
     @NonNull
-    public static final ExecutorService MAIN;
+    public static final ExecutorService PARALLEL;
 
     /**
      * An {@link Executor} that executes tasks one at a time in serial order.
      * This serialization is global to the app.
-     * Actual execution is done on {@link #MAIN}.
+     * Actual execution is done on {@link #PARALLEL}.
      */
     @SuppressWarnings("WeakerAccess")
     public static final Executor SERIAL;
@@ -92,7 +92,7 @@ public final class ASyncExecutor {
     private static final int BACKUP_POOL_SIZE = 5;
 
     /**
-     * Used for rejected executions from the {@link #MAIN} service.
+     * Used for rejected executions from the {@link #PARALLEL} service.
      */
     private static ThreadPoolExecutor sBackupExecutor;
     private static final RejectedExecutionHandler REJECTED_EXECUTION_HANDLER =
@@ -125,9 +125,9 @@ public final class ASyncExecutor {
                 new SynchronousQueue<>(),
                 createThreadFactory("MAIN"));
         main.setRejectedExecutionHandler(REJECTED_EXECUTION_HANDLER);
-        MAIN = main;
+        PARALLEL = main;
 
-        SERIAL = new SerialExecutor(MAIN);
+        SERIAL = new SerialExecutor(PARALLEL);
 
         NETWORK = Executors.newCachedThreadPool(createThreadFactory("NETWORK"));
 
