@@ -53,7 +53,7 @@ public class TransformationTask
 
     private Transformation transformation;
     private File destFile;
-    private ImageHandler.NextAction nextAction;
+    private NextAction nextAction;
 
     TransformationTask() {
         super(R.id.TASK_ID_IMAGE_TRANSFORMATION, TAG);
@@ -71,16 +71,16 @@ public class TransformationTask
      */
     void transform(@NonNull final Transformation transformation,
                    @NonNull final File destFile,
-                   @NonNull final ImageHandler.NextAction action) {
+                   @NonNull final NextAction action) {
         this.transformation = transformation;
         this.destFile = destFile;
         nextAction = action;
         execute();
     }
 
-    @NonNull
     @Override
     @WorkerThread
+    @NonNull
     protected TransformedData doWork()
             throws CoverStorageException, IOException {
 
@@ -92,7 +92,7 @@ public class TransformationTask
             return new TransformedData(destFile, nextAction);
         }
 
-        return new TransformedData(null, ImageHandler.NextAction.Done);
+        return new TransformedData(null, NextAction.Done);
     }
 
     /**
@@ -103,7 +103,7 @@ public class TransformationTask
         @Nullable
         private final File file;
         @NonNull
-        private final ImageHandler.NextAction nextAction;
+        private final NextAction nextAction;
 
         /**
          * Constructor.
@@ -112,7 +112,7 @@ public class TransformationTask
          * @param action what to do with the result.
          */
         TransformedData(@Nullable final File file,
-                        @NonNull final ImageHandler.NextAction action) {
+                        @NonNull final NextAction action) {
             this.file = file;
             nextAction = action;
         }
@@ -123,7 +123,7 @@ public class TransformationTask
         }
 
         @NonNull
-        ImageHandler.NextAction getNextAction() {
+        NextAction getNextAction() {
             return nextAction;
         }
 
