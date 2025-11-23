@@ -87,6 +87,13 @@ public abstract class TaskBase<Result>
         this.taskName = taskName;
     }
 
+    /**
+     * Set a custom {@link Executor} to use.
+     * <p>
+     * When not set, the default is {@link ASyncExecutor#SERIAL}.
+     *
+     * @param executor to use
+     */
     @UiThread
     public void setExecutor(@NonNull final Executor executor) {
         this.executor = executor;
@@ -107,6 +114,11 @@ public abstract class TaskBase<Result>
         return taskName;
     }
 
+    /**
+     * Get the current task status.
+     *
+     * @return status
+     */
     @NonNull
     public Status getStatus() {
         return status;

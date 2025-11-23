@@ -372,7 +372,7 @@ public class BookDaoImpl
             }
 
             // At this point all database actions were successful.
-            // Now delete the covers for those actually deleted books.
+            // Now delete the covers for the actually deleted books.
             // Note that if anything goes wrong here:
             // - the database will be rolled back as expected.
             // - the already deleted covers will NOT be restored automatically.

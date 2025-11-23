@@ -536,7 +536,7 @@ public final class ImageHandler {
             editPictureLauncher.launch(input);
 
         } catch (@NonNull final IllegalArgumentException e) {
-            // This is a bug; a permission issue with the GenericFileProvider
+            // This would be a bug; a permission issue with the GenericFileProvider
             ErrorDialog.show(context, TAG, new CoverStorageException(
                     ERROR_GENERIC_FILE_PROVIDER, e));
 
@@ -716,7 +716,6 @@ public final class ImageHandler {
 
         final File file = result.getFile();
         if (file != null) {
-
             try {
                 switch (result.getNextAction()) {
                     case Crop: {

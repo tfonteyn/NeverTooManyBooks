@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,9 +57,7 @@ public final class LiveDataEvent<T> {
     }
 
     /**
-     * Create a LiveDataEvent with an optional payload.
-     * <p>
-     * Used for operation {@link MTask#onCancelled()}.
+     * Create with an optional payload.
      *
      * @param data the payload
      * @param <T>  type of payload
@@ -72,9 +70,7 @@ public final class LiveDataEvent<T> {
     }
 
     /**
-     * Create a LiveDataEvent with a valid non-null payload.
-     * <p>
-     * Used for operations {@link MTask#onFinished()} and {@link MTask#onFailure()}.
+     * Create with a valid non-null payload.
      *
      * @param data the payload
      * @param <T>  type of payload

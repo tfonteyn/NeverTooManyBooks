@@ -60,6 +60,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 public class CoverStorage {
 
+    /** Log tag. */
+    private static final String TAG = "CoverStorage";
+
     /**
      * Preference key: whether backups will be taken of cover files,
      * which will let te user undo transformation and other changes.
@@ -83,20 +86,26 @@ public class CoverStorage {
     /** Sub directory of the Covers directory. */
     private static final String TMP_SUB_DIR = "tmp";
 
-    private static final String TAG = "CoverStorage";
     /** The minimum side (height/width) an image must be to be considered valid; in pixels. */
     private static final int MIN_VALID_IMAGE_SIDE = 10;
     /** The minimum size an image file on disk must be to be considered valid; in bytes. */
     private static final int MIN_VALID_IMAGE_FILE_SIZE = 1024;
+
+    /** Main image file extension. */
     private static final String EXT_JPG = ".jpg";
+    /** Fallback image file extension. */
     private static final String EXT_PNG = ".png";
+
     /** Compression percentage is actually ignored as we're using PNG. */
     private static final int QUALITY = 100;
+
     private static final String ERROR_INPUT_STREAM_WAS_NULL = "InputStream was NULL";
+
     @NonNull
     private final Supplier<Context> appContextSupplier;
     @NonNull
     private final Supplier<CoverCacheDao> coverCacheDaoSupplier;
+
     /**
      * Initialised in {@link #initDir()}.
      * <p>
@@ -233,7 +242,7 @@ public class CoverStorage {
      * @see #initDir()
      * @see #getDir()
      */
-    @Discouraged(message = "Avoid using this method if possible to avoid overhead")
+    @Discouraged(message = "Avoid using this method if possible due to overhead")
     @NonNull
     private File ensureDir()
             throws CoverStorageException {
@@ -399,7 +408,8 @@ public class CoverStorage {
     @NonNull
     public File persist(@NonNull final Bitmap source,
                         @NonNull final File destination)
-            throws IOException, CoverStorageException {
+            throws CoverStorageException,
+                   IOException {
 
         final File tmpFile = getTempFile();
         try (OutputStream os = new FileOutputStream(tmpFile)) {
