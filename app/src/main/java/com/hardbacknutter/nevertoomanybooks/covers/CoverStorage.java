@@ -26,11 +26,12 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.provider.MediaStore;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.Discouraged;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
@@ -119,12 +120,14 @@ public class CoverStorage {
      * @param appContextSupplier    deferred supplier for the raw Application Context
      * @param coverCacheDaoSupplier deferred supplier for the {@link CoverCacheDao}
      */
+    @AnyThread
     public CoverStorage(@NonNull final Supplier<Context> appContextSupplier,
                         @NonNull final Supplier<CoverCacheDao> coverCacheDaoSupplier) {
         this.appContextSupplier = appContextSupplier;
         this.coverCacheDaoSupplier = coverCacheDaoSupplier;
     }
 
+    @AnyThread
     @NonNull
     private static String createName(@NonNull final String uuid,
                                      @IntRange(from = 0, to = 3) final int cIdx) {
@@ -490,33 +493,36 @@ public class CoverStorage {
 
     /**
      * Delete the persisted file (if it exists).
+     * Any errors are logged, but ignored.
      *
      * @param uuid the book UUID
      * @param cIdx 0..n image index
      */
+    @WorkerThread
     public void delete(@NonNull final String uuid,
                        @IntRange(from = 0, to = 3) final int cIdx) {
 
-        final Optional<File> persistedFile = getPersistedFile(uuid, cIdx);
-        if (persistedFile.isPresent()) {
-            final File file = persistedFile.get();
+        getPersistedFile(uuid, cIdx).ifPresent(file -> {
             if (isUndoEnabled()) {
                 try {
                     createVersionedFileService().save(file);
-                } catch (@NonNull final CoverStorageException e) {
+                } catch (@NonNull final CoverStorageException | IOException e) {
                     LoggerFactory.getLogger().e(TAG, e);
                 }
+            } else {
+                // no undo, just trash it
+                FileUtils.delete(file);
             }
-            FileUtils.delete(file);
-        }
 
-        // Delete from the cache. And yes, we also delete the ones
-        // where != index, but we don't care; it's a cache.
-        // If the user flipped the cache on/off we're not always be cleaning up correctly.
-        // It's not that important though.
-        if (isImageCachingEnabled()) {
-            coverCacheDaoSupplier.get().delete(uuid);
-        }
+            // Delete from the cache.
+            // Note we also delete the ones where != index.
+            // and if the user flipped the cache on/off we're not
+            // always cleaning up correctly.
+            // Oh well... we don't care; it's a cache.
+            if (isImageCachingEnabled()) {
+                coverCacheDaoSupplier.get().delete(uuid);
+            }
+        });
     }
 
     /**
@@ -529,6 +535,7 @@ public class CoverStorage {
      *
      * @throws IOException on generic/other IO failures
      */
+    @WorkerThread
     public boolean restore(@NonNull final String uuid,
                            @IntRange(from = 0, to = 3) final int cIdx)
             throws IOException {
@@ -582,6 +589,7 @@ public class CoverStorage {
      *
      * @return {@code true} if enabled
      */
+    @AnyThread
     private boolean isUndoEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
                                 .getBoolean(PK_ENABLE_UNDO, true);
@@ -592,6 +600,7 @@ public class CoverStorage {
      *
      * @return {@code true} if resized images are cached in a database.
      */
+    @AnyThread
     public boolean isImageCachingEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
                                 .getBoolean(PK_CACHE_RESIZED_IMAGES, false);
@@ -602,6 +611,7 @@ public class CoverStorage {
      *
      * @param enable flag
      */
+    @AnyThread
     public void setImageCachingEnabled(final boolean enable) {
         PreferenceManager.getDefaultSharedPreferences(appContextSupplier.get())
                          .edit()
