@@ -39,6 +39,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.provider.GenericFileProvider;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -106,6 +107,9 @@ public class EditPictureContract
 
     public static final class Input {
 
+        private static final String ERROR_GENERIC_FILE_PROVIDER =
+                "GenericFileProvider/IllegalArgumentException";
+
         @NonNull
         final File dstFile;
         @NonNull
@@ -130,17 +134,23 @@ public class EditPictureContract
          *
          * @return instance
          *
-         * @throws IllegalArgumentException When a given {@link File} is outside
-         *                                  the paths supported by the provider.
+         * @throws CoverStorageException When a given {@link File} is outside
+         *                               the paths supported by the provider.
          */
         @NonNull
         public static Input create(@NonNull final Context context,
                                    @NonNull final File srcFile,
-                                   @NonNull final File dstFile) {
-            final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
-            final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+                                   @NonNull final File dstFile)
+                throws CoverStorageException {
+            try {
+                final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
+                final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+                return new Input(srcUri, dstUri, dstFile);
 
-            return new Input(srcUri, dstUri, dstFile);
+            } catch (@NonNull final IllegalArgumentException e) {
+                // This would be a bug; a permission issue with the GenericFileProvider
+                throw new CoverStorageException(ERROR_GENERIC_FILE_PROVIDER, e);
+            }
         }
     }
 }
