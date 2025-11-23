@@ -19,11 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Process;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
@@ -38,7 +42,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.core.database.UncheckedDaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.network.UncheckedSAXException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 import com.hardbacknutter.util.logger.BuildConfig;
 
 public final class ASyncExecutor {
@@ -65,16 +74,18 @@ public final class ASyncExecutor {
     public static final ExecutorService PARALLEL;
 
     /**
-     * An {@link Executor} that executes tasks one at a time in serial order.
+     * An {@link Executor} that executes tasks <strong>one at a time</strong> in serial order.
      * This serialization is global to the app.
      * Actual execution is done on {@link #PARALLEL}.
+     * <p>
+     * The main purpose would be storage writes.
      */
     @SuppressWarnings("WeakerAccess")
     public static final Executor SERIAL;
 
     /**
-     * Dedicated {@link ExecutorService} for loading & scaling images
-     * from the file-system or database.
+     * Dedicated {@link ExecutorService} for <strong>loading & scaling</strong> images
+     * from the file-system or database. Do <strong>NOT</strong> use for writing.
      * <p>
      * <strong>Note:</strong> this executor uses an unbounded
      * <strong>LIFO</strong> {@link BlockingDeque}.
@@ -91,6 +102,7 @@ public final class ASyncExecutor {
     private static final int KEEP_ALIVE_SECONDS = 3;
     private static final int BACKUP_POOL_SIZE = 5;
 
+    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
     /**
      * Used for rejected executions from the {@link #PARALLEL} service.
      */
@@ -179,6 +191,43 @@ public final class ASyncExecutor {
                 createThreadFactory(threadName));
         executor.allowCoreThreadTimeOut(true);
         return executor;
+    }
+
+    /**
+     * Runs the work on an executor and returns success or failure on the UI thread.
+     *
+     * @param executor  to use
+     * @param worker    code to run
+     * @param onSuccess callback with the result
+     * @param onError   callback with an Exception, if it's an 'Unchecked' exception
+     *                  it will be unpacked and the actual cause will be passed in instead.
+     * @param <T>       result type
+     */
+    public static <T> void runOnExecutor(@NonNull final Executor executor,
+                                         @NonNull final Supplier<T> worker,
+                                         @NonNull final Consumer<T> onSuccess,
+                                         @NonNull final Consumer<Throwable> onError) {
+        executor.execute(() -> {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
+            //noinspection CheckStyle
+            try {
+                final T result = worker.get();
+                UI_HANDLER.post(() -> onSuccess.accept(result));
+            } catch (@NonNull final Throwable t) {
+                final Throwable unpacked;
+                //noinspection InstanceofCatchParameter
+                if (t instanceof UncheckedIOException
+                    || t instanceof UncheckedStorageException
+                    || t instanceof UncheckedDaoWriteException
+                    || t instanceof UncheckedSAXException) {
+                    unpacked = t.getCause();
+                } else {
+                    unpacked = t;
+                }
+                UI_HANDLER.post(() -> onError.accept(unpacked));
+            }
+        });
     }
 
     static class SerialExecutor
