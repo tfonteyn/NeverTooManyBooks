@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -382,7 +383,8 @@ public class BookDaoImpl
             final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
             actuallyDeleted.forEach(uuid -> {
                 for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
-                    coverStorage.delete(uuid, cIdx);
+                    final int finalCIdx = cIdx;
+                    ASyncExecutor.SERIAL.execute(() -> coverStorage.delete(uuid, finalCIdx));
                 }
             });
 

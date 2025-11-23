@@ -50,8 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
@@ -513,6 +515,7 @@ public class BookDaoHelper {
             throws StorageException, IOException {
 
         final String uuid = book.getUuid();
+        final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
 
         for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
             if (book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {
@@ -526,14 +529,11 @@ public class BookDaoHelper {
 
                 if (fileSpec.isEmpty()) {
                     // A *present* but empty fileSpec indicates we need to delete the cover
-                    ServiceLocator.getInstance()
-                                  .getCoverStorage()
-                                  .delete(uuid, cIdx);
+                    final int finalCIdx = cIdx;
+                    ASyncExecutor.SERIAL.execute(() -> coverStorage.delete(uuid, finalCIdx));
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    ServiceLocator.getInstance()
-                                  .getCoverStorage()
-                                  .persist(new File(fileSpec), uuid, cIdx);
+                    coverStorage.persist(new File(fileSpec), uuid, cIdx);
                 }
 
                 book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);

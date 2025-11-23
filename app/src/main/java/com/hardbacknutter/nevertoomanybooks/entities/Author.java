@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
@@ -1084,7 +1085,10 @@ public class Author
         }
         // we have a uuid, remove the physical file, if any
         final String uuid = oUuid.get();
-        ServiceLocator.getInstance().getCoverStorage().delete(uuid, cIdx);
+        ASyncExecutor.SERIAL.execute(
+                () -> ServiceLocator.getInstance()
+                                    .getCoverStorage()
+                                    .delete(uuid, cIdx));
         // remove the uuid
         imageUuid = null;
         updateInDatabase(context);

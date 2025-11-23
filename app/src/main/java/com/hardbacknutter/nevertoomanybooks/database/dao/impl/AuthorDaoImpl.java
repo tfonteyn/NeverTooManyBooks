@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.database.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -747,12 +748,13 @@ public class AuthorDaoImpl
      * @param author to handle
      */
     private void deletePicture(@NonNull final Author author) {
-        final Optional<String> pictureUuid = author.getImageUuid();
-        if (pictureUuid.isPresent()) {
-            ServiceLocator.getInstance().getCoverStorage()
-                          .delete(pictureUuid.get(), 0);
+        author.getImageUuid().ifPresent(pictureUuid -> {
+            ASyncExecutor.SERIAL.execute(
+                    () -> ServiceLocator.getInstance()
+                                        .getCoverStorage()
+                                        .delete(pictureUuid, 0));
             author.setImageUuid(null);
-        }
+        });
     }
 
     private void insertPseudonymLink(final long authorId,

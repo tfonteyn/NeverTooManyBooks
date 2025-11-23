@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
@@ -1847,7 +1848,10 @@ public class Book
                 }
             } else {
                 // a null file indicates we need to delete the cover
-                ServiceLocator.getInstance().getCoverStorage().delete(uuid, cIdx);
+                ASyncExecutor.SERIAL.execute(
+                        () -> ServiceLocator.getInstance()
+                                            .getCoverStorage()
+                                            .delete(uuid, cIdx));
             }
 
             ServiceLocator.getInstance().getBookDao().touch(this);
