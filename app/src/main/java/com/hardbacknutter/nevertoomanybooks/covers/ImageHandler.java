@@ -24,12 +24,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewParent;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -49,7 +47,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -64,11 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureC
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PermissionRequester;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
-import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ErrorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.Tip;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -95,12 +89,8 @@ public final class ImageHandler {
     /** Log tag. */
     private static final String TAG = "ImageHandler";
 
-    private static final String PK_CAMERA_IMAGE_AUTOROTATE = "camera.image.autorotate";
-    private static final String PK_CAMERA_IMAGE_ACTION = "camera.image.action";
-
     private static final String RK_MENU = TAG + ":rk:menu";
     private static final String IMAGE_MIME_TYPE = "image/*";
-    private static final String ERROR_GENERIC_FILE_PROVIDER = "GenericFileProvider";
     /** Rotate +90 or -90 degrees. */
     private static final int TURN = 90;
     /** Rotate upside down. */
@@ -148,9 +138,9 @@ public final class ImageHandler {
     @Nullable
     private final Supplier<String> coverBrowserTitleSupplier;
 
-    /** Main used is to run transformation tasks. Shared among all current ImageHandlers. */
+    /** Private to this handler. */
     @NonNull
-    private final ImageTransformationViewModel vm;
+    private final ImageHandlerViewModel vm;
 
     private final ExtMenuLauncher menuLauncher;
     @DrawableRes
@@ -186,7 +176,7 @@ public final class ImageHandler {
         }
         // we distinguish multiple vm in the same fragment by cIdx as the key
         vm = new ViewModelProvider(fragment)
-                .get(String.valueOf(this.cIdx), ImageTransformationViewModel.class);
+                .get(String.valueOf(this.cIdx), ImageHandlerViewModel.class);
 
         imageLoader = new ImageViewLoader(ASyncExecutor.IMAGES,
                                           ImageView.ScaleType.FIT_START,
@@ -247,13 +237,40 @@ public final class ImageHandler {
                                                            viewLifecycleOwner);
         }
 
-        vm.onFinished().observe(viewLifecycleOwner, message -> {
+        vm.onInvalidImage().observe(viewLifecycleOwner, message -> {
+            hideProgress();
+            message.process(this::onInvalidImage);
+        });
+        vm.onError().observe(viewLifecycleOwner, message -> {
+            hideProgress();
+            message.process(this::onError);
+        });
+
+        vm.onTransformationResult().observe(viewLifecycleOwner, message -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
-                LoggerFactory.getLogger().d(TAG, "onFragmentViewCreated",
-                                            "vm.onFinished()|event=" + message);
+                LoggerFactory.getLogger().d(TAG, "vm.onTransformationResult()|event=" + message);
             }
             hideProgress();
             message.process(this::onAfterTransform);
+        });
+        vm.onStartEdit().observe(viewLifecycleOwner, message -> {
+            message.process(this::editPicture);
+        });
+        vm.onStartCropper().observe(viewLifecycleOwner, message -> {
+            message.process(input -> cropImageLauncher.launch(input));
+        });
+        vm.onStartTakePicture().observe(viewLifecycleOwner, message -> {
+            message.process(this::takePicture);
+        });
+        vm.onRestore().observe(viewLifecycleOwner, message -> {
+            message.process(restored -> {
+                reloadImageCallback.accept(cIdx);
+            });
+        });
+        vm.onReloadImage().observe(viewLifecycleOwner, aVoid -> {
+            // must use a post to force the View to update.
+            //noinspection DataFlowIssue
+            fragment.getView().post(() -> reloadImageCallback.accept(cIdx));
         });
     }
 
@@ -344,8 +361,7 @@ public final class ImageHandler {
         final Context context = fragment.requireContext();
 
         if (menuItemId == R.id.MENU_DELETE) {
-            imageOwner.removeImage(context, cIdx);
-            reloadImageCallback.accept(cIdx);
+            vm.removeImage(imageOwner, cIdx);
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ROTATE_CW) {
@@ -364,33 +380,17 @@ public final class ImageHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_CROP) {
-            try {
-                cropImageLauncher.launch(new CropImageContract.Input(
-                        createTempImageFile(imageOwner),
-                        ServiceLocator.getInstance().getCoverStorage().getTempFile()));
-
-            } catch (@NonNull final CoverStorageException e) {
-                ErrorDialog.show(context, TAG, e);
-            } catch (@NonNull final IOException e) {
-                ErrorDialog.show(context, TAG, e);
-            }
+            vm.prepareCropper(imageOwner, cIdx);
             return true;
 
         } else if (menuItemId == R.id.MENU_EDIT) {
-            try {
-                editPicture(createTempImageFile(imageOwner));
-
-            } catch (@NonNull final CoverStorageException e) {
-                ErrorDialog.show(context, TAG, e);
-            } catch (@NonNull final IOException e) {
-                ErrorDialog.show(context, TAG, e);
-            }
+            vm.prepareEditor(imageOwner, cIdx);
             return true;
 
         } else if (menuItemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
             permissionRequester.request(Manifest.permission.CAMERA, isGranted -> {
                 if (isGranted) {
-                    takePicture();
+                    vm.prepareTakePicture();
                 }
             });
             return true;
@@ -404,62 +404,11 @@ public final class ImageHandler {
             return true;
 
         } else if (menuItemId == R.id.MENU_UNDO) {
-            try {
-                if (imageOwner.getImageUuid().isPresent()) {
-                    if (ServiceLocator.getInstance().getCoverStorage()
-                                      .restore(imageOwner.getImageUuid().get(), cIdx)) {
-                        reloadImageCallback.accept(cIdx);
-                    }
-                }
-            } catch (@NonNull final IOException e) {
-                ErrorDialog.show(context, TAG, e);
-            }
+            imageOwner.getImageUuid().ifPresent(uuid -> vm.restore(uuid, cIdx));
             return true;
         }
         return false;
     }
-
-    /**
-     * Create a temporary File for the given {@link ImageOwner}.
-     * <p>
-     * If there is a permanent image, we get a <strong>copy of that one</strong>.
-     * If there is no image, we get a new File object.
-     * Either way, the File returned will have a new temporary name.
-     *
-     * @param imageOwner for which we want a image
-     *
-     * @return the File
-     *
-     * @throws CoverStorageException The images directory is not available
-     * @throws IOException           on failure to make a copy of the permanent file
-     */
-    @NonNull
-    private File createTempImageFile(@NonNull final ImageOwner imageOwner)
-            throws CoverStorageException, IOException {
-
-        // the temp file we'll return
-        final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
-
-        // If we have a permanent file, copy it into the temp location
-        //noinspection DataFlowIssue
-        final Optional<File> uuidFile = imageOwner.getImage(fragment.getContext(), cIdx);
-        if (uuidFile.isPresent()) {
-            FileUtils.copy(uuidFile.get(), tmpFile);
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
-            LoggerFactory.getLogger()
-                         .e("TAG", new Throwable("createTempImageFile"),
-                            "imageOwner.id=" + imageOwner.getId()
-                            + "|cIdx=" + cIdx
-                            + "|exists=" + tmpFile.exists()
-                            + "|length=" + tmpFile.length()
-                            + "|file=" + tmpFile.getAbsolutePath()
-                         );
-        }
-        return tmpFile;
-    }
-
 
     /**
      * Use the isbn to fetch other possible images from the internet
@@ -496,54 +445,35 @@ public final class ImageHandler {
      * @throws IllegalArgumentException (debug) if the fileSpec is invalid
      */
     private void onPictureSelected(@NonNull final String fileSpec) {
-        if (fileSpec.isEmpty()) {
-            throw new IllegalArgumentException("fileSpec.isEmpty()");
-        }
-
-        final File file = new File(fileSpec);
-        if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
-            try {
-                //noinspection DataFlowIssue
-                imageSupplier.get().setImage(fragment.getContext(), cIdx, file);
-            } catch (@NonNull final StorageException | IOException ignore) {
-                // safe to ignore, we just checked existence...
-            }
-        } else {
-            //noinspection DataFlowIssue
-            imageSupplier.get().removeImage(fragment.getContext(), cIdx);
-            //noinspection DataFlowIssue
-            Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
-                          Snackbar.LENGTH_LONG).show();
-        }
-
-        reloadImageCallback.accept(cIdx);
+        vm.onPictureSelected(imageSupplier.get(), cIdx, fileSpec);
     }
 
     /**
      * Edit the image using an external application.
      *
-     * @param srcFile to edit
-     *
-     * @throws CoverStorageException The images directory is not available
+     * @param input for the launcher
      */
-    private void editPicture(@NonNull final File srcFile)
-            throws CoverStorageException {
-        final Context context = fragment.requireContext();
+    private void editPicture(@NonNull final EditPictureContract.Input input) {
         try {
-            final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
-            final EditPictureContract.Input input =
-                    EditPictureContract.Input.create(context, srcFile, tempFile);
             editPictureLauncher.launch(input);
-
-        } catch (@NonNull final IllegalArgumentException e) {
-            // This would be a bug; a permission issue with the GenericFileProvider
-            ErrorDialog.show(context, TAG, new CoverStorageException(
-                    ERROR_GENERIC_FILE_PROVIDER, e));
-
         } catch (@NonNull final ActivityNotFoundException e) {
             //noinspection DataFlowIssue
             Snackbar.make(fragment.getView(), R.string.error_no_image_editor,
                           Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    // @RequiresPermission(Manifest.permission.CAMERA)
+    private void takePicture(@NonNull final TakePictureContract.Input input) {
+        try {
+            takePictureLauncher.launch(input);
+        } catch (@NonNull final ActivityNotFoundException e) {
+            // No Camera? we should not get here as we should not have been
+            // to call this method in the first place... flw
+            // Fake an IOException...
+            final Context context = fragment.requireContext();
+            ErrorDialog.show(context, TAG,
+                             new IOException(context.getString(R.string.error_unexpected), e));
         }
     }
 
@@ -553,17 +483,8 @@ public final class ImageHandler {
      * @param file edited image file
      */
     private void onPictureResult(@NonNull final File file) {
-        if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
-            showProgress();
-            vm.execute(new Transformation()
-                               .setSource(file)
-                               .setScale(true),
-                       file);
-        } else {
-            //noinspection DataFlowIssue
-            Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
-                          Snackbar.LENGTH_LONG).show();
-        }
+        showProgress();
+        vm.onPictureResult(file);
     }
 
     /**
@@ -572,117 +493,19 @@ public final class ImageHandler {
      * @param uri to load the new image from
      */
     private void onPictureResult(@NonNull final Uri uri) {
-        final Context context = fragment.getContext();
-        //noinspection DataFlowIssue
-        try (InputStream is = context.getContentResolver().openInputStream(uri)) {
-            showProgress();
-
-            // copy the data to a temporary file
-            final File tmpFile = ServiceLocator.getInstance().getCoverStorage()
-                                               .writeTempFile(is);
-
-            if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(tmpFile)) {
-                vm.execute(new Transformation()
-                                   .setSource(tmpFile)
-                                   .setScale(true),
-                           tmpFile);
-            } else {
-                // abort
-                hideProgress();
-                //noinspection DataFlowIssue
-                Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
-                              Snackbar.LENGTH_LONG).show();
-            }
-        } catch (@NonNull final CoverStorageException e) {
-            ErrorDialog.show(context, TAG, e);
-        } catch (@NonNull final IOException e) {
-            // 2025-11-05: bug report #197:
-            // java.io.FileNotFoundException: open failed: ENOENT (No such file or directory)
-            //	at android.database.DatabaseUtils.readExceptionWithFileNotFoundExceptionFromParcel(DatabaseUtils.java:162)
-            //	at android.content.ContentProviderProxy.openTypedAssetFile(ContentProviderProxy.java:814)
-            //	at android.content.ContentResolver.openTypedAssetFileDescriptor(ContentResolver.java:2045)
-            //	at android.content.ContentResolver.openAssetFileDescriptor(ContentResolver.java:1860)
-            //	at android.content.ContentResolver.openInputStream(ContentResolver.java:1530)
-            //	at com.hardbacknutter.nevertoomanybooks.covers.ImageHandler.onPictureResult(ImageHandler.java:577)
-            //
-            // So the user picked a file from storage, and we get the Uri.
-            // When we open the Uri, the systems tells us the file does not exist ¯\_(ツ)_/¯
-            //
-            //
-            // Don't call generic IOException; we *know* what went wrong
-            ErrorDialog.show(context, TAG, e,
-                             context.getString(R.string.error_storage_not_writable),
-                             context.getString(R.string.warning_image_copy_failed));
-        }
-    }
-
-    // @RequiresPermission(Manifest.permission.CAMERA)
-    private void takePicture() {
-        final Context context = fragment.requireContext();
-        try {
-            final File tempFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
-            final TakePictureContract.Input input =
-                    TakePictureContract.Input.create(context, tempFile);
-            takePictureLauncher.launch(input);
-
-        } catch (@NonNull final CoverStorageException e) {
-            ErrorDialog.show(context, TAG, e);
-
-        } catch (@NonNull final IllegalArgumentException e) {
-            // This is a bug; a permission issue with the GenericFileProvider
-            ErrorDialog.show(context, TAG, new CoverStorageException(
-                    ERROR_GENERIC_FILE_PROVIDER, e));
-
-        } catch (@NonNull final ActivityNotFoundException e) {
-            // No Camera? we should not get here as we should not have been
-            // to call this method in the first place... flw
-            // Fake an IOException...
-            ErrorDialog.show(context, TAG,
-                             new IOException(context.getString(R.string.error_unexpected),
-                                             e));
-        }
+        showProgress();
+        vm.onPictureResult(uri);
     }
 
     /**
-     * Called when the user used their camera (or other scanner-like device) to take a picture.
+     * Called when the user used their camera to take a picture.
      *
      * @param file the image
      */
     private void onTakePictureResult(@NonNull final File file) {
-        if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
-            final Context context = fragment.getContext();
-
-            final int surfaceRotation;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                //noinspection DataFlowIssue
-                surfaceRotation = context.getDisplay().getRotation();
-            } else {
-                //noinspection DataFlowIssue
-                final WindowManager wm = (WindowManager)
-                        context.getSystemService(Context.WINDOW_SERVICE);
-                surfaceRotation = wm.getDefaultDisplay().getRotation();
-            }
-
-            // Should we apply an explicit rotation angle?
-            final int explicitRotation = IntListPref
-                    .getInt(context, PK_CAMERA_IMAGE_AUTOROTATE, 0);
-
-            // What action (if any) should we take after we're done?
-            final NextAction action = NextAction.getAction(context);
-
-            showProgress();
-            vm.execute(new Transformation()
-                               .setSource(file)
-                               .setScale(true)
-                               .setSurfaceRotation(surfaceRotation)
-                               .setRotation(explicitRotation),
-                       file,
-                       action);
-        } else {
-            //noinspection DataFlowIssue
-            Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
-                          Snackbar.LENGTH_LONG).show();
-        }
+        showProgress();
+        //noinspection DataFlowIssue
+        vm.onTakePictureResult(fragment.getContext(), file);
     }
 
     /**
@@ -691,24 +514,11 @@ public final class ImageHandler {
      * @param angle to rotate.
      */
     private void startRotation(final int angle) {
-        try {
-            final File file = createTempImageFile(imageSupplier.get());
-            showProgress();
-            vm.execute(new Transformation()
-                               .setSource(file)
-                               .setRotation(angle),
-                       file);
-
-        } catch (@NonNull final CoverStorageException e) {
-            //noinspection DataFlowIssue
-            ErrorDialog.show(fragment.getContext(), TAG, e);
-        } catch (@NonNull final IOException e) {
-            //noinspection DataFlowIssue
-            ErrorDialog.show(fragment.getContext(), TAG, e);
-        }
+        showProgress();
+        vm.startRotation(imageSupplier.get(), cIdx, angle);
     }
 
-    private void onAfterTransform(@NonNull final TransformationTask.TransformedData result) {
+    private void onAfterTransform(@NonNull final TransformationResult result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
             LoggerFactory.getLogger().d(TAG, "onAfterTransform", result);
         }
@@ -716,41 +526,60 @@ public final class ImageHandler {
 
         final File file = result.getFile();
         if (file != null) {
-            try {
-                switch (result.getNextAction()) {
-                    case Crop: {
-                        cropImageLauncher.launch(new CropImageContract.Input(
-                                file,
-                                ServiceLocator.getInstance().getCoverStorage().getTempFile()));
-                        return;
-                    }
-                    case Edit: {
-                        editPicture(file);
-                        return;
-                    }
-                    case Done: {
-                        //noinspection DataFlowIssue
-                        imageSupplier.get().setImage(context, cIdx, file);
-                        // must use a post to force the View to update.
-                        //noinspection DataFlowIssue
-                        fragment.getView().post(() -> reloadImageCallback.accept(cIdx));
-                        return;
-                    }
+            switch (result.getNextAction()) {
+                case Crop: {
+                    vm.prepareCropper(file);
+                    return;
                 }
-            } catch (@NonNull final StorageException e) {
-                //noinspection DataFlowIssue
-                ErrorDialog.show(context, TAG, e);
-            } catch (@NonNull final IOException e) {
-                ErrorDialog.show(context, TAG, e);
+                case Edit: {
+                    //noinspection DataFlowIssue
+                    vm.prepareEditor(file);
+                    return;
+                }
+                case Done: {
+                    //noinspection DataFlowIssue
+                    vm.setImage(imageSupplier.get(), cIdx, file);
+                    return;
+                }
             }
         }
 
         // transformation failed
         //noinspection DataFlowIssue
-        imageSupplier.get().removeImage(context, cIdx);
-        // must use a post to force the View to update.
-        //noinspection DataFlowIssue
-        fragment.getView().post(() -> reloadImageCallback.accept(cIdx));
+        vm.removeImage(imageSupplier.get(), cIdx);
+    }
+
+    private void onError(@Nullable final Throwable e) {
+        if (e == null) {
+            //noinspection DataFlowIssue
+            Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
+                          Snackbar.LENGTH_LONG).show();
+        } else {
+            //noinspection DataFlowIssue
+            ErrorDialog.show(fragment.getContext(), TAG, e);
+        }
+    }
+
+    private void onInvalidImage(@Nullable final Throwable e) {
+        if (e == null) {
+            // No actual error occurred; the image was simply deemed not usable.
+            //noinspection DataFlowIssue
+            Snackbar.make(fragment.getView(), R.string.warning_image_invalid,
+                          Snackbar.LENGTH_LONG).show();
+
+        } else if (e instanceof IOException) {
+            // Handle IOException directly; we *know* writing to storage went wrong
+            final Context context = fragment.getContext();
+            //noinspection DataFlowIssue
+            ErrorDialog.show(context, TAG, e,
+                             context.getString(R.string.warning_image_copy_failed),
+                             context.getString(R.string.error_storage_not_writable));
+        } else {
+            // CoverStorageException is unlikely but possible.
+            // Others very unlikely.
+            //noinspection DataFlowIssue
+            ErrorDialog.show(fragment.getContext(), TAG, e);
+        }
     }
 
     private void showProgress() {
@@ -780,43 +609,6 @@ public final class ImageHandler {
         if (progressIndicator != null && progressIndicator.getParent() != null) {
             imageViewParent.removeView(progressIndicator);
             progressIndicator = null;
-        }
-    }
-
-    public enum NextAction {
-        /** After taking a picture, do nothing. */
-        Done(0),
-        /** After taking a picture, crop. */
-        Crop(1),
-        /** After taking a picture, start an editor. */
-        Edit(2);
-
-        private final int value;
-
-        NextAction(final int value) {
-            this.value = value;
-        }
-
-        /**
-         * Get the user default action to take after taking a picture.
-         *
-         * @param context Current context
-         *
-         * @return next action
-         */
-        @NonNull
-        static NextAction getAction(@NonNull final Context context) {
-
-            final int value = IntListPref.getInt(context, PK_CAMERA_IMAGE_ACTION, Done.value);
-            switch (value) {
-                case 2:
-                    return Edit;
-                case 1:
-                    return Crop;
-                case 0:
-                default:
-                    return Done;
-            }
         }
     }
 

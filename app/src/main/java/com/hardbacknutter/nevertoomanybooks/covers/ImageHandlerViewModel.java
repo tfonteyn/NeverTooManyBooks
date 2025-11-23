@@ -1,0 +1,612 @@
+/*
+ * @Copyright 2018-2025 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.covers;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
+import android.view.WindowManager;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.util.Optional;
+
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
+import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
+import com.hardbacknutter.util.logger.LoggerFactory;
+
+@SuppressWarnings("WeakerAccess")
+public class ImageHandlerViewModel
+        extends ViewModel {
+
+    private static final String PK_CAMERA_IMAGE_AUTOROTATE = "camera.image.autorotate";
+
+    private final MutableLiveData<LiveDataEvent<TransformationResult>> transformationResult =
+            new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<Throwable>> onInvalidImage =
+            new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<Throwable>> onError =
+            new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<EditPictureContract.Input>> onStartEdit =
+            new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<CropImageContract.Input>> onStartCropper =
+            new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TakePictureContract.Input>> onStartTakePicture =
+            new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<Boolean>> onRestore =
+            new MutableLiveData<>();
+    private final MutableLiveData<Void> onReloadImage =
+            new MutableLiveData<>();
+
+    @NonNull
+    LiveData<LiveDataEvent<TransformationResult>> onTransformationResult() {
+        return transformationResult;
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<Throwable>> onInvalidImage() {
+        return onInvalidImage;
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<Throwable>> onError() {
+        return onError;
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<EditPictureContract.Input>> onStartEdit() {
+        return onStartEdit;
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<CropImageContract.Input>> onStartCropper() {
+        return onStartCropper;
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<TakePictureContract.Input>> onStartTakePicture() {
+        return onStartTakePicture;
+    }
+
+    @NonNull
+    LiveData<LiveDataEvent<Boolean>> onRestore() {
+        return onRestore;
+    }
+
+    @NonNull
+    LiveData<Void> onReloadImage() {
+        return onReloadImage;
+    }
+
+    private void setInvalidImage(@Nullable final Throwable e) {
+        if (e == null) {
+            onInvalidImage.setValue(LiveDataEvent.ofNullable(null));
+        } else if (e.getCause() != null) {
+            onInvalidImage.setValue(LiveDataEvent.ofNullable(e.getCause()));
+        } else {
+            onInvalidImage.setValue(LiveDataEvent.ofNullable(e));
+        }
+    }
+
+    /**
+     * Prepare to start the external editor.
+     * <p>
+     * When completed, triggers {@link #onStartEdit()}.
+     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     *
+     * @param imageOwner from which we want to edit an image
+     * @param cIdx       0..n image index
+     */
+    void prepareEditor(@NonNull final ImageOwner imageOwner,
+                       @IntRange(from = 0, to = 3) final int cIdx) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                    try {
+                        final File srcFile = createTempImageFile(context, imageOwner, cIdx);
+                        final File dstFile = ServiceLocator.getInstance().getCoverStorage()
+                                                           .getTempFile();
+                        return EditPictureContract.Input.create(srcFile, dstFile);
+
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedStorageException(e);
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                },
+                input -> onStartEdit.setValue(LiveDataEvent.of(input)),
+                this::setInvalidImage);
+    }
+
+    void prepareEditor(@NonNull final File srcFile) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.PARALLEL,
+                () -> {
+                    try {
+                        final File dstFile = ServiceLocator.getInstance().getCoverStorage()
+                                                           .getTempFile();
+                        return EditPictureContract.Input.create(srcFile, dstFile);
+
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedStorageException(e);
+                    }
+                },
+                input -> onStartEdit.setValue(LiveDataEvent.of(input)),
+                this::setInvalidImage);
+    }
+
+    /**
+     * Prepare to start the internal cropper editor.
+     * <p>
+     * When completed, triggers {@link #onStartEdit()}.
+     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     *
+     * @param imageOwner from which we want to edit an image
+     * @param cIdx       0..n image index
+     */
+    void prepareCropper(@NonNull final ImageOwner imageOwner,
+                        @IntRange(from = 0, to = 3) final int cIdx) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                    try {
+                        final File srcFile = createTempImageFile(context, imageOwner, cIdx);
+                        final File dstFile = ServiceLocator.getInstance().getCoverStorage()
+                                                           .getTempFile();
+                        return new CropImageContract.Input(srcFile, dstFile);
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedStorageException(e);
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                },
+                input -> onStartCropper.setValue(LiveDataEvent.of(input)),
+                this::setInvalidImage);
+    }
+
+    void prepareCropper(@NonNull final File srcFile) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.PARALLEL,
+                () -> {
+                    try {
+                        final File dstFile = ServiceLocator.getInstance().getCoverStorage()
+                                                           .getTempFile();
+                        return new CropImageContract.Input(srcFile, dstFile);
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedStorageException(e);
+                    }
+                },
+                input -> onStartCropper.setValue(LiveDataEvent.of(input)),
+                this::setInvalidImage);
+    }
+
+    /**
+     * Prepare to start the camera.
+     * <p>
+     * When completed, triggers {@link #onStartTakePicture()}.
+     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     */
+    void prepareTakePicture() {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.PARALLEL,
+                () -> {
+                    try {
+                        final File tempFile = ServiceLocator.getInstance().getCoverStorage()
+                                                            .getTempFile();
+                        return TakePictureContract.Input.create(tempFile);
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedStorageException(e);
+                    }
+                },
+                input -> onStartTakePicture.setValue(LiveDataEvent.of(input)),
+                this::setInvalidImage);
+
+    }
+
+    /**
+     * Start a rotation.
+     * <p>
+     * Triggers {@link #onTransformationResult()} with the result.
+     * If there is no result, triggers {@link #setInvalidImage} with a {@code null}.
+     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     *
+     * @param imageOwner from which we want to edit an image
+     * @param cIdx       0..n image index
+     * @param angle      to rotate
+     */
+    void startRotation(@NonNull final ImageOwner imageOwner,
+                       @IntRange(from = 0, to = 3) final int cIdx,
+                       final int angle) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                    try {
+                        final File srcFile = createTempImageFile(context, imageOwner, cIdx);
+                        return transform(new Transformation()
+                                                 .setSource(srcFile)
+                                                 .setRotation(angle),
+                                         srcFile,
+                                         NextAction.Done);
+
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedStorageException(e);
+                    }
+                },
+                result -> {
+                    if (result == null) {
+                        setInvalidImage(null);
+                    } else {
+                        transformationResult.setValue(LiveDataEvent.of(result));
+                    }
+                },
+                this::setInvalidImage);
+    }
+
+    /**
+     * Process the image received from a camera (or other scanner-like device).
+     * <p>
+     * Triggers {@link #onTransformationResult()} with the result.
+     * If there is no result, triggers {@link #setInvalidImage} with a {@code null}.
+     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     *
+     * @param context Current context.
+     * @param file    image to process
+     */
+    void onTakePictureResult(@NonNull final Context context,
+                             @NonNull final File file) {
+
+        final int surfaceRotation;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            surfaceRotation = context.getDisplay().getRotation();
+        } else {
+            final WindowManager wm = (WindowManager)
+                    context.getSystemService(Context.WINDOW_SERVICE);
+            surfaceRotation = wm.getDefaultDisplay().getRotation();
+        }
+
+        // Should we apply an explicit rotation angle?
+        final int explicitRotation = IntListPref
+                .getInt(context, PK_CAMERA_IMAGE_AUTOROTATE, 0);
+
+        // What action (if any) should we take after we're done?
+        final NextAction action = NextAction.getAction(context);
+
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
+                        return null;
+                    }
+
+                    try {
+                        return transform(new Transformation()
+                                                 .setSource(file)
+                                                 .setScale(true)
+                                                 .setSurfaceRotation(surfaceRotation)
+                                                 .setRotation(explicitRotation),
+                                         file,
+                                         action);
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedStorageException(e);
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                },
+                result -> {
+                    if (result == null) {
+                        setInvalidImage(null);
+                    } else {
+                        transformationResult.setValue(LiveDataEvent.of(result));
+                    }
+                },
+                this::setInvalidImage);
+    }
+
+    /**
+     * Process the image after the user edited it.
+     * <p>
+     * Triggers {@link #onTransformationResult()} with the result.
+     * If there is no result, triggers {@link #setInvalidImage} with a {@code null}.
+     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     *
+     * @param file image to process
+     */
+    void onPictureResult(@NonNull final File file) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
+                        return null;
+                    }
+
+                    try {
+                        return transform(new Transformation()
+                                                 .setSource(file)
+                                                 .setScale(true),
+                                         file,
+                                         NextAction.Done);
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedStorageException(e);
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                },
+                result -> {
+                    if (result == null) {
+                        setInvalidImage(null);
+                    } else {
+                        transformationResult.setValue(LiveDataEvent.of(result));
+                    }
+                },
+                // N/A as no Exceptions are thrown.
+                this::setInvalidImage);
+    }
+
+    /**
+     * Process the image picked by the user from storage.
+     * <p>
+     * Triggers {@link #onTransformationResult()} with the result.
+     * If there is no result, triggers {@link #setInvalidImage} with a {@code null}.
+     * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
+     *
+     * @param uri image to process
+     */
+    void onPictureResult(@NonNull final Uri uri) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    // 2025-11-05: bug report #197:
+                    // java.io.FileNotFoundException: open failed: ENOENT (No such file or directory)
+                    //  at android.database.DatabaseUtils.readExceptionWithFileNotFoundExceptionFromParcel(DatabaseUtils.java:162)
+                    //  at android.content.ContentProviderProxy.openTypedAssetFile(ContentProviderProxy.java:814)
+                    //  at android.content.ContentResolver.openTypedAssetFileDescriptor(ContentResolver.java:2045)
+                    //  at android.content.ContentResolver.openAssetFileDescriptor(ContentResolver.java:1860)
+                    //  at android.content.ContentResolver.openInputStream(ContentResolver.java:1530)
+                    //  at com.hardbacknutter.nevertoomanybooks.covers.ImageHandler.onPictureResult(ImageHandler.java:577)
+                    //
+                    // So the user picked a file from storage, and we get the Uri.
+                    // When we open the Uri, the systems tells us
+                    // the file does not exist ¯\_(ツ)_/¯
+
+                    final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+                    try (InputStream is = serviceLocator.getAppContext()
+                                                        .getContentResolver()
+                                                        .openInputStream(uri)) {
+
+                        final CoverStorage coverStorage = serviceLocator.getCoverStorage();
+                        // copy the data to a temporary file
+                        final File file = coverStorage.writeTempFile(is);
+                        if (!coverStorage.isAcceptableSize(file)) {
+                            return null;
+                        }
+
+                        return transform(new Transformation()
+                                                 .setSource(file)
+                                                 .setScale(true),
+                                         file,
+                                         NextAction.Done);
+                    } catch (@NonNull final CoverStorageException e) {
+                        throw new UncheckedStorageException(e);
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                },
+                result -> {
+                    if (result == null) {
+                        setInvalidImage(null);
+                    } else {
+                        transformationResult.setValue(LiveDataEvent.of(result));
+                    }
+                },
+                this::setInvalidImage);
+    }
+
+    /**
+     * Process the image picked by the user from the cover-browser.
+     *
+     * @param imageOwner for which we want to set an image
+     * @param cIdx       0..n image index
+     * @param fileSpec   the selected image
+     *
+     * @throws IllegalArgumentException (debug) if the fileSpec is invalid
+     */
+    void onPictureSelected(@NonNull final ImageOwner imageOwner,
+                           @IntRange(from = 0, to = 3) final int cIdx,
+                           @NonNull final String fileSpec) {
+        if (fileSpec.isEmpty()) {
+            throw new IllegalArgumentException("fileSpec.isEmpty()");
+        }
+
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                    final File file = new File(fileSpec);
+                    if (ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
+                        try {
+                            imageOwner.setImage(context, cIdx, file);
+                        } catch (@NonNull final StorageException | IOException ignore) {
+                            // safe to ignore, we just checked existence...
+                        }
+                    } else {
+                        imageOwner.removeImage(context, cIdx);
+                        onInvalidImage.setValue(LiveDataEvent.ofNullable(null));
+                    }
+                    return (Void) null;
+                },
+                aVoid -> onReloadImage.setValue(null),
+                e -> onInvalidImage.setValue(LiveDataEvent.of(e)));
+    }
+
+    void setImage(@NonNull final ImageOwner imageOwner,
+                  @IntRange(from = 0, to = 3) final int cIdx,
+                  @NonNull final File file) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                    try {
+                        imageOwner.setImage(context, cIdx, file);
+                    } catch (@NonNull final StorageException e) {
+                        throw new UncheckedStorageException(e);
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                    return (Void) null;
+                },
+                aVoid -> onReloadImage.setValue(null),
+                e -> onError.setValue(LiveDataEvent.of(e)));
+    }
+
+    void removeImage(@NonNull final ImageOwner imageOwner,
+                     @IntRange(from = 0, to = 3) final int cIdx) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+                    imageOwner.removeImage(context, cIdx);
+                    return (Void) null;
+                },
+                result -> onReloadImage.setValue(null),
+                e -> onError.setValue(LiveDataEvent.of(e)));
+    }
+
+    void restore(@NonNull final String uuid,
+                 @IntRange(from = 0, to = 3) final int cIdx) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.IMAGES,
+                () -> {
+                    try {
+                        return ServiceLocator.getInstance()
+                                             .getCoverStorage()
+                                             .restore(uuid, cIdx);
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                },
+                restored -> {
+                    if (restored) {
+                        onRestore.setValue(LiveDataEvent.of(true));
+                    }
+                },
+                e -> onError.setValue(LiveDataEvent.of(e)));
+    }
+
+    /**
+     * Create a temporary File for the given {@link ImageOwner}.
+     * <p>
+     * If there is a permanent image, we get a <strong>copy of that one</strong>.
+     * If there is no image, we get a new File object.
+     * Either way, the File returned will have a new temporary name.
+     *
+     * @param context    Current context
+     * @param imageOwner for which we want an image
+     * @param cIdx       0..n image index
+     *
+     * @return the File
+     *
+     * @throws CoverStorageException The images directory is not available
+     * @throws IOException           on failure to make a copy of the permanent file
+     */
+    @WorkerThread
+    @NonNull
+    private File createTempImageFile(@NonNull final Context context,
+                                     @NonNull final ImageOwner imageOwner,
+                                     @IntRange(from = 0, to = 3) final int cIdx)
+            throws CoverStorageException, IOException {
+
+        // the temp file we'll return
+        final File tmpFile = ServiceLocator.getInstance().getCoverStorage().getTempFile();
+
+        // If we have a permanent file, copy it into the temp location
+        final Optional<File> uuidFile = imageOwner.getImage(context, cIdx);
+        if (uuidFile.isPresent()) {
+            FileUtils.copy(uuidFile.get(), tmpFile);
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGES) {
+            LoggerFactory.getLogger()
+                         .e("TAG", new Throwable("createTempImageFile"),
+                            "imageOwner.id=" + imageOwner.getId()
+                            + "|cIdx=" + cIdx
+                            + "|exists=" + tmpFile.exists()
+                            + "|length=" + tmpFile.length()
+                            + "|file=" + tmpFile.getAbsolutePath()
+                         );
+        }
+        return tmpFile;
+    }
+
+    /**
+     * Run the transformation and persist the resulting file.
+     *
+     * @param transformation to run
+     * @param destFile       to write
+     * @param nextAction     to take / pass on to the result
+     *
+     * @return TransformationResult
+     *
+     * @throws CoverStorageException The covers directory is not available
+     * @throws IOException           on generic/other IO failures
+     */
+    @WorkerThread
+    @NonNull
+    private TransformationResult transform(@NonNull final Transformation transformation,
+                                           @NonNull final File destFile,
+                                           @NonNull final NextAction nextAction)
+            throws CoverStorageException, IOException {
+
+        final Optional<Bitmap> optBitmap = transformation.transform();
+        if (optBitmap.isPresent()) {
+            final Bitmap source = optBitmap.get();
+            ServiceLocator.getInstance().getCoverStorage().persist(source, destFile);
+
+            return new TransformationResult(destFile, nextAction);
+        }
+
+        return new TransformationResult(null, NextAction.Done);
+    }
+}
