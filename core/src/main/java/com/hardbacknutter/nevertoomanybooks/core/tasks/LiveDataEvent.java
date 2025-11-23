@@ -67,7 +67,7 @@ public final class LiveDataEvent<T> {
      * @return LiveDataEvent
      */
     @NonNull
-    static <T> LiveDataEvent<T> ofNullable(@Nullable final T data) {
+    public static <T> LiveDataEvent<T> ofNullable(@Nullable final T data) {
         return new LiveDataEvent<>(data);
     }
 
