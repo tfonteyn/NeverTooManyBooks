@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteDoneException;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -137,6 +138,7 @@ public class CsvRecordReader
      *
      * @throws DataReaderException on failure to parse this line
      */
+    @AnyThread
     @NonNull
     public static List<String> parse(@NonNull final Context context,
                                      final int row,
@@ -272,6 +274,7 @@ public class CsvRecordReader
     }
 
     @Override
+    @WorkerThread
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,

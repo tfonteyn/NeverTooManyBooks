@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,9 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.network;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -69,6 +71,7 @@ public class ConnectionValidatorTask
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             super.cancel();
@@ -87,8 +90,9 @@ public class ConnectionValidatorTask
      * @throws StorageException     on storage related failures
      * @throws IOException          on generic/other IO failures
      */
-    @NonNull
     @Override
+    @WorkerThread
+    @NonNull
     protected Boolean doWork()
             throws IOException,
                    StorageException,

@@ -23,8 +23,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Base64;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -97,11 +99,13 @@ public class XmlRecordReader
      *
      * @param context Current context
      */
+    @AnyThread
     public XmlRecordReader(@NonNull final Context context) {
         this.realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
     }
 
     @Override
+    @WorkerThread
     @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context,
                                                   @NonNull final ArchiveReaderRecord record)
@@ -118,6 +122,7 @@ public class XmlRecordReader
     }
 
     @Override
+    @WorkerThread
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,

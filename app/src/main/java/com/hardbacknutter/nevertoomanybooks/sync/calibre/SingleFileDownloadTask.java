@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
@@ -78,6 +80,7 @@ class SingleFileDownloadTask
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         super.cancel();
         synchronized (server) {
@@ -85,8 +88,9 @@ class SingleFileDownloadTask
         }
     }
 
-    @NonNull
     @Override
+    @WorkerThread
+    @NonNull
     protected Uri doWork()
             throws IOException,
                    StorageException,

@@ -21,7 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.backup.bin;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,13 +68,15 @@ public class ImageRecordReader
      *
      * @param updateOption options
      */
+    @AnyThread
     public ImageRecordReader(@NonNull final DataReader.Updates updateOption) {
         this.updateOption = updateOption;
     }
 
     @SuppressWarnings("OverlyBroadThrowsClause")
-    @NonNull
     @Override
+    @WorkerThread
+    @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ProgressListener progressListener)

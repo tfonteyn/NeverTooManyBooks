@@ -75,9 +75,9 @@ public class SearchEditionsTask
         execute();
     }
 
-    @NonNull
     @Override
     @WorkerThread
+    @NonNull
     protected Collection<AltEdition> doWork()
             throws NetworkUnavailableException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();

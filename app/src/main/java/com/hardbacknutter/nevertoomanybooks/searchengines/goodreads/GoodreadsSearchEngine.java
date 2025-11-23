@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -710,6 +711,7 @@ public class GoodreadsSearchEngine
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         super.cancel();
 

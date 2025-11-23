@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -172,6 +173,7 @@ final class SearchTask
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         super.cancel();
         synchronized (searchEngine) {
@@ -179,9 +181,9 @@ final class SearchTask
         }
     }
 
-    @NonNull
     @Override
     @WorkerThread
+    @NonNull
     protected Book doWork()
             throws StorageException,
                    SearchException,

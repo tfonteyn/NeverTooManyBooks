@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,8 +101,9 @@ public class StorageMoverTask
         return freeSpace > (usedSpace * OVERHEAD);
     }
 
-    @NonNull
     @Override
+    @WorkerThread
+    @NonNull
     protected Integer doWork()
             throws IOException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();

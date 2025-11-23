@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -150,6 +151,7 @@ public class LibraryThingSearchEngine
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             super.cancel();

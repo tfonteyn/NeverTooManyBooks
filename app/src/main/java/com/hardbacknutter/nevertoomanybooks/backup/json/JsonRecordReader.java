@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
@@ -150,6 +151,7 @@ public class JsonRecordReader
     }
 
     @Override
+    @WorkerThread
     @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context,
                                                   @NonNull final ArchiveReaderRecord record)
@@ -223,6 +225,7 @@ public class JsonRecordReader
     }
 
     @Override
+    @WorkerThread
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,

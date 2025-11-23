@@ -208,8 +208,8 @@ public abstract class SearchEngineBase
         return new FullDateParser(new ISODateParser(systemLocale), locales);
     }
 
-    @AnyThread
     @Override
+    @AnyThread
     @CallSuper
     public void cancel() {
         cancelRequested.set(true);

@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.settings.tags;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.util.Locale;
 import java.util.Map;
@@ -49,8 +50,9 @@ public class TagMapperTask
         execute();
     }
 
-    @NonNull
     @Override
+    @WorkerThread
+    @NonNull
     protected Map<Options, Integer> doWork()
             throws DaoWriteException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -222,6 +223,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         }
 
         @Override
+        @AnyThread
         public void cancel() {
             synchronized (this) {
                 super.cancel();
@@ -231,8 +233,8 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
             }
         }
 
-        @WorkerThread
         @Override
+        @WorkerThread
         @NonNull
         protected Optional<METADATA> doWork()
                 throws DataReaderException,
@@ -272,6 +274,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         }
 
         @Override
+        @AnyThread
         public void cancel() {
             synchronized (this) {
                 super.cancel();
@@ -281,8 +284,8 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
             }
         }
 
-        @WorkerThread
         @Override
+        @WorkerThread
         @NonNull
         protected RESULTS doWork()
                 throws CertificateException,

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,8 +59,8 @@ public class DBCleanerTask
         execute();
     }
 
-    @WorkerThread
     @Override
+    @WorkerThread
     @NonNull
     protected Boolean doWork()
             throws DaoWriteException {

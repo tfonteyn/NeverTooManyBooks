@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.tasks;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -59,6 +60,7 @@ public interface ProgressListener
      * @param indeterminate true/false to enable/disable the indeterminate mode
      *                      or {@code null} to tell the receiver to revert back to its initial mode.
      */
+    @AnyThread
     void setIndeterminate(@Nullable Boolean indeterminate);
 
     /**
@@ -67,6 +69,7 @@ public interface ProgressListener
      *
      * @return max position
      */
+    @AnyThread
     int getMaxPos();
 
     /**
@@ -74,6 +77,7 @@ public interface ProgressListener
      *
      * @param maxPosition value
      */
+    @AnyThread
     void setMaxPos(int maxPosition);
 
     /**
@@ -83,6 +87,7 @@ public interface ProgressListener
      *
      * @return interval in ms
      */
+    @AnyThread
     default int getUpdateIntervalInMs() {
         return 200;
     }

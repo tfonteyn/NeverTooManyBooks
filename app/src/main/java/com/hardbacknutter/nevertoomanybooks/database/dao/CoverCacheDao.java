@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,7 +68,6 @@ public interface CoverCacheDao {
      * @return Bitmap (if cached) or {@code null} (if not cached)
      */
     @Nullable
-    @AnyThread
     Bitmap getCover(@NonNull String uuid,
                     @IntRange(from = 0, to = 3) int cIdx,
                     int width);

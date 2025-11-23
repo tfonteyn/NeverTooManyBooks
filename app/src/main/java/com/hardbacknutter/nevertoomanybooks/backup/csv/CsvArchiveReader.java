@@ -23,6 +23,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
@@ -77,6 +78,7 @@ public class CsvArchiveReader
      * @param uri          to read from
      * @param updateOption options
      */
+    @AnyThread
     public CsvArchiveReader(@NonNull final Uri uri,
                             @NonNull final DataReader.Updates updateOption) {
         this.uri = uri;

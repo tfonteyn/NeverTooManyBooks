@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -1924,6 +1925,7 @@ public class IsfdbSearchEngine
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             super.cancel();

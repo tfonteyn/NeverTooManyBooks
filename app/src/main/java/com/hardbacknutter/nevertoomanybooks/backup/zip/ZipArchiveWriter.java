@@ -134,6 +134,7 @@ public class ZipArchiveWriter
      *
      * @throws FileNotFoundException if the uri cannot be resolved
      */
+    @AnyThread
     public ZipArchiveWriter(@NonNull final Set<RecordType> recordTypes,
                             @Nullable final LocalDateTime sinceDateTime,
                             @NonNull final File destFile)
@@ -272,6 +273,7 @@ public class ZipArchiveWriter
      * @throws DataWriterException on a decoding/parsing of data issue
      * @throws IOException         on generic/other IO failures
      */
+    @WorkerThread
     @NonNull
     private File prepareBooks(@NonNull final Context context,
                               @Nullable final LocalDateTime dateSince,
@@ -312,6 +314,7 @@ public class ZipArchiveWriter
      * @throws DataWriterException on a decoding/parsing of data issue
      * @throws IOException         on generic/other IO failures
      */
+    @WorkerThread
     private void writeMetaData(@NonNull final Context context,
                                @NonNull final ExportResults data)
             throws DataWriterException,
@@ -355,6 +358,7 @@ public class ZipArchiveWriter
      * @throws DataWriterException on a decoding/parsing of data issue
      * @throws IOException         on generic/other IO failures
      */
+    @WorkerThread
     @NonNull
     private ExportResults writeRecord(@NonNull final Context context,
                                       @NonNull final RecordType recordType,
@@ -396,6 +400,7 @@ public class ZipArchiveWriter
      *
      * @throws IOException on generic/other IO failures
      */
+    @WorkerThread
     private void writeImages(@NonNull final Context context,
                              @NonNull final File coverDir,
                              @NonNull final Collection<String> fileNames,
@@ -455,6 +460,7 @@ public class ZipArchiveWriter
      *
      * @throws IOException on generic/other IO failures
      */
+    @WorkerThread
     private void putByteArray(@NonNull final String name,
                               @NonNull final byte[] bytes,
                               @SuppressWarnings("SameParameterValue") final boolean compress)
@@ -491,6 +497,7 @@ public class ZipArchiveWriter
      *
      * @throws IOException on generic/other IO failures
      */
+    @WorkerThread
     private void putFile(@NonNull final String name,
                          @NonNull final File file,
                          final boolean compress)

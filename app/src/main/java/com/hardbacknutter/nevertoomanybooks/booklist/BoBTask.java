@@ -97,9 +97,9 @@ public class BoBTask
         execute();
     }
 
-    @NonNull
     @Override
     @WorkerThread
+    @NonNull
     protected Outcome doWork() {
         final Style style = bookshelf.getStyle();
 

@@ -25,6 +25,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import java.util.List;
 import java.util.Locale;
@@ -93,8 +94,9 @@ public class AuthorResolverTask
      * @throws SearchException      on generic exceptions (wrapped) during search
      * @throws DaoWriteException    on failure
      */
-    @NonNull
     @Override
+    @WorkerThread
+    @NonNull
     protected Boolean doWork()
             throws CancellationException,
                    CredentialsException, SearchException, DaoWriteException {

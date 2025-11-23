@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,8 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -39,6 +41,7 @@ public class TestProgressListener
     }
 
     @Override
+    @WorkerThread
     public void publishProgress(final int delta,
                                 @Nullable final String message) {
         progressCurrentPos += delta;
@@ -63,26 +66,31 @@ public class TestProgressListener
     }
 
     @Override
+    @AnyThread
     public void cancel() {
     }
 
     @Override
+    @AnyThread
     public boolean isCancelled() {
         return false;
     }
 
     @Override
+    @AnyThread
     public void setIndeterminate(@Nullable final Boolean indeterminate) {
         LoggerFactory.getLogger()
                      .d(tag, "setIndeterminate", String.valueOf(indeterminate));
     }
 
     @Override
+    @AnyThread
     public int getMaxPos() {
         return maxPos;
     }
 
     @Override
+    @AnyThread
     public void setMaxPos(final int maxPos) {
         LoggerFactory.getLogger().d(tag, "setMaxPos", String.valueOf(maxPos));
         this.maxPos = maxPos;

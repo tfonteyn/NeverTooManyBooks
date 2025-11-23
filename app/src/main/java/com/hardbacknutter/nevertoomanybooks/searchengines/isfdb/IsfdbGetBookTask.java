@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -90,6 +91,7 @@ public class IsfdbGetBookTask
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             super.cancel();
@@ -99,9 +101,9 @@ public class IsfdbGetBookTask
         }
     }
 
-    @NonNull
     @Override
     @WorkerThread
+    @NonNull
     protected Book doWork()
             throws StorageException, SearchException, CredentialsException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();

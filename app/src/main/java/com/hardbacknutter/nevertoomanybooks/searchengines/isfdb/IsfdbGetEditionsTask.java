@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -89,6 +90,7 @@ public class IsfdbGetEditionsTask
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             super.cancel();
@@ -98,9 +100,9 @@ public class IsfdbGetEditionsTask
         }
     }
 
-    @NonNull
     @Override
     @WorkerThread
+    @NonNull
     protected List<AltEditionIsfdb> doWork()
             throws StorageException,
                    SearchException,

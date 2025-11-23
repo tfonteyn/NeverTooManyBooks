@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -249,6 +250,7 @@ public class StripInfoSearchEngine
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         synchronized (this) {
             super.cancel();

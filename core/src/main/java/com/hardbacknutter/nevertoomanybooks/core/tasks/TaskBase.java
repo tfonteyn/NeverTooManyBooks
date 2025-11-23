@@ -169,8 +169,8 @@ public abstract class TaskBase<Result>
      * @throws CancellationException if the user cancelled us
      * @throws Exception             depending on implementation
      */
-    @NonNull
     @WorkerThread
+    @NonNull
     protected abstract Result doWork()
             throws CancellationException, Exception;
 
@@ -198,8 +198,8 @@ public abstract class TaskBase<Result>
     protected abstract void setTaskFailure(@NonNull Throwable e);
 
     @Override
-    @CallSuper
     @AnyThread
+    @CallSuper
     public void cancel() {
         cancelRequested.set(true);
     }
@@ -230,8 +230,8 @@ public abstract class TaskBase<Result>
      * @param delta the relative step in the overall progress count.
      * @param text  (optional) text message
      */
-    @WorkerThread
     @Override
+    @WorkerThread
     public void publishProgress(final int delta,
                                 @Nullable final String text) {
         progressCurrentPos += delta;
@@ -263,8 +263,8 @@ public abstract class TaskBase<Result>
      *
      * @param maxPosition value
      */
-    @AnyThread
     @Override
+    @AnyThread
     public void setMaxPos(final int maxPosition) {
         progressMaxPos = maxPosition;
     }

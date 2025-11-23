@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -632,6 +633,7 @@ public class SearchBookUpdatesViewModel
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         super.cancel();
         postSearch(false);

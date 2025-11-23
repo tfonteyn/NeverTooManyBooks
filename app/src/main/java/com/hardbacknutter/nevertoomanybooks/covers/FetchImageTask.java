@@ -81,9 +81,9 @@ class FetchImageTask
         execute();
     }
 
-    @NonNull
     @Override
     @WorkerThread
+    @NonNull
     protected ImageFileInfo doWork()
             throws StorageException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();

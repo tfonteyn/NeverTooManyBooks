@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -111,6 +112,7 @@ public abstract class JsoupSearchEngineBase
     }
 
     @Override
+    @AnyThread
     public void cancel() {
         super.cancel();
         synchronized (this) {

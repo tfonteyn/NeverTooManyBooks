@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -75,10 +76,12 @@ public final class CsvGoodreads {
      *
      * @param defaultStyle to use
      */
+    @AnyThread
     public CsvGoodreads(@NonNull final Style defaultStyle) {
         this.defaultStyle = defaultStyle;
     }
 
+    @AnyThread
     @NonNull
     public StringList<Author> getAuthorCoder() {
         if (authorCoder == null) {
@@ -87,6 +90,7 @@ public final class CsvGoodreads {
         return authorCoder;
     }
 
+    @AnyThread
     @NonNull
     public StringList<Bookshelf> getBookshelfCoder() {
         if (bookshelfCoder == null) {

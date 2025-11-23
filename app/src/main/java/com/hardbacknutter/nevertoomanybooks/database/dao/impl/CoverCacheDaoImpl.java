@@ -136,7 +136,6 @@ public class CoverCacheDaoImpl
 
     @Override
     @Nullable
-    @AnyThread
     public Bitmap getCover(@NonNull final String uuid,
                            @IntRange(from = 0, to = 3) final int cIdx,
                            final int maxWidth) {

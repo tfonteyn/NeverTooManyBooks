@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -101,8 +102,9 @@ public class AcraCustomDialogViewModel
             execute();
         }
 
-        @NonNull
         @Override
+        @WorkerThread
+        @NonNull
         protected Boolean doWork()
                 throws CancellationException, IOException, FileNotFoundException {
             final Context context = ServiceLocator.getInstance().getLocalizedAppContext();

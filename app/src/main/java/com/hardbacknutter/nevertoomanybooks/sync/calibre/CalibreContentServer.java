@@ -1451,6 +1451,7 @@ public final class CalibreContentServer
      * @throws StorageException       on storage related failures
      * @throws IOException            on generic/other IO failures
      */
+    @WorkerThread
     @NonNull
     Uri fetchFile(@NonNull final Context context,
                   @NonNull final Book book,
