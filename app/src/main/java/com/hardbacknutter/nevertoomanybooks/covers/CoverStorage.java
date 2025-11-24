@@ -396,7 +396,16 @@ public class CoverStorage {
         final String name = createName(uuid, cIdx) + EXT_JPG;
         final File destination = new File(getDir(), name);
 
-        return persist(source, destination);
+        try {
+            if (isUndoEnabled()) {
+                createVersionedFileService().save(destination);
+            }
+            FileUtils.rename(source, destination);
+            return destination;
+        } finally {
+            // Fire and forget
+            FileUtils.backgroundDelete(source);
+        }
     }
 
     /**
@@ -422,7 +431,15 @@ public class CoverStorage {
                 throw new IOException("Bitmap compression failed");
             }
         }
-        return persist(tmpFile, destination);
+        try {
+            if (isUndoEnabled()) {
+                createVersionedFileService().save(destination);
+            }
+            FileUtils.rename(tmpFile, destination);
+            return destination;
+        } finally {
+            FileUtils.delete(tmpFile);
+        }
     }
 
     /**
@@ -445,21 +462,14 @@ public class CoverStorage {
                    IOException {
 
         final File tmpFile = writeTempFile(source);
-        return persist(tmpFile, destination);
-    }
-
-    @NonNull
-    private File persist(@NonNull final File source,
-                         @NonNull final File destination)
-            throws CoverStorageException, IOException {
         try {
             if (isUndoEnabled()) {
                 createVersionedFileService().save(destination);
             }
-            FileUtils.rename(source, destination);
+            FileUtils.rename(tmpFile, destination);
             return destination;
         } finally {
-            FileUtils.delete(source);
+            FileUtils.delete(tmpFile);
         }
     }
 
@@ -488,7 +498,8 @@ public class CoverStorage {
             return tmpFile;
 
         } catch (@NonNull final IOException e) {
-            FileUtils.delete(tmpFile);
+            // Fire and forget
+            FileUtils.backgroundDelete(tmpFile);
             throw e;
         }
     }
