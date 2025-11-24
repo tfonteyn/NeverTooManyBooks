@@ -25,6 +25,7 @@ import android.content.Context;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,13 +76,11 @@ public interface ImageOwner {
      *                If applicable, the caller can/must use the {@link File}
      *                as returned by this method.
      *
-     * @return the {@link File} after processing (either the original, or a renamed/moved file)
-     *
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
      */
-    @Nullable
-    File setImage(@NonNull Context context,
+    @WorkerThread
+    void setImage(@NonNull Context context,
                   @IntRange(from = 0, to = 3) int cIdx,
                   @Nullable File file)
             throws StorageException, IOException;
@@ -92,6 +91,7 @@ public interface ImageOwner {
      * @param context Current context
      * @param cIdx    0..n image index
      */
+    @WorkerThread
     void removeImage(@NonNull Context context,
                      @IntRange(from = 0, to = 3) int cIdx);
 }

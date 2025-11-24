@@ -32,6 +32,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.io.File;
@@ -62,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageOwner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -1070,6 +1072,7 @@ public class Author
      * @param cIdx    0..n image index; pass in {@code 0} for future compatibility
      */
     @Override
+    @WorkerThread
     public void removeImage(@NonNull final Context context,
                             @IntRange(from = 0, to = 0) final int cIdx) {
         // we need to delete any existing file, and remove any existing uuid.
@@ -1098,29 +1101,23 @@ public class Author
      *                If applicable, the caller can/must use the {@link File}
      *                as returned by this method.
      *
-     * @return the {@link File} after processing (either the original, or a renamed/moved file)
-     *
-     * @throws StorageException The covers directory is not available
-     * @throws IOException      on generic/other IO failures
+     * @throws CoverStorageException The covers directory is not available
+     * @throws IOException           on generic/other IO failures
      */
-    @Nullable
     @Override
-    public File setImage(@NonNull final Context context,
+    @WorkerThread
+    public void setImage(@NonNull final Context context,
                          @IntRange(from = 0, to = 0) final int cIdx,
                          @Nullable final File file)
-            throws StorageException, IOException {
+            throws IOException, CoverStorageException {
 
         if (file == null) {
             removeImage(context, cIdx);
-            return null;
+            return;
         }
 
         @Nullable
         String uuid = getImageUuid().orElse(null);
-        // the file to return from this method, after the incoming file has been processed
-        @Nullable
-        File destination = file;
-
         if (uuid != null && file.getName().startsWith(uuid)) {
             // No further action needed as we have the image "in-place"
             // ... not actually sure when this would be the case; keep an eye on logs
@@ -1135,19 +1132,15 @@ public class Author
             }
         } else if (uuid != null) {
             // we already had an image, just replace it with the new file
-            destination = ServiceLocator.getInstance().getCoverStorage()
-                                        .persist(file, uuid, cIdx);
+            ServiceLocator.getInstance().getCoverStorage().persist(file, uuid, cIdx);
         } else {
             // it's the first time we persist an image
             // Rename the temp file to a new uuid based permanent file name
             uuid = UUID.randomUUID().toString();
-            destination = ServiceLocator.getInstance().getCoverStorage()
-                                        .persist(file, uuid, cIdx);
+            ServiceLocator.getInstance().getCoverStorage().persist(file, uuid, cIdx);
             imageUuid = uuid;
             updateInDatabase(context);
         }
-
-        return destination;
     }
 
     private void updateInDatabase(@NonNull final Context context) {

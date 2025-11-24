@@ -33,6 +33,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -564,6 +565,11 @@ public class Book
         }
     }
 
+    /**
+     * Get the publication-date for this book.
+     *
+     * @return date; can be {@link PartialDate#NOT_SET}
+     */
     @NonNull
     public PartialDate getPublicationDate() {
         return partialDateParser.parse(getString(DBKey.PUBLICATION_DATE))
@@ -1764,16 +1770,14 @@ public class Book
      * @param cIdx    0..n image index
      * @param file    cover file or {@code null} to delete the cover
      *
-     * @return the File after processing (either original, or a renamed/moved file)
-     *
      * @throws StorageException      The covers directory is not available
      * @throws IOException           on generic/other IO failures
      * @throws IllegalStateException (debug) if the UUID is missing
      */
     @SuppressWarnings({"UnusedReturnValue", "OverlyBroadThrowsClause"})
     @Override
-    @Nullable
-    public File setImage(@NonNull final Context context,
+    @WorkerThread
+    public void setImage(@NonNull final Context context,
                          @IntRange(from = 0, to = 3) final int cIdx,
                          @Nullable final File file)
             throws StorageException, IOException {
@@ -1815,7 +1819,6 @@ public class Book
             stage.setStage(EntityStage.Stage.Dirty);
 
             // just return the incoming file, it has not been changed or renamed
-            return file;
 
         } else {
             // we're in read-only mode, use the UUID storage based file name
@@ -1823,10 +1826,6 @@ public class Book
             if (uuid == null || uuid.isEmpty()) {
                 throw new IllegalStateException("Missing uuid");
             }
-
-            // the file to return from this method, after the incoming file has been processed
-            @Nullable
-            File destination = file;
 
             // See BookDaoHelper#persistCovers which does the same as below for BKEY_TMP_FILE_SPEC
             if (file != null) {
@@ -1844,8 +1843,7 @@ public class Book
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    destination = ServiceLocator.getInstance().getCoverStorage()
-                                                .persist(file, uuid, cIdx);
+                    ServiceLocator.getInstance().getCoverStorage().persist(file, uuid, cIdx);
                 }
             } else {
                 // a null file indicates we need to delete the cover
@@ -1853,12 +1851,11 @@ public class Book
             }
 
             ServiceLocator.getInstance().getBookDao().touch(this);
-
-            return destination;
         }
     }
 
     @Override
+    @WorkerThread
     public void removeImage(@NonNull final Context context,
                             @IntRange(from = 0, to = 3) final int cIdx) {
         try {
