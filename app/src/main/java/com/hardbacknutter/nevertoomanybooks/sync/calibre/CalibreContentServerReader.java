@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -552,7 +553,7 @@ public class CalibreContentServerReader
         }
 
         if (doCovers) {
-            convertCovers(context, calibreBook, book, calibreBookId);
+            convertCovers(calibreBookId, calibreBook, book);
         }
 
         if (!calibreBook.isNull(CalibreBookJsonKey.USER_METADATA)) {
@@ -817,23 +818,34 @@ public class CalibreContentServerReader
         }
     }
 
-    private void convertCovers(@NonNull final Context context,
+    /**
+     * Fetch a cover from the server and add it to the book.
+     * This is a fire-and-forget operation. Errors are ignored.
+     *
+     * @param calibreBookId pre-parsed id for the calibreBook
+     * @param calibreBook   to fetch the cover for
+     * @param book          to update
+     */
+    private void convertCovers(final int calibreBookId,
                                @NonNull final JSONObject calibreBook,
-                               @NonNull final Book book,
-                               final int calibreBookId)
-            throws StorageException, IOException {
-        if (!calibreBook.isNull(CalibreBookJsonKey.COVER)) {
-            final String coverUrl = calibreBook.optString(CalibreBookJsonKey.COVER);
-            if (!coverUrl.isEmpty()) {
+                               @NonNull final Book book) {
+        if (calibreBook.isNull(CalibreBookJsonKey.COVER)) {
+            return;
+        }
+        final String coverUrl = calibreBook.optString(CalibreBookJsonKey.COVER);
+        if (coverUrl.isEmpty()) {
+            return;
+        }
+
+        ASyncExecutor.SERIAL.execute(() -> {
+            try {
                 final File file = server.getCover(calibreBookId, coverUrl)
                                         .orElse(null);
-                try {
-                    book.setImage(context, 0, file);
-                } catch (@NonNull final IOException ignore) {
-                    // ignore
-                }
+                book.setImage(context, 0, file);
+            } catch (@NonNull final IOException | StorageException e) {
+                LoggerFactory.getLogger().e(TAG, e);
             }
-        }
+        });
     }
 
     @Override
