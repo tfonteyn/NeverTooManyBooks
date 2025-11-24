@@ -40,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -48,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.VersionedFileService;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -492,7 +494,22 @@ public class CoverStorage {
     }
 
     /**
-     * Delete the persisted file (if it exists).
+     * Delete the persisted files for the given book uuids.
+     * Any errors are logged, but ignored.
+     *
+     * @param uuids list of book uuid's
+     */
+    @WorkerThread
+    public void delete(@NonNull final List<String> uuids) {
+        uuids.forEach(uuid -> {
+            for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
+                delete(uuid, cIdx);
+            }
+        });
+    }
+
+    /**
+     * Delete the persisted file at the given index, for the given uuid.
      * Any errors are logged, but ignored.
      *
      * @param uuid the book UUID

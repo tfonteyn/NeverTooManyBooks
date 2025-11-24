@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -374,19 +373,8 @@ public class BookDaoImpl
 
             // At this point all database actions were successful.
             // Now delete the covers for the actually deleted books.
-            // Note that if anything goes wrong here:
-            // - the database will be rolled back as expected.
-            // - the already deleted covers will NOT be restored automatically.
-            //   The user can however restore them one-by-one
-            //   if they enabled the undo facility for covers.
-            // but what could go wrong during a file-delete op... flw... oh well.
-            final CoverStorage coverStorage = ServiceLocator.getInstance().getCoverStorage();
-            actuallyDeleted.forEach(uuid -> {
-                for (int cIdx = 0; cIdx < DBKey.NR_OF_BOOK_COVERS; cIdx++) {
-                    final int finalCIdx = cIdx;
-                    ASyncExecutor.SERIAL.execute(() -> coverStorage.delete(uuid, finalCIdx));
-                }
-            });
+            ASyncExecutor.SERIAL.execute(
+                    () -> ServiceLocator.getInstance().getCoverStorage().delete(actuallyDeleted));
 
             if (txLock != null) {
                 db.setTransactionSuccessful();
