@@ -21,9 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,43 +30,31 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CropImageContract;
-import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImageEditorBinding;
 import com.hardbacknutter.util.insets.InsetsListenerBuilder;
 import com.hardbacknutter.util.insets.Side;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
- * A minimalist editor for the cover images.
- * Limited to cropping for now, but the intention is to incorporate the rotating
- * features implemented elsewhere.
+ * A minimalist cropping-editor for the cover images.
  * <p>
  * Depends on / works in conjunction with {@link CropImageView}.
  * <p>
  * FIXME: rotating the device will revert the image to the original
+ *  A fix will require the custom view to be able to preserve state of cropping/bitmap.
  */
 public class CropImageFragment
         extends BaseFragment {
 
     private static final String TAG = "CropImageFragment";
-
-    /** used to calculate free space on Shared Storage, 100kb per picture is an overestimation. */
-    private static final long ESTIMATED_PICTURE_SIZE = 100_000L;
 
     /** A back-press is always a "cancel". */
     private final OnBackPressedCallback backPressedCallback =
@@ -79,9 +65,10 @@ public class CropImageFragment
                     getActivity().finish();
                 }
             };
+
     private FragmentImageEditorBinding vb;
-    // do NOT delete the destination file in case source and destination was the same file
-    private String destinationPath;
+
+    private CropImageViewModel vm;
 
     @Nullable
     @Override
@@ -97,91 +84,67 @@ public class CropImageFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        try {
-            final File coverDir = ServiceLocator.getInstance().getCoverStorage().getDir();
-            // make an educated guess how many pics we can store.
-            if (FileUtils.getFreeSpace(coverDir) / ESTIMATED_PICTURE_SIZE < 1) {
-                // Shouldn't we 'finish()' the activity? i.e. handle like an exception?
-                Snackbar.make(vb.coverImage0, R.string.error_insufficient_storage,
-                              Snackbar.LENGTH_LONG).show();
-            }
-        } catch (@NonNull final CoverStorageException | IOException e) {
-            // just log, do not display exception data
-            LoggerFactory.getLogger().e(TAG, e);
-            //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.error_24px)
-                    .setTitle(R.string.error_storage_not_accessible)
-                    .setPositiveButton(R.string.ok, (d, w) -> {
-                        //noinspection DataFlowIssue
-                        getActivity().finish();
-                    })
-                    .create()
-                    .show();
-            return;
-        }
+        // do NOT set a listener on vb.bottomAppBar/vb.fab
+        // The AppBar does that automatically, and the FAB is anchored to that bar.
+        InsetsListenerBuilder.create(vb.coverImage0)
+                             .margins(Side.Start, Side.Top, Side.End, Side.Bottom)
+                             .systemBars()
+                             .displayCutout()
+                             .systemGestures()
+                             .apply();
+
+        final LifecycleOwner viewLifecycleOwner = getViewLifecycleOwner();
 
         //noinspection DataFlowIssue
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
+                     .addCallback(viewLifecycleOwner, backPressedCallback);
 
-        final Bundle args = requireArguments();
+        vm = new ViewModelProvider(this).get(CropImageViewModel.class);
+        vm.init(requireArguments());
 
-        final String srcPath = Objects.requireNonNull(args.getString(
-                CropImageContract.BKEY_SOURCE), CropImageContract.BKEY_SOURCE);
-        final Bitmap bitmap = getBitmap(srcPath);
+        // no storage space left, quit
+        vm.onInsufficientStorage().observe(viewLifecycleOwner, message ->
+                message.process(aVoid -> showMessageAndFinishActivity(
+                        getString(R.string.error_insufficient_storage))));
 
-        if (bitmap != null) {
-            destinationPath = Objects.requireNonNull(args.getString(
-                    CropImageContract.BKEY_DESTINATION), CropImageContract.BKEY_DESTINATION);
+        vm.onError().observe(viewLifecycleOwner, message ->
+                message.process(e -> onError(e)));
 
-            // do NOT set a listener on the vb.bottomAppBar/vb.fab
-            // The former does that automatically, and the latter is anchored to the bar.
-            InsetsListenerBuilder.create(vb.coverImage0)
-                                 .margins(Side.Start, Side.Top, Side.End, Side.Bottom)
-                                 .systemBars()
-                                 .displayCutout()
-                                 // final fix for github issue #29
-                                 .systemGestures()
-                                 .apply();
+        // Load the initial bitmap
+        vm.onBitmap().observe(viewLifecycleOwner, message ->
+                message.process(bitmap -> vb.coverImage0.setInitialBitmap(bitmap)));
 
-            vb.coverImage0.setInitialBitmap(bitmap);
+        // After a successful save
+        vm.onSaved().observe(viewLifecycleOwner, message ->
+                message.process(resultIntent -> {
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().finish();
+                }));
 
-            // the FAB button saves the image
-            vb.fab.setOnClickListener(v -> onSave());
-
-            // FIXME: 2024-07-14: if the device is displaying a 3-button soft-nav-bar,
-            //  we'll have two 'back' buttons just above each other. ...
-            //  I tried to detect a) visibility of navbar; b) if gesture-nav is enable
-            //  using various unsubstantiated/dated posts on the web...
-            //  none of them worked. So we have two buttons.... better than none I suppose.
-            // Back is cancel
-            vb.bottomAppBar.setNavigationOnClickListener(v -> getActivity().finish());
-            // Reset/undo but stay here editing
-            vb.bottomAppBar.setOnMenuItemClickListener(menuItem -> {
-                if (menuItem.getItemId() == R.id.MENU_UNDO) {
-                    vb.coverImage0.resetBitmap();
-                    return true;
-                }
-                return false;
-            });
-        } else {
-            //noinspection DataFlowIssue
-            getActivity().finish();
-        }
+        initListeners();
     }
 
-    @Nullable
-    private Bitmap getBitmap(@NonNull final String srcPath) {
-        Bitmap bitmap = null;
-        try (InputStream is = new FileInputStream(srcPath)) {
-            bitmap = BitmapFactory.decodeStream(is);
-        } catch (@NonNull final IOException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                LoggerFactory.getLogger().d(TAG, "getBitmap", e);
+    private void initListeners() {
+        // the FAB button saves the image
+        vb.fab.setOnClickListener(v -> onSave());
+
+        // FIXME: 2024-07-14: if the device is displaying a 3-button soft-nav-bar,
+        //  we'll have two 'back' buttons just above each other. ...
+        //  I tried to detect a) visibility of navbar; b) if gesture-nav is enable
+        //  using various unsubstantiated/dated posts on the web...
+        //  none of them worked. So we have two buttons.... better than none I suppose.
+        // Back is cancel
+        //noinspection DataFlowIssue
+        vb.bottomAppBar.setNavigationOnClickListener(v -> getActivity().finish());
+
+        // Reset/undo
+        vb.bottomAppBar.setOnMenuItemClickListener(menuItem -> {
+            if (menuItem.getItemId() == R.id.MENU_UNDO) {
+                vb.coverImage0.resetBitmap();
+                return true;
             }
-        }
-        return bitmap;
+            return false;
+        });
     }
 
     private void onSave() {
@@ -189,33 +152,31 @@ public class CropImageFragment
         vb.fab.setEnabled(false);
 
         @Nullable
-        Bitmap bitmap = vb.coverImage0.getCroppedBitmap();
-        if (bitmap != null) {
-            try {
-                final File destination = new File(destinationPath);
-                ServiceLocator.getInstance().getCoverStorage().persist(bitmap, destination);
-
-                final Intent resultIntent = CropImageContract
-                        .createResult(destinationPath);
-                //noinspection DataFlowIssue
-                getActivity().setResult(Activity.RESULT_OK, resultIntent);
-                getActivity().finish();
-
-            } catch (@NonNull final IOException | CoverStorageException e) {
-                LoggerFactory.getLogger().e(TAG, e);
-                bitmap = null;
-            }
-        }
-
+        final Bitmap bitmap = vb.coverImage0.getCroppedBitmap();
         if (bitmap == null) {
-            //noinspection DataFlowIssue
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.error_24px)
-                    .setTitle(R.string.action_save)
-                    .setMessage(R.string.error_storage_not_writable)
-                    .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
+            onError(null);
+        } else {
+            vm.save(bitmap);
         }
+    }
+
+    @UiThread
+    private void onError(@Nullable final Throwable e) {
+        if (e != null) {
+            LoggerFactory.getLogger().e(TAG, e);
+        }
+
+        // Getting the cover-dir and calculating free-space failed: unlikely
+        // Loading the initial bitmap failed: unlikely
+        // "Save" failed. This probable the only time we'll get here... flw
+        // ... so the generic message is good enough.
+
+        //noinspection DataFlowIssue
+        new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.error_24px)
+                .setMessage(R.string.error_storage_not_writable)
+                .setPositiveButton(R.string.ok, (d, w) -> d.dismiss())
+                .create()
+                .show();
     }
 }

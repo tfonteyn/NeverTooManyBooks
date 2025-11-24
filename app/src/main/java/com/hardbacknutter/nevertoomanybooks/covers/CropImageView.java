@@ -57,8 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.AttrUtils;
 public class CropImageView
         extends AppCompatImageView {
 
-    /** 400% zoom regardless of screen or image orientation. */
-    private static final int ZOOM_FACTOR = 4;
+    /** 400% maximum zoom regardless of screen or image orientation. */
+    private static final int MAX_ZOOM_FACTOR = 4;
+    /** Zoom is animated and adjusted every 300 millis. */
     private static final int ZOOM_DURATION_IN_MILLIS = 300;
 
     /**
@@ -392,8 +393,8 @@ public class CropImageView
         setImageMatrix(computeImageMatrix());
 
         // Set the maximum zoom, which is relative to the base matrix.
-        maxZoom = ZOOM_FACTOR * Math.max((float) bitmap.getWidth()
-                                         / (float) currentLayoutRect.width(),
+        maxZoom = MAX_ZOOM_FACTOR * Math.max((float) bitmap.getWidth()
+                                             / (float) currentLayoutRect.width(),
                                          (float) bitmap.getHeight()
                                          / (float) currentLayoutRect.height());
     }
@@ -507,7 +508,7 @@ public class CropImageView
                          * SIXTY_PERCENT
                          * getScale());
 
-        // If more than 10% difference then recenter/scale.
+        // If more than TEN_PERCENT difference then recenter/scale.
         if (Math.abs(scaleFactor - getScale()) / scaleFactor > TEN_PERCENT) {
             final float[] coordinates = {
                     highlightView.cropRect.centerX(),
