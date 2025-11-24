@@ -2027,7 +2027,7 @@ public class Book
 
         getImage(context, 0).ifPresent(file -> {
             try {
-                final Uri uri = GenericFileProvider.createUri(context, file, getTitle());
+                final Uri uri = GenericFileProvider.createUri(file, getTitle());
                 // read access to the input uri
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                       .putExtra(Intent.EXTRA_STREAM, uri);
