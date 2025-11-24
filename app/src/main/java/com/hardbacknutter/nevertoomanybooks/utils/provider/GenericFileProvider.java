@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * Note that the only reason we create this subclass is to have a central point to manage the
@@ -76,15 +77,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * @see <a href="https://developer.android.com/reference/android/content/ContentProvider.html">
  *         ContentProvider</a>
  */
+@SuppressWarnings("StaticMethodOnlyUsedInOneClass")
 public class GenericFileProvider
         extends ExtFileProvider {
 
     /**
      * Get a FileProvider URI for the given file.
      *
-     * @param context Current context
-     * @param file    A {@link File} pointing to the filename for which you want a
-     *                {@code content} {@link Uri}.
+     * @param file A {@link File} pointing to the filename for which
+     *             you want a {@code content} {@link Uri}.
      *
      * @return A content URI for the file.
      *
@@ -92,17 +93,18 @@ public class GenericFileProvider
      *                                  the paths supported by the provider.
      */
     @NonNull
-    public static Uri createUri(@NonNull final Context context,
-                                @NonNull final File file) {
-        return getUriForFile(context, context.getString(R.string.fileProviderAuthority), file);
+    public static Uri createUri(@NonNull final File file) {
+        final Context appContext = ServiceLocator.getInstance().getAppContext();
+        // The string is non-translatable, see build.gradle where it's defined
+        return getUriForFile(appContext, appContext.getString(R.string.fileProviderAuthority),
+                             file);
     }
 
     /**
      * Get a FileProvider URI for the given file.
      *
-     * @param context     Current context
-     * @param file        A {@link File} pointing to the filename for which you want a
-     *                    {@code content} {@link Uri}.
+     * @param file        A {@link File} pointing to the filename for which
+     *                    you want a {@code content} {@link Uri}.
      * @param displayName the name to display instead of the original file name
      *
      * @return A content URI for the file.
@@ -111,10 +113,12 @@ public class GenericFileProvider
      *                                  the paths supported by the provider.
      */
     @NonNull
-    public static Uri createUri(@NonNull final Context context,
-                                @NonNull final File file,
+    public static Uri createUri(@NonNull final File file,
                                 @NonNull final String displayName) {
-        return getUriForFile(context, context.getString(R.string.fileProviderAuthority), file,
+        final Context appContext = ServiceLocator.getInstance().getAppContext();
+        // The string is non-translatable, see build.gradle where it's defined
+        return getUriForFile(appContext, appContext.getString(R.string.fileProviderAuthority),
+                             file,
                              displayName);
     }
 }

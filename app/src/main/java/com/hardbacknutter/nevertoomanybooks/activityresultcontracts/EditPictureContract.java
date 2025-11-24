@@ -128,7 +128,6 @@ public class EditPictureContract
         /**
          * Constructor.
          *
-         * @param context Current context
          * @param srcFile the input file
          * @param dstFile the output file (name)
          *
@@ -138,13 +137,12 @@ public class EditPictureContract
          *                               the paths supported by the provider.
          */
         @NonNull
-        public static Input create(@NonNull final Context context,
-                                   @NonNull final File srcFile,
+        public static Input create(@NonNull final File srcFile,
                                    @NonNull final File dstFile)
                 throws CoverStorageException {
             try {
-                final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
-                final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+                final Uri srcUri = GenericFileProvider.createUri(srcFile);
+                final Uri dstUri = GenericFileProvider.createUri(dstFile);
                 return new Input(srcUri, dstUri, dstFile);
 
             } catch (@NonNull final IllegalArgumentException e) {

@@ -108,7 +108,6 @@ public class TakePictureContract
         /**
          * Constructor.
          *
-         * @param context Current context
          * @param dstFile the output file (name)
          *
          * @return instance
@@ -117,11 +116,10 @@ public class TakePictureContract
          *                               the paths supported by the provider.
          */
         @NonNull
-        public static Input create(@NonNull final Context context,
-                                   @NonNull final File dstFile)
+        public static Input create(@NonNull final File dstFile)
                 throws CoverStorageException {
             try {
-                final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+                final Uri dstUri = GenericFileProvider.createUri(dstFile);
                 return new Input(dstUri, dstFile);
 
             } catch (@NonNull final IllegalArgumentException e) {
