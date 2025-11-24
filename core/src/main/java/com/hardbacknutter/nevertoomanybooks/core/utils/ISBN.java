@@ -19,18 +19,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.core.utils;
 
-import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,15 +89,6 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  */
 @SuppressWarnings("MagicNumber")
 public class ISBN {
-
-    /**
-     * Validity level.
-     * Type: int
-     *
-     * @see Validity
-     */
-    @VisibleForTesting
-    public static final String PK_EDIT_BOOK_ISBN_CHECKS = "edit.book.isbn.checks";
 
     /** Log tag. */
     private static final String TAG = "ISBN";
@@ -920,31 +910,25 @@ public class ISBN {
          */
         Strict(2);
 
-        private final int value;
+        private final int id;
 
-        Validity(final int value) {
-            this.value = value;
+        Validity(final int id) {
+            this.id = id;
         }
 
         /**
-         * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
+         * Lookup by id.
          *
-         * @param context Current context
+         * @param id to lookup
          *
          * @return Validity level
          */
         @NonNull
-        public static Validity getLevel(@NonNull final Context context) {
-
-            final int value = IntListPref.getInt(context, PK_EDIT_BOOK_ISBN_CHECKS, Loose.value);
-            switch (value) {
-                case 2:
-                    return Strict;
-                case 0:
-                    return None;
-                default:
-                    return Loose;
-            }
+        public static Validity byId(final int id) {
+            return Arrays.stream(values())
+                         .filter(v -> v.id == id)
+                         .findFirst()
+                         .orElse(Loose);
         }
     }
 

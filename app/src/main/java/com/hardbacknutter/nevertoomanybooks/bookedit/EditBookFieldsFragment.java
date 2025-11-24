@@ -157,7 +157,7 @@ public class EditBookFieldsFragment
         vb.bookshelves.setOnClickListener(v -> editBookshelves());
 
         // ISBN: manual edit of the field, or click the end-icon to scan a barcode
-        isbnValidityCheck = ISBN.Validity.getLevel(context);
+        isbnValidityCheck = vm.getLevel(context);
         isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
         isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
