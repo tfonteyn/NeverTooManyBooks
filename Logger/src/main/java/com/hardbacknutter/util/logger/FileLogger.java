@@ -277,14 +277,16 @@ public class FileLogger
 
     /**
      * This is an expensive call... file open+close... BOOOO!
+     * <p>
+     * ENHANCE: implement a FIFO queue for the log messages.
      *
      * @param tag     log tag
      * @param type    warn,error,...
      * @param message to write
      */
-    private void writeToLog(@NonNull final String tag,
-                            @NonNull final String type,
-                            @NonNull final String message) {
+    private synchronized void writeToLog(@NonNull final String tag,
+                                         @NonNull final String type,
+                                         @NonNull final String message) {
         // UTC based
         final String fullMsg = LocalDateTime.now(ZoneOffset.UTC)
                                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
