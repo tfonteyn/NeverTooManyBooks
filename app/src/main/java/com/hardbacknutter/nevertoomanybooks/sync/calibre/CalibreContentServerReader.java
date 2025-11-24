@@ -466,7 +466,7 @@ public class CalibreContentServerReader
         book.setFormat(eBookString);
 
         // sanity check, the book should always/already be on the mapped shelf.
-        book.ensureBookshelf(context);
+        book.ensureBookshelf();
 
         final long id = bookDao.insert(context, book, EnumSet.of(BookDao.BookFlag.RunInBatch));
         results.bookCreated(id);

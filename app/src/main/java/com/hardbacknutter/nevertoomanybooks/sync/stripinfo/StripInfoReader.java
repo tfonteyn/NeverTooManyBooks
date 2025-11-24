@@ -342,7 +342,7 @@ public class StripInfoReader
                    DaoWriteException {
 
         // sanity check, the book should always/already be on the mapped shelf.
-        book.ensureBookshelf(context);
+        book.ensureBookshelf();
 
         final String preImportUuid = book.getString(DBKey.BOOK_UUID, null);
         final long preImportId = book.getId();

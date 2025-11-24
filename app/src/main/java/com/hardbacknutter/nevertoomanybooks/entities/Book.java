@@ -1467,11 +1467,9 @@ public class Book
 
     /**
      * Ensure the book has a bookshelf.
-     * If the book is not on any Bookshelf, add the current/default bookshelf
-     *
-     * @param context Current context
+     * If the book is not on any Bookshelf, adds the current/default bookshelf
      */
-    public void ensureBookshelf(@NonNull final Context context) {
+    public void ensureBookshelf() {
         final List<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
         if (list.isEmpty()) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();

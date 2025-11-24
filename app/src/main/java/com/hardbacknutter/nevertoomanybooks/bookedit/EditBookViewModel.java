@@ -270,7 +270,7 @@ public class EditBookViewModel
             }
 
             book.addValidators(context);
-            book.ensureBookshelf(context);
+            book.ensureBookshelf();
             book.ensureLanguage(context);
         }
     }
