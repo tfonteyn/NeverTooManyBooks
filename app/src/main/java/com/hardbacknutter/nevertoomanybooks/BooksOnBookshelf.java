@@ -511,7 +511,7 @@ public class BooksOnBookshelf
         bulkSetLocationLauncher = new AutoCompletePickerLauncher(RK_SET_LOCATION);
         bulkSetLocationLauncher.setResultListener(
                 (previousSelection, currentSelection, extras)
-                        -> vm.setLocation(this, currentSelection, extras));
+                        -> vm.setLocation(currentSelection, extras));
         bulkSetLocationLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         bookshelfFiltersLauncher = new BookshelfFiltersLauncher(this::onFiltersUpdate);

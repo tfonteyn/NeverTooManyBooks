@@ -212,14 +212,12 @@ public interface BookDao {
      * <p>
      * Assign the given Location to the given list of Books.
      *
-     * @param context  Current context
      * @param bookIds  to update
      * @param location to set
      *
      * @return {@code true} for success.
      */
-    boolean setLocation(@NonNull Context context,
-                        @NonNull List<Long> bookIds,
+    boolean setLocation(@NonNull List<Long> bookIds,
                         @NonNull String location);
 
     /**

@@ -1094,14 +1094,12 @@ public class BooksOnBookshelfViewModel
     /**
      * Bulk update the location for the given set of books.
      *
-     * @param context  Current context
      * @param location to set
      * @param extras   contains {@link #BKEY_BOOK_IDS}
      *
      * @throws IllegalArgumentException if the extras or bookIds are missing
      */
-    void setLocation(@NonNull final Context context,
-                     @NonNull final String location,
+    void setLocation(@NonNull final String location,
                      @Nullable final Bundle extras) {
 
         if (extras == null) {
@@ -1113,7 +1111,7 @@ public class BooksOnBookshelfViewModel
             throw new IllegalArgumentException(ERROR_NO_BOOK_IDS);
         }
 
-        bookDao.setLocation(context, bookIds, location);
+        bookDao.setLocation(bookIds, location);
         // ALWAYS rebuild
         triggerRebuildList.setValue(LiveDataEvent.of(false));
     }

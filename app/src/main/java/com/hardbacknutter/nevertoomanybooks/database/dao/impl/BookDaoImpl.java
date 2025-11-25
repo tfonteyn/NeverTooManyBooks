@@ -538,8 +538,7 @@ public class BookDaoImpl
     }
 
     @Override
-    public boolean setLocation(@NonNull final Context context,
-                               @NonNull final List<Long> bookIds,
+    public boolean setLocation(@NonNull final List<Long> bookIds,
                                @NonNull final String location) {
         // Sanity check
         if (bookIds.isEmpty()) {
