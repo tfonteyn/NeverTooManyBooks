@@ -604,9 +604,9 @@ public class SearchBookUpdatesViewModel
      * There was an Exception thrown during the search;
      * Cleanup up and report the final outcome.
      *
-     * @param e exception
+     * @param e error
      */
-    private void postSearch(@NonNull final Exception e) {
+    private void postSearch(@NonNull final Throwable e) {
         LoggerFactory.getLogger().e(TAG, e);
 
         if (currentCursor != null) {

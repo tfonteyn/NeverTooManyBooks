@@ -163,7 +163,7 @@ public class ImportResults
      */
     public void handleRowException(@NonNull final Context context,
                                    final int row,
-                                   @NonNull final Exception e,
+                                   @NonNull final Throwable e,
                                    @Nullable final String localizedMessage) {
         final String message = Objects.requireNonNullElseGet(localizedMessage, () -> ExMsg
                 .map(context, e)
