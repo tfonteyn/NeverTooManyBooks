@@ -26,11 +26,14 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -47,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutp
 import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
@@ -504,43 +508,47 @@ public class SearchBookUpdatesViewModel
      *
      * @param context    Current context
      * @param remoteBook results of the search
-     *
-     * @return {@code true} if a new search for the next book was started.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean processOne(@NonNull final Context context,
-                       @Nullable final Book remoteBook) {
-
-        //noinspection CheckStyle,OverlyBroadCatchBlock
-        try {
-            if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
-                //noinspection DataFlowIssue
-                final Book delta = syncProcessor.process(context, currentBookId, currentBook,
-                                                         remoteBook, currentFieldsWanted);
-                if (delta != null) {
-                    try {
-                        bookDao.update(context, delta);
-                    } catch (@NonNull final StorageException | DaoWriteException e) {
-                        // ignore, but log it.
-                        LoggerFactory.getLogger().e(TAG, e);
+    @UiThread
+    void processOne(@NonNull final Context context,
+                    @Nullable final Book remoteBook) {
+        ASyncExecutor.runOnExecutor(
+                ASyncExecutor.SERIAL,
+                () -> {
+                    final Context c = ServiceLocator.getInstance().getLocalizedAppContext();
+                    if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
+                        final Book delta;
+                        try {
+                            //noinspection DataFlowIssue
+                            delta = syncProcessor.process(c, currentBookId, currentBook,
+                                                          remoteBook, currentFieldsWanted);
+                        } catch (@NonNull final IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                        if (delta != null) {
+                            try {
+                                bookDao.update(c, delta);
+                            } catch (@NonNull final StorageException | DaoWriteException e) {
+                                // ignore, but log it.
+                                LoggerFactory.getLogger().e(TAG, e);
+                            }
+                        }
                     }
-                }
-            }
+                    return (Void) null;
+                },
+                aVoid -> {
+                    //update the counter, another one done.
+                    final TaskProgress taskProgress = new TaskProgress(
+                            R.id.TASK_ID_UPDATE_FIELDS, null,
+                            currentProgressCounter, currentCursorCount, null);
+                    synchronized (searchCoordinatorProgress) {
+                        searchCoordinatorProgress.setValue(LiveDataEvent.of(taskProgress));
+                    }
 
-            //update the counter, another one done.
-            final TaskProgress taskProgress = new TaskProgress(
-                    R.id.TASK_ID_UPDATE_FIELDS, null,
-                    currentProgressCounter, currentCursorCount, null);
-            synchronized (searchCoordinatorProgress) {
-                searchCoordinatorProgress.setValue(LiveDataEvent.of(taskProgress));
-            }
-
-            // On to the next book in the list.
-            return nextBook(context);
-        } catch (@NonNull final Exception e) {
-            postSearch(e);
-            return false;
-        }
+                    // On to the next book in the list.
+                    nextBook(context);
+                },
+                this::postSearch);
     }
 
 
