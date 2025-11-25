@@ -838,6 +838,7 @@ public class CalibreContentServerReader
         }
 
         ASyncExecutor.SERIAL.execute(() -> {
+            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
             try {
                 final File file = server.getCover(calibreBookId, coverUrl)
                                         .orElse(null);
