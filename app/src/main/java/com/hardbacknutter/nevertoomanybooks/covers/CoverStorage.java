@@ -151,6 +151,7 @@ public class CoverStorage {
      *
      * @throws CoverStorageException The covers directory is not available
      */
+    @AnyThread
     public void initDir()
             throws CoverStorageException {
 
@@ -202,6 +203,7 @@ public class CoverStorage {
      *
      * @return {@code true} if image is acceptable.
      */
+    @WorkerThread
     public boolean isAcceptableSize(@Nullable final File file) {
         if (file == null || file.length() < MIN_VALID_IMAGE_FILE_SIZE) {
             return false;
@@ -387,6 +389,7 @@ public class CoverStorage {
      * @throws IOException           on generic/other IO failures
      * @throws CoverStorageException The covers directory is not available
      */
+    @AnyThread
     @NonNull
     public File persist(@NonNull final File source,
                         @NonNull final String uuid,
@@ -419,6 +422,7 @@ public class CoverStorage {
      * @throws IOException           on generic/other IO failures
      * @throws CoverStorageException The covers directory is not available
      */
+    @WorkerThread
     @NonNull
     public File persist(@NonNull final Bitmap source,
                         @NonNull final File destination)
@@ -454,6 +458,7 @@ public class CoverStorage {
      * @throws FileNotFoundException if the input stream was {@code null}
      * @throws IOException           on generic/other IO failures
      */
+    @WorkerThread
     @NonNull
     public File persist(@Nullable final InputStream source,
                         @NonNull final File destination)
@@ -484,6 +489,7 @@ public class CoverStorage {
      * @throws FileNotFoundException if the input stream was {@code null}
      * @throws IOException           on generic/other IO failures
      */
+    @WorkerThread
     @NonNull
     File writeTempFile(@Nullable final InputStream source)
             throws CoverStorageException, IOException {
