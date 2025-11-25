@@ -1352,7 +1352,7 @@ public class SearchBookByIsbnFragment
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
-                BookSearchCriteria.setStrictIsbnDefault(requireContext(), checked);
+                BookSearchCriteria.setStrictIsbnDefault(checked);
 
                 final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
                 isbnCleanupTextWatcher.setValidityLevel(validity);

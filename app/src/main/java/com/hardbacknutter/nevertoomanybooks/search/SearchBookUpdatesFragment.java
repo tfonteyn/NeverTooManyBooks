@@ -339,7 +339,7 @@ public class SearchBookUpdatesFragment
 
             } else if (menuItemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
-                BookSearchCriteria.setStrictIsbnDefault(requireContext(), checked);
+                BookSearchCriteria.setStrictIsbnDefault(checked);
 
             } else if (menuItemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
                 vm.setSyncAction(SyncAction.Skip);

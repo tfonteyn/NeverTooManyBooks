@@ -118,13 +118,11 @@ public class BookSearchCriteria {
     /**
      * Set the global user-settings strictIsbn flag.
      *
-     * @param context    Current context
      * @param strictIsbn {@code true} for strict ISBN checking,
      *                   {@code false} for allowing other valid generic codes.
      */
-    public static void setStrictIsbnDefault(@NonNull final Context context,
-                                            final boolean strictIsbn) {
-        PreferenceManager.getDefaultSharedPreferences(context)
+    public static void setStrictIsbnDefault(final boolean strictIsbn) {
+        ServiceLocator.getInstance().getSharedPreferences()
                          .edit()
                          .putBoolean(PK_SEARCH_STRICT_ISBN, strictIsbn)
                          .apply();
