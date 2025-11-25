@@ -102,6 +102,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.LocalizedContext;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
@@ -343,6 +344,7 @@ public class ServiceLocator {
      *
      * @return Application Context using the user preferred Locale
      */
+    @LocalizedContext
     @NonNull
     public Context getLocalizedAppContext() {
         return getAppLocale().apply(sInstance.appContext);
