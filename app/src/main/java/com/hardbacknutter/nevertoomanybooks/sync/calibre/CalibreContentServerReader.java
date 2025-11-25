@@ -361,6 +361,7 @@ public class CalibreContentServerReader
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
      */
+    @WorkerThread
     private void importBook(@NonNull final Context context,
                             @NonNull final Book calibreBook)
             throws StorageException,
@@ -430,6 +431,7 @@ public class CalibreContentServerReader
         }
     }
 
+    @WorkerThread
     private void updateBook(@NonNull final Context context,
                             @NonNull final Book calibreBook,
                             @NonNull final Book book)

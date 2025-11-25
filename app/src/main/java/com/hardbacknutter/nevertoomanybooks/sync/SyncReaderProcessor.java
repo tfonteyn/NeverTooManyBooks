@@ -22,9 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.sync;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
@@ -73,6 +75,7 @@ public class SyncReaderProcessor {
     @SuppressWarnings("FieldNotUsedInToString")
     private final Collection<Mapper> mappers;
 
+    @AnyThread
     protected SyncReaderProcessor(@NonNull final Context context,
                                   @NonNull final Builder builder) {
         this.fields = builder.fields;
@@ -192,6 +195,7 @@ public class SyncReaderProcessor {
      * @throws IOException on <strong>very serious</strong> io issues.
      *                     Less serious io issues are swallowed/ignored
      */
+    @WorkerThread
     @Nullable
     public final Book process(@NonNull final Context context,
                               final long bookId,
@@ -270,6 +274,7 @@ public class SyncReaderProcessor {
      * @throws IOException on <strong>very serious</strong> io issues.
      *                     Less serious io issues are swallowed/ignored
      */
+    @WorkerThread
     protected boolean process(@NonNull final Context context,
                               @NonNull final Book localBook,
                               @NonNull final Book remoteBook,
@@ -278,6 +283,7 @@ public class SyncReaderProcessor {
         return false;
     }
 
+    @WorkerThread
     private void doDefaultProcessing(@NonNull final Context context,
                                      @NonNull final Book localBook,
                                      @NonNull final Book remoteBook,
@@ -325,6 +331,7 @@ public class SyncReaderProcessor {
      *
      * @return {@code true} if already present
      */
+    @WorkerThread
     private boolean hasField(@NonNull final Book localBook,
                              @NonNull final SyncField field,
                              @NonNull final RealNumberParser realNumberParser) {
@@ -349,6 +356,7 @@ public class SyncReaderProcessor {
         return false;
     }
 
+    @WorkerThread
     private void processCover(@NonNull final Book localBook,
                               @NonNull final Book remoteBook,
                               @IntRange(from = 0, to = 3) final int cIdx)
@@ -396,6 +404,7 @@ public class SyncReaderProcessor {
      *
      * @throws IllegalArgumentException if the key is not an appendable type
      */
+    @WorkerThread
     private void processAppend(@NonNull final Context context,
                                @NonNull final Book localBook,
                                @NonNull final Book remoteBook,

@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
@@ -48,6 +49,7 @@ public class StripInfoSyncReaderProcessor
     }
 
     @Override
+    @WorkerThread
     protected boolean process(@NonNull final Context context,
                               @NonNull final Book localBook,
                               @NonNull final Book remoteBook,

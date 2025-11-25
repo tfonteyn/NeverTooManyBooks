@@ -238,6 +238,7 @@ public class StripInfoReader
      * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
      */
+    @WorkerThread
     private void importBook(@NonNull final Context context,
                             @NonNull final Book siBook)
             throws StorageException,
@@ -292,6 +293,7 @@ public class StripInfoReader
         }
     }
 
+    @WorkerThread
     @Nullable
     private Book createUpdateDelta(@NonNull final Context context,
                                    @NonNull final Book siBook,
