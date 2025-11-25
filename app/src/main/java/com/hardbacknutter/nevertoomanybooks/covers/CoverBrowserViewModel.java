@@ -77,17 +77,8 @@ public class CoverBrowserViewModel
      * We want a separate executor from the 'preview' one.
      */
     private final ExecutorService galleryDisplayExecutor = ASyncExecutor.create("gallery/d");
-    /**
-     * Executor for fetching gallery images.
-     * We want a separate executor from the 'preview' one.
-     */
-    private final ExecutorService galleryNetworkExecutor = ASyncExecutor.create("gallery/n");
-
     /** Executor for displaying preview images. */
     private final ExecutorService previewDisplayExecutor = ASyncExecutor.IMAGES;
-
-    /** Executor for fetching preview images. */
-    private final ExecutorService previewNetworkExecutor = ASyncExecutor.NETWORK;
 
     /**
      * Holder for all active tasks, so we can cancel them if needed.
@@ -336,7 +327,7 @@ public class CoverBrowserViewModel
                         new FetchImageTask(taskIdCounter.incrementAndGet(), edition, cIdx,
                                            fileManager, taskListener,
                                            ImageWebSize.SMALL_FIRST);
-                task.setExecutor(galleryNetworkExecutor);
+                task.setExecutor(ASyncExecutor.NETWORK);
 
                 galleryTasks.put(edition, task);
                 task.start();
@@ -388,7 +379,7 @@ public class CoverBrowserViewModel
                                                fileManager, taskListener,
                                                ImageWebSize.LARGE_FIRST);
 
-        selectedImageTask.setExecutor(previewNetworkExecutor);
+        selectedImageTask.setExecutor(ASyncExecutor.NETWORK);
         selectedImageTask.start();
     }
 
