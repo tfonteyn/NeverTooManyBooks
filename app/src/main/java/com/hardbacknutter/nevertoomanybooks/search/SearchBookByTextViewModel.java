@@ -119,13 +119,11 @@ public class SearchBookByTextViewModel
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
      * @param args    {@link Fragment#requireArguments()}
      */
-    void init(@NonNull final Context context,
-              @NonNull final Bundle args) {
+    void init(@NonNull final Bundle args) {
         if (searchCriteria == null) {
-            searchCriteria = new BookSearchCriteria(context);
+            searchCriteria = new BookSearchCriteria();
 
             // Lookup the provided style or use the default if not found.
             final String styleUuid = args.getString(Style.BKEY_UUID);

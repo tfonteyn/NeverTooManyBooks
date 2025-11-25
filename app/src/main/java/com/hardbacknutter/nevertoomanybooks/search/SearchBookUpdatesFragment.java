@@ -324,9 +324,8 @@ public class SearchBookUpdatesFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            //noinspection DataFlowIssue
             menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
-                .setChecked(BookSearchCriteria.isStrictIsbn(getContext()));
+                .setChecked(BookSearchCriteria.isStrictIsbnGlobal());
         }
 
         @Override

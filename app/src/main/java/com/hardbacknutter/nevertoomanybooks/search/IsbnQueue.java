@@ -81,7 +81,7 @@ class IsbnQueue {
                                                    .getString(PK_SCAN_QUEUE, "")
                                                    .split(CSV);
         if (isbnList.length > 0) {
-            return readFromStream(context, Arrays.stream(isbnList));
+            return readFromStream(Arrays.stream(isbnList));
         }
         return List.of();
     }
@@ -115,7 +115,7 @@ class IsbnQueue {
             if (is != null) {
                 try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
                      BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE)) {
-                    return readFromStream(context, reader.lines());
+                    return readFromStream(reader.lines());
 
                 } catch (@NonNull final UncheckedIOException ue) {
                     //noinspection DataFlowIssue
@@ -127,9 +127,8 @@ class IsbnQueue {
     }
 
     @NonNull
-    private static List<Item> readFromStream(@NonNull final Context context,
-                                             @NonNull final Stream<String> stream) {
-        final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(context);
+    private static List<Item> readFromStream(@NonNull final Stream<String> stream) {
+        final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
         return stream
                 // allow multiple csv
                 .map(line -> line.split(CSV))

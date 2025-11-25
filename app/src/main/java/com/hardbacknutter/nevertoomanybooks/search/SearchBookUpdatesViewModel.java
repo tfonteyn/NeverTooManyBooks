@@ -157,7 +157,7 @@ public class SearchBookUpdatesViewModel
 
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
-            searchCriteria = new BookSearchCriteria(context);
+            searchCriteria = new BookSearchCriteria();
 
             if (args != null) {
                 // if we have args, then we can expect the list to be present
@@ -414,7 +414,7 @@ public class SearchBookUpdatesViewModel
 
                 if (!currentFieldsWanted.isEmpty()) {
                     // reset all criteria (this is CRUCIAL)
-                    searchCriteria.reset(context);
+                    searchCriteria.reset();
                     boolean canSearch = false;
 
                     final String isbnStr = currentBook.getIsbn();

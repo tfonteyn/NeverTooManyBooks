@@ -86,8 +86,7 @@ public class SearchBookByTextFragment
         super.onCreate(savedInstanceState);
 
         vm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
-        //noinspection DataFlowIssue
-        vm.init(getContext(), requireArguments());
+        vm.init(requireArguments());
     }
 
     @Override
@@ -338,8 +337,7 @@ public class SearchBookByTextFragment
 
     @Override
     void onClearSearchCriteria() {
-        //noinspection DataFlowIssue
-        vm.getSearchCriteria().reset(getContext());
+        vm.getSearchCriteria().reset();
 
         vb.title.setText("");
         vb.author.setText("");

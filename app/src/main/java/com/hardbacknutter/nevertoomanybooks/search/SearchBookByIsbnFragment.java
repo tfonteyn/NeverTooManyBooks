@@ -490,8 +490,7 @@ public class SearchBookByIsbnFragment
         autoRemoveError(vb.isbn, vb.lblIsbn);
 
         // The search preference determines the level here; NOT the 'edit book'
-        //noinspection DataFlowIssue
-        final ISBN.Validity isbnValidityCheck = BookSearchCriteria.isStrictIsbn(getContext())
+        final ISBN.Validity isbnValidityCheck = BookSearchCriteria.isStrictIsbnGlobal()
                                                 ? ISBN.Validity.Strict
                                                 : ISBN.Validity.None;
 
@@ -534,7 +533,7 @@ public class SearchBookByIsbnFragment
 
             viewToModel();
 
-            final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(v.getContext());
+            final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
             final ISBN code = new ISBN(vm.getIsbnText(), strictIsbn);
             if (!code.isValid(strictIsbn)) {
                 vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
@@ -893,8 +892,7 @@ public class SearchBookByIsbnFragment
      * @return the search-id, or {@code 0} if no search was started
      */
     private int startSearch(@NonNull final ISBN code) {
-        //noinspection DataFlowIssue
-        final BookSearchCriteria criteria = new BookSearchCriteria(getContext());
+        final BookSearchCriteria criteria = new BookSearchCriteria();
         criteria.setIsbnFromScan(code, vm.getScannerMode());
 
         return startSearch(criteria);
@@ -930,8 +928,7 @@ public class SearchBookByIsbnFragment
      * @param barCode as returned by the scanner
      */
     private void onBarcodeScanned(@NonNull final String barCode) {
-        //noinspection DataFlowIssue
-        final boolean strictIsbn = BookSearchCriteria.isStrictIsbn(getContext());
+        final boolean strictIsbn = BookSearchCriteria.isStrictIsbnGlobal();
         final ISBN code = new ISBN(barCode, strictIsbn);
 
         final Context context = requireContext();
@@ -1322,9 +1319,8 @@ public class SearchBookByIsbnFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            //noinspection DataFlowIssue
             menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
-                .setChecked(BookSearchCriteria.isStrictIsbn(getContext()));
+                .setChecked(BookSearchCriteria.isStrictIsbnGlobal());
         }
 
         @Override

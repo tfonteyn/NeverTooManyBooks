@@ -89,12 +89,12 @@ public class SearchCoordinatorTest
 
         BookSearchCriteria criteria;
 
-        criteria = new BookSearchCriteria(context);
+        criteria = new BookSearchCriteria();
         criteria.setFetchCovers(new boolean[]{false, false, false, false});
         criteria.setIsbnText("9781406358803");
         coordinator.search(criteria);
 
-        criteria = new BookSearchCriteria(context);
+        criteria = new BookSearchCriteria();
         criteria.setFetchCovers(new boolean[]{false, false, false, false});
         criteria.setIsbnText("9781444727180");
         coordinator.search(criteria);

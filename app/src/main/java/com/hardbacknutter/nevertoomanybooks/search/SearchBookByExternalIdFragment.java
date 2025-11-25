@@ -247,8 +247,7 @@ public class SearchBookByExternalIdFragment
             return;
         }
 
-        //noinspection DataFlowIssue
-        final BookSearchCriteria criteria = new BookSearchCriteria(getContext());
+        final BookSearchCriteria criteria = new BookSearchCriteria();
         //noinspection DataFlowIssue
         criteria.addSid(engineId, sid);
 

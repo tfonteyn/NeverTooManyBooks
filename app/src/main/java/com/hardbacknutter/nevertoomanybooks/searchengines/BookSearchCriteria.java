@@ -20,11 +20,8 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -92,27 +89,24 @@ public class BookSearchCriteria {
      * <p>
      * The 'strictIsbn' flag is initialized from the global user-settings.
      *
-     * @param context Current context
      */
-    public BookSearchCriteria(@NonNull final Context context) {
+    public BookSearchCriteria() {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         for (int cIdx = 0; cIdx < fetchCovers.length; cIdx++) {
             fetchCovers[cIdx] = serviceLocator.isFieldEnabled(DBKey.COVER[cIdx]);
         }
-        strictIsbn = isStrictIsbn(context);
+        strictIsbn = isStrictIsbnGlobal();
     }
 
     /**
      * Get the global user-settings strictIsbn flag.
      *
-     * @param context Current context
-     *
      * @return {@code true} for strict ISBN checking,
      *         {@code false} for allowing other valid generic codes.
      */
-    public static boolean isStrictIsbn(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_SEARCH_STRICT_ISBN, true);
+    public static boolean isStrictIsbnGlobal() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_SEARCH_STRICT_ISBN, true);
     }
 
     /**
@@ -123,9 +117,9 @@ public class BookSearchCriteria {
      */
     public static void setStrictIsbnDefault(final boolean strictIsbn) {
         ServiceLocator.getInstance().getSharedPreferences()
-                         .edit()
-                         .putBoolean(PK_SEARCH_STRICT_ISBN, strictIsbn)
-                         .apply();
+                      .edit()
+                      .putBoolean(PK_SEARCH_STRICT_ISBN, strictIsbn)
+                      .apply();
     }
 
     @Nullable
@@ -315,16 +309,15 @@ public class BookSearchCriteria {
      * Reset all criteria; empty strings, empty list.
      * The 'strictIsbn' flag is initialized from the global user-settings.
      *
-     * @param context Current context
      */
-    public void reset(@NonNull final Context context) {
+    public void reset() {
         title = "";
         author = "";
         series = "";
         seriesNr = "";
         publisher = "";
         isbnText = "";
-        strictIsbn = isStrictIsbn(context);
+        strictIsbn = isStrictIsbnGlobal();
         sids.clear();
     }
 
