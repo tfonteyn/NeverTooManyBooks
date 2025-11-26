@@ -24,8 +24,8 @@
     <!-- View tag - tags a Cover Image View with the task responsible to fetch the image -->
     <item name="TAG_THUMBNAIL_TASK"
           type="id" />
-    <!-- View tag - tags a Cover Image View with the 'uuid' (i.e. the book) it represents. -->
-    <item name="TAG_THUMBNAIL_UUID"
+    <!-- View tag - tags an Image View with the uuid of the owner (book, author) it represents. -->
+    <item name="TAG_IMAGE_OWNER_UUID"
           type="id" />
 
     <!-- Predefined id's for cover image views; so we can use them in an array. -->

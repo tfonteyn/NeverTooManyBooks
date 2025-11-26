@@ -82,7 +82,7 @@ class CoverHelper {
      *                  Passed in to allow for future expansion.
      */
     void onZoomCover(@NonNull final View coverView) {
-        final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
+        final String uuid = (String) coverView.getTag(R.id.TAG_IMAGE_OWNER_UUID);
         coverStorage.getPersistedFile(uuid, 0).ifPresent(file -> {
             final FragmentActivity activity = (FragmentActivity) coverView.getContext();
             ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
@@ -109,7 +109,7 @@ class CoverHelper {
     boolean setImageView(@NonNull final ImageView coverView,
                          @NonNull final String uuid) {
         // store the uuid for use in onZoomCover
-        coverView.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
+        coverView.setTag(R.id.TAG_IMAGE_OWNER_UUID, uuid);
 
         // 1. If caching is used, check it.
         if (imageCachingEnabled) {
