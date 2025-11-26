@@ -20,8 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.graphics.Bitmap;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Process;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -39,6 +37,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 
 /**
  * Load & scale a Bitmap from a file; and populate the view.
@@ -48,8 +47,6 @@ public class ImageViewLoader {
     /** Log tag. */
     private static final String TAG = "ImageViewLoader";
 
-    @NonNull
-    private final Handler handler;
     @NonNull
     private final ExecutorService executor;
 
@@ -81,8 +78,6 @@ public class ImageViewLoader {
                            @NonNull final ApplySizing applySizing,
                            @Px final int width,
                            @Px final int height) {
-
-        handler = new Handler(Looper.getMainLooper());
 
         this.executor = executor;
         this.scaleType = scaleType;
@@ -183,54 +178,59 @@ public class ImageViewLoader {
 
         final ImageReference imageReference = new ImageReference(imageView);
 
-        executor.execute(() -> {
-            // Initial check, as this thread might have been started after a small delay
-            if (!imageReference.isAssociated()) {
-                return;
-            }
-
-            // do the loading/scaling as background work.
-            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-            final Optional<Bitmap> oBitmap = new Transformation()
-                    .setScale(this.width, this.height)
-                    .setSource(file)
-                    .transform();
-
-            if (!imageReference.isAssociated()) {
-                // We're not sending the bitmap (if we have one) to onSuccess,
-                // instead just recycle it.
-                // If we did this would mean sending it to the file-based caching.
-                // But if we're scrolling too fast to stay associated, then
-                // we can assume the cache-writer is already busy anyhow, so the returned
-                // bitmap would get dropped anyhow, and NOT recycled.
-                // i.e. a worse situation we must avoid.
-                oBitmap.ifPresent(Bitmap::recycle);
-                return;
-            }
-
-            // back to the UI thread to display the bitmap or placeholder
-            handler.post(() -> {
-                // CHECK AGAIN, we might have lost the association while we switched threads.
-                final ImageView view = imageReference.getView();
-                if (view == null) {
-                    oBitmap.ifPresent(Bitmap::recycle);
-                    return;
-                }
-
-                if (oBitmap.isPresent()) {
-                    // Finally, load it into the View
-                    final Bitmap bitmap = oBitmap.get();
-                    fromBitmap(view, bitmap);
-                    if (onSuccess != null) {
-                        onSuccess.accept(bitmap);
+        STask.execute(
+                executor,
+                () -> {
+                    // Initial check, as this thread might have been started after a small delay
+                    if (!imageReference.isAssociated()) {
+                        return null;
                     }
-                } else {
-                    // Found the image-file, but failed to load/decode it.
-                    // Use 'broken-image' icon and preserve the space.
-                    placeholder(view, R.drawable.broken_image_24px);
-                }
-            });
-        });
+
+                    // do the loading/scaling as background work.
+                    Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                    final Optional<Bitmap> oBitmap = new Transformation()
+                            .setScale(this.width, this.height)
+                            .setSource(file)
+                            .transform();
+
+                    if (!imageReference.isAssociated()) {
+                        // We're not sending the bitmap (if we have one) as the result,
+                        // instead we just recycle it.
+                        // If we send it back, we'd be sending it to the file-based caching.
+                        // But if we're scrolling too fast to stay associated, then
+                        // we can assume the cache-writer is already busy anyhow,
+                        // so the returned bitmap would get dropped anyhow, and NOT recycled.
+                        // i.e. a worse situation we must avoid.
+                        oBitmap.ifPresent(Bitmap::recycle);
+                        return null;
+                    }
+
+                    return oBitmap.orElse(null);
+                },
+                bitmap -> {
+                    // CHECK AGAIN, we might have lost the association while we switched threads.
+                    final ImageView view = imageReference.getView();
+                    if (view == null) {
+                        if (bitmap != null) {
+                            bitmap.recycle();
+                        }
+                        return;
+                    }
+
+                    if (bitmap != null) {
+                        // Finally, load it into the View
+                        fromBitmap(view, bitmap);
+                        if (onSuccess != null) {
+                            onSuccess.accept(bitmap);
+                        }
+                    } else {
+                        // Found the image-file, but failed to load/decode it.
+                        // Use 'broken-image' icon and preserve the space.
+                        placeholder(view, R.drawable.broken_image_24px);
+                    }
+                },
+                e -> {
+                });
     }
 
     public enum ApplySizing {
