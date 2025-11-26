@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ParcelUtils;
@@ -512,7 +513,7 @@ public class SearchBookUpdatesViewModel
     @UiThread
     void processOne(@NonNull final Context context,
                     @Nullable final Book remoteBook) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     final Context c = ServiceLocator.getInstance().getLocalizedAppContext();

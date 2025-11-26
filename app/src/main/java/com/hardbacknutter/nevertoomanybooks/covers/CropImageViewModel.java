@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 
 @SuppressWarnings("WeakerAccess")
 public class CropImageViewModel
@@ -96,7 +97,7 @@ public class CropImageViewModel
         final String srcPath = Objects.requireNonNull(args.getString(
                 CropImageContract.BKEY_SOURCE), CropImageContract.BKEY_SOURCE);
 
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.PARALLEL,
                 () -> {
                     try {
@@ -115,7 +116,7 @@ public class CropImageViewModel
                         return;
                     }
                     // We've got storage space... prep the bitmap
-                    ASyncExecutor.runOnExecutor(
+                    STask.execute(
                             ASyncExecutor.PARALLEL,
                             () -> {
                                 try (InputStream is = new FileInputStream(srcPath)) {
@@ -136,7 +137,7 @@ public class CropImageViewModel
      * @param bitmap to save
      */
     void save(@NonNull final Bitmap bitmap) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     final File destination = new File(destinationPath);

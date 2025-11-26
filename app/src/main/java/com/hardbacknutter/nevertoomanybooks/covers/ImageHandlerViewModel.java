@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.STask;
 import com.hardbacknutter.nevertoomanybooks.core.utils.IntListPref;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
@@ -137,7 +138,7 @@ public class ImageHandlerViewModel
      */
     void prepareEditor(@NonNull final ImageOwner imageOwner,
                        @IntRange(from = 0, to = 3) final int cIdx) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -158,7 +159,7 @@ public class ImageHandlerViewModel
     }
 
     void prepareEditor(@NonNull final File srcFile) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.PARALLEL,
                 () -> {
                     try {
@@ -185,7 +186,7 @@ public class ImageHandlerViewModel
      */
     void prepareCropper(@NonNull final ImageOwner imageOwner,
                         @IntRange(from = 0, to = 3) final int cIdx) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -205,7 +206,7 @@ public class ImageHandlerViewModel
     }
 
     void prepareCropper(@NonNull final File srcFile) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.PARALLEL,
                 () -> {
                     try {
@@ -227,7 +228,7 @@ public class ImageHandlerViewModel
      * In case of an error, triggers {@link #setInvalidImage(Throwable)}.
      */
     void prepareTakePicture() {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.PARALLEL,
                 () -> {
                     try {
@@ -257,7 +258,7 @@ public class ImageHandlerViewModel
     void startRotation(@NonNull final ImageOwner imageOwner,
                        @IntRange(from = 0, to = 3) final int cIdx,
                        final int angle) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -314,7 +315,7 @@ public class ImageHandlerViewModel
         // What action (if any) should we take after we're done?
         final NextAction action = NextAction.getAction(context);
 
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
@@ -355,7 +356,7 @@ public class ImageHandlerViewModel
      * @param file image to process
      */
     void onPictureResult(@NonNull final File file) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     if (!ServiceLocator.getInstance().getCoverStorage().isAcceptableSize(file)) {
@@ -395,7 +396,7 @@ public class ImageHandlerViewModel
      * @param uri image to process
      */
     void onPictureResult(@NonNull final Uri uri) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     // 2025-11-05: bug report #197:
@@ -460,7 +461,7 @@ public class ImageHandlerViewModel
             throw new IllegalArgumentException("fileSpec.isEmpty()");
         }
 
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -484,7 +485,7 @@ public class ImageHandlerViewModel
     void setImage(@NonNull final ImageOwner imageOwner,
                   @IntRange(from = 0, to = 3) final int cIdx,
                   @NonNull final File file) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -503,7 +504,7 @@ public class ImageHandlerViewModel
 
     void removeImage(@NonNull final ImageOwner imageOwner,
                      @IntRange(from = 0, to = 3) final int cIdx) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.SERIAL,
                 () -> {
                     final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -516,7 +517,7 @@ public class ImageHandlerViewModel
 
     void restore(@NonNull final String uuid,
                  @IntRange(from = 0, to = 3) final int cIdx) {
-        ASyncExecutor.runOnExecutor(
+        STask.execute(
                 ASyncExecutor.IMAGES,
                 () -> {
                     try {
