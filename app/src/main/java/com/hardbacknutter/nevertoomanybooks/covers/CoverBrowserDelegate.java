@@ -399,7 +399,7 @@ class CoverBrowserDelegate
                     vb.lblPreview.setVisibility(View.VISIBLE);
                     vb.preview.setVisibility(View.VISIBLE);
                     vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
-                }, null);
+                });
                 return;
             }
         }
@@ -535,7 +535,7 @@ class CoverBrowserDelegate
                 final Optional<File> file = imageFileInfo.getFile();
                 if (file.isPresent()) {
                     // YES, load it into the view.
-                    imageLoader.fromFile(holder.vb.coverImage0, file.get(), null, null);
+                    imageLoader.fromFile(holder.vb.coverImage0, file.get(), null);
 
                     holder.vb.lblSite.setText(imageFileInfo.getEngineId().getLabelResId());
                     holder.vb.coverImage0.setOnClickListener(

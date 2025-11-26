@@ -149,12 +149,12 @@ class CoverHelper {
             // 3. Start a subsequent task to send it to the cache.
             // Any errors are ignored
             imageLoader.fromFile(coverView, oFile.get(), bitmap ->
-                    coverStorage.saveToCache(uuid, 0, bitmap, cachedImageWidth), null);
+                    coverStorage.saveToCache(uuid, 0, bitmap, cachedImageWidth));
         } else {
             // 1. Starts a task to get the image from the file system.
             // 2. Uses the UiThread to display it.
             // Any errors are ignored
-            imageLoader.fromFile(coverView, oFile.get(), null, null);
+            imageLoader.fromFile(coverView, oFile.get(), null);
         }
         return true;
     }

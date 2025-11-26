@@ -175,13 +175,11 @@ public class ImageViewLoader {
      * @param imageView to populate
      * @param file      to load, must be valid
      * @param onSuccess (optional) Consumer to execute after successfully displaying the image
-     * @param onFailed  (optional) Runnable to execute after failing to decode the file
      */
     @UiThread
     public void fromFile(@NonNull final ImageView imageView,
                          @NonNull final File file,
-                         @Nullable final Consumer<Bitmap> onSuccess,
-                         @Nullable final Runnable onFailed) {
+                         @Nullable final Consumer<Bitmap> onSuccess) {
 
         final ImageReference imageReference = new ImageReference(imageView);
 
@@ -228,12 +226,8 @@ public class ImageViewLoader {
                     }
                 } else {
                     // Found the image-file, but failed to load/decode it.
-                    if (onFailed != null) {
-                        onFailed.run();
-                    } else {
-                        // Use 'broken-image' icon and preserve the space.
-                        placeholder(view, R.drawable.broken_image_24px);
-                    }
+                    // Use 'broken-image' icon and preserve the space.
+                    placeholder(view, R.drawable.broken_image_24px);
                 }
             });
         });
