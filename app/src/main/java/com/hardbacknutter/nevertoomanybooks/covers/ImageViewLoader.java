@@ -34,9 +34,7 @@ import androidx.annotation.Px;
 import androidx.annotation.UiThread;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
@@ -91,11 +89,6 @@ public class ImageViewLoader {
         this.applySizing = applySizing;
         this.width = width;
         this.height = height;
-    }
-
-    private static boolean isAssociated(@Nullable final ImageView view,
-                                        @NonNull final UUID taskUuid) {
-        return view != null && taskUuid.equals(view.getTag(R.id.TAG_THUMBNAIL_TASK));
     }
 
     /**
@@ -190,50 +183,48 @@ public class ImageViewLoader {
                          @Nullable final Consumer<Bitmap> onSuccess,
                          @Nullable final Runnable onFailed) {
 
-        final UUID taskUuid = UUID.randomUUID();
-        imageView.setTag(R.id.TAG_THUMBNAIL_TASK, taskUuid);
-        final WeakReference<ImageView> viewWeakReference = new WeakReference<>(imageView);
+        final ImageReference imageReference = new ImageReference(imageView);
 
         executor.execute(() -> {
-            if (!isAssociated(viewWeakReference.get(), taskUuid)) {
+            // Initial check, as this thread might have been started after a small delay
+            if (!imageReference.isAssociated()) {
                 return;
             }
 
-            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the loading/scaling as background work.
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             final Optional<Bitmap> oBitmap = new Transformation()
                     .setScale(this.width, this.height)
                     .setSource(file)
                     .transform();
-            // do NOT quit if oBitmap.isEmpty() as we'll load a placeholder further down if so.
 
-            if (!isAssociated(viewWeakReference.get(), taskUuid)) {
-                // We're not sending it to onSuccess.
-                // In practice this means sending it to the file-based caching.
+            if (!imageReference.isAssociated()) {
+                // We're not sending the bitmap (if we have one) to onSuccess,
+                // instead just recycle it.
+                // If we did this would mean sending it to the file-based caching.
                 // But if we're scrolling too fast to stay associated, then
                 // we can assume the cache-writer is already busy anyhow, so the returned
-                // bitmap would get dropped anyhow, and NOT recycled. i.e. a worse situation
-                // we must avoid.
+                // bitmap would get dropped anyhow, and NOT recycled.
+                // i.e. a worse situation we must avoid.
                 oBitmap.ifPresent(Bitmap::recycle);
                 return;
             }
 
             // back to the UI thread to display the bitmap or placeholder
             handler.post(() -> {
-                final ImageView view = viewWeakReference.get();
-                if (!isAssociated(view, taskUuid)) {
+                // CHECK AGAIN, we might have lost the association while we switched threads.
+                final ImageView view = imageReference.getView();
+                if (view == null) {
                     oBitmap.ifPresent(Bitmap::recycle);
                     return;
                 }
 
-                // clear the association
-                view.setTag(R.id.TAG_THUMBNAIL_TASK, null);
-
                 if (oBitmap.isPresent()) {
                     // Finally, load it into the View
-                    fromBitmap(view, oBitmap.get());
+                    final Bitmap bitmap = oBitmap.get();
+                    fromBitmap(view, bitmap);
                     if (onSuccess != null) {
-                        onSuccess.accept(oBitmap.get());
+                        onSuccess.accept(bitmap);
                     }
                 } else {
                     // Found the image-file, but failed to load/decode it.
