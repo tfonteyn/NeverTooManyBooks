@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.util.Optional;
@@ -84,8 +85,10 @@ class CoverHelper {
     void onZoomCover(@NonNull final View coverView) {
         final String uuid = (String) coverView.getTag(R.id.TAG_IMAGE_OWNER_UUID);
         coverStorage.getPersistedFile(uuid, 0).ifPresent(file -> {
-            final FragmentActivity activity = (FragmentActivity) coverView.getContext();
-            ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
+            // Rely on the fact that the BoB *is* an Activity.
+            final FragmentManager fm = ((FragmentActivity) coverView.getContext())
+                    .getSupportFragmentManager();
+            ZoomedImageDialogFragment.launch(fm, file);
         });
     }
 
