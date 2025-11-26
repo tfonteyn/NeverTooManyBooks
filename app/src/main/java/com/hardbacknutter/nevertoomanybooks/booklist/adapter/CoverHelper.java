@@ -117,7 +117,7 @@ class CoverHelper {
             // Problem: we need to report back whether we have an image or not.
             final Bitmap bitmap = coverStorage.getCachedBitmap(uuid, 0, cachedImageWidth);
             if (bitmap != null) {
-                // GOOD: displaying must be done on the UI thread
+                // Uses the UiThread to display it.
                 imageLoader.fromBitmap(coverView, bitmap);
                 return true;
             }
@@ -134,20 +134,24 @@ class CoverHelper {
             return false;
         }
 
+        // 2025-05-25: we did extensive tests using Glide 5.0rc1 library.
+        // Neither during normal scrolling, fling-scrolling nor fast-scrolling
+        // was there any difference. The most extreme test with 7000 books/covers
+        // all visible/expanded, and Glide made no difference whatsoever.
+
         // 3. We have a file.
-        // GOOD: uses a background thread (UI thread for final step of displaying)
         if (imageCachingEnabled) {
-            // 1. Gets the image from the file system and display it.
-            // 2. Start a subsequent task to send it to the cache.
+            // 1. Starts a task to get the image from the file system.
+            // 2. Uses the UiThread to display it.
+            // 3. Start a subsequent task to send it to the cache.
+            // Any errors are ignored
             imageLoader.fromFile(coverView, oFile.get(), bitmap ->
                     coverStorage.saveToCache(uuid, 0, bitmap, cachedImageWidth), null);
         } else {
-            // Get the image from the file system and display it.
+            // 1. Starts a task to get the image from the file system.
+            // 2. Uses the UiThread to display it.
+            // Any errors are ignored
             imageLoader.fromFile(coverView, oFile.get(), null, null);
-            // 2025-05-25: we did extensive tests using Glide 5.0rc1 library.
-            // Neither during normal scrolling, fling-scrolling nor fast-scrolling
-            // was there any difference. The most extreme test with 7000 books/covers
-            // all visible/expanded, and Glide made no difference whatsoever.
         }
         return true;
     }
