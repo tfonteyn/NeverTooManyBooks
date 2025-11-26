@@ -25,6 +25,7 @@ import android.os.Looper;
 import android.os.Process;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 
 import java.io.UncheckedIOException;
 import java.util.concurrent.Executor;
@@ -43,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.core.storage.UncheckedStorageExcepti
  */
 public final class STask {
 
-    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
+    public static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
 
     private STask() {
     }
@@ -58,29 +59,24 @@ public final class STask {
      *                   it will be unpacked and the actual cause will be passed in instead.
      * @param <T>        result type
      */
+    @UiThread
     public static <T> void execute(@NonNull final Executor executor,
                                    @NonNull final Supplier<T> worker,
                                    @NonNull final Consumer<T> onFinished,
                                    @NonNull final Consumer<Throwable> onFailure) {
         executor.execute(() -> {
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-
             //noinspection CheckStyle
             try {
                 final T result = worker.get();
                 UI_HANDLER.post(() -> onFinished.accept(result));
+            } catch (@NonNull final UncheckedIOException
+                                    | UncheckedStorageException
+                                    | UncheckedDaoWriteException
+                                    | UncheckedSAXException e) {
+                UI_HANDLER.post(() -> onFailure.accept(e.getCause()));
             } catch (@NonNull final Throwable t) {
-                final Throwable unpacked;
-                //noinspection InstanceofCatchParameter
-                if (t instanceof UncheckedIOException
-                    || t instanceof UncheckedStorageException
-                    || t instanceof UncheckedDaoWriteException
-                    || t instanceof UncheckedSAXException) {
-                    unpacked = t.getCause();
-                } else {
-                    unpacked = t;
-                }
-                UI_HANDLER.post(() -> onFailure.accept(unpacked));
+                UI_HANDLER.post(() -> onFailure.accept(t));
             }
         });
     }
