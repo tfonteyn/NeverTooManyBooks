@@ -253,20 +253,14 @@ public final class ImageHandler {
             hideProgress();
             message.process(this::onAfterTransform);
         });
-        vm.onStartEdit().observe(viewLifecycleOwner, message -> {
-            message.process(this::editPicture);
-        });
-        vm.onStartCropper().observe(viewLifecycleOwner, message -> {
-            message.process(input -> cropImageLauncher.launch(input));
-        });
-        vm.onStartTakePicture().observe(viewLifecycleOwner, message -> {
-            message.process(this::takePicture);
-        });
-        vm.onRestore().observe(viewLifecycleOwner, message -> {
-            message.process(restored -> {
-                reloadImageCallback.accept(cIdx);
-            });
-        });
+        vm.onStartEdit().observe(viewLifecycleOwner, message
+                -> message.process(this::editPicture));
+        vm.onStartCropper().observe(viewLifecycleOwner, message
+                -> message.process(input -> cropImageLauncher.launch(input)));
+        vm.onStartTakePicture().observe(viewLifecycleOwner, message
+                -> message.process(this::takePicture));
+        vm.onRestore().observe(viewLifecycleOwner, message
+                -> message.process(restored -> reloadImageCallback.accept(cIdx)));
         vm.onReloadImage().observe(viewLifecycleOwner, aVoid -> {
             // must use a post to force the View to update.
             //noinspection DataFlowIssue

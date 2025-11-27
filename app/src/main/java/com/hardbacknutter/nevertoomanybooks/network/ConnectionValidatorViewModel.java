@@ -59,11 +59,13 @@ public class ConnectionValidatorViewModel
 
     @NonNull
     public LiveData<LiveDataEvent<Boolean>> onConnectionSuccessful() {
+        //noinspection DataFlowIssue
         return validatorTask.onFinished();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<Boolean>> onConnectionCancelled() {
+        //noinspection DataFlowIssue
         return validatorTask.onCancelled();
     }
 
@@ -74,6 +76,7 @@ public class ConnectionValidatorViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<Throwable>> onConnectionFailed() {
+        //noinspection DataFlowIssue
         return validatorTask.onFailure();
     }
 
@@ -84,6 +87,7 @@ public class ConnectionValidatorViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
+        //noinspection DataFlowIssue
         return validatorTask.onProgress();
     }
 

@@ -32,6 +32,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
+@SuppressWarnings("StringConcatenationMissingWhitespace")
 final class TestConstants {
 
     static final String[] lang = {"eng", "ger", "eng", "nld", "eng",};

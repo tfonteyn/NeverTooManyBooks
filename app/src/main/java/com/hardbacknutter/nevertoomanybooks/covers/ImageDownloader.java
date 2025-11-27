@@ -56,7 +56,6 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * Given a URL and a filename, this class uses an {@link OkHttpClient} to download an image,
@@ -198,18 +197,13 @@ public class ImageDownloader {
                 try (Response response = call.execute()) {
                     checkResponseCode(response);
 
-                    final ResponseBody body = response.body();
-                    if (body != null) {
-                        try (InputStream source = body.byteStream()) {
-                            if (isZipped(response)) {
-                                savedFile = coverStorage.persist(new GZIPInputStream(source),
-                                                                 destFile);
-                            } else {
-                                savedFile = coverStorage.persist(source, destFile);
-                            }
+                    try (InputStream source = response.body().byteStream()) {
+                        if (isZipped(response)) {
+                            savedFile = coverStorage.persist(new GZIPInputStream(source),
+                                                             destFile);
+                        } else {
+                            savedFile = coverStorage.persist(source, destFile);
                         }
-                    } else {
-                        savedFile = null;
                     }
                 }
             }

@@ -108,7 +108,7 @@ public class CropImageFragment
                         getString(R.string.error_insufficient_storage))));
 
         vm.onError().observe(viewLifecycleOwner, message ->
-                message.process(e -> onError(e)));
+                message.process(this::onError));
 
         // Load the initial bitmap
         vm.onBitmap().observe(viewLifecycleOwner, message ->

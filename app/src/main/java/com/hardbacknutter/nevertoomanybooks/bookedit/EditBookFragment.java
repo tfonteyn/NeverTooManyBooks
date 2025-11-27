@@ -303,10 +303,7 @@ public class EditBookFragment
             vm.saveBook(getContext());
             setResultsAndFinish();
 
-        } catch (@NonNull final StorageException e) {
-            ErrorDialog.show(getContext(), TAG, e);
-
-        } catch (@NonNull final DaoWriteException e) {
+        } catch (@NonNull final StorageException | DaoWriteException e) {
             ErrorDialog.show(getContext(), TAG, e);
         }
     }
