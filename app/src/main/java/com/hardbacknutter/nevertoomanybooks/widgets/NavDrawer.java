@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -102,15 +102,10 @@ public final class NavDrawer {
 
     /**
      * If the drawerLayout is showing, close it.
-     *
-     * @return {@code true} if it closed;
-     *         {@code false} if this was a no-operation.
      */
-    public boolean close() {
+    public void close() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
         }
-        return false;
     }
 }
