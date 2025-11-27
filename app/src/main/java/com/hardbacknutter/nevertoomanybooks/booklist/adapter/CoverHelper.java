@@ -114,6 +114,26 @@ class CoverHelper {
         // store the uuid for use in onZoomCover
         coverView.setTag(R.id.TAG_IMAGE_OWNER_UUID, uuid);
 
+        // 2025-05-25: we did extensive tests using Glide 5.0rc1 library.
+        // Neither during normal scrolling, fling-scrolling nor fast-scrolling
+        // was there any difference. The most extreme test with 7000 books/covers
+        // all visible/expanded, and Glide made no difference whatsoever.
+
+        // 2025-11-27: tried multiple ways to get all of the below moved to a background
+        // thread with callbacks to display the images (or when none, any text).
+        //
+        // Due to the ViewHolders bing reused/recycled, it became VERY cumbersome
+        // to keep track of things. No solution really worked.
+        //
+        // Current implementation:
+        // 1. The bitmap (if present) is retrieved on the UI Thread.
+        // 2: The file exists() is called on the UI Thread.
+        // 3: imageLoader.fromFile: starts a background thread, works fine
+        //
+        // Given the Glide tests + the extended threading tests either don't make a
+        // difference or just don't work.... no further work/attempts to be done for now.
+
+
         // 1. If caching is used, check it.
         if (imageCachingEnabled) {
             // BAD: database access on UI thread
@@ -137,11 +157,6 @@ class CoverHelper {
             return false;
         }
 
-        // 2025-05-25: we did extensive tests using Glide 5.0rc1 library.
-        // Neither during normal scrolling, fling-scrolling nor fast-scrolling
-        // was there any difference. The most extreme test with 7000 books/covers
-        // all visible/expanded, and Glide made no difference whatsoever.
-
         // 3. We have a file.
         if (imageCachingEnabled) {
             // 1. Starts a task to get the image from the file system.
@@ -156,6 +171,7 @@ class CoverHelper {
             // Any errors are ignored
             imageLoader.fromFile(coverView, oFile.get(), null);
         }
+        // the image was/will-be displayed or a placeholder was shown.
         return true;
     }
 }
