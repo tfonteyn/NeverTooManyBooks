@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.widgets.adapters.RowViewHolder;
 
 /**
@@ -69,6 +70,8 @@ class Formatter
 
     @NonNull
     private final List<Locale> locales;
+    @NonNull
+    private final ReorderHelper reorderHelper;
 
     Formatter(@NonNull final Context context,
               @NonNull final Style style,
@@ -76,6 +79,7 @@ class Formatter
         this.context = context;
         this.style = style;
         this.locales = locales;
+        reorderHelper = new ReorderHelper(this.locales);
 
         unreadStr = context.getString(R.string.lbl_unread);
         a_space_b = context.getString(R.string.a_space_b);
@@ -107,7 +111,7 @@ class Formatter
             }
             case BooklistGroup.LANGUAGE:
             case BooklistGroup.ORIGINAL_LANGUAGE: {
-                return formatLanguage(rowData, key, serviceLocator);
+                return formatLanguage(rowData, key);
             }
             case BooklistGroup.CONDITION: {
                 return formatCondition(rowData, key);
@@ -218,8 +222,7 @@ class Formatter
             // It should be done using the Series language
             // but as long as we don't store the Series language there is no point
             final String lang = rowData.getString(DBKey.LANGUAGE);
-            return ServiceLocator.getInstance().getReorderHelper()
-                                 .reorder(context, text, lang, locales);
+            return reorderHelper.reorder(context, text, lang);
         } else {
             return text;
         }
@@ -239,8 +242,7 @@ class Formatter
         if (style.isShowReorderedTitle()) {
             // We don't have full Objects here for Series/Publisher so we can't use
             // their methods for auto-reordering.
-            return ServiceLocator.getInstance().getReorderHelper()
-                                 .reorder(context, text, (Locale) null, locales);
+            return reorderHelper.reorder(context, text);
         } else {
             return text;
         }
@@ -248,13 +250,13 @@ class Formatter
 
     @NonNull
     private String formatLanguage(@NonNull final DataHolder rowData,
-                                  @NonNull final String key,
-                                  final ServiceLocator serviceLocator) {
+                                  @NonNull final String key) {
         final String text = rowData.getString(key);
         if (text.isEmpty()) {
             return context.getString(R.string.bob_empty_language);
         } else {
-            return serviceLocator.getLanguages().getDisplayLanguageFromISO3(context, text);
+            return ServiceLocator.getInstance().getLanguages()
+                                 .getDisplayLanguageFromISO3(context, text);
         }
     }
 

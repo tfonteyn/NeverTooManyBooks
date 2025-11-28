@@ -95,7 +95,7 @@ public class SettingsViewModel
             initDone = true;
 
             storedVolumeIndex = CoverVolume.getVolume(context);
-            storedTitleOrderBy = ReorderHelper.isSortReordered(context);
+            storedTitleOrderBy = ReorderHelper.isSortReordered();
 
             if (args != null) {
                 missingStorageVolume = args.getBoolean(BKEY_MISSING_STORAGE_VOLUME);

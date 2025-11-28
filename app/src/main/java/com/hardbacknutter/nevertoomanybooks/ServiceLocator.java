@@ -103,7 +103,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.LocalizedContext;
-import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
 import com.hardbacknutter.util.logger.FileLogger;
@@ -147,9 +146,6 @@ public class ServiceLocator {
 
     @Nullable
     private FieldVisibility fieldVisibility;
-
-    @Nullable
-    private ReorderHelper reorderHelper;
 
     @Nullable
     private Languages languages;
@@ -435,21 +431,6 @@ public class ServiceLocator {
             }
         }
         return coverStorage;
-    }
-
-    /**
-     * Get the title/name reordering helper..
-     *
-     * @return singleton
-     */
-    @NonNull
-    public ReorderHelper getReorderHelper() {
-        synchronized (this) {
-            if (reorderHelper == null) {
-                reorderHelper = new ReorderHelper();
-            }
-        }
-        return reorderHelper;
     }
 
     /**

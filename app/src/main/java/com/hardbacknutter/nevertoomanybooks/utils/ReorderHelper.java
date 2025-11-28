@@ -20,11 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +32,6 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 
 /**
  * Reorder display labels (title/name) for:
@@ -71,18 +68,29 @@ public final class ReorderHelper {
     /**
      * Cache for the pv_reformat_titles_prefixes strings.
      */
-    private final Map<Locale, String> localePrefixMap = new HashMap<>();
+    private static final Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
+    @NonNull
+    private final List<Locale> allLocales;
+    private final boolean sortReordered;
+
+    /**
+     * Constructor.
+     *
+     * @param userLocales the list of all user locales.
+     */
+    public ReorderHelper(@NonNull final List<Locale> userLocales) {
+        this.allLocales = userLocales;
+        sortReordered = isSortReordered();
+    }
 
     /**
      * Get the global default for this preference.
      *
-     * @param context Current context
-     *
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
-    public static boolean isSortReordered(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_SORT_TITLE_REORDERED, true);
+    public static boolean isSortReordered() {
+        return ServiceLocator.getInstance().getSharedPreferences()
+                             .getBoolean(PK_SORT_TITLE_REORDERED, true);
     }
 
     /**
@@ -99,33 +107,8 @@ public final class ReorderHelper {
     public String reorderForSorting(@NonNull final Context context,
                                     @NonNull final String text,
                                     @NonNull final Locale locale) {
-        if (isSortReordered(context)) {
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-            final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-            return reorder(context, text, locale, allLocales);
-        } else {
-            return text;
-        }
-    }
-
-    /**
-     * <strong>Conditionally</strong> reorder the given text
-     * for <strong>use as the OrderBy column</strong>.
-     *
-     * @param context     Current context
-     * @param text        to reorder
-     * @param firstLocale to try first
-     * @param localeList  to try if the the firstLocale fails
-     *
-     * @return the reordered text or the original text, as to-be used for sorting.
-     */
-    @NonNull
-    public String reorderForSorting(@NonNull final Context context,
-                                    @NonNull final String text,
-                                    @Nullable final Locale firstLocale,
-                                    @NonNull final List<Locale> localeList) {
-        if (isSortReordered(context)) {
-            return reorder(context, text, firstLocale, localeList);
+        if (sortReordered) {
+            return reorder(context, text, locale);
         } else {
             return text;
         }
@@ -133,7 +116,7 @@ public final class ReorderHelper {
 
     /**
      * <strong>Unconditionally</strong> reorder the given text.
-     * Uses the device Locale list.
+     * Uses the users Locale list.
      *
      * @param context Current context
      * @param title   to reorder
@@ -143,58 +126,34 @@ public final class ReorderHelper {
     @NonNull
     public String reorder(@NonNull final Context context,
                           @NonNull final String title) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        return reorder(context, title, (Locale) null, allLocales);
+        return reorder(context, title, (Locale) null);
     }
 
     /**
      * <strong>Unconditionally</strong> reorder the given text.
-     * Uses the given Locale or the device Locale list.
+     * Uses the given language to create a Locale to use.
      *
-     * @param context Current context
-     * @param title   to reorder
-     * @param locale  to try first
+     * @param context  Current context
+     * @param title    to reorder
+     * @param language (Optional) to try first
      *
      * @return the reordered title
      */
     @NonNull
     public String reorder(@NonNull final Context context,
                           @NonNull final String title,
-                          @NonNull final Locale locale) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        return reorder(context, title, locale, allLocales);
-    }
-
-    /**
-     * <strong>Unconditionally</strong> reorder the given text.
-     * Uses the given language or the given Locale list.
-     *
-     * @param context    Current context
-     * @param title      to reorder
-     * @param language   to try first
-     * @param localeList to try if the the language locale fails
-     *
-     * @return the reordered title
-     */
-    @NonNull
-    public String reorder(@NonNull final Context context,
-                          @NonNull final String title,
-                          @Nullable final String language,
-                          @NonNull final List<Locale> localeList) {
+                          @Nullable final String language) {
         @Nullable
         final Locale localeFromLang;
         if (language == null || language.isBlank()) {
             localeFromLang = null;
         } else {
-            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             localeFromLang = ServiceLocator.getInstance()
                                            .getAppLocale()
-                                           .getLocale(language, userLocale)
+                                           .getLocale(language, allLocales.get(0))
                                            .orElse(null);
         }
-        return reorder(context, title, localeFromLang, localeList);
+        return reorder(context, title, localeFromLang);
     }
 
     /**
@@ -207,15 +166,13 @@ public final class ReorderHelper {
      * @param context     Current context
      * @param title       to reorder
      * @param firstLocale to try first
-     * @param localeList  to try if the the firstLocale fails
      *
      * @return reordered title, or the original if the pattern was not found
      */
     @NonNull
     public String reorder(@NonNull final Context context,
                           @NonNull final String title,
-                          @Nullable final Locale firstLocale,
-                          @NonNull final List<Locale> localeList) {
+                          @Nullable final Locale firstLocale) {
 
         final String[] titleWords = title.split(" ");
         // Single word titles (or empty titles).. just return.
@@ -223,7 +180,7 @@ public final class ReorderHelper {
             return title;
         }
 
-        final List<Locale> locales = concatLocales(firstLocale, localeList);
+        final List<Locale> locales = concatLocales(firstLocale);
         for (final Locale locale : locales) {
             // case sensitive, see notes in
             // src/main/res/values/string.xml/pv_reformat_titles_prefixes
@@ -250,16 +207,14 @@ public final class ReorderHelper {
      * @param context     Current context
      * @param text        to process
      * @param firstLocale to try first
-     * @param localeList  to try after
      *
      * @return the un-reordered text
      */
     @NonNull
     public String reverse(@NonNull final Context context,
                           @NonNull final String text,
-                          @Nullable final Locale firstLocale,
-                          @NonNull final List<Locale> localeList) {
-        final List<Locale> locales = concatLocales(firstLocale, localeList);
+                          @Nullable final Locale firstLocale) {
+        final List<Locale> locales = concatLocales(firstLocale);
         for (final Locale locale : locales) {
             final String[] words = getWords(context, locale).split("\\|");
             for (final String word : words) {
@@ -270,8 +225,7 @@ public final class ReorderHelper {
                                                            - SUFFIX_SEPARATOR.length()
                                                            - word.length());
                     // Now reorder it AGAIN, and check if it matches the original text.
-                    final String reordered =
-                            reorder(context, reconstructed, firstLocale, localeList);
+                    final String reordered = reorder(context, reconstructed, firstLocale);
                     // IgnoreCase as the incoming text might have an uppercase character to start
                     if (text.equalsIgnoreCase(reordered)) {
                         // We have a good chance that this is the original title.
@@ -299,18 +253,21 @@ public final class ReorderHelper {
     @NonNull
     private String getWords(@NonNull final Context context,
                             @NonNull final Locale locale) {
+        String words;
         // getLocalizedResources is slow, so we cache it for every Locale.
-        String words = localePrefixMap.get(locale);
-        if (words == null) {
-            words = ServiceLocator.getInstance()
-                                  .getAppLocale()
-                                  .getLocalizedResources(context, locale)
-                                  .getString(R.string.pv_reformat_titles_prefixes);
-            // hack for WebLate removing empty Strings.
-            if ("|".equals(words)) {
-                words = "";
+        synchronized (LOCALE_PREFIX_MAP) {
+            words = LOCALE_PREFIX_MAP.get(locale);
+            if (words == null) {
+                words = ServiceLocator.getInstance()
+                                      .getAppLocale()
+                                      .getLocalizedResources(context, locale)
+                                      .getString(R.string.pv_reformat_titles_prefixes);
+                // hack for WebLate removing empty Strings.
+                if ("|".equals(words)) {
+                    words = "";
+                }
+                LOCALE_PREFIX_MAP.put(locale, words);
             }
-            localePrefixMap.put(locale, words);
         }
         return words;
     }
@@ -320,20 +277,22 @@ public final class ReorderHelper {
      * and suffix it with {@link Locale#ENGLISH}.
      *
      * @param firstLocale (optional) prefix
-     * @param localeList  main list
      *
      * @return concatenated/final Locale list
      */
     @NonNull
-    private List<Locale> concatLocales(@Nullable final Locale firstLocale,
-                                       @NonNull final List<Locale> localeList) {
+    private List<Locale> concatLocales(@Nullable final Locale firstLocale) {
         // Create a NEW list, and add optional prefix at the start, and Locale.ENGLISH at the end
-        final List<Locale> locales = new ArrayList<>(localeList);
+        final List<Locale> locales = new ArrayList<>(allLocales);
         if (firstLocale != null) {
             locales.add(0, firstLocale);
         }
-        locales.add(Locale.ENGLISH);
+        if (!locales.contains(Locale.ENGLISH)
+            && !locales.contains(Locale.US)
+            && !locales.contains(Locale.UK)
+            && !locales.contains(Locale.CANADA)) {
+            locales.add(Locale.ENGLISH);
+        }
         return locales;
     }
-
 }

@@ -159,15 +159,14 @@ public class MaintenanceDaoImpl
         final Locale userLocale = userLocales.get(0);
         final List<Locale> locales = LocaleListUtils.asList(userLocales);
 
+        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+        final ReorderHelper reorderHelper = new ReorderHelper(locales);
+
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
-
-            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-            final AppLocale appLocale = serviceLocator.getAppLocale();
-            final ReorderHelper reorderHelper = serviceLocator.getReorderHelper();
 
             // We should use the locale from the 1st book in the series...
             // but that is a huge overhead so we use the user-locale directly.
@@ -212,7 +211,7 @@ public class MaintenanceDaoImpl
                             .getLocale(cursor.getString(3), userLocale)
                             .orElse(userLocale);
                     final String rTitle = reorderHelper
-                            .reorderForSorting(context, title, bookLocale, locales);
+                            .reorderForSorting(context, title, bookLocale);
                     final String rObTitle = SqlEncode.orderByColumn(rTitle, bookLocale);
 
                     // only update the database if actually needed.
@@ -239,7 +238,7 @@ public class MaintenanceDaoImpl
                     final String currentObTitle = cursor.getString(2);
 
                     final String rTitle = reorderHelper
-                            .reorderForSorting(context, title, userLocale, locales);
+                            .reorderForSorting(context, title, userLocale);
                     final String rObTitle = SqlEncode.orderByColumn(rTitle, userLocale);
 
                     // only update the database if actually needed.
@@ -265,7 +264,7 @@ public class MaintenanceDaoImpl
                     final String currentObTitle = cursor.getString(2);
 
                     final String rTitle = reorderHelper
-                            .reorderForSorting(context, title, userLocale, locales);
+                            .reorderForSorting(context, title, userLocale);
                     final String rObTitle = SqlEncode.orderByColumn(rTitle, userLocale);
 
                     // only update the database if actually needed.
@@ -292,7 +291,7 @@ public class MaintenanceDaoImpl
                     final String currentObTitle = cursor.getString(2);
 
                     final String rTitle = reorderHelper
-                            .reorderForSorting(context, title, userLocale, locales);
+                            .reorderForSorting(context, title, userLocale);
                     final String rObTitle = SqlEncode.orderByColumn(rTitle, userLocale);
 
                     // only update the database if actually needed.

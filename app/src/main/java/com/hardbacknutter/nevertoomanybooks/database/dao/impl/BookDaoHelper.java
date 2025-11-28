@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.util.logger.LoggerFactory;
 
 /**
@@ -130,9 +131,10 @@ public class BookDaoHelper {
         // Handle TITLE
         if (book.contains(DBKey.TITLE)) {
             final String title = book.getTitle();
-            final String obTitle = ServiceLocator.getInstance()
-                                                 .getReorderHelper()
-                                                 .reorderForSorting(context, title, bookLocale);
+            final String obTitle =
+                    new ReorderHelper(LocaleListUtils.asList(
+                            context.getResources().getConfiguration().getLocales()))
+                            .reorderForSorting(context, title, bookLocale);
 
             book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(obTitle, bookLocale));
         }

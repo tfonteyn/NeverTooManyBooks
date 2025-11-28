@@ -36,6 +36,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.PartialDateParser;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -327,7 +328,8 @@ public class TocEntry
                            @NonNull final Style style) {
 
         if (style.isShowReorderedTitle()) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final ReorderHelper reorderHelper = new ReorderHelper(
+                    LocaleListUtils.asList(context.getResources().getConfiguration().getLocales()));
             // Using the locale here is overkill;  see #getLocale(..)
             return reorderHelper.reorder(context, title);
         } else {

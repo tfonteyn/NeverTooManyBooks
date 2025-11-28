@@ -561,7 +561,9 @@ public class Book
                            @NonNull final Style style) {
 
         if (style.isShowReorderedTitle()) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final List<Locale> allLocales = LocaleListUtils.asList(
+                    context.getResources().getConfiguration().getLocales());
+            final ReorderHelper reorderHelper = new ReorderHelper(allLocales);
             return reorderHelper.reorder(context, getTitle(), getLocaleOrUserLocale(context));
         } else {
             return getTitle();

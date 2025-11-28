@@ -108,13 +108,12 @@ public class TocEntryDaoImpl
         }
 
         if (normalize) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
             final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+            final ReorderHelper reorderHelper = new ReorderHelper(allLocales);
             list.forEach(tocEntry -> {
                 final String title = reorderHelper.reverse(context, tocEntry.getTitle(),
-                                                           localeSupplier.apply(tocEntry),
-                                                           allLocales);
+                                                           localeSupplier.apply(tocEntry));
                 tocEntry.setTitle(title);
             });
         }
@@ -183,9 +182,10 @@ public class TocEntryDaoImpl
                                          @NonNull final Locale locale) {
 
         final String title = tocEntry.getTitle();
-        final String obTitle = ServiceLocator.getInstance()
-                                             .getReorderHelper()
-                                             .reorderForSorting(context, title, locale);
+        final String obTitle = new ReorderHelper(LocaleListUtils.asList(
+                context.getResources().getConfiguration().getLocales()))
+                .reorderForSorting(context, title, locale);
+
         final String searchDateIso = tocEntry.getFirstPublicationDate().getIsoString();
 
         try (Cursor cursor = db.rawQuery(Sql.FIND_BY_AUTHOR_AND_TITLE, new String[]{
@@ -300,7 +300,8 @@ public class TocEntryDaoImpl
         }
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-        final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+        final ReorderHelper reorderHelper = new ReorderHelper(LocaleListUtils.asList(
+                context.getResources().getConfiguration().getLocales()));
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BOOK_LINK);
              SynchronizedStatement stmtInsToc = db.compileStatement(Sql.INSERT);

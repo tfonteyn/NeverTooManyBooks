@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.StringCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -519,7 +520,8 @@ public class Series
 
         final String label;
         if (style.isShowReorderedTitle()) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final ReorderHelper reorderHelper = new ReorderHelper(
+                    LocaleListUtils.asList(context.getResources().getConfiguration().getLocales()));
             // Using the locale here is overkill;  see #getLocale(..)
             label = reorderHelper.reorder(context, title);
         } else {

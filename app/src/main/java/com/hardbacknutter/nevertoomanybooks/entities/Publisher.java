@@ -29,8 +29,8 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
@@ -146,7 +146,8 @@ public class Publisher
         // yes, we're using the 'title'. Adding specific publisher logic was
         // to much overhead for a presumably little used feature
         if (style.isShowReorderedTitle()) {
-            final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
+            final ReorderHelper reorderHelper = new ReorderHelper(
+                    LocaleListUtils.asList(context.getResources().getConfiguration().getLocales()));
             // Using the locale here is overkill;  see #getLocale(..)
             return reorderHelper.reorder(context, name);
         } else {
