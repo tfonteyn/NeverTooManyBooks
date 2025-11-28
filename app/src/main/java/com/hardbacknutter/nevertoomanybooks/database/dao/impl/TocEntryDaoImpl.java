@@ -521,17 +521,21 @@ public class TocEntryDaoImpl
                 + _WHERE_ + DBKey.FK_BOOK + "=?";
 
 
-        /** Get a count of the {@link TocEntry}s. */
+        /** Get a count of all the {@link TocEntry}s. */
         static final String COUNT_ALL =
                 SELECT_COUNT_FROM_ + TBL_TOC_ENTRIES.getName();
 
+        /**
+         * Count the number of {@link Book}s (links) in which the given {@link TocEntry}
+         * is present.
+         */
         static final String COUNT_BOOKS =
-                SELECT_COUNT_FROM_ + TBL_TOC_ENTRIES.ref()
-                + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?";
+                SELECT_COUNT_FROM_ + TBL_BOOK_TOC_ENTRIES.ref()
+                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?";
 
         /**
          * Count the number of {@link TocEntry}'s
-         * <strong>for a specific {@link Author}</strong>.
+         * <strong>for a given {@link Author}</strong>.
          */
         static final String COUNT_FOR_AUTHOR =
                 SELECT_COUNT_FROM_ + TBL_TOC_ENTRIES.getName()
