@@ -164,15 +164,14 @@ public final class AppLocaleImpl
 
     @Override
     @NonNull
-    public Optional<Locale> getLocale(@NonNull final Context context,
-                                      @NonNull final String inputLang) {
+    public Optional<Locale> getLocale(@NonNull final String language,
+                                      @NonNull final Locale userLocale) {
 
-        if (inputLang.isEmpty()) {
+        if (language.isEmpty()) {
             return Optional.empty();
         }
 
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        String lang = inputLang.strip().toLowerCase(userLocale);
+        String lang = language.strip().toLowerCase(userLocale);
         final int len = lang.length();
         if (len > 3) {
             lang = languagesSupplier.get().getISO3FromDisplayLanguage(userLocale, lang);

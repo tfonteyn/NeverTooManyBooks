@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,14 +75,14 @@ public interface AppLocale {
      * Example: display:"asu", has an actual iso3 code of "asa" but we will wrongly take "asu"
      * to be an ISO3 code. There are a couple more like this.
      *
-     * @param context   Current context
-     * @param inputLang to use for Locale
+     * @param language   to use for Locale
+     * @param userLocale Current Locale
      *
      * @return the Locale for the passed language
      */
     @NonNull
-    Optional<Locale> getLocale(@NonNull Context context,
-                               @NonNull String inputLang);
+    Optional<Locale> getLocale(@NonNull String language,
+                               @NonNull Locale userLocale);
 
     /**
      * Load a Resources set for the specified Locale.

@@ -108,7 +108,7 @@ public class SettingsViewModel
 
     private void initLanguages(@NonNull final Context context) {
         final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
-
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final String[] tmpEntryValues = BuildConfig.SUPPORTED_LOCALES;
 
         uiLanguageEntries = new String[tmpEntryValues.length + 1];
@@ -120,9 +120,9 @@ public class SettingsViewModel
         for (int i = 0; i < tmpEntryValues.length; i++) {
             uiLanguageEntryValues[i + 1] = tmpEntryValues[i];
             final Locale locale = appLocale
-                    .getLocale(context, tmpEntryValues[i])
+                    .getLocale(tmpEntryValues[i], userLocale)
                     // We should never get here... flw
-                    .orElseGet(() -> context.getResources().getConfiguration().getLocales().get(0));
+                    .orElse(userLocale);
             // The NAME, i.e. including country, script,...
             uiLanguageEntries[i + 1] = locale.getDisplayName(locale);
         }

@@ -209,7 +209,7 @@ public class MaintenanceDaoImpl
                     final String currentObTitle = cursor.getString(2);
 
                     final Locale bookLocale = appLocale
-                            .getLocale(context, cursor.getString(3))
+                            .getLocale(cursor.getString(3), userLocale)
                             .orElse(userLocale);
                     final String rTitle = reorderHelper
                             .reorderForSorting(context, title, bookLocale, locales);

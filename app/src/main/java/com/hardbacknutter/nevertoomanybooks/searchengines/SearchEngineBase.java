@@ -179,8 +179,10 @@ public abstract class SearchEngineBase
 
             default:
                 // other sites are (should be ?) just the country code.
+                final Locale userLocale = context.getResources().getConfiguration().getLocales()
+                                                 .get(0);
                 final Optional<Locale> locale = ServiceLocator.getInstance().getAppLocale()
-                                                              .getLocale(context, root);
+                                                              .getLocale(root, userLocale);
                 if (BuildConfig.DEBUG /* always */) {
                     LoggerFactory.getLogger()
                                  .d(TAG, "getLocale", "locale=" + locale);

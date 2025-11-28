@@ -883,9 +883,9 @@ public class Book
                                                final boolean updateLanguage) {
         if (contains(DBKey.LANGUAGE)) {
             final String lang = getString(DBKey.LANGUAGE);
-
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Optional<Locale> bookLocale = ServiceLocator.getInstance().getAppLocale()
-                                                              .getLocale(context, lang);
+                                                              .getLocale(lang, userLocale);
             if (bookLocale.isPresent()) {
                 if (updateLanguage) {
                     putString(DBKey.LANGUAGE, lang);

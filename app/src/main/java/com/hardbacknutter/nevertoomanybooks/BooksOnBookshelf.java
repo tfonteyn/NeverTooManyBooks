@@ -2650,8 +2650,10 @@ public class BooksOnBookshelf
                 if (text.length() > 3) {
                     editLang = text;
                 } else {
+                    final Locale userLocale = context.getResources().getConfiguration().getLocales()
+                                                     .get(0);
                     editLang = ServiceLocator.getInstance().getAppLocale()
-                                             .getLocale(context, text)
+                                             .getLocale(text, userLocale)
                                              .map(Locale::getDisplayLanguage)
                                              .orElse(text);
                 }

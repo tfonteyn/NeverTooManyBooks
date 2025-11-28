@@ -90,17 +90,19 @@ public class Languages {
      *
      * @return the best matching Locale we could determine
      *
-     * @see AppLocale#getLocale(Context, String)
+     * @see AppLocale#getLocale(String, Locale)
      */
     @NonNull
     public Locale toLocale(@NonNull final Context context,
                            @Nullable final String language) {
 
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         if (language == null || language.isBlank()) {
-            return context.getResources().getConfiguration().getLocales().get(0);
+            return userLocale;
         }
-        return ServiceLocator.getInstance().getAppLocale().getLocale(context, language).orElseGet(
-                () -> context.getResources().getConfiguration().getLocales().get(0));
+        return ServiceLocator.getInstance().getAppLocale()
+                             .getLocale(language, userLocale)
+                             .orElse(userLocale);
     }
 
     /**
@@ -116,7 +118,7 @@ public class Languages {
     public String getDisplayLanguageFromISO3(@NonNull final Context context,
                                              @NonNull final String iso3) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        return ServiceLocator.getInstance().getAppLocale().getLocale(context, iso3)
+        return ServiceLocator.getInstance().getAppLocale().getLocale(iso3, userLocale)
                              .map(locale -> locale.getDisplayLanguage(userLocale))
                              .orElse(iso3);
     }
@@ -415,7 +417,7 @@ public class Languages {
     /**
      * Generate language mappings for a given Locale.
      *
-     * @param locale  the Locale for which to create a mapping
+     * @param locale the Locale for which to create a mapping
      */
     @VisibleForTesting
     public void createLanguageMappingCache(@NonNull final Locale locale) {

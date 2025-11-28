@@ -633,7 +633,9 @@ public class Series
         if (id > 0) {
             final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(id);
             if (!lang.isEmpty()) {
-                return ServiceLocator.getInstance().getAppLocale().getLocale(context, lang);
+                final Locale userLocale = context.getResources().getConfiguration().getLocales()
+                                                 .get(0);
+                return ServiceLocator.getInstance().getAppLocale().getLocale(lang, userLocale);
             }
         }
 

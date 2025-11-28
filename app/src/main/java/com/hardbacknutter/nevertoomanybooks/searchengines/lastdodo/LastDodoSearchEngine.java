@@ -700,10 +700,12 @@ public class LastDodoSearchEngine
                 // No book language -> use site Locale
                 locale = getLocale(context);
             } else {
-                // Get the Locale from the language, but if that fails
-                // just use the site Locale
+                // Get the Locale from the language,
+                // but if that fails use the site Locale
+                final Locale userLocale = context.getResources().getConfiguration().getLocales()
+                                                 .get(0);
                 locale = ServiceLocator.getInstance().getAppLocale()
-                                       .getLocale(context, language)
+                                       .getLocale(language, userLocale)
                                        .orElseGet(() -> getLocale(context));
             }
 

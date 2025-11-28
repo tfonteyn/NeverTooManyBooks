@@ -188,9 +188,11 @@ public final class ReorderHelper {
         if (language == null || language.isBlank()) {
             localeFromLang = null;
         } else {
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             localeFromLang = ServiceLocator.getInstance()
                                            .getAppLocale()
-                                           .getLocale(context, language).orElse(null);
+                                           .getLocale(language, userLocale)
+                                           .orElse(null);
         }
         return reorder(context, title, localeFromLang, localeList);
     }

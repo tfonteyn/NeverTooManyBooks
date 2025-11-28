@@ -155,12 +155,13 @@ public class UserInterfacePreferenceFragment
                 if (AppLocale.SYSTEM_LANGUAGE.equals(value)) {
                     return context.getString(R.string.pt_ui_system_locale);
                 } else {
+                    final Locale userLocale =
+                            context.getResources().getConfiguration().getLocales().get(0);
                     final Locale locale = ServiceLocator
                             .getInstance().getAppLocale()
-                            .getLocale(context, value)
+                            .getLocale(value, userLocale)
                             // We should never get here... flw
-                            .orElseGet(() -> context.getResources().getConfiguration().getLocales()
-                                                    .get(0));
+                            .orElse(userLocale);
                     // The NAME, i.e. including country, script,...
                     return locale.getDisplayName(locale);
                 }
