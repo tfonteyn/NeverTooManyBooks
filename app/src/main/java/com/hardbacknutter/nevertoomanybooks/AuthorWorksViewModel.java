@@ -37,6 +37,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -74,11 +75,10 @@ public class AuthorWorksViewModel
 
     /** The list of TOC/Books we're displaying. */
     private final List<AuthorWork> works = new ArrayList<>();
-
-    /** Database Access. */
-    private BookDao bookDao;
     /** Author is set in {@link #init} and {@link #setAuthor(Context, Author, boolean)}. */
     private final List<Author> authors = new ArrayList<>();
+    /** Database Access. */
+    private BookDao bookDao;
     /** Initial Bookshelf is set in {@link #init}. */
     private Bookshelf bookshelf;
     /** Initially we get toc entries and books. */
@@ -189,22 +189,25 @@ public class AuthorWorksViewModel
     }
 
     private void reloadWorkList(@NonNull final Context context) {
-        works.clear();
-        final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
 
-        final List<AuthorWork> authorWorks =
-                ServiceLocator.getInstance().getAuthorDao()
-                              .getAuthorWorks(getPrimaryAuthor(), bookshelfId,
-                                              showTocEntries, showBooks,
-                                              orderByColumn);
+        ASyncExecutor.PARALLEL.execute(() -> {
+            works.clear();
+            final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
 
-        works.addAll(authorWorks);
-        onWorks.setValue(null);
-        // Activity subtitle will show the bookshelf name (or empty for all-shelves)
-        // + the number of works shown.
-        onBookshelf.setValue(context.getString(R.string.name_hash_nr,
-                                               allBookshelves ? "" : bookshelf.getName(),
-                                               works.size()));
+            final List<AuthorWork> authorWorks =
+                    ServiceLocator.getInstance().getAuthorDao()
+                                  .getAuthorWorks(getPrimaryAuthor(), bookshelfId,
+                                                  showTocEntries, showBooks,
+                                                  orderByColumn);
+
+            works.addAll(authorWorks);
+            onWorks.postValue(null);
+            // Activity subtitle will show the bookshelf name (or empty for all-shelves)
+            // + the number of works shown.
+            onBookshelf.postValue(context.getString(R.string.name_hash_nr,
+                                                    allBookshelves ? "" : bookshelf.getName(),
+                                                    works.size()));
+        });
     }
 
     @NonNull
