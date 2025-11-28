@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,6 +74,6 @@ public class LanguageFormatter
     @NonNull
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
-        return languages.getISO3FromDisplayLanguage(context, locale, text);
+        return languages.getISO3FromDisplayLanguage(locale, text);
     }
 }

@@ -69,7 +69,7 @@ public class LanguageTest
         final Languages l = serviceLocator.getLanguages();
 
         final Locale locale = new Locale("cs", "CZ");
-        l.createLanguageMappingCache(context, locale);
+        l.createLanguageMappingCache(locale);
 
         // ces=cs
         Log.d(TAG, "ces=" + l.getLocaleIsoFromISO3(Locale.UK, "ces"));
@@ -81,14 +81,14 @@ public class LanguageTest
         Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "cze"));
 
 
-        Log.d(TAG, "český=" + l.getISO3FromDisplayLanguage(context, locale, "český"));
-        Log.d(TAG, "slovenský=" + l.getISO3FromDisplayLanguage(context, locale, "slovenský"));
-        Log.d(TAG, "německý=" + l.getISO3FromDisplayLanguage(context, locale, "německý"));
-        Log.d(TAG, "polský=" + l.getISO3FromDisplayLanguage(context, locale, "polský"));
-        Log.d(TAG, "anglický=" + l.getISO3FromDisplayLanguage(context, locale, "anglický"));
-        Log.d(TAG, "francouzský=" + l.getISO3FromDisplayLanguage(context, locale, "francouzský"));
-        Log.d(TAG, "španělský=" + l.getISO3FromDisplayLanguage(context, locale, "španělský"));
-        Log.d(TAG, "italský=" + l.getISO3FromDisplayLanguage(context, locale, "italský"));
+        Log.d(TAG, "český=" + l.getISO3FromDisplayLanguage(locale, "český"));
+        Log.d(TAG, "slovenský=" + l.getISO3FromDisplayLanguage(locale, "slovenský"));
+        Log.d(TAG, "německý=" + l.getISO3FromDisplayLanguage(locale, "německý"));
+        Log.d(TAG, "polský=" + l.getISO3FromDisplayLanguage(locale, "polský"));
+        Log.d(TAG, "anglický=" + l.getISO3FromDisplayLanguage(locale, "anglický"));
+        Log.d(TAG, "francouzský=" + l.getISO3FromDisplayLanguage(locale, "francouzský"));
+        Log.d(TAG, "španělský=" + l.getISO3FromDisplayLanguage(locale, "španělský"));
+        Log.d(TAG, "italský=" + l.getISO3FromDisplayLanguage(locale, "italský"));
 
     }
 
@@ -105,7 +105,7 @@ public class LanguageTest
         final Languages l = serviceLocator.getLanguages();
 
         final Locale locale = new Locale("sk", "SK");
-        l.createLanguageMappingCache(context, locale);
+        l.createLanguageMappingCache(locale);
 
         // slk=sk
         Log.d(TAG, "slk=" + l.getLocaleIsoFromISO3(Locale.UK, "slk"));
@@ -116,14 +116,14 @@ public class LanguageTest
         // display:Slovak
         Log.d(TAG, "display:" + l.getDisplayLanguageFromISO3(context, "slo"));
 
-        Log.d(TAG, "český=" + l.getISO3FromDisplayLanguage(context, locale, "český"));
-        Log.d(TAG, "slovenský=" + l.getISO3FromDisplayLanguage(context, locale, "slovenský"));
-        Log.d(TAG, "německý=" + l.getISO3FromDisplayLanguage(context, locale, "německý"));
-        Log.d(TAG, "polský=" + l.getISO3FromDisplayLanguage(context, locale, "polský"));
-        Log.d(TAG, "anglický=" + l.getISO3FromDisplayLanguage(context, locale, "anglický"));
-        Log.d(TAG, "francouzský=" + l.getISO3FromDisplayLanguage(context, locale, "francouzský"));
-        Log.d(TAG, "španělský=" + l.getISO3FromDisplayLanguage(context, locale, "španělský"));
-        Log.d(TAG, "italský=" + l.getISO3FromDisplayLanguage(context, locale, "italský"));
+        Log.d(TAG, "český=" + l.getISO3FromDisplayLanguage(locale, "český"));
+        Log.d(TAG, "slovenský=" + l.getISO3FromDisplayLanguage(locale, "slovenský"));
+        Log.d(TAG, "německý=" + l.getISO3FromDisplayLanguage(locale, "německý"));
+        Log.d(TAG, "polský=" + l.getISO3FromDisplayLanguage(locale, "polský"));
+        Log.d(TAG, "anglický=" + l.getISO3FromDisplayLanguage(locale, "anglický"));
+        Log.d(TAG, "francouzský=" + l.getISO3FromDisplayLanguage(locale, "francouzský"));
+        Log.d(TAG, "španělský=" + l.getISO3FromDisplayLanguage(locale, "španělský"));
+        Log.d(TAG, "italský=" + l.getISO3FromDisplayLanguage(locale, "italský"));
 
     }
 }

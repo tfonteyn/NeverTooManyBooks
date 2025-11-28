@@ -175,7 +175,7 @@ public final class AppLocaleImpl
         String lang = inputLang.strip().toLowerCase(userLocale);
         final int len = lang.length();
         if (len > 3) {
-            lang = languagesSupplier.get().getISO3FromDisplayLanguage(context, userLocale, lang);
+            lang = languagesSupplier.get().getISO3FromDisplayLanguage(userLocale, lang);
         }
 
         // THIS IS A MUST

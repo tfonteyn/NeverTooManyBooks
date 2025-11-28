@@ -147,7 +147,7 @@ class ResultsAccumulator {
                     processMoney(key, result, book, locale, realNumberParser);
 
                 } else if (DBKey.LANGUAGE_KEYS.contains(key)) {
-                    processLanguage(context, key, result, book, locale);
+                    processLanguage(key, result, book, locale);
 
                 } else if (LIST_KEYS.contains(key)) {
                     processList(key, result, book);
@@ -219,14 +219,12 @@ class ResultsAccumulator {
      * <p>
      * The data is always expected to be a {@code String}.
      *
-     * @param context  Current context
      * @param key      Key of data
      * @param siteData Source Bundle
      * @param book     Destination bundle
      * @param locale   for parsing
      */
-    private void processLanguage(@NonNull final Context context,
-                                 @NonNull final String key,
+    private void processLanguage(@NonNull final String key,
                                  @NonNull final Book siteData,
                                  @NonNull final Book book,
                                  @NonNull final Locale locale) {
@@ -247,8 +245,7 @@ class ResultsAccumulator {
 
         // If more than 3 characters, it's likely a 'display' name of a language.
         if (dataToAdd.length() > 3) {
-            dataToAdd = languagesSupplier
-                    .get().getISO3FromDisplayLanguage(context, locale, dataToAdd);
+            dataToAdd = languagesSupplier.get().getISO3FromDisplayLanguage(locale, dataToAdd);
         }
 
         // copy the new data

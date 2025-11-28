@@ -78,10 +78,8 @@ class EditLanguageDelegate
         final Languages languages = ServiceLocator.getInstance().getLanguages();
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        final String fromIso = languages.getISO3FromDisplayLanguage(
-                context, userLocale, originalText);
-        final String toIso = languages.getISO3FromDisplayLanguage(
-                context, userLocale, currentText);
+        final String fromIso = languages.getISO3FromDisplayLanguage(userLocale, originalText);
+        final String toIso = languages.getISO3FromDisplayLanguage(userLocale, currentText);
 
         super.onSave(context, fromIso, toIso);
         return toIso;

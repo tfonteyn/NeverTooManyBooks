@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,7 +88,7 @@ public class LanguageDaoImpl
 
                 if (lang.length() > 3) {
                     // It's likely a 'display' name of a language.
-                    iso = languagesSupplier.get().getISO3FromDisplayLanguage(context, locale, lang);
+                    iso = languagesSupplier.get().getISO3FromDisplayLanguage(locale, lang);
                 } else {
                     // It's almost certainly a language code
                     iso = languagesSupplier.get().getISO3FromCode(lang);

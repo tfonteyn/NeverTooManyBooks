@@ -26,7 +26,6 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,15 +127,13 @@ public class Languages {
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
      *
-     * @param context  Current context
      * @param locale   the locale of the language string
      * @param language the string as normally produced by {@link Locale#getDisplayLanguage}
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public String getISO3FromDisplayLanguage(@NonNull final Context context,
-                                             @NonNull final Locale locale,
+    public String getISO3FromDisplayLanguage(@NonNull final Locale locale,
                                              @NonNull final String language) {
 
         final String source = language.strip().toLowerCase(locale);
@@ -144,7 +141,7 @@ public class Languages {
             return "";
         }
         // create the mappings for the given locale if they don't exist yet
-        createLanguageMappingCache(context, locale);
+        createLanguageMappingCache(locale);
 
         return isoLanguageDao.get().findByDisplayName(source);
     }
@@ -409,7 +406,7 @@ public class Languages {
         final List<Locale> locales = new ArrayList<>(LocaleListUtils.asList(context));
         // Always add English
         locales.add(Locale.ENGLISH);
-        locales.forEach(locale -> createLanguageMappingCache(context, locale));
+        locales.forEach(this::createLanguageMappingCache);
 
         // Locales from SearchEngine's are added automatically as/when needed
     }
@@ -417,14 +414,12 @@ public class Languages {
     /**
      * Generate language mappings for a given Locale.
      *
-     * @param context Current context
      * @param locale  the Locale for which to create a mapping
      */
     @VisibleForTesting
-    public void createLanguageMappingCache(@NonNull final Context context,
-                                           @NonNull final Locale locale) {
+    public void createLanguageMappingCache(@NonNull final Locale locale) {
         final SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(context);
+                ServiceLocator.getInstance().getSharedPreferences();
 
         final String isoCode = getIsoCode(locale);
 

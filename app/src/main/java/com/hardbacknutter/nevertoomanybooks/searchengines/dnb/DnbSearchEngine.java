@@ -410,8 +410,8 @@ public class DnbSearchEngine
                             }
                             case "Sprache":
                             case "Language": {
-                                book.setLanguage(languages.getISO3FromDisplayLanguage(
-                                        context, locale, td.text()));
+                                book.setLanguage(
+                                        languages.getISO3FromDisplayLanguage(locale, td.text()));
                                 break;
                             }
                             case "Genre": {
@@ -461,9 +461,8 @@ public class DnbSearchEngine
                             }
                             case "Originalsprache":
                             case "Original language": {
-                                final String lang = languages
-                                        .getISO3FromDisplayLanguage(context, locale, td.text());
-                                book.setTranslatedFromLanguage(lang);
+                                book.setTranslatedFromLanguage(
+                                        languages.getISO3FromDisplayLanguage(locale, td.text()));
                                 break;
                             }
                             case "Land":
