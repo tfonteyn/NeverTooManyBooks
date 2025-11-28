@@ -195,6 +195,7 @@ public class EditBookViewModel
     private DateParser<LocalDateTime> dateParser;
     private RealNumberParser realNumberParser;
     private Style style;
+    private LocaleList userLocales;
 
     /**
      * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
@@ -241,8 +242,9 @@ public class EditBookViewModel
             final StylesHelper stylesHelper = serviceLocator.getStyles();
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
 
+            userLocales = context.getResources().getConfiguration().getLocales();
+
             final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final List<Locale> locales = LocaleListUtils.asList(userLocales);
             final Locale userLocale = userLocales.get(0);
 
@@ -666,7 +668,6 @@ public class EditBookViewModel
             final Set<String> set = new LinkedHashSet<>(
                     ServiceLocator.getInstance().getLanguageDao().getList());
             // Provide defaults: the device language + the set we explicitly support
-            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             set.addAll(ServiceLocator.getInstance().getLanguages().getDefaultCodes(userLocales));
             languagesCodes = new ArrayList<>(set);
         }
