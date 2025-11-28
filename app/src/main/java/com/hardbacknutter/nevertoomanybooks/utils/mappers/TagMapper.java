@@ -54,18 +54,18 @@ public class TagMapper
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param locale Current Locale
      */
-    public TagMapper(@NonNull final Context context) {
-        locale = context.getResources().getConfiguration().getLocales().get(0);
+    public TagMapper(@NonNull final Locale locale) {
+        this.locale = locale;
         tagDao = ServiceLocator.getInstance().getTagDao();
         allMappings = ServiceLocator.getInstance().getTagMappingDao().getAll();
     }
 
     @VisibleForTesting
-    public TagMapper(@NonNull final Context context,
+    public TagMapper(@NonNull final Locale locale,
                      @NonNull final List<TagMapping> mappings) {
-        locale = context.getResources().getConfiguration().getLocales().get(0);
+        this.locale = locale;
         tagDao = ServiceLocator.getInstance().getTagDao();
         allMappings = mappings;
     }

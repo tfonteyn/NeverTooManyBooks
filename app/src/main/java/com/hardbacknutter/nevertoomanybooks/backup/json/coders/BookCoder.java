@@ -101,7 +101,7 @@ public class BookCoder
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
         realNumberParser = new RealNumberParser(allLocales);
 
-        tagMapper = new TagMapper(context);
+        tagMapper = new TagMapper(userLocales.get(0));
     }
 
     @Override

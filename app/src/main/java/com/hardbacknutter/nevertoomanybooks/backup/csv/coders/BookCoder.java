@@ -163,7 +163,7 @@ public class BookCoder {
             ratingParser = csvFormat.createRatingParser(tmp);
         }
 
-        tagMapper = new TagMapper(context);
+        tagMapper = new TagMapper(userLocales.get(0));
     }
 
     /**

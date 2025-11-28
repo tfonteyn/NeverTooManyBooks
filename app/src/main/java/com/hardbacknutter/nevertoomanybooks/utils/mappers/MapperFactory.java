@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 public final class MapperFactory {
 
@@ -45,7 +46,9 @@ public final class MapperFactory {
 
         ColorMapper.create(context).ifPresent(mappers::add);
         FormatMapper.create(context).ifPresent(mappers::add);
-        mappers.add(new TagMapper(context));
+
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        mappers.add(new TagMapper(locale));
 
         return mappers;
     }

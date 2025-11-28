@@ -458,7 +458,7 @@ public class TagDaoImpl
             throws DaoInsertException, DaoUpdateException {
 
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
-        final TagMapper tagMapper = new TagMapper(context);
+        final TagMapper tagMapper = new TagMapper(locale);
         final Pattern csvSplitter = Pattern.compile("\\\\,");
 
         // the modified book count
