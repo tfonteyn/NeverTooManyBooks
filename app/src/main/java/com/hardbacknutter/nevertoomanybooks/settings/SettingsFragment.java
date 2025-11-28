@@ -238,7 +238,7 @@ public class SettingsFragment
         prefs.registerOnSharedPreferenceChangeListener(this);
 
         //noinspection DataFlowIssue
-        findPreference(PSK_CALIBRE).setSummary(CalibreHandler.isSyncEnabled(getContext())
+        findPreference(PSK_CALIBRE).setSummary(CalibreHandler.isSyncEnabled()
                                                ? R.string.enabled : R.string.disabled);
     }
 

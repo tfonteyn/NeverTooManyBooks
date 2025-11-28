@@ -385,10 +385,8 @@ class BooklistBuilder {
 
     /**
      * build.
-     *
-     * @param context Current context
      */
-    private void addBookLevelDomains(@NonNull final Context context) {
+    private void addBookLevelDomains() {
         // Always get the book id
         addDomainExpression(DBExpr.BOOK_ID);
         // Always get the UUID.
@@ -433,7 +431,7 @@ class BooklistBuilder {
                            TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE));
         }
 
-        if (CalibreHandler.isSyncEnabled(context)) {
+        if (CalibreHandler.isSyncEnabled()) {
             DBExpr.CALIBRE.forEach(this::addDomainExpression);
             extraJoins.put(TBL_CALIBRE_BOOKS.getName(),
                            TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS));
@@ -516,7 +514,7 @@ class BooklistBuilder {
 
         style.getGroupList().forEach(this::addGroup);
 
-        addBookLevelDomains(context);
+        addBookLevelDomains();
 
         this.filters.addAll(searchCriteria);
         this.filters.addAll(createBookshelfFilters(context));

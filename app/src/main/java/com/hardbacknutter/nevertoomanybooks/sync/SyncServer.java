@@ -77,7 +77,7 @@ public enum SyncServer
     /** A Calibre Content Server. */
     CalibreCS(R.string.lbl_calibre_content_server, true, true) {
         public boolean isEnabled(@NonNull final Context context) {
-            return CalibreHandler.isSyncEnabled(context);
+            return CalibreHandler.isSyncEnabled();
         }
 
         @Override

@@ -38,7 +38,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -47,6 +46,7 @@ import java.security.cert.CertificateException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetDirectoryUriContract;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.TaskProgress;
@@ -105,13 +105,11 @@ public class CalibreHandler {
     /**
      * Check if SYNC menus should be shown at all.
      *
-     * @param context Current context
-     *
      * @return {@code true} if menus should be shown
      */
     @AnyThread
-    public static boolean isSyncEnabled(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PK_ENABLED, false);
+    public static boolean isSyncEnabled() {
+        return ServiceLocator.getInstance().getSharedPreferences().getBoolean(PK_ENABLED, false);
     }
 
     /**
