@@ -67,7 +67,7 @@ public class IdentifierTest
     @Test
     public void validateSiteUrl() {
         for (final Identifier identifier : Identifier.createInitialList(context)) {
-            final String url = identifier.getSiteUrl(context);
+            final String url = identifier.getSiteUrl();
             assertTrue(url, UrlPatterns.isBlankOrValidUrl(url));
         }
     }

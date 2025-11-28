@@ -131,7 +131,7 @@ public class IdentifierDaoImpl
         stmt.bindString(2, String.valueOf(identifier.getType()));
         stmt.bindString(3, identifier.getName());
         stmt.bindString(4, identifier.getWikidataClaimAuthorId().orElse(null));
-        stmt.bindString(5, identifier.getSiteUrl(context));
+        stmt.bindString(5, identifier.getSiteUrl());
         stmt.bindString(6, identifier.getBookUri(context).orElse(null));
         stmt.bindString(7, identifier.getAuthorUri(context).orElse(null));
         final long iId = stmt.executeInsert();
@@ -162,7 +162,7 @@ public class IdentifierDaoImpl
         stmt.bindString(2, String.valueOf(identifier.getType()));
         stmt.bindString(3, identifier.getName());
         stmt.bindString(4, identifier.getWikidataClaimAuthorId().orElse(null));
-        stmt.bindString(5, identifier.getSiteUrl(context));
+        stmt.bindString(5, identifier.getSiteUrl());
         stmt.bindString(6, identifier.getBookUri(context).orElse(null));
         stmt.bindString(7, identifier.getAuthorUri(context).orElse(null));
 

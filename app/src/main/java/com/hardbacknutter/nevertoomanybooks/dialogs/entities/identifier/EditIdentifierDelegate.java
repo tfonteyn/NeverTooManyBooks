@@ -188,7 +188,7 @@ class EditIdentifierDelegate
             return false;
         }
 
-        if (!UrlPatterns.isBlankOrValidUrl(currentEdit.getSiteUrl(context))) {
+        if (!UrlPatterns.isBlankOrValidUrl(currentEdit.getSiteUrl())) {
             vb.lblIdentifierSiteUrl.setError(
                     context.getString(R.string.vldt_blank_or_valid_url_required));
             return false;
@@ -248,8 +248,8 @@ class EditIdentifierDelegate
         final Identifier currentEdit = vm.getCurrentEdit();
         vb.identifierName.setText(currentEdit.getName());
         vb.identifierKey.setText(currentEdit.getKey());
+        vb.identifierSiteUrl.setText(currentEdit.getSiteUrl());
         //noinspection DataFlowIssue
-        vb.identifierSiteUrl.setText(currentEdit.getSiteUrl(context));
         vb.identifierBookUri.setText(currentEdit.getBookUri(context).orElse(""));
         vb.identifierAuthorUri.setText(currentEdit.getAuthorUri(context).orElse(""));
 

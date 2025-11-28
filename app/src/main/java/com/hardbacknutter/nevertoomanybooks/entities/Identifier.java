@@ -623,16 +623,14 @@ public class Identifier
      * Get the main/home page for this Identifier.
      * This it not necessarily the home page.
      *
-     * @param context Current context
-     *
      * @return url
      */
     @Nullable
-    public String getSiteUrl(@NonNull final Context context) {
+    public String getSiteUrl() {
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
             //noinspection DataFlowIssue
-            return EngineId.Amazon.getConfig().getHostUrl(context);
+            return EngineId.Amazon.getConfig().getHostUrl();
         }
 
         return siteUrl;

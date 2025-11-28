@@ -1295,7 +1295,7 @@ public final class LegacyUpgrades {
             } else {
                 stmt.bindString(4, wdc);
             }
-            final String siteUrl = identifier.getSiteUrl(context);
+            final String siteUrl = identifier.getSiteUrl();
             if (siteUrl == null) {
                 stmt.bindNull(5);
             } else {
