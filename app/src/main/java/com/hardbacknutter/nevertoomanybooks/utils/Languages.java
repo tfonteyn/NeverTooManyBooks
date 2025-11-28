@@ -499,23 +499,23 @@ public class Languages {
 
     /**
      * Generate and return a list of language ISO codes consisting (in order)
-     * of the device language and the the supported app locales.
+     * of the device language and the supported app locales.
      * <p>
      * This can used as an initial list for new users when the database does not contain
      * any languages yet.
      *
-     * @param context Current context
+     * @param locales to create codes for
      *
      * @return The list of ISO 639-2 codes
      */
     @NonNull
-    public List<String> getDefaultCodes(@NonNull final Context context) {
-        final Resources res = context.getResources();
+    public List<String> getDefaultCodes(@NonNull final LocaleList locales) {
         // to make it easier for first time users, add some defaults.
         // Keep in mind all these are JDK language/locale codes which need converting to ISO 639-2
         final Set<String> set = new LinkedHashSet<>();
         // the device language
-        set.add(getISO3FromCode(res.getConfiguration().getLocales().get(0).getLanguage()));
+
+        set.add(getISO3FromCode(locales.get(0).getLanguage()));
 
         // and all supported locales.
         Arrays.stream(BuildConfig.SUPPORTED_LOCALES)

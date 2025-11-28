@@ -664,8 +664,8 @@ public class EditBookViewModel
             final Set<String> set = new LinkedHashSet<>(
                     ServiceLocator.getInstance().getLanguageDao().getList());
             // Provide defaults: the device language + the set we explicitly support
-            set.addAll(ServiceLocator.getInstance().getLanguages()
-                                     .getDefaultCodes(context));
+            final LocaleList locales = context.getResources().getConfiguration().getLocales();
+            set.addAll(ServiceLocator.getInstance().getLanguages().getDefaultCodes(locales));
             languagesCodes = new ArrayList<>(set);
         }
         return languagesCodes;
