@@ -65,11 +65,17 @@ public class AuthorWorksViewModel
     private static final String PK_SHOW_BOOKS = PK_PREFIX + "show.books";
 
     /** Update the author details (name, dates, etc...). */
-    private final MutableLiveData<Author> onAuthor = new MutableLiveData<>();
+    private final MutableLiveData<Author> onAuthorUpdated = new MutableLiveData<>();
     /** Update the works list. */
-    private final MutableLiveData<Void> onWorks = new MutableLiveData<>();
+    private final MutableLiveData<Void> onWorksUpdated = new MutableLiveData<>();
+    /**
+     * A single work was deleted.
+     * param1: position in list/adapter
+     */
+    private final MutableLiveData<Integer> onWorkDeleted = new MutableLiveData<>();
+
     /** Update the name of the bookshelf + number of items. */
-    private final MutableLiveData<String> onBookshelf = new MutableLiveData<>();
+    private final MutableLiveData<String> onBookshelfUpdated = new MutableLiveData<>();
 
     private final AuthorResolverTask authorResolverTask = new AuthorResolverTask();
 
@@ -120,18 +126,18 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
-    LiveData<Author> onAuthor() {
-        return onAuthor;
+    LiveData<Author> onAuthorUpdated() {
+        return onAuthorUpdated;
     }
 
     @NonNull
-    LiveData<Void> onWorks() {
-        return onWorks;
+    LiveData<Void> onWorksUpdated() {
+        return onWorksUpdated;
     }
 
     @NonNull
-    LiveData<String> onBookshelf() {
-        return onBookshelf;
+    LiveData<String> onBookshelfUpdated() {
+        return onBookshelfUpdated;
     }
 
     /**
@@ -178,7 +184,7 @@ public class AuthorWorksViewModel
             showTocEntries = prefs.getBoolean(PK_SHOW_TOC_ENTRIES, showTocEntries);
             showBooks = prefs.getBoolean(PK_SHOW_BOOKS, showBooks);
 
-            onAuthor.setValue(getPrimaryAuthor());
+            onAuthorUpdated.setValue(getPrimaryAuthor());
             reloadWorkList(context);
         }
     }
@@ -189,7 +195,6 @@ public class AuthorWorksViewModel
     }
 
     private void reloadWorkList(@NonNull final Context context) {
-
         ASyncExecutor.PARALLEL.execute(() -> {
             works.clear();
             final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
@@ -201,12 +206,12 @@ public class AuthorWorksViewModel
                                                   orderByColumn);
 
             works.addAll(authorWorks);
-            onWorks.postValue(null);
+            onWorksUpdated.postValue(null);
             // Activity subtitle will show the bookshelf name (or empty for all-shelves)
             // + the number of works shown.
-            onBookshelf.postValue(context.getString(R.string.name_hash_nr,
-                                                    allBookshelves ? "" : bookshelf.getName(),
-                                                    works.size()));
+            onBookshelfUpdated.postValue(context.getString(R.string.name_hash_nr,
+                                                           allBookshelves ? "" : bookshelf.getName(),
+                                                           works.size()));
         });
     }
 
@@ -313,7 +318,7 @@ public class AuthorWorksViewModel
         dataModified = !author.equals(getPrimaryAuthor());
         this.authors.clear();
         this.authors.add(author);
-        onAuthor.setValue(author);
+        onAuthorUpdated.setValue(author);
         if (reloadWorks) {
             reloadWorkList(context);
         }

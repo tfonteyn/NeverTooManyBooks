@@ -195,9 +195,10 @@ public class AuthorWorksFragment
 
         setupImageView(toolbar);
 
-        vm.onAuthor().observe(getViewLifecycleOwner(), this::onAuthorDetailsUpdate);
-        vm.onWorks().observe(getViewLifecycleOwner(), aVoid -> adapter.notifyDataSetChanged());
-        vm.onBookshelf().observe(getViewLifecycleOwner(), s -> bookshelfView.setText(s));
+        vm.onAuthorUpdated().observe(getViewLifecycleOwner(), this::onAuthorDetailsUpdate);
+        vm.onWorksUpdated().observe(getViewLifecycleOwner(), aVoid
+                -> adapter.notifyDataSetChanged());
+        vm.onBookshelfUpdated().observe(getViewLifecycleOwner(), s -> bookshelfView.setText(s));
 
         vm.onResolverFinished().observe(getViewLifecycleOwner(), this::onResolverFinished);
         vm.onResolverCancelled().observe(getViewLifecycleOwner(), this::onResolverCancelled);
