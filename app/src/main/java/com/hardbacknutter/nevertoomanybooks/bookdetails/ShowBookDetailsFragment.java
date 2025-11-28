@@ -349,9 +349,9 @@ public class ShowBookDetailsFragment
      * Create the optional sync delegates.
      */
     private void createSyncDelegates() {
-        //noinspection DataFlowIssue
-        if (SyncServer.CalibreCS.isEnabled(getContext())) {
+        if (SyncServer.CalibreCS.isEnabled()) {
             try {
+                //noinspection DataFlowIssue
                 calibreHandler = new CalibreHandler(getContext(), this)
                         .setProgressFrame(getProgressFrame());
                 calibreHandler.onViewCreated(this);

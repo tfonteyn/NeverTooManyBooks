@@ -622,7 +622,7 @@ public class BooksOnBookshelf
      */
     private void createSyncDelegates() {
 
-        if (SyncServer.CalibreCS.isEnabled(this)) {
+        if (SyncServer.CalibreCS.isEnabled()) {
             if (calibreSyncLauncher == null) {
                 calibreSyncLauncher = registerForActivityResult(
                         new CalibreSyncContract(), result -> {
@@ -634,7 +634,7 @@ public class BooksOnBookshelf
             }
         }
 
-        if (SyncServer.StripInfo.isEnabled(this)) {
+        if (SyncServer.StripInfo.isEnabled()) {
             if (stripInfoSyncLauncher == null) {
                 stripInfoSyncLauncher = registerForActivityResult(
                         new StripInfoSyncContract(), result -> {
@@ -652,7 +652,7 @@ public class BooksOnBookshelf
      * i.e. books which exist in the optional Calibre Content Server.
      */
     private void createCalibreServerHandler() {
-        if (calibreHandler == null && SyncServer.CalibreCS.isEnabled(this)) {
+        if (calibreHandler == null && SyncServer.CalibreCS.isEnabled()) {
             try {
                 calibreHandler = new CalibreHandler(this, this)
                         .setProgressFrame(findViewById(R.id.progress_frame));
@@ -673,9 +673,9 @@ public class BooksOnBookshelf
                 // The launchers MUST have been created at Activity startup,
                 // due to how "registerForActivityResult" works.
                 final boolean enable =
-                        SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null
+                        SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null
                         ||
-                        SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null;
+                        SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null;
 
                 //noinspection DataFlowIssue
                 navDrawer.getMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
@@ -1504,10 +1504,10 @@ public class BooksOnBookshelf
 
         if (menuItemId == R.id.SUBMENU_SYNC) {
             menu.findItem(R.id.MENU_SYNC_CALIBRE)
-                .setVisible(SyncServer.CalibreCS.isEnabled(this) && calibreSyncLauncher != null);
+                .setVisible(SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null);
 
             menu.findItem(R.id.MENU_SYNC_STRIP_INFO)
-                .setVisible(SyncServer.StripInfo.isEnabled(this) && stripInfoSyncLauncher != null);
+                .setVisible(SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
         }
 
         final CharSequence menuTitle = getString(subMenuTitleId);

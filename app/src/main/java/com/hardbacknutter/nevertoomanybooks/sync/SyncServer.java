@@ -76,7 +76,7 @@ public enum SyncServer
 
     /** A Calibre Content Server. */
     CalibreCS(R.string.lbl_calibre_content_server, true, true) {
-        public boolean isEnabled(@NonNull final Context context) {
+        public boolean isEnabled() {
             return CalibreHandler.isSyncEnabled();
         }
 
@@ -212,8 +212,8 @@ public enum SyncServer
 
     /** StripInfo web site. */
     StripInfo(R.string.site_stripinfo_be, false, false) {
-        public boolean isEnabled(@NonNull final Context context) {
-            return StripInfoHandler.isSyncEnabled(context);
+        public boolean isEnabled() {
+            return StripInfoHandler.isSyncEnabled();
         }
 
         @Override
@@ -379,11 +379,9 @@ public enum SyncServer
     /**
      * Check if this server is globally enabled.
      *
-     * @param context Current context
-     *
      * @return flag
      */
-    public abstract boolean isEnabled(@NonNull Context context);
+    public abstract boolean isEnabled();
 
     boolean isSyncDateUserEditable() {
         return syncDateIsUserEditable;
