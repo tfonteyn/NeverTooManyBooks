@@ -86,7 +86,6 @@ public interface IdentifierDao {
     /**
      * Insert a new {@link Identifier}.
      *
-     * @param context    Current context
      * @param identifier to insert. Will be updated with the id
      *
      * @return the row id of the newly inserted item
@@ -94,20 +93,17 @@ public interface IdentifierDao {
      * @throws DaoWriteException on failure
      */
     @IntRange(from = 1)
-    long insert(@NonNull Context context,
-                @NonNull Identifier identifier)
+    long insert(@NonNull Identifier identifier)
             throws DaoWriteException;
 
     /**
      * Update the given {@link Identifier}.
      *
-     * @param context    Current context
      * @param identifier to update
      *
      * @throws DaoWriteException on failure
      */
-    void update(@NonNull Context context,
-                @NonNull Identifier identifier)
+    void update(@NonNull Identifier identifier)
             throws DaoWriteException;
 
     /**

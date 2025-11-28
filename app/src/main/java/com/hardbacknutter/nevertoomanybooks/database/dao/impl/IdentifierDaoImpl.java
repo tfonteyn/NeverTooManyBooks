@@ -322,8 +322,7 @@ public class IdentifierDaoImpl
 
     @IntRange(from = 1)
     @Override
-    public long insert(@NonNull final Context context,
-                       @NonNull final Identifier identifier)
+    public long insert(@NonNull final Identifier identifier)
             throws DaoInsertException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
@@ -332,8 +331,7 @@ public class IdentifierDaoImpl
     }
 
     @Override
-    public void update(@NonNull final Context context,
-                       @NonNull final Identifier identifier)
+    public void update(@NonNull final Identifier identifier)
             throws DaoUpdateException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {

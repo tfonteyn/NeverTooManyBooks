@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities.identifier;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -90,14 +89,12 @@ public class EditIdentifierViewModel
      * <p>
      * If it does, return the existing Identifier indicating failure to save.
      *
-     * @param context Current context
-     *
      * @return an empty Optional for SUCCESS, or else the existing Identifier.
      *
      * @throws DaoWriteException on failure
      */
     @NonNull
-    Optional<Identifier> saveIfUnique(@NonNull final Context context)
+    Optional<Identifier> saveIfUnique()
             throws DaoWriteException {
 
         // FIRST check if the name was changed
@@ -109,7 +106,7 @@ public class EditIdentifierViewModel
         // It's an existing one and the name was not changed;
         // just update the other attributes
         if (original.getId() != 0 && sameName) {
-            dao.update(context, original);
+            dao.update(original);
             return Optional.empty();
         }
 
@@ -121,9 +118,9 @@ public class EditIdentifierViewModel
 
         // Just insert or update as needed
         if (original.getId() == 0) {
-            dao.insert(context, original);
+            dao.insert(original);
         } else {
-            dao.update(context, original);
+            dao.update(original);
         }
         // return SUCCESS
         return Optional.empty();

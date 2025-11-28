@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -70,8 +69,7 @@ public class IdentifierValueDaoImpl
     }
 
     @Override
-    public void insertOrUpdate(@NonNull final Context context,
-                               @IntRange(from = 1) final long fkId,
+    public void insertOrUpdate(@IntRange(from = 1) final long fkId,
                                @NonNull final Collection<Identifier.Value> list)
             throws DaoInsertException, DaoUpdateException {
 
@@ -102,7 +100,7 @@ public class IdentifierValueDaoImpl
                     // We do NOT want to speculate it might be TYPE_LONG!
                     // See docs on the Identifier class for usage.
                     identifier = new Identifier(iv.getKey());
-                    insert(context, identifier);
+                    insert(identifier);
                 }
                 stmt.bindLong(1, fkId);
                 stmt.bindLong(2, identifier.getId());

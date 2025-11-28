@@ -210,7 +210,7 @@ class EditIdentifierDelegate
         }
 
         try {
-            final Optional<Identifier> existingEntity = vm.saveIfUnique(context);
+            final Optional<Identifier> existingEntity = vm.saveIfUnique();
             if (existingEntity.isEmpty()) {
                 // Success
                 EditParcelableLauncher.setEditInPlaceResult(owner, requestKey, vm.getOriginal());

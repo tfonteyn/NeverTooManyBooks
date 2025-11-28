@@ -539,7 +539,7 @@ public class AuthorDaoImpl
                 author.setId(iId);
 
                 ServiceLocator.getInstance().getAuthorIdentifierDao()
-                              .insertOrUpdate(context, author.getId(), author.getIdentifiers());
+                              .insertOrUpdate(author.getId(), author.getIdentifiers());
                 insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {
@@ -592,7 +592,7 @@ public class AuthorDaoImpl
 
             if (rowsAffected > 0) {
                 ServiceLocator.getInstance().getAuthorIdentifierDao()
-                              .insertOrUpdate(context, author.getId(), author.getIdentifiers());
+                              .insertOrUpdate(author.getId(), author.getIdentifiers());
                 insertOrUpdateRealAuthor(context, author, locale);
 
                 if (txLock != null) {

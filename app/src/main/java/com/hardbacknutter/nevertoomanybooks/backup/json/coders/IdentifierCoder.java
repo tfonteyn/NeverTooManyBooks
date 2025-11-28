@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -32,18 +30,6 @@ import com.hardbacknutter.org.json.JSONObject;
 
 public class IdentifierCoder
         implements JsonCoder<Identifier> {
-
-    @NonNull
-    private final Context context;
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     */
-    public IdentifierCoder(@NonNull final Context context) {
-        this.context = context;
-    }
 
     @NonNull
     @Override

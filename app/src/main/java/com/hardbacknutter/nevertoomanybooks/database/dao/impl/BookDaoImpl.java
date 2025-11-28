@@ -480,8 +480,7 @@ public class BookDaoImpl
             // Instead we always work with the String key.
             // We will insert new entries
             // but there is nothing to update as such.
-            serviceLocator.getBookIdentifierDao().insertOrUpdate(context,
-                                                                 book.getId(),
+            serviceLocator.getBookIdentifierDao().insertOrUpdate(book.getId(),
                                                                  book.getIdentifiers());
         }
 

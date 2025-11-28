@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
-import android.content.Context;
-
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
@@ -52,14 +50,12 @@ public interface IdentifierValueDao {
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param context Current context
      * @param fkId    foreign-key id: the {@link Book} or {@link Author} id.
      * @param list    the list of {@link Identifier.Value}s
      *
      * @throws DaoWriteException on failure
      */
-    void insertOrUpdate(@NonNull Context context,
-                        @IntRange(from = 1) long fkId,
+    void insertOrUpdate(@IntRange(from = 1) long fkId,
                         @NonNull Collection<Identifier.Value> list)
             throws DaoWriteException;
 
