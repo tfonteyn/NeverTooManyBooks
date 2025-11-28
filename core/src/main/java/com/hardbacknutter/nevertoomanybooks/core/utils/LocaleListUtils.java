@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,8 @@ public final class LocaleListUtils {
      */
     @NonNull
     public static List<Locale> asList(@NonNull final Context context) {
-        return asList(context, null);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        return asList(null, userLocales);
     }
 
     /**
@@ -63,13 +64,33 @@ public final class LocaleListUtils {
     @NonNull
     public static List<Locale> asList(@NonNull final Context context,
                                       @Nullable final Locale firstLocale) {
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        return asList(firstLocale, userLocales);
+    }
+
+    @NonNull
+    public static List<Locale> asList(@NonNull final LocaleList localeList) {
+        return asList(null, localeList);
+    }
+
+    /**
+     * Get an <strong>unmodifiable</strong> List of the user Locales.
+     *
+     * @param firstLocale (optional) Locale to add to the top of the list
+     * @param localeList  the {@link LocaleList} to convert
+     *
+     * @return an <strong>unmodifiable</strong> List
+     */
+    @NonNull
+    public static List<Locale> asList(@Nullable final Locale firstLocale,
+                                      @NonNull final LocaleList localeList) {
         // A linked set to eliminate any duplicates caused by the prefixed Locale
         final Set<Locale> locales = new LinkedHashSet<>();
+
         if (firstLocale != null) {
             locales.add(firstLocale);
         }
 
-        final LocaleList localeList = context.getResources().getConfiguration().getLocales();
         for (int i = 0; i < localeList.size(); i++) {
             locales.add(localeList.get(i));
         }

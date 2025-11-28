@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
@@ -154,8 +155,9 @@ public class MaintenanceDaoImpl
     @WorkerThread
     public void rebuildOrderByTitleColumns(@NonNull final Context context) {
         final Logger logger = LoggerFactory.getLogger();
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final List<Locale> locales = LocaleListUtils.asList(context);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final Locale userLocale = userLocales.get(0);
+        final List<Locale> locales = LocaleListUtils.asList(userLocales);
 
         Synchronizer.SyncLock txLock = null;
         try {

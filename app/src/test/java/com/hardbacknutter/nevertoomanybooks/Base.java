@@ -88,7 +88,7 @@ public class Base {
     private StylesHelper stylesHelper;
     private SharedPreferences sharedPreferences;
     @Mock
-    private LocaleList localeList;
+    private LocaleList userLocales;
     private Locale jdkLocale;
 
     @NonNull
@@ -141,15 +141,15 @@ public class Base {
 
 
         when(resources.getConfiguration()).thenReturn(configuration);
-        when(configuration.getLocales()).thenReturn(localeList);
+        when(configuration.getLocales()).thenReturn(userLocales);
         // we CANNOT mock the setters - as I understand due to Configuration.class being final
         // TODO: look into mocking Configuration.class
 //        doNothing().when(configuration).setLocales(any(LocaleList.class));
 //        doNothing().when(configuration).setLocale(any(Locale.class));
 
-        when(localeList.size()).thenReturn(locales.size());
+        when(userLocales.size()).thenReturn(locales.size());
         doAnswer(invocation -> locales.get(invocation.getArgument(0)))
-                .when(localeList).get(anyInt());
+                .when(userLocales).get(anyInt());
 
         when(style.getUuid()).thenReturn(BuiltinStyle.HARD_DEFAULT_UUID);
         when(stylesHelper.getDefault()).thenReturn(style);
@@ -162,7 +162,7 @@ public class Base {
                 .when(coverStorage).persist(any(InputStream.class), any(File.class));
 
         final ServiceLocatorMock serviceLocatorMock =
-                new ServiceLocatorMock(context, localeList, stylesHelper, coverStorage);
+                new ServiceLocatorMock(context, userLocales, stylesHelper, coverStorage);
         // See class docs.
         ImageDownloader.IGNORE_RENAME_FAILURE = true;
 

@@ -47,6 +47,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.DisplayBookLauncher;
@@ -160,8 +161,8 @@ public class AuthorWorksFragment
         editAuthorLauncher.setOnEditInPlaceListener(
                 author -> vm.setAuthor(getContext(), author, false));
 
-        final Resources res = context.getResources();
-        dff = new DateFieldFormatter(res.getConfiguration().getLocales().get(0), false);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        dff = new DateFieldFormatter(userLocale, false);
     }
 
     @Nullable

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2024 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -201,10 +201,10 @@ public class CalibrePreferencesFragment
             final X509Certificate ca = CalibreContentServer.getCertificate(context);
             ca.checkValidity();
 
-            final LocaleList locales = context.getResources().getConfiguration().getLocales();
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
             final DateTimeFormatter formatter = DateTimeFormatter
                     .ofLocalizedDate(FormatStyle.MEDIUM)
-                    .withLocale(locales.get(0));
+                    .withLocale(userLocales.get(0));
 
             final String from = formatter.format(ca.getNotBefore()
                                                    .toInstant()

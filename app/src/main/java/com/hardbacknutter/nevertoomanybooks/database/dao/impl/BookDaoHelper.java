@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -107,10 +108,11 @@ public class BookDaoHelper {
         this.isNew = isNew;
 
         // Handle Language field FIRST, we need it for _OB fields.
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final Locale userLocale = userLocales.get(0);
         bookLocale = this.book.getAndUpdateLocale(context, true).orElse(userLocale);
 
-        final List<Locale> locales = LocaleListUtils.asList(context, bookLocale);
+        final List<Locale> locales = LocaleListUtils.asList(bookLocale, userLocales);
         realNumberParser = new RealNumberParser(locales);
         moneyParser = new MoneyParser(userLocale, realNumberParser);
     }

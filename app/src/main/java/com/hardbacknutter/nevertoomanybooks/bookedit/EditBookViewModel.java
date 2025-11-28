@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.view.View;
 import android.widget.TextView;
 
@@ -241,8 +242,9 @@ public class EditBookViewModel
             style = stylesHelper.getStyle(styleUuid).orElseGet(stylesHelper::getDefault);
 
             final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-            final List<Locale> locales = LocaleListUtils.asList(context);
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> locales = LocaleListUtils.asList(userLocales);
+            final Locale userLocale = userLocales.get(0);
 
             realNumberParser = new RealNumberParser(locales);
             // We need a FullDateParser to cope with international Locale formats
@@ -664,8 +666,8 @@ public class EditBookViewModel
             final Set<String> set = new LinkedHashSet<>(
                     ServiceLocator.getInstance().getLanguageDao().getList());
             // Provide defaults: the device language + the set we explicitly support
-            final LocaleList locales = context.getResources().getConfiguration().getLocales();
-            set.addAll(ServiceLocator.getInstance().getLanguages().getDefaultCodes(locales));
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            set.addAll(ServiceLocator.getInstance().getLanguages().getDefaultCodes(userLocales));
             languagesCodes = new ArrayList<>(set);
         }
         return languagesCodes;
