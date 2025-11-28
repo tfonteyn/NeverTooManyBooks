@@ -59,7 +59,7 @@ public class IdentifierCoder
         // nulls will be discarded
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl());
         out.put(DBKey.IDENTIFIERS.BOOK_URI, identifier.getBookUri(context).orElse(null));
-        out.put(DBKey.IDENTIFIERS.AUTHOR_URI, identifier.getAuthorUri(context).orElse(null));
+        out.put(DBKey.IDENTIFIERS.AUTHOR_URI, identifier.getAuthorUri().orElse(null));
         return out;
     }
 

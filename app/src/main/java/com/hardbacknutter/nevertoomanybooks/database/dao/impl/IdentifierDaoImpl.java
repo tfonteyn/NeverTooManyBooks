@@ -133,7 +133,7 @@ public class IdentifierDaoImpl
         stmt.bindString(4, identifier.getWikidataClaimAuthorId().orElse(null));
         stmt.bindString(5, identifier.getSiteUrl());
         stmt.bindString(6, identifier.getBookUri(context).orElse(null));
-        stmt.bindString(7, identifier.getAuthorUri(context).orElse(null));
+        stmt.bindString(7, identifier.getAuthorUri().orElse(null));
         final long iId = stmt.executeInsert();
 
         if (iId != -1) {
@@ -164,7 +164,7 @@ public class IdentifierDaoImpl
         stmt.bindString(4, identifier.getWikidataClaimAuthorId().orElse(null));
         stmt.bindString(5, identifier.getSiteUrl());
         stmt.bindString(6, identifier.getBookUri(context).orElse(null));
-        stmt.bindString(7, identifier.getAuthorUri(context).orElse(null));
+        stmt.bindString(7, identifier.getAuthorUri().orElse(null));
 
         stmt.bindLong(8, identifier.getId());
         final int rowsAffected = stmt.executeUpdateDelete();

@@ -83,7 +83,7 @@ public class IdentifierTest
     @Test
     public void validateAuthorUri() {
         for (final Identifier identifier : Identifier.createInitialList(context)) {
-            final String uri = identifier.getAuthorUri(context).orElse("");
+            final String uri = identifier.getAuthorUri().orElse("");
             assertTrue(uri, UrlPatterns.isBlankOrValidUriWith1s(uri));
         }
     }

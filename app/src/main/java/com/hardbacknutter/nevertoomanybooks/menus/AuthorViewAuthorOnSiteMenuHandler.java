@@ -47,7 +47,7 @@ public class AuthorViewAuthorOnSiteMenuHandler
     public AuthorViewAuthorOnSiteMenuHandler() {
         super(R.id.SUBMENU_VIEW_AUTHOR_ON_SITE,
               0,
-              (context, identifier) -> identifier.getAuthorUri(context));
+              (context, identifier) -> identifier.getAuthorUri());
     }
 
     @NonNull

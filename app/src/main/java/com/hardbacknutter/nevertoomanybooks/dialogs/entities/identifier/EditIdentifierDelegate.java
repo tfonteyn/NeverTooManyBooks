@@ -198,7 +198,7 @@ class EditIdentifierDelegate
                     context.getString(R.string.vldt_blank_or_valid_uri_with_1s_param_required));
             return false;
         }
-        if (!UrlPatterns.isBlankOrValidUriWith1s(currentEdit.getAuthorUri(context).orElse(null))) {
+        if (!UrlPatterns.isBlankOrValidUriWith1s(currentEdit.getAuthorUri().orElse(null))) {
             vb.lblIdentifierAuthorUri.setError(
                     context.getString(R.string.vldt_blank_or_valid_uri_with_1s_param_required));
             return false;
@@ -251,7 +251,7 @@ class EditIdentifierDelegate
         vb.identifierSiteUrl.setText(currentEdit.getSiteUrl());
         //noinspection DataFlowIssue
         vb.identifierBookUri.setText(currentEdit.getBookUri(context).orElse(""));
-        vb.identifierAuthorUri.setText(currentEdit.getAuthorUri(context).orElse(""));
+        vb.identifierAuthorUri.setText(currentEdit.getAuthorUri().orElse(""));
 
         // Remove the "P" prefix for easier editing
         String wdp = currentEdit.getWikidataClaimAuthorId().orElse("");

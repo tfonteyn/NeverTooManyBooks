@@ -671,12 +671,10 @@ public class Identifier
      * Get the <strong>uri</strong> for viewing an author on the site.
      * The uri will have a single {@code %s} placeholder where the Identifier value needs to go.
      *
-     * @param context Current context
-     *
      * @return uri
      */
     @NonNull
-    public Optional<String> getAuthorUri(@NonNull final Context context) {
+    public Optional<String> getAuthorUri() {
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
             //noinspection DataFlowIssue
