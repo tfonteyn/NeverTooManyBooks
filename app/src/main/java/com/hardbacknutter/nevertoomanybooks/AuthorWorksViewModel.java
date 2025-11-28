@@ -136,6 +136,11 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
+    LiveData<Integer> onWorkDeleted() {
+        return onWorkDeleted;
+    }
+
+    @NonNull
     LiveData<String> onBookshelfUpdated() {
         return onBookshelfUpdated;
     }
@@ -345,45 +350,46 @@ public class AuthorWorksViewModel
      * <p>
      * The caller must update the adapter manually.
      *
-     * @param context Current context
-     * @param work    to delete
+     * @param context  Current context
+     * @param position of the work to delete in the list
      *
-     * @return {@code true} if a row was deleted
-     *
-     * @throws IllegalArgumentException for an invalid AuthorWork type
+     * @throws IllegalArgumentException (debug) for an invalid AuthorWork type
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean delete(@NonNull final Context context,
-                   @NonNull final AuthorWork work) {
-        final boolean success;
-        switch (work.getWorkType()) {
-            case TocEntry: {
-                success = ServiceLocator.getInstance().getTocEntryDao()
-                                        .delete(context, (TocEntry) work);
-                break;
-            }
-            case Book: {
-                success = bookDao.delete((Book) work);
-                if (success) {
-                    dataModified = true;
-                }
-                break;
-            }
-            case BookLight: {
-                success = bookDao.delete((BookLight) work);
-                if (success) {
-                    dataModified = true;
-                }
-                break;
-            }
-            default:
-                throw new IllegalArgumentException(String.valueOf(work));
-        }
+    void delete(@NonNull final Context context,
+                final int position) {
+        ASyncExecutor.PARALLEL.execute(() -> {
+            final AuthorWork work = works.get(position);
 
-        if (success) {
-            works.remove(work);
-        }
-        return success;
+            final boolean success;
+            switch (work.getWorkType()) {
+                case TocEntry: {
+                    success = ServiceLocator.getInstance().getTocEntryDao()
+                                            .delete(context, (TocEntry) work);
+                    break;
+                }
+                case Book: {
+                    success = bookDao.delete((Book) work);
+                    if (success) {
+                        dataModified = true;
+                    }
+                    break;
+                }
+                case BookLight: {
+                    success = bookDao.delete((BookLight) work);
+                    if (success) {
+                        dataModified = true;
+                    }
+                    break;
+                }
+                default:
+                    throw new IllegalArgumentException(String.valueOf(work));
+            }
+
+            if (success) {
+                works.remove(work);
+                onWorkDeleted.postValue(position);
+            }
+        });
     }
 
     @NonNull

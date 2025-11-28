@@ -46,7 +46,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -198,6 +197,8 @@ public class AuthorWorksFragment
         vm.onAuthorUpdated().observe(getViewLifecycleOwner(), this::onAuthorDetailsUpdate);
         vm.onWorksUpdated().observe(getViewLifecycleOwner(), aVoid
                 -> adapter.notifyDataSetChanged());
+        vm.onWorkDeleted().observe(getViewLifecycleOwner(), position
+                -> adapter.notifyItemRemoved(position));
         vm.onBookshelfUpdated().observe(getViewLifecycleOwner(), s -> bookshelfView.setText(s));
 
         vm.onResolverFinished().observe(getViewLifecycleOwner(), this::onResolverFinished);
@@ -394,44 +395,34 @@ public class AuthorWorksFragment
     private boolean onMenuItemSelected(final int position,
                                        @IdRes final int menuItemId) {
 
-        final AuthorWork work = vm.getWorks().get(position);
-
         if (menuItemId == R.id.MENU_DELETE) {
-            deleteWork(position, work);
+            deleteWork(position);
             return true;
         }
         return false;
     }
 
-    private void deleteWork(final int position,
-                            @NonNull final AuthorWork work) {
-        Author primaryAuthor = work.getPrimaryAuthor();
-        // Sanity check
-        if (primaryAuthor == null) {
-            //noinspection DataFlowIssue
-            primaryAuthor = Author.createUnknownAuthor(getContext());
-        }
+    private void deleteWork(final int position) {
+
+        final AuthorWork work = vm.getWorks().get(position);
+
         switch (work.getWorkType()) {
             case TocEntry: {
                 //noinspection DataFlowIssue
                 StandardDialogs.deleteTocEntry(
                         getContext(),
-                        (TocEntry) work, () -> {
-                            vm.delete(getContext(), work);
-                            adapter.notifyItemRemoved(position);
-                        });
+                        (TocEntry) work,
+                        () -> vm.delete(getContext(), position));
                 break;
             }
-            case Book:
-            case BookLight: {
+            case BookLight:
+            case Book: {
                 //noinspection DataFlowIssue
                 StandardDialogs.deleteBook(
                         getContext(),
                         work.getLabel(getContext(), Details.AutoSelect, vm.getStyle()),
-                        Collections.singletonList(primaryAuthor), () -> {
-                            vm.delete(getContext(), work);
-                            adapter.notifyItemRemoved(position);
-                        });
+                        work.getAuthors(),
+                        () -> vm.delete(getContext(), position));
                 break;
             }
             default:

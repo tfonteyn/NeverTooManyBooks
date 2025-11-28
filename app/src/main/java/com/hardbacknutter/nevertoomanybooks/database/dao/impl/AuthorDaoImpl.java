@@ -236,6 +236,7 @@ public class AuthorDaoImpl
     }
 
     @Override
+    @WorkerThread
     @NonNull
     public List<AuthorWork> getAuthorWorks(@NonNull final Author author,
                                            final long bookshelfId,

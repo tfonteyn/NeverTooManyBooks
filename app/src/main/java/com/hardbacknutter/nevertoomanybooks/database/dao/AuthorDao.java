@@ -70,6 +70,7 @@ public interface AuthorDao {
      *
      * @return List of {@link AuthorWork} for this {@link Author}
      */
+    @WorkerThread
     @NonNull
     List<AuthorWork> getAuthorWorks(@NonNull Author author,
                                     long bookshelfId,
