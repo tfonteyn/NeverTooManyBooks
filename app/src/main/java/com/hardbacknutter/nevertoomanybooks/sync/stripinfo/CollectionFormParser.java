@@ -99,7 +99,7 @@ public class CollectionFormParser {
                                 @NonNull final BookshelfMapper bookshelfMapper) {
 
         //noinspection DataFlowIssue
-        postUrl = EngineId.StripInfoBe.getConfig().getHostUrl(context)
+        postUrl = EngineId.StripInfoBe.getConfig().getHostUrl()
                   + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         httpPost = FutureHttpFactory.create(EngineId.StripInfoBe);

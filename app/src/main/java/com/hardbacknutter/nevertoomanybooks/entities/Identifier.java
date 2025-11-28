@@ -663,7 +663,7 @@ public class Identifier
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
             //noinspection DataFlowIssue
-            return Optional.of(EngineId.Amazon.getConfig().getHostUrl(context) + "/dp/%s");
+            return Optional.of(EngineId.Amazon.getConfig().getHostUrl() + "/dp/%s");
         }
 
         return bookUri != null ? Optional.of(bookUri) : Optional.empty();
@@ -682,7 +682,7 @@ public class Identifier
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
             //noinspection DataFlowIssue
-            return Optional.of(EngineId.Amazon.getConfig().getHostUrl(context)
+            return Optional.of(EngineId.Amazon.getConfig().getHostUrl()
                                + "/stores/author/%s");
         }
 

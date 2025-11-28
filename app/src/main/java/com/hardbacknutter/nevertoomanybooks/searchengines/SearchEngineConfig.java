@@ -24,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -212,13 +211,11 @@ public class SearchEngineConfig {
     /**
      * Get the user-configured host url for this engine.
      *
-     * @param context Current context
-     *
      * @return host url
      */
     @NonNull
-    public String getHostUrl(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(
+    public String getHostUrl() {
+        return ServiceLocator.getInstance().getSharedPreferences().getString(
                 engineId.getPreferenceKey() + '.' + PK_HOST_URL,
                 engineId.getDefaultUrl());
     }

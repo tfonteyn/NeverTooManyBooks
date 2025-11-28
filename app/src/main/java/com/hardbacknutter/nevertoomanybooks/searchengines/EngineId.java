@@ -475,7 +475,7 @@ public enum EngineId
 
     /**
      * The <strong>DEFAULT</strong> url.
-     * Use {@link SearchEngineConfig#getHostUrl(Context)} instead for all normal usage!
+     * Use {@link SearchEngineConfig#getHostUrl()} instead for all normal usage!
      *
      * @return default/hardcoded url for the site.
      */

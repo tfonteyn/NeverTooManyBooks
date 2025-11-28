@@ -207,7 +207,7 @@ public class IsfdbAuth
         final SearchEngineConfig config = EngineId.Isfdb.getConfig();
 
         //noinspection DataFlowIssue
-        final String url = config.getHostUrl(context) + USER_LOGIN_URL;
+        final String url = config.getHostUrl() + USER_LOGIN_URL;
         final String postBody = new StringJoiner("&")
                 .add("login=" + URLEncoder.encode(username, StandardCharsets.UTF_8))
                 .add("password=" + URLEncoder.encode(password, StandardCharsets.UTF_8))

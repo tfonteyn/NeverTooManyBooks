@@ -102,7 +102,7 @@ class CollectionFormUploader {
     CollectionFormUploader(@NonNull final Context context) {
 
         //noinspection DataFlowIssue
-        postUrl = EngineId.StripInfoBe.getConfig().getHostUrl(context)
+        postUrl = EngineId.StripInfoBe.getConfig().getHostUrl()
                   + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         httpPost = FutureHttpFactory.create(EngineId.StripInfoBe);
