@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2023 HardBackNutter
+ * @Copyright 2018-2025 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,6 +85,14 @@ public interface AuthorWork {
      */
     @Nullable
     Author getPrimaryAuthor();
+
+    /**
+     * Get the list of {@link Author}s.
+     *
+     * @return List
+     */
+    @NonNull
+    List<Author> getAuthors();
 
     /**
      * Get the list of book titles this work is present in.

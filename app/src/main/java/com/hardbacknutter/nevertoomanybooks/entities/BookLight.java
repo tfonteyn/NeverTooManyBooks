@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -159,6 +160,12 @@ public class BookLight
     @Nullable
     public Author getPrimaryAuthor() {
         return primaryAuthor;
+    }
+
+    @Override
+    @NonNull
+    public List<Author> getAuthors() {
+        return Collections.singletonList(primaryAuthor);
     }
 
     @Override

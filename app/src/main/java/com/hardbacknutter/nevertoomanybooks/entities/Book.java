@@ -905,17 +905,14 @@ public class Book
      *
      * @return the {@link Author} or {@code null} if none present
      */
+    @Override
     @Nullable
     public Author getPrimaryAuthor() {
         final List<Author> authors = getAuthors();
         return authors.isEmpty() ? null : authors.get(0);
     }
 
-    /**
-     * Get the list of {@link Author}s.
-     *
-     * @return List
-     */
+    @Override
     @NonNull
     public List<Author> getAuthors() {
         return getParcelableArrayList(BKEY_AUTHOR_LIST);

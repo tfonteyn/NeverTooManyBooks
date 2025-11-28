@@ -29,6 +29,7 @@ import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -334,9 +335,16 @@ public class TocEntry
         }
     }
 
+    @Override
     @NonNull
     public Author getPrimaryAuthor() {
         return author;
+    }
+
+    @Override
+    @NonNull
+    public List<Author> getAuthors() {
+        return Collections.singletonList(author);
     }
 
     public void setPrimaryAuthor(@NonNull final Author author) {
