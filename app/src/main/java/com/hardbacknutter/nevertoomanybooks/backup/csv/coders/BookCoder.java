@@ -117,6 +117,7 @@ public class BookCoder {
     private final RatingParser ratingParser;
     private final TagMapper tagMapper;
     private final RealNumberParser realNumberParser;
+    private final LocaleList userLocales;
     @Nullable
     private CsvGoodreads goodreads;
     @Nullable
@@ -144,8 +145,9 @@ public class BookCoder {
 
         unknownAuthor = Author.createUnknownAuthor(context);
 
+        userLocales = context.getResources().getConfiguration().getLocales();
+
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
         dateParser = new FullDateParser(new ISODateParser(systemLocale), allLocales);
 
@@ -202,8 +204,7 @@ public class BookCoder {
         }
 
         // check/fix the language
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        book.getAndUpdateLocale(true, userLocale);
+        book.getAndUpdateLocale(true, userLocales.get(0));
 
         // Database access is strictly limited to fetching ID's for any list elements.
         processIsbn(book);
