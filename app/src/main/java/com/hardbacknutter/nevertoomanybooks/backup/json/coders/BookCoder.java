@@ -95,7 +95,7 @@ public class BookCoder
 
         this.context = context;
 
-        bookshelfCoder = new BookshelfCoder(context, defaultStyle);
+        bookshelfCoder = new BookshelfCoder(defaultStyle);
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final List<Locale> allLocales = LocaleListUtils.asList(userLocales);

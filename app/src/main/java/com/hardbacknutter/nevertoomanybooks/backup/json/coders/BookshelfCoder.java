@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.util.Optional;
@@ -38,18 +36,13 @@ public class BookshelfCoder
 
     @NonNull
     private final Style defaultStyle;
-    @NonNull
-    private final Context context;
 
     /**
      * Constructor.
      *
-     * @param context      Current context
      * @param defaultStyle the default style to use for {@link Bookshelf}s
      */
-    public BookshelfCoder(@NonNull final Context context,
-                          @NonNull final Style defaultStyle) {
-        this.context = context;
+    public BookshelfCoder(@NonNull final Style defaultStyle) {
         this.defaultStyle = defaultStyle;
     }
 

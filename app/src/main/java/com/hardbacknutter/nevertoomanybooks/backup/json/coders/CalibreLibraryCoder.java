@@ -62,7 +62,7 @@ public class CalibreLibraryCoder
     public CalibreLibraryCoder(@NonNull final Context context,
                                @NonNull final Style defaultStyle) {
         this.context = context;
-        bookshelfCoder = new BookshelfCoder(context, defaultStyle);
+        bookshelfCoder = new BookshelfCoder(defaultStyle);
         bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
     }
 

@@ -404,7 +404,7 @@ public class JsonRecordReader
             final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
-            new BookshelfCoder(context, defaultStyle)
+            new BookshelfCoder(defaultStyle)
                     .decode(jsonRoot)
                     .forEach(bookshelf -> {
                         // If we ever make the mistake of backing up the 'All Books' again

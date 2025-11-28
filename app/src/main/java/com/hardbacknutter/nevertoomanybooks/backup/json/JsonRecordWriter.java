@@ -284,7 +284,7 @@ public class JsonRecordWriter
                         ServiceLocator.getInstance().getBookshelfDao().getAll();
                 if (!bookshelves.isEmpty()) {
                     jsonData.put(RecordType.Bookshelves.getName(),
-                                 new BookshelfCoder(context, defaultStyle).encode(bookshelves));
+                                 new BookshelfCoder(defaultStyle).encode(bookshelves));
                 }
                 results.bookshelves = bookshelves.size();
             }
