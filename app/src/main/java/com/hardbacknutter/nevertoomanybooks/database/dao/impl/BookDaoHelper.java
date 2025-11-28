@@ -110,7 +110,7 @@ public class BookDaoHelper {
         // Handle Language field FIRST, we need it for _OB fields.
         final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final Locale userLocale = userLocales.get(0);
-        bookLocale = this.book.getAndUpdateLocale(context, true).orElse(userLocale);
+        bookLocale = this.book.getAndUpdateLocale(true, userLocale).orElse(userLocale);
 
         final List<Locale> locales = LocaleListUtils.asList(bookLocale, userLocales);
         realNumberParser = new RealNumberParser(locales);

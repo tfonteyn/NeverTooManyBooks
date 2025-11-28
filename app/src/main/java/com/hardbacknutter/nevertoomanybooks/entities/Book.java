@@ -848,11 +848,12 @@ public class Book
      */
     @NonNull
     public Optional<Locale> getLocale(@NonNull final Context context) {
-        final Optional<Locale> updatedLocale = getAndUpdateLocale(context, false);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Optional<Locale> updatedLocale = getAndUpdateLocale(false, userLocale);
         if (updatedLocale.isPresent()) {
             return updatedLocale;
         } else {
-            return Optional.of(context.getResources().getConfiguration().getLocales().get(0));
+            return Optional.of(userLocale);
         }
     }
 
@@ -865,25 +866,25 @@ public class Book
      */
     @NonNull
     public Locale getLocaleOrUserLocale(@NonNull final Context context) {
-        return getAndUpdateLocale(context, false)
-                .orElseGet(() -> context.getResources().getConfiguration().getLocales().get(0));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        return getAndUpdateLocale(false, userLocale)
+                .orElse(userLocale);
     }
 
     /**
      * Use the book's language setting to determine the Locale.
      *
-     * @param context        Current context
      * @param updateLanguage {@code true} to update the language field with the ISO code
      *                       if needed. {@code false} to leave it unchanged.
+     * @param userLocale     Current Locale
      *
      * @return the Locale.
      */
     @NonNull
-    public Optional<Locale> getAndUpdateLocale(@NonNull final Context context,
-                                               final boolean updateLanguage) {
+    public Optional<Locale> getAndUpdateLocale(final boolean updateLanguage,
+                                               @NonNull final Locale userLocale) {
         if (contains(DBKey.LANGUAGE)) {
             final String lang = getString(DBKey.LANGUAGE);
-            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final Optional<Locale> bookLocale = ServiceLocator.getInstance().getAppLocale()
                                                               .getLocale(lang, userLocale);
             if (bookLocale.isPresent()) {
