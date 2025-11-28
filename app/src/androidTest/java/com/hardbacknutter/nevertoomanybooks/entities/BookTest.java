@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.os.LocaleList;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -75,7 +76,8 @@ public class BookTest
         assertNotNull(money);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
-        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         // dump(book);
 
@@ -96,7 +98,8 @@ public class BookTest
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no PRICE_PAID_CURRENCY
 
-        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
@@ -120,7 +123,8 @@ public class BookTest
         book.putString(DBKey.PRICE_PAID, "test");
         // no PRICE_PAID_CURRENCY
 
-        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
@@ -143,7 +147,8 @@ public class BookTest
         assertTrue(money.isPresent());
         book.putMoney(DBKey.PRICE_LISTED, money.get());
 
-        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         //dump(book);
 
@@ -174,7 +179,8 @@ public class BookTest
 
         // Not tested: null string for a string field..
 
-        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
         bdh.processExternalIds();
         dump(book);
 
@@ -216,7 +222,8 @@ public class BookTest
         // Not tested: null string for a string field..
 
 
-        final BookDaoHelper bdh = new BookDaoHelper(context, book, false);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, false);
         bdh.processExternalIds();
         dump(book);
 
@@ -266,7 +273,8 @@ public class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
         bdh.processNullsAndBlanks();
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
@@ -292,7 +300,8 @@ public class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final BookDaoHelper bdh = new BookDaoHelper(context, book, false);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, false);
         bdh.processNullsAndBlanks();
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));

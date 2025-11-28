@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
+import android.os.LocaleList;
 
 import java.util.List;
 
@@ -76,7 +77,8 @@ public class BookDaoHelperTest
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_GOODREADS,
                                                          "18306114")));
 
-        final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, false);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final BookDaoHelper bookDaoHelper = new BookDaoHelper(userLocales, book, false);
         final ContentValues cv = bookDaoHelper
                 .process(context)
                 .filterValues(serviceLocator.getDb().getTableInfo(TBL_BOOKS));

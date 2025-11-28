@@ -97,18 +97,17 @@ public class BookDaoHelper {
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param book    to process
-     * @param isNew   flag; whether the book is entirely 'new' or it's an update
+     * @param userLocales Current Locales
+     * @param book        to process
+     * @param isNew       flag; whether the book is entirely 'new' or it's an update
      */
-    public BookDaoHelper(@NonNull final Context context,
+    public BookDaoHelper(@NonNull final LocaleList userLocales,
                          @NonNull final Book book,
                          final boolean isNew) {
         this.book = book;
         this.isNew = isNew;
 
         // Handle Language field FIRST, we need it for _OB fields.
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
         final Locale userLocale = userLocales.get(0);
         bookLocale = this.book.getAndUpdateLocale(true, userLocale).orElse(userLocale);
 

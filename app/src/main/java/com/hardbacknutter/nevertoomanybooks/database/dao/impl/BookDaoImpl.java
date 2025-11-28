@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -144,6 +145,8 @@ public class BookDaoImpl
             throws StorageException,
                    DaoWriteException {
 
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+
         Synchronizer.SyncLock txLock = null;
         //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
@@ -151,7 +154,7 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, true);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(userLocales, book, true);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
@@ -248,6 +251,8 @@ public class BookDaoImpl
             throws StorageException,
                    DaoWriteException {
 
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+
         Synchronizer.SyncLock txLock = null;
         //noinspection OverlyBroadCatchBlock,CheckStyle
         try {
@@ -255,7 +260,7 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, false);
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(userLocales, book, false);
             final ContentValues cv = bookDaoHelper
                     .process(context)
                     .filterValues(db.getTableInfo(TBL_BOOKS));
