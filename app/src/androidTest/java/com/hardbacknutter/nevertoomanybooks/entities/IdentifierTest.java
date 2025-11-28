@@ -57,7 +57,7 @@ public class IdentifierTest
             assertFalse("Duplicate key: " + key, keys.contains(key));
             keys.add(key);
 
-            i.getBookUri(context).ifPresent(bookUri -> assertEquals(
+            i.getBookUri().ifPresent(bookUri -> assertEquals(
                     "Invalid bookUri key: " + key,
                     1,
                     PATTERN.split(bookUri, -1).length - 1));
@@ -75,7 +75,7 @@ public class IdentifierTest
     @Test
     public void validateBookUri() {
         for (final Identifier identifier : Identifier.createInitialList(context)) {
-            final String uri = identifier.getBookUri(context).orElse("");
+            final String uri = identifier.getBookUri().orElse("");
             assertTrue(uri, UrlPatterns.isBlankOrValidUriWith1s(uri));
         }
     }

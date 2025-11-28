@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
@@ -134,7 +135,7 @@ class BibTeXCitation
         final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
         book.getIdentifiers().forEach(iv -> identifierDao
                 .findByKey(iv.getKey())
-                .flatMap(identifier -> identifier.getBookUri(context))
+                .flatMap(Identifier::getBookUri)
                 .ifPresent(bookUri -> sj.add(
                         String.format(NAME_VALUE, URL, String.format(bookUri, iv.getSid())))));
 

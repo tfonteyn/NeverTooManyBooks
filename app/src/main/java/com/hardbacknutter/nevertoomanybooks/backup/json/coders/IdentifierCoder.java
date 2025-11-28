@@ -58,7 +58,7 @@ public class IdentifierCoder
         out.put(DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID, identifier.getWikidataClaimAuthorId());
         // nulls will be discarded
         out.put(DBKey.IDENTIFIERS.SITE_URL, identifier.getSiteUrl());
-        out.put(DBKey.IDENTIFIERS.BOOK_URI, identifier.getBookUri(context).orElse(null));
+        out.put(DBKey.IDENTIFIERS.BOOK_URI, identifier.getBookUri().orElse(null));
         out.put(DBKey.IDENTIFIERS.AUTHOR_URI, identifier.getAuthorUri().orElse(null));
         return out;
     }

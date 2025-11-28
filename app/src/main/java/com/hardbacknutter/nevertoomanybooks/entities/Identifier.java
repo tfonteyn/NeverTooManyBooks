@@ -652,12 +652,10 @@ public class Identifier
      * Get the <strong>uri</strong> for viewing a book on the site.
      * The uri will have a single {@code %s} placeholder where the Identifier value needs to go.
      *
-     * @param context Current context
-     *
      * @return uri
      */
     @NonNull
-    public Optional<String> getBookUri(@NonNull final Context context) {
+    public Optional<String> getBookUri() {
         // Always overrule the db stored url for amazon
         if (SID_ASIN.equals(key)) {
             //noinspection DataFlowIssue

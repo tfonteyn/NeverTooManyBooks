@@ -1301,7 +1301,7 @@ public final class LegacyUpgrades {
             } else {
                 stmt.bindString(5, siteUrl);
             }
-            final String bookUrl = identifier.getBookUri(context).orElse(null);
+            final String bookUrl = identifier.getBookUri().orElse(null);
             if (bookUrl == null) {
                 stmt.bindNull(6);
             } else {

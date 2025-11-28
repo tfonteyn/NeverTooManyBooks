@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.IdentifierDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 
 /**
  * Example.
@@ -94,7 +95,7 @@ public class RISCitation
         book.getIdentifiers()
             .forEach(iv -> identifierDao
                     .findByKey(iv.getKey())
-                    .flatMap(identifier -> identifier.getBookUri(context))
+                    .flatMap(Identifier::getBookUri)
                     .ifPresent(bookUri -> sj.add(
                             "UR  - " + String.format(bookUri, iv.getSid()))));
 

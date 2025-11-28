@@ -193,7 +193,7 @@ class EditIdentifierDelegate
                     context.getString(R.string.vldt_blank_or_valid_url_required));
             return false;
         }
-        if (!UrlPatterns.isBlankOrValidUriWith1s(currentEdit.getBookUri(context).orElse(null))) {
+        if (!UrlPatterns.isBlankOrValidUriWith1s(currentEdit.getBookUri().orElse(null))) {
             vb.lblIdentifierBookUri.setError(
                     context.getString(R.string.vldt_blank_or_valid_uri_with_1s_param_required));
             return false;
@@ -244,13 +244,11 @@ class EditIdentifierDelegate
     }
 
     private void modelToView() {
-        final Context context = owner.getContext();
         final Identifier currentEdit = vm.getCurrentEdit();
         vb.identifierName.setText(currentEdit.getName());
         vb.identifierKey.setText(currentEdit.getKey());
         vb.identifierSiteUrl.setText(currentEdit.getSiteUrl());
-        //noinspection DataFlowIssue
-        vb.identifierBookUri.setText(currentEdit.getBookUri(context).orElse(""));
+        vb.identifierBookUri.setText(currentEdit.getBookUri().orElse(""));
         vb.identifierAuthorUri.setText(currentEdit.getAuthorUri().orElse(""));
 
         // Remove the "P" prefix for easier editing

@@ -47,7 +47,7 @@ public class ViewBookOnSiteMenuHandler
     public ViewBookOnSiteMenuHandler() {
         super(R.id.SUBMENU_VIEW_BOOK_ON_SITE,
               R.id.MENU_GROUP_BOOK,
-              (context, identifier) -> identifier.getBookUri(context));
+              (context, identifier) -> identifier.getBookUri());
     }
 
     @NonNull
