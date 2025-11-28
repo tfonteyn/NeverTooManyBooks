@@ -99,7 +99,7 @@ public class IdentifierDaoImpl
         // This method must run on API 26: Use simple INSERT, and not the UPSERT!
         try (ExtSQLiteStatement stmt = new ExtSQLiteStatement(db.compileStatement(Sql.INSERT))) {
             for (final Identifier identifier : identifierList) {
-                doInsert(context, identifier, stmt);
+                doInsert(identifier, stmt);
             }
         } catch (@NonNull final SQLException e) {
             // log... we're in a real mess now
@@ -115,7 +115,6 @@ public class IdentifierDaoImpl
     /**
      * Insert a new {@link Identifier}.
      *
-     * @param context    Current context
      * @param identifier to insert. Will be updated with the id
      * @param stmt       statement to run
      *
@@ -123,8 +122,7 @@ public class IdentifierDaoImpl
      *
      * @throws DaoInsertException on failure
      */
-    private static long doInsert(@NonNull final Context context,
-                                 @NonNull final Identifier identifier,
+    private static long doInsert(@NonNull final Identifier identifier,
                                  @NonNull final ExtSQLiteStatement stmt)
             throws DaoInsertException {
         stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
@@ -148,14 +146,12 @@ public class IdentifierDaoImpl
     /**
      * Update the given {@link Identifier}.
      *
-     * @param context    Current context
      * @param identifier to update
      * @param stmt       statement to run
      *
      * @throws DaoUpdateException on failure
      */
-    private static void doUpdate(@NonNull final Context context,
-                                 @NonNull final Identifier identifier,
+    private static void doUpdate(@NonNull final Identifier identifier,
                                  @NonNull final SynchronizedStatement stmt)
             throws DaoUpdateException {
         stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
@@ -191,9 +187,9 @@ public class IdentifierDaoImpl
                 txLock = db.beginTransaction(true);
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                restoreApi30(context, identifierList);
+                restoreApi30(identifierList);
             } else {
-                restoreApi26(context, identifierList);
+                restoreApi26(identifierList);
             }
             if (txLock != null) {
                 db.setTransactionSuccessful();
@@ -206,8 +202,7 @@ public class IdentifierDaoImpl
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    private void restoreApi30(@NonNull final Context context,
-                              @NonNull final List<Identifier> identifierList)
+    private void restoreApi30(@NonNull final List<Identifier> identifierList)
             throws DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -218,13 +213,12 @@ public class IdentifierDaoImpl
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_BUILTIN)) {
             for (final Identifier identifier : identifierList) {
-                doInsert(context, identifier, stmt);
+                doInsert(identifier, stmt);
             }
         }
     }
 
-    private void restoreApi26(@NonNull final Context context,
-                              @NonNull final List<Identifier> identifierList)
+    private void restoreApi26(@NonNull final List<Identifier> identifierList)
             throws DaoUpdateException, DaoInsertException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -244,11 +238,11 @@ public class IdentifierDaoImpl
                 iId = stmtFindByKey.simpleQueryForLongOrZero();
                 if (iId == 0) {
                     // no, add it
-                    doInsert(context, identifier, stmtInsert);
+                    doInsert(identifier, stmtInsert);
                 } else {
                     // key exists, update it
                     identifier.setId(iId);
-                    doUpdate(context, identifier, stmtUpdate);
+                    doUpdate(identifier, stmtUpdate);
                 }
             }
         }
@@ -333,7 +327,7 @@ public class IdentifierDaoImpl
             throws DaoInsertException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
-            return doInsert(context, identifier, stmt);
+            return doInsert(identifier, stmt);
         }
     }
 
@@ -343,7 +337,7 @@ public class IdentifierDaoImpl
             throws DaoUpdateException {
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
-            doUpdate(context, identifier, stmt);
+            doUpdate(identifier, stmt);
         }
     }
 
