@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
+import android.os.LocaleList;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
@@ -135,9 +136,11 @@ class ResultsAccumulator {
         results.forEach(localeBookPair -> {
             final Locale locale = localeBookPair.first;
             final Book result = localeBookPair.second;
-            final List<Locale> locales = LocaleListUtils.asList(context, locale);
-            final RealNumberParser realNumberParser = new RealNumberParser(locales);
-            final DateParser<LocalDateTime> dateParser = new FullDateParser(isoDateParser, locales);
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> allLocales = LocaleListUtils.asList(locale, userLocales);
+            final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
+            final DateParser<LocalDateTime> dateParser =
+                    new FullDateParser(isoDateParser, allLocales);
 
             result.keySet().forEach(key -> {
                 if (DBKey.DATE_KEYS.contains(key)) {

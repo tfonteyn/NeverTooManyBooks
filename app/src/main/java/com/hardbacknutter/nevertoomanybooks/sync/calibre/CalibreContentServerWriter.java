@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.LocaleList;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,8 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -125,7 +128,9 @@ public class CalibreContentServerWriter
                                                .getInstance()
                                                .getSystemLocaleList()
                                                .get(0));
-        realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        realNumberParser = new RealNumberParser(allLocales);
     }
 
     @Override

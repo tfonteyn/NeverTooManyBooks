@@ -20,12 +20,14 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
@@ -95,7 +97,9 @@ public class BookCoder
 
         bookshelfCoder = new BookshelfCoder(context, defaultStyle);
         calibreLibraryCoder = new CalibreLibraryCoder(context, defaultStyle);
-        realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        realNumberParser = new RealNumberParser(allLocales);
 
         tagMapper = new TagMapper(context);
     }

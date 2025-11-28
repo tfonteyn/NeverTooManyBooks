@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -391,8 +392,9 @@ public class Book
     @NonNull
     public Book duplicate(@NonNull final Context context) {
         final Book duplicate = new Book();
-        final RealNumberParser realNumberParser = new RealNumberParser(
-                LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
 
         // Q: Why don't we get the DataManager#mRawData, remove the identifiers/dates and use that?
         // A: because we would need to clone mRawData before we can start removing fields,
@@ -1901,8 +1903,9 @@ public class Book
 
         validatorConfig = new ValidatorConfig();
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
 
         final DataValidator priceValidator = new OrValidator(
                 new BlankValidator(),

@@ -24,6 +24,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
+import android.os.LocaleList;
 import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
@@ -45,6 +46,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -88,6 +90,9 @@ public class DebugReport {
     @NonNull
     public DebugReport addDefaultMessage() {
         final PackageInfoWrapper info = PackageInfoWrapper.createWithSignatures(context);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+
         message =
                 "App: " + info.getPackageName() + '\n'
                 + "Version: " + info.getVersionName() + " (" + info.getVersionCode() + ")\n"
@@ -99,7 +104,7 @@ public class DebugReport {
                 + "Brand: " + Build.BRAND + '\n'
                 + "Model: " + Build.MODEL + '\n'
 
-                + "Locales: " + LocaleListUtils.asList(context) + '\n'
+                + "Locales: " + allLocales + '\n'
                 + "Signed-By: " + info.getSignedBy().orElse("Not signed") + '\n';
         return this;
     }

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
@@ -202,10 +203,10 @@ public abstract class SearchEngineBase
     @NonNull
     protected DateParser<LocalDateTime> getFullDateParser(@NonNull final Context context,
                                                           @NonNull final Locale locale) {
-        final List<Locale> locales = LocaleListUtils.asList(context, locale);
-        final Locale systemLocale = ServiceLocator
-                .getInstance().getSystemLocaleList().get(0);
-        return new FullDateParser(new ISODateParser(systemLocale), locales);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
+        final List<Locale> allLocales = LocaleListUtils.asList(locale, userLocales);
+        return new FullDateParser(new ISODateParser(systemLocale), allLocales);
     }
 
     @Override
@@ -641,8 +642,9 @@ public abstract class SearchEngineBase
                                @Nullable final String currencyStr,
                                @NonNull final Book book) {
 
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final RealNumberParser realNumberParser = new RealNumberParser(
+                LocaleListUtils.asList(siteLocale, userLocales));
         final MoneyParser parser = new MoneyParser(siteLocale, realNumberParser);
 
         // TODO: maybe move this logic to the MoneyParser class ?

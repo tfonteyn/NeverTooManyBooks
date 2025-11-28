@@ -403,10 +403,11 @@ public class Languages {
      * @param context Current context
      */
     public void createLanguageMappingCache(@NonNull final Context context) {
-        final List<Locale> locales = new ArrayList<>(LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = new ArrayList<>(LocaleListUtils.asList(userLocales));
         // Always add English
-        locales.add(Locale.ENGLISH);
-        locales.forEach(this::createLanguageMappingCache);
+        allLocales.add(Locale.ENGLISH);
+        allLocales.forEach(this::createLanguageMappingCache);
 
         // Locales from SearchEngine's are added automatically as/when needed
     }
@@ -491,7 +492,8 @@ public class Languages {
      */
     public boolean isUserLanguage(@NonNull final Context context,
                                   @NonNull final String iso) {
-        return LocaleListUtils.asList(context)
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        return LocaleListUtils.asList(userLocales)
                               .stream()
                               .map(this::getIsoCode)
                               .anyMatch(iso::equals);

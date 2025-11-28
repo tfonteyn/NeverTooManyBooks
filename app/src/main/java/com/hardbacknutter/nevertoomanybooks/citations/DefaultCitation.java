@@ -21,8 +21,12 @@
 package com.hardbacknutter.nevertoomanybooks.citations;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
+
+import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -70,8 +74,9 @@ class DefaultCitation
                                                                style)))
                 .orElse("");
 
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
 
         //remove trailing 0's
         final float rating = book.getFloat(DBKey.RATING, realNumberParser);

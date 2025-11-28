@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.LocaleList;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -391,8 +392,9 @@ public class BolSearchEngine
         }
 
         final Locale siteLocale = getLocale(context);
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
 
         for (final Element specRow : specs.select("div.specs__row")) {
             final Element label = specRow.selectFirst("dt.specs__title");

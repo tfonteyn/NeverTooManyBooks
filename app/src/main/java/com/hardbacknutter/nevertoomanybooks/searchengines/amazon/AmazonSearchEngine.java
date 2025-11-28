@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -709,19 +710,21 @@ public class AmazonSearchEngine
     @NonNull
     protected DateParser<LocalDateTime> getFullDateParser(@NonNull final Context context,
                                                           @NonNull final Locale locale) {
-        final List<Locale> locales;
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+
+        final List<Locale> allLocales;
 
         // Hack to support the Portuguese site which does a redirect to the Spanish one
         if (SPANISH.equals(locale.getLanguage())) {
-            locales = new ArrayList<>(LocaleListUtils.asList(context, locale));
+            allLocales = new ArrayList<>(LocaleListUtils.asList(locale, userLocales));
             // Not verified but let's hope "pt_BR" uses the same spelling for month names
-            locales.add(1, new Locale("pt"));
+            allLocales.add(1, new Locale("pt"));
         } else {
-            locales = LocaleListUtils.asList(context, locale);
+            allLocales = LocaleListUtils.asList(locale, userLocales);
         }
         final Locale systemLocale = ServiceLocator
                 .getInstance().getSystemLocaleList().get(0);
-        return new FullDateParser(new ISODateParser(systemLocale), locales);
+        return new FullDateParser(new ISODateParser(systemLocale), allLocales);
     }
 
     /**

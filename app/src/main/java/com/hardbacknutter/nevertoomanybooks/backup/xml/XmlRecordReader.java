@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.util.Base64;
 
 import androidx.annotation.AnyThread;
@@ -39,6 +40,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -101,7 +104,9 @@ public class XmlRecordReader
      */
     @AnyThread
     public XmlRecordReader(@NonNull final Context context) {
-        this.realNumberParser = new RealNumberParser(LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        this.realNumberParser = new RealNumberParser(allLocales);
     }
 
     @Override

@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.CursorIndexOutOfBoundsException;
+import android.os.LocaleList;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -133,10 +134,11 @@ public class BooklistAdapter
         this.style = style;
         this.layout = layout;
 
-        final List<Locale> locales = LocaleListUtils.asList(context);
-        realNumberParser = new RealNumberParser(locales);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        realNumberParser = new RealNumberParser(allLocales);
         partialDateParser = new PartialDateParser();
-        formatter = new Formatter(context, style, locales);
+        formatter = new Formatter(context, style, allLocales);
 
         final Resources res = context.getResources();
         levelIndent = res.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);

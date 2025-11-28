@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -99,7 +100,9 @@ public final class ReorderHelper {
                                     @NonNull final String text,
                                     @NonNull final Locale locale) {
         if (isSortReordered(context)) {
-            return reorder(context, text, locale, LocaleListUtils.asList(context));
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+            return reorder(context, text, locale, allLocales);
         } else {
             return text;
         }
@@ -140,7 +143,9 @@ public final class ReorderHelper {
     @NonNull
     public String reorder(@NonNull final Context context,
                           @NonNull final String title) {
-        return reorder(context, title, (Locale) null, LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        return reorder(context, title, (Locale) null, allLocales);
     }
 
     /**
@@ -157,7 +162,9 @@ public final class ReorderHelper {
     public String reorder(@NonNull final Context context,
                           @NonNull final String title,
                           @NonNull final Locale locale) {
-        return reorder(context, title, locale, LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        return reorder(context, title, locale, allLocales);
     }
 
     /**

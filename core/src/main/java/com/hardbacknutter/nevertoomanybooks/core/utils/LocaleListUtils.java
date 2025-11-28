@@ -20,7 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.core.utils;
 
-import android.content.Context;
 import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
@@ -43,31 +42,10 @@ public final class LocaleListUtils {
     /**
      * Get an <strong>unmodifiable</strong> List of the user Locales.
      *
-     * @param context Current context
-     *
-     * @return unmodifiable list
-     */
-    @NonNull
-    public static List<Locale> asList(@NonNull final Context context) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        return asList(null, userLocales);
-    }
-
-    /**
-     * Get an <strong>unmodifiable</strong> List of the user Locales.
-     *
-     * @param context     Current context
-     * @param firstLocale (optional) Locale to add to the top of the list
+     * @param localeList the {@link LocaleList} to convert
      *
      * @return an <strong>unmodifiable</strong> List
      */
-    @NonNull
-    public static List<Locale> asList(@NonNull final Context context,
-                                      @Nullable final Locale firstLocale) {
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        return asList(firstLocale, userLocales);
-    }
-
     @NonNull
     public static List<Locale> asList(@NonNull final LocaleList localeList) {
         return asList(null, localeList);

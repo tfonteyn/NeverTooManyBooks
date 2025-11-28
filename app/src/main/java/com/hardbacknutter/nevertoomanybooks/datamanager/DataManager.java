@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.datamanager;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -39,6 +40,7 @@ import java.util.Collection;
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -182,8 +184,9 @@ public class DataManager
      */
     protected void putAll(@NonNull final Context context,
                           @NonNull final DataManager src) {
-        final RealNumberParser realNumberParser =
-                new RealNumberParser(LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
         for (final String key : src.keySet()) {
             put(key, src.get(key, realNumberParser));
         }

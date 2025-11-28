@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
 
 import android.content.Context;
+import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -144,18 +145,19 @@ public class BookCoder {
         unknownAuthor = Author.createUnknownAuthor(context);
 
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final List<Locale> locales = LocaleListUtils.asList(context);
-        dateParser = new FullDateParser(new ISODateParser(systemLocale), locales);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        dateParser = new FullDateParser(new ISODateParser(systemLocale), allLocales);
 
         // Make sure US is added so we can parse "dot" decimal-separator
         // even when the user Locale is a comma decimal-separator.
         // FIXME LOCALE: this does NOT support the case where a user's Locales only
         //  use "dot" decimal-separator and they are importing a number with a comma!
-        if (locales.contains(Locale.US)) {
-            realNumberParser = new RealNumberParser(locales);
-            ratingParser = csvFormat.createRatingParser(locales);
+        if (allLocales.contains(Locale.US)) {
+            realNumberParser = new RealNumberParser(allLocales);
+            ratingParser = csvFormat.createRatingParser(allLocales);
         } else {
-            final List<Locale> tmp = new ArrayList<>(locales);
+            final List<Locale> tmp = new ArrayList<>(allLocales);
             tmp.add(Locale.US);
             realNumberParser = new RealNumberParser(tmp);
             ratingParser = csvFormat.createRatingParser(tmp);

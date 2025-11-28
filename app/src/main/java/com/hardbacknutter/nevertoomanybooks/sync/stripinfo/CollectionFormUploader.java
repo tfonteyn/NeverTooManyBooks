@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.LocaleList;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -109,8 +110,9 @@ class CollectionFormUploader {
                                     HttpConstants.CONTENT_TYPE_FORM_URL_ENCODED_UTF8);
 
         final Locale siteLocale = EngineId.StripInfoBe.getDefaultLocale();
-        final List<Locale> locales = LocaleListUtils.asList(context, siteLocale);
-        realNumberParser = new RealNumberParser(locales);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(siteLocale, userLocales);
+        realNumberParser = new RealNumberParser(allLocales);
         moneyParser = new MoneyParser(siteLocale, realNumberParser);
     }
 

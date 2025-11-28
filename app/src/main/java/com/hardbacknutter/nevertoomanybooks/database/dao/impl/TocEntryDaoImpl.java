@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -108,10 +109,12 @@ public class TocEntryDaoImpl
 
         if (normalize) {
             final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
-            final List<Locale> locales = LocaleListUtils.asList(context);
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
             list.forEach(tocEntry -> {
                 final String title = reorderHelper.reverse(context, tocEntry.getTitle(),
-                                                           localeSupplier.apply(tocEntry), locales);
+                                                           localeSupplier.apply(tocEntry),
+                                                           allLocales);
                 tocEntry.setTitle(title);
             });
         }

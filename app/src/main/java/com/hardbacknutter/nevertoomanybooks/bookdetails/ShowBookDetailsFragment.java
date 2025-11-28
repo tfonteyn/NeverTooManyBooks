@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -276,8 +277,10 @@ public class ShowBookDetailsFragment
         super.onViewCreated(view, savedInstanceState);
         InsetsListenerBuilder.fragmentRootView(view);
 
-        final List<Locale> locales = LocaleListUtils.asList(view.getContext());
-        realNumberParser = new RealNumberParser(locales);
+        final LocaleList userLocales = view
+                .getContext().getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        realNumberParser = new RealNumberParser(allLocales);
 
         // update all Fields with their current View instances
         vm.getFields().forEach(field -> field.setParentView(view));

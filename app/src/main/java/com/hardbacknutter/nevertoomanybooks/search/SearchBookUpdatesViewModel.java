@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.search;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.LocaleList;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -186,8 +187,9 @@ public class SearchBookUpdatesViewModel
      */
     @NonNull
     private SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
-        final List<Locale> locales = LocaleListUtils.asList(context);
-        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
         final SyncReaderProcessor.Builder builder =
                 new SyncReaderProcessor.Builder(context, SYNC_PREFERENCE_PREFIX, realNumberParser);
 

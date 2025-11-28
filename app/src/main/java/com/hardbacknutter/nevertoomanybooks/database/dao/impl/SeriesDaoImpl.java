@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -219,10 +220,12 @@ public class SeriesDaoImpl
 
         if (normalize) {
             final ReorderHelper reorderHelper = ServiceLocator.getInstance().getReorderHelper();
-            final List<Locale> locales = LocaleListUtils.asList(context);
+            final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+            final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
             list.forEach(series -> {
                 final String title = reorderHelper.reverse(context, series.getTitle(),
-                                                           localeSupplier.apply(series), locales);
+                                                           localeSupplier.apply(series),
+                                                           allLocales);
                 series.setTitle(title);
             });
         }

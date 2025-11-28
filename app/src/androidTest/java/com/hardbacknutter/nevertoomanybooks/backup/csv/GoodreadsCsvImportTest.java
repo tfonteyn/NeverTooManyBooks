@@ -22,11 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.LocaleList;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -100,8 +102,9 @@ public class GoodreadsCsvImportTest
                    StorageException, CredentialsException, CertificateException {
 
 
-        final RealNumberParser realNumberParser = new RealNumberParser(
-                LocaleListUtils.asList(context));
+        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
+        final RealNumberParser realNumberParser = new RealNumberParser(allLocales);
 
         File file;
         ImportHelper importHelper;
