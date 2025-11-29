@@ -60,6 +60,7 @@ public interface Mergeable {
      * @return {@code true} if it's the same name (except for diacritics)
      */
     default boolean isSameName(@NonNull final Mergeable that) {
+        // Single-spaces in the string are preserved.
         return Objects.hash(getNameFields()
                                     .stream()
                                     .map(SqlEncode::normalize)

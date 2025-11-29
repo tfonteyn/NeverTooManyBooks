@@ -28,7 +28,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizer;
 import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi26;
 import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
 
@@ -68,6 +67,11 @@ import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizerApi29;
  */
 public final class SqlEncode {
 
+    /** Keep only alpha/digit. KEEPS spaces. */
+    public static final Pattern NORMALIZE_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
+    /** Keep only alpha/digit. NO SPACES */
+    public static final Pattern ORDERBY_PATTERN = Pattern.compile("[^\\p{Alpha}\\d]");
+
     /** See {@link #singleQuotes}. */
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
     /** See {@link #dateTime(LocalDateTime)}. */
@@ -86,21 +90,6 @@ public final class SqlEncode {
     @NonNull
     public static String singleQuotes(@NonNull final CharSequence value) {
         return SINGLE_QUOTE_LITERAL.matcher(value).replaceAll("''");
-    }
-
-    /**
-     * Prepare a string to be inserted in the 'Order By' column.
-     * e.g. Author names, the Title of a book: strip spaces etc, make lowercase,...
-     *
-     * @param text   to normalize
-     * @param locale to use for case manipulation
-     *
-     * @return normalized text; always lowercase
-     */
-    @NonNull
-    public static String orderByColumn(@NonNull final CharSequence text,
-                                       @NonNull final Locale locale) {
-        return normalize(text).toLowerCase(locale);
     }
 
     /**
@@ -134,6 +123,22 @@ public final class SqlEncode {
     }
 
     /**
+     * Prepare a string to be inserted in the 'Order By' column.
+     * e.g. Author names, the Title of a book
+     * Keep normalized basic characters and digits, strip spaces, make all lowercase.
+     *
+     * @param text   to normalize
+     * @param locale to use for case manipulation
+     *
+     * @return normalized text; always lowercase
+     */
+    @NonNull
+    public static String orderByColumn(@NonNull final CharSequence text,
+                                       @NonNull final Locale locale) {
+        return normalize(text, ORDERBY_PATTERN).toLowerCase(locale);
+    }
+
+    /**
      * Normalize the given string and remove any non-alpha/digit/space characters.
      * The case is preserved.
      *
@@ -143,7 +148,7 @@ public final class SqlEncode {
      */
     @NonNull
     public static String normalize(@NonNull final CharSequence text) {
-        return normalize(text, TextNormalizer.ALPHANUMERIC_PATTERN);
+        return normalize(text, NORMALIZE_PATTERN);
     }
 
     /**

@@ -30,6 +30,7 @@ import androidx.annotation.WorkerThread;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
@@ -57,6 +58,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
+/**
+ * FTS Strings <strong>PRESERVE single-spaces</strong>.
+ */
 public class FtsDaoImpl
         extends BaseDaoImpl
         implements FtsDao {
@@ -72,6 +76,7 @@ public class FtsDaoImpl
 
     /** Name of the temporary table used during {@link #rebuild()}. */
     private static final String TMP_TABLE_FOR_REBUILDING = "books_fts_rebuilding";
+    private static final String LIST_DELIMITER = "; ";
 
     @NonNull
     private final Supplier<StylesHelper> stylesHelperSupplier;
@@ -114,7 +119,10 @@ public class FtsDaoImpl
         if (list.isEmpty()) {
             stmt.bindNull(position);
         } else {
-            final String normalized = FtsDaoHelper.normalize(list);
+            final String normalized = list
+                    .stream()
+                    .map(SqlEncode::normalize)
+                    .collect(Collectors.joining(LIST_DELIMITER));
             if (normalized.isBlank()) {
                 stmt.bindNull(position);
             } else {

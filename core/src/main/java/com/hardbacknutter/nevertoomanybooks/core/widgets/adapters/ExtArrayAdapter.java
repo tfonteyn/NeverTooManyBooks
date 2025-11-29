@@ -753,6 +753,8 @@ public class ExtArrayAdapter<T>
 
     /**
      * This versions also filters on Diacritic characters.
+     * <p>
+     * Single-spaces in the string are preserved.
      *
      * <p>An array filter constrains the content of the array adapter with
      * a prefix. Each item that does not start with the supplied prefix

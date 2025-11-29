@@ -25,10 +25,8 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -45,14 +43,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
- * Helper to normalize strings before inserting them into the FTS table,
- * and methods to prepare for a search.
+ * Helper methods for preparing a search.
  */
 public final class FtsDaoHelper {
 
     private static final String TAG = "FtsDaoHelper";
-
-    private static final String LIST_DELIMITER = "; ";
 
     /**
      * Keep only alpha/digit, space and the '-' characters.
@@ -181,21 +176,6 @@ public final class FtsDaoHelper {
             return Optional.empty();
         }
         return Optional.of(query);
-    }
-
-    /**
-     * Normalize each element in the list by stripping all non-alpha/digits;
-     * and concatenate them to a semi-colon separated string-list.
-     *
-     * @param list to normalize
-     *
-     * @return normalized string
-     */
-    @NonNull
-    static String normalize(@NonNull final List<String> list) {
-        return list.stream()
-                   .map(SqlEncode::normalize)
-                   .collect(Collectors.joining(LIST_DELIMITER));
     }
 
 

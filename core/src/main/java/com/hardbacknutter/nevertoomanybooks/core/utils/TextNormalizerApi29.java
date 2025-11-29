@@ -39,6 +39,9 @@ public final class TextNormalizerApi29 {
     private static final Transliterator TRANSLITERATOR = Transliterator.getInstance(
             "NFD; [:Nonspacing Mark:] Remove; Latin-ASCII");
 
+    /** Replace repeated/special whitespace characters with a single space. */
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+
     private TextNormalizerApi29() {
     }
 
@@ -56,7 +59,7 @@ public final class TextNormalizerApi29 {
                                    @NonNull final Pattern keep) {
         String result = TRANSLITERATOR.transliterate(text.toString());
         // Condense all special or duplicate whitespace into single spaces
-        result = TextNormalizer.WHITESPACE.matcher(result).replaceAll(" ");
+        result = WHITESPACE.matcher(result).replaceAll(" ");
         // Remove unwanted characters
         return keep.matcher(result).replaceAll("");
     }

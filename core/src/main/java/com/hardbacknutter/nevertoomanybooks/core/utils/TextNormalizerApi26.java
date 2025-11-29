@@ -53,6 +53,8 @@ public final class TextNormalizerApi26 {
 
     /** Manual replacements for characters that don’t decompose into ASCII. */
     private static final Map<Character, String> EXTRA_REPLACEMENTS = new HashMap<>();
+    /** Replace repeated/special whitespace characters with a single space. */
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
     static {
         // German (de)
@@ -133,7 +135,7 @@ public final class TextNormalizerApi26 {
         // Step 4: filter
         String result = builder.toString();
         // Condense all special or duplicate whitespace into single spaces
-        result = TextNormalizer.WHITESPACE.matcher(result).replaceAll(" ");
+        result = WHITESPACE.matcher(result).replaceAll(" ");
         // Remove unwanted characters
         return keep.matcher(result).replaceAll("");
     }

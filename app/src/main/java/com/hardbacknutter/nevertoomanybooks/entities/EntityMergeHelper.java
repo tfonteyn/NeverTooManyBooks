@@ -98,6 +98,7 @@ public class EntityMergeHelper<T extends Mergeable> {
             idFixer.accept(current, currentLocale);
 
             final long id = current.getId();
+            // Single-spaces in the string are preserved.
             final int hash = Objects.hash(current.getNameFields()
                                                  .stream()
                                                  .map(SqlEncode::normalize)
