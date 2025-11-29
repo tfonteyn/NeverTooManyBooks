@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.LocaleList;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -51,12 +50,15 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.DateParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -103,6 +105,8 @@ public class BookDaoImpl
 
     @NonNull
     private final DateParser<LocalDateTime> dateParser;
+    @NonNull
+    private final TableInfo tableInfo;
 
     /**
      * Constructor.
@@ -114,6 +118,7 @@ public class BookDaoImpl
                        @NonNull final Locale systemLocale) {
         super(db, TAG);
         dateParser = new ISODateParser(systemLocale);
+        tableInfo = db.getTableInfo(DBDefinitions.TBL_BOOKS);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -145,7 +150,8 @@ public class BookDaoImpl
             throws StorageException,
                    DaoWriteException {
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> userLocales = LocaleListUtils.asList(
+                context.getResources().getConfiguration().getLocales());
 
         Synchronizer.SyncLock txLock = null;
         //noinspection OverlyBroadCatchBlock,CheckStyle
@@ -154,10 +160,8 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(userLocales, book, true);
-            final ContentValues cv = bookDaoHelper
-                    .process(context)
-                    .filterValues(db.getTableInfo(TBL_BOOKS));
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
+            final ContentValues cv = bookDaoHelper.process(context, book, true);
 
             // Make sure we have at least one author
             final List<Author> authors = book.getAuthors();
@@ -214,7 +218,7 @@ public class BookDaoImpl
 
             // lastly we move the covers from the cache dir to their permanent dir/name
             try {
-                bookDaoHelper.persistCovers();
+                bookDaoHelper.persistCovers(book);
 
             } catch (@NonNull final StorageException e) {
                 book.putLong(DBKey.PK_ID, 0);
@@ -251,7 +255,8 @@ public class BookDaoImpl
             throws StorageException,
                    DaoWriteException {
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
+        final List<Locale> userLocales = LocaleListUtils.asList(
+                context.getResources().getConfiguration().getLocales());
 
         Synchronizer.SyncLock txLock = null;
         //noinspection OverlyBroadCatchBlock,CheckStyle
@@ -260,10 +265,8 @@ public class BookDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final BookDaoHelper bookDaoHelper = new BookDaoHelper(userLocales, book, false);
-            final ContentValues cv = bookDaoHelper
-                    .process(context)
-                    .filterValues(db.getTableInfo(TBL_BOOKS));
+            final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
+            final ContentValues cv = bookDaoHelper.process(context, book, false);
 
             // Disallow UUID updates
             if (cv.containsKey(DBKey.BOOK_UUID)) {
@@ -295,7 +298,7 @@ public class BookDaoImpl
                 ServiceLocator.getInstance().getFtsDao().update(book.getId());
 
                 try {
-                    bookDaoHelper.persistCovers();
+                    bookDaoHelper.persistCovers(book);
                 } catch (@NonNull final IOException e) {
                     throw new DaoCoverException(ERROR_STORING_COVERS + book);
                 }

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -52,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverStorage;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -69,10 +67,9 @@ import com.hardbacknutter.util.logger.LoggerFactory;
  * Normal flow:
  * <ol>
  *     <li>Create this object</li>
- *     <li>Call {@link #process(Context)}</li>
- *     <li>Call {@link #filterValues(TableInfo)}</li>
+ *     <li>Call {@link #process(Context, Book, boolean)}</li>
  *     <li>insert or update the book to the database</li>
- *     <li>Call {@link #persistCovers()}</li>
+ *     <li>Call {@link #persistCovers(Book)}</li>
  * </ol>
  * <p>
  * Processing and filtering is done in two methods to facilitate testing.
@@ -85,36 +82,38 @@ public class BookDaoHelper {
     private static final Pattern T = Pattern.compile("T");
 
     @NonNull
-    private final Book book;
-    private final boolean isNew;
-
+    private final List<Locale> userLocales;
     @NonNull
-    private final Locale bookLocale;
+    private final TableInfo tableInfo;
     @NonNull
-    private final RealNumberParser realNumberParser;
+    private final List<String> dateDomainNames;
     @NonNull
-    private final MoneyParser moneyParser;
+    private final List<String> dateTimeDomainNames;
+    private final List<Domain> tableDomains;
 
     /**
      * Constructor.
      *
+     * @param tableInfo   of the {@link DBDefinitions#TBL_BOOKS} table
      * @param userLocales Current Locales
-     * @param book        to process
-     * @param isNew       flag; whether the book is entirely 'new' or it's an update
      */
-    public BookDaoHelper(@NonNull final LocaleList userLocales,
-                         @NonNull final Book book,
-                         final boolean isNew) {
-        this.book = book;
-        this.isNew = isNew;
+    public BookDaoHelper(@NonNull final TableInfo tableInfo,
+                         @NonNull final List<Locale> userLocales) {
+        this.tableInfo = tableInfo;
+        this.userLocales = userLocales;
 
-        // Handle Language field FIRST, we need it for _OB fields.
-        final Locale userLocale = userLocales.get(0);
-        bookLocale = this.book.getAndUpdateLocale(true, userLocale).orElse(userLocale);
+        tableDomains = DBDefinitions.TBL_BOOKS.getDomains();
+        dateDomainNames = tableDomains
+                .stream()
+                .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Date)
+                .map(Domain::getName)
+                .collect(Collectors.toList());
+        dateTimeDomainNames = tableDomains
+                .stream()
+                .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.DateTime)
+                .map(Domain::getName)
+                .collect(Collectors.toList());
 
-        final List<Locale> locales = LocaleListUtils.asList(bookLocale, userLocales);
-        realNumberParser = new RealNumberParser(locales);
-        moneyParser = new MoneyParser(userLocale, realNumberParser);
     }
 
     /**
@@ -123,18 +122,35 @@ public class BookDaoHelper {
      * and {@link BookDaoImpl#update(Context, Book, Set)}.
      *
      * @param context Current context
+     * @param book    to process
+     * @param isNew   flag; whether the book is entirely 'new' or it's an update
      *
-     * @return {@code this} (for chaining)
+     * @return New and filtered ContentValues
      */
     @NonNull
-    BookDaoHelper process(@NonNull final Context context) {
+    ContentValues process(@NonNull final Context context,
+                          @NonNull final Book book,
+                          final boolean isNew) {
+
+        final Locale userLocale = userLocales.get(0);
+
+        // Handle Language field FIRST, we need it for _OB fields.
+        final Locale bookLocale = book.getAndUpdateLocale(true, userLocale)
+                                      .orElse(userLocale);
+
+        // NEW copy, with the book-locale as the first
+        final List<Locale> locales = new ArrayList<>(userLocales);
+        locales.add(0, bookLocale);
+
+        final RealNumberParser realNumberParser = new RealNumberParser(locales);
+        final MoneyParser moneyParser = new MoneyParser(userLocale, realNumberParser);
+
         // Handle TITLE
         if (book.contains(DBKey.TITLE)) {
             final String title = book.getTitle();
-            final String obTitle =
-                    new ReorderHelper(LocaleListUtils.asList(
-                            context.getResources().getConfiguration().getLocales()))
-                            .reorderForSorting(context, title, bookLocale);
+
+            final String obTitle = new ReorderHelper(locales)
+                    .reorderForSorting(context, title, bookLocale);
 
             book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(obTitle, bookLocale));
         }
@@ -150,23 +166,23 @@ public class BookDaoHelper {
         }
 
         // cleanup/build all price related fields
-        DBKey.MONEY_KEYS.forEach(this::processPrice);
+        DBKey.MONEY_KEYS.forEach(key -> processPrice(book, key, moneyParser));
 
         // Try to cross-pollinate the ReadingProgress and page-count fields.
-        processReadProgress();
+        processReadProgress(book);
 
         // replace 'T' by ' ' and truncate pure date fields if needed
-        processDates();
+        processDates(book);
 
         // make sure there are only valid external id's present
         if (book.contains(Book.BKEY_IDENTIFIER_LIST)) {
-            processExternalIds();
+            processExternalIds(book);
         }
 
         // lastly, cleanup null and blank fields as needed.
-        processNullsAndBlanks();
+        processNullsAndBlanks(book, isNew, realNumberParser);
 
-        return this;
+        return filterValues(book, realNumberParser);
     }
 
     /**
@@ -175,9 +191,12 @@ public class BookDaoHelper {
      * copy the value across.
      * We do NOT overwrite existing {@link DBKey#PAGES} values!
      *
+     * @param book to process
+     *
      * @see BookDaoImpl#setReadingProgress(Book, ReadingProgress)
      */
-    private void processReadProgress() {
+    @VisibleForTesting
+    public void processReadProgress(@NonNull final Book book) {
         final ReadingProgress readingProgress = book.getReadingProgress();
         // KEEP THIS LOGIC IN SYNC with {@link BookDaoImpl#setReadProgress()} !
         if (!readingProgress.asPercentage() && book.getString(DBKey.PAGES).isEmpty()) {
@@ -186,12 +205,16 @@ public class BookDaoHelper {
     }
 
     /**
-     * Helper for {@link #process(Context)}.
+     * Handle the given price field.
      *
-     * @param key key for the money (value) field
+     * @param book        to process
+     * @param key         key for the money (value) field
+     * @param moneyParser to use
      */
     @VisibleForTesting
-    public void processPrice(@NonNull final String key) {
+    void processPrice(@NonNull final Book book,
+                      @NonNull final String key,
+                      @NonNull final MoneyParser moneyParser) {
         try {
             final String currencyKey = key + DBKey.CURRENCY_SUFFIX;
             if (book.contains(key) && !book.contains(currencyKey)) {
@@ -207,12 +230,10 @@ public class BookDaoHelper {
                 // else just leave the original text in the book
             }
 
-            // Either way, make sure any currency strings present are uppercase
+            // Make sure any currency strings present are uppercase
             if (book.contains(currencyKey)) {
                 book.putString(currencyKey, book.getString(currencyKey)
-                                                //TODO: using Locale.ENGLISH might
-                                                // not be 100% foolproof...
-                                                .toUpperCase(Locale.ENGLISH));
+                                                .toUpperCase(userLocales.get(0)));
             }
         } catch (@NonNull final NumberFormatException e) {
             // just leave the original text in the book
@@ -220,8 +241,6 @@ public class BookDaoHelper {
     }
 
     /**
-     * Helper for {@link #process(Context)}.
-     * <p>
      * Truncate Date fields to being pure dates without a time segment.
      * Replaces 'T' with ' ' to please SqLite/SQL datetime standards.
      * <p>
@@ -269,56 +288,55 @@ public class BookDaoHelper {
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_ACQUIRED}
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#PUBLICATION_DATE}
      * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#FIRST_PUBLICATION_DATE}
+     *
+     * @param book to process
      */
     @VisibleForTesting
-    public void processDates() {
-        final List<Domain> domains = DBDefinitions.TBL_BOOKS.getDomains();
-
+    public void processDates(@NonNull final Book book) {
         // Partial/Full Date strings
-        domains.stream()
-               .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Date)
-               .map(Domain::getName)
-               .filter(book::contains)
-               .forEach(key -> {
-                   final String date = book.getString(key);
-                   // This is very crude... we simply truncate to 10 characters maximum
-                   // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date.
-                   if (date.length() > 10) {
-                       book.putString(key, date.substring(0, 10));
-                   }
-               });
+        dateDomainNames.stream()
+                       .filter(book::contains)
+                       .forEach(key -> {
+                           final String date = book.getString(key);
+                           // This is very crude... we simply truncate to 10 characters maximum
+                           // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date.
+                           if (date.length() > 10) {
+                               book.putString(key, date.substring(0, 10));
+                           }
+                       });
 
         // Full UTC based DateTime strings
-        domains.stream()
-               .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.DateTime)
-               .map(Domain::getName)
-               .filter(book::contains)
-               .forEach(key -> {
-                   final String date = book.getString(key);
-                   // Again, very crude logic... we simply check for the 11th char being a 'T'
-                   // and if so, replace it with a space
-                   if (date.length() > 10 && date.charAt(10) == 'T') {
-                       book.putString(key, T.matcher(date).replaceFirst(" "));
-                   }
-               });
+        dateTimeDomainNames
+                .stream()
+                .filter(book::contains)
+                .forEach(key -> {
+                    final String date = book.getString(key);
+                    // Again, very crude logic... we simply check for the 11th char being a 'T'
+                    // and if so, replace it with a space
+                    if (date.length() > 10 && date.charAt(10) == 'T') {
+                        book.putString(key, T.matcher(date).replaceFirst(" "));
+                    }
+                });
     }
 
     /**
-     * Helper for {@link #process(Context)}.
-     * <p>
      * Processes the external id keys.
      * <p>
      * Removes any keys with zero values, empty strings, null values
-     * or any invalid values for the type.
-     * <p>
-     * Further processing should be done in {@link #processNullsAndBlanks()}.
+     * or any invalid values for the type. Further processing is done in
+     * {@link #processNullsAndBlanks(Book, boolean, RealNumberParser)}.
+     *
+     * @param book to process
      */
     @VisibleForTesting
-    public void processExternalIds() {
+    public void processExternalIds(@NonNull final Book book) {
         final IdentifierDao identifierDao = ServiceLocator.getInstance().getIdentifierDao();
-        final List<Identifier> domains = identifierDao.getAll();
-        final Map<String, Character> map = domains.stream().collect(
-                Collectors.toMap(Identifier::getKey, Identifier::getType));
+        // We need to recollect these here, as they can be updated
+        // by a previous book processing.
+        final Map<String, Character> map = identifierDao
+                .getAll()
+                .stream()
+                .collect(Collectors.toMap(Identifier::getKey, Identifier::getType));
 
         final List<Identifier.Value> ivsOut = new ArrayList<>();
         final List<Identifier.Value> ivsIn = book.getIdentifiers();
@@ -360,8 +378,6 @@ public class BookDaoHelper {
     }
 
     /**
-     * Helper for {@link #process(Context)}.
-     * <p>
      * Fields in this Book, which have a default in the database and
      * <ul>
      *      <li>which are null but not allowed to be null</li>
@@ -370,12 +386,16 @@ public class BookDaoHelper {
      * <p>
      * For new books, REMOVE those keys.
      * Existing books, REPLACE those keys with the default value for the column.
+     *  @param book  to process
+     *
+     * @param isNew            flag; whether the book is entirely 'new' or it's an update
+     * @param realNumberParser to use
      */
     @VisibleForTesting
-    public void processNullsAndBlanks() {
-
-        DBDefinitions.TBL_BOOKS
-                .getDomains()
+    public void processNullsAndBlanks(@NonNull final Book book,
+                                      final boolean isNew,
+                                      @NonNull final RealNumberParser realNumberParser) {
+        tableDomains
                 .stream()
                 .filter(domain -> book.contains(domain.getName()) && domain.hasDefault())
                 .forEach(domain -> {
@@ -399,7 +419,7 @@ public class BookDaoHelper {
     }
 
     /**
-     * Return a ContentValues collection containing only those values from 'source'
+     * Creates a ContentValues collection containing only those values from 'source'
      * that match columns in 'dest'.
      * <ul>
      *      <li>Exclude the primary key from the list of columns.</li>
@@ -408,20 +428,26 @@ public class BookDaoHelper {
      *          be transformed to 0/1</li>
      * </ul>
      *
-     * @param tableInfo destination table
+     * @param book             to process
+     * @param realNumberParser to use
      *
      * @return New and filtered ContentValues
      *
      * @throws IllegalArgumentException if a {@code null} is set for a not-nullable column
      */
+    @VisibleForTesting
     @NonNull
-    ContentValues filterValues(@NonNull final TableInfo tableInfo) {
+    public ContentValues filterValues(@NonNull final Book book,
+                                      @NonNull final RealNumberParser realNumberParser) {
         final ContentValues cv = new ContentValues();
-        for (final String key : book.keySet()) {
+
+        book.keySet()
+            .stream()
             // We've seen empty keys in old BC imports - this is likely due to a csv column
             // not being properly escaped, i.e. the data itself containing a comma.
             // Not much we can do about that, so skip if encountered.
-            if (!key.isEmpty()) {
+            .filter(key -> !key.isEmpty())
+            .forEach(key -> {
                 // Get column info for this column.
                 final ColumnInfo columnInfo = tableInfo.getColumn(key);
                 // Check if we actually have a matching column, and never update a PK.
@@ -501,8 +527,7 @@ public class BookDaoHelper {
                         }
                     }
                 }
-            }
-        }
+            });
         return cv;
     }
 
@@ -510,11 +535,13 @@ public class BookDaoHelper {
      * Called during {@link BookDaoImpl#insert(Context, Book, Set)}
      * and {@link BookDaoImpl#update(Context, Book, Set)}.
      *
+     * @param book to process
+     *
      * @throws StorageException The covers directory is not available
      * @throws IOException      on generic/other IO failures
      */
     @SuppressWarnings("OverlyBroadThrowsClause")
-    void persistCovers()
+    void persistCovers(@NonNull final Book book)
             throws StorageException, IOException {
 
         final String uuid = book.getUuid();
