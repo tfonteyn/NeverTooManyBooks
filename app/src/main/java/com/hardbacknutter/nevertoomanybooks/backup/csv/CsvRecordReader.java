@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.core.database.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.core.database.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
@@ -357,7 +358,9 @@ public class CsvRecordReader
         Synchronizer.SyncLock txLock = null;
 
         final Style defaultStyle = ServiceLocator.getInstance().getStyles().getDefault();
-        final BookCoder bookCoder = new BookCoder(context, csvFormat, defaultStyle);
+        final List<Locale> allLocales = LocaleListUtils.asList(
+                context.getResources().getConfiguration().getLocales());
+        final BookCoder bookCoder = new BookCoder(context, csvFormat, defaultStyle, allLocales);
 
         while (row < books.size() && !progressListener.isCancelled()) {
 

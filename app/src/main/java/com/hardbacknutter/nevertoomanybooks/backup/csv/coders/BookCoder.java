@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
 
 import android.content.Context;
-import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.core.parsers.NumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RatingParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.core.utils.LocaleListUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.LegacyUpgrades;
@@ -117,7 +115,7 @@ public class BookCoder {
     private final RatingParser ratingParser;
     private final TagMapper tagMapper;
     private final RealNumberParser realNumberParser;
-    private final LocaleList userLocales;
+    private final List<Locale> userLocales;
     @Nullable
     private CsvGoodreads goodreads;
     @Nullable
@@ -129,12 +127,15 @@ public class BookCoder {
      * @param context      Current context
      * @param csvFormat    type/origin of the input data to decode
      * @param defaultStyle the default style to use for {@link Bookshelf}s
+     * @param userLocales  to use for parsing
      */
     public BookCoder(@NonNull final Context context,
                      @NonNull final CsvFormat csvFormat,
-                     @NonNull final Style defaultStyle) {
+                     @NonNull final Style defaultStyle,
+                     @NonNull final List<Locale> userLocales) {
         this.csvFormat = csvFormat;
         this.defaultStyle = defaultStyle;
+        this.userLocales = userLocales;
 
         authorCoder = new StringList<>(new AuthorCoder());
         // Backwards compatibility: BookshelfCoder elementSeparator MUST be a ','
@@ -145,27 +146,27 @@ public class BookCoder {
 
         unknownAuthor = Author.createUnknownAuthor(context);
 
-        userLocales = context.getResources().getConfiguration().getLocales();
-
         final Locale systemLocale = ServiceLocator.getInstance().getSystemLocaleList().get(0);
-        final List<Locale> allLocales = LocaleListUtils.asList(userLocales);
-        dateParser = new FullDateParser(new ISODateParser(systemLocale), allLocales);
+        dateParser = new FullDateParser(new ISODateParser(systemLocale), this.userLocales);
+
+        tagMapper = new TagMapper(this.userLocales.get(0));
+
+        // Special treatment for the floating point parsers,
+        // due to CSV files potentially coming from "foreign" websites.
 
         // Make sure US is added so we can parse "dot" decimal-separator
         // even when the user Locale is a comma decimal-separator.
-        // FIXME LOCALE: this does NOT support the case where a user's Locales only
-        //  use "dot" decimal-separator and they are importing a number with a comma!
-        if (allLocales.contains(Locale.US)) {
-            realNumberParser = new RealNumberParser(allLocales);
-            ratingParser = csvFormat.createRatingParser(allLocales);
-        } else {
-            final List<Locale> tmp = new ArrayList<>(allLocales);
-            tmp.add(Locale.US);
-            realNumberParser = new RealNumberParser(tmp);
-            ratingParser = csvFormat.createRatingParser(tmp);
+        final List<Locale> tmpLocales = new ArrayList<>(this.userLocales);
+        if (!this.userLocales.contains(Locale.US)) {
+            tmpLocales.add(Locale.US);
         }
-
-        tagMapper = new TagMapper(userLocales.get(0));
+        // Make sure FRANCE is added so we can parse "comma" decimal-separator
+        // even when the user Locale is a dot decimal-separator.
+        if (!this.userLocales.contains(Locale.FRANCE)) {
+            tmpLocales.add(Locale.FRANCE);
+        }
+        realNumberParser = new RealNumberParser(tmpLocales);
+        ratingParser = csvFormat.createRatingParser(tmpLocales);
     }
 
     /**
