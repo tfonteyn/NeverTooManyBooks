@@ -26,8 +26,6 @@ import androidx.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.core.utils.TextNormalizer;
-
 public final class SearchEngineUtils {
 
     /** Fields can contain div tags which we remove to make the text shorter. */
@@ -51,6 +49,10 @@ public final class SearchEngineUtils {
      */
     private static final Pattern CLEAN_NAME_PATTERN =
             Pattern.compile("[,.':;`~@#$%^&*(\\-=_+\u200E\u200F]*$");
+    /** Keep only alpha/digit and space characters. */
+    private static final Pattern KEEP_PATTERN = Pattern.compile("[^\\p{Alpha}\\d ]");
+    /** Replace repeated/special whitespace characters with a single space. */
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
     private SearchEngineUtils() {
     }
@@ -137,10 +139,10 @@ public final class SearchEngineUtils {
             return "";
         }
 
-        final String result = TextNormalizer.WHITESPACE
+        final String result = WHITESPACE
                 .matcher(search)
                 .replaceAll(" ");
-        return TextNormalizer.ALPHANUMERIC_PATTERN
+        return KEEP_PATTERN
                 .matcher(result)
                 .replaceAll("");
     }
