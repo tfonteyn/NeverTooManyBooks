@@ -327,7 +327,7 @@ public final class LegacyUpgrades {
         TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_AUTO_UPDATE);
     }
 
-    static void v21onUpgrade(final Context context) {
+    static void v21onUpgrade(@NonNull final Context context) {
         // migrate SearchEngine Preferences
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -378,10 +378,10 @@ public final class LegacyUpgrades {
     static void v23onUpgrade(@NonNull final SQLiteDatabase db) {
         // Up to version 22 we had a bug in how we'd store TOC entries which could create
         // duplicate authors. Fixed in 23 but we need to do a clean up during upgrade.
-        v23removeDuplicateAuthors(db);
+        removeDuplicateAuthors(db);
         // as a result of the author cleanup, we now might have duplicate toc entries,
         // same algorithm to clean those up
-        v23removeDuplicateTocEntries(db);
+        removeDuplicateTocEntries(db);
 
         // Add pen-name support
         TBL_PSEUDONYM_AUTHOR.create(db, true);
@@ -390,169 +390,12 @@ public final class LegacyUpgrades {
                 "bdt_book_id", SqLiteDataType.Integer).build());
     }
 
-    private static void v23removeDuplicateAuthors(@NonNull final SQLiteDatabase db) {
-
-        // find the names for duplicate author; i.e. identical family and given names.
-        final List<Pair<String, String>> authors = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(
-                SELECT_ + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
-                + _FROM_ + TBL_AUTHORS.getName()
-                + _GROUP_BY_ + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
-                + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
-            while (cursor.moveToNext()) {
-                authors.add(new Pair<>(cursor.getString(0), cursor.getString(1)));
-            }
-        }
-        if (authors.isEmpty()) {
-            return;
-        }
-
-        // use the family and given names to find the id's for each duplication
-        final List<List<Long>> authorDuplicates = new ArrayList<>();
-        for (final Pair<String, String> a : authors) {
-            try (Cursor cursor = db.rawQuery(
-                    SELECT_ + DBKey.PK_ID + _FROM_ + TBL_AUTHORS.getName()
-                    + _WHERE_ + DBKey.AUTHOR.FAMILY_NAME + "=?"
-                    + _AND_ + DBKey.AUTHOR.GIVEN_NAMES + "=?",
-                    new String[]{a.first, a.second})) {
-                final List<Long> ids = new ArrayList<>();
-                while (cursor.moveToNext()) {
-                    ids.add(cursor.getLong(0));
-                }
-                if (ids.size() > 1) {
-                    authorDuplicates.add(ids);
-                }
-            }
-        }
-        if (authorDuplicates.isEmpty()) {
-            return;
-        }
-
-        final Logger logger = LoggerFactory.getLogger();
-
-        // for each duplicate author, weed out the duplicates and delete them
-        for (final List<Long> idList : authorDuplicates) {
-            final long keep = idList.get(0);
-            final List<Long> others = idList.subList(1, idList.size());
-
-            final String ids = others.stream()
-                                     .map(String::valueOf)
-                                     .collect(Collectors.joining(","));
-
-            String sql;
-
-            sql = UPDATE_ + DBDefinitions.TBL_BOOK_AUTHOR.getName()
-                  + _SET_ + DBKey.FK_AUTHOR + "=" + keep
-                  + _WHERE_ + DBKey.FK_AUTHOR + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
-                throw e;
-            }
-
-            sql = UPDATE_ + TBL_TOC_ENTRIES.getName() + _SET_ + DBKey.FK_AUTHOR + "=" + keep
-                  + _WHERE_ + DBKey.FK_AUTHOR + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
-                throw e;
-            }
-
-            sql = DELETE_FROM_ + TBL_AUTHORS.getName()
-                  + _WHERE_ + DBKey.PK_ID + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
-                throw e;
-            }
-        }
-    }
-
-    private static void v23removeDuplicateTocEntries(@NonNull final SQLiteDatabase db) {
-        // find the duplicate tocs; i.e. identical author and title.
-        final List<Pair<Long, String>> entries = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(
-                SELECT_ + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
-                + _FROM_ + TBL_TOC_ENTRIES.getName()
-                + _GROUP_BY_ + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
-                + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
-            while (cursor.moveToNext()) {
-                entries.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
-            }
-        }
-        if (entries.isEmpty()) {
-            return;
-        }
-
-        // use the author and title to find the id's for each duplication
-        final List<List<Long>> entryDuplicates = new ArrayList<>();
-        for (final Pair<Long, String> toc : entries) {
-            try (Cursor cursor = db.rawQuery(
-                    SELECT_ + DBKey.PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
-                    + _WHERE_ + DBKey.FK_AUTHOR + "=?"
-                    + _AND_ + DBKey.TITLE + "=?",
-                    new String[]{String.valueOf(toc.first), toc.second})) {
-                final List<Long> ids = new ArrayList<>();
-                while (cursor.moveToNext()) {
-                    ids.add(cursor.getLong(0));
-                }
-                if (ids.size() > 1) {
-                    entryDuplicates.add(ids);
-                }
-            }
-        }
-        if (entryDuplicates.isEmpty()) {
-            return;
-        }
-
-        final Logger logger = LoggerFactory.getLogger();
-
-        // for each duplicate toc entry, weed out the duplicates and delete them
-        for (final List<Long> idList : entryDuplicates) {
-            final long keep = idList.get(0);
-            final List<Long> others = idList.subList(1, idList.size());
-
-            final String ids = others.stream()
-                                     .map(String::valueOf)
-                                     .collect(Collectors.joining(","));
-
-            String sql;
-
-            sql = UPDATE_ + DBDefinitions.TBL_BOOK_TOC_ENTRIES.getName()
-                  + _SET_ + DBKey.FK_TOC_ENTRY + "=" + keep
-                  + _WHERE_ + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e,
-                         "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
-                throw e;
-            }
-
-            sql = DELETE_FROM_ + TBL_TOC_ENTRIES.getName()
-                  + _WHERE_ + DBKey.PK_ID + " IN (" + ids + ')';
-            //noinspection CheckStyle,OverlyBroadCatchBlock
-            try (SQLiteStatement stmt = db.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            } catch (@NonNull final Exception e) {
-                logger.e(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
-                throw e;
-            }
-        }
-    }
 
     static void v24onUpgrade(@NonNull final SQLiteDatabase db) {
         TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_TRANSLATION_ORIGINAL_TITLE);
     }
 
-    static void v25onUpgrade(final Context context,
+    static void v25onUpgrade(@NonNull final Context context,
                              @NonNull final SQLiteDatabase db) {
         TBL_DELETED_BOOKS.create(db, true);
         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_FTS, true);
@@ -989,7 +832,7 @@ public final class LegacyUpgrades {
     }
 
     static void v42onUpgrade(@NonNull final SQLiteDatabase db,
-                             final Context context) {
+                             @NonNull final Context context) {
         // depending on the install/upgrade path, we might already have
         // added the WIKIDATA_CLAIM_AUTHOR_ID column
         final ColumnInfo wdCId = TBL_IDENTIFIERS
@@ -1010,9 +853,8 @@ public final class LegacyUpgrades {
                    + '|' + FieldVisibility.getBitValue(Set.of(DBKey.COVER[2], DBKey.COVER[3])));
     }
 
-    static void v44onUpgrade(final Context context) {
-        final SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
+    static void v44onUpgrade(@NonNull final Context context) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         // If the user never enabled the zoom-slider, force the default back to zero
         if (!prefs.getBoolean(CameraConfig.PK_CAMERA_ZOOM_CONTROL_SHOW, false)) {
             prefs.edit().putFloat(CameraConfig.PK_CAMERA_ZOOM_CONTROL_VALUE, 0f).apply();
@@ -1022,70 +864,181 @@ public final class LegacyUpgrades {
         StartupViewModel.schedule(context, StartupViewModel.PK_REBUILD_TITLE_OB, true);
     }
 
+
+    private static void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
+                                                               @NonNull final SQLiteDatabase db) {
+        try (SQLiteStatement stmt = db.compileStatement(
+                "UPDATE " + TBL_IDENTIFIERS.getName()
+                + " SET " + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
+                + " WHERE " + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
+            Identifier.createInitialList(context)
+                      .stream()
+                      .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
+                      .forEach(identifier -> {
+                          stmt.bindString(1, identifier.getWikidataClaimAuthorId().get());
+                          stmt.bindString(2, identifier.getKey());
+                          stmt.executeUpdateDelete();
+                      });
+        }
+    }
+
+    /**
+     * Called at the end of {@link DBHelper#onUpgrade(SQLiteDatabase, int, int)}.
+     * Add a set of Identifiers which were added after the initial app release.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     */
+    static void addIdentifiersIfNotYetDone(@NonNull final Context context,
+                                           @NonNull final SQLiteDatabase db) {
+
+        addIdentifier(db, new Identifier(
+                Identifier.SID_DATABAZE_KNIH,
+                Identifier.TYPE_LONG,
+                context.getString(R.string.identifier_databaze_knih),
+                "P10387",
+                DatabazeKnihSearchEngine.SITE_URL,
+                DatabazeKnihSearchEngine.BOOK_URL,
+                DatabazeKnihSearchEngine.AUTHOR_URL));
+        addIdentifier(db, new Identifier(
+                Identifier.SID_ISNI,
+                Identifier.TYPE_STRING,
+                context.getString(R.string.identifier_isni),
+                "P213",
+                ISNI.SITE_URL,
+                null,
+                ISNI.AUTHOR_URL));
+        addIdentifier(db, new Identifier(
+                Identifier.SID_STORYGRAPH,
+                Identifier.TYPE_STRING,
+                context.getString(R.string.identifier_storygraph),
+                "P12430",
+                StoryGraph.SITE_URL,
+                StoryGraph.BOOK_URL,
+                StoryGraph.AUTHOR_URL));
+        addIdentifier(db, new Identifier(
+                Identifier.SID_URN,
+                Identifier.TYPE_STRING,
+                context.getString(R.string.identifier_urn),
+                null,
+                null,
+                null,
+                null));
+        addIdentifier(db, new Identifier(
+                Identifier.SID_VIAF,
+                Identifier.TYPE_LONG,
+                context.getString(R.string.identifier_viaf),
+                "P214",
+                VIAF.SITE_URL,
+                null,
+                VIAF.AUTHOR_URL));
+        addIdentifier(db, new Identifier(
+                Identifier.SID_BIBLIOTECE_PL,
+                Identifier.TYPE_LONG,
+                context.getString(R.string.identifier_bibliotece_pl),
+                null,
+                BibliotecePlSearchEngine.SITE_URL,
+                BibliotecePlSearchEngine.BOOK_URL,
+                BibliotecePlSearchEngine.AUTHOR_URL));
+    }
+
+    /**
+     * Add the given Identifier.
+     * Does nothing if it already exists..
+     *
+     * @param db         Database Access
+     * @param identifier to add
+     */
+    private static void addIdentifier(@NonNull final SQLiteDatabase db,
+                                      @NonNull final Identifier identifier) {
+
+        // key must be unique
+        boolean found = false;
+        try (SQLiteStatement stmt = db.compileStatement(
+                "SELECT 1 FROM " + TBL_IDENTIFIERS.getName()
+                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
+            stmt.bindString(1, identifier.getKey());
+            found = 1 == stmt.simpleQueryForLong();
+        } catch (@NonNull final SQLiteDoneException ignore) {
+            // ignore
+        }
+        if (found) {
+            // The identifier is already present
+            return;
+        }
+
+        try (SQLiteStatement stmt = db.compileStatement(
+                "INSERT INTO " + TBL_IDENTIFIERS.getName()
+                + '(' + DBKey.IDENTIFIERS.KEY
+                + ',' + DBKey.IDENTIFIERS.TYPE
+                + ',' + DBKey.IDENTIFIERS.NAME
+                // Added in db42
+                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
+                + ',' + DBKey.IDENTIFIERS.SITE_URL
+                + ',' + DBKey.IDENTIFIERS.BOOK_URI
+                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
+                + ") VALUES(?,?,?,?,?,?,?)")) {
+            stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
+            stmt.bindString(2, String.valueOf(identifier.getType()));
+            stmt.bindString(3, identifier.getName());
+
+            final String wdc = identifier.getWikidataClaimAuthorId().orElse(null);
+            if (wdc == null) {
+                stmt.bindNull(4);
+            } else {
+                stmt.bindString(4, wdc);
+            }
+            final String siteUrl = identifier.getSiteUrl();
+            if (siteUrl == null) {
+                stmt.bindNull(5);
+            } else {
+                stmt.bindString(5, siteUrl);
+            }
+            final String bookUrl = identifier.getBookUri().orElse(null);
+            if (bookUrl == null) {
+                stmt.bindNull(6);
+            } else {
+                stmt.bindString(6, bookUrl);
+            }
+            final String authorUrl = identifier.getAuthorUri().orElse(null);
+            if (authorUrl == null) {
+                stmt.bindNull(7);
+            } else {
+                stmt.bindString(7, authorUrl);
+            }
+            stmt.executeInsert();
+        }
+    }
+
+    /**
+     * Called at the end of {@link DBHelper#onUpgrade(SQLiteDatabase, int, int)}.
+     * Depending on the upgrade path of some users... add the global style
+     * if it does not already exists.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     */
     static void insertGlobalStyleIfNotYetDone(@NonNull final Context context,
                                               @NonNull final SQLiteDatabase db) {
-        final boolean install;
+        final boolean isPresent;
         try (SQLiteStatement stmt = db.compileStatement(
                 "SELECT COUNT(" + DBKey.STYLE.TYPE + ") FROM " + TBL_BOOKLIST_STYLES.getName()
                 + _WHERE_ + DBKey.STYLE.TYPE + "=2")) {
-            install = 0 == stmt.simpleQueryForLong();
+            isPresent = stmt.simpleQueryForLong() > 0;
         }
 
-        if (install) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            final GlobalStyle style = GlobalStyle.createDefault();
-            style.setSortAuthorByGivenName(
-                    prefs.getBoolean("sort.author.name.given_first", false));
-            style.setShowAuthorByGivenName(
-                    prefs.getBoolean("show.author.name.given_first", false));
-
-            StyleDaoImpl.insertGlobalDefaults(db, style);
+        if (isPresent) {
+            return;
         }
-    }
 
-    /**
-     * Convert the {@code genre} string to a list of {@link Tag}s.
-     *
-     * @param genre to convert
-     *
-     * @return a list of new Tags, with id {@code 0}
-     */
-    @NonNull
-    public static List<Tag> migrateGenre(@NonNull final String genre) {
-        // sanity
-        if (genre.isBlank()) {
-            return List.of();
-        }
-        return Arrays.stream(GENRE_SPLITTER_PATTERN.split(genre))
-                     .map(String::strip)
-                     .map(Tag::new)
-                     .collect(Collectors.toList());
-    }
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final GlobalStyle style = GlobalStyle.createDefault();
+        style.setSortAuthorByGivenName(
+                prefs.getBoolean("sort.author.name.given_first", false));
+        style.setShowAuthorByGivenName(
+                prefs.getBoolean("show.author.name.given_first", false));
 
-    /**
-     * Check and migrate pre-db25 global field visibility keys.
-     *
-     * @param prefs to migrate
-     */
-    private static void v24migrateGlobalFieldVisibility(@NonNull final SharedPreferences prefs) {
-        final Pattern dot = Pattern.compile("\\.");
-        final List<String> oldVisKeys = prefs.getAll()
-                                             .keySet()
-                                             .stream()
-                                             .filter(key -> key.startsWith(
-                                                     PK_FIELDS_VISIBILITY_KEYS))
-                                             .collect(Collectors.toList());
-        if (!oldVisKeys.isEmpty()) {
-            final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
-                                                                  .getGlobalFieldVisibility();
-            oldVisKeys.forEach(oldKey -> {
-                final boolean value = prefs.getBoolean(oldKey, false);
-                final String dbKey = dot.split(oldKey, 3)[2];
-                fieldVisibility.setVisible(dbKey, value);
-            });
-
-            fieldVisibility.save(prefs);
-        }
+        StyleDaoImpl.insertGlobalDefaults(db, style);
     }
 
     /**
@@ -1103,7 +1056,7 @@ public final class LegacyUpgrades {
 
         // This will take care of old keys in general, but will
         // ALSO copy the FieldVisibility.PK_LOANS which is still in use.
-        v24migrateGlobalFieldVisibility(prefs);
+        migrateGlobalFieldVisibility(prefs);
 
         // Now remove all obsolete keys.
         final SharedPreferences.Editor editor = prefs.edit();
@@ -1185,135 +1138,206 @@ public final class LegacyUpgrades {
         context.deleteSharedPreferences("language2iso3");
     }
 
-    private static void updateIdentifierWikidataAuthorIdClaims(@NonNull final Context context,
-                                                               @NonNull final SQLiteDatabase db) {
-        try (SQLiteStatement stmt = db.compileStatement(
-                "UPDATE " + TBL_IDENTIFIERS.getName()
-                + " SET " + DBDefinitions.DOM_IDENTIFIER_WIKIDATA_CLAIM_AUTHOR_ID + "=?"
-                + " WHERE " + DBDefinitions.DOM_IDENTIFIER_KEY + "=?")) {
-            Identifier.createInitialList(context)
-                      .stream()
-                      .filter(identifier -> identifier.getWikidataClaimAuthorId().isPresent())
-                      .forEach(identifier -> {
-                          stmt.bindString(1, identifier.getWikidataClaimAuthorId().get());
-                          stmt.bindString(2, identifier.getKey());
-                          stmt.executeUpdateDelete();
-                      });
+    /**
+     * Check and migrate pre-db25 global field visibility keys.
+     *
+     * @param prefs to migrate
+     */
+    private static void migrateGlobalFieldVisibility(@NonNull final SharedPreferences prefs) {
+        final Pattern dot = Pattern.compile("\\.");
+        final List<String> oldVisKeys = prefs.getAll()
+                                             .keySet()
+                                             .stream()
+                                             .filter(key -> key.startsWith(
+                                                     PK_FIELDS_VISIBILITY_KEYS))
+                                             .collect(Collectors.toList());
+        if (!oldVisKeys.isEmpty()) {
+            final FieldVisibility fieldVisibility = ServiceLocator.getInstance()
+                                                                  .getGlobalFieldVisibility();
+            oldVisKeys.forEach(oldKey -> {
+                final boolean value = prefs.getBoolean(oldKey, false);
+                final String dbKey = dot.split(oldKey, 3)[2];
+                fieldVisibility.setVisible(dbKey, value);
+            });
+
+            fieldVisibility.save(prefs);
         }
     }
 
-    static void addIdentifiersIfNotYetDone(@NonNull final Context context,
-                                           @NonNull final SQLiteDatabase db) {
-
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_DATABAZE_KNIH,
-                Identifier.TYPE_LONG,
-                context.getString(R.string.identifier_databaze_knih),
-                "P10387",
-                DatabazeKnihSearchEngine.SITE_URL,
-                DatabazeKnihSearchEngine.BOOK_URL,
-                DatabazeKnihSearchEngine.AUTHOR_URL));
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_ISNI,
-                Identifier.TYPE_STRING,
-                context.getString(R.string.identifier_isni),
-                "P213",
-                ISNI.SITE_URL,
-                null,
-                ISNI.AUTHOR_URL));
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_STORYGRAPH,
-                Identifier.TYPE_STRING,
-                context.getString(R.string.identifier_storygraph),
-                "P12430",
-                StoryGraph.SITE_URL,
-                StoryGraph.BOOK_URL,
-                StoryGraph.AUTHOR_URL));
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_URN,
-                Identifier.TYPE_STRING,
-                context.getString(R.string.identifier_urn),
-                null,
-                null,
-                null,
-                null));
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_VIAF,
-                Identifier.TYPE_LONG,
-                context.getString(R.string.identifier_viaf),
-                "P214",
-                VIAF.SITE_URL,
-                null,
-                VIAF.AUTHOR_URL));
-        addIdentifier(context, db, new Identifier(
-                Identifier.SID_BIBLIOTECE_PL,
-                Identifier.TYPE_LONG,
-                context.getString(R.string.identifier_bibliotece_pl),
-                null,
-                BibliotecePlSearchEngine.SITE_URL,
-                BibliotecePlSearchEngine.BOOK_URL,
-                BibliotecePlSearchEngine.AUTHOR_URL));
+    /**
+     * Convert the {@code genre} string to a list of {@link Tag}s.
+     *
+     * @param genre to convert
+     *
+     * @return a list of new Tags, with id {@code 0}
+     */
+    @NonNull
+    public static List<Tag> migrateGenre(@NonNull final String genre) {
+        // sanity
+        if (genre.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(GENRE_SPLITTER_PATTERN.split(genre))
+                     .map(String::strip)
+                     .map(Tag::new)
+                     .collect(Collectors.toList());
     }
 
-    private static void addIdentifier(@NonNull final Context context,
-                                      @NonNull final SQLiteDatabase db,
-                                      @NonNull final Identifier identifier) {
+    private static void removeDuplicateAuthors(@NonNull final SQLiteDatabase db) {
 
-        // key must be unique
-        boolean found = false;
-        try (SQLiteStatement stmt = db.compileStatement(
-                "SELECT 1 FROM " + TBL_IDENTIFIERS.getName()
-                + " WHERE " + DBKey.IDENTIFIERS.KEY + "=?")) {
-            stmt.bindString(1, identifier.getKey());
-            found = 1 == stmt.simpleQueryForLong();
-        } catch (@NonNull final SQLiteDoneException ignore) {
-            // ignore
+        // find the names for duplicate author; i.e. identical family and given names.
+        final List<Pair<String, String>> authors = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(
+                SELECT_ + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
+                + _FROM_ + TBL_AUTHORS.getName()
+                + _GROUP_BY_ + DBKey.AUTHOR.FAMILY_NAME + ',' + DBKey.AUTHOR.GIVEN_NAMES
+                + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
+            while (cursor.moveToNext()) {
+                authors.add(new Pair<>(cursor.getString(0), cursor.getString(1)));
+            }
         }
-        if (found) {
-            // The identifier is already present
+        if (authors.isEmpty()) {
             return;
         }
 
-        try (SQLiteStatement stmt = db.compileStatement(
-                "INSERT INTO " + TBL_IDENTIFIERS.getName()
-                + '(' + DBKey.IDENTIFIERS.KEY
-                + ',' + DBKey.IDENTIFIERS.TYPE
-                + ',' + DBKey.IDENTIFIERS.NAME
-                // Added in db42
-                + ',' + DBKey.IDENTIFIERS.WIKIDATA_CLAIM_AUTHOR_ID
-                + ',' + DBKey.IDENTIFIERS.SITE_URL
-                + ',' + DBKey.IDENTIFIERS.BOOK_URI
-                + ',' + DBKey.IDENTIFIERS.AUTHOR_URI
-                + ") VALUES(?,?,?,?,?,?,?)")) {
-            stmt.bindString(1, identifier.getKey().toLowerCase(Locale.ENGLISH));
-            stmt.bindString(2, String.valueOf(identifier.getType()));
-            stmt.bindString(3, identifier.getName());
+        // use the family and given names to find the id's for each duplication
+        final List<List<Long>> authorDuplicates = new ArrayList<>();
+        for (final Pair<String, String> a : authors) {
+            try (Cursor cursor = db.rawQuery(
+                    SELECT_ + DBKey.PK_ID + _FROM_ + TBL_AUTHORS.getName()
+                    + _WHERE_ + DBKey.AUTHOR.FAMILY_NAME + "=?"
+                    + _AND_ + DBKey.AUTHOR.GIVEN_NAMES + "=?",
+                    new String[]{a.first, a.second})) {
+                final List<Long> ids = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    ids.add(cursor.getLong(0));
+                }
+                if (ids.size() > 1) {
+                    authorDuplicates.add(ids);
+                }
+            }
+        }
+        if (authorDuplicates.isEmpty()) {
+            return;
+        }
 
-            final String wdc = identifier.getWikidataClaimAuthorId().orElse(null);
-            if (wdc == null) {
-                stmt.bindNull(4);
-            } else {
-                stmt.bindString(4, wdc);
+        final Logger logger = LoggerFactory.getLogger();
+
+        // for each duplicate author, weed out the duplicates and delete them
+        for (final List<Long> idList : authorDuplicates) {
+            final long keep = idList.get(0);
+            final List<Long> others = idList.subList(1, idList.size());
+
+            final String ids = others.stream()
+                                     .map(String::valueOf)
+                                     .collect(Collectors.joining(","));
+
+            String sql;
+
+            sql = UPDATE_ + DBDefinitions.TBL_BOOK_AUTHOR.getName()
+                  + _SET_ + DBKey.FK_AUTHOR + "=" + keep
+                  + _WHERE_ + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                logger.e(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
+                throw e;
             }
-            final String siteUrl = identifier.getSiteUrl();
-            if (siteUrl == null) {
-                stmt.bindNull(5);
-            } else {
-                stmt.bindString(5, siteUrl);
+
+            sql = UPDATE_ + TBL_TOC_ENTRIES.getName() + _SET_ + DBKey.FK_AUTHOR + "=" + keep
+                  + _WHERE_ + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                logger.e(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                throw e;
             }
-            final String bookUrl = identifier.getBookUri().orElse(null);
-            if (bookUrl == null) {
-                stmt.bindNull(6);
-            } else {
-                stmt.bindString(6, bookUrl);
+
+            sql = DELETE_FROM_ + TBL_AUTHORS.getName()
+                  + _WHERE_ + DBKey.PK_ID + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                logger.e(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
+                throw e;
             }
-            final String authorUrl = identifier.getAuthorUri().orElse(null);
-            if (authorUrl == null) {
-                stmt.bindNull(7);
-            } else {
-                stmt.bindString(7, authorUrl);
+        }
+    }
+
+    private static void removeDuplicateTocEntries(@NonNull final SQLiteDatabase db) {
+        // find the duplicate tocs; i.e. identical author and title.
+        final List<Pair<Long, String>> entries = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(
+                SELECT_ + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
+                + _FROM_ + TBL_TOC_ENTRIES.getName()
+                + _GROUP_BY_ + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
+                + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
+            while (cursor.moveToNext()) {
+                entries.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
             }
-            stmt.executeInsert();
+        }
+        if (entries.isEmpty()) {
+            return;
+        }
+
+        // use the author and title to find the id's for each duplication
+        final List<List<Long>> entryDuplicates = new ArrayList<>();
+        for (final Pair<Long, String> toc : entries) {
+            try (Cursor cursor = db.rawQuery(
+                    SELECT_ + DBKey.PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
+                    + _WHERE_ + DBKey.FK_AUTHOR + "=?"
+                    + _AND_ + DBKey.TITLE + "=?",
+                    new String[]{String.valueOf(toc.first), toc.second})) {
+                final List<Long> ids = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    ids.add(cursor.getLong(0));
+                }
+                if (ids.size() > 1) {
+                    entryDuplicates.add(ids);
+                }
+            }
+        }
+        if (entryDuplicates.isEmpty()) {
+            return;
+        }
+
+        final Logger logger = LoggerFactory.getLogger();
+
+        // for each duplicate toc entry, weed out the duplicates and delete them
+        for (final List<Long> idList : entryDuplicates) {
+            final long keep = idList.get(0);
+            final List<Long> others = idList.subList(1, idList.size());
+
+            final String ids = others.stream()
+                                     .map(String::valueOf)
+                                     .collect(Collectors.joining(","));
+
+            String sql;
+
+            sql = UPDATE_ + DBDefinitions.TBL_BOOK_TOC_ENTRIES.getName()
+                  + _SET_ + DBKey.FK_TOC_ENTRY + "=" + keep
+                  + _WHERE_ + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                logger.e(TAG, e,
+                         "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                throw e;
+            }
+
+            sql = DELETE_FROM_ + TBL_TOC_ENTRIES.getName()
+                  + _WHERE_ + DBKey.PK_ID + " IN (" + ids + ')';
+            //noinspection CheckStyle,OverlyBroadCatchBlock
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                logger.e(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                throw e;
+            }
         }
     }
 }
