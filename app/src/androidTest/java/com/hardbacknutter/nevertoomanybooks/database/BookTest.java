@@ -270,23 +270,22 @@ public class BookTest
         assertBookHasPersistedCover(book, 0);
         assertBookHasPersistedCover(book, 1);
 
-        // We've used both temp files, so both files should be gone now
+        // We've used both temp files, so files 1+2 should be gone now
+        // but 3+4 will still be there
         final File[] tempFiles;
         tempFiles = tempDir.listFiles(jpgFilter);
         assertNotNull(tempFiles);
-        assertEquals(0, tempFiles.length);
+        assertEquals(2, tempFiles.length);
 
         // sanity check there must NOT be any temp cover fileSpecs.
-        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+        assertBookHasNoTempCovers(book);
 
         // sanity check the cover is really there
         assertBookHasPersistedCover(book, 1);
         // remove it
         book.removeImage(context, 1);
         // there must NOT be any temp cover fileSpecs.
-        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+        assertBookHasNoTempCovers(book);
         // the front cover should still be there
         assertBookHasPersistedCover(book, 0);
         //the back cover must be gone
@@ -303,8 +302,7 @@ public class BookTest
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 
         // there must NOT be any temp cover fileSpecs.
-        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+        assertBookHasNoTempCovers(book);
         // We once again must have front and back cover
         assertBookHasPersistedCover(book, 0);
         assertBookHasPersistedCover(book, 1);
@@ -327,6 +325,8 @@ public class BookTest
         args.putLong(DBKey.FK_BOOK, bookId);
 
         vm.init(context, args, s1.get());
+        vm.loadBook();
+
         final Book retrieved = vm.getBook();
         assertEquals(bookId, retrieved.getId());
         assertBookMatchesInitialInsert(retrieved, bookIdx);
@@ -356,7 +356,7 @@ public class BookTest
         book.setAuthors(authorList);
         book.setPublishers(publisherList);
 
-        // Add a front cover but no back cover
+        // Add a front cover only
         final File tempDir = coverStorage.getTempDir();
         book.setImage(context, 0, new File(tempDir, DbPrep.COVER[0]));
         // we're in 'Dirty' mode, so must be a temp file
@@ -404,12 +404,17 @@ public class BookTest
 
         assertBookHasPersistedCover(book, 0);
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[2]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[3]));
 
         final File tempDir = coverStorage.getTempDir();
         final List<File> tempFiles = FileUtils.collectFiles(tempDir, jpgFilter, 10);
-        // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
-        assertEquals(1, tempFiles.size());
+        // expected: 3: because "0.jpg" should be gone,
+        // but "1.jpg", "2.jpg", "3.jpg" will still be there
+        assertEquals(3, tempFiles.size());
         assertEquals(DbPrep.COVER[1], tempFiles.get(0).getName());
+        assertEquals(DbPrep.COVER[2], tempFiles.get(1).getName());
+        assertEquals(DbPrep.COVER[3], tempFiles.get(2).getName());
     }
 
     private void assertBookHasTempCover(@NonNull final Book book,
@@ -417,10 +422,17 @@ public class BookTest
             throws StorageException {
 
         assertTrue(book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx]));
+
         final File tempDir = coverStorage.getTempDir();
         assertEquals(tempDir.getAbsolutePath()
                      + File.separatorChar + DbPrep.COVER[cIdx],
                      book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null));
+    }
+
+    private void assertBookHasNoTempCovers(@NonNull final Book book) {
+        for (int i = 0; i < Book.BKEY_TMP_FILE_SPEC.length; i++) {
+            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[i]));
+        }
     }
 
     /**

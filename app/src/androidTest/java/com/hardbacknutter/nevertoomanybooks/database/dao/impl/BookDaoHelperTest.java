@@ -17,17 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
-import android.os.LocaleList;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -39,21 +39,26 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("MissingJavadoc")
 public class BookDaoHelperTest
         extends BaseDBTest {
 
+    private TableInfo tableInfo;
+
     @Before
     public void setup()
-            throws DaoWriteException, StorageException {
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
+
+        tableInfo = serviceLocator.getDb().getTableInfo(DBDefinitions.TBL_BOOKS);
     }
 
     @Test
     public void quickCv() {
+        final List<Locale> userLocales = List.of(Locale.US);
 
         final Book book = new Book();
         book.putLong(DBKey.PK_ID, 1);
@@ -77,11 +82,8 @@ public class BookDaoHelperTest
         book.setIdentifiers(List.of(new Identifier.Value(Identifier.SID_GOODREADS,
                                                          "18306114")));
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final BookDaoHelper bookDaoHelper = new BookDaoHelper(userLocales, book, false);
-        final ContentValues cv = bookDaoHelper
-                .process(context)
-                .filterValues(serviceLocator.getDb().getTableInfo(TBL_BOOKS));
+        final BookDaoHelper bookDaoHelper = new BookDaoHelper(tableInfo, userLocales);
+        final ContentValues cv = bookDaoHelper.process(context, book, false);
 
         assertEquals(5, cv.size());
         assertTrue(cv.containsKey(DBKey.DESCRIPTION));

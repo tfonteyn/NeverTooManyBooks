@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.core.network.UrlPatterns;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -45,7 +44,7 @@ public class IdentifierTest
 
     @Before
     public void setup()
-            throws DaoWriteException, StorageException {
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
     }
 

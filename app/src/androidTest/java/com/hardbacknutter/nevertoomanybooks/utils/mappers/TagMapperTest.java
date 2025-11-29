@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.mappers;
 import android.util.Log;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -56,7 +57,7 @@ public class TagMapperTest
 
     @Test
     public void doTest() {
-        final TagMapper tagMapper = new TagMapper(context, mappings);
+        final TagMapper tagMapper = new TagMapper(Locale.US, mappings);
 
         final List<Tag> tags = List.of(new Tag("qwerty"),
                                        new Tag("one"),

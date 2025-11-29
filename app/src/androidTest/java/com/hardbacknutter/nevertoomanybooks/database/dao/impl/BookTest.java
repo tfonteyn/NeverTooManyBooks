@@ -17,9 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.entities;
+package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.os.LocaleList;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -30,15 +29,16 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.core.database.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.core.database.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.MoneyParser;
 import com.hardbacknutter.nevertoomanybooks.core.parsers.RealNumberParser;
 import com.hardbacknutter.nevertoomanybooks.core.storage.StorageException;
 import com.hardbacknutter.nevertoomanybooks.core.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Identifier;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import org.junit.Before;
@@ -50,6 +50,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("MissingJavadoc")
 public class BookTest
         extends BaseDBTest {
 
@@ -58,27 +59,31 @@ public class BookTest
     private static final String INVALID_DEFAULT = "Invalid default";
 
     private Book book;
+    private TableInfo tableInfo;
 
     @Before
     public void setup()
-            throws DaoWriteException, StorageException {
+            throws StorageException {
         super.setup(AppLocale.SYSTEM_LANGUAGE);
         book = new Book();
+
+        tableInfo = serviceLocator.getDb().getTableInfo(DBDefinitions.TBL_BOOKS);
     }
 
     /** US english book, price in $. */
     @Test
     public void preprocessPrices01() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
+        final List<Locale> userLocales = List.of(Locale.US);
+        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), realNumberParser);
 
         book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(1.23d), MoneyParser.USD);
         assertNotNull(money);
         book.putMoney(DBKey.PRICE_LISTED, money);
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
-        bdh.processPrice(DBKey.PRICE_LISTED);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
+        bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
         // dump(book);
 
         assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
@@ -88,7 +93,9 @@ public class BookTest
     /** US english book, price set, currency not set. */
     @Test
     public void preprocessPrices02() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
+        final List<Locale> userLocales = List.of(Locale.US);
+        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), realNumberParser);
 
         book.setLanguage("eng");
         final Money money = MoneyParser.parse(BigDecimal.valueOf(0d), "");
@@ -98,10 +105,9 @@ public class BookTest
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no PRICE_PAID_CURRENCY
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
-        bdh.processPrice(DBKey.PRICE_LISTED);
-        bdh.processPrice(DBKey.PRICE_PAID);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
+        bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
+        bdh.processPrice(book, DBKey.PRICE_PAID, moneyParser);
         //dump(book);
 
         assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
@@ -113,7 +119,9 @@ public class BookTest
 
     @Test
     public void preprocessPrices03() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
+        final List<Locale> userLocales = List.of(Locale.FRANCE);
+        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), realNumberParser);
 
         book.setLanguage("fra");
         // as a valid string
@@ -123,10 +131,9 @@ public class BookTest
         book.putString(DBKey.PRICE_PAID, "test");
         // no PRICE_PAID_CURRENCY
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
-        bdh.processPrice(DBKey.PRICE_LISTED);
-        bdh.processPrice(DBKey.PRICE_PAID);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
+        bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
+        bdh.processPrice(book, DBKey.PRICE_PAID, moneyParser);
         //dump(book);
 
         assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
@@ -139,17 +146,17 @@ public class BookTest
 
     @Test
     public void preprocessPrices04() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.FRANCE));
-        final MoneyParser moneyParser = new MoneyParser(Locale.FRANCE, realNumberParser);
+        final List<Locale> userLocales = List.of(Locale.FRANCE);
+        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
+        final MoneyParser moneyParser = new MoneyParser(userLocales.get(0), realNumberParser);
 
         book.setLanguage("eng");
         final Optional<Money> money = moneyParser.parse("EUR 45");
         assertTrue(money.isPresent());
         book.putMoney(DBKey.PRICE_LISTED, money.get());
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
-        bdh.processPrice(DBKey.PRICE_LISTED);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
+        bdh.processPrice(book, DBKey.PRICE_LISTED, moneyParser);
         //dump(book);
 
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED, realNumberParser), 0);
@@ -158,6 +165,8 @@ public class BookTest
 
     @Test
     public void preprocessExternalIdsForInsert() {
+        final List<Locale> userLocales = List.of(Locale.US);
+        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
 
         //noinspection DataFlowIssue
         book.setIdentifiers(List.of(
@@ -179,10 +188,9 @@ public class BookTest
 
         // Not tested: null string for a string field..
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
-        bdh.processExternalIds();
-        dump(book);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
+        bdh.processExternalIds(book);
+        dump(book, realNumberParser);
 
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
 
@@ -192,15 +200,16 @@ public class BookTest
         assertTrue(book.getIdentifierValue(Identifier.SID_STRIP_INFO).isEmpty());
         assertTrue(book.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
 
-        bdh.processNullsAndBlanks();
-        dump(book);
+        bdh.processNullsAndBlanks(book, true, realNumberParser);
+        dump(book, realNumberParser);
         // should not have any effect, so same tests:
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
     }
 
     @Test
     public void preprocessExternalIdsForUpdate() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
+        final List<Locale> userLocales = List.of(Locale.US);
+        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
 
         //noinspection DataFlowIssue
         book.setIdentifiers(List.of(
@@ -221,11 +230,9 @@ public class BookTest
 
         // Not tested: null string for a string field..
 
-
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, false);
-        bdh.processExternalIds();
-        dump(book);
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
+        bdh.processExternalIds(book);
+        dump(book, realNumberParser);
 
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
@@ -236,8 +243,8 @@ public class BookTest
         assertTrue(book.getIdentifierValue(Identifier.SID_OPEN_LIBRARY).isEmpty());
 
 
-        bdh.processNullsAndBlanks();
-        dump(book);
+        bdh.processNullsAndBlanks(book, false, realNumberParser);
+        dump(book, realNumberParser);
         // should not have any effect, so same tests:
         assertEquals("2", book.requireIdentifierValue(Identifier.SID_GOODREADS));
         assertTrue(book.getIdentifierValue(Identifier.SID_ISFDB).isEmpty());
@@ -264,7 +271,8 @@ public class BookTest
     /** Domain: text, default "". */
     @Test
     public void preprocessNullsAndBlanksForInsert() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
+        final List<Locale> userLocales = List.of(Locale.US);
+        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
 
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
@@ -273,9 +281,8 @@ public class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, true);
-        bdh.processNullsAndBlanks();
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
+        bdh.processNullsAndBlanks(book, true, realNumberParser);
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
 
@@ -291,7 +298,8 @@ public class BookTest
 
     @Test
     public void preprocessNullsAndBlanksForUpdate() {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
+        final List<Locale> userLocales = List.of(Locale.US);
+        final RealNumberParser realNumberParser = new RealNumberParser(userLocales);
 
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
@@ -300,9 +308,8 @@ public class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final LocaleList userLocales = context.getResources().getConfiguration().getLocales();
-        final BookDaoHelper bdh = new BookDaoHelper(userLocales, book, false);
-        bdh.processNullsAndBlanks();
+        final BookDaoHelper bdh = new BookDaoHelper(tableInfo, userLocales);
+        bdh.processNullsAndBlanks(book, false, realNumberParser);
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
 
@@ -316,8 +323,8 @@ public class BookTest
         assertEquals(0d, book.getDouble(DBKey.PRICE_PAID, realNumberParser), 0);
     }
 
-    private void dump(@NonNull final DataManager data) {
-        final RealNumberParser realNumberParser = new RealNumberParser(List.of(Locale.US));
+    private void dump(@NonNull final DataManager data,
+                      @NonNull final RealNumberParser realNumberParser) {
 
         for (final String key : data.keySet()) {
             final Object value = data.get(key, realNumberParser);

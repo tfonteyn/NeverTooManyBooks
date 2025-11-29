@@ -131,7 +131,7 @@ public class TocEntry
      */
     @RestrictTo(RestrictTo.Scope.TESTS)
     @VisibleForTesting
-    TocEntry(final long id,
+    public TocEntry(final long id,
              @NonNull final Author author,
              @NonNull final String title,
              @NonNull final PartialDate firstPublicationDate,

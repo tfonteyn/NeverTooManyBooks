@@ -146,6 +146,14 @@ public class ShowBookDetailsViewModel
     }
 
     /**
+     * Tests ONLY. Load the book without triggering onBookLoaded.
+     */
+    @VisibleForTesting
+    public void loadBook() {
+        book = Book.from(bookId);
+    }
+
+    /**
      * (Re)load the data for the current book and trigger a UI update.
      */
     void displayBook() {
